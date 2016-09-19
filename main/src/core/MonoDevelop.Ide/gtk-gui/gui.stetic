@@ -62,7 +62,6 @@
                 <child>
                   <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                     <property name="MemberName" />
-                    <property name="DisplayAsRelativePath">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -559,7 +558,6 @@
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">3</property>
@@ -1295,7 +1293,6 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="browseButton">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -2595,8 +2592,8 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.ImageView" id="imageAdd">
                         <property name="MemberName" />
-                        <property name="IconSize">Button</property>
                         <property name="IconId">gtk-add</property>
+                        <property name="IconSize">Button</property>
                       </widget>
                     </child>
                   </widget>
@@ -2615,8 +2612,8 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.ImageView" id="imageRemove">
                         <property name="MemberName" />
-                        <property name="IconSize">Button</property>
                         <property name="IconId">gtk-remove</property>
+                        <property name="IconSize">Button</property>
                       </widget>
                     </child>
                   </widget>
@@ -2667,8 +2664,8 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.ImageView" id="imageUp">
                         <property name="MemberName" />
-                        <property name="IconSize">Button</property>
                         <property name="IconId">gtk-go-up</property>
+                        <property name="IconSize">Button</property>
                       </widget>
                     </child>
                   </widget>
@@ -2687,8 +2684,8 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.ImageView" id="imageDown">
                         <property name="MemberName" />
-                        <property name="IconSize">Button</property>
                         <property name="IconId">gtk-go-down</property>
+                        <property name="IconSize">Button</property>
                       </widget>
                     </child>
                   </widget>
@@ -3161,7 +3158,6 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.FolderEntry" id="projectFolderEntry">
                         <property name="MemberName" />
-                        <property name="DisplayAsRelativePath">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -3236,8 +3232,8 @@ Diagnostic</property>
     </child>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget" design-size="315 285">
-    <property name="GeneratePublic">False</property>
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox13">
         <property name="MemberName" />
@@ -5478,7 +5474,6 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -7464,7 +7459,6 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="strongNameFileEntry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7538,7 +7532,6 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7672,7 +7665,6 @@ All solutions</property>
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="outputPathEntry">
                             <property name="MemberName" />
-                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
@@ -8068,8 +8060,8 @@ All solutions</property>
               <widget class="MonoDevelop.Components.ImageView" id="imageQuestion">
                 <property name="MemberName" />
                 <property name="Yalign">0</property>
-                <property name="IconSize">Dialog</property>
                 <property name="IconId">gtk-dialog-question</property>
+                <property name="IconSize">Dialog</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -8681,7 +8673,6 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">2</property>
@@ -9389,16 +9380,15 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <property name="Tooltip" translatable="yes">Add existing files to the project</property>
                         <property name="CanFocus">True</property>
                         <property name="Type">Custom</property>
-                        <property name="UseUnderline">True</property>
                         <property name="Relief">None</property>
                         <signal name="Clicked" handler="OnAddFileButtonClicked" />
-	                    <child>
-	                      <widget class="MonoDevelop.Components.ImageView" id="imageAdd">
-	                        <property name="MemberName" />
-	                        <property name="IconSize">Menu</property>
-	                        <property name="IconId">gtk-add</property>
-	                      </widget>
-	                    </child>
+                        <child>
+                          <widget class="MonoDevelop.Components.ImageView" id="imageAdd">
+                            <property name="MemberName" />
+                            <property name="IconId">gtk-add</property>
+                            <property name="IconSize">Menu</property>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -9655,8 +9645,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
-                <property name="DisplayAsRelativePath">False</property>
-                <signal name="PathChanged" handler="OnFolderentryPathChanged" />
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -10661,7 +10649,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
-                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -10903,9 +10890,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
-                            <property name="BrowserTitle">Select Policy Set File</property>
-                            <property name="DisplayAsRelativePath">False</property>
-                            <signal name="PathChanged" handler="OnFileEntryPathChanged" />
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -12117,7 +12101,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget" design-size="565 400">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget" design-size="1359 400">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -12171,6 +12155,22 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                   <packing>
                     <property name="Position">0</property>
                     <property name="AutoSize">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label2">
+                    <property name="MemberName" />
+                    <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes">Language bundles can provide new editor themes, code snippets, code completion items and
+other information to improve the editing experience of specific languages.
+Xamarin Studio supports:
+*TextMate (.tmBundle)* and *Sublime 3 (.sublime)* package files.</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
                   </packing>
                 </child>
                 <child>
@@ -12230,7 +12230,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                   </widget>
                   <packing>
                     <property name="PackType">End</property>
-                    <property name="Position">1</property>
+                    <property name="Position">2</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>

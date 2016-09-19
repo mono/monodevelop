@@ -16,6 +16,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		private global::Gtk.TreeView bundleTreeview;
 
+		private global::Gtk.Label label2;
+
 		private global::Gtk.HBox hbox2;
 
 		private global::Gtk.Button addButton;
@@ -72,6 +74,16 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));
 			w5.Position = 0;
 			// Container child vbox5.Gtk.Box+BoxChild
+			this.label2 = new global::Gtk.Label();
+			this.label2.Name = "label2";
+			this.label2.Xalign = 0F;
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString("Language bundles can provide new editor themes, code snippets, code completion items and\nother information to improve the editing experience of specific languages.\nXamarin Studio supports:\n*TextMate (.tmBundle)* and *Sublime 3 (.sublime)* package files.");
+			this.vbox5.Add(this.label2);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.label2]));
+			w6.Position = 1;
+			w6.Expand = false;
+			w6.Fill = false;
+			// Container child vbox5.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox();
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
@@ -83,11 +95,11 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = "gtk-add";
 			this.hbox2.Add(this.addButton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
-			w6.PackType = ((global::Gtk.PackType)(1));
-			w6.Position = 0;
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
+			w7.PackType = ((global::Gtk.PackType)(1));
+			w7.Position = 0;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.removeButton = new global::Gtk.Button();
 			this.removeButton.CanFocus = true;
@@ -96,11 +108,11 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = "gtk-remove";
 			this.hbox2.Add(this.removeButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
-			w7.PackType = ((global::Gtk.PackType)(1));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
+			w8.PackType = ((global::Gtk.PackType)(1));
+			w8.Position = 1;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.buttonEdit = new global::Gtk.Button();
 			this.buttonEdit.CanFocus = true;
@@ -108,21 +120,21 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			this.buttonEdit.UseUnderline = true;
 			this.buttonEdit.Label = global::Mono.Unix.Catalog.GetString("_Edit");
 			this.hbox2.Add(this.buttonEdit);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonEdit]));
-			w8.PackType = ((global::Gtk.PackType)(1));
-			w8.Position = 2;
-			w8.Expand = false;
-			w8.Fill = false;
-			this.vbox5.Add(this.hbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonEdit]));
 			w9.PackType = ((global::Gtk.PackType)(1));
-			w9.Position = 1;
+			w9.Position = 2;
 			w9.Expand = false;
 			w9.Fill = false;
+			this.vbox5.Add(this.hbox2);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
+			w10.PackType = ((global::Gtk.PackType)(1));
+			w10.Position = 2;
+			w10.Expand = false;
+			w10.Fill = false;
 			this.GtkAlignment.Add(this.vbox5);
 			this.vbox4.Add(this.GtkAlignment);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment]));
-			w11.Position = 1;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment]));
+			w12.Position = 1;
 			this.Add(this.vbox4);
 			if ((this.Child != null))
 			{
