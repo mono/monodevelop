@@ -497,12 +497,12 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (new ProjectFile [0]);
 
-			return BindTask<ProjectFile []> (async cancelToken => {
+			return BindTask<ProjectFile []> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await GetSourceFilesAsync (monitor, configuration);
+					return GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
