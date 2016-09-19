@@ -527,6 +527,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public IConfigurationModel ActiveConfiguration {
 				get { return activeConfiguration; }
 				set {
+					if (activeConfiguration == value)
+						return;
 					activeConfiguration = value;
 					if (ConfigurationChanged != null)
 						ConfigurationChanged (this, EventArgs.Empty);
@@ -539,6 +541,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public IRunConfigurationModel ActiveRunConfiguration {
 				get { return activeRunConfiguration; }
 				set {
+					if (activeRunConfiguration == value)
+						return;
 					activeRunConfiguration = value;
 					if (RunConfigurationChanged != null)
 						RunConfigurationChanged (this, EventArgs.Empty);
@@ -551,6 +555,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public IRuntimeModel ActiveRuntime {
 				get { return activeRuntime; }
 				set {
+					if (activeRuntime == value)
+						return;
 					activeRuntime = value;
 					using (var mutableModel = value.GetMutableModel ()) {
 						if (RuntimeChanged != null)
