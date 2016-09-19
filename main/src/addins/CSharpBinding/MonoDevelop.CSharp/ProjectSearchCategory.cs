@@ -133,10 +133,6 @@ namespace MonoDevelop.CSharp
 							return new DeclaredSymbolInfo [0];
 						
 						var kind = type.Kind;
-						if (kind == DeclaredSymbolInfoKind.Constructor ||
-							kind == DeclaredSymbolInfoKind.Module ||
-							kind == DeclaredSymbolInfoKind.Indexer)
-							continue;
 
 						if (tag != null) {
 							if ((tag == "type" || tag == "t") && kind != DeclaredSymbolInfoKind.Class && kind != DeclaredSymbolInfoKind.Struct && kind != DeclaredSymbolInfoKind.Interface && kind != DeclaredSymbolInfoKind.Enum && kind != DeclaredSymbolInfoKind.Delegate)
@@ -193,6 +189,11 @@ namespace MonoDevelop.CSharp
 					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
+						var kind = declaredSymbolInfo.Kind;
+						if (kind == DeclaredSymbolInfoKind.Constructor ||
+							kind == DeclaredSymbolInfoKind.Module ||
+							kind == DeclaredSymbolInfoKind.Indexer)
+							continue;
 						declaredSymbolInfo.DocumentId = document.Id;
 						infos.Add (declaredSymbolInfo);
 					}
