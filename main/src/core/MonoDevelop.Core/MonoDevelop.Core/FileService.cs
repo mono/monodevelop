@@ -554,12 +554,34 @@ namespace MonoDevelop.Core
 
 		public static string NormalizeRelativePath (string path)
 		{
-			string result = path.Trim (Path.DirectorySeparatorChar, ' ');
-			while (result.StartsWith ("." + Path.DirectorySeparatorChar)) {
-				result = result.Substring (2);
-				result = result.Trim (Path.DirectorySeparatorChar);
+			int i;
+			for (i = 0; i < path.Length; ++i) {
+				if (path [i] != Path.DirectorySeparatorChar && path [i] != ' ')
+					break;
 			}
-			return result == "." ? "" : result;
+
+			var maxLen = path.Length - 1;
+			while (i < maxLen) {
+				if (path [i] != '.' || path [i + 1] != Path.DirectorySeparatorChar)
+					break;
+				
+				i += 2;
+				while (i < maxLen && i == Path.DirectorySeparatorChar)
+					i++;
+			}
+
+			int j;
+			for (j = maxLen; j > i; --j) {
+				if (path [j] != Path.DirectorySeparatorChar) {
+					j++;
+					break;
+				}
+			}
+
+			if (j - i == 1 && path [i] == '.')
+				return string.Empty;
+
+			return path.Substring (i, j - i);
 		}
 
 		// Atomic rename of a file. It does not fire events.
