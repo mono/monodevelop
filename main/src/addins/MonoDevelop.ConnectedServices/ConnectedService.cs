@@ -19,6 +19,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedService[] Empty = new IConnectedService[0];
 
+		string solutionPadDisplayName;
 		Status status = (Status)(-1);
 
 		/// <summary>
@@ -41,6 +42,22 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets the display name of the service to show to the user in the solution pad
 		/// </summary>
 		public string DisplayName { get; protected set; }
+
+		/// <summary>
+		/// Gets the display name of the service to show to the user in the solution pad
+		/// </summary>
+		public string SolutionPadDisplayName {
+			get {
+				if (this.solutionPadDisplayName != null)
+					return solutionPadDisplayName;
+
+				return this.DisplayName;
+			}
+
+			set {
+				solutionPadDisplayName = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the description of the service to display to the user in the services gallery.

@@ -16,9 +16,14 @@ namespace MonoDevelop.ConnectedServices
 		string Id { get; }
 
 		/// <summary>
-		/// Gets the display name of the service to show to the user in the solution pad
+		/// Gets the display name of the service to show to the user
 		/// </summary>
 		string DisplayName { get; }
+
+		/// <summary>
+		/// Gets the display name of the service to show to the user in the solution pad
+		/// </summary>
+		string SolutionPadDisplayName { get; }
 
 		/// <summary>
 		/// Gets the description of the service to display to the user in the services gallery.
