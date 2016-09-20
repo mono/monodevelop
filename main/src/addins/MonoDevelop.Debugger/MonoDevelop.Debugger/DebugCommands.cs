@@ -72,18 +72,9 @@ namespace MonoDevelop.Debugger
 
 	class DebugHandler: CommandHandler
 	{
-		internal static IEnumerable<IBuildTarget> GetRunTargets ()
+		internal static IBuildTarget GetRunTarget ()
 		{
-			var selectedSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (selectedSolution == null)
-				yield return IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-
-			var multi = selectedSolution.MultiStartupItems.ToArray ();
-			if (multi.Length == 0)
-				yield return selectedSolution.StartupItem ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			else
-				foreach (var target in multi)
-					yield return target;
+			return IdeApp.ProjectOperations.CurrentSelectedSolution ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 		}
 
 		protected override void Run ()
@@ -94,9 +85,9 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (IdeApp.Workspace.IsOpen) {
-				foreach (var target in GetRunTargets ())
-					if (target != null)
-						IdeApp.ProjectOperations.Debug (target);
+				var target = GetRunTarget ();
+				if (target != null)
+					IdeApp.ProjectOperations.Debug (target);
 			}
 		}
 
@@ -117,13 +108,8 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			foreach (var target in GetRunTargets ()) {
-				if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
-					info.Enabled = true;
-					return;
-				}
-			}
-			info.Enabled = false;
+			var target = GetRunTarget ();
+			info.Enabled = target != null && IdeApp.ProjectOperations.CanDebug (target);
 		}
 	}
 	
@@ -539,9 +525,9 @@ namespace MonoDevelop.Debugger
 			if (IdeApp.Workspace.IsOpen) {
 				var bp = new RunToCursorBreakpoint (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
 				DebuggingService.Breakpoints.Add (bp);
-				foreach (var target in DebugHandler.GetRunTargets ())
-					if (target != null)
-						IdeApp.ProjectOperations.Debug (target);
+				var target = DebugHandler.GetRunTarget ();
+				if (target != null)
+					IdeApp.ProjectOperations.Debug (target);
 			}
 		}
 
@@ -557,11 +543,10 @@ namespace MonoDevelop.Debugger
 			var doc = IdeApp.Workbench.ActiveDocument;
 
 			if (doc?.Editor != null && doc.FileName != FilePath.Null) {
-				foreach (var target in DebugHandler.GetRunTargets ()) {
-					if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
-						info.Enabled = true;
-						return;
-					}
+				var target = DebugHandler.GetRunTarget ();
+				if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
+					info.Enabled = true;
+					return;
 				}
 			}
 			info.Enabled = false;
