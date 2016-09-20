@@ -59,9 +59,11 @@ namespace MonoDevelop.Components
 			AXButton,
 			AXGroup,
 			AXRadioButton,
+			AXRuler,
 			AXSplitGroup,
 			AXSplitter,
 			AXTabGroup,
+			AXTextArea
 		};
 
 		public enum SubRoles
@@ -414,7 +416,7 @@ namespace MonoDevelop.Components
 			public event EventHandler PerformShowPopupMenu;
 
 #if MAC
-			Gtk.Widget parent;
+			protected Gtk.Widget parent;
 			NSAccessibilityElement parentElement;
 			Gdk.Rectangle realFrame;
 #endif
@@ -468,6 +470,13 @@ namespace MonoDevelop.Components
 #endif
 			}
 
+			public void SetAccessibilityLabel (string label)
+			{
+#if MAC
+				AccessibilityLabel = label;
+#endif
+			}
+
 			public void SetAccessibilityIdentifier (string identifier)
 			{
 #if MAC
@@ -490,7 +499,7 @@ namespace MonoDevelop.Components
 			}
 
 #if MAC
-			void GetCoordsInWindow (Gtk.Widget widget, out int x, out int y)
+			protected void GetCoordsInWindow (Gtk.Widget widget, out int x, out int y)
 			{
 				x = widget.Allocation.X;
 				y = widget.Allocation.Y;
@@ -501,6 +510,54 @@ namespace MonoDevelop.Components
 						y += widget.Allocation.Y;
 					}
 				}
+			}
+
+			protected void GetCoordsInScreen (Gtk.Widget widget, int windowX, int windowY, out int screenX, out int screenY)
+			{
+				Gdk.Window gdkWindow = widget.GdkWindow;
+
+				screenX = windowX;
+				screenY = windowY;
+
+				if (gdkWindow == null) {
+					return;
+				}
+
+				CGRect windowRect = new CGRect (windowX, windowY, 0, 0);
+
+				var ptr = gdk_quartz_window_get_nswindow (gdkWindow.Handle);
+				if (ptr == IntPtr.Zero) {
+					return;
+				}
+				NSWindow nsWin = Runtime.GetNSObject<NSWindow> (ptr);
+
+				var screenRect = nsWin.ConvertRectToScreen (windowRect);
+				screenX = (int)screenRect.X;
+				screenY = (int)screenRect.Y;
+			}
+
+			protected bool ConvertGtkYCoordToCocoa (Gtk.Widget widget, int gtkY, out int cocoaY)
+			{
+				Gdk.Window gdkWindow = widget.GdkWindow;
+
+				cocoaY = gtkY;
+
+				if (gdkWindow == null) {
+					return false;
+				}
+
+				var ptr = gdk_quartz_window_get_nswindow (gdkWindow.Handle);
+				if (ptr == IntPtr.Zero) {
+					return false;
+				}
+				NSWindow nsWin = Runtime.GetNSObject<NSWindow> (ptr);
+
+				// Flip the y coords to Cooca origin
+				nfloat halfWindowHeight = nsWin.ContentView.Frame.Height / 2;
+				nfloat dy = gtkY - halfWindowHeight;
+
+				cocoaY = (int)(halfWindowHeight - dy);
+				return true;
 			}
 
 			[DllImport ("libgtk-quartz-2.0.dylib")]
@@ -534,10 +591,18 @@ namespace MonoDevelop.Components
 
 				GetCoordsInWindow (parent, out parentInWindowX, out parentInWindowY);
 
+				if (AccessibilityChildren == null) {
+					return this;
+				}
+
 				foreach (var o in AccessibilityChildren) {
 					var proxy = o as AccessibilityElementProxy;
 					if (proxy == null) {
 						throw new Exception ($"Unsupported type {o.GetType ()} inside AccessibilityElementProxy");
+					}
+
+					if (proxy.AccessibilityHidden) {
+						continue;
 					}
 
 					Gdk.Rectangle frameInRealParent = proxy.realFrame;
@@ -546,9 +611,10 @@ namespace MonoDevelop.Components
 						frameInRealParent.X + parentInWindowX + frameInRealParent.Width >= pointInGtkWindow.X &&
 						frameInRealParent.Y + parentInWindowY < pointInGtkWindow.Y &&
 						frameInRealParent.Y + parentInWindowY + frameInRealParent.Height >= pointInGtkWindow.Y) {
-						return o;
+						return proxy.GetAccessibilityHitTest (pointOnScreen);
 					}
 				}
+
 				return this;
 			}
 
@@ -688,6 +754,123 @@ namespace MonoDevelop.Components
 				return OnPerformPress ();
 			}
 #endif
+		}
+
+		public struct Range
+		{
+			public int Location { get; set; }
+			public int Length { get; set; }
+		}
+
+#if MAC
+		public abstract class AccessibilityElementNavigableStaticTextProxy : AccessibilityElementProxy, INSAccessibilityNavigableStaticText
+#else
+		public abstract class AccessibilityElementNavigableStaticTextProxy
+#endif
+		{
+#if MAC
+			string INSAccessibilityStaticText.AccessibilityValue {
+				get {
+					return Value;
+				}
+			}
+
+			[Export ("setAccessibilityValue:")]
+			public void SetAccessibilityValue (string value)
+			{
+			}
+
+			public override nint AccessibilityInsertionPointLineNumber {
+				get {
+					return InsertionPointLineNumber;
+				}
+			}
+
+			public override nint AccessibilityNumberOfCharacters {
+				get {
+					return NumberOfCharacters;
+				}
+			}
+
+			// Returned frame is in screen coordinate space
+			[Export ("accessibilityFrameForRange:")]
+			CGRect AccessibilityFrameForRange (NSRange range)
+			{
+				var realRange = new Range { Location = (int) range.Location, Length = (int) range.Length };
+				var frame = GetFrameForRange (realRange);
+
+				int parentX, parentY;
+
+				// Gtk is giving the top left corner of the bounding box, but Cocoa needs the bottom left
+				int realFrameY = frame.Y + frame.Height;
+				GetCoordsInWindow (parent, out parentX, out parentY);
+				int cocoaY;
+				if (!ConvertGtkYCoordToCocoa (parent, parentY + realFrameY, out cocoaY)) {
+					Console.WriteLine ("Error converting coordinate");
+				}
+
+				int screenX, screenY;
+				GetCoordsInScreen (parent, parentX + frame.X, cocoaY, out screenX, out screenY);
+
+				return new CGRect (screenX, screenY, frame.Width, frame.Height);
+			}
+
+			[Export ("accessibilityLineForIndex:")]
+			nint AccessibilityLineForIndex (nint index)
+			{
+				return GetLineForIndex ((int)index);
+			}
+
+			[Export ("accessibilityRangeForLine:")]
+			NSRange AccessibilityRangeForLine (nint line)
+			{
+				var range = GetRangeForLine ((int)line);
+
+				return new NSRange (range.Location, range.Length);
+			}
+
+			[Export ("accessibilityStringForRange:")]
+			string AccessibilityStringForRange (NSRange range)
+			{
+				var realRange = new Range { Location = (int)range.Location, Length = (int)range.Length };
+				return GetStringForRange (realRange);
+			}
+
+			[Export ("accessibilityRangeForIndex:")]
+			NSRange AccessibilityRangeForIndex (nint index)
+			{
+				var realRange = GetRangeForIndex ((int)index);
+				return new NSRange (realRange.Location, realRange.Length);
+			}
+
+			[Export ("accessibilityStyleRangeForIndex:")]
+			NSRange AccessibililtyStyleRangeForIndex (nint index)
+			{
+				var realRange = GetStyleRangeForIndex ((int)index);
+				return new NSRange (realRange.Location, realRange.Length);
+			}
+
+			[Export ("accessibilityRangeForPosition:")]
+			NSRange AccessibilityRangeForPosition (CGPoint position)
+			{
+				Gdk.Point point = new Gdk.Point ((int)position.X, (int)position.Y);
+				var realRange = GetRangeForPosition (point);
+				return new NSRange (realRange.Location, realRange.Length);
+			}
+#endif
+
+			protected abstract int NumberOfCharacters { get; }
+			protected abstract int InsertionPointLineNumber { get; }
+			protected abstract string Value { get; }
+
+			// Returns frame in Gtk.Widget parent space.
+			protected abstract Gdk.Rectangle GetFrameForRange (Range range);
+			protected abstract int GetLineForIndex (int index);
+			protected abstract Range GetRangeForLine (int line);
+			protected abstract string GetStringForRange (Range range);
+			protected abstract Range GetRangeForIndex (int index);
+			protected abstract Range GetStyleRangeForIndex (int index);
+			protected abstract Range GetRangeForPosition (Gdk.Point position);
 		}
 	}
 }
