@@ -2593,9 +2593,9 @@ namespace Mono.TextEditor
 			
 			protected override void OnDestroyed ()
 			{
-				base.OnDestroyed ();
 				if (layout != null)
 					layout.Dispose ();
+				base.OnDestroyed ();
 			}
 			
 			protected override Cairo.Rectangle CalculateInitialBounds ()
