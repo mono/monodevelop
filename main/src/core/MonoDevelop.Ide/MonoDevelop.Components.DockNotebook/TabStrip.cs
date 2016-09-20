@@ -51,7 +51,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 		HBox innerBox;
 
-		List<Widget> children = new List<Widget> ();
 		readonly DockNotebook notebook;
 		DockNotebookTab highlightedTab;
 		bool overCloseButton;
@@ -111,21 +110,15 @@ namespace MonoDevelop.Components.DockNotebook
 		}
 
 		public bool  NavigationButtonsVisible {
-			get { return children.Contains (PreviousButton); }
+			get { return NextButton.Visible; }
 			set {
 				if (value == NavigationButtonsVisible)
 					return;
-				if (value) {
-					children.Add (NextButton);
-					children.Add (PreviousButton);
-					OnSizeAllocated (Allocation);
-					PreviousButton.ShowAll ();
-					NextButton.ShowAll ();
-				} else {
-					children.Remove (PreviousButton);
-					children.Remove (NextButton);
-					OnSizeAllocated (Allocation);
-				}
+
+				NextButton.Visible = value;
+				PreviousButton.Visible = value;
+
+				OnSizeAllocated (Allocation);
 			}
 		}
 
@@ -204,7 +197,9 @@ namespace MonoDevelop.Components.DockNotebook
 			DropDownButton.Accessible.Description = Core.GettextCatalog.GetString ("Display the document list menu");
 
 			PreviousButton.ShowAll ();
+			PreviousButton.NoShowAll = true;
 			NextButton.ShowAll ();
+			NextButton.NoShowAll = true;
 			DropDownButton.ShowAll ();
 
 			PreviousButton.Name = "MonoDevelop.DockNotebook.BarButton";
@@ -214,10 +209,6 @@ namespace MonoDevelop.Components.DockNotebook
 			innerBox.PackStart (PreviousButton, false, false, 0);
 			innerBox.PackStart (NextButton, false, false, 0);
 			innerBox.PackEnd (DropDownButton, false, false, 0);
-
-			children.Add (PreviousButton);
-			children.Add (NextButton);
-			children.Add (DropDownButton);
 
 			tracker.HoveredChanged += (sender, e) => {
 				if (!tracker.Hovered) {
