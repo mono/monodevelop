@@ -175,7 +175,7 @@ namespace MonoDevelop.Core.Assemblies
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
 			bool monoUseMSBuild = Runtime.Preferences.BuildWithMSBuild
-						&& System.Version.Parse (toolsVersion) >= new System.Version(14, 1);
+						&& System.Version.Parse (toolsVersion) >= new System.Version(15, 0);
 
 			if (monoUseMSBuild) {
 				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
@@ -183,7 +183,7 @@ namespace MonoDevelop.Core.Assemblies
 					return path;
 				}
 
-				// ToolsVersion >= 14.1 is supported only by msbuild, so, just
+				// ToolsVersion >= 15.0 is supported only by msbuild, so, just
 				// return null here
 				return null;
 			}

@@ -281,7 +281,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonStop.Sensitive = false;
 			treeviewSearchResults.Model = newStore;
 
-			store.Dispose ();
 			store = newStore;
 
 			treeviewSearchResults.ThawChildNotify ();

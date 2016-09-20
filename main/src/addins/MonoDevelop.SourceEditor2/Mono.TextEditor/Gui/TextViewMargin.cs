@@ -1477,15 +1477,22 @@ namespace Mono.TextEditor
 		{
 			if (!textEditor.Options.DrawIndentationMarkers)
 				return;
+			bool dispose = false;
+
 			if (line.Length == 0) {
 				var nextLine = line.NextLine;
 				while (nextLine != null && nextLine.Length == 0)
 					nextLine = nextLine.NextLine;
-				if (nextLine != null)
+				if (nextLine != null) {
 					layout = GetLayout (nextLine);
+					dispose = true;
+				}
 			}
-			if (layout.IndentSize == 0)
+			if (layout.IndentSize == 0) {
+				if (dispose && layout.IsUncached)
+					layout.Dispose ();
 				return;
+			}
 			cr.Save ();
 			var dotted = new [] { textEditor.Options.Zoom };
 			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
@@ -1504,6 +1511,8 @@ namespace Mono.TextEditor
 				cr.Stroke ();
 			}
 			cr.Restore ();
+			if (dispose && layout.IsUncached)
+				layout.Dispose ();
 		}
 
 		LayoutWrapper GetVirtualSpaceLayout (DocumentLine line, DocumentLocation location)
@@ -2938,11 +2947,10 @@ namespace Mono.TextEditor
 				this.margin = margin;
 			}
 
-			TextViewMargin.LayoutWrapper layoutWrapper;
 			int index;
 			bool snapCharacters;
 
-			bool ConsumeLayout (int xp, int yp)
+			bool ConsumeLayout (LayoutWrapper layoutWrapper, int xp, int yp)
 			{
 				int trailing;
 				bool isInside = layoutWrapper.Layout.XyToIndex (xp, yp, out index, out trailing);
@@ -2996,12 +3004,17 @@ namespace Mono.TextEditor
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;
-						layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
-						done |= ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos));
-						if (done)
-							break;
+						var layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
 						int height, width;
-						layoutWrapper.Layout.GetPixelSize (out width, out height);
+						try {
+							done |= ConsumeLayout (layoutWrapper, (int)(xp - xPos), (int)(yp - yPos));
+							if (done)
+								break;
+							layoutWrapper.Layout.GetPixelSize (out width, out height);
+						} finally {
+							if (layoutWrapper.IsUncached)
+								layoutWrapper.Dispose ();
+						}
 						xPos += width * (int)Pango.Scale.PangoScale;
 						if (measueLayout == null) {
 							measueLayout = margin.textEditor.LayoutCache.RequestLayout ();
@@ -3036,10 +3049,15 @@ namespace Mono.TextEditor
 						}
 					}
 					if (!done) {
-						layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
-						if (!ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos))) {
-							if (endAtEol)
-								return DocumentLocation.Empty; 
+						LayoutWrapper layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
+						try {
+							if (!ConsumeLayout (layoutWrapper, (int)(xp - xPos), (int)(yp - yPos))) {
+								if (endAtEol)
+									return DocumentLocation.Empty;
+							}
+						} finally {
+							if (layoutWrapper.IsUncached)
+								layoutWrapper.Dispose ();
 						}
 					}
 				} finally {
@@ -3114,14 +3132,16 @@ namespace Mono.TextEditor
 			uint curIndex = 0;
 			uint byteIndex = 0;
 			int index;
+			Pango.Rectangle pos;
 			try {
 				index = (int)TranslateToUTF8Index (wrapper.LineChars, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.LineChars.Length), ref curIndex, ref byteIndex);
+				pos = wrapper.Layout.IndexToPos (index);
 			} catch {
 				return 0;
+			} finally {
+				if (wrapper.IsUncached)
+					wrapper.Dispose ();
 			}
-			var pos = wrapper.Layout.IndexToPos (index);
-			if (wrapper.IsUncached)
-				wrapper.Dispose ();
 
 			return (pos.X + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
 		}

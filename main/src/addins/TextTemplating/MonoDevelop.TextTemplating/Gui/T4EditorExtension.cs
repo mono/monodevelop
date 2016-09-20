@@ -258,8 +258,6 @@ namespace MonoDevelop.TextTemplating.Gui
 			Gtk.ScrolledWindow w = (Gtk.ScrolledWindow) outlineTreeView.Parent;
 			w.Destroy ();
 			outlineTreeView.Destroy ();
-			outlineTreeStore.Dispose ();
-			outlineTreeStore = null;
 			outlineTreeView = null;
 		}
 		

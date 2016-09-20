@@ -122,9 +122,9 @@ namespace Mono.TextEditor
 
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
 			UnregisterAdjustments ();
-			LayoutCache.Dispose (); 
+			LayoutCache.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		void UnregisterAdjustments ()

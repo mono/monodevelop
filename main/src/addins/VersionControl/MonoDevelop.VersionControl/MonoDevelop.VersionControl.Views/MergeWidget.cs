@@ -88,9 +88,9 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
 			if (MainEditor != null && MainEditor.Document != null)
 				MainEditor.Document.TextChanged -= UpdateConflictsOnTextReplace;
+			base.OnDestroyed ();
 		}
 		
 		public string GetResultText ()

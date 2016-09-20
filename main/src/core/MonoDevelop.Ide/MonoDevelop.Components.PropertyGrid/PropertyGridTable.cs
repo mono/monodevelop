@@ -609,6 +609,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					}
 				}
 			}
+			layout.Dispose ();
 		}
 
 		//when inactive, the editor bounds may be shrunk to make room for an expander

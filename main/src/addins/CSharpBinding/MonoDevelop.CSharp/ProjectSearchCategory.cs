@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp
 			public static readonly SymbolCache Empty = new SymbolCache ();
 
 			List<Microsoft.CodeAnalysis.Workspace> workspaces = new List<Microsoft.CodeAnalysis.Workspace> ();
-			ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> documentInfos = new ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> ();
+			ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> documentInfos = new ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> ();
 
 			public void AddWorkspace (Microsoft.CodeAnalysis.Workspace ws, CancellationToken token)
 			{
@@ -120,57 +120,102 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
+			static IEnumerable<DeclaredSymbolInfoKind> AllKinds {
+				get {
+					// No Constructor, Indexer, Module
+					yield return DeclaredSymbolInfoKind.Class;
+					yield return DeclaredSymbolInfoKind.Constant;
+					yield return DeclaredSymbolInfoKind.Delegate;
+					yield return DeclaredSymbolInfoKind.Enum;
+					yield return DeclaredSymbolInfoKind.EnumMember;
+					yield return DeclaredSymbolInfoKind.Event;
+					yield return DeclaredSymbolInfoKind.Field;
+					yield return DeclaredSymbolInfoKind.Interface;
+					yield return DeclaredSymbolInfoKind.Method;
+					yield return DeclaredSymbolInfoKind.Property;
+					yield return DeclaredSymbolInfoKind.Struct;
+				}
+			}
+
+			static IEnumerable<DeclaredSymbolInfoKind> TagToKinds (string tag)
+			{
+				if (tag == null) {
+					foreach (var kind in AllKinds) {
+						yield return kind;
+					}
+					yield break;
+				}
+
+				switch (tag) {
+				case "type":
+				case "t":
+					yield return DeclaredSymbolInfoKind.Class;
+					yield return DeclaredSymbolInfoKind.Struct;
+					yield return DeclaredSymbolInfoKind.Interface;
+					yield return DeclaredSymbolInfoKind.Enum;
+					yield return DeclaredSymbolInfoKind.Delegate;
+					break;
+				case "member":
+				case "m":
+					yield return DeclaredSymbolInfoKind.Method;
+					yield return DeclaredSymbolInfoKind.Property;
+					yield return DeclaredSymbolInfoKind.Field;
+					yield return DeclaredSymbolInfoKind.Event;
+					break;
+				case "class":
+					yield return DeclaredSymbolInfoKind.Class;
+					break;
+				case "struct":
+					yield return DeclaredSymbolInfoKind.Struct;
+					break;
+				case "interface":
+					yield return DeclaredSymbolInfoKind.Interface;
+					break;
+				case "enum":
+					yield return DeclaredSymbolInfoKind.Enum;
+					break;
+				case "delegate":
+					yield return DeclaredSymbolInfoKind.Delegate;
+					break;
+				case "method":
+					yield return DeclaredSymbolInfoKind.Method;
+					break;
+				case "property":
+					yield return DeclaredSymbolInfoKind.Property;
+					break;
+				case "field":
+					yield return DeclaredSymbolInfoKind.Field;
+					break;
+				case "event":
+					yield return DeclaredSymbolInfoKind.Event;
+					break;
+				}
+			}
+
 			public IReadOnlyList<DeclaredSymbolInfo> GetAllTypes(string tag, CancellationToken token)
 			{
 				int count = 0;
-				foreach (var infos in documentInfos.Values)
-					count += infos.Count;
+				var kinds = TagToKinds (tag).ToArray ();
+				foreach (var infosByKind in documentInfos.Values) {
+					if (token.IsCancellationRequested)
+						return new DeclaredSymbolInfo [0];
+
+					foreach (var kind in kinds)
+						count += infosByKind[kind].Count;
+				}
 
 				var result = new List<DeclaredSymbolInfo>(count);
-				foreach (var infos in documentInfos.Values) {
-					foreach (var type in infos) {
-						if (token.IsCancellationRequested)
-							return new DeclaredSymbolInfo [0];
-						
-						var kind = type.Kind;
-						if (kind == DeclaredSymbolInfoKind.Constructor ||
-							kind == DeclaredSymbolInfoKind.Module ||
-							kind == DeclaredSymbolInfoKind.Indexer)
-							continue;
+				foreach (var infosByKind in documentInfos.Values) {
+					if (token.IsCancellationRequested)
+						return new DeclaredSymbolInfo [0];
 
-						if (tag != null) {
-							if ((tag == "type" || tag == "t") && kind != DeclaredSymbolInfoKind.Class && kind != DeclaredSymbolInfoKind.Struct && kind != DeclaredSymbolInfoKind.Interface && kind != DeclaredSymbolInfoKind.Enum && kind != DeclaredSymbolInfoKind.Delegate)
-								continue;
-
-							if (tag == "class" && kind != DeclaredSymbolInfoKind.Class)
-								continue;
-							if (tag == "struct" && kind != DeclaredSymbolInfoKind.Struct)
-								continue;
-							if (tag == "interface" && kind != DeclaredSymbolInfoKind.Interface)
-								continue;
-							if (tag == "enum" && kind != DeclaredSymbolInfoKind.Enum)
-								continue;
-							if (tag == "delegate" && kind != DeclaredSymbolInfoKind.Delegate)
-								continue;
-
-							if ((tag == "member" || tag == "m") && kind != DeclaredSymbolInfoKind.Method && kind != DeclaredSymbolInfoKind.Property && kind != DeclaredSymbolInfoKind.Field && kind != DeclaredSymbolInfoKind.Event)
-								continue;
-							if (tag == "method" && kind != DeclaredSymbolInfoKind.Method)
-								continue;
-							if (tag == "property" && kind != DeclaredSymbolInfoKind.Property)
-								continue;
-							if (tag == "field" && kind != DeclaredSymbolInfoKind.Field)
-								continue;
-							if (tag == "event" && kind != DeclaredSymbolInfoKind.Event)
-								continue;
-						}
-						result.Add (type);
-					}
+					foreach (var kind in kinds)
+						result.AddRange (infosByKind [kind]);
 				}
 				return result;
 			}
 
-			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
@@ -185,26 +230,34 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
+			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
 			{
 				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-				var infos = new List<DeclaredSymbolInfo> ();
+				var infos = new Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> ();
+				foreach (var kind in AllKinds) {
+					infos [kind] = new List<DeclaredSymbolInfo> ();
+				}
 				foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
+						var kind = declaredSymbolInfo.Kind;
+						if (kind == DeclaredSymbolInfoKind.Constructor ||
+							kind == DeclaredSymbolInfoKind.Module ||
+							kind == DeclaredSymbolInfoKind.Indexer)
+							continue;
 						declaredSymbolInfo.DocumentId = document.Id;
-						infos.Add (declaredSymbolInfo);
+						infos[kind].Add (declaredSymbolInfo);
 					}
 				}
 				RemoveDocument (result, document.Id);
 				result.TryAdd (document.Id, infos);
 			}
 
-			static void RemoveDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.DocumentId documentId)
+			static void RemoveDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.DocumentId documentId)
 			{
 				if (result.ContainsKey (documentId)) {
-					List<DeclaredSymbolInfo> val;
+					Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val;
 					result.TryRemove (documentId, out val);
 				}
 			}
@@ -336,21 +389,29 @@ namespace MonoDevelop.CSharp
 					if (SymbolInfoTask == null)
 						SymbolInfoTask = Task.FromResult (default(SymbolCache)).ContinueWith(t => GetSymbolInfos (token));
 					var cache = await SymbolInfoTask.ConfigureAwait (false);
-					var allTypes = cache.GetAllTypes (searchPattern.Tag, token);
 					if (token.IsCancellationRequested)
 						return;
+					
 					string toMatch = searchPattern.Pattern;
 					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 					newResult.Tag = searchPattern.Tag;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
+
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
 						oldLastResult = new WorkerResult ();
-//					var now = DateTime.Now;
 
-					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
+					if (token.IsCancellationRequested)
+						return;
+					
+					IReadOnlyList<DeclaredSymbolInfo> allTypes = null;
+					if (!IsSameFilterStart (oldLastResult, newResult))
+						allTypes = cache.GetAllTypes (searchPattern.Tag, token);
+					
+//					var now = DateTime.Now;
+					AllResults (searchResultCallback, newResult, allTypes ?? lastResult.filteredSymbols, token);
 					//newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 					//					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
@@ -361,12 +422,15 @@ namespace MonoDevelop.CSharp
 			}, token);
 		}
 
-		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
+		static bool IsSameFilterStart (WorkerResult oldLastResult, WorkerResult newResult)
+		{
+			return oldLastResult.pattern != null && newResult.pattern.StartsWith (oldLastResult.pattern, StringComparison.Ordinal) && oldLastResult.filteredSymbols != null;
+		}
+
+		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> allTypes, CancellationToken token)
 		{
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
-			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
-			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 			foreach (var type in allTypes) {
 				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;

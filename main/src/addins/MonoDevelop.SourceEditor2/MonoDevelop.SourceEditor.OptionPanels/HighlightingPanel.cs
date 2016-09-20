@@ -80,11 +80,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.EditorTheme = schemeName;
 
-			if (styleStore != null) {
-				styleStore.Dispose ();
-				styleStore = null;
-			}
-
 			MonoDevelop.Ide.Gui.Styles.Changed -= HandleThemeChanged;
 			base.OnDestroyed ();
 		}

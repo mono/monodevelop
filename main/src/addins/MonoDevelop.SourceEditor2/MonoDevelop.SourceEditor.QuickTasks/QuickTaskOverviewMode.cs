@@ -891,7 +891,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return true;
 		}
 
-		CancellationTokenSource src = new CancellationTokenSource ();
+		CancellationTokenSource src;
 
 		class IdleUpdater
 		{
@@ -999,26 +999,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void DrawIndicatorSurface(uint timeout = 250)
 		{
 			RemoveIndicatorIdleHandler ();
-			GLib.TimeoutHandler timeoutHandler = delegate {
-				indicatorIdleTimout = 0;
-				if (!IsRealized)
-					return false;
-				var allocation = Allocation;
-				src.Cancel ();
-				src = new CancellationTokenSource ();
-				new IdleUpdater (this, src.Token).Start ();
-				return false;
-			};
 			if (timeout == 0) {
-				timeoutHandler ();
+				IndicatorSurfaceTimeoutHandler ();
 			} else {
-				indicatorIdleTimout = GLib.Timeout.Add (timeout, timeoutHandler);
+				indicatorIdleTimout = GLib.Timeout.Add (timeout, IndicatorSurfaceTimeoutHandler);
 			}
+		}
+
+		bool IndicatorSurfaceTimeoutHandler ()
+		{
+			indicatorIdleTimout = 0;
+			if (!IsRealized)
+				return false;
+			var allocation = Allocation;
+			src?.Cancel ();
+			src = new CancellationTokenSource ();
+			new IdleUpdater (this, src.Token).Start ();
+			return false;
 		}
 
 		void RemoveIndicatorIdleHandler ()
 		{
 			if (indicatorIdleTimout > 0) {
+				src?.Cancel ();
 				GLib.Source.Remove (indicatorIdleTimout);
 				indicatorIdleTimout = 0;
 			}

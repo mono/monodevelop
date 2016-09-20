@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace MonoDevelop.Core
@@ -61,6 +62,16 @@ namespace MonoDevelop.Core
 			foreach (var c in FilePath.GetInvalidPathChars ())
 				Assert.False (FileService.IsValidPath (c.ToString ()),
 					string.Format ("String with {0} (charcode: {1})", Char.IsControl (c) ? "<Control Char>" : c.ToString (), Convert.ToInt32 (c)));
+		}
+
+		[Test]
+		public void NormalizeRelativePathTests ()
+		{
+			var sep = Path.DirectorySeparatorChar;
+
+			Assert.AreEqual (Path.Combine ("..", "bin"), FileService.NormalizeRelativePath (Path.Combine ("..", "bin")));
+			Assert.AreEqual ("bin", FileService.NormalizeRelativePath (Path.Combine ("." + sep, "bin" + sep)));
+			Assert.AreEqual ("bin", FileService.NormalizeRelativePath (Path.Combine ("." + sep, "." + sep, "bin" + sep + sep)));
 		}
 	}
 }

@@ -2599,9 +2599,9 @@ namespace Mono.TextEditor
 			
 			protected override void OnDestroyed ()
 			{
-				base.OnDestroyed ();
 				if (layout != null)
 					layout.Dispose ();
+				base.OnDestroyed ();
 			}
 			
 			protected override Cairo.Rectangle CalculateInitialBounds ()
@@ -2627,6 +2627,10 @@ namespace Mono.TextEditor
 				} else {
 					x2 = 0;
 					Console.WriteLine ("Invalid end index :" + index);
+				}
+
+				if (lineLayout.IsUncached) {
+					lineLayout.Dispose ();
 				}
 				
 				double y = Editor.LineToY (lineNr);

@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 
 			editor.Options = DefaultSourceEditorOptions.PlainEditor;
 			
-			sw.Add (editor);
+			sw.AddWithViewport (editor);
 			sw.HscrollbarPolicy = Gtk.PolicyType.Automatic;
 			sw.VscrollbarPolicy = Gtk.PolicyType.Automatic;
 			sw.ShowAll ();

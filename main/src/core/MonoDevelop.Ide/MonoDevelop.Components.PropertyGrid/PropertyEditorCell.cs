@@ -65,7 +65,10 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			this.container = container;
 			this.editorManager = editorManager;
-			
+
+			if (layout != null) {
+				layout.Dispose ();
+			}
 			layout = new Pango.Layout (container.PangoContext);
 			layout.Width = -1;
 			layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
