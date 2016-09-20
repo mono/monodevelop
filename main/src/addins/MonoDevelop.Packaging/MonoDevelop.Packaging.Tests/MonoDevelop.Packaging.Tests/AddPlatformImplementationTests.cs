@@ -342,6 +342,10 @@ namespace MonoDevelop.Packaging.Tests
 			Assert.IsTrue (androidProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
 			Assert.IsTrue (iosProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
 			Assert.IsTrue (pclProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
+
+			// iOS and Android project should have an AssemblyInfo file.
+			Assert.IsTrue (androidProject.MSBuildProject.GetAllItems ().Any (item => item.Include.Contains ("AssemblyInfo.cs")));
+			Assert.IsTrue (iosProject.MSBuildProject.GetAllItems ().Any (item => item.Include.Contains ("AssemblyInfo.cs")));
 		}
 
 		[Test]

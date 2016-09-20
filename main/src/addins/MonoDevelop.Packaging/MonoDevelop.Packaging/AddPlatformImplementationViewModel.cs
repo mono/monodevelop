@@ -114,7 +114,7 @@ namespace MonoDevelop.Packaging
 
 		async Task CreateNewAndroidProject (ProgressMonitor monitor)
 		{
-			androidProject = await CreateNewProject (monitor, "MonoDroid") as DotNetProject;
+			androidProject = await CreateNewProject (monitor, "MonoDroid", true) as DotNetProject;
 
 			if (sharedProject != null)
 				AddProjectReference (androidProject, sharedProject);
