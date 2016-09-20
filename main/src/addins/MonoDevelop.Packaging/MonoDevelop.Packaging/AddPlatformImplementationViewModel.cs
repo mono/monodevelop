@@ -32,6 +32,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using System.Linq;
 
 namespace MonoDevelop.Packaging
 {
@@ -99,6 +100,7 @@ namespace MonoDevelop.Packaging
 		{
 			sharedProject = new SharedAssetsProject ("C#");
 			sharedProject.FileName = GetNewProjectFileName ("SharedAssetsProject");
+			sharedProject.DefaultNamespace = Project.DefaultNamespace;
 			Project.ParentFolder.AddItem (sharedProject);
 
 			await SaveProject (monitor, sharedProject);
@@ -135,15 +137,17 @@ namespace MonoDevelop.Packaging
 			await SaveProject (monitor, sharedProject);
 		}
 
-		async Task<Project> CreateNewProject (ProgressMonitor monitor, string projectType, bool addAssemblyInfo = false)
+		async Task<DotNetProject> CreateNewProject (ProgressMonitor monitor, string projectType, bool addAssemblyInfo = false)
 		{
 			FilePath projectFileName = GetNewProjectFileName (projectType);
 			var createInfo = CreateProjectCreateInformation (projectFileName);
 			var options = CreateProjectOptions ();
 
-			var newProject = Services.ProjectService.CreateProject ("C#", createInfo, options, projectType);
+			var newProject = Services.ProjectService.CreateProject ("C#", createInfo, options, projectType) as DotNetProject;
 
 			newProject.FileName = projectFileName;
+			newProject.DefaultNamespace = Project.DefaultNamespace;
+			newProject.SetOutputAssemblyName (GetOutputAssemblyName ());
 
 			if (addAssemblyInfo)
 				AddAssemblyInfoFile (newProject);
@@ -153,6 +157,16 @@ namespace MonoDevelop.Packaging
 			await SaveProject (monitor, newProject);
 
 			return newProject;
+		}
+
+		string GetOutputAssemblyName ()
+		{
+			var config = Project.Configurations.OfType<DotNetProjectConfiguration> ().FirstOrDefault ();
+			if (config != null) {
+				return config.OutputAssembly;
+			}
+
+			return Project.Name;
 		}
 
 		ProjectCreateInformation CreateProjectCreateInformation (FilePath projectFileName)

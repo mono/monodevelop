@@ -130,6 +130,10 @@ namespace MonoDevelop.Packaging.Tests
 
 			// Ensure NuGet imports are added to the Android project.
 			Assert.IsTrue (androidProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
+
+			// DefaultNamespace is the same for all projects.
+			Assert.AreEqual ("MyProject", ((DotNetProject)androidProject).DefaultNamespace);
+			Assert.AreEqual ("MyProject", ((DotNetProject)pclProject).DefaultNamespace);
 		}
 
 		[Test]
@@ -209,6 +213,10 @@ namespace MonoDevelop.Packaging.Tests
 
 			var assemblyInfoFile = iosProject.Items.OfType<ProjectFile> ().Single (file => file.FilePath.FileName == "AssemblyInfo.cs");
 			Assert.IsNotNull (assemblyInfoFile);
+
+			// DefaultNamespace is the same for all projects.
+			Assert.AreEqual ("MyProject", iosProject.DefaultNamespace);
+			Assert.AreEqual ("MyProject", pclProject.DefaultNamespace);
 		}
 
 		[Test]
@@ -323,6 +331,17 @@ namespace MonoDevelop.Packaging.Tests
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.iOS", "MyProject.iOS.csproj"), iosProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.NuGet", "MyProject.NuGet.nuproj"), nugetProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Shared", "MyProject.Shared.shproj"), sharedProject.FileName);
+
+			// DefaultNamespace is the same for all projects.
+			Assert.AreEqual ("MyProject", androidProject.DefaultNamespace);
+			Assert.AreEqual ("MyProject", iosProject.DefaultNamespace);
+			Assert.AreEqual ("MyProject", pclProject.DefaultNamespace);
+			Assert.AreEqual ("MyProject", sharedProject.DefaultNamespace);
+
+			// OutputAssemblyName is the same for PCL, iOS and Android project.
+			Assert.IsTrue (androidProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
+			Assert.IsTrue (iosProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
+			Assert.IsTrue (pclProject.Configurations.OfType<DotNetProjectConfiguration> ().All (config => config.OutputAssembly == "MyProject"));
 		}
 
 		[Test]
