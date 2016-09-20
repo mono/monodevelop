@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							  (project, loop, providers) => {
 								  var conf = project.DefaultConfiguration?.Selector;
 
-								  foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 										  continue;
 									  if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
 				var conf = project.DefaultConfiguration?.Selector;
-				foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 						continue;
 					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.Name))
