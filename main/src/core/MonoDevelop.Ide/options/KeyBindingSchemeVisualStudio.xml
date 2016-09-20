@@ -139,6 +139,8 @@
     <binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.WindowCommands.NextDocument" shortcut="Control+F6" />
     <binding command="MonoDevelop.Ide.Commands.WindowCommands.PrevDocument" shortcut="Control+Shift+F6" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchNextPad" shortcut="Alt+F6" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousPad" shortcut="Alt+Shift+F6" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers" shortcut="" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow" shortcut="" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow" shortcut="" />

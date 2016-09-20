@@ -166,6 +166,7 @@ namespace MonoDevelop.Debugger
 		bool ShowParameterName;
 		bool ShowParameterValue;
 		bool ShowLineNumber;
+		bool ShowExternalCode;
 
 		void LoadSettings ()
 		{
@@ -174,6 +175,7 @@ namespace MonoDevelop.Debugger
 			ShowParameterName = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterName", true);
 			ShowParameterValue = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterValue", false);
 			ShowLineNumber = PropertyService.Get ("Monodevelop.StackTrace.ShowLineNumber", true);
+			ShowExternalCode = PropertyService.Get ("Monodevelop.StackTrace.ShowExternalCode", false);
 		}
 
 		void StoreSettings ()
@@ -183,6 +185,7 @@ namespace MonoDevelop.Debugger
 			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterName", ShowParameterName);
 			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterValue", ShowParameterValue);
 			PropertyService.Set ("Monodevelop.StackTrace.ShowLineNumber", ShowLineNumber);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowExternalCode", ShowExternalCode);
 		}
 
 		void LoadColumnsVisibility ()
@@ -294,14 +297,24 @@ namespace MonoDevelop.Debugger
 				return;
 
 			var backtrace = DebuggingService.CurrentCallStack;
-
+			var externalCodeIter = TreeIter.Zero;
 			for (int i = 0; i < backtrace.FrameCount; i++) {
 				bool icon = i == DebuggingService.CurrentFrameIndex;
 
 				StackFrame frame = backtrace.GetFrame (i);
 				if (frame.IsDebuggerHidden)
 					continue;
-				
+
+				if (!ShowExternalCode && frame.IsExternalCode) {
+					if (externalCodeIter.Equals (TreeIter.Zero)) {
+						externalCodeIter = store.AppendValues (icon, GettextCatalog.GetString ("[External Code]"), string.Empty, string.Empty, string.Empty, null, Pango.Style.Italic, null, -1);
+					} else if (icon) {
+						//Set IconColumn value to true if any of hidden frames is current frame
+						store.SetValue (externalCodeIter, IconColumn, true);
+					}
+					continue;
+				}
+				externalCodeIter = TreeIter.Zero;
 				var method = EvaluateMethodName (frame);
 				
 				string file;
@@ -387,6 +400,15 @@ namespace MonoDevelop.Debugger
 				OnCopy ();
 			};
 			context_menu.Items.Add (copyItem);
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+			var showExternalCodeCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show External Code"));
+			showExternalCodeCheckbox.Clicked += delegate {
+				showExternalCodeCheckbox.Checked = ShowExternalCode = !ShowExternalCode;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			showExternalCodeCheckbox.Checked = ShowExternalCode;
+			context_menu.Items.Add (showExternalCodeCheckbox);
 
 			context_menu.Items.Add (new SeparatorContextMenuItem ());
 
@@ -473,8 +495,16 @@ namespace MonoDevelop.Debugger
 			var selected = tree.Selection.GetSelectedRows ();
 			TreeIter iter;
 
-			if (selected.Length > 0 && store.GetIter (out iter, selected [0]))
-				DebuggingService.CurrentFrameIndex = (int)store.GetValue (iter, FrameIndexColumn);
+			if (selected.Length > 0 && store.GetIter (out iter, selected [0])) {
+				var frameIndex = (int)store.GetValue (iter, FrameIndexColumn);
+				if (frameIndex == -1) {
+					ShowExternalCode = true;
+					StoreSettings ();
+					UpdateDisplay ();
+					return;
+				}
+				DebuggingService.CurrentFrameIndex = frameIndex;
+			}
 		}
 
 		[CommandHandler (EditCommands.SelectAll)]

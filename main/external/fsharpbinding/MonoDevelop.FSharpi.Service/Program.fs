@@ -89,18 +89,15 @@ module CompletionServer =
                     match command with
                     | Input input ->
                         if input.EndsWith(";;") then
-                            try
-                                let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + "\n" + input)
-                                match result with
-                                | Choice1Of2 () -> ()
-                                | Choice2Of2 exn -> do! writeOutput (exn |> string)
-                                for w in warnings do
-                                    do! writeOutput (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
+                            let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + "\n" + input)
+                            match result with
+                            | Choice1Of2 () -> ()
+                            | Choice2Of2 exn -> do! writeOutput (exn |> string)
+                            for w in warnings do
+                                do! writeOutput (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
 
-                                if not (input.StartsWith "#silentCd") then
-                                    do! writeOutput "SERVER-PROMPT>"
-                            with
-                            | exn -> do! writeOutput (exn |> string)
+                            if not (input.StartsWith "#silentCd") then
+                                do! writeOutput "SERVER-PROMPT>"
                             return ""
                         else
                            return currentInput + "\n" + input
@@ -121,7 +118,13 @@ module CompletionServer =
                     | _ -> do! writeOutput (sprintf "Could not parse command - %s" command)
                            return currentInput
                 }
-            let currentInput = parseInput() |> Async.RunSynchronously
+            let currentInput =
+                try
+                    parseInput() |> Async.RunSynchronously
+                with
+                | exn ->
+                    writeOutput (exn |> string) |> Async.RunSynchronously
+                    currentInput
             main(currentInput)
 
         Console.SetOut outStream

@@ -116,6 +116,8 @@ namespace Mono.TextEditor
 				for (var curLine = segmentStartLine; curLine != endLine && y < editor.VAdjustment.Value + editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
 					var width = (int)(curLayout.Width);
+					if (curLayout.IsUncached)
+						curLayout.Dispose ();
 					curWidth = System.Math.Max (curWidth, width);
 					y += editor.GetLineHeight (curLine);
 				}
@@ -125,11 +127,16 @@ namespace Mono.TextEditor
 				
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.Length, -1, -1);
 				var rectangleStart = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+				if (lineLayout.IsUncached)
+					lineLayout.Dispose ();
+				
 				xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleStart.X / Pango.Scale.PangoScale) - xPadding);
 
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.Length, -1, -1);
-				
 				var rectangleEnd = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+				if (lineLayout.IsUncached)
+					lineLayout.Dispose ();
+				
 				xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleEnd.X / Pango.Scale.PangoScale) - xPadding));
 
 				rectangleWidth = textViewMargin.XOffset + textViewMargin.TextStartPosition + curWidth - xPos + xPadding * 2;

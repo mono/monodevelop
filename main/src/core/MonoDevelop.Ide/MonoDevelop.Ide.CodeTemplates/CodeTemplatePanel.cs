@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			this.Build();
 			Gtk.Widget control = textEditor;
-			scrolledwindow1.Add (control);
+			scrolledwindow1.AddWithViewport (control);
 			control.ShowAll ();
 			
 			templateStore = new TreeStore (typeof (CodeTemplate), typeof (string), typeof (string));

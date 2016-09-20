@@ -772,6 +772,18 @@
 			macShortcut = "Control|Shift|Tab"
 			_label = "Switch to previous document"
 			_description = "Switch to previous document" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextPad"
+			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextPad"
+			shortcut = "Alt+F6"
+			macShortcut = "Control+Alt+Tab"
+			_label = "Switch to next pad"
+			_description = "Switch to next pad" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousPad"
+			defaultHandler = "MonoDevelop.Ide.Commands.SwitchPreviousPad"
+			shortcut = "Shift+Alt+F6"
+			macShortcut = "Control+Shift+Alt+Tab"
+			_label = "Switch to previous pad"
+			_description = "Switch to previous pad" />
 	</Category>
 
 	<!-- HelpCommands -->
@@ -790,7 +802,7 @@
 			_description = "Show tip of the day" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
-			_label = "Reveal _Logs"
+			_label = "Open Log Directory"
 			icon = "md-open-folder"
 			_description = "Opens the directory where the diagnostic logs are stored" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"

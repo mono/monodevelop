@@ -580,7 +580,7 @@ namespace MonoDevelop.Ide
 
 			if (!Platform.IsWindows) {
 				// Limit maximum threads when running on mono
-				int threadCount = 8 * Environment.ProcessorCount;
+				int threadCount = 125;
 				ThreadPool.SetMaxThreads (threadCount, threadCount);
 			}
 

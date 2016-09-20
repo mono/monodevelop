@@ -341,7 +341,6 @@ namespace MonoDevelop.Components.MainToolbar
 			try {
 				var confs = ToolbarView.RunConfigurationModel.Cast<RunConfigurationModel> ().ToList ();
 				if (confs.Count > 0) {
-					var defaultConfig = ToolbarView.ActiveRunConfiguration != null ? (RunConfigurationModel)ToolbarView.ActiveRunConfiguration : confs [0];
 					bool selected = false;
 
 					foreach (var item in confs) {
@@ -353,9 +352,10 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 
 					if (!selected) {
-						ToolbarView.ActiveRunConfiguration = ToolbarView.RunConfigurationModel.First ();
+						var defaultConfig = confs.First ();
+						ToolbarView.ActiveRunConfiguration = defaultConfig;
 						if (currentSolution != null)
-							currentSolution.StartupConfiguration = defaultConfig?.RunConfiguration;
+							currentSolution.StartupConfiguration = defaultConfig.RunConfiguration;
 					}
 				}
 			} finally {

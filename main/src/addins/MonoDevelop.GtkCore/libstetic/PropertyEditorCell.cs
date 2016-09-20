@@ -56,6 +56,9 @@ namespace Stetic
 		public void Initialize (Widget container, PropertyDescriptor property, object obj)
 		{
 			this.container = container;
+			if (layout != null) {
+				layout.Dispose ();
+			}
 			layout = new Pango.Layout (container.PangoContext);
 			layout.Width = -1;
 			

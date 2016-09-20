@@ -2126,7 +2126,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (store != null) {
 				Clear ();
-				store.Dispose ();
 				store = null;
 			}
 
@@ -2534,6 +2533,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					var iconSize = GetZoomedIconSize (StatusIcon, zoom);
 					width += (int)iconSize.Width + StatusIconSpacing;
 				}
+			}
+
+			protected override void OnEditingStarted (Gtk.CellEditable editable, string path)
+			{
+				var entry = editable as Gtk.Entry;
+				if (entry != null && scaledFont != null)
+					entry.ModifyFont (scaledFont);
+				base.OnEditingStarted (editable, path);
 			}
 
 			public double Zoom {

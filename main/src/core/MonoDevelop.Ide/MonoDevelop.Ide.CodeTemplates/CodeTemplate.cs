@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				link.IsEditable = variableDecarations [name].IsEditable;
 				link.IsIdentifier = variableDecarations [name].IsIdentifier;
 				if (!string.IsNullOrEmpty (variableDecarations [name].Function)) {
-					IListDataProvider<string > functionResult = expansion.RunFunction (context, null, variableDecarations [name].Function);
+					var functionResult = expansion.RunFunction (context, null, variableDecarations [name].Function);
 					if (functionResult != null && functionResult.Count > 0) {
 						string s = (string)functionResult [functionResult.Count - 1];
 						if (s == null) {

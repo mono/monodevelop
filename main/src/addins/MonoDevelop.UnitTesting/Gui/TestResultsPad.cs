@@ -616,7 +616,7 @@ namespace MonoDevelop.UnitTesting
 				IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 			} else {
 				LoggingService.LogError ("Can't get source code location for test : "+ test);
-				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for : {0}", test.Name));
 			}
 		}
 
@@ -631,7 +631,7 @@ namespace MonoDevelop.UnitTesting
 				IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 			}  else {
 				LoggingService.LogError ("Can't get source code location for test : "+ test);
-				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for : {0}", test.Name));
 			}
 		}
 

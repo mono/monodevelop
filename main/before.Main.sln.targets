@@ -1,0 +1,23 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<!--
+	Ensure that when a configuration is not provided, we use a good default
+	for the current OS.
+	-->
+	<Choose>
+		<When Condition="'$(Configuration)'==''">
+			<Choose>
+				<When Condition="'$(OS)'!='Unix'">
+					<PropertyGroup>
+						<Configuration>DebugWin32</Configuration>
+					</PropertyGroup>
+				</When>
+				<When Condition="Exists('/System/Library/Frameworks/CoreFoundation.framework')">
+					<PropertyGroup>
+						<Configuration>DebugMac</Configuration>
+					</PropertyGroup>
+				</When>
+			</Choose>
+		</When>
+	</Choose>
+</Project>

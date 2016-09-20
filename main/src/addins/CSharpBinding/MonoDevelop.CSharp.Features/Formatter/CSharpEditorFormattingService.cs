@@ -55,14 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public bool SupportsFormattingOnTypedCharacter(Document document, char ch)
 		{
-			var optionsService = document.Project.Solution.Workspace.Options;
-			//			if ((ch == '}' && !optionsService.GetOption(FeatureOnOffOptions.AutoFormattingOnCloseBrace, document.Project.Language)) ||
-			//				(ch == ';' && !optionsService.GetOption(FeatureOnOffOptions.AutoFormattingOnSemicolon, document.Project.Language)))
-			//			{
-			//				return false;
-			//			}
-
-			return _supportedChars.Contains(ch);
+			return _autoFormattingTriggerChars.Contains(ch);
 		}
 
 		//		public async Task<IList<TextChange>> GetFormattingChangesAsync(Document document, TextSpan? textSpan, CancellationToken cancellationToken)

@@ -76,6 +76,7 @@ namespace MonoDevelop.Debugger.Soft
 			var dsi = new SoftDebuggerStartInfo (null, runtime.EnvironmentVariables) {
 				Command = cmd.Command,
 				Arguments = cmd.Arguments,
+				RuntimeArguments = cmd.RuntimeArguments,
 				WorkingDirectory = cmd.WorkingDirectory,
 			};
 			((SoftDebuggerLaunchArgs)dsi.StartArgs).MonoExecutableFileName = runtime.GetMonoExecutableForAssembly (cmd.Command);

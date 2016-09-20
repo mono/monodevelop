@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 		public static Pango.Layout CreateLayout (this Cairo.Context cr)
 		{
 			IntPtr raw_ret = pango_cairo_create_layout (cr == null ? IntPtr.Zero : cr.Handle);
-			return GLib.Object.GetObject (raw_ret) as Pango.Layout;
+			return GLib.Object.GetObject (raw_ret, true) as Pango.Layout;
 		}
 
 		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]

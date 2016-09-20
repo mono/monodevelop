@@ -121,6 +121,7 @@ namespace MonoDevelop.Refactoring
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false, true, false, null, true)) {
 					CancellationToken token = monitor.CancellationToken;
+					var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();
 						monitor.BeginTask ("Analyzing solution", workspace.CurrentSolution.Projects.Count ());
@@ -134,7 +135,7 @@ namespace MonoDevelop.Refactoring
 						return diagnosticList;
 					}).ConfigureAwait (false);
 					await Runtime.RunInMainThread (delegate {
-						Report (monitor, allDiagnostics);
+						Report (monitor, allDiagnostics, solution);
 					}).ConfigureAwait (false);
 				}
 			} catch (OperationCanceledException) {
@@ -145,7 +146,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		internal static void Report (ProgressMonitor monitor, List<Diagnostic> allDiagnostics)
+		internal static void Report (ProgressMonitor monitor, List<Diagnostic> allDiagnostics, Projects.WorkspaceObject parent)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Reporting results..."), allDiagnostics.Count);
 			TaskService.Errors.Clear ();
@@ -156,7 +157,9 @@ namespace MonoDevelop.Refactoring
 					diagnostic.GetMessage (),
 					startLinePosition.Character + 1,
 					startLinePosition.Line + 1,
-					GetSeverity (diagnostic)
+					GetSeverity (diagnostic),
+					TaskPriority.Normal,
+					parent
 				);
 			}));
 

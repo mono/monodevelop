@@ -447,24 +447,13 @@ namespace MonoDevelop.CSharp
 			string GetName (SyntaxNode node)
 			{
 				if (tag is SyntaxTree) {
-					var type = node as TypeDeclarationSyntax;
+					var type = node;
 					if (type != null) {
 						var sb = new StringBuilder ();
-						sb.Append (type.Identifier.ToString ());
-						while (type.Parent is TypeDeclarationSyntax) {
-							type = type.Parent as TypeDeclarationSyntax;
-							sb.Insert (0, type.Identifier + ".");
-						}
-						return sb.ToString ();
-					}
-					var delegateDecl = node as DelegateDeclarationSyntax;
-					if (delegateDecl != null) {
-						var sb = new StringBuilder ();
-						sb.Append (delegateDecl.Identifier.ToString ());
-						var parentType = delegateDecl.Parent as TypeDeclarationSyntax;
-						while (parentType != null) {
-							sb.Insert (0, parentType.Identifier + ".");
-							parentType = parentType.Parent as TypeDeclarationSyntax;
+						sb.Append (ext.GetEntityMarkup (type));
+						while (type.Parent is BaseTypeDeclarationSyntax) {
+							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
+							type = type.Parent;
 						}
 						return sb.ToString ();
 					}

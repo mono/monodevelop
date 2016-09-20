@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -126,7 +125,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -159,6 +157,10 @@
     </Reference>
     <Reference Include="System.Composition.Runtime">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -201,7 +203,6 @@
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
       <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
       <Name>Mono.Addins.Gui</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
@@ -5122,6 +5123,246 @@
     <EmbeddedResource Include="icons\prefs-name-conventions-16~dark~sel%402x.png">
       <LogicalName>prefs-name-conventions-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16.png">
+      <LogicalName>prefs-feedback-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16%402x.png">
+      <LogicalName>prefs-feedback-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~dark.png">
+      <LogicalName>prefs-feedback-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~dark%402x.png">
+      <LogicalName>prefs-feedback-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~sel.png">
+      <LogicalName>prefs-feedback-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~sel%402x.png">
+      <LogicalName>prefs-feedback-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~dark~sel.png">
+      <LogicalName>prefs-feedback-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-feedback-16~dark~sel%402x.png">
+      <LogicalName>prefs-feedback-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16.png">
+      <LogicalName>prefs-maintenance-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16%402x.png">
+      <LogicalName>prefs-maintenance-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~dark.png">
+      <LogicalName>prefs-maintenance-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~dark%402x.png">
+      <LogicalName>prefs-maintenance-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~sel.png">
+      <LogicalName>prefs-maintenance-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~sel%402x.png">
+      <LogicalName>prefs-maintenance-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~dark~sel.png">
+      <LogicalName>prefs-maintenance-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-maintenance-16~dark~sel%402x.png">
+      <LogicalName>prefs-maintenance-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16.png">
+      <LogicalName>prefs-performance-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16%402x.png">
+      <LogicalName>prefs-performance-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~dark.png">
+      <LogicalName>prefs-performance-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~dark%402x.png">
+      <LogicalName>prefs-performance-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~sel.png">
+      <LogicalName>prefs-performance-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~sel%402x.png">
+      <LogicalName>prefs-performance-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~dark~sel.png">
+      <LogicalName>prefs-performance-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-performance-16~dark~sel%402x.png">
+      <LogicalName>prefs-performance-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16.png">
+      <LogicalName>prefs-visual-style-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16%402x.png">
+      <LogicalName>prefs-visual-style-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~dark.png">
+      <LogicalName>prefs-visual-style-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~dark%402x.png">
+      <LogicalName>prefs-visual-style-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~sel.png">
+      <LogicalName>prefs-visual-style-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~sel%402x.png">
+      <LogicalName>prefs-visual-style-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~dark~sel.png">
+      <LogicalName>prefs-visual-style-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-visual-style-16~dark~sel%402x.png">
+      <LogicalName>prefs-visual-style-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16.png">
+      <LogicalName>prefs-compiler-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16%402x.png">
+      <LogicalName>prefs-compiler-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~dark.png">
+      <LogicalName>prefs-compiler-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~dark%402x.png">
+      <LogicalName>prefs-compiler-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~sel.png">
+      <LogicalName>prefs-compiler-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~sel%402x.png">
+      <LogicalName>prefs-compiler-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~dark~sel.png">
+      <LogicalName>prefs-compiler-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-compiler-16~dark~sel%402x.png">
+      <LogicalName>prefs-compiler-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16.png">
+      <LogicalName>prefs-project-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16%402x.png">
+      <LogicalName>prefs-project-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~dark.png">
+      <LogicalName>prefs-project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~dark%402x.png">
+      <LogicalName>prefs-project-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~sel.png">
+      <LogicalName>prefs-project-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~sel%402x.png">
+      <LogicalName>prefs-project-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~dark~sel.png">
+      <LogicalName>prefs-project-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-project-16~dark~sel%402x.png">
+      <LogicalName>prefs-project-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16.png">
+      <LogicalName>prefs-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16%402x.png">
+      <LogicalName>prefs-solution-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~dark.png">
+      <LogicalName>prefs-solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~dark%402x.png">
+      <LogicalName>prefs-solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~sel.png">
+      <LogicalName>prefs-solution-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~sel%402x.png">
+      <LogicalName>prefs-solution-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~dark~sel.png">
+      <LogicalName>prefs-solution-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-solution-16~dark~sel%402x.png">
+      <LogicalName>prefs-solution-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16.png">
+      <LogicalName>prefs-signing-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16%402x.png">
+      <LogicalName>prefs-signing-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~dark.png">
+      <LogicalName>prefs-signing-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~dark%402x.png">
+      <LogicalName>prefs-signing-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~sel.png">
+      <LogicalName>prefs-signing-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~sel%402x.png">
+      <LogicalName>prefs-signing-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~dark~sel.png">
+      <LogicalName>prefs-signing-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-signing-16~dark~sel%402x.png">
+      <LogicalName>prefs-signing-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16.png">
+      <LogicalName>prefs-output-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16%402x.png">
+      <LogicalName>prefs-output-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~dark.png">
+      <LogicalName>prefs-output-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~dark%402x.png">
+      <LogicalName>prefs-output-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~sel.png">
+      <LogicalName>prefs-output-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~sel%402x.png">
+      <LogicalName>prefs-output-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~dark~sel.png">
+      <LogicalName>prefs-output-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-output-16~dark~sel%402x.png">
+      <LogicalName>prefs-output-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16.png">
+      <LogicalName>prefs-startup-project-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16%402x.png">
+      <LogicalName>prefs-startup-project-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~dark.png">
+      <LogicalName>prefs-startup-project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~dark%402x.png">
+      <LogicalName>prefs-startup-project-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~sel.png">
+      <LogicalName>prefs-startup-project-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~sel%402x.png">
+      <LogicalName>prefs-startup-project-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~dark~sel.png">
+      <LogicalName>prefs-startup-project-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-startup-project-16~dark~sel%402x.png">
+      <LogicalName>prefs-startup-project-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\copy-16.png">
       <LogicalName>copy-16.png</LogicalName>
     </EmbeddedResource>
@@ -6334,60 +6575,6 @@
     <EmbeddedResource Include="icons\parser-16~dark~sel%402x.png">
       <LogicalName>parser-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16.png">
-      <LogicalName>status-building-1-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16%402x.png">
-      <LogicalName>status-building-1-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16~dark.png">
-      <LogicalName>status-building-1-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16~dark%402x.png">
-      <LogicalName>status-building-1-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16.png">
-      <LogicalName>status-building-2-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16%402x.png">
-      <LogicalName>status-building-2-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16~dark.png">
-      <LogicalName>status-building-2-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16~dark%402x.png">
-      <LogicalName>status-building-2-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16.png">
-      <LogicalName>status-building-3-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16%402x.png">
-      <LogicalName>status-building-3-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16~dark.png">
-      <LogicalName>status-building-3-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16~dark%402x.png">
-      <LogicalName>status-building-3-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-16.png">
-      <LogicalName>status-building-4-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-16%402x.png">
-      <LogicalName>status-building-4-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16.png">
-      <LogicalName>status-building-5-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16%402x.png">
-      <LogicalName>status-building-5-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16~dark.png">
-      <LogicalName>status-building-5-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16~dark%402x.png">
-      <LogicalName>status-building-5-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-1-16.png">
       <LogicalName>status-connecting-1-16.png</LogicalName>
     </EmbeddedResource>
@@ -6579,78 +6766,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-error-count-16~dark%402x.png">
       <LogicalName>status-error-count-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16.png">
-      <LogicalName>status-opening-1-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16%402x.png">
-      <LogicalName>status-opening-1-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16~dark.png">
-      <LogicalName>status-opening-1-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16~dark%402x.png">
-      <LogicalName>status-opening-1-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16.png">
-      <LogicalName>status-opening-2-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16%402x.png">
-      <LogicalName>status-opening-2-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16~dark.png">
-      <LogicalName>status-opening-2-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16~dark%402x.png">
-      <LogicalName>status-opening-2-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16.png">
-      <LogicalName>status-opening-3-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16%402x.png">
-      <LogicalName>status-opening-3-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16~dark.png">
-      <LogicalName>status-opening-3-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16~dark%402x.png">
-      <LogicalName>status-opening-3-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16.png">
-      <LogicalName>status-opening-4-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16%402x.png">
-      <LogicalName>status-opening-4-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16~dark.png">
-      <LogicalName>status-opening-4-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16~dark%402x.png">
-      <LogicalName>status-opening-4-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16.png">
-      <LogicalName>status-opening-5-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16%402x.png">
-      <LogicalName>status-opening-5-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16~dark.png">
-      <LogicalName>status-opening-5-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16~dark%402x.png">
-      <LogicalName>status-opening-5-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16.png">
-      <LogicalName>status-opening-6-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16%402x.png">
-      <LogicalName>status-opening-6-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16~dark.png">
-      <LogicalName>status-opening-6-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16~dark%402x.png">
-      <LogicalName>status-opening-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-parsing-16.png">
       <LogicalName>status-parsing-16.png</LogicalName>
@@ -7204,7 +7319,6 @@
     <EmbeddedResource Include="icons\redo-16~dark~disabled%402x.png">
       <LogicalName>redo-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\workspace-template.png">
       <LogicalName>workspace-template.png</LogicalName>
     </EmbeddedResource>
@@ -7241,7 +7355,6 @@
     <EmbeddedResource Include="templates\images\workspace-32~dark~sel%402x.png">
       <LogicalName>workspace-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\solution-template.png">
       <LogicalName>solution-template.png</LogicalName>
     </EmbeddedResource>
@@ -7278,7 +7391,6 @@
     <EmbeddedResource Include="templates\images\solution-32~dark~sel%402x.png">
       <LogicalName>solution-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-template.png">
       <LogicalName>project-template.png</LogicalName>
     </EmbeddedResource>
@@ -7315,7 +7427,6 @@
     <EmbeddedResource Include="templates\images\project-32~dark~sel%402x.png">
       <LogicalName>project-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-template.png">
       <LogicalName>project-crossplatform-shared-template.png</LogicalName>
     </EmbeddedResource>
@@ -7352,7 +7463,6 @@
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~dark~sel%402x.png">
       <LogicalName>project-crossplatform-shared-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-library-template.png">
       <LogicalName>project-library-template.png</LogicalName>
     </EmbeddedResource>
@@ -7389,7 +7499,6 @@
     <EmbeddedResource Include="templates\images\project-library-32~dark~sel%402x.png">
       <LogicalName>project-library-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template.png">
       <LogicalName>project-crossplatform-pcl-template.png</LogicalName>
     </EmbeddedResource>
@@ -7426,7 +7535,6 @@
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~dark~sel%402x.png">
       <LogicalName>project-crossplatform-pcl-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-gui-template.png">
       <LogicalName>project-gui-template.png</LogicalName>
     </EmbeddedResource>
@@ -7463,7 +7571,6 @@
     <EmbeddedResource Include="templates\images\project-gui-32~dark~sel%402x.png">
       <LogicalName>project-gui-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-console-template.png">
       <LogicalName>project-console-template.png</LogicalName>
     </EmbeddedResource>
@@ -7500,7 +7607,6 @@
     <EmbeddedResource Include="templates\images\project-console-32~dark~sel%402x.png">
       <LogicalName>project-console-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-test-template.png">
       <LogicalName>project-test-template.png</LogicalName>
     </EmbeddedResource>
@@ -7537,7 +7643,6 @@
     <EmbeddedResource Include="templates\images\project-test-32~dark~sel%402x.png">
       <LogicalName>project-test-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-package-template.png">
       <LogicalName>project-package-template.png</LogicalName>
     </EmbeddedResource>
@@ -7574,7 +7679,6 @@
     <EmbeddedResource Include="templates\images\project-package-32~dark~sel%402x.png">
       <LogicalName>project-package-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\AppManifest.xft.xml">
       <LogicalName>AppManifest.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -8474,10 +8578,10 @@
     <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IMainToolbarView.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarController.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarCommandHandlers.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusBarContextHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IButtonBarButton.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MruCache.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\IProjectionExtension.cs" />
@@ -8567,6 +8671,7 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\SingleProjectFileCustomTool.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\RunWithCustomParametersDialog.cs" />
     <Compile Include="MonoDevelop.Components\InformationPopoverWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\MarkupOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8578,6 +8683,7 @@
     <None Include="MonoDevelop.Ide.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

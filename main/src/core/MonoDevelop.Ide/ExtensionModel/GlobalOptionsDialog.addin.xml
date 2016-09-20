@@ -7,7 +7,7 @@
 
 <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
 	<Section id = "Preferences" _label = "Environment">
-		<Section id = "Style" _label = "Visual Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" />
+		<Section id = "Style" _label = "Visual Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" icon="md-prefs-visual-style" />
 		<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" icon="md-prefs-author-information" />
 		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" icon="md-prefs-key-bindings" />
 		<Section id = "Fonts" _label = "Fonts" fill="true" class = "MonoDevelop.Ide.Fonts.FontChooserPanel" icon = "md-prefs-fonts" />
@@ -42,8 +42,8 @@
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">
-		<Section id = "LogAgent" _label = "Automated Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" />
-		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
+		<Section id = "LogAgent" _label = "Automated Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" icon="md-prefs-feedback" />
+		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" icon="md-prefs-maintenance" />
 	</Section>
 </Extension>
 

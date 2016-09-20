@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow.Child = texteditor;
+			scrolledwindow.AddWithViewport (texteditor);
 			ShowAll ();
 			
 			#region Indent options
@@ -182,11 +182,56 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewIndentOptions.AppendColumn (column);
 
 
-			AddOption (indentationOptions, "IndentBlock", GettextCatalog.GetString ("Indent block contents"), "namespace Test { class AClass { void Method () { int x; int y; } } }");
-			AddOption (indentationOptions, "IndentBraces", GettextCatalog.GetString ("Indent open and close braces"), "class AClass { int aField; void AMethod () {}}");
-			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent switch sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
-			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
-			AddOption (indentationOptions, "LabelPositioning", GettextCatalog.GetString ("Label indentation"), "enum AEnum { A, B, C }");
+			AddOption (indentationOptions, "IndentBlock", GettextCatalog.GetString ("Indent block contents"), @"namespace Test
+{
+	class AClass
+	{
+		void Method ()
+		{
+			int x;
+			int y;
+		}
+	}
+}");
+			AddOption (indentationOptions, "IndentBraces", GettextCatalog.GetString ("Indent open and close braces"), @"class AClass
+{
+	int aField;
+
+	void AMethod()
+	{
+	}
+}");
+			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent switch sections"), @"class AClass
+{
+	void Method(int x)
+	{
+		switch (x)
+		{
+			case 1:
+			break;
+		}
+	}
+}");
+			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case sections"), @"class AClass
+{
+	void Method(int x)
+	{
+		switch (x)
+		{
+			case 1:
+			break;
+		}
+	}
+}");
+			AddOption (indentationOptions, "LabelPositioning", GettextCatalog.GetString ("Label indentation"), @"class Test
+{
+	void Method()
+	{
+	label:
+		Console.WriteLine (""Hello World"");
+	}
+
+}");
 			treeviewIndentOptions.ExpandAll ();
 			#endregion
 			

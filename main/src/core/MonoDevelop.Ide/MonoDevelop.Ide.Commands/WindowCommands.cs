@@ -277,4 +277,31 @@ namespace MonoDevelop.Ide.Commands
 			Switch (false);
 		}
 	}
+
+	internal class SwitchNextPad : CommandHandler
+	{
+		protected static void Switch (bool next)
+		{
+			if (!IdeApp.Preferences.EnableDocumentSwitchDialog)
+				return;
+
+			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
+				?? IdeApp.Workbench.RootWindow;
+			var sw = new DocumentSwitcher (toplevel, GettextCatalog.GetString ("Pads"), next);
+			sw.Present ();
+		}
+
+		protected override void Run ()
+		{
+			Switch (true);
+		}
+	}
+
+	internal class SwitchPreviousPad : SwitchNextPad
+	{
+		protected override void Run ()
+		{
+			Switch (false);
+		}
+	}
 }

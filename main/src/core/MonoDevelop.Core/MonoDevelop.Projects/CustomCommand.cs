@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects
 		
 		public string Command {
 			get { return command; }
-			set { command = value; }
+			set { command = value ?? string.Empty; }
 		}
 		
 		public string WorkingDir {

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<PropertyGroup>
+		<Special>foo</Special>
+		<Fada>t0</Fada>
+		<Nothing></Nothing>
+	</PropertyGroup>
+	<ItemGroup>
+		<File Include="a.txt">
+			<foo>m1</foo>
+		</File>
+		<File Include="b.txt">
+			<foo>m2</foo>
+		</File>
+		<Ras Include="@(File->Metadata('$(Special)'))" />
+		<Dis Include="aa" />
+		<Dis Include="bb" />
+		<Dis Include="aa" />
+		<Dis Include="BB" />
+		<Cleared Include="@(File->ClearMetadata())" />
+		<Empty Include="AA;;BB" />
+		<Empty Include="$(Nothing)" />
+		<Empty Include="CC" />
+	</ItemGroup>
+	<PropertyGroup>
+		<TestCount>@(File -> Count())</TestCount>
+		<TestDirectoryName>@(File -> DirectoryName())</TestDirectoryName>
+		<TestVarInTransform>@(Ras)</TestVarInTransform>
+		<FadaResPrev>$(Fada) - [$(FadaAcum)]</FadaResPrev>
+		<FadaAcum>$(Fada)_@(File)</FadaAcum>
+		<Fada>t1</Fada>
+		<FadaRes>$(Fada) - [$(FadaAcum)]</FadaRes>
+		<Func>$([System.String]::Concat(abc,$(TestCount)))</Func>
+		<Func2>$(TestCount.Substring(0,1))</Func2>
+		<Special>foo</Special>
+		<Distinct>@(Dis->Distinct())</Distinct>
+		<DistinctWithCase>@(Dis->DistinctWithCase())</DistinctWithCase>
+		<Reverse>@(Dis->Reverse())</Reverse>
+		<AnyHaveMetadataValue>@(File->AnyHaveMetadataValue('foo','M1'))</AnyHaveMetadataValue>
+		<AnyHaveMetadataValue2>@(File->AnyHaveMetadataValue('foo','XX'))</AnyHaveMetadataValue2>
+		<ClearMetadata>@(Cleared->AnyHaveMetadataValue('foo','M1'))</ClearMetadata>
+		<HasMetadata>@(File->HasMetadata('foo'))</HasMetadata>
+		<Metadata>@(File->Metadata('foo'))</Metadata>
+		<WithMetadataValue>@(File->WithMetadataValue('foo','M1'))</WithMetadataValue>
+		<MetadataList>@(File->'%(filename)-%(foo)')</MetadataList>
+		<MetadataList2>@(File2->'%(filename)-%(foo)-%(Extra)')</MetadataList2>
+		<IndexOf>@(File->IndexOf('.'))</IndexOf>
+		<Replace>@(File->Replace('.','_._'))</Replace>
+		<get_Length>@(File->get_Length())</get_Length>
+		<get_Chars>@(File->get_Chars(2))</get_Chars>
+		<EmptyItem>@(Empty)</EmptyItem>
+		<MetadataCatch>@(Empty->'%(createdtime)')</MetadataCatch>
+		<MultiValue>@(Multi)</MultiValue>
+		<MultiValue2>@(Multi2)</MultiValue2>
+	</PropertyGroup>
+	<ItemGroup>
+		<File Include="$(Fada).txt" />
+		<File2 Include="@(File)">
+			<Extra>b1_%(foo)</Extra>
+		</File2>
+		<Multi Include="@(File);TT;@(Empty)"/>
+		<Multi2 Include="@(File->'%(filename)');TT;@(Empty)"/>
+	</ItemGroup>
+
+	
+	<Target Name="Test1">
+		<Message Text="$(TestCount)" />
+		<!-- 3 -->
+	</Target>
+	<Target Name="Test2">
+		<Message Text="$(TestDirectoryName)" />
+		<!-- 3 -->
+	</Target>
+	<Target Name="Test3">
+		<Message Text="$(TestVarInTransform)" />
+		<!-- m1;m2 -->
+	</Target>
+	<Target Name="Test5">
+		<Message Text="$(FadaRes)" />
+		<!-- t1 - [t0_a.txt;b.txt;t1.txt] -->
+	</Target>
+	<Target Name="Test6">
+		<Message Text="$(Func)" />
+		<!-- abc@(File -> Count()) -->
+	</Target>
+	<Target Name="Test7">
+		<Message Text="$(Func2)" />
+		<!-- @ -->
+	</Target>
+	<Target Name="Test8">
+		<Message Text="$(FadaResPrev)" />
+		<!-- t0 - [] -->
+	</Target>
+	<Target Name="Test9">
+		<Message Text="$(Distinct)" />
+		<!-- aa;bb -->
+	</Target>
+	<Target Name="Test10">
+		<Message Text="$(DistinctWithCase)" />
+		<!-- aa;bb -->
+	</Target>
+	<Target Name="Test11">
+		<Message Text="$(Reverse)" />
+		<!-- "BB;aa;bb;aa -->
+	</Target>
+	<Target Name="Test12">
+		<Message Text="$(AnyHaveMetadataValue)" />
+		<!-- true -->
+	</Target>
+	<Target Name="Test13">
+		<Message Text="$(AnyHaveMetadataValue2)" />
+		<!-- false -->
+	</Target>
+	<Target Name="Test14">
+		<Message Text="$(ClearMetadata)" />
+		<!-- false -->
+	</Target>
+	<Target Name="Test15">
+		<Message Text="$(HasMetadata)" />
+		<!-- a.txt -->
+	</Target>
+	<Target Name="Test16">
+		<Message Text="$(Metadata)" />
+		<!-- m1;m2 -->
+	</Target>
+	<Target Name="Test17">
+		<Message Text="$(WithMetadataValue)" />
+		<!-- a.txt;b.txt -->
+	</Target>
+	<Target Name="Test18">
+		<Message Text="$(MetadataList)" />
+		<!-- a.txt;b.txt -->
+	</Target>
+	<Target Name="Test19">
+		<Message Text="$(MetadataList2)" />
+		<!-- a.txt;b.txt -->
+	</Target>
+	<Target Name="Test20">
+		<Message Text="$(IndexOf)" />
+		<!-- 1;1;2 -->
+	</Target>
+	<Target Name="Test21">
+		<Message Text="$(Replace)" />
+		<!-- a_._txt;b_._txt;t1_._txt -->
+	</Target>
+	<Target Name="Test22">
+		<Message Text="$(get_Length)" />
+		<!-- 5;5;6 -->
+	</Target>
+	<Target Name="Test23">
+		<Message Text="$(get_Chars)" />
+		<!-- t;t;. -->
+	</Target>
+	<Target Name="Test24">
+		<Message Text="$(EmptyItem)" />
+		<!-- AA;BB -->
+	</Target>
+	<Target Name="Test25">
+		<Message Text="$(MetadataCatch)" />
+		<!-- ;; -->
+	</Target>
+	<Target Name="Test26">
+		<Message Text="$(MultiValue)" />
+		<!-- a.txt;b.txt;t1.txt;TT;AA;BB;CC -->
+	</Target>
+	<Target Name="Test27">
+		<Message Text="$(MultiValue2)" />
+		<!-- a;b;t1;TT;AA;BB;CC -->
+	</Target>
+</Project>

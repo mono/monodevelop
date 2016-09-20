@@ -118,8 +118,17 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute (CancellationToken cancellationToken)
 		{
-			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject, packageManagementEvents)) {
-				ExecuteAsync (cancellationToken).Wait ();
+			try {
+				using (var monitor = new NuGetPackageEventsMonitor (dotNetProject, packageManagementEvents)) {
+					ExecuteAsync (cancellationToken).Wait ();
+				}
+			} catch (AggregateException ex) {
+				Exception baseException = ex.GetBaseException ();
+				if (baseException.InnerException is PackageAlreadyInstalledException) {
+					context.Log (MessageLevel.Info, baseException.Message);
+				} else {
+					throw;
+				}
 			}
 		}
 

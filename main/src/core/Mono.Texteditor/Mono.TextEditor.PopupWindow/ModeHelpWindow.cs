@@ -218,7 +218,7 @@ namespace Mono.TextEditor.PopupWindow
 		None
 	}
 
-	class TokenRenderer
+	class TokenRenderer : IDisposable
 	{
 		const int normalFontSize = 11;
 		const int outlinedFontSize = 8;
@@ -329,9 +329,17 @@ namespace Mono.TextEditor.PopupWindow
 			cr.ClosePath ();
 			cr.Fill ();
 		}
+
+		public void Dispose ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+		}
 	}
 
-	class LineRenderer
+	class LineRenderer : IDisposable
 	{
 		TokenRenderer[] tokens;
 
@@ -382,6 +390,13 @@ namespace Mono.TextEditor.PopupWindow
 			foreach (var token in tokens) {
 				token.Render (cr, x, y, Height);
 				x += token.Width + token.Spacing;
+			}
+		}
+
+		public void Dispose ()
+		{
+			foreach (var token in tokens) {
+				token.Dispose ();
 			}
 		}
 	}
@@ -437,6 +452,13 @@ namespace Mono.TextEditor.PopupWindow
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+
+			if (descTexts != null) {
+				foreach (var item in descTexts) {
+					item.Dispose ();
+				}
+				descTexts = null;
+			}
 			
 			if (titleLayout != null) {
 				titleLayout.Dispose ();
