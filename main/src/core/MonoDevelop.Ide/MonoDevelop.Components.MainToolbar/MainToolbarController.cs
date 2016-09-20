@@ -179,12 +179,13 @@ namespace MonoDevelop.Components.MainToolbar
 			ignoreRuntimeChangedCount++;
 			try {
 				ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
-				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
+				var startConf = currentSolution?.StartupConfiguration as SingleItemSolutionRunConfiguration;
+				if (!IdeApp.Workspace.IsOpen || currentSolution == null || startConf == null || startConf.Item == null)
 					return;
 
 				// Check that the current startup project is enabled for the current configuration
 				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
+				if (solConf == null || !solConf.BuildEnabledForItem (startConf.Item))
 					return;
 
 				ExecutionTarget previous = null;
