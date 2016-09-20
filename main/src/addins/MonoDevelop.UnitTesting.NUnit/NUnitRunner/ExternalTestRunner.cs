@@ -97,14 +97,12 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		
 		NUnitTestRunner GetRunner (string assemblyPath)
 		{
-			string basePath = Path.GetDirectoryName (GetType ().Assembly.Location);
-
 			TestPackage package = new TestPackage (assemblyPath);
 			package.Settings ["ShadowCopyFiles"] = false;
 			package.BasePath = Path.GetDirectoryName(assemblyPath);
 			
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
-			string asm = Path.Combine (basePath, "NUnitRunner.exe");
+			string asm = GetType ().Assembly.Location;
 			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.UnitTesting.NUnit.External.NUnitTestRunner");
 			runner.Initialize ();
 			return runner;

@@ -274,6 +274,32 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
 		}
+
+		public static AssemblyBitness GetAssemblyBitness (string assemblyPath)
+		{
+			IKVM.Reflection.PortableExecutableKinds peKind;
+			IKVM.Reflection.ImageFileMachine machine;
+
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (assemblyPath);
+					assembly.ManifestModule.GetPEKind (out peKind, out machine);
+				} catch {
+					peKind = IKVM.Reflection.PortableExecutableKinds.ILOnly;
+					machine = IKVM.Reflection.ImageFileMachine.I386;
+				}
+			}
+
+			if ((peKind & IKVM.Reflection.PortableExecutableKinds.Required32Bit) != 0)
+				return AssemblyBitness.Requires32bit;
+			if ((peKind & IKVM.Reflection.PortableExecutableKinds.Preferred32Bit) != 0)
+				return AssemblyBitness.Prefers32bit;
+			if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0)
+				return AssemblyBitness.Requires64bit;
+			
+			return AssemblyBitness.Other;
+		}
 		
 		void CreateFrameworks ()
 		{
@@ -489,5 +515,13 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 		}
+	}
+
+	public enum AssemblyBitness
+	{
+		Prefers32bit,
+		Requires32bit,
+		Requires64bit,
+		Other
 	}
 }

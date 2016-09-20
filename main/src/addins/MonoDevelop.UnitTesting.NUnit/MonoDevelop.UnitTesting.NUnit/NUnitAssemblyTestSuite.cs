@@ -44,6 +44,7 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
@@ -329,7 +330,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 				try {
 					if (File.Exists (ld.Path)) {
 						runner = new ExternalTestRunner ();
-						runner.Connect (ld.NUnitVersion).Wait ();
+						var is64bit = SystemAssemblyService.GetAssemblyBitness (ld.Path) == AssemblyBitness.Requires64bit;
+						runner.Connect (ld.NUnitVersion, is64bit).Wait ();
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
 					}
 				} catch (Exception ex) {
@@ -388,7 +390,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			var console = testContext.ExecutionContext.ConsoleFactory.CreateConsole ();
 
 			ExternalTestRunner runner = new ExternalTestRunner ();
-			runner.Connect (NUnitVersion, testContext.ExecutionContext.ExecutionHandler, console).Wait ();
+			var is64bit = SystemAssemblyService.GetAssemblyBitness (AssemblyPath) == AssemblyBitness.Requires64bit;
+			runner.Connect (NUnitVersion, is64bit, testContext.ExecutionContext.ExecutionHandler, console).Wait ();
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			string[] filter = null;

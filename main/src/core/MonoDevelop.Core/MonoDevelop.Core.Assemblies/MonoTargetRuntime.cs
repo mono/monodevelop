@@ -304,27 +304,15 @@ namespace MonoDevelop.Core.Assemblies
 		/// <param name="assemblyPath">Assembly path.</param>
 		public string GetMonoExecutableForAssembly (string assemblyPath)
 		{
-			IKVM.Reflection.PortableExecutableKinds peKind;
-			IKVM.Reflection.ImageFileMachine machine;
-
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
-				try {
-					assembly = universe.LoadFile (assemblyPath);
-					assembly.ManifestModule.GetPEKind (out peKind, out machine);
-				} catch {
-					peKind = IKVM.Reflection.PortableExecutableKinds.ILOnly;
-					machine = IKVM.Reflection.ImageFileMachine.I386;
-				}
-			}
+			var ab = SystemAssemblyService.GetAssemblyBitness (assemblyPath);
 
 			string monoPath;
 
-			if ((peKind & (IKVM.Reflection.PortableExecutableKinds.Required32Bit | IKVM.Reflection.PortableExecutableKinds.Preferred32Bit)) != 0) {
+			if (ab == AssemblyBitness.Prefers32bit || ab == AssemblyBitness.Requires32bit) {
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
 				if (File.Exists (monoPath))
 					return monoPath;
-			} else if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0) {
+			} else if (ab == AssemblyBitness.Requires64bit) {
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
 				if (File.Exists (monoPath))
 					return monoPath;
