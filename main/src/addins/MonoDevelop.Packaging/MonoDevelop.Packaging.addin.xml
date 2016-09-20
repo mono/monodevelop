@@ -60,6 +60,13 @@
 					fill="true"
 					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
 			</Condition>
+			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+				<Section
+					id="ReferenceAssemblies"
+					_label="Reference Assemblies"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.ReferenceAssembliesOptionsPanel" />
+			</Condition>
 		</Section>
 	</Extension>
 

@@ -100,6 +100,13 @@
     <Compile Include="MonoDevelop.Packaging.Gui\GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizardPage.cs" />
+    <Compile Include="MonoDevelop.Packaging.OptionPanels\ReferenceAssembliesOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkReferenceAssembliesOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkReferenceAssembliesOptionsPanelWidget.UI.cs">
+      <DependentUpon>GtkReferenceAssembliesOptionsPanelWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Packaging\ReferenceAssemblyFrameworkCollection.cs" />
+    <Compile Include="MonoDevelop.Packaging\ReferenceAssemblyFramework.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

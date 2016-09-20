@@ -41,6 +41,7 @@ namespace MonoDevelop.Packaging
 	class PackagingProject : DotNetProject, INuGetAwareProject
 	{
 		PackageReferenceCollection packageReferences;
+		ReferenceAssemblyFrameworkCollection referenceAssemblyFrameworks;
 
 		public PackagingProject ()
 		{
@@ -288,6 +289,9 @@ namespace MonoDevelop.Packaging
 			packageReferences = new PackageReferenceCollection ();
 			Items.Bind (packageReferences);
 
+			referenceAssemblyFrameworks = new ReferenceAssemblyFrameworkCollection ();
+			Items.Bind (referenceAssemblyFrameworks);
+
 			base.OnInitialize ();
 		}
 
@@ -303,6 +307,18 @@ namespace MonoDevelop.Packaging
 		bool IsMatch (PackageReference packageReference, PackageIdentity packageIdentity)
 		{
 			return String.Equals (packageReference.Include, packageIdentity.Id, StringComparison.OrdinalIgnoreCase);
+		}
+
+		public IEnumerable<TargetFrameworkMoniker> GetReferenceAssemblyFrameworks ()
+		{
+			return referenceAssemblyFrameworks.Select (item => item.GetTargetFrameworkMoniker ());
+		}
+
+		public void UpdateReferenceAssemblyFrameworks (IEnumerable<TargetFrameworkMoniker> frameworks)
+		{
+			referenceAssemblyFrameworks.Clear ();
+
+			referenceAssemblyFrameworks.AddRange (frameworks.Select (fx => new ReferenceAssemblyFramework (fx)));
 		}
 	}
 }
