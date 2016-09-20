@@ -46,10 +46,12 @@ namespace MonoDevelop.Packaging.Templating
 
 		public override void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
 		{
+			string projectName = Parameters["ProjectName"];
 			var libraryProjects = GetLibraryProjects (items).ToList ();
 
 			foreach (DotNetProject project in libraryProjects) {
 				project.AddCommonPackagingImports ();
+				project.SetOutputAssemblyName (projectName);
 			}
 
 			if (Parameters.GetBoolValue ("CreatePortableProject")) {

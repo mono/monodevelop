@@ -27,6 +27,7 @@
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Packaging
 {
@@ -62,6 +63,13 @@ namespace MonoDevelop.Packaging
 		{
 			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
 			return propertyGroup.HasProperty ("NuGetId");
+		}
+
+		public static void SetOutputAssemblyName (this DotNetProject project, string name)
+		{
+			foreach (var configuration in project.Configurations.OfType<DotNetProjectConfiguration> ()) {
+				configuration.OutputAssembly = name;
+			}
 		}
 	}
 }
