@@ -16,13 +16,16 @@
 
 	<Combine name="${ProjectName}" directory=".">
 		<Project name="${ProjectName}.Shared" directory="${ProjectName}.Shared" type="SharedAssetsProject" if="CreateSharedProject">
+			<Options DefaultNamespace="${ProjectName}" />
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 			</Files>
 		</Project>
 
 		<Project name="${ProjectName}" directory = "." type="C#PortableLibrary" if="CreatePortableProject">
-			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"/>
+			<Options Target="Library"
+				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"
+				DefaultNamespace="${ProjectName}" />
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
@@ -30,7 +33,9 @@
 		</Project>
 
 		<Project name="${ProjectName}.iOS" directory="${ProjectName}.iOS" type="XamarinIOS" if="CreateIOSProject">
-			<Options Target="Library" TargetFrameworkVersion="Xamarin.iOS,Version=v1.0" />
+			<Options Target="Library"
+				TargetFrameworkVersion="Xamarin.iOS,Version=v1.0"
+				DefaultNamespace="${ProjectName}" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -44,7 +49,7 @@
 		</Project>
 		
 		<Project name="${ProjectName}.Android" directory="${ProjectName}.Android" type="MonoDroid" if="CreateAndroidProject">
-			<Options Target="Library"  />
+			<Options Target="Library" DefaultNamespace="${ProjectName}" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -58,7 +63,7 @@
 		</Project>
 
 		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging" if="CreateNuGetProject">
-			<Options TargetFrameworkVersion="4.5" />
+			<Options TargetFrameworkVersion="4.5" DefaultNamespace="${ProjectName}" />
 			<References>
 				<Reference type="Project" refto="${ProjectName}.Android" />
 				<Reference type="Project" refto="${ProjectName}.iOS" />
