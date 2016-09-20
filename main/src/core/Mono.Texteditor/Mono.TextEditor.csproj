@@ -78,6 +78,9 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -382,6 +385,14 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
