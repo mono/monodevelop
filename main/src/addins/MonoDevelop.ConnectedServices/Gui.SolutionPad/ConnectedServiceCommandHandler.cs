@@ -19,7 +19,8 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		public override void ActivateItem ()
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
-			ConnectedServices.OpenServicesTab (this.Project, service.Id);
+			if (service != null)
+				ConnectedServices.OpenServicesTab (this.Project, service.Id);
 		}
 
 		[CommandUpdateHandler (Commands.RemoveService)]

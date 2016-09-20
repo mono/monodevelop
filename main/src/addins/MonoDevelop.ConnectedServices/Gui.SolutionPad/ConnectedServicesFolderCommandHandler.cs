@@ -21,7 +21,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		[CommandHandler (Commands.OpenServicesGalleryFromServicesNode)]
 		public override void ActivateItem ()
 		{
-			ConnectedServices.OpenServicesTab (this.Project);
+			var connectedServiceFolderNode = CurrentNode.DataItem as ConnectedServiceFolderNode;
+			if (connectedServiceFolderNode != null)
+				ConnectedServices.OpenServicesTab (this.Project);
 		}
 	}
 }
