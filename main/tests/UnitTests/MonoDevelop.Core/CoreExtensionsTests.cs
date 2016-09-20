@@ -150,7 +150,7 @@ namespace MonoDevelop.Core
 
 			// Force this, we already test the general algorithm in memo1 and memo2.
 			obj1 = f2 (knownArg, knownArg);
-			Assert.AreEqual (4, memoTest2CallCount);
+			Assert.AreEqual (4, memoTest3CallCount);
 		}
 	}
 }
