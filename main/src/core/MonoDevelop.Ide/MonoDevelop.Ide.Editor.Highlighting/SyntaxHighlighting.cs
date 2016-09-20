@@ -215,10 +215,23 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					PushScopeStack (curMatch.Scope);
 
-					if (curMatch.Captures.Count > 0) {
-						foreach (var capture in curMatch.Captures) {
+					if (curMatch.Captures.Groups.Count > 0) {
+						foreach (var capture in curMatch.Captures.Groups) {
 							var grp = match.Groups [capture.Item1];
-							if (grp.Length == 0)
+							if (grp == null || grp.Length == 0)
+								continue;
+							if (curSegmentOffset < grp.Index) {
+								ReplaceSegment (segments, new ColoredSegment (curSegmentOffset, grp.Index - curSegmentOffset, ScopeStack));
+							}
+							ReplaceSegment (segments, new ColoredSegment (grp.Index, grp.Length, ScopeStack.Push (capture.Item2)));
+							curSegmentOffset = grp.Index + grp.Length;
+						}
+					}
+
+					if (curMatch.Captures.NamedGroups.Count > 0) {
+						foreach (var capture in curMatch.Captures.NamedGroups) {
+							var grp = match.Groups [capture.Item1];
+							if (grp == null || grp.Length == 0)
 								continue;
 							if (curSegmentOffset < grp.Index) {
 								ReplaceSegment (segments, new ColoredSegment (curSegmentOffset, grp.Index - curSegmentOffset, ScopeStack));

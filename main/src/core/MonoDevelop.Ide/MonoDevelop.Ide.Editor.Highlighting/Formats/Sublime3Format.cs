@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				}
 			}
-			return new SyntaxMatch (match, scope, captures, push, pop, set);
+			return new SyntaxMatch (match, scope, new Captures (captures), push, pop, set);
 		}
 
 		internal static void ParseScopes (List<string> scope, string value)

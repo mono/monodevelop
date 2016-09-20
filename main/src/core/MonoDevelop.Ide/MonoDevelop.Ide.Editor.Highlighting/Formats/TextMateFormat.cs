@@ -203,7 +203,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static TmSetting ReadPreferences (Stream stream)
 		{
 			var dict = PDictionary.FromStream (stream);
+			return ReadPreferences (dict);
+		}
 
+		internal static TmSetting ReadPreferences (PDictionary dict)
+		{
 			string name = null;
 			var scopes = new List<string> ();
 			var settings = new Dictionary<string, PObject> ();
@@ -284,7 +288,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return ReadHighlighting (dictionary);
 		}
 
-		static SyntaxHighlightingDefinition ReadHighlighting (PDictionary dictionary)
+		internal static SyntaxHighlightingDefinition ReadHighlighting (PDictionary dictionary)
 		{
 
 			string firstLineMatch = null;
@@ -359,7 +363,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			List<string> matchScope  = new List<string> ();
 			Sublime3Format.ParseScopes (matchScope, (dict ["name"] as PString)?.Value);
 
-			List<Tuple<int, string>> captures = null;
+			Captures captures = null;
 			var captureDict = dict ["captures"] as PDictionary;
 			if (captureDict != null)
 				captures = ReadCaptureDictionary (captureDict);
@@ -369,14 +373,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var begin = (dict ["begin"] as PString)?.Value;
 			if (begin != null) {
 				
-				List<Tuple<int, string>> beginCaptures = null;
+				Captures beginCaptures = null;
 				captureDict = dict ["beginCaptures"] as PDictionary;
 
 				if (captureDict != null)
 					beginCaptures = ReadCaptureDictionary (captureDict);
 
 				var end = (dict ["end"] as PString)?.Value;
-				List<Tuple<int, string>> endCaptures = null;
+				Captures endCaptures = null;
 				List<string> endScope = new List<string> ();
 				if (end != null) {
 					captureDict = dict ["endCaptures"] as PDictionary;
@@ -402,19 +406,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null);
 		}
 
-		static List<Tuple<int, string>> ReadCaptureDictionary (PDictionary captureDict)
+		static Captures ReadCaptureDictionary (PDictionary captureDict)
 		{
-			var captures = new List<Tuple<int, string>> ();
+			var group = new List<Tuple<int, string>> ();
+			var named = new List<Tuple<string, string>> ();
 			foreach (var kv in captureDict) {
-				var g = int.Parse (kv.Key);
-				var s = ((kv.Value as PDictionary) ["name"] as PString).Value;
-				/*	if (g == 0) {
-						scope = s;
-						continue;
-					}*/
-				captures.Add (Tuple.Create (g, s));
+				var s = ((kv.Value as PDictionary) ["name"] as PString)?.Value;
+				if (s == null)
+					continue;
+				int g;
+				try {
+					g = int.Parse (kv.Key);
+				} catch (Exception e) {
+					named.Add (Tuple.Create (kv.Key, s));
+					continue;
+				}
+				group.Add (Tuple.Create (g, s));
 			}
-			return captures;
+			return new Captures(group, named);
 		}
 		#endregion
 

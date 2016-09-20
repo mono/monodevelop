@@ -214,20 +214,39 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	public class Captures
+	{
+		public static readonly Captures Empty = new Captures (new List<Tuple<int, string>> (), new List<Tuple<string, string>> ());
+		public IReadOnlyList<Tuple<int, string>> Groups { get; private set; }
+		public IReadOnlyList<Tuple<string, string>> NamedGroups { get; private set; }
+
+		public Captures (IReadOnlyList<Tuple<int, string>> groups)
+		{
+			Groups = groups;
+			NamedGroups = Captures.Empty.NamedGroups;
+		}
+
+		public Captures (IReadOnlyList<Tuple<int, string>> groups, IReadOnlyList<Tuple<string, string>> namedGroups)
+		{
+			Groups = groups;
+			NamedGroups = namedGroups;
+		}
+	}
+
 	public class SyntaxMatch
 	{
 		public string Match { get; private set; }
 		public IReadOnlyList<string> Scope { get; private set; }
-		public IReadOnlyList<Tuple<int, string>> Captures { get; private set; }
+		public Captures Captures { get; private set; }
 		public ContextReference Push { get; private set; }
 		public bool Pop { get; private set; }
 		public ContextReference Set { get; private set; }
 
-		internal SyntaxMatch (string match, IReadOnlyList<string> scope, IReadOnlyList<Tuple<int, string>> captures, ContextReference push, bool pop, ContextReference set)
+		internal SyntaxMatch (string match, IReadOnlyList<string> scope, Captures captures, ContextReference push, bool pop, ContextReference set)
 		{
 			Match = match;
 			Scope = scope;
-			Captures = captures ?? new List<Tuple<int, string>> ();
+			Captures = captures ?? Captures.Empty;
 			Push = push;
 			Pop = pop;
 			Set = set;
