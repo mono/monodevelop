@@ -666,6 +666,15 @@ namespace MonoDevelop.Components
 				}
 			}
 
+			public override bool AccessibilityFocused {
+				get {
+					return parent.HasFocus;
+				}
+				set {
+					parent.HasFocus = value;
+				}
+			}
+
 			protected bool OnPerformCancel ()
 			{
 				PerformCancel?.Invoke (this, EventArgs.Empty);
