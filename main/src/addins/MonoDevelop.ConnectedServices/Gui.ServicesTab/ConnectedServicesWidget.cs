@@ -92,7 +92,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			details.LoadService (service);
 
-			header.Subtitle = String.Empty;
+			header.Subtitle = service?.Project?.Name;
 			header.BackButtonVisible = true;
 
 			ShowingService = service;
