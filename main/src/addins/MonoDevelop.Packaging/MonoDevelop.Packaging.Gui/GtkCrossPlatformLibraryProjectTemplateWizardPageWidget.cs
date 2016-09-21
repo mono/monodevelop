@@ -25,9 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using Gdk;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Packaging.Templating;
 
 namespace MonoDevelop.Packaging.Gui
@@ -36,6 +39,8 @@ namespace MonoDevelop.Packaging.Gui
 	public partial class GtkCrossPlatformLibraryProjectTemplateWizardPageWidget : Gtk.Bin
 	{
 		CrossPlatformLibraryTemplateWizardPage wizardPage;
+		Color backgroundColor;
+		EventBoxTooltip nameTooltip;
 
 		public GtkCrossPlatformLibraryProjectTemplateWizardPageWidget ()
 		{
@@ -45,7 +50,7 @@ namespace MonoDevelop.Packaging.Gui
 			targetPlatformsSeparator.ModifyBg (StateType.Normal, separatorColor);
 			sharedCodeSeparator.ModifyBg (StateType.Normal, separatorColor);
 
-			var backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
+			backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
 			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
@@ -99,6 +104,17 @@ namespace MonoDevelop.Packaging.Gui
 		void NameTextChanged (object sender, EventArgs e)
 		{
 			wizardPage.LibraryName = nameTextBox.Text;
+
+			if (wizardPage.HasLibraryNameError ()) {
+				if (nameTooltip == null) {
+					nameTooltip = ShowErrorTooltip (nameEventBox, wizardPage.LibraryNameError);
+				}
+			} else {
+				if (nameTooltip != null) {
+					HideTooltip (nameEventBox, nameTooltip);
+					nameTooltip = null;
+				}
+			}
 		}
 
 		void DescriptionTextChanged (object sender, EventArgs e)
@@ -124,6 +140,38 @@ namespace MonoDevelop.Packaging.Gui
 		void SharedProjectRadioButtonToggled (object sender, EventArgs e)
 		{
 			wizardPage.IsSharedProjectSelected = sharedProjectRadioButton.Active;
+		}
+
+		public override void Dispose ()
+		{
+			Dispose (nameTooltip);
+		}
+
+		void Dispose (IDisposable disposable)
+		{
+			if (disposable != null) {
+				disposable.Dispose ();
+			}
+		}
+
+		EventBoxTooltip ShowErrorTooltip (EventBox eventBox, string tooltipText)
+		{
+			eventBox.ModifyBg (StateType.Normal, backgroundColor);
+			Xwt.Drawing.Image image = ImageService.GetIcon ("md-error", IconSize.Menu);
+
+			eventBox.Add (new ImageView (image));
+			eventBox.ShowAll ();
+
+			return new EventBoxTooltip (eventBox) {
+				ToolTip = tooltipText,
+				Severity = TaskSeverity.Error
+			};
+		}
+
+		void HideTooltip (EventBox eventBox, EventBoxTooltip tooltip)
+		{
+			Dispose (tooltip);
+			eventBox.Foreach (eventBox.Remove);
 		}
 	}
 }

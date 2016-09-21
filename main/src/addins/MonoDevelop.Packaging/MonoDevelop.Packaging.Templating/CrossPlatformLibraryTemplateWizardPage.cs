@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Packaging.Gui;
 using MonoDevelop.Projects;
+using NuGet.Packaging;
 
 namespace MonoDevelop.Packaging.Templating
 {
@@ -88,7 +89,19 @@ namespace MonoDevelop.Packaging.Templating
 
 		bool IsValidLibraryName ()
 		{
-			return !string.IsNullOrEmpty (libraryName);
+			LibraryNameError = null;
+
+			if (string.IsNullOrEmpty (libraryName)) {
+				return false;
+			} else if (libraryName.Length > NuGetPackageMetadata.MaxPackageIdLength) {
+				LibraryNameError = GettextCatalog.GetString ("Library name must not exceed 100 characters.");
+				return false;
+			} else if (!PackageIdValidator.IsValidPackageId (libraryName)) {
+				LibraryNameError = GettextCatalog.GetString ("The library name contains invalid characters. Examples of valid library names include 'MyPackage' and 'MyPackage.Sample'.");
+				return false;
+			}
+
+			return true;
 		}
 
 		bool ValidPlatformsSelected ()
@@ -108,6 +121,13 @@ namespace MonoDevelop.Packaging.Templating
 				wizard.Parameters ["ProjectName"] = NewProjectConfiguration.GenerateValidProjectName (libraryName);
 				UpdateCanMoveNext ();
 			}
+		}
+
+		public string LibraryNameError { get; private set; }
+
+		public bool HasLibraryNameError ()
+		{
+			return !string.IsNullOrEmpty (LibraryNameError);
 		}
 
 		public string Description {

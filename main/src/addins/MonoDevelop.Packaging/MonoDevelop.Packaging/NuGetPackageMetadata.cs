@@ -32,6 +32,8 @@ namespace MonoDevelop.Packaging
 {
 	class NuGetPackageMetadata
 	{
+		public const int MaxPackageIdLength = 100;
+
 		public string Id { get; set; }
 		public string Version { get; set; }
 		public string Authors { get; set; }
