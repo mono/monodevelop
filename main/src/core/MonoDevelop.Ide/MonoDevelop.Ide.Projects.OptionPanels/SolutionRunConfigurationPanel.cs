@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		DataField<string> projectNameField = new DataField<string> ();
 		DataField<SolutionItem> projectField = new DataField<SolutionItem> ();
 		DataField<string> runConfigField = new DataField<string> ();
+		DataField<ItemCollection> projectRunConfigsField = new DataField<ItemCollection> ();
 
 		public SolutionRunConfigurationPanel ()
 		{
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			config = (SolutionRunConfigInfo)dataObject;
 
-			store = new ListStore (selectedField, projectNameField, projectField, runConfigField);
+			store = new ListStore (selectedField, projectNameField, projectField, runConfigField, projectRunConfigsField);
 			listView = new ListView (store);
 
 			var col1 = new ListViewColumn (GettextCatalog.GetString ("Solution Item"));
@@ -64,7 +65,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			col1.Views.Add (new TextCellView (projectNameField));
 			listView.Columns.Add (col1);
 
-			var configSelView = new TextCellView (runConfigField);
+			var configSelView = new ComboBoxCellView (runConfigField);
+			configSelView.Editable = true;
+			configSelView.ItemsField = projectRunConfigsField;
 			var col2 = new ListViewColumn (GettextCatalog.GetString ("Run Configuration"), configSelView);
 			listView.Columns.Add (col2);
 
@@ -72,7 +75,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				var row = store.AddRow ();
 				var si = config.EditedConfig.Items.FirstOrDefault (i => i.SolutionItem == it);
 				var sc = si?.RunConfiguration?.Name ?? it.GetDefaultRunConfiguration ()?.Name;
-				store.SetValues (row, selectedField, si != null, projectNameField, it.Name, projectField, it, runConfigField, sc);
+				var configs = new ItemCollection ();
+				foreach (var pc in it.GetRunConfigurations ())
+					configs.Add (pc.Name);
+				store.SetValues (row, selectedField, si != null, projectNameField, it.Name, projectField, it, runConfigField, sc, projectRunConfigsField, configs);
 			}
 		}
 
