@@ -94,7 +94,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusWidget.Visible = false;
 
 			addButton = new Button ();
-			addButton.MinWidth = 50;
+			addButton.MinWidth = 128;
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
 
