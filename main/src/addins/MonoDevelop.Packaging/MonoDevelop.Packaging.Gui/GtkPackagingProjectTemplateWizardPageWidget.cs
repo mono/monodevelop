@@ -25,9 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using Gdk;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Packaging.Templating;
 
 namespace MonoDevelop.Packaging.Gui
@@ -36,12 +39,15 @@ namespace MonoDevelop.Packaging.Gui
 	public partial class GtkPackagingProjectTemplateWizardPageWidget : Gtk.Bin
 	{
 		PackagingProjectTemplateWizardPage wizardPage;
+		Color backgroundColor;
+		EventBoxTooltip idTooltip;
+		EventBoxTooltip versionTooltip;
 
 		public GtkPackagingProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
 
-			var backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
+			backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
 			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
@@ -90,11 +96,33 @@ namespace MonoDevelop.Packaging.Gui
 		void PackageIdTextBoxChanged (object sender, EventArgs e)
 		{
 			wizardPage.Id = packageIdTextBox.Text;
+
+			if (wizardPage.HasIdError ()) {
+				if (idTooltip == null) {
+					idTooltip = ShowErrorTooltip (idEventBox, wizardPage.IdError);
+				}
+			} else {
+				if (idTooltip != null) {
+					HideTooltip (idEventBox, idTooltip);
+					idTooltip = null;
+				}
+			}
 		}
 
 		void PackageVersionTextBoxChanged (object sender, EventArgs e)
 		{
 			wizardPage.Version = packageVersionTextBox.Text;
+
+			if (wizardPage.HasVersionError ()) {
+				if (versionTooltip == null) {
+					versionTooltip = ShowErrorTooltip (versionEventBox, wizardPage.VersionError);
+				}
+			} else {
+				if (versionTooltip != null) {
+					HideTooltip (versionEventBox, versionTooltip);
+					versionTooltip = null;
+				}
+			}
 		}
 
 		void PackageAuthorsTextBoxChanged (object sender, EventArgs e)
@@ -105,6 +133,39 @@ namespace MonoDevelop.Packaging.Gui
 		void PackageDescriptionTextChanged (object sender, EventArgs e)
 		{
 			wizardPage.Description = packageDescriptionTextBox.Text;
+		}
+
+		public override void Dispose ()
+		{
+			Dispose (idTooltip);
+			Dispose (versionTooltip);
+		}
+
+		void Dispose (IDisposable disposable)
+		{
+			if (disposable != null) {
+				disposable.Dispose ();
+			}
+		}
+
+		EventBoxTooltip ShowErrorTooltip (EventBox eventBox, string tooltipText)
+		{
+			eventBox.ModifyBg (StateType.Normal, backgroundColor);
+			Xwt.Drawing.Image image = ImageService.GetIcon ("md-error", IconSize.Menu);
+
+			eventBox.Add (new ImageView (image));
+			eventBox.ShowAll ();
+
+			return new EventBoxTooltip (eventBox) {
+				ToolTip = tooltipText,
+				Severity = TaskSeverity.Error
+			};
+		}
+
+		void HideTooltip (EventBox eventBox, EventBoxTooltip tooltip)
+		{
+			Dispose (tooltip);
+			eventBox.Foreach (eventBox.Remove);
 		}
 	}
 }

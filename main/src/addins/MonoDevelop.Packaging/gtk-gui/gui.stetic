@@ -62,7 +62,28 @@
                       <placeholder />
                     </child>
                     <child>
-                      <placeholder />
+                      <widget class="Gtk.EventBox" id="idEventBox">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">16</property>
+                        <property name="HeightRequest">16</property>
+                        <property name="VisibleWindow">False</property>
+                        <child>
+                          <placeholder />
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="LeftAttach">2</property>
+                        <property name="RightAttach">3</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="Gtk.EventBox" id="organizationInfoEventBox">
@@ -71,7 +92,15 @@
                         <property name="HeightRequest">16</property>
                         <property name="VisibleWindow">False</property>
                         <child>
-                          <placeholder />
+                          <widget class="Gtk.EventBox" id="versionEventBox">
+                            <property name="MemberName" />
+                            <property name="WidthRequest">16</property>
+                            <property name="HeightRequest">16</property>
+                            <property name="VisibleWindow">False</property>
+                            <child>
+                              <placeholder />
+                            </child>
+                          </widget>
                         </child>
                       </widget>
                       <packing>
@@ -1438,7 +1467,6 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">Single for all platforms</property>
-                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>

@@ -29,6 +29,8 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Packaging.Gui;
 using MonoDevelop.Projects;
+using NuGet.Packaging;
+using NuGet.Versioning;
 
 namespace MonoDevelop.Packaging.Templating
 {
@@ -41,6 +43,8 @@ namespace MonoDevelop.Packaging.Templating
 		string version = string.Empty;
 		string description = string.Empty;
 		string authors = string.Empty;
+		bool validId;
+		bool validVersion;
 
 		public PackagingProjectTemplateWizardPage (PackagingProjectTemplateWizard wizard)
 		{
@@ -72,20 +76,44 @@ namespace MonoDevelop.Packaging.Templating
 
 		void UpdateCanMoveNext ()
 		{
-			CanMoveToNextPage = IsValidId () &&
-				IsValidVersion () &&
+			CanMoveToNextPage = validId &&
+				validVersion &&
 				!string.IsNullOrEmpty (description) &&
 				!string.IsNullOrEmpty (authors);
 		}
 
 		bool IsValidId ()
 		{
-			return !string.IsNullOrEmpty (id);
+			IdError = null;
+
+			if (string.IsNullOrEmpty (id)) {
+				return false;
+			} else if (id.Length > NuGetPackageMetadata.MaxPackageIdLength) {
+				IdError = GettextCatalog.GetString ("The package id must not exceed 100 characters.");
+				return false;
+			} else if (!PackageIdValidator.IsValidPackageId (id)) {
+				IdError = GettextCatalog.GetString ("The package id contains invalid characters. Examples of valid package ids include 'MyPackage' and 'MyPackage.Sample'.");
+				return false;
+			}
+
+			return true;
 		}
 
 		bool IsValidVersion ()
 		{
-			return !string.IsNullOrEmpty (version);
+			VersionError = null;
+
+			if (string.IsNullOrEmpty (version)) {
+				return false;
+			} else {
+				NuGetVersion nugetVersion = null;
+				if (!NuGetVersion.TryParse (version, out nugetVersion)) {
+					VersionError = GettextCatalog.GetString ("The package version contains invalid characters. Examples of valid version include '1.0.0' and '1.2.3-beta1'.");
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		public string Id {
@@ -94,8 +122,16 @@ namespace MonoDevelop.Packaging.Templating
 				id = value.Trim ();
 				wizard.Parameters ["PackageId"] = id;
 				wizard.Parameters ["ProjectName"] = NewProjectConfiguration.GenerateValidProjectName (id);
+				validId = IsValidId ();
 				UpdateCanMoveNext ();
 			}
+		}
+
+		public string IdError { get; private set; }
+
+		public bool HasIdError ()
+		{
+			return !string.IsNullOrEmpty (IdError);
 		}
 
 		public string Version {
@@ -103,8 +139,16 @@ namespace MonoDevelop.Packaging.Templating
 			set {
 				version = value.Trim ();
 				wizard.Parameters ["PackageVersion"] = version;
+				validVersion = IsValidVersion ();
 				UpdateCanMoveNext ();
 			}
+		}
+
+		public string VersionError { get; private set; }
+
+		public bool HasVersionError ()
+		{
+			return !string.IsNullOrEmpty (VersionError);
 		}
 
 		public string Description {

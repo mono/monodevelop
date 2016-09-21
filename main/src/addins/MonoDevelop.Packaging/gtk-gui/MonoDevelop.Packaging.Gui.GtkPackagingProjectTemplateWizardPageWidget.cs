@@ -16,7 +16,11 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.Table configurationTable;
 
+		private global::Gtk.EventBox idEventBox;
+
 		private global::Gtk.EventBox organizationInfoEventBox;
+
+		private global::Gtk.EventBox versionEventBox;
 
 		private global::Gtk.Label packageAuthorsLabel;
 
@@ -40,192 +44,210 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.VBox deviceLargeImageVBox;
 
-		protected virtual void Build()
+		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize(this);
+			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget
-			global::Stetic.BinContainer.Attach(this);
+			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget";
 			// Container child MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.Gtk.Container+ContainerChild
-			this.mainHBox = new global::Gtk.HBox();
+			this.mainHBox = new global::Gtk.HBox ();
 			this.mainHBox.Name = "mainHBox";
 			// Container child mainHBox.Gtk.Box+BoxChild
-			this.leftBorderEventBox = new global::Gtk.EventBox();
+			this.leftBorderEventBox = new global::Gtk.EventBox ();
 			this.leftBorderEventBox.WidthRequest = 30;
 			this.leftBorderEventBox.Name = "leftBorderEventBox";
-			this.mainHBox.Add(this.leftBorderEventBox);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.leftBorderEventBox]));
+			this.mainHBox.Add (this.leftBorderEventBox);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.leftBorderEventBox]));
 			w1.Position = 0;
 			w1.Expand = false;
 			// Container child mainHBox.Gtk.Box+BoxChild
-			this.configurationVBox = new global::Gtk.VBox();
+			this.configurationVBox = new global::Gtk.VBox ();
 			this.configurationVBox.WidthRequest = 440;
 			this.configurationVBox.Name = "configurationVBox";
 			// Container child configurationVBox.Gtk.Box+BoxChild
-			this.configurationTopEventBox = new global::Gtk.EventBox();
+			this.configurationTopEventBox = new global::Gtk.EventBox ();
 			this.configurationTopEventBox.Name = "configurationTopEventBox";
-			this.configurationVBox.Add(this.configurationTopEventBox);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTopEventBox]));
+			this.configurationVBox.Add (this.configurationTopEventBox);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.configurationVBox [this.configurationTopEventBox]));
 			w2.Position = 0;
 			// Container child configurationVBox.Gtk.Box+BoxChild
-			this.configurationTableEventBox = new global::Gtk.EventBox();
+			this.configurationTableEventBox = new global::Gtk.EventBox ();
 			this.configurationTableEventBox.Name = "configurationTableEventBox";
 			// Container child configurationTableEventBox.Gtk.Container+ContainerChild
-			this.configurationTable = new global::Gtk.Table(((uint)(4)), ((uint)(3)), false);
+			this.configurationTable = new global::Gtk.Table (((uint)(4)), ((uint)(3)), false);
 			this.configurationTable.Name = "configurationTable";
 			this.configurationTable.RowSpacing = ((uint)(7));
 			this.configurationTable.ColumnSpacing = ((uint)(6));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.organizationInfoEventBox = new global::Gtk.EventBox();
+			this.idEventBox = new global::Gtk.EventBox ();
+			this.idEventBox.WidthRequest = 16;
+			this.idEventBox.HeightRequest = 16;
+			this.idEventBox.Name = "idEventBox";
+			this.idEventBox.VisibleWindow = false;
+			this.configurationTable.Add (this.idEventBox);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.idEventBox]));
+			w3.LeftAttach = ((uint)(2));
+			w3.RightAttach = ((uint)(3));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child configurationTable.Gtk.Table+TableChild
+			this.organizationInfoEventBox = new global::Gtk.EventBox ();
 			this.organizationInfoEventBox.WidthRequest = 16;
 			this.organizationInfoEventBox.HeightRequest = 16;
 			this.organizationInfoEventBox.Name = "organizationInfoEventBox";
 			this.organizationInfoEventBox.VisibleWindow = false;
-			this.configurationTable.Add(this.organizationInfoEventBox);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.organizationInfoEventBox]));
-			w3.TopAttach = ((uint)(1));
-			w3.BottomAttach = ((uint)(2));
-			w3.LeftAttach = ((uint)(2));
-			w3.RightAttach = ((uint)(3));
-			w3.XOptions = ((global::Gtk.AttachOptions)(2));
-			w3.YOptions = ((global::Gtk.AttachOptions)(2));
+			// Container child organizationInfoEventBox.Gtk.Container+ContainerChild
+			this.versionEventBox = new global::Gtk.EventBox ();
+			this.versionEventBox.WidthRequest = 16;
+			this.versionEventBox.HeightRequest = 16;
+			this.versionEventBox.Name = "versionEventBox";
+			this.versionEventBox.VisibleWindow = false;
+			this.organizationInfoEventBox.Add (this.versionEventBox);
+			this.configurationTable.Add (this.organizationInfoEventBox);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.organizationInfoEventBox]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
+			w5.LeftAttach = ((uint)(2));
+			w5.RightAttach = ((uint)(3));
+			w5.XOptions = ((global::Gtk.AttachOptions)(2));
+			w5.YOptions = ((global::Gtk.AttachOptions)(2));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageAuthorsLabel = new global::Gtk.Label();
+			this.packageAuthorsLabel = new global::Gtk.Label ();
 			this.packageAuthorsLabel.Name = "packageAuthorsLabel";
 			this.packageAuthorsLabel.Xpad = 5;
 			this.packageAuthorsLabel.Xalign = 1F;
-			this.packageAuthorsLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Author:");
+			this.packageAuthorsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Author:");
 			this.packageAuthorsLabel.Justify = ((global::Gtk.Justification)(1));
-			this.configurationTable.Add(this.packageAuthorsLabel);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsLabel]));
-			w4.TopAttach = ((uint)(2));
-			w4.BottomAttach = ((uint)(3));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.configurationTable.Add (this.packageAuthorsLabel);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageAuthorsLabel]));
+			w6.TopAttach = ((uint)(2));
+			w6.BottomAttach = ((uint)(3));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageAuthorsTextBox = new global::Gtk.Entry();
+			this.packageAuthorsTextBox = new global::Gtk.Entry ();
 			this.packageAuthorsTextBox.CanFocus = true;
 			this.packageAuthorsTextBox.Name = "packageAuthorsTextBox";
 			this.packageAuthorsTextBox.IsEditable = true;
 			this.packageAuthorsTextBox.InvisibleChar = '●';
-			this.configurationTable.Add(this.packageAuthorsTextBox);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsTextBox]));
-			w5.TopAttach = ((uint)(2));
-			w5.BottomAttach = ((uint)(3));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageDescriptionLabel = new global::Gtk.Label();
-			this.packageDescriptionLabel.Name = "packageDescriptionLabel";
-			this.packageDescriptionLabel.Xpad = 5;
-			this.packageDescriptionLabel.Xalign = 1F;
-			this.packageDescriptionLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Description:");
-			this.packageDescriptionLabel.Justify = ((global::Gtk.Justification)(1));
-			this.configurationTable.Add(this.packageDescriptionLabel);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageDescriptionLabel]));
-			w6.TopAttach = ((uint)(3));
-			w6.BottomAttach = ((uint)(4));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageDescriptionTextBox = new global::Gtk.Entry();
-			this.packageDescriptionTextBox.CanFocus = true;
-			this.packageDescriptionTextBox.Name = "packageDescriptionTextBox";
-			this.packageDescriptionTextBox.IsEditable = true;
-			this.packageDescriptionTextBox.InvisibleChar = '●';
-			this.configurationTable.Add(this.packageDescriptionTextBox);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageDescriptionTextBox]));
-			w7.TopAttach = ((uint)(3));
-			w7.BottomAttach = ((uint)(4));
+			this.configurationTable.Add (this.packageAuthorsTextBox);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageAuthorsTextBox]));
+			w7.TopAttach = ((uint)(2));
+			w7.BottomAttach = ((uint)(3));
 			w7.LeftAttach = ((uint)(1));
 			w7.RightAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageIdLabel = new global::Gtk.Label();
+			this.packageDescriptionLabel = new global::Gtk.Label ();
+			this.packageDescriptionLabel.Name = "packageDescriptionLabel";
+			this.packageDescriptionLabel.Xpad = 5;
+			this.packageDescriptionLabel.Xalign = 1F;
+			this.packageDescriptionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Description:");
+			this.packageDescriptionLabel.Justify = ((global::Gtk.Justification)(1));
+			this.configurationTable.Add (this.packageDescriptionLabel);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageDescriptionLabel]));
+			w8.TopAttach = ((uint)(3));
+			w8.BottomAttach = ((uint)(4));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child configurationTable.Gtk.Table+TableChild
+			this.packageDescriptionTextBox = new global::Gtk.Entry ();
+			this.packageDescriptionTextBox.CanFocus = true;
+			this.packageDescriptionTextBox.Name = "packageDescriptionTextBox";
+			this.packageDescriptionTextBox.IsEditable = true;
+			this.packageDescriptionTextBox.InvisibleChar = '●';
+			this.configurationTable.Add (this.packageDescriptionTextBox);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageDescriptionTextBox]));
+			w9.TopAttach = ((uint)(3));
+			w9.BottomAttach = ((uint)(4));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child configurationTable.Gtk.Table+TableChild
+			this.packageIdLabel = new global::Gtk.Label ();
 			this.packageIdLabel.WidthRequest = 132;
 			this.packageIdLabel.Name = "packageIdLabel";
 			this.packageIdLabel.Xpad = 5;
 			this.packageIdLabel.Xalign = 1F;
-			this.packageIdLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Id:");
+			this.packageIdLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Id:");
 			this.packageIdLabel.Justify = ((global::Gtk.Justification)(1));
-			this.configurationTable.Add(this.packageIdLabel);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdLabel]));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.configurationTable.Add (this.packageIdLabel);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageIdLabel]));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageIdTextBox = new global::Gtk.Entry();
+			this.packageIdTextBox = new global::Gtk.Entry ();
 			this.packageIdTextBox.CanFocus = true;
 			this.packageIdTextBox.Name = "packageIdTextBox";
 			this.packageIdTextBox.IsEditable = true;
 			this.packageIdTextBox.InvisibleChar = '●';
-			this.configurationTable.Add(this.packageIdTextBox);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdTextBox]));
-			w9.LeftAttach = ((uint)(1));
-			w9.RightAttach = ((uint)(2));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.configurationTable.Add (this.packageIdTextBox);
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageIdTextBox]));
+			w11.LeftAttach = ((uint)(1));
+			w11.RightAttach = ((uint)(2));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageVersionLabel = new global::Gtk.Label();
+			this.packageVersionLabel = new global::Gtk.Label ();
 			this.packageVersionLabel.Name = "packageVersionLabel";
 			this.packageVersionLabel.Xpad = 5;
 			this.packageVersionLabel.Xalign = 1F;
-			this.packageVersionLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Version:");
+			this.packageVersionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Version:");
 			this.packageVersionLabel.Justify = ((global::Gtk.Justification)(1));
-			this.configurationTable.Add(this.packageVersionLabel);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionLabel]));
-			w10.TopAttach = ((uint)(1));
-			w10.BottomAttach = ((uint)(2));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.configurationTable.Add (this.packageVersionLabel);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageVersionLabel]));
+			w12.TopAttach = ((uint)(1));
+			w12.BottomAttach = ((uint)(2));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.packageVersionTextBox = new global::Gtk.Entry();
+			this.packageVersionTextBox = new global::Gtk.Entry ();
 			this.packageVersionTextBox.CanFocus = true;
 			this.packageVersionTextBox.Name = "packageVersionTextBox";
 			this.packageVersionTextBox.IsEditable = true;
 			this.packageVersionTextBox.InvisibleChar = '●';
-			this.configurationTable.Add(this.packageVersionTextBox);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionTextBox]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.LeftAttach = ((uint)(1));
-			w11.RightAttach = ((uint)(2));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.configurationTableEventBox.Add(this.configurationTable);
-			this.configurationVBox.Add(this.configurationTableEventBox);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
-			// Container child configurationVBox.Gtk.Box+BoxChild
-			this.configurationBottomEventBox = new global::Gtk.EventBox();
-			this.configurationBottomEventBox.Name = "configurationBottomEventBox";
-			this.configurationVBox.Add(this.configurationBottomEventBox);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
-			w14.Position = 2;
-			this.mainHBox.Add(this.configurationVBox);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
+			this.configurationTable.Add (this.packageVersionTextBox);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.configurationTable [this.packageVersionTextBox]));
+			w13.TopAttach = ((uint)(1));
+			w13.BottomAttach = ((uint)(2));
+			w13.LeftAttach = ((uint)(1));
+			w13.RightAttach = ((uint)(2));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.configurationTableEventBox.Add (this.configurationTable);
+			this.configurationVBox.Add (this.configurationTableEventBox);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.configurationVBox [this.configurationTableEventBox]));
 			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
+			// Container child configurationVBox.Gtk.Box+BoxChild
+			this.configurationBottomEventBox = new global::Gtk.EventBox ();
+			this.configurationBottomEventBox.Name = "configurationBottomEventBox";
+			this.configurationVBox.Add (this.configurationBottomEventBox);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.configurationVBox [this.configurationBottomEventBox]));
+			w16.Position = 2;
+			this.mainHBox.Add (this.configurationVBox);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.configurationVBox]));
+			w17.Position = 1;
+			w17.Expand = false;
+			w17.Fill = false;
 			// Container child mainHBox.Gtk.Box+BoxChild
-			this.deviceLargeImageEventBox = new global::Gtk.EventBox();
+			this.deviceLargeImageEventBox = new global::Gtk.EventBox ();
 			this.deviceLargeImageEventBox.Name = "deviceLargeImageEventBox";
 			// Container child deviceLargeImageEventBox.Gtk.Container+ContainerChild
-			this.deviceLargeImageVBox = new global::Gtk.VBox();
+			this.deviceLargeImageVBox = new global::Gtk.VBox ();
 			this.deviceLargeImageVBox.Name = "deviceLargeImageVBox";
-			this.deviceLargeImageEventBox.Add(this.deviceLargeImageVBox);
-			this.mainHBox.Add(this.deviceLargeImageEventBox);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.deviceLargeImageEventBox]));
-			w17.Position = 2;
-			this.Add(this.mainHBox);
-			if ((this.Child != null))
-			{
-				this.Child.ShowAll();
+			this.deviceLargeImageEventBox.Add (this.deviceLargeImageVBox);
+			this.mainHBox.Add (this.deviceLargeImageEventBox);
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.deviceLargeImageEventBox]));
+			w19.Position = 2;
+			this.Add (this.mainHBox);
+			if ((this.Child != null)) {
+				this.Child.ShowAll ();
 			}
-			this.Hide();
+			this.Hide ();
 		}
 	}
 }
