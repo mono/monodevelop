@@ -68,6 +68,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		TargetFrameworkMoniker pcl5Tfm = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v5.0");
 
+		// Profile 111 is ~equivalent to netstandard 1.1
+		TargetFrameworkMoniker defaultPclTfm = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v4.5", "Profile111");
+
 		string [] KnownNetStandardVersions = new [] {
 			"netstandard1.0",
 			"netstandard1.1",
@@ -100,17 +103,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			TargetFramework = project.TargetFramework;
 
-			string projectJsonFramework = null;
+			string netstandardVersion = null;
 			try {
-				projectJsonFramework = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+				netstandardVersion = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+				if (netstandardVersion != null && !netstandardVersion.StartsWith ("netstandard", StringComparison.Ordinal)) {
+					netstandardVersion = null;
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error reading project.json file", ex);
 			}
 
-			NetStandardVersion = projectJsonFramework;
+			NetStandardVersion = netstandardVersion;
 
-			if (projectJsonFramework != null && projectJsonFramework.StartsWith ("netstandard", StringComparison.Ordinal)) {
+			if (netstandardVersion != null) {
 				netstandardRadio.Active = true;
+				// Even though netstandard really uses PCL5 in the project file, that PCL is not really useful by itself.
+				// Within this dialog, replace it with a better value for the user to get if they switch to PCL.
+				// When saving , if it's netstandard we'll write PCL5 to the project regardless.
+				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (defaultPclTfm);
 			} else {
 				pclRadio.Active = true;
 			}
