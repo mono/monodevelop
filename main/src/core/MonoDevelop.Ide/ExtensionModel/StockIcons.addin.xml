@@ -274,6 +274,7 @@
 	<StockIcon stockid="md-expander-arrow-expanded" resource="expander-arrow-expanded-8.png" />
 	<StockIcon stockid="md-folder-code" resource="folder-code-16.png" />
 	<StockIcon stockid="md-folder-services" resource="folder-services-16.png" />
+	<StockIcon stockid="md-getting-started" resource="getting-started-16.png" size="Menu" />
 
 	<!-- Project icons -->
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />

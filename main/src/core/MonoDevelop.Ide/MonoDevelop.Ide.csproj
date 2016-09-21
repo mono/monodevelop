@@ -7235,6 +7235,30 @@
     <EmbeddedResource Include="icons\fullscreen-16~dark~sel%402x.png">
       <LogicalName>fullscreen-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16.png">
+      <LogicalName>getting-started-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16%402x.png">
+      <LogicalName>getting-started-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark.png">
+      <LogicalName>getting-started-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark%402x.png">
+      <LogicalName>getting-started-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~sel.png">
+      <LogicalName>getting-started-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~sel%402x.png">
+      <LogicalName>getting-started-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark~sel.png">
+      <LogicalName>getting-started-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark~sel%402x.png">
+      <LogicalName>getting-started-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\help-16.png">
       <LogicalName>help-16.png</LogicalName>
     </EmbeddedResource>

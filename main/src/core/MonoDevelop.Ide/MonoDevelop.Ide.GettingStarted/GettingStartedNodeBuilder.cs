@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = GettextCatalog.GetString ("Getting Started");
-			nodeInfo.Icon = Context.GetIcon (Stock.Help);
+			nodeInfo.Icon = Context.GetIcon ("md-getting-started");
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
