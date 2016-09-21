@@ -501,15 +501,7 @@ namespace MonoDevelop.Components
 #if MAC
 			protected void GetCoordsInWindow (Gtk.Widget widget, out int x, out int y)
 			{
-				x = widget.Allocation.X;
-				y = widget.Allocation.Y;
-
-				while ((widget = widget.Parent) != null) {
-					if (!(widget is Gtk.Container) || widget is Gtk.EventBox) {
-						x += widget.Allocation.X;
-						y += widget.Allocation.Y;
-					}
-				}
+				widget.TranslateCoordinates (widget.Toplevel, 0, 0, out x, out y);
 			}
 
 			protected void GetCoordsInScreen (Gtk.Widget widget, int windowX, int windowY, out int screenX, out int screenY)
