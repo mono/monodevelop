@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		const string NetStandardPackageName = "NETStandard.Library";
 		const string NetStandardPackageVersion = "1.6.0";
 		const string NetStandardDefaultFramework = "netstandard1.3";
+		const string NetStandardPclCompatPackageName = "Microsoft.NETCore.Portable.Compatibility";
+		const string NetStandardPclCompatPackageVersion = "1.0.1";
 
 		ComboBox netStandardCombo;
 		Entry targetFrameworkEntry;
@@ -314,16 +316,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					json ["dependencies"] = deps;
 				}
 
-				var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
-				string newRefVersion = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
-				if (existingRefVersion != newRefVersion) {
-					deps [NetStandardPackageName] = newRefVersion;
+				//make sure NETStandard.Library has the version we need
+				if (EnsurePackageHasVersion (deps, NetStandardPackageName, NetStandardPackageVersion)) {
+					//if we had to fix that, also add to optional Microsoft.NETCore.Portable.Compatibility
+					EnsurePackageHasVersion (deps, NetStandardPclCompatPackageName, NetStandardPclCompatPackageVersion);
 					changed = true;
 				}
 			} else {
 				//not netstandard, remove the netstandard nuget package ref
 				if (deps != null) {
 					deps.Property (NetStandardPackageName)?.Remove ();
+					deps.Property (NetStandardPclCompatPackageName)?.Remove ();
 				}
 			}
 
@@ -348,6 +351,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					file.Save ();
 				}
 			}
+		}
+
+		static bool EnsurePackageHasVersion (JObject dependencies, string packageName, string version)
+		{
+			var existingRefVersion = dependencies.Property (packageName)?.Value?.Value<string> ();
+			string newRefVersion = EnsureMinimumVersion (version, existingRefVersion);
+			if (existingRefVersion != newRefVersion) {
+				dependencies [packageName] = newRefVersion;
+				return true;
+			}
+			return false;
 		}
 
 		static ProjectFile MigrateToProjectJson (DotNetProject project)
