@@ -8,6 +8,7 @@
 		<_Name>NuGet Package</_Name>
 		<Category>other/net/general</Category>
 		<Icon>md-package-project</Icon>
+		<Image id="md-package-project" />
 		<FileExtension>.nuproj</FileExtension>
 		<_Description>Creates a NuGet Packaging project.</_Description>
 		<Wizard>MonoDevelop.Packaging.ProjectTemplateWizard</Wizard>
