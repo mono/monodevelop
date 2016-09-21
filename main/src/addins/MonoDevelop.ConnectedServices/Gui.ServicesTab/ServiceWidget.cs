@@ -61,6 +61,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				platformWidget.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
 				statusWidget.Visible = service?.Status == Status.Added && !showDetails;
+				description.HorizontalPlacement = value ? WidgetPlacement.Start : WidgetPlacement.Fill;
 			}
 		}
 
@@ -114,6 +115,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			description = new MarkupView {
 				Selectable = false,
 				LineSpacing = 3,
+				MinWidth = 500,
 				BackgroundColor = Styles.BaseBackgroundColor,
 			};
 
@@ -124,8 +126,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			platformWidget.PackStart (new Label { Text = GettextCatalog.GetString ("Platforms:"), TextColor = Styles.SecondaryTextColor }, false, (WidgetPlacement)4, (WidgetPlacement)4, -1, -1, 20, -1, -1);
 			platformWidget.PackStart (platforms);
 
-			vbox.PackStart (description);
-			vbox.PackStart (platformWidget, false, (WidgetPlacement)4, (WidgetPlacement)4, -1, 10, -1, -1, -1);
+			vbox.PackStart (description, false, hpos: WidgetPlacement.Start);
+			vbox.PackStart (platformWidget, false, marginTop: 10);
 
 			var container = new HBox { Spacing = 0 };
 			container.Margin = 30;
