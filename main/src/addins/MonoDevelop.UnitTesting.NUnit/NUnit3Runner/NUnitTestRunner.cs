@@ -84,13 +84,21 @@ namespace NUnit3Runner
 			return new GetTestInfoResponse { Result = r };
 		}
 
-		TestPackage CreatePackage (string path)
+		TestPackage CreatePackage (string path, bool useAppDomain)
 		{
 			TestPackage package = new TestPackage (path);
 			package.AddSetting ("ShadowCopyFiles", false);
 			package.AddSetting ("ProcessModel", "InProcess");
-			package.AddSetting ("DomainUsage", "Single");
+			package.AddSetting ("DomainUsage", useAppDomain ? "Single" : "None");
 			return package;
+		}
+
+		static bool ShouldUseAppDomain (string[] supportAssemblies)
+		{
+			// In the case of nunit.framework not being locally copied, as in, it's marked as a support assembly
+			// we need to force the app to not use app domains, otherwise nunit3's internal runner will not find
+			// the framework dll, thus fail to run anything.
+			return !supportAssemblies.Any (asm => asm.EndsWith ("nunit.framework.dll", StringComparison.OrdinalIgnoreCase));
 		}
 		
 		public XmlNode Run (ITestEventListener listener, string[] nameFilter, string path, string suiteName, string[] supportAssemblies, string testRunnerType, string testRunnerAssembly)
@@ -113,7 +121,7 @@ namespace NUnit3Runner
 				tr = (ITestRunner)Activator.CreateInstance (runnerType);
 			}
 
-			TestPackage package = CreatePackage (path);
+			TestPackage package = CreatePackage (path, ShouldUseAppDomain (supportAssemblies));
 
 			if (tr == null)
 				tr = engine.GetRunner (package);
@@ -124,7 +132,7 @@ namespace NUnit3Runner
 		public NunitTestInfo GetTestInfo (string path, string[] supportAssemblies)
 		{
 			InitSupportAssemblies (supportAssemblies);
-			TestPackage package = CreatePackage (path);
+			TestPackage package = CreatePackage (path, ShouldUseAppDomain (supportAssemblies));
 			var tr = engine.GetRunner (package);
 			var r = tr.Explore (TestFilter.Empty);
 			var root = r.SelectSingleNode ("test-suite") as XmlElement;

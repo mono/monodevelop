@@ -55,7 +55,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			var result = item.Item as Result;
 
-			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, result.Message, null);
+			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, Ambience.EscapeText (result.Message), null);
 			if (window.IsEmpty)
 				return null;
 			return window;

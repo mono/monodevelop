@@ -802,7 +802,7 @@
 			_description = "Show tip of the day" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
-			_label = "Reveal _Logs"
+			_label = "Open Log Directory"
 			icon = "md-open-folder"
 			_description = "Opens the directory where the diagnostic logs are stored" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"

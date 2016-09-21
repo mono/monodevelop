@@ -54,34 +54,38 @@ namespace MonoDevelop.UnitTesting
 		
 		public void RegisterResult (string configuration, UnitTest test, UnitTestResult result)
 		{
-			string aname = test.StoreRelativeName;
-			
-			TestRecord root = GetRootRecord (configuration, result.TestDate);
-			if (root == null) {
-				root = new TestRecord ();
-				fileCache [GetRootFileName (configuration, result.TestDate)] = root;
-			}
-			root.Modified = true;
-			TestRecord record = root;
-			
-			if (aname.Length > 0) {
-				string[] path = test.StoreRelativeName.Split ('.');
-				foreach (string p in path) {
-					TestRecord ctr = record.Tests != null ? record.Tests [p] : null;
-					if (ctr == null) {
-						ctr = new TestRecord ();
-						ctr.Name = p;
-						if (record.Tests == null)
-							record.Tests = new TestRecordCollection ();
-						record.Tests.Add (ctr);
-					}
-					record = ctr;
+			//This method can be called from multiple threads when remote process(test runner) is responding
+			//This lock is protecting collections fileCache, record.Tests and record.Results
+			lock (fileCache) {
+				string aname = test.StoreRelativeName;
+
+				TestRecord root = GetRootRecord (configuration, result.TestDate);
+				if (root == null) {
+					root = new TestRecord ();
+					fileCache [GetRootFileName (configuration, result.TestDate)] = root;
 				}
+				root.Modified = true;
+				TestRecord record = root;
+
+				if (aname.Length > 0) {
+					string [] path = test.StoreRelativeName.Split ('.');
+					foreach (string p in path) {
+						TestRecord ctr = record.Tests != null ? record.Tests [p] : null;
+						if (ctr == null) {
+							ctr = new TestRecord ();
+							ctr.Name = p;
+							if (record.Tests == null)
+								record.Tests = new TestRecordCollection ();
+							record.Tests.Add (ctr);
+						}
+						record = ctr;
+					}
+				}
+
+				if (record.Results == null)
+					record.Results = new UnitTestResultCollection ();
+				record.Results.Add (result);
 			}
-			
-			if (record.Results == null)
-				record.Results = new UnitTestResultCollection ();
-			record.Results.Add (result);
 		}
 		
 		public UnitTestResult GetNextResult (string configuration, UnitTest test, DateTime date)

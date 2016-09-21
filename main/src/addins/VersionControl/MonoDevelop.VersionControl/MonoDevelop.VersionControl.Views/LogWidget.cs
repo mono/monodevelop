@@ -34,6 +34,7 @@ using System.Threading;
 using MonoDevelop.Components;
 using Mono.TextEditor;
 using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -172,8 +173,7 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewLog.AppendColumn (colRevMessage);
 			colRevMessage.MinWidth = 350;
 			colRevMessage.Resizable = true;
-			
-			
+
 			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer);
 			colRevDate.SetCellDataFunc (textRenderer, DateFunc);
 			colRevDate.Resizable = true;
@@ -228,7 +228,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
 			colChangedPath.Title = GettextCatalog.GetString ("Path");
-			
+
 			diffRenderer.DrawLeft = true;
 			colChangedPath.PackStart (diffRenderer, true);
 			colChangedPath.SetCellDataFunc (diffRenderer, SetDiffCellData);
@@ -238,7 +238,7 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
 			
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
-			
+
 			labelAuthor.Text = "";
 			labelDate.Text = "";
 			labelRevision.Text = "";
@@ -500,9 +500,6 @@ namespace MonoDevelop.VersionControl.Views
 			revertToButton.Clicked -= RevertToRevisionClicked;
 			refreshButton.Clicked -= RefreshClicked;
 			Ide.Gui.Styles.Changed -= HandleStylesChanged;
-
-			logstore.Dispose ();
-			changedpathstore.Dispose ();
 
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();

@@ -432,7 +432,7 @@
 		<Group color="User Property Declaration"/>
 	</Match>
 
-	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)" ignorecase="False">
+	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b" ignorecase="False">
 		<!-- let mutable x = 1 -->
 		<Group color="Keyword(Iteration)"/>
 		<Group color="Plain Text" />

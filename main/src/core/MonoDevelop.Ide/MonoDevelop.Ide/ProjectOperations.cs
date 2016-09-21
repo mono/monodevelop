@@ -1243,6 +1243,13 @@ namespace MonoDevelop.Ide
 				return false;
 
 			var buildTarget = executionTarget;
+
+			// When executing a solution we are actually going to execute the starup project. So we only need to build that project.
+			// TODO: handle multi-startup solutions.
+			var sol = buildTarget as Solution;
+			if (sol != null && sol.StartupItem != null)
+				buildTarget = sol.StartupItem;
+			
 			var buildDeps = buildTarget.GetExecutionDependencies ().ToList ();
 			if (buildDeps.Count > 1)
 				throw new NotImplementedException ("Multiple execution dependencies not yet supported");

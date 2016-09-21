@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			checkbuttonSurroundWith.Active = (template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith;
 			
 			Gtk.Widget control = textEditor;
-			scrolledwindow1.Child = control;
+			scrolledwindow1.AddWithViewport (control);
 			control.ShowAll ();
 			textEditor.CaretPositionChanged += CaretPositionChanged;
 			textEditor.Options = DefaultSourceEditorOptions.PlainEditor;

@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace Mono.TextEditor.Utils
 {
-	class ColoredSegment
+	public class ColoredSegment
 	{
 		public string Style { get; set; }
 		public string Text { get; set; }
@@ -74,16 +74,18 @@ namespace Mono.TextEditor.Utils
 			return GenerateHtml (ColoredSegment.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
-		internal static string GenerateHtml (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		public static string GenerateHtml (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options, bool includeBoilerplate = true)
 		{
 			var htmlText = new StringBuilder ();
-			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
-			htmlText.AppendLine ("<HTML>");
-			htmlText.AppendLine ("<HEAD>");
-			htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
-			htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
-			htmlText.AppendLine ("</HEAD>");
-			htmlText.AppendLine ("<BODY>"); 
+			if (includeBoilerplate) {
+				htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
+				htmlText.AppendLine ("<HTML>");
+				htmlText.AppendLine ("<HEAD>");
+				htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
+				htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
+				htmlText.AppendLine ("</HEAD>");
+				htmlText.AppendLine ("<BODY>"); 
+			}
 
 			htmlText.AppendLine ("<FONT face = '" + options.Font.Family + "'>");
 			bool first = true;
@@ -109,7 +111,10 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 			htmlText.AppendLine ("</FONT>");
-            htmlText.AppendLine ("</BODY></HTML>");
+
+			if (includeBoilerplate) {
+				htmlText.AppendLine ("</BODY></HTML>");
+			}
 
 			if (Platform.IsWindows)
                 return GenerateCFHtml (htmlText.ToString ());

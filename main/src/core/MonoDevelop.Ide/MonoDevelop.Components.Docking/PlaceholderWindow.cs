@@ -64,6 +64,15 @@ namespace MonoDevelop.Components.Docking
 	   		redgc.RgbFgColor = frame.Style.Background (StateType.Selected);
 		}
 
+		protected override void OnDestroyed ()
+		{
+			if (redgc != null) {
+				redgc.Dispose ();
+				redgc = null;
+			}
+			base.OnDestroyed ();
+		}
+
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
@@ -77,18 +86,19 @@ namespace MonoDevelop.Components.Docking
 			black.Pixel = 1;
 			white = new Gdk.Color (255, 255, 255);
 			white.Pixel = 0;
-			
-			Gdk.Pixmap pm = new Pixmap (this.GdkWindow, width, height, 1);
-			Gdk.GC gc = new Gdk.GC (pm);
-			gc.Background = white;
-			gc.Foreground = white;
-			pm.DrawRectangle (gc, true, 0, 0, width, height);
-			
-			gc.Foreground = black;
-			pm.DrawRectangle (gc, false, 0, 0, width - 1, height - 1);
-			pm.DrawRectangle (gc, false, 1, 1, width - 3, height - 3);
-			
-			this.ShapeCombineMask (pm, 0, 0);
+
+			using (Gdk.Pixmap pm = new Pixmap (this.GdkWindow, width, height, 1)) {
+				using (Gdk.GC gc = new Gdk.GC (pm)) {
+					gc.Background = white;
+					gc.Foreground = white;
+					pm.DrawRectangle (gc, true, 0, 0, width, height);
+
+					gc.Foreground = black;
+					pm.DrawRectangle (gc, false, 0, 0, width - 1, height - 1);
+					pm.DrawRectangle (gc, false, 1, 1, width - 3, height - 3);
+				}
+				this.ShapeCombineMask (pm, 0, 0);
+			}
 		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)

@@ -277,8 +277,12 @@ namespace MonoDevelop.Core.Execution
 		public IExecutionModeSet GetDebugExecutionMode ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ExecutionModesExtensionPath)) {
-				if (node.Id == "MonoDevelop.Debugger")
-					return (IExecutionModeSet) ((TypeExtensionNode)node).GetInstance (typeof (IExecutionModeSet));
+				if (node.Id == "Debug") {
+					foreach (ExtensionNode childNode in node.ChildNodes) {
+						if (childNode.Id == "MonoDevelop.Debugger")
+							return (IExecutionModeSet) ((TypeExtensionNode)childNode).GetInstance (typeof (IExecutionModeSet));
+					}
+				}
 			}
 			return null;
 		}

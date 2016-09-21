@@ -54,6 +54,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			UnitTestResult res = new UnitTestResult ();
 			res.status = ResultStatus.Failure;
+			ex = ex.FlattenAggregate ();
 			res.Message = ex.Message;
 			res.stackTrace = ex.StackTrace;
 			return res;
@@ -64,8 +65,10 @@ namespace MonoDevelop.UnitTesting
 			UnitTestResult res = new UnitTestResult ();
 			res.status = ResultStatus.Failure;
 			res.Message = message;
-			if (ex != null)
+			if (ex != null) {
+				ex = ex.FlattenAggregate ();
 				res.stackTrace = ex.Message + "\n" + ex.StackTrace;
+			}
 			return res;
 		}
 		

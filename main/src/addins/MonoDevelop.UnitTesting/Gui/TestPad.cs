@@ -927,10 +927,19 @@ namespace MonoDevelop.UnitTesting
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			Gdk.GC gc = new Gdk.GC (GdkWindow);
-			gc.ClipRectangle = Allocation;
-			GdkWindow.DrawLayout (gc, padding, padding, layout);
+			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+				gc.ClipRectangle = Allocation;
+				GdkWindow.DrawLayout (gc, padding, padding, layout);
+			}
 			return true;
+		}
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			base.OnDestroyed ();
 		}
 	}
 }

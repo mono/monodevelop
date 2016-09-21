@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
-		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> ();
+		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
 
 		public MSBuildPropertyGroup ()
 		{

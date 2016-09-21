@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
-    <BaseIntermediateOutputPath>obj\4.0</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj\dotnet.4.0</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>

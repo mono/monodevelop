@@ -22,7 +22,7 @@ clean-local: sln_clean
 	cd build && $(MAKE) clean
 
 restore-packages:
-	mono .nuget/NuGet.exe restore
+	nuget restore
 
 vcrevision:
 	touch vcrevision

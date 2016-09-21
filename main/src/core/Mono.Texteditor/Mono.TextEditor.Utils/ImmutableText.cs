@@ -425,7 +425,7 @@ namespace Mono.TextEditor.Utils
 					// head too small, returns (head + tail/2) + (tail/2)
 					if (compositeTail.head.Length > compositeTail.tail.Length) {
 						// Rotates to concatenate with smaller part.
-						tail = compositeTail.RotateRight ();
+						compositeTail = (CompositeNode)compositeTail.RotateRight ();
 					}
 					head = ConcatNodes (head, compositeTail.head);
 					tail = compositeTail.tail;
@@ -435,7 +435,7 @@ namespace Mono.TextEditor.Utils
 						// tail too small, returns (head/2) + (head/2 concat tail)
 						if (compositeHead.tail.Length > compositeHead.head.Length) {
 							// Rotates to concatenate with smaller part.
-							head = compositeHead.RotateLeft ();
+							compositeHead = (CompositeNode)compositeHead.RotateLeft ();
 						}
 						tail = ConcatNodes (compositeHead.tail, tail);
 						head = compositeHead.head;

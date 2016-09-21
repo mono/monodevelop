@@ -1176,16 +1176,34 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
+		[Obsolete ("Use GetMarkup")]
 		public string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false)
 		{
-			return textEditorImpl.GetPangoMarkup (offset, length, fitIdeStyle);
+			return GetMarkup (offset, length, new MarkupOptions (MarkupFormat.Pango, fitIdeStyle));
 		}
 
+		[Obsolete ("Use GetMarkup")]
 		public string GetPangoMarkup (ISegment segment, bool fitIdeStyle = false)
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
-			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length, fitIdeStyle);
+			return GetMarkup (segment, new MarkupOptions (MarkupFormat.Pango, fitIdeStyle));
+		}
+
+		public string GetMarkup (int offset, int length, MarkupOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			return textEditorImpl.GetMarkup (offset, length, options);
+		}
+
+		public string GetMarkup (ISegment segment, MarkupOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return textEditorImpl.GetMarkup (segment.Offset, segment.Length, options);
 		}
 
 		public static implicit operator Microsoft.CodeAnalysis.Text.SourceText (TextEditor editor)

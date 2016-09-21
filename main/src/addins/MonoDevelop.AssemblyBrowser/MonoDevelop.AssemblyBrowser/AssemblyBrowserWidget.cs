@@ -481,9 +481,14 @@ namespace MonoDevelop.AssemblyBrowser
 			switch (member.SymbolKind) {
 			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.TypeDefinition:
 				var type = member as IUnresolvedTypeDefinition;
-				if (type.TypeParameters.Count == 0)
-					return "T:" + type.FullName;
-				return "T:" + type.FullName + "`" + type.TypeParameters.Count;
+				sb = new StringBuilder ();
+				sb.Append ("T:");
+				sb.Append (type.FullName);
+				if (type.TypeParameters.Count != 0) {
+					sb.Append ('`');
+					sb.Append (type.TypeParameters.Count);
+				}
+				return sb.ToString ();
 			case SymbolKind.Method:
 				var method = (IUnresolvedMethod)member;
 				sb = new StringBuilder ();
@@ -557,9 +562,14 @@ namespace MonoDevelop.AssemblyBrowser
 
 		static string GetIdString (TypeDefinition typeDefinition)
 		{
-			if (!typeDefinition.HasGenericParameters)
-				return "T:" + typeDefinition.FullName;
-			return "T:" + typeDefinition.FullName + "`" + typeDefinition.GenericParameters.Count;
+			var sb = new StringBuilder ();
+			sb.Append ("T:");
+			sb.Append (typeDefinition.FullName);
+			if (typeDefinition.HasGenericParameters) {
+				sb.Append ('`');
+				sb.Append (typeDefinition.GenericParameters.Count);
+			}
+			return sb.ToString ();
 		}		
 
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
@@ -591,17 +601,19 @@ namespace MonoDevelop.AssemblyBrowser
 				return true;
 			if (nav.DataItem is AssemblyResourceFolder)
 				return true;
-			string strippedUrl = helpUrl;
-			if (strippedUrl.Length > 2 && strippedUrl [1] == ':')
-				strippedUrl = strippedUrl.Substring (2);
-			int idx = strippedUrl.IndexOf ('~');
-			if (idx > 0) 
-				strippedUrl = strippedUrl.Substring (0, idx);
-			
+			int startIndex = 0;
+			int endIndex = helpUrl.Length;
+			if (helpUrl.Length > 2 && helpUrl [1] == ':') {
+				startIndex = 2;
+			}
+			int idx = helpUrl.IndexOf ('~', startIndex);
+			if (idx > 0)
+				endIndex = idx;
 			var type = nav.DataItem as IUnresolvedTypeDefinition;
-			if (type != null && !strippedUrl.StartsWith (type.FullName, StringComparison.Ordinal))
+			if (type != null && helpUrl.IndexOf (type.FullName, startIndex, Math.Min (endIndex - startIndex, type.FullName.Length), StringComparison.Ordinal) == -1)
 				return true;
-			if (nav.DataItem is Namespace && !strippedUrl.StartsWith (((Namespace)nav.DataItem).Name, StringComparison.Ordinal))
+			var @namespace = nav.DataItem as Namespace;
+			if (@namespace != null && helpUrl.IndexOf (@namespace.Name, startIndex, Math.Min (endIndex - startIndex, @namespace.Name.Length), StringComparison.Ordinal) == -1)
 				return true;
 			return false;
 		}
@@ -1492,16 +1504,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			ActiveMember = null;
-			if (memberListStore != null) {
-				memberListStore.Dispose ();
-				memberListStore = null;
-			}
-			
-			if (typeListStore != null) {
-				typeListStore.Dispose ();
-				typeListStore = null;
-			}
-			
+			memberListStore = null;
+			typeListStore = null;
+
 			if (documentationPanel != null) {
 				documentationPanel.Destroy ();
 				documentationPanel = null;

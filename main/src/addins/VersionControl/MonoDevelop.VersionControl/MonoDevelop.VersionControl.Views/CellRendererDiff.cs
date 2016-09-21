@@ -58,7 +58,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.lines = lines;
 			this.diffMode = diffMode;
 			this.path = path;
-			
+
 			if (diffMode) {
 				if (lines != null && lines.Length > 0) {
 					int maxlen = -1;
@@ -95,9 +95,9 @@ namespace MonoDevelop.VersionControl.Views
 			if (diffMode) {
 				layout.FontDescription = FontService.MonospaceFont;
 				layout.SetText (text);
-			}
-			else
+			} else {
 				layout.SetMarkup (text);
+			}
 			return layout;
 		}
 		
