@@ -226,13 +226,23 @@ namespace MonoDevelop.ConnectedServices
 		{
 			// ask all the dependencies to add themselves to the project
 			// we'll do them one at a time in case there are interdependencies between them
-			foreach (var dependency in this.Dependencies.Reverse ()) {
-				try {
+
+			try {
+				// we are going to short circuit package dependencies though and uninstall them in one go
+				var packages = this.Dependencies.Reverse ().OfType<PackageDependency> ().Cast<IPackageDependency> ().ToList ();
+
+				foreach (var dependency in this.Dependencies.Reverse ()) {
+					if (packages.Contains (dependency)) {
+						continue;
+					}
+
 					await dependency.RemoveFromProject (token).ConfigureAwait (false);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not remove dependency", ex);
-					throw;
 				}
+
+				await this.Project.RemovePackageDependencies (packages).ConfigureAwait (false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not remove dependency", ex);
+				throw;
 			}
 		}
 

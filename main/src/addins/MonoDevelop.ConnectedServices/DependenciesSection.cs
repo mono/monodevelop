@@ -4,6 +4,7 @@ using MonoDevelop.ConnectedServices.Gui.ServicesTab;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -94,14 +95,23 @@ namespace MonoDevelop.ConnectedServices
 
 			// ask all the dependencies to add themselves to the project
 			// we'll do them one at a time in case there are interdependencies between them
-			foreach (var dependency in Service.Dependencies) {
-				try {
+
+			// we are going to short circuit package dependencies though and install them in one go
+			var packages = this.Service.Dependencies.OfType<PackageDependency> ().Cast<IPackageDependency>().ToList();
+			await this.Service.Project.AddPackageDependencies (packages).ConfigureAwait (false);
+
+			try {
+				foreach (var dependency in Service.Dependencies) {
+					if (packages.Contains (dependency)) {
+						continue;
+					}
+
 					await dependency.AddToProject (token).ConfigureAwait (false);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not add dependency", ex);
-					NotifyAddingToProjectFailed ();
-					return IsAdded = false;
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not add dependency", ex);
+				NotifyAddingToProjectFailed ();
+				return IsAdded = false;
 			}
 			return IsAdded = true;
 		}
