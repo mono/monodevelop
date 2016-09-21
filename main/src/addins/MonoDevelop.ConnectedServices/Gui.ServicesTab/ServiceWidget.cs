@@ -16,7 +16,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		ImageView statusIcon;
 		Label statusText;
 		ImageView image;
-		Label title, description, platforms;
+		Label title, platforms;
+		MarkupView description;
 		HBox platformWidget;
 		Button addButton;
 		AnimatedIcon animatedStatusIcon;
@@ -41,7 +42,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service = value;
 				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-service")).WithSize (IconSize.Medium);
 				title.Markup = "<b>" + service.DisplayName + "</b>";
-				description.Text = service.Description;
+				description.Markup = "<span foreground='" + Styles.SecondaryTextColor.ToHexString (false) + "'>" + service.Description + "</span>";
 
 				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
 
@@ -110,10 +111,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			vbox.Spacing = 10;
 			vbox.PackStart (header);
 
-			description = new Label ();
-			description.TextColor = Styles.SecondaryTextColor;
-			description.Wrap = WrapMode.Word;
-			description.Ellipsize = EllipsizeMode.None;
+			description = new MarkupView {
+				Selectable = false,
+				LineSpacing = 3,
+				BackgroundColor = Styles.BaseBackgroundColor,
+			};
 
 			platforms = new Label ();
 			platforms.TextColor = Styles.SecondaryTextColor;
