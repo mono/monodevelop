@@ -4,6 +4,6 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	static class MSBuildConsts
 	{
-		public const string Version = "14.1";
+		public const string Version = "15.0";
 	}
 }

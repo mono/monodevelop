@@ -185,19 +185,18 @@ namespace Stetic.Editor
 			int sx = spacing;
 			int maxx = columns * (iconSize + spacing) + spacing;
 			bool calcSize = (testx == -1);
-			
-			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			Pango.FontDescription des = this.Style.FontDescription.Copy();
-			des.Size = 10 * (int) Pango.Scale.PangoScale;
-			layout.FontDescription = des;
-			layout.SetMarkup (title);
-			layout.Width = -1;
-			int w, h;
-			int tborder = 1;
-			layout.GetPixelSize (out w, out h);
-			if (draw) {
-				GdkWindow.DrawRectangle (this.Style.DarkGC (Gtk.StateType.Normal), true, x, y, Allocation.Width + tborder*2, h + tborder*2);
-				GdkWindow.DrawLayout (this.Style.ForegroundGC (Gtk.StateType.Normal), x + tborder + 2, y + tborder, layout);
+			int w, h, tborder = 1;
+			using (var layout = new Pango.Layout (this.PangoContext)) {
+				Pango.FontDescription des = this.Style.FontDescription.Copy ();
+				des.Size = 10 * (int)Pango.Scale.PangoScale;
+				layout.FontDescription = des;
+				layout.SetMarkup (title);
+				layout.Width = -1;
+				layout.GetPixelSize (out w, out h);
+				if (draw) {
+					GdkWindow.DrawRectangle (this.Style.DarkGC (Gtk.StateType.Normal), true, x, y, Allocation.Width + tborder * 2, h + tborder * 2);
+					GdkWindow.DrawLayout (this.Style.ForegroundGC (Gtk.StateType.Normal), x + tborder + 2, y + tborder, layout);
+			}
 			}
 			
 			if (calcSize)

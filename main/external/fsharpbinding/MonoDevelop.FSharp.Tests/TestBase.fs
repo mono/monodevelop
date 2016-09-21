@@ -74,7 +74,7 @@ module FsUnit =
 
 [<AutoOpen>]
 module Path =
-    let (++) (a:string) (b:string) = Path.Combine(a,b)
+    let (/) (a:string) (b:string) = Path.Combine(a,b)
     ///Cleans up a path removing trailing double quotes and also consistant forward slash handling
     let neutralise (path:string) =
         Path.GetFullPath( path.TrimStart('\"').TrimEnd('\"'))

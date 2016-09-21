@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		string	inputString = null;
 		int	position = 0;
 		int	tokenPosition = 0;
+		int tokenLength = 0;
 		
 		Token	token;
 		Token	putback = null;
@@ -140,7 +141,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			putback = token;
 		}
 
-		StringBuilder nextTokenSb = new StringBuilder ();
 		public void GetNextToken ()
 		{
 			if (putback != null) {
@@ -157,6 +157,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			SkipWhiteSpace ();
 			
 			tokenPosition = position;
+			tokenLength = 0;
 			
 //			int i = PeekChar ();
 			int i = ReadChar ();
@@ -168,7 +169,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			char ch = (char) i;
 
-			nextTokenSb.Length = 0;
 			// FIXME: looks like a hack: if '-' is here '->' won't be tokenized
 			// maybe we should treat item reference as a token
 			if (ch == '-' && PeekChar () == '>') {
@@ -176,21 +176,22 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				token = new Token ("->", TokenType.Transform, tokenPosition);
 			} else if (Char.IsDigit (ch) || ch == '-') {
 
-				nextTokenSb.Append (ch);
-				
+				tokenLength++;
+
 				while ((i = PeekChar ()) != -1) {
 					ch = (char) i;
 					
-					if (Char.IsDigit (ch) || ch == '.')
-						nextTokenSb.Append ((char) ReadChar ());
-					else
+					if (Char.IsDigit (ch) || ch == '.') {
+						ReadChar ();
+						tokenLength++;
+					} else
 						break;
 				}
 				
-				token = new Token (nextTokenSb.ToString (), TokenType.Number, tokenPosition);
+				token = new Token (inputString.Substring(tokenPosition, tokenLength), TokenType.Number, tokenPosition);
 			} else if (ch == '\'' && position < inputString.Length) {
 
-				nextTokenSb.Append (ch);
+				tokenLength++;
 
 				bool is_itemref = (PeekChar () == '@');
 				int num_open_braces = 0;
@@ -202,29 +203,31 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 						num_open_braces ++;
 					if (ch == ')' && !in_literal && is_itemref)
 						num_open_braces --;
-					
-					nextTokenSb.Append ((char) ReadChar ());
-					
+
+					ReadChar ();
+					tokenLength++;
+
 					if (ch == '\'') {
 						if (num_open_braces == 0)
 							break;
 						in_literal = !in_literal;
 					}
 				}
-				
-				token = new Token (nextTokenSb.ToString (1, nextTokenSb.Length - 2), TokenType.String, tokenPosition);
+
+				token = new Token (inputString.Substring (tokenPosition + 1, tokenLength - 2), TokenType.String, tokenPosition);
 				
 			} else 	if (ch == '_' || Char.IsLetter (ch)) {
-				nextTokenSb.Append ((char) ch);
-				
+				tokenLength++;
+
 				while ((i = PeekChar ()) != -1) {
-					if ((char) i == '_' || Char.IsLetterOrDigit ((char) i))
-						nextTokenSb.Append ((char) ReadChar ());
-					else
+					if ((char) i == '_' || Char.IsLetterOrDigit ((char) i)) {
+						ReadChar ();
+						tokenLength++;
+					} else
 						break;
 				}
 				
-				string temp = nextTokenSb.ToString ();
+				string temp = inputString.Substring(tokenPosition, tokenLength);
 				
 				if (keywords.ContainsKey (temp))
 					token = new Token (temp, keywords [temp], tokenPosition);

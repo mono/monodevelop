@@ -341,10 +341,8 @@
 	<StockIcon stockid="md-build-current-selected-project" resource="build-project-16.png" size="Menu" />
 
 	<!-- Status icons -->
-	<StockIcon stockid="md-status-build" animation="res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
 	<StockIcon stockid="md-status-download" animation="res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
 	<StockIcon stockid="md-status-upload" animation="res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
-	<StockIcon stockid="md-status-open" animation="res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
 	<StockIcon stockid="md-status-search" animation="res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
 	<StockIcon stockid="md-status-connecting" animation="res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
 	<StockIcon stockid="md-status-device-deploying" animation="res:status-device-deploying-1-16.png;res:status-device-deploying-2-16.png;res:status-device-deploying-3-16.png;res:status-device-deploying-4-16.png;res:status-device-deploying-5-16.png;res:status-device-deploying-6-16.png" size="Menu" />

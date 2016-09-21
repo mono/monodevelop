@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow.Child = texteditor;
+			scrolledwindow.AddWithViewport (texteditor);
 			ShowAll ();
 			
 			#region Indent options

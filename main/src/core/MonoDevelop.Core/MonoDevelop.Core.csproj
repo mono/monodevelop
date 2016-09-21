@@ -666,10 +666,6 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
-      <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
-      <Name>Mono.Addins.Gui</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\ikvm\reflect\IKVM.Reflection.csproj">
       <Project>{4CB170EF-DFE6-4A56-9E1B-A85449E827A7}</Project>
       <Name>IKVM.Reflection</Name>
@@ -689,7 +685,7 @@
     <Folder Include="MSBuild\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
-    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
+    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />

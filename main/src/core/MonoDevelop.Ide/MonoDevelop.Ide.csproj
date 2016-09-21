@@ -203,7 +203,6 @@
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
       <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
       <Name>Mono.Addins.Gui</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
@@ -6576,60 +6575,6 @@
     <EmbeddedResource Include="icons\parser-16~dark~sel%402x.png">
       <LogicalName>parser-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16.png">
-      <LogicalName>status-building-1-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16%402x.png">
-      <LogicalName>status-building-1-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16~dark.png">
-      <LogicalName>status-building-1-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-1-16~dark%402x.png">
-      <LogicalName>status-building-1-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16.png">
-      <LogicalName>status-building-2-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16%402x.png">
-      <LogicalName>status-building-2-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16~dark.png">
-      <LogicalName>status-building-2-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-2-16~dark%402x.png">
-      <LogicalName>status-building-2-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16.png">
-      <LogicalName>status-building-3-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16%402x.png">
-      <LogicalName>status-building-3-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16~dark.png">
-      <LogicalName>status-building-3-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-3-16~dark%402x.png">
-      <LogicalName>status-building-3-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-16.png">
-      <LogicalName>status-building-4-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-4-16%402x.png">
-      <LogicalName>status-building-4-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16.png">
-      <LogicalName>status-building-5-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16%402x.png">
-      <LogicalName>status-building-5-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16~dark.png">
-      <LogicalName>status-building-5-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-building-5-16~dark%402x.png">
-      <LogicalName>status-building-5-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-1-16.png">
       <LogicalName>status-connecting-1-16.png</LogicalName>
     </EmbeddedResource>
@@ -6821,78 +6766,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-error-count-16~dark%402x.png">
       <LogicalName>status-error-count-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16.png">
-      <LogicalName>status-opening-1-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16%402x.png">
-      <LogicalName>status-opening-1-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16~dark.png">
-      <LogicalName>status-opening-1-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-1-16~dark%402x.png">
-      <LogicalName>status-opening-1-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16.png">
-      <LogicalName>status-opening-2-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16%402x.png">
-      <LogicalName>status-opening-2-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16~dark.png">
-      <LogicalName>status-opening-2-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-2-16~dark%402x.png">
-      <LogicalName>status-opening-2-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16.png">
-      <LogicalName>status-opening-3-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16%402x.png">
-      <LogicalName>status-opening-3-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16~dark.png">
-      <LogicalName>status-opening-3-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-3-16~dark%402x.png">
-      <LogicalName>status-opening-3-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16.png">
-      <LogicalName>status-opening-4-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16%402x.png">
-      <LogicalName>status-opening-4-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16~dark.png">
-      <LogicalName>status-opening-4-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-4-16~dark%402x.png">
-      <LogicalName>status-opening-4-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16.png">
-      <LogicalName>status-opening-5-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16%402x.png">
-      <LogicalName>status-opening-5-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16~dark.png">
-      <LogicalName>status-opening-5-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-5-16~dark%402x.png">
-      <LogicalName>status-opening-5-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16.png">
-      <LogicalName>status-opening-6-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16%402x.png">
-      <LogicalName>status-opening-6-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16~dark.png">
-      <LogicalName>status-opening-6-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-opening-6-16~dark%402x.png">
-      <LogicalName>status-opening-6-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-parsing-16.png">
       <LogicalName>status-parsing-16.png</LogicalName>

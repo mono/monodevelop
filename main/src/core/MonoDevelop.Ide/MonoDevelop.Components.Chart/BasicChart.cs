@@ -557,9 +557,10 @@ namespace MonoDevelop.Components.Chart
 				if (sx > ex) {
 					int tmp = sx; sx = ex; ex = tmp;
 				}
-				Gdk.GC sgc = new Gdk.GC (GdkWindow);
-		   		sgc.RgbFgColor = new Color (225, 225, 225);
-				win.DrawRectangle (sgc, true, sx, top, ex - sx, height + 1);
+				using (Gdk.GC sgc = new Gdk.GC (GdkWindow)) {
+					sgc.RgbFgColor = new Color (225, 225, 225);
+					win.DrawRectangle (sgc, true, sx, top, ex - sx, height + 1);
+				}
 			}
 			
 			// Draw axes
@@ -733,6 +734,7 @@ namespace MonoDevelop.Components.Chart
 					}
 				}
 			}
+			layout?.Dispose ();
 		}
 		
 		int MeasureAxisSize (AxisPosition pos)
@@ -791,6 +793,7 @@ namespace MonoDevelop.Components.Chart
 						max = tw;
 				}
 			}
+			layout.Dispose ();
 			return max;
 		}
 		
@@ -832,66 +835,69 @@ namespace MonoDevelop.Components.Chart
 		
 		void DrawCursor (ChartCursor cursor)
 		{
-			Gdk.GC gc = new Gdk.GC (GdkWindow);
-	   		gc.RgbFgColor = cursor.Color;
-			
-			int x, y;
-			GetPoint (cursor.Value, cursor.Value, out x, out y);
-				
-			if (cursor.Dimension == AxisDimension.X) {
-				int cy = top - AreaBorderWidth - 1;
-				Point[] ps = new Point [4];
-				ps [0] = new Point (x, cy);
-				ps [1] = new Point (x + (cursor.HandleSize/2), cy - cursor.HandleSize + 1);
-				ps [2] = new Point (x - (cursor.HandleSize/2), cy - cursor.HandleSize + 1);
-				ps [3] = ps [0];
-				GdkWindow.DrawPolygon (gc, false, ps);
-				if (activeCursor == cursor)
-					GdkWindow.DrawPolygon (gc, true, ps);
-				GdkWindow.DrawLine (gc, x, top, x, top + height);
-			} else {
-				throw new NotSupportedException ();
+			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+				gc.RgbFgColor = cursor.Color;
+
+				int x, y;
+				GetPoint (cursor.Value, cursor.Value, out x, out y);
+
+				if (cursor.Dimension == AxisDimension.X) {
+					int cy = top - AreaBorderWidth - 1;
+					Point [] ps = new Point [4];
+					ps [0] = new Point (x, cy);
+					ps [1] = new Point (x + (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
+					ps [2] = new Point (x - (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
+					ps [3] = ps [0];
+					GdkWindow.DrawPolygon (gc, false, ps);
+					if (activeCursor == cursor)
+						GdkWindow.DrawPolygon (gc, true, ps);
+					GdkWindow.DrawLine (gc, x, top, x, top + height);
+				} else {
+					throw new NotSupportedException ();
+				}
 			}
 		}
 		
 		void DrawCursorLabel (ChartCursor cursor)
 		{
-			Gdk.GC gc = new Gdk.GC (GdkWindow);
-	   		gc.RgbFgColor = cursor.Color;
-			
-			int x, y;
-			GetPoint (cursor.Value, cursor.Value, out x, out y);
+			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+				gc.RgbFgColor = cursor.Color;
 
-			if (cursor.Dimension == AxisDimension.X) {
-			
-				string text;
-				
-				if (cursor.LabelAxis != null) {
-					double minStep = GetMinTickStep (cursor.Dimension);
-					TickEnumerator tenum = cursor.LabelAxis.GetTickEnumerator (minStep);
-					tenum.Init (cursor.Value);
-					text = tenum.CurrentLabel;
+				int x, y;
+				GetPoint (cursor.Value, cursor.Value, out x, out y);
+
+				if (cursor.Dimension == AxisDimension.X) {
+
+					string text;
+
+					if (cursor.LabelAxis != null) {
+						double minStep = GetMinTickStep (cursor.Dimension);
+						TickEnumerator tenum = cursor.LabelAxis.GetTickEnumerator (minStep);
+						tenum.Init (cursor.Value);
+						text = tenum.CurrentLabel;
+					} else {
+						text = GetValueLabel (cursor.Dimension, cursor.Value);
+					}
+
+					if (text != null && text.Length > 0) {
+						Pango.Layout layout = new Pango.Layout (this.PangoContext);
+						layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+						layout.SetMarkup (text);
+
+						int tw, th;
+						layout.GetPixelSize (out tw, out th);
+						int tl = x - tw / 2;
+						int tt = top + 4;
+						if (tl + tw + 2 >= left + width) tl = left + width - tw - 1;
+						if (tl < left + 1) tl = left + 1;
+						GdkWindow.DrawRectangle (Style.WhiteGC, true, tl - 1, tt - 1, tw + 2, th + 2);
+						GdkWindow.DrawRectangle (Style.BlackGC, false, tl - 2, tt - 2, tw + 3, th + 3);
+						GdkWindow.DrawLayout (gc, tl, tt, layout);
+						layout.Dispose ();
+					}
 				} else {
-					text = GetValueLabel (cursor.Dimension, cursor.Value);
+					throw new NotSupportedException ();
 				}
-				
-				if (text != null && text.Length > 0) {
-					Pango.Layout layout = new Pango.Layout (this.PangoContext);
-					layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-					layout.SetMarkup (text);
-					
-					int tw, th;
-					layout.GetPixelSize (out tw, out th);
-					int tl = x - tw/2;
-					int tt = top + 4;
-					if (tl + tw + 2 >= left + width) tl = left + width - tw - 1;
-					if (tl < left + 1) tl = left + 1;
-					GdkWindow.DrawRectangle (Style.WhiteGC, true, tl - 1, tt - 1, tw + 2, th + 2);
-					GdkWindow.DrawRectangle (Style.BlackGC, false, tl - 2, tt - 2, tw + 3, th + 3);
-					GdkWindow.DrawLayout (gc, tl, tt, layout);
-				}
-			} else {
-				throw new NotSupportedException ();
 			}
 		}
 		

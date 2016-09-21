@@ -887,10 +887,10 @@ namespace MonoDevelop.Ide
 		
 #region Event handling
 		
-		internal async void NotifyItemAdded (WorkspaceItem item)
+		internal void NotifyItemAdded (WorkspaceItem item)
 		{
 			try {
-				await MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
+				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}

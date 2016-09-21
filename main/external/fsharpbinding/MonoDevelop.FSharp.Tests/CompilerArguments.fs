@@ -101,14 +101,15 @@ type CompilerArgumentsTests() =
     
     [<Test>]
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
-        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
-        let _ = testProject.AddReference "mscorlib"
-        let reference = testProject.AddReference "FSharp.Core.dll"
-        let references =
-            CompilerArguments.generateReferences(testProject,
-                                                 Some (FSharpCompilerVersion.FSharp_3_1),
-                                                 FSharpTargetFramework.NET_4_5,
-                                                 ConfigurationSelector.Default,
-                                                 true)
-        let testPaths = references |> List.map makeTestableReference
-        testPaths |> should contain (reference.HintPath.FullPath |> string)
+        if not Platform.IsWindows then
+            use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+            let _ = testProject.AddReference "mscorlib"
+            let reference = testProject.AddReference "FSharp.Core.dll"
+            let references =
+                CompilerArguments.generateReferences(testProject,
+                                                     Some (FSharpCompilerVersion.FSharp_3_1),
+                                                     FSharpTargetFramework.NET_4_5,
+                                                     ConfigurationSelector.Default,
+                                                     true)
+            let testPaths = references |> List.map makeTestableReference
+            testPaths |> should contain (reference.HintPath.FullPath |> string)

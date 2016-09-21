@@ -63,6 +63,29 @@ namespace MonoDevelop.Core
 			{ "zh_TW", "zh-TW" },
 		};
 
+		static void SetLocale (string locale)
+		{
+			string cultureLang;
+			if (!localeToCulture.TryGetValue (locale, out cultureLang))
+				cultureLang = locale.Replace ("_", "-");
+			CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
+			if (ci.IsNeutralCulture) {
+				// We need a non-neutral culture
+				foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
+					if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
+						ci = c;
+						break;
+					}
+			}
+			if (!ci.IsNeutralCulture) {
+				if (Platform.IsWindows)
+					SetThreadUILanguage (ci.LCID);
+				mainThread.CurrentUICulture = ci;
+			}
+			if (!Platform.IsWindows)
+				Environment.SetEnvironmentVariable ("LANGUAGE", locale);
+		}
+
 		static GettextCatalog ()
 		{
 			mainThread = Thread.CurrentThread;
@@ -71,28 +94,11 @@ namespace MonoDevelop.Core
 			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
-			UILocale = Runtime.Preferences.UserInterfaceLanguage;
-			if (!string.IsNullOrEmpty (UILocale)) {
-				string cultureLang;
-				if (!localeToCulture.TryGetValue (UILocale, out cultureLang))
-					cultureLang = UILocale.Replace ("_", "-");
-				CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
-				if (ci.IsNeutralCulture) {
-					// We need a non-neutral culture
-					foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
-						if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
-							ci = c;
-							break;
-						}
-				}
-				if (!ci.IsNeutralCulture) {
-					if (Platform.IsWindows)
-						SetThreadUILanguage (ci.LCID);
-					mainThread.CurrentUICulture = ci;
-				}
-				if (!Platform.IsWindows)
-					Environment.SetEnvironmentVariable ("LANGUAGE", UILocale);
-			}
+			var locale = UILocale = Runtime.Preferences.UserInterfaceLanguage;
+			if (string.IsNullOrEmpty (UILocale))
+				locale = Environment.GetEnvironmentVariable ("MONODEVELOP_STUB_LANGUAGE");
+			if (!string.IsNullOrEmpty (locale))
+				SetLocale (locale);
 			
 			if (string.IsNullOrEmpty (catalog) || !Directory.Exists (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
