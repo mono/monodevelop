@@ -23,11 +23,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			widget = new ConnectedServicesWidget ();
 			widget.GalleryShown += (sender, e) => {
-				this.ContentName = string.Format ("{0} \u2013 {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name);
 				UpdateCurrentNode ();
 			};
 			widget.ServiceShown += (sender, e) => {
-				this.ContentName = string.Format ("{0} \u2013 {1}", e.Service.DisplayName, project.Name);
 				UpdateCurrentNode ();
 			};
 		}
