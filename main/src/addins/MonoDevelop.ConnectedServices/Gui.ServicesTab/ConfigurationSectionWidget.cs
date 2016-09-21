@@ -69,7 +69,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.Spacing = 7;
 			header.MarginLeft = 15;
 			header.MarginRight = 30;
-			header.MinHeight = 34;
+			header.MinHeight = 46;
 
 			expanderImage = new ImageView (arrowRight);
 
