@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			//if project.json exists, update it
 			if (projectJsonFile != null) {
-				var nugetFx = nsVersion ?? GetPclShortNameMapping (fx.Id) ?? NetStandardDefaultFramework;
+				var nugetFx = nsVersion ?? GetPclProfileFullName (fx.Id) ?? NetStandardDefaultFramework;
 				bool projectJsonChanged;
 				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx, out projectJsonChanged);
 				needsRestore = projectJsonChanged;
@@ -401,7 +401,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			}
 
-			var framework = GetPclShortNameMapping (project.TargetFramework.Id) ?? NetStandardDefaultFramework;
+			var framework = GetPclProfileFullName (project.TargetFramework.Id) ?? NetStandardDefaultFramework;
 			json ["frameworks"] = new JObject (
 				new JProperty (framework, new JObject())
 			);
@@ -436,68 +436,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return r.GetReferencedFileNames(null).Any (f => ((FilePath)f).IsChildPathOf (packagesDir));
 		}
 
-		static string GetPclShortNameMapping (TargetFrameworkMoniker tfm)
+		static string GetPclProfileFullName (TargetFrameworkMoniker tfm)
 		{
 			if (tfm.Identifier != TargetFrameworkMoniker.ID_PORTABLE) {
 				return null;
 			}
 
-			//we can only look up via profile numbers for 4.x PCLs
-			if (tfm.Version == null || !tfm.Version.StartsWith ("4.", StringComparison.Ordinal)
-			    || tfm.Profile == null || !tfm.Profile.StartsWith ("Profile", StringComparison.Ordinal))
+			//nuget only accepts pcls with a profile number
+			if (tfm.Profile == null || !tfm.Profile.StartsWith ("Profile", StringComparison.Ordinal))
 			{
 				return null;
 			}
 
-			// look up against all extant profile numbers
-			switch (tfm.Profile.Substring ("Profile".Length)) {
-			case "31": return "portable-win81+wp81";
-			case "32": return "portable-win81+wpa81";
-			case "44": return "portable-net451+win81";
-			case "84": return "portable-wp81+wpa81";
-			case "151": return "portable-net451+win81+wpa81";
-			case "157": return "portable-win81+wp81+wpa81";
-			case "7": return "portable-net45+win8";
-			case "49": return "portable-net45+wp8";
-			case "78": return "portable-net45+win8+wp8";
-			case "111": return "portable-net45+win8+wpa81";
-			case "259": return "portable-net45+win8+wpa81+wp8";
-			case "2": return "portable-net4+win8+sl4+wp7";
-			case "3": return "portable-net4+sl4";
-			case "4": return "portable-net45+sl4+win8+wp7";
-			case "5": return "portable-net4+win8";
-			case "6": return "portable-net403+win8";
-			case "14": return "portable-net4+sl5";
-			case "18": return "portable-net403+sl4";
-			case "19": return "portable-net403+sl5";
-			case "23": return "portable-net45+sl4";
-			case "24": return "portable-net45+sl5";
-			case "36": return "portable-net4+sl4+win8+wp8";
-			case "37": return "portable-net4+sl5+win8";
-			case "41": return "portable-net403+sl4+win8";
-			case "42": return "portable-net403+sl5+win8";
-			case "46": return "portable-net45+sl4+win8";
-			case "47": return "portable-net45+sl5+win8";
-			case "88": return "portable-net4+sl4+win8+wp75";
-			case "92": return "portable-net4+win8+wpa81";
-			case "95": return "portable-net403+sl4+win8+wp7";
-			case "96": return "portable-net403+sl4+win8+wp75";
-			case "102": return "portable-net403+win8+wpa81";
-			case "104": return "portable-net45+sl4+win8+wp75";
-			case "136": return "portable-net4+sl5+win8+wp8";
-			case "143": return "portable-net403+sl4+win8+wp8";
-			case "147": return "portable-net403+sl5+win8+wp8";
-			case "154": return "portable-net45+sl4+win8+wp8";
-			case "158": return "portable-net45+sl5+win8+wp8";
-			case "225": return "portable-net4+sl5+win8+wpa81";
-			case "240": return "portable-net403+sl5+win8+wpa81";
-			case "255": return "portable-net45+sl5+win8+wpa81";
-			case "328": return "portable-net4+sl5+win8+wpa81+wp8";
-			case "336": return "portable-net403+sl5+win8+wpa81+wp8";
-			case "344": return "portable-net45+sl5+win8+wpa81+wp8";
-			}
-
-			return null;
+			return tfm.ToString ();
 		}
 
 		static string EnsureMinimumVersion (string minimum, string existing)
