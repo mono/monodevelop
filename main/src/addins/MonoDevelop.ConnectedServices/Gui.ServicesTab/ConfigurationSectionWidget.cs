@@ -95,7 +95,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.PackStart (headerTitle);
 
 			addBtn = new Button (GettextCatalog.GetString ("Add to the project"));
+			addBtn.MinWidth = 128;
+			addBtn.MinHeight = 34;
 			header.PackEnd (addBtn);
+			addBtn.VerticalPlacement = WidgetPlacement.Center;
 			addBtn.Clicked += this.AddBtnClicked;
 
 			var container = new VBox ();

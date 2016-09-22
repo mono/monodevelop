@@ -96,6 +96,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			addButton = new Button ();
 			addButton.MinWidth = 128;
+			addButton.MinHeight = 34;
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
 
