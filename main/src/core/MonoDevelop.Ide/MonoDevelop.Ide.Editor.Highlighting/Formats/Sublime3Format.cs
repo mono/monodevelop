@@ -538,11 +538,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '+':
 					if (readPlusQuantifier)
 						continue;
+					if (readStarQuantifier) {
+						continue;
+					}
 					readPlusQuantifier = true;
 					break;
 				case '*':
 					if (readStarQuantifier)
 						continue;
+					if (readPlusQuantifier) {
+						result.Length--;
+						if (!recordGroupName && groupStack.Count > 0) {
+							groupStack.Peek ().groupContent.Length--;
+						}
+					}
+
 					readStarQuantifier = true;
 					break;
 				case '\\':

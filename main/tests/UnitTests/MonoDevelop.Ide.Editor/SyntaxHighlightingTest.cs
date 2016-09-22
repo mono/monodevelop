@@ -395,6 +395,8 @@ typedef struct
 		{
 			Assert.AreEqual ("\\w+", Sublime3Format.CompileRegex ("\\w++"));
 			Assert.AreEqual ("\\w*", Sublime3Format.CompileRegex ("\\w**"));
+			Assert.AreEqual ("[A-Z]*", Sublime3Format.CompileRegex ("[A-Z]*+"));
+			Assert.AreEqual ("[A-Z]*", Sublime3Format.CompileRegex ("[A-Z]+*"));
 		}
 
 		[Test]
@@ -416,6 +418,8 @@ typedef struct
 		{
 			Assert.AreEqual ("(?<id>[A-Z_a-z]*)\\s*[A-Z_a-z]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
 		}
+
+
 
 	}
 }
