@@ -509,6 +509,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			if (string.IsNullOrEmpty (regex))
 				return regex;
+			regex = StripRegexComments (regex);
 			var result = new StringBuilder ();
 
 			var charProperty = new StringBuilder ();
@@ -610,6 +611,34 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				} else {
 					result.Append (ch);
 				}
+			}
+			return result.ToString ();
+		}
+
+		static string StripRegexComments (string regex)
+		{
+			var result = new StringBuilder ();
+			bool inCommment = false;
+			bool escape = false;
+			foreach (var ch in regex) {
+				if (inCommment) {
+					if (ch == '\n')
+						inCommment = false;
+					continue;
+				}
+				if (escape) {
+					escape = false;
+					result.Append (ch);
+					continue;
+				}
+				if (ch == '\\') {
+					escape = true;
+				}
+				if (ch == '#') {
+					inCommment = true;
+					continue;
+				}
+				result.Append (ch);
 			}
 			return result.ToString ();
 		}
