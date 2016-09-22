@@ -503,6 +503,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		class Group 
+		{
+			public string Id { get; set; }
+			public StringBuilder groupContent = new StringBuilder ();
+			public Group (string id)
+			{
+				Id = id;
+			}
+		}
 
 		// translates ruby regex -> .NET regexes
 		internal static string CompileRegex (string regex)
@@ -516,8 +525,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			int characterClassLevel = 0;
 			bool escape = false;
-			bool readCharacterProperty = false, readCharPropertyIdentifier = false;
-			bool readPlusQuantifier = false, readStarQuantifier = false;
+			bool readCharacterProperty = false, readCharPropertyIdentifier = false, replaceGroup = false, skipRecordChar = false;
+			bool readPlusQuantifier = false, readStarQuantifier = false, readGroupName = false, recordGroupName = false;
+			StringBuilder curGroupName = new StringBuilder ();
+			var groups = new List<Group> ();
+			var groupStack = new Stack<Group> ();
+			int groupNumber = 1;
 			CharacterClass curClass = null;
 			for (int i = 0; i < regex.Length; i++) {
 				var ch = regex [i];
@@ -558,8 +571,57 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						readCharPropertyIdentifier = false;
 						continue;
 					}
+					if (next == 'g') {
+						i++;
+						replaceGroup = true;
+						readGroupName = true;
+						continue;
+					}
 					escape = true;
 					goto addChar;
+				case '(':
+					if (escape)
+						break;
+					groupStack.Push (new Group(groupNumber.ToString ()));
+					groupNumber++;
+					skipRecordChar = true;
+					break;
+				case '>':
+					recordGroupName = false;
+					if (replaceGroup) {
+						foreach (var g in groups) {
+							if (g.Id == curGroupName.ToString ()) {
+								result.Append (g.groupContent.ToString ());
+							}
+						}
+						replaceGroup = false;
+						curGroupName.Length = 0;
+						continue;
+					}
+					if (groupStack.Count > 0)
+						groupStack.Peek ().Id = curGroupName.ToString ();
+					skipRecordChar = true;
+					curGroupName.Length = 0;
+					break;
+				case '<':
+					if (readGroupName) {
+						recordGroupName = true;
+						readGroupName = false;
+					}
+					break;
+				case '?':
+					if (groupStack.Count > 0 && result[result.Length - 1] == '(') {
+						readGroupName = true;
+						groupNumber--;
+						skipRecordChar = true;
+					}
+					break;
+				case ')':
+					if (escape)
+						break;
+					if (groupStack.Count > 0)
+						groups.Add (groupStack.Pop ());
+					break;
 				case '[':
 					if (escape)
 						break;
@@ -575,7 +637,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (characterClassLevel > 0) {
 						characterClassLevel--;
 						if (characterClassLevel == 0) {
-							result.Append (curClass.Generate ());
+							var cg = curClass.Generate ();
+							result.Append (cg);
+							if (!recordGroupName && groupStack.Count > 0)
+								groupStack.Peek ().groupContent.Append (cg);
 							curClass = null;
 							continue;
 						}
@@ -584,6 +649,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				escape = false;
 			addChar:
+				if (recordGroupName && ch != '<') {
+					curGroupName.Append (ch);
+				}
+				if (replaceGroup)
+					continue;
+				if (ch != '?')
+					readGroupName = false;
 				if (ch != '+')
 					readPlusQuantifier = false;
 				if (ch != '*')
@@ -610,6 +682,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					curClass.Push (ch);
 				} else {
 					result.Append (ch);
+					if (!recordGroupName && groupStack.Count > 0) {
+						if (!skipRecordChar)
+							groupStack.Peek ().groupContent.Append (ch);
+					}
+					skipRecordChar = false;
 				}
 			}
 			return result.ToString ();
@@ -620,6 +697,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var result = new StringBuilder ();
 			bool inCommment = false;
 			bool escape = false;
+			bool wasWhitespace = false;
 			foreach (var ch in regex) {
 				if (inCommment) {
 					if (ch == '\n')
@@ -634,10 +712,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (ch == '\\') {
 					escape = true;
 				}
-				if (ch == '#') {
+				if (ch == '#' && wasWhitespace) {
 					inCommment = true;
 					continue;
 				}
+				wasWhitespace = ch == ' ' || ch == '\t';
 				result.Append (ch);
 			}
 			return result.ToString ();

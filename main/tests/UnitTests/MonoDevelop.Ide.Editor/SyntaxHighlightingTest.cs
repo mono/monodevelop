@@ -405,5 +405,17 @@ typedef struct
 			Assert.AreEqual ("\\[(\\\\]|[^\\]])*\\]", Sublime3Format.CompileRegex ("\\[(\\\\]|[^\\]])*\\]"));
 		}
 
+		[Test]
+		public void TestComment ()
+		{
+			Assert.AreEqual ("test ", Sublime3Format.CompileRegex ("test # comment"));
+		}
+
+		[Test]
+		public void TestGroupReplacement ()
+		{
+			Assert.AreEqual ("(?<id>[A-Z_a-z]*)\\s*[A-Z_a-z]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
+		}
+
 	}
 }

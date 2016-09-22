@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Language Bundles"), MonoDevelop.Components.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (GettextCatalog.GetString ("Bundles"), "*.tmBundle", "*.sublime-package");
+			dialog.AddFilter (GettextCatalog.GetString ("Bundles"), "*.tmBundle", "*.sublime-package", "*.tmbundle");
 			if (!dialog.Run ())
 				return;
 			string newFileName = SyntaxHighlightingService.LanguageBundlePath.Combine (dialog.SelectedFile.FileName);
