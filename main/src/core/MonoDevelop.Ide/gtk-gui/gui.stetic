@@ -12101,7 +12101,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget" design-size="1359 400">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget" design-size="884 413">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -12109,27 +12109,29 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.Label" id="GtkLabel5">
+          <widget class="Gtk.VBox" id="vbox5">
             <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Language bundles&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Alignment" id="GtkAlignment">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="Yalign">0</property>
-            <property name="LeftPadding">12</property>
+            <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.VBox" id="vbox5">
+              <widget class="Gtk.TextView" id="textview1">
+                <property name="MemberName" />
+                <property name="Sensitive">False</property>
+                <property name="Editable">False</property>
+                <property name="CursorVisible">False</property>
+                <property name="AcceptsTab">False</property>
+                <property name="Text" translatable="yes">Language bundles can provide new editor themes, code snippets, code completion items and other information to improve the editing experience of specific languages. Xamarin Studio supports: &lt;b&gt;TextMate (.tmBundle)&lt;/b&gt; and &lt;b&gt;Sublime 3 (.sublime)&lt;/b&gt; package files.</property>
+                <property name="WrapMode">Word</property>
+                <property name="PixelsBelowLines">6</property>
+                <property name="PixelsInsideWrap">3</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
@@ -12158,23 +12160,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="label2">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Language bundles can provide new editor themes, code snippets, code completion items and
-other information to improve the editing experience of specific languages.
-Xamarin Studio supports:
-*TextMate (.tmBundle)* and *Sublime 3 (.sublime)* package files.</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.HBox" id="hbox2">
+                  <widget class="Gtk.VBox" id="vbox1">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
@@ -12187,7 +12173,6 @@ Xamarin Studio supports:
                         <property name="label">gtk-add</property>
                       </widget>
                       <packing>
-                        <property name="PackType">End</property>
                         <property name="Position">0</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
@@ -12204,7 +12189,6 @@ Xamarin Studio supports:
                         <property name="label">gtk-remove</property>
                       </widget>
                       <packing>
-                        <property name="PackType">End</property>
                         <property name="Position">1</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
@@ -12212,35 +12196,25 @@ Xamarin Studio supports:
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Button" id="buttonEdit">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Type">TextOnly</property>
-                        <property name="Label" translatable="yes">_Edit</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="PackType">End</property>
-                        <property name="Position">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
+                      <placeholder />
                     </child>
                   </widget>
                   <packing>
-                    <property name="PackType">End</property>
-                    <property name="Position">2</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
           </packing>
         </child>

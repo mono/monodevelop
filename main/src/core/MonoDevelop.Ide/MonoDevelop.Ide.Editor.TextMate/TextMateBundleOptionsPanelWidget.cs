@@ -40,7 +40,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public TextMateBundleOptionsPanelWidget ()
 		{
 			this.Build ();
-			this.buttonEdit.Visible = false;
+			textview1.SetMarkup (textview1.Buffer.Text);
+
 			this.addButton.Clicked += AddLanguageBundle;
 			this.removeButton.Clicked += RemoveLanguageBundle;
 
