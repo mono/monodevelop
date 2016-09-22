@@ -137,7 +137,6 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				var match = decreaseIndentPattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
 				if (match.Success) {
 					DecreaseIndent (ref indentLevel);
-					DecreaseIndent (ref nextLineIndent);
 					//var matchLen = lineOffset + line.LengthIncludingDelimiter - (match.Index + match.Length);
 					//if (matchLen <= 0)
 					//	break;
