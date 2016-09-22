@@ -54,7 +54,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			foreach (var service in services) {
 				var serviceWidget = new ServiceWidget (service);
 				serviceWidget.MarginTop = 5;
-				serviceWidget.ButtonReleased += HandleServiceWidgetButtonReleased;
 
 				if (service.Status == Status.Added) {
 					enabledList.PackStart (serviceWidget);
@@ -63,6 +62,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					availableList.PackStart (serviceWidget);
 					availableLabel.Visible = true;
 				}
+				serviceWidget.ButtonReleased += HandleServiceWidgetButtonReleased;
 				service.StatusChanged += HandleServiceStatusChanged;
 			}
 		}
