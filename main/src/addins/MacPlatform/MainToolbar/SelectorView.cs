@@ -541,7 +541,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// For whatever reason, we custom load the images here through NSImage, providing both 1x and 2x image reps.
 				Cells [RunConfigurationIdx].Image = runConfigImage;
 				Cells [ConfigurationIdx].Image = configImage;;
-				Cells [RuntimeIdx].Image = deviceImage;
+				Cells [RuntimeIdx].Image = runtimeImage;
 				RealignTexts ();
 			}
 
