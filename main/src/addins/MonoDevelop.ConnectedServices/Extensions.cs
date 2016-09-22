@@ -54,7 +54,7 @@ namespace MonoDevelop.ConnectedServices
 			} catch (InvalidOperationException) {
 				// Nuget throws these and logs them, let's not pollute the log anymore than we need to
 				// and assume that it was already added to the project
-				return true;
+				throw;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue package for installation", ex);
 				throw;
@@ -90,8 +90,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			} catch (InvalidOperationException) {
 				// Nuget throws these and logs them, let's not pollute the log anymore than we need to
-				// and assume that it was already added to the project
-				return true;
+				throw;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue packages for installation", ex);
 				throw;
