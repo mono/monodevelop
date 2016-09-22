@@ -1504,16 +1504,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			ActiveMember = null;
-			if (memberListStore != null) {
-				memberListStore.Dispose ();
-				memberListStore = null;
-			}
-			
-			if (typeListStore != null) {
-				typeListStore.Dispose ();
-				typeListStore = null;
-			}
-			
+			memberListStore = null;
+			typeListStore = null;
+
 			if (documentationPanel != null) {
 				documentationPanel.Destroy ();
 				documentationPanel = null;

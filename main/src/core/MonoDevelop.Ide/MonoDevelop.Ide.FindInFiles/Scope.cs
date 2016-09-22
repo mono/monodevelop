@@ -280,9 +280,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 
+		FileProvider[] fileNames;
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return GetFileNames (null, filterOptions).Count ();
+			fileNames = GetFileNames (filterOptions).Select (file => new FileProvider (file)).ToArray ();
+			return fileNames.Length;
 		}
 
 		public DirectoryScope (string path, bool recurse)
@@ -291,10 +293,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.recurse = recurse;
 		}
 
-		IEnumerable<string> GetFileNames (ProgressMonitor monitor, FilterOptions filterOptions)
+		IEnumerable<string> GetFileNames (FilterOptions filterOptions)
 		{
-			if (monitor != null)
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
 			var directoryStack = new Stack<string> ();
 			directoryStack.Push (path);
 
@@ -346,7 +346,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			return GetFileNames (monitor, filterOptions).Select (file => new FileProvider (file));
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
+			return fileNames;
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)

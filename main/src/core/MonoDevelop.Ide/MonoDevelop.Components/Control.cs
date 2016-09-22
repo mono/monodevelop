@@ -211,7 +211,6 @@ namespace MonoDevelop.Components
 			var gtkWidget = nativeWidget as Gtk.Widget;
 			if (gtkWidget != null) {
 				gtkWidget.Destroy ();
-				gtkWidget.Dispose ();
 			}
 #if MAC
 			else if (nativeWidget is NSView)

@@ -497,12 +497,12 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (new ProjectFile [0]);
 
-			return BindTask<ProjectFile []> (async cancelToken => {
+			return BindTask<ProjectFile []> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await GetSourceFilesAsync (monitor, configuration);
+					return GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -994,7 +994,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context);
+			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
 		}
 
 		public bool SupportsTarget (string target)
@@ -1073,7 +1073,8 @@ namespace MonoDevelop.Projects
 
 			try {
 				var tr = await OnRunTarget (monitor, target, configuration, context);
-				tr.BuildResult.SourceTarget = this;
+				if (tr != null)
+					tr.BuildResult.SourceTarget = this;
 				return tr;
 			} finally {
 				// If any of the project generated files changes, notify it

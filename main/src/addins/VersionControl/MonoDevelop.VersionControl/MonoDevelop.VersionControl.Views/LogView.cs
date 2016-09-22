@@ -18,8 +18,6 @@ namespace MonoDevelop.VersionControl.Views
 		LogWidget widget;
 		VersionInfo vinfo;
 		
-		ListStore changedpathstore;
-		
 		public LogWidget LogWidget {
 			get {
 				return widget;
@@ -98,10 +96,6 @@ namespace MonoDevelop.VersionControl.Views
 			if (widget != null) {
 				widget.Destroy ();
 				widget = null;
-			}
-			if (changedpathstore != null) {
-				changedpathstore.Dispose ();
-				changedpathstore = null;
 			}
 			if (info != null) {
 				info.Updated -= OnInfoUpdated;

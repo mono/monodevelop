@@ -873,7 +873,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, out string binDir)
 		{
-			var supportedToolsVersions = new [] { "14.1", "14.0", "12.0", "4.0" };
+			var supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
 
 			foreach (var toolsVersion in supportedToolsVersions) {
 				binDir = runtime.GetMSBuildBinPath (toolsVersion);
@@ -1034,18 +1034,18 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var version = Version.Parse (toolsVersion);
 			bool useMicrosoftBuild =
-				((version >= new Version (14, 1)) && Runtime.Preferences.BuildWithMSBuild) ||
+				((version >= new Version (15, 0)) && Runtime.Preferences.BuildWithMSBuild) ||
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 
 			if (useMicrosoftBuild) {
-				toolsVersion = "dotnet." + toolsVersion;
+				toolsVersion = "dotnet." + (version >= new Version (15, 0) ? "14.1" : toolsVersion);
 			}
 
 			var exe = builderDir.Combine (toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
 			if (File.Exists (exe))
 				return exe;
 			
-			throw new InvalidOperationException ("Unsupported MSBuild ToolsVersion '" + toolsVersion + "'");
+			throw new InvalidOperationException ("Unsupported MSBuild ToolsVersion '" + version + "'");
 		}
 
 		internal static async void ReleaseProjectBuilder (RemoteBuildEngine engine)

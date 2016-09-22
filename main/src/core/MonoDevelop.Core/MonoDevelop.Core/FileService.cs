@@ -454,7 +454,7 @@ namespace MonoDevelop.Core
 				// handle case a: some/path b: some/path/deeper...
 				if (a >= aEnd) {
 					if (IsSeparator (*b)) {
-						lastStartA = a + 1;
+						lastStartA = aEnd;
 						lastStartB = b;
 					}
 				}
@@ -466,7 +466,16 @@ namespace MonoDevelop.Core
 						goUpCount++;
 					lastStartB++;
 				}
-				var size = goUpCount * 2 + goUpCount + aEnd - lastStartA;
+				int remainingPathLength = (int)(aEnd - lastStartA);
+				int size = 0;
+				if (goUpCount > 0)
+					size = goUpCount * 2 + goUpCount - 1;
+				if (remainingPathLength > 0) {
+					if (goUpCount > 0)
+						size++;
+					size += remainingPathLength;
+				}
+				
 				var result = new char [size];
 				fixed (char* rPtr = result) {
 					// go paths up
@@ -474,7 +483,8 @@ namespace MonoDevelop.Core
 					for (int i = 0; i < goUpCount; i++) {
 						*(r++) = '.';
 						*(r++) = '.';
-						*(r++) = Path.DirectorySeparatorChar;
+						if (i != goUpCount - 1 || remainingPathLength > 0) // If there is no remaining path, there is no need for a trailing slash
+							*(r++) = Path.DirectorySeparatorChar;
 					}
 					// copy the remaining absulute path
 					while (lastStartA < aEnd)
@@ -544,12 +554,34 @@ namespace MonoDevelop.Core
 
 		public static string NormalizeRelativePath (string path)
 		{
-			string result = path.Trim (Path.DirectorySeparatorChar, ' ');
-			while (result.StartsWith ("." + Path.DirectorySeparatorChar)) {
-				result = result.Substring (2);
-				result = result.Trim (Path.DirectorySeparatorChar);
+			int i;
+			for (i = 0; i < path.Length; ++i) {
+				if (path [i] != Path.DirectorySeparatorChar && path [i] != ' ')
+					break;
 			}
-			return result == "." ? "" : result;
+
+			var maxLen = path.Length - 1;
+			while (i < maxLen) {
+				if (path [i] != '.' || path [i + 1] != Path.DirectorySeparatorChar)
+					break;
+				
+				i += 2;
+				while (i < maxLen && i == Path.DirectorySeparatorChar)
+					i++;
+			}
+
+			int j;
+			for (j = maxLen; j > i; --j) {
+				if (path [j] != Path.DirectorySeparatorChar) {
+					j++;
+					break;
+				}
+			}
+
+			if (j - i == 1 && path [i] == '.')
+				return string.Empty;
+
+			return path.Substring (i, j - i);
 		}
 
 		// Atomic rename of a file. It does not fire events.

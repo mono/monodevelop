@@ -58,3 +58,6 @@
 	path = main/external/roslyn
 	url = git://github.com/mono/roslyn.git
 	branch = monodevelop_bin
+[submodule "main/external/macdoc"]
+	path = main/external/macdoc
+	url = git://github.com/xamarin/macdoc

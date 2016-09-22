@@ -271,6 +271,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			return res;
 		}
+
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			if (text_gc != null) {
+				text_gc.Dispose ();
+				text_gc = null;
+			}
+			base.OnDestroyed ();
+		}
 	}
 	
 	class EntryWithEmptyMessage: Gtk.Entry
@@ -303,6 +316,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				evnt.Window.DrawLayout (text_gc, 2, 2, layout);
 			}
 			return res;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			if (text_gc != null) {
+				text_gc.Dispose ();
+				text_gc = null;
+			}
+			base.OnDestroyed ();
 		}
 		
 		public static Gdk.Color ColorBlend (Gdk.Color a, Gdk.Color b)

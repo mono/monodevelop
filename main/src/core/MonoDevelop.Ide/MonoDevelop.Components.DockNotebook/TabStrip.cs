@@ -256,8 +256,8 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			foreach (var c in children.ToArray ())
-				callback (c);
+			for (int i = 0; i < children.Count; ++i)
+				callback (children [i]);
 		}
 
 		protected override void OnRemoved (Widget widget)

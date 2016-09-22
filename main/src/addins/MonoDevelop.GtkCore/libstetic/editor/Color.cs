@@ -12,10 +12,11 @@ namespace Stetic.Editor {
 		
 		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
-			Gdk.GC gc = new Gdk.GC (window);
-	   		gc.RgbFgColor = (Gdk.Color) Value;
-			window.DrawRectangle (gc, true, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
-			window.DrawRectangle (Container.Style.BlackGC, false, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+			using (Gdk.GC gc = new Gdk.GC (window)) {
+				gc.RgbFgColor = (Gdk.Color)Value;
+				window.DrawRectangle (gc, true, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+				window.DrawRectangle (Container.Style.BlackGC, false, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+			}
 		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)

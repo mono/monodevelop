@@ -359,53 +359,54 @@ namespace Mono.Instrumentation.Monitor
 			DateTime initialTime = mainValue.TimeStamp;
 			
 			Cairo.Context ctx = CairoHelper.Create (GdkWindow);
-			
-			Gdk.GC gc = new Gdk.GC (GdkWindow);
-			gc.RgbFgColor = Style.White;
-			GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
-			
-			// Draw full time marker
-			
-			ctx.NewPath ();
-			ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth/2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
-			HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
-			hsl.L = 0.8;
-			ctx.SetSourceColor (hsl);
-			ctx.Fill ();
-			
-			// Draw values
-			
-			foreach (CounterValueInfo val in data) {
-				DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, 0, val);
-			}
-			
-			if (ty > maxy)
-				maxy = ty;
-			
-			int totalms = (int) mainValue.Duration.TotalMilliseconds;
-			int marks = (totalms / 1000) + 1;
-			
-			ctx.LineWidth = 1;
-			gc.RgbFgColor = Style.Foreground (Gtk.StateType.Normal);
-			
-			for (int n=0; n<=marks; n++) {
+
+			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+				gc.RgbFgColor = Style.White;
+				GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
+
+				// Draw full time marker
+
 				ctx.NewPath ();
-				int y = ytop + (int) (n * scale) + baseTime;
-				ctx.MoveTo (markerX, y + 0.5);
-				ctx.LineTo (markerX + MarkerWidth, y + 0.5);
-				ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
-				ctx.Stroke ();
-				
-				y += 2;
-				layout.SetText (n + "s");
-				GdkWindow.DrawLayout (gc, markerX + 1, y + 2, layout);
-				
-				int tw, th;
-				layout.GetPixelSize (out tw, out th);
-				y += th;
-				
-				if (y > maxy)
+				ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth / 2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
+				HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
+				hsl.L = 0.8;
+				ctx.SetSourceColor (hsl);
+				ctx.Fill ();
+
+				// Draw values
+
+				foreach (CounterValueInfo val in data) {
+					DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, 0, val);
+				}
+
+				if (ty > maxy)
+					maxy = ty;
+
+				int totalms = (int)mainValue.Duration.TotalMilliseconds;
+				int marks = (totalms / 1000) + 1;
+
+				ctx.LineWidth = 1;
+				gc.RgbFgColor = Style.Foreground (Gtk.StateType.Normal);
+
+				for (int n = 0; n <= marks; n++) {
+					ctx.NewPath ();
+					int y = ytop + (int)(n * scale) + baseTime;
+					ctx.MoveTo (markerX, y + 0.5);
+					ctx.LineTo (markerX + MarkerWidth, y + 0.5);
+					ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
+					ctx.Stroke ();
+
+					y += 2;
+					layout.SetText (n + "s");
+					GdkWindow.DrawLayout (gc, markerX + 1, y + 2, layout);
+
+					int tw, th;
+					layout.GetPixelSize (out tw, out th);
+					y += th;
+
+					if (y > maxy)
 					maxy = y;
+			}
 			}
 			
 			((IDisposable)ctx).Dispose ();
@@ -537,6 +538,15 @@ namespace Mono.Instrumentation.Monitor
 				ctx.RelLineTo (0, ExpanderSize - 4);
 			}
 			ctx.Stroke ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			base.OnDestroyed ();
 		}
 	}
 }

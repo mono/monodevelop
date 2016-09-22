@@ -265,14 +265,6 @@ namespace MonoDevelop.CSharp.ClassOutline
 				return;
 			var w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Destroy ();
-			if (outlineTreeModelSort != null) {
-				outlineTreeModelSort.Dispose ();
-				outlineTreeModelSort = null;
-			}
-			if (outlineTreeStore != null) {
-				outlineTreeStore.Dispose ();
-				outlineTreeStore = null;
-			}
 			outlineTreeView = null;
 			settings = null;
 			foreach (var tw in toolbarWidgets)
