@@ -95,6 +95,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusWidget.Visible = false;
 
 			addButton = new Button ();
+			addButton.BackgroundColor = Styles.BaseSelectionBackgroundColor;
+			addButton.LabelColor = Styles.BaseSelectionTextColor;
 			addButton.MinWidth = 128;
 			addButton.MinHeight = 34;
 			addButton.Visible = false;
