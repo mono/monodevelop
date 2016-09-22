@@ -41,8 +41,6 @@ namespace MonoDevelop.Ide.Gui
 				styleProp = typeof (Styles).GetProperty (name, BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase);
 				if (styleProp == null)
 					return null;
-				if (styleProp.PropertyType != typeof (Xwt.Drawing.Color)) // we support only Xwt colors for now
-					styleProp = null;
 				tagGetters [name] = styleProp;
 			}
 			if (styleProp == null)
