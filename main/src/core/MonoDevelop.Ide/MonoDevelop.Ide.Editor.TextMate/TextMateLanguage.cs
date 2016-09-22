@@ -138,6 +138,12 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		Lazy<Regex> unIndentedLinePattern;
 		internal Regex UnIndentedLinePattern { get { return unIndentedLinePattern.Value; } }
 
+		Lazy<Regex> foldingStartMarkerPattern;
+		internal Regex FoldingStartMarker { get { return foldingStartMarkerPattern.Value; } }
+
+		Lazy<Regex> foldingStopMarkerPattern;
+		internal Regex FoldingStopMarker { get { return foldingStopMarkerPattern.Value; } }
+
 		void ExtractComments ()
 		{
 			lineComments = new List<string> ();
@@ -164,6 +170,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			decreaseIndentPattern = new Lazy<Regex> (() => ReadSetting ("decreaseIndentPattern"));
 			indentNextLinePattern = new Lazy<Regex> (() => ReadSetting ("indentNextLinePattern"));
 			unIndentedLinePattern = new Lazy<Regex> (() => ReadSetting ("unIndentedLinePattern"));
+			foldingStartMarkerPattern = new Lazy<Regex> (() => ReadSetting ("foldingStartMarker"));
+			foldingStopMarkerPattern = new Lazy<Regex> (() => ReadSetting ("foldingStopMarker"));
 		}
 
 		Regex ReadSetting (string settingName)
@@ -172,7 +180,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				PObject val;
 				if (setting.TryGetSetting (settingName, out val)) {
 					try {
-						return new Regex (((PString)val).Value);
+						
+						return new Regex (Sublime3Format.CompileRegex (((PString)val).Value));
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while parsing " + settingName + ": " + val, e);
 					}

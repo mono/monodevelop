@@ -32,16 +32,25 @@ using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
 	class TextMateFoldingTextEditorExtension : TextEditorExtension
 	{
+		Regex foldingStartMarker, foldingStopMarker;
+		
 		protected override void Initialize ()
 		{
 			Editor.TextChanged += UpdateFoldings;
+
+			var startScope = Editor.SyntaxHighlighting.GetScopeStackAsync (0, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var lang = TextMateLanguage.Create (startScope);
+			foldingStartMarker = lang.FoldingStartMarker;
+			foldingStopMarker = lang.FoldingStopMarker;
 			UpdateFoldings (null, null);
 		}
+
 
 		public override void Dispose ()
 		{
@@ -86,10 +95,49 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		internal async Task<IEnumerable<IFoldSegment>> GetFoldingsAsync(IReadonlyTextDocument doc, CancellationToken token)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+		#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+		{
+			if (foldingStartMarker == null || foldingStopMarker == null)
+				return GenerateFoldingsFromIndentationStack (doc, token);
+			var foldings = new List<FoldSegment> ();
+			int offset = 0;
+			var foldStack = new Stack<int> ();
+			foreach (var line in doc.GetLines ()) {
+				var startMatch = foldingStartMarker.Match (doc, offset, line.Length);
+				var stopMatch = foldingStopMarker.Match (doc, offset, line.Length);
+				if (startMatch.Success && !stopMatch.Success) {
+					foldStack.Push (startMatch.Index);
+				} else if (!startMatch.Success && stopMatch.Success) {
+					if (foldStack.Count > 0) {
+						int start = foldStack.Pop ();
+						foldings.Add (new FoldSegment (start, offset + line.Length - start));
+					}
+				} else if (startMatch.Success && stopMatch.Success) {
+					if (stopMatch.Index < startMatch.Index) {
+						if (foldStack.Count > 0) {
+							int start = foldStack.Pop ();
+							foldings.Add (new FoldSegment (start, offset + line.Length - start));
+						}
+						foldStack.Push (startMatch.Index);
+					}
+					// ignore foldings inside a single line.
+				}
+				offset += line.LengthIncludingDelimiter;
+			}
+			return foldings;
+		}
+
+		class FoldTreeSegments : TreeSegment
+		{
+			public FoldTreeSegments (int offset, int length) : base (offset, length)
+			{
+			}
+		}
+
+		static IEnumerable<IFoldSegment> GenerateFoldingsFromIndentationStack (IReadonlyTextDocument doc, CancellationToken token)
 		{
 			var foldings = new List<FoldSegment> ();
-			
+
 			var indentStack = new Stack<LineInfo> ();
 			var line = doc.GetLine (1);
 			indentStack.Push (new LineInfo (line, line.GetIndentation (doc).Length, 1));
@@ -127,13 +175,6 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				}
 			}
 			return foldings;
-		}
-
-		class FoldTreeSegments : TreeSegment
-		{
-			public FoldTreeSegments (int offset, int length) : base (offset, length)
-			{
-			}
 		}
 
 		class FoldSegment : AbstractSegment, IFoldSegment
