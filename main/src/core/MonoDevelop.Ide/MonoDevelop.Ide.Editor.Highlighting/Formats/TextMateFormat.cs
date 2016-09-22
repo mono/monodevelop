@@ -349,7 +349,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				var incl = (dict ["include"] as PString)?.Value;
 				if (incl != null) {
-					includesAndMatches.Add (incl.TrimStart ('#'));
+					if (incl == "$base") {
+						includesAndMatches.Add ("main");
+					} else if (incl.StartsWith ("#")){
+						includesAndMatches.Add (incl.TrimStart ('#'));
+					} else {
+						includesAndMatches.Add ("#" + incl);
+					}
 					continue;
 				}
 				var newMatch = ReadMatch (dict);

@@ -548,7 +548,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						continue;
 					if (readPlusQuantifier) {
 						result.Length--;
-						if (!recordGroupName && groupStack.Count > 0) {
+						if (!recordGroupName && groupStack.Count > 0 && groupStack.Peek ().groupContent.Length > 0) {
 							groupStack.Peek ().groupContent.Length--;
 						}
 					}

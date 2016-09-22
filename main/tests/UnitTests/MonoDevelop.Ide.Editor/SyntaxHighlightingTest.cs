@@ -315,8 +315,9 @@ typedef struct
 				}
 			}
 			editor.Text = sb.ToString ();
-
+			highlighting.PrepareMatches ();
 			editor.SyntaxHighlighting = new SyntaxHighlighting (highlighting, editor);
+
 			//var line = editor.GetLine (6); {
 			foreach (var line in editor.GetLines ()) {
 				var coloredSegments = editor.SyntaxHighlighting.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments;

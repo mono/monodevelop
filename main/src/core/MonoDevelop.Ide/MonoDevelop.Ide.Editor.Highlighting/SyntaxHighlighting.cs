@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public static HighlightState CreateNewState (SyntaxHighlighting highlighting)
 			{
 				return new HighlightState {
-					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.Definition.GetContext ("main")),
+					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.definition.MainContext),
 					ScopeStack = ImmutableStack<string>.Empty.Push (highlighting.definition.Scope),
 					MatchStack = ImmutableStack<SyntaxMatch>.Empty
 				};
@@ -261,11 +261,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						//	scopeStack = scopeStack.Pop ();
 						PopStack (currentContext, curMatch);
 						//curSegmentOffset = matchEndOffset;
-						var nextContexts = curMatch.Set.GetContexts (highlighting.Definition);
+						var nextContexts = curMatch.Set.GetContexts (currentContext);
 						PushStack (curMatch, nextContexts);
 						goto skip;
 					} else if (curMatch.Push != null) {
-						var nextContexts = curMatch.Push.GetContexts (highlighting.Definition);
+						var nextContexts = curMatch.Push.GetContexts (currentContext);
 						PushStack (curMatch, nextContexts);
 					} else {
 						if (curMatch.Scope.Count > 0) {
@@ -382,9 +382,5 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				list.Insert (i, new ColoredSegment (startItem.Offset, lengthBefore, startItem.ScopeStack));
 		}
 
-		internal SyntaxContext GetContext (string name)
-		{
-			return definition.GetContext (name);
-		}
 	}
 }

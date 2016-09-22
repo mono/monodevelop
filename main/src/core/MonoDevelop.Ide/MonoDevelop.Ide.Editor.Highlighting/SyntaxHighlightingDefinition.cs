@@ -51,6 +51,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly List<SyntaxContext> contexts;
 		public IReadOnlyList<SyntaxContext> Contexts { get { return contexts; } }
 
+		public SyntaxContext MainContext {
+			get {
+				return contexts [0];
+			}
+		}
+
 		internal SyntaxHighlightingDefinition (string name, string scope, string firstLineMatch, bool hidden, List<string> extensions, List<SyntaxContext> contexts)
 		{
 			this.extensions = extensions;
@@ -59,25 +65,23 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			Scope = scope;
 			FirstLineMatch = firstLineMatch;
 			Hidden = hidden;
-
-			foreach (var ctx in Contexts) {
-				ctx.PrepareMatches (this);
+			foreach (var ctx in contexts) {
+				ctx.SetDefinition (this);
 			}
 		}
 
-		internal SyntaxContext GetContext (string name)
+		internal void PrepareMatches()
 		{
 			foreach (var ctx in Contexts) {
-				if (ctx.Name == name)
-					return ctx;
+				ctx.PrepareMatches ();
 			}
-			return null;
 		}
 	}
 
 	public class SyntaxContext
 	{
 		List<SyntaxMatch> matches;
+		internal SyntaxHighlightingDefinition definition;
 
 		public string Name { get; private set; }
 
@@ -150,22 +154,47 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			MetaIncludePrototype = metaIncludePrototype;
 		}
 
-		IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlightingDefinition definition)
+		internal SyntaxContext GetContext (string name)
 		{
-			return GetMatches (definition, new List<string> ());
+			if (name.StartsWith ("#")) {
+				var splittedNames = name.Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+				if (splittedNames.Length == 0)
+					return null;
+				foreach (var bundle in SyntaxHighlightingService.LanguageBundles) {
+					foreach (var highlighting in bundle.Highlightings) {
+						if (highlighting.Scope == splittedNames [0]) {
+							var searchName = splittedNames.Length == 1 ? "main" : splittedNames [1];
+							foreach (var ctx in highlighting.Contexts) {
+								if (ctx.Name == searchName)
+									return ctx;
+							}
+						}
+					}
+				}
+				return null;
+			}
+			foreach (var ctx in definition.Contexts) {
+				if (ctx.Name == name)
+					return ctx;
+			}
+			return null;
 		}
 
-		IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlightingDefinition definition, List<string> alreadyIncluded)
+		IEnumerable<SyntaxMatch> GetMatches ()
+		{
+			return GetMatches (new List<string> ());
+		}
+
+		IEnumerable<SyntaxMatch> GetMatches (List<string> alreadyIncluded)
 		{
 			foreach (var o in includesAndMatches) {
-				
 				var match = o as SyntaxMatch;
 				if (match != null) {
 					yield return match;
 					continue;
 				}
 				var include = o as string;
-				var ctx = definition.GetContext (include);
+				var ctx = GetContext (include);
 				if (ctx == null) {
 					LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
 					continue;
@@ -173,37 +202,51 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (alreadyIncluded.Contains (include))
 					continue;
 				alreadyIncluded.Add (include);
-				foreach (var match2 in ctx.GetMatches (definition, alreadyIncluded))
+				foreach (var match2 in ctx.GetMatches (alreadyIncluded))
 					yield return match2;
 			}
 		}
 
-		internal void PrepareMatches(SyntaxHighlightingDefinition definiton)
+		internal void SetDefinition (SyntaxHighlightingDefinition definition)
+		{
+			this.definition = definition;
+			foreach (var o in includesAndMatches) {
+				var match = o as SyntaxMatch;
+				if (match != null) {
+					if (match.Push is AnonymousMatchContextReference)
+						((AnonymousMatchContextReference)match.Push).Context.SetDefinition (definition);
+					if (match.Set is AnonymousMatchContextReference)
+						((AnonymousMatchContextReference)match.Set).Context.SetDefinition (definition);
+				}
+			}
+		}
+
+		internal void PrepareMatches ()
 		{
 			var preparedMatches = new List<SyntaxMatch> ();
 			IEnumerable<object> list = includesAndMatches;
 			if (MetaIncludePrototype &&  Name != "prototype") {
-				var prototypeContext = definiton.GetContext ("prototype");
+				var prototypeContext = GetContext ("prototype");
 				if (prototypeContext != null)
-					list = list.Concat (prototypeContext.GetMatches (definiton));
+					list = list.Concat (prototypeContext.GetMatches ());
 			}
 			foreach (var o in list) {
 				var match = o as SyntaxMatch;
 				if (match != null) {
 					if (match.Push is AnonymousMatchContextReference)
-						match.Push.GetContexts (definiton).First ().PrepareMatches (definiton);
+						match.Push.GetContexts (this).First ().PrepareMatches ();
 					if (match.Set is AnonymousMatchContextReference)
-						match.Set.GetContexts (definiton).First ().PrepareMatches (definiton);
+						match.Set.GetContexts (this).First ().PrepareMatches ();
 					preparedMatches.Add (match);
 					continue;
 				}
 				var include = o as string;
-				var ctx = definiton.GetContext (include);
+				var ctx = GetContext (include);
 				if (ctx == null) {
-					LoggingService.LogWarning ($"highlighting {definiton.Name} can't find include {include}.");
+					LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
 					continue;
 				}
-				preparedMatches.AddRange (ctx.GetMatches (definiton));
+				preparedMatches.AddRange (ctx.GetMatches ());
 			}
 			this.matches = preparedMatches;
 		}
@@ -276,12 +319,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public abstract class ContextReference
 	{
-		public abstract IEnumerable<SyntaxContext> GetContexts (SyntaxHighlightingDefinition definiton);
+		public abstract IEnumerable<SyntaxContext> GetContexts (SyntaxContext context);
 	}
 
 	public class ContextNameContextReference : ContextReference
 	{
-
 		public string Name { get; private set; }
 
 		internal ContextNameContextReference (string value)
@@ -289,9 +331,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.Name = value;
 		}
 
-		public override IEnumerable<SyntaxContext> GetContexts (SyntaxHighlightingDefinition definiton)
+		public override IEnumerable<SyntaxContext> GetContexts (SyntaxContext context)
 		{
-			yield return definiton.GetContext (Name);
+			yield return context.GetContext (Name);
 		}
 	}
 
@@ -304,10 +346,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public IReadOnlyList<string> Names { get; private set; }
 
-		public override IEnumerable<SyntaxContext> GetContexts (SyntaxHighlightingDefinition definiton)
+		public override IEnumerable<SyntaxContext> GetContexts (SyntaxContext context)
 		{
 			foreach (var name in Names)
-				yield return definiton.GetContext (name);
+				yield return context.GetContext (name);
 		}
 	}
 
@@ -320,7 +362,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			Context = context;
 		}
 
-		public override IEnumerable<SyntaxContext> GetContexts (SyntaxHighlightingDefinition definiton)
+		public override IEnumerable<SyntaxContext> GetContexts (SyntaxContext context)
 		{
 			yield return Context;
 		}

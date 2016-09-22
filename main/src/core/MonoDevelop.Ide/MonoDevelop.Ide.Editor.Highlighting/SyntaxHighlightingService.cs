@@ -175,6 +175,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (string file in Directory.GetFiles (path)) {
 				LoadStyleOrMode (file);
 			}
+			foreach (var bundle in languageBundles) {
+				foreach (var h in bundle.Highlightings)
+					h.PrepareMatches ();
+			}
 		}
 
 		internal static object LoadStyleOrMode (string file)

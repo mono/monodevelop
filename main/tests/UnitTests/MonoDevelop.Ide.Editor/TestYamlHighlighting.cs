@@ -39,6 +39,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Ignore("Fixme")]
 	[TestFixture]
 	class TestYamlHighlighting : TestBase
 	{
