@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> envVars = new Dictionary<string, string> ();
+		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
 		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
 		List<string> propertiesWithTransformsSorted = new List<string> ();
 		public Dictionary<string, string> EvaluationCache { get; } = new Dictionary<string, string> ();
