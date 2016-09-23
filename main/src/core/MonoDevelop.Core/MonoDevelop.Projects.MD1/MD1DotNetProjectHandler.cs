@@ -433,10 +433,15 @@ namespace MonoDevelop.Projects.MD1
 		
 		public string EvaluateString (string value)
 		{
-			string val = value.Replace ("$(Configuration)", config.Name).Replace ("$(Platform)", config.Platform);
-			return val;
+			string res;
+			if (ConfigPlatformCache.TryGetValue (value, out res))
+				return res;
+
+			ConfigPlatformCache[value] = res = value.Replace ("$(Configuration)", config.Name).Replace ("$(Platform)", config.Platform);
+			return res;
 		}
 
-		public Dictionary<string, string> EvaluationCache { get; } = new Dictionary<string, string> ();
+		Dictionary<string, string> ConfigPlatformCache { get; } = new Dictionary<string, string> ();
+		public Dictionary<string, bool> ExistsEvaluationCache { get; } = new Dictionary<string, bool> ();
 	}
 }
