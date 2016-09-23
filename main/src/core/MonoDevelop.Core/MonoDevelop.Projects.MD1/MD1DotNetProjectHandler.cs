@@ -418,6 +418,7 @@ namespace MonoDevelop.Projects.MD1
 	{
 		Project project;
 		DotNetProjectConfiguration config;
+		string directoryName;
 		
 		public ProjectParserContext (Project project, DotNetProjectConfiguration config)
 		{
@@ -428,6 +429,18 @@ namespace MonoDevelop.Projects.MD1
 		public string FullFileName {
 			get {
 				return project.FileName;
+			}
+		}
+
+		public string FullDirectoryName {
+			get {
+				if (FullFileName == String.Empty)
+					return null;
+				
+				if (directoryName == null)
+					directoryName = Path.GetDirectoryName (FullFileName);
+
+				return directoryName;
 			}
 		}
 		

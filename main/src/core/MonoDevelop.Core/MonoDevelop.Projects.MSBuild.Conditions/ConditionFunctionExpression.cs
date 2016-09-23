@@ -100,10 +100,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if (string.IsNullOrEmpty (file))
 				return false;
 
-			string directory  = null;
-			
-			if (context.FullFileName != String.Empty)
-				directory = Path.GetDirectoryName (context.FullFileName);
+			string directory = context.FullDirectoryName;
 
 			file = MSBuildProjectService.FromMSBuildPath (directory, file);
 			bool res;

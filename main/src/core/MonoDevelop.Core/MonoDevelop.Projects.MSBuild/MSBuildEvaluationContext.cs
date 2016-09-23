@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildProject project;
 		MSBuildEvaluationContext parentContext;
 		IMSBuildPropertyGroupEvaluated itemMetadata;
+		string directoryName;
 
 		string itemFile;
 		string recursiveDir;
@@ -901,6 +902,17 @@ namespace MonoDevelop.Projects.MSBuild
 		public string FullFileName {
 			get {
 				return project.FileName;
+			}
+		}
+
+		public string FullDirectoryName {
+			get {
+				if (FullFileName == String.Empty)
+					return null;
+				if (directoryName == null)
+					directoryName = Path.GetDirectoryName (FullFileName);
+
+				return directoryName;
 			}
 		}
 
