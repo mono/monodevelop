@@ -118,7 +118,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			description = new MarkupView {
 				Selectable = false,
-				LineSpacing = 3,
+				LineSpacing = 6,
 				MinWidth = 640,
 				BackgroundColor = Styles.BaseBackgroundColor,
 			};
