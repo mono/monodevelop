@@ -187,10 +187,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			return result;
 		}
-		
+
+		static HashSet<string> reportedVariables = new HashSet<string> ();
 		public void AddVariable (CodeTemplateVariable var)
 		{
-			variableDecarations.Add (var.Name, var);
+			if (variableDecarations.ContainsKey (var.Name)) {
+				if (reportedVariables.Add (var.Name))
+					LoggingService.LogWarning ("code template duplicate : " + var.Name);
+			}
+			variableDecarations [var.Name] = var;
 		}
 		
 		public class TemplateResult
