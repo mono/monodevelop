@@ -165,4 +165,5 @@
     <Folder Include="MonoDevelop.Packaging.OptionPanels\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="PostBuild.proj" />
 </Project>

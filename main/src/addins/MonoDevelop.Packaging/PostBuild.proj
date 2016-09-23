@@ -1,0 +1,17 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PrepareForRunDependsOn>$(PrepareForRunDependsOn);_MyPostBuildTarget</PrepareForRunDependsOn>
+    <_MyCopyItemRelativePath>../../../../external/NuGetizer3000/src/NuGet.Packaging.Tasks/bin/</_MyCopyItemRelativePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/ApiIntersect.exe" />
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/ICSharpCode.Decompiler.dll" />
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/ICSharpCode.NRefactory.CSharp.dll" />
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/ICSharpCode.NRefactory.dll" />
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/Mono.Cecil.dll" />
+    <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/Mono.Options.dll" />
+  </ItemGroup>
+  <Target Name="_MyPostBuildTarget">
+    <Copy SourceFiles="@(_MyCopyItem)" DestinationFolder="$(OutputPath)" />
+  </Target>
+</Project>

@@ -60,4 +60,4 @@
 	branch = monodevelop_bin
 [submodule "main/external/NuGetizer3000"]
 	path = main/external/NuGetizer3000
-	url = git://github.com/xamarin/NuGetizer3000.git
+	url = git://github.com/mrward/NuGetizer3000.git
