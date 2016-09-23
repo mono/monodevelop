@@ -274,6 +274,7 @@ namespace MonoDevelop.Ide.Commands
 				return;
 			
 			int i = 0;
+			var descFormat = GettextCatalog.GetString ("Open {0}");
 			foreach (var ri in files) {
 				string commandText = ri.DisplayName.Replace ("_", "__");
 				if (!Platform.IsMac) {
@@ -281,7 +282,7 @@ namespace MonoDevelop.Ide.Commands
 					commandText = acceleratorKeyPrefix + commandText;
 				}
 				var cmd = new CommandInfo (commandText) {
-					Description = GettextCatalog.GetString ("Open {0}", ri.FileName)
+					Description = string.Format (descFormat, ri.FileName)
 				};
 /*				Gdk.Pixbuf icon = DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
 				#pragma warning disable 618
@@ -336,6 +337,8 @@ namespace MonoDevelop.Ide.Commands
 				return;
 				
 			int i = 0;
+			var solutionFormat = GettextCatalog.GetString ("Load solution {0}");
+			var ctrlModText = GettextCatalog.GetString ("Hold Control to open in current workspace.");
 			foreach (var ri in projects) {
 				//getting the icon requires probing the file, so handle IO errors
 				IconId icon;
@@ -360,9 +363,9 @@ namespace MonoDevelop.Ide.Commands
 					commandText = acceleratorKeyPrefix + commandText;
 				}
 
-				string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
+				string str = string.Format (solutionFormat, ri.ToString ());
 				if (IdeApp.Workspace.IsOpen)
-					str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
+					str += " - " + ctrlModText;
 				
 				var cmd = new CommandInfo (commandText) {
 					Icon = icon,

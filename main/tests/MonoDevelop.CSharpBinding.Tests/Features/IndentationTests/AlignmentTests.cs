@@ -746,7 +746,40 @@ class Test
 	}
 }", fmt);
 			
-			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual ("\t\t\t", indent.ThisLineIndent);
+		}
+
+		/// <summary>
+		/// Bug 42310 - Extra indentation when using Smart indentation with inline List<enum> initialisation
+		/// </summary>
+		[Test]
+		public void TestBug42310 ()
+		{
+			var fmt = FormattingOptionsFactory.CreateMono ();
+			var indent = Helper.CreateEngine (@"
+using System.Collections.Generic;
+
+public enum Animal {
+	Cat,
+	Dog,
+	Pig,
+	Elephant,
+	Cheetah
+};
+
+public class MyClass
+{
+	public MyClass()
+	{
+		var animals = new List<Animal> {
+			Animal.Cat,
+			$
+		};
+	}
+}
+
+", fmt);
+			Assert.AreEqual ("\t\t\t", indent.ThisLineIndent);
 		}
 	}
 }

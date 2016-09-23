@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide
 		const int headerDistance = 4;
 		const int maxRows = 2;
 		const int itemPadding = 3;
+		KeyboardShortcut initialKey;
 		
 		Item activeItem;
 		public Item ActiveItem {
@@ -263,45 +264,69 @@ namespace MonoDevelop.Ide
 			Gdk.ModifierType mod;
 			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
-			
-			switch (accels [0].Key) {
-			case Gdk.Key.Left:
-			case Gdk.Key.KP_Left:
-				LeftItem ();
-				break;
-			case Gdk.Key.Right:
-			case Gdk.Key.KP_Right:
-				RightItem ();
-				break;
-			case Gdk.Key.Up:
-			case Gdk.Key.KP_Up:
-				PrevItem (false);
-				break;
-			case Gdk.Key.Down:
-			case Gdk.Key.KP_Down:
-				NextItem (false);
-				break;
-			case Gdk.Key.Tab:
+			if (initialKey.IsEmpty)
+				initialKey = new KeyboardShortcut (key, mod);
+
+			if (accels [0].Key == initialKey.Key) {
 				if ((accels [0].Modifier & ModifierType.ShiftMask) == 0)
 					NextItem (true);
 				else
 					PrevItem (true);
-				break;
-			case Gdk.Key.Return:
-			case Gdk.Key.KP_Enter:
-			case Gdk.Key.ISO_Enter:
-				OnRequestClose (new RequestActionEventArgs (true));
-				break;
-			case Gdk.Key.Escape:
-				OnRequestClose (new RequestActionEventArgs (false));
-				break;
+			} else {
+				switch (accels [0].Key) {
+					case Gdk.Key.space:
+					case Gdk.Key.KP_Space:
+						RightItem (true);
+						break;
+					case Gdk.Key.Left:
+					case Gdk.Key.KP_Left:
+						LeftItem ();
+						break;
+					case Gdk.Key.Right:
+					case Gdk.Key.KP_Right:
+						RightItem ();
+						break;
+					case Gdk.Key.Up:
+					case Gdk.Key.KP_Up:
+						PrevItem (false);
+						break;
+					case Gdk.Key.Down:
+					case Gdk.Key.KP_Down:
+						NextItem (false);
+						break;
+					case Gdk.Key.Tab:
+						if ((accels [0].Modifier & ModifierType.ShiftMask) == 0)
+							NextItem (true);
+						else
+							PrevItem (true);
+						break;
+					case Gdk.Key.Return:
+					case Gdk.Key.KP_Enter:
+					case Gdk.Key.ISO_Enter:
+						OnRequestClose (new RequestActionEventArgs (true));
+						break;
+					case Gdk.Key.Escape:
+						OnRequestClose (new RequestActionEventArgs (false));
+					break;
+				}
 			}
 			return base.OnKeyPressEvent (evnt);
 		}
 		
 		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
 		{
-			if (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R) {
+			if (initialKey.IsEmpty) {
+				Gdk.Key key;
+				Gdk.ModifierType mod;
+				KeyboardShortcut [] accels;
+				GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
+				initialKey = new KeyboardShortcut (key, mod);
+			}
+
+			var releaseMods = GtkWorkarounds.KeysForMod (initialKey.Modifier);
+
+			if ((releaseMods.Length == 0 && (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R)) ||
+			    releaseMods.Contains (evnt.Key)) {
 				OnRequestClose (new RequestActionEventArgs (true));
 			}
 			return base.OnKeyReleaseEvent (evnt);
@@ -332,7 +357,7 @@ namespace MonoDevelop.Ide
 
 		public event EventHandler<RequestActionEventArgs> RequestClose;
 		
-		void LeftItem ()
+		void LeftItem (bool wrap = false)
 		{
 			for (int i = 0; i < categories.Count; i++) {
 				var cat = categories[i];
@@ -340,6 +365,10 @@ namespace MonoDevelop.Ide
 				if (idx < 0)
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
+				if (wrap && i == 0) {
+					LastCategory (relIndex);
+					return;
+				}
 				if (relIndex / maxItems == 0) {
 					Category prevCat = GetPrevCat (i);
 					if (prevCat == cat)
@@ -353,7 +382,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void RightItem ()
+		void RightItem (bool wrap = false)
 		{
 			for (int i = 0; i < categories.Count; i++) {
 				var cat = categories[i];
@@ -368,9 +397,37 @@ namespace MonoDevelop.Ide
 					if (i + 1 < categories.Count) {
 						int newIndex = Math.Min (nextCat.Items.Count - 1, nextCat.FirstVisibleItem + relIndex);
 						ActiveItem = nextCat.Items [newIndex];
-					}
+					} else if (wrap)
+						FirstCategory (relIndex);
 				} else {
 					ActiveItem = cat.Items [relIndex + maxItems];
+				}
+				return;
+			}
+		}
+
+		public void LastCategory (int selIndex = 0)
+		{
+			for (int i = categories.Count - 1; i >= 0; i--) {
+				var cat = categories [i];
+
+				if (cat.Items.Count > 0) {
+					int newIndex = Math.Min (cat.Items.Count - 1, cat.FirstVisibleItem + selIndex);
+					ActiveItem = cat.Items [newIndex];
+					return;
+				}
+			}
+		}
+
+		public void FirstCategory (int selIndex = 0)
+		{
+			for (int i = 0; i < categories.Count; i++) {
+				var cat = categories [i];
+
+				if (cat.Items.Count > 0) {
+					int newIndex = Math.Min (cat.Items.Count - 1, cat.FirstVisibleItem + selIndex);
+					ActiveItem = cat.Items [newIndex];
+					return;
 				}
 			}
 		}
@@ -557,9 +614,16 @@ namespace MonoDevelop.Ide
 		Label labelType     = new Label ();
 		Label labelTitle    = new Label ();
 		DocumentList documentList = new DocumentList ();
-		
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : this (parent, null, startWithNext)
 		{
+		}
+
+		public DocumentSwitcher (Gtk.Window parent, string category, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		{
+			if (string.IsNullOrEmpty (category))
+				category = GettextCatalog.GetString ("Documents");
+			
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
 				IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
@@ -616,8 +680,10 @@ namespace MonoDevelop.Ide
 					Title = pad.Title,
 					Tag = pad
 				};
-				if (pad.InternalContent.Initialized && pad.Window.Content.Control.HasFocus)
-					activeItem = item;
+				if (category == padCategory.Title) {
+					if (activeItem == null || (pad.InternalContent.Initialized && pad.Window.HasFocus))
+						activeItem = item;
+				}
 				padCategory.AddItem (item);
 			}
 			documentList.AddCategory (padCategory);
@@ -632,8 +698,10 @@ namespace MonoDevelop.Ide
 					Path = doc.Name,
 					Tag = doc
 				};
-				if (doc.Window.ActiveViewContent.Control.HasFocus)
-					activeItem = item;
+				if (category == padCategory.Title) {
+					if (activeItem == null || doc.Window.ActiveViewContent.Control.HasFocus)
+						activeItem = item;
+				}
 				documentCategory.AddItem (item);
 			}
 			documentList.AddCategory (documentCategory);

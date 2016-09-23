@@ -1283,7 +1283,7 @@ namespace MonoDevelop.Autotools
 						j ++;
 
 					if (j >= len) {
-						sb.Append (filename.Substring (i));
+						sb.Append (filename, i, filename.Length - i);
 						break;
 					}
 

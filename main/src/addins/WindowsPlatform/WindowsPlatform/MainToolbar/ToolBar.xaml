@@ -17,6 +17,8 @@
         <StackPanel x:Name="LeftPanel" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto" UseLayoutRounding="True">
             <local:RunButtonControl x:Name="RunButton" VerticalContentAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True" />
             <Separator Opacity="0" Width="10" UseLayoutRounding="True" />
+            <local:RunConfigurationComboMenu x:Name="RunConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" UseLayoutRounding="True" />
+            <Separator x:Name="RunConfigurationSeparator" Opacity="0" Width="10" UseLayoutRounding="True" />
             <local:ConfigurationComboMenu x:Name="ConfigurationMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" UseLayoutRounding="True" />
             <Separator Opacity="0" Width="10" UseLayoutRounding="True" />
             <local:RuntimeComboMenu x:Name="RuntimeMenu" VerticalContentAlignment="Center" Background="Transparent" VerticalAlignment="Center" UseLayoutRounding="True" />

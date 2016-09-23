@@ -34,18 +34,18 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserNavigationPoint : NavigationPoint
+	class AssemblyBrowserNavigationPoint : DocumentNavigationPoint
 	{
 		List<AssemblyLoader> definitions;
 		string idString;
 
-		public AssemblyBrowserNavigationPoint (List<AssemblyLoader> definitions, string idString)
+		public AssemblyBrowserNavigationPoint (List<AssemblyLoader> definitions, AssemblyLoader assembly, string idString) : base (assembly?.FileName)
 		{
 			this.definitions = definitions;
 			this.idString = idString;
 		}
 
-		Document DoShow ()
+		protected override async Task<Document> DoShow ()
 		{
 			Document result = null;
 			foreach (var view in Ide.IdeApp.Workbench.Documents) {
@@ -67,6 +67,11 @@ namespace MonoDevelop.AssemblyBrowser
 				view.Widget.suspendNavigation = true;
 				view.EnsureDefinitionsLoaded (definitions);
 				view.Open (idString, expandNode: false);
+			} else if (FileName != null) {
+				var view = result.GetContent<AssemblyBrowserViewContent> ();
+				view.Widget.suspendNavigation = true;
+				view.EnsureDefinitionsLoaded (definitions);
+				await view.Load (FileName);
 			}
 			return result;
 		}
@@ -76,24 +81,26 @@ namespace MonoDevelop.AssemblyBrowser
 			var other = obj as AssemblyBrowserNavigationPoint;
 			if (other == null)
 				return false;
-			return other.idString.Equals (idString);
+			if (other.idString != null)
+				return other.idString.Equals (idString);
+			return base.Equals (other);
 		}
 
 		public override int GetHashCode ()
 		{
-			return idString.GetHashCode ();
+			return idString != null ? idString.GetHashCode () : base.GetHashCode ();
 		}
 
 		#region implemented abstract members of NavigationPoint
 
-		public override Task<Document> ShowDocument ()
-		{
-			return Task.FromResult (DoShow ());
-		}
-
 		public override string DisplayName {
 			get {
-				return GettextCatalog.GetString ("Assembly Browser");
+				if (!string.IsNullOrEmpty (idString)) {
+					if (!string.IsNullOrEmpty (FileName))
+						return String.Format ("{0} : {1}", base.DisplayName, idString);
+					return idString;
+				}
+				return base.DisplayName;
 			}
 		}
 

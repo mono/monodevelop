@@ -78,11 +78,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
 
-			if (styleStore != null) {
-				styleStore.Dispose ();
-				styleStore = null;
-			}
-
 			MonoDevelop.Ide.Gui.Styles.Changed -= HandleThemeChanged;
 			base.OnDestroyed ();
 		}
@@ -176,7 +171,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				error = true;
 				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
 				style.Name = styleName;
-				style.Description = GettextCatalog.GetString ("Loading error:" + e.Message);
+				style.Description = GettextCatalog.GetString ("Loading error: {0}", e.Message);
 				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
 				return style;
 			}

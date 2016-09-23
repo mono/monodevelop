@@ -160,8 +160,9 @@
 	
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-<!--		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>-->
-		<ModeSetType class="MonoDevelop.Core.Assemblies.CustomRuntimeExecutionModeSet"/>
+		<ModeSet id="Run" _name="Run" />
+		<ModeSet id="Debug" _name="Debug" />
+		<ModeSet id="Profile" _name="Profile" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Runtimes">

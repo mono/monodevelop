@@ -858,21 +858,23 @@ namespace Stetic
 				this.GdkWindow.DrawRectangle (this.Style.WhiteGC, true, 0, 0, w, h);
 				this.GdkWindow.DrawRectangle (this.Style.BlackGC, false, 0, 0, w-1, h-1);
 			} else if (fill == BoxFill.HLine) {
-				Gdk.GC gc = new Gdk.GC (this.GdkWindow);
-				gc.SetDashes (0, new sbyte[] {1,1}, 2);
-				gc.SetLineAttributes (SelectionHandleBox.selectionLineWidth, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Miter);
-				gc.Foreground = this.Style.Black;
-				this.GdkWindow.DrawLine (gc, 0, h/2, w, h/2);
-				gc.Foreground = this.Style.White;
-				this.GdkWindow.DrawLine (gc, 1, h/2, w, h/2);
+				using (Gdk.GC gc = new Gdk.GC (this.GdkWindow)) {
+					gc.SetDashes (0, new sbyte [] { 1, 1 }, 2);
+					gc.SetLineAttributes (SelectionHandleBox.selectionLineWidth, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Miter);
+					gc.Foreground = this.Style.Black;
+					this.GdkWindow.DrawLine (gc, 0, h / 2, w, h / 2);
+					gc.Foreground = this.Style.White;
+					this.GdkWindow.DrawLine (gc, 1, h/2, w, h/2);
+				}
 			} else {
-				Gdk.GC gc = new Gdk.GC (this.GdkWindow);
-				gc.SetDashes (0, new sbyte[] {1,1}, 2);
-				gc.SetLineAttributes (SelectionHandleBox.selectionLineWidth, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Miter);
-				gc.Foreground = this.Style.Black;
-				this.GdkWindow.DrawLine (gc, w/2, 0, w/2, h);
-				gc.Foreground = this.Style.White;
-				this.GdkWindow.DrawLine (gc, w/2, 1, w/2, h);
+				using (Gdk.GC gc = new Gdk.GC (this.GdkWindow)) {
+					gc.SetDashes (0, new sbyte [] { 1, 1 }, 2);
+					gc.SetLineAttributes (SelectionHandleBox.selectionLineWidth, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Miter);
+					gc.Foreground = this.Style.Black;
+					this.GdkWindow.DrawLine (gc, w / 2, 0, w / 2, h);
+					gc.Foreground = this.Style.White;
+					this.GdkWindow.DrawLine (gc, w / 2, 1, w/2, h);
+				}
 			}
 			
 			return true;

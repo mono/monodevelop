@@ -211,8 +211,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			names.Reverse();
-			return string.Join(".", names);
+			return string.Join(".", names.Reverse<string> ());
 		}
 
 		private static string GetNodeName(SyntaxNode node, bool includeTypeParameters)
@@ -418,7 +417,7 @@ namespace MonoDevelop.CSharp
 			: this()
 		{
 			this.FilePath = node.SyntaxTree.FilePath;
-			Name = string.Intern (name);
+			Name = name;
 //			ContainerDisplayName = string.Intern (containerDisplayName);
 			FullyQualifiedContainerName = fullyQualifiedContainerName;
 			Kind = kind;

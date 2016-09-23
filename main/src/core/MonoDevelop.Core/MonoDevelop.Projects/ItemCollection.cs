@@ -60,6 +60,7 @@ namespace MonoDevelop.Projects
 
 		public void Add (T item)
 		{
+			AssertCanWrite ();
 			list = list.Add (item);
 			OnItemsAdded (new [] { item });
 		}

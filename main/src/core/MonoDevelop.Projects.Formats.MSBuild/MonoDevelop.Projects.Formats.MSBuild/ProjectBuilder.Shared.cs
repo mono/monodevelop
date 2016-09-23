@@ -98,10 +98,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void LogWriteLine (string txt)
 		{
+			LogWrite (txt + Environment.NewLine);
+		}
+
+		void LogWrite (string txt)
+		{
 			lock (log) {
 				if (currentLogWriter != null) {
 					// Append the line to the log, and schedule the flush of the log, unless it has already been done
-					log.AppendLine (txt);
+					log.Append (txt);
 					if (!flushingLog) {
 						// Flush the log after 100ms
 						flushingLog = true;

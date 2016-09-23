@@ -98,6 +98,12 @@ namespace MonoDevelop.Components.MainToolbar
 		IConfigurationModel ActiveConfiguration { get; set; }
 
 		/// <summary>
+		/// Gets the active run configuration.
+		/// </summary>
+		/// <value>The active run configuration.</value>
+		IRunConfigurationModel ActiveRunConfiguration { get; set; }
+
+		/// <summary>
 		/// Gets the active runtime.
 		/// </summary>
 		/// <value>The active runtime.</value>
@@ -110,15 +116,32 @@ namespace MonoDevelop.Components.MainToolbar
 		IEnumerable<IConfigurationModel> ConfigurationModel { get; set; }
 
 		/// <summary>
+		/// Gets or sets the Run Configuration model which contains all the usable run configurations.
+		/// </summary>
+		/// <value>The run configuration model.</value>
+		IEnumerable<IRunConfigurationModel> RunConfigurationModel { get; set; }
+
+		/// <summary>
 		/// Gets or sets the Runtime model which contains all usable runtimes.
 		/// </summary>
 		/// <value>The runtime model.</value>
 		IEnumerable<IRuntimeModel> RuntimeModel { get; set; }
 
 		/// <summary>
+		/// Gets or sets the run configuration selector is visible.
+		/// </summary>
+		/// <value>The run configuration visible.</value>
+		bool RunConfigurationVisible { get; set; }
+
+		/// <summary>
 		/// Occurs when the configuration changed.
 		/// </summary>
 		event EventHandler ConfigurationChanged;
+
+		/// <summary>
+		/// Occurs when the run configuration changed.
+		/// </summary>
+		event EventHandler RunConfigurationChanged;
 
 		/// <summary>
 		/// Occurs when the runtime changed.

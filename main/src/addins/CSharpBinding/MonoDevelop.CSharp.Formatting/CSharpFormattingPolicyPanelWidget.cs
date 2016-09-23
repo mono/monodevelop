@@ -82,7 +82,7 @@ namespace Example {
 			texteditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow1.Child = texteditor;
+			scrolledwindow1.AddWithViewport (texteditor);
 			ShowAll ();
 		}
 

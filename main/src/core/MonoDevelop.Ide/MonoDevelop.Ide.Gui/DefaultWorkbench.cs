@@ -244,8 +244,11 @@ namespace MonoDevelop.Ide.Gui
 				var iconsEl = BrandingService.GetElement ("ApplicationIcons");
 				if (iconsEl != null) {
 					try {
-						Gtk.Window.DefaultIconList = iconsEl.Elements ("Icon")
+						var icons = iconsEl.Elements ("Icon")
 							.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
+						Gtk.Window.DefaultIconList = icons;
+						foreach (var icon in icons)
+							icon.Dispose ();
 						return;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not load app icons", ex);
@@ -1386,11 +1389,11 @@ namespace MonoDevelop.Ide.Gui
 				};
 			}
 			
-			item.VisibleChanged += delegate {
+			item.VisibleChanged += (s,a) => {
 				if (item.Visible)
-					window.NotifyShown ();
+					window.NotifyShown (a);
 				else
-					window.NotifyHidden ();
+					window.NotifyHidden (a);
 			};
 			
 			item.ContentVisibleChanged += delegate {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">monodevelop.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LGPL-2.1 and MIT</project_license>
+  <name>MonoDevelop</name>
+  <summary>Full-Featured IDE for Mono and Gtk#</summary>
+  <description>
+    <p>
+      MonoDevelop is a full-featured integrated development
+      environment (IDE) for Mono and Gtk# primarily designed
+      for C# and other .NET languages. It allows to quickly
+      create desktop and ASP.NET Web applications.
+    </p>
+  </description>
+  <url type="homepage">http://monodevelop.com/</url>
+  <screenshots>
+    <screenshot type="default">http://www.monodevelop.com/images/388-ss-main-5-4.png</screenshot>
+    <screenshot>http://www.monodevelop.com/images/387-ss-stetic-5-4.png</screenshot>
+    <screenshot>http://www.monodevelop.com/images/392-ss-addin-5-4.png</screenshot>
+    <screenshot>http://www.monodevelop.com/images/391-ss-nuget-5-4.png</screenshot>
+  </screenshots>
+</application>

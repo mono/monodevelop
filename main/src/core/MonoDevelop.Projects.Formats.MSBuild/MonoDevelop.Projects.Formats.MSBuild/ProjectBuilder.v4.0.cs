@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects.MSBuild
 					ILogger[] loggers;
 					var logger = new LocalLogger (file);
 					if (logWriter != null) {
-						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWriteLine, null, null);
+						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWrite, null, null);
 						loggers = new ILogger[] { logger, consoleLogger };
 					} else {
 						loggers = new ILogger[] { logger };

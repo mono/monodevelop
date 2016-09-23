@@ -74,9 +74,7 @@ namespace MonoDevelop.Debugger
 	{
 		internal static IBuildTarget GetRunTarget ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem != null ? 
-				IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem : 
-				IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			return IdeApp.ProjectOperations.CurrentSelectedSolution ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 		}
 
 		internal async static void BuildAndDebug ()

@@ -184,7 +184,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		IEnumerable<IMethodSymbol> GetExtensionMethods (SemanticModel semanticModel, ITypeSymbol typeToExtend, InvocationExpressionSyntax node, CancellationToken cancellationToken)
 		{
-			var usedNamespaces = new HashSet<string> ();
+			var usedNamespaces = new List<string> ();
 			foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
 				usedNamespaces.Add (un.GetFullName ());
 			}
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 					foreach (var member in currentNs.GetNamespaceMembers ()) {
 						var currentNsName = member.GetFullName ();
-						if (usedNamespaces.Contains (currentNsName) ||
+						if (usedNamespaces.Any (u => u.StartsWith (currentNsName, StringComparison.Ordinal)) ||
 							enclosingNamespaceName == currentNsName ||
 							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
 							enclosingNamespaceName [currentNsName.Length] == '.')) {

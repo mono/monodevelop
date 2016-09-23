@@ -72,12 +72,12 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
 		{
-			return Task.Run (delegate {
+			return Task.Run (async delegate {
 				Solution sol = (Solution)obj;
 
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
-					WriteFileInternal (file, file, sol, saveProjects, monitor);
+					await WriteFileInternal (file, file, sol, saveProjects, monitor);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 		}
 
-		void WriteFileInternal (string file, string sourceFile, Solution solution, bool saveProjects, ProgressMonitor monitor)
+		async Task WriteFileInternal (string file, string sourceFile, Solution solution, bool saveProjects, ProgressMonitor monitor)
 		{
 			if (saveProjects) {
 				var items = solution.GetAllSolutionItems ().ToArray ();
@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.MSBuild
 					try {
 						monitor.BeginStep ();
 						item.SavingSolution = true;
-						item.SaveAsync (monitor).Wait ();
+						await item.SaveAsync (monitor);
 					} finally {
 						item.SavingSolution = false;
 					}
@@ -392,7 +392,7 @@ namespace MonoDevelop.Projects.MSBuild
 				});
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
-				sol.OnEndLoad ().Wait ();
+				await sol.OnEndLoad ();
 				sol.NotifyItemReady ();
 				monitor.EndTask ();
 				throw;

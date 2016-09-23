@@ -167,7 +167,10 @@ namespace Mono.TextTemplating
 			
 			if (settings.Debug)
 				pars.TempFiles.KeepFiles = true;
-			
+			if (string.IsNullOrWhiteSpace (pars.CompilerOptions))
+				pars.CompilerOptions = "/noconfig";
+			else if (!pars.CompilerOptions.Contains ("/noconfig"))
+				pars.CompilerOptions = "/noconfig " + pars.CompilerOptions;
 			return settings.Provider.CompileAssemblyFromDom (pars, ccu);
 		}
 		

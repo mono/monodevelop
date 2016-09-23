@@ -564,12 +564,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			RepositionContents ();
 		}
 
+		NSImage statusReadyImage = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 		void ReconstructString ()
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
 				UpdateApplicationNamePlaceholderText ();
-				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
+				imageView.Image = statusReadyImage;
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;

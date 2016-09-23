@@ -588,10 +588,9 @@ namespace MonoDevelop.SourceEditor
 					if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 						if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 							continue;
+						task.Completed = IdeApp.Preferences.DefaultHideMessageBubbles;
 						var errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, task.Severity == TaskSeverity.Error, task.Description);
 						errorMarkers.Add (errorTextMarker);
-
-						errorTextMarker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles;
 					}
 				}
 				return errorMarkers;
@@ -3040,9 +3039,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
+		string ITextEditorImpl.GetMarkup (int offset, int length, MarkupOptions options)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
+			var data = TextEditor.GetTextEditorData ();
+			switch (options.MarkupFormat) {
+			case MarkupFormat.Pango:
+				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
+			case MarkupFormat.Html:
+				return HtmlWriter.GenerateHtml (Mono.TextEditor.Utils.ColoredSegment.GetChunks (data, new Mono.TextEditor.TextSegment (offset, length)), data.ColorStyle, data.Options, false);
+			case MarkupFormat.RichText:
+				return RtfWriter.GenerateRtf (Mono.TextEditor.Utils.ColoredSegment.GetChunks (data, new Mono.TextEditor.TextSegment (offset, length)), data.ColorStyle, data.Options);
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)
@@ -3543,6 +3552,9 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.GrabFocus ()
 		{
+			var topLevelWindow = this.TextEditor.Toplevel as Gtk.Window;
+			if (topLevelWindow != null)
+				topLevelWindow.Present ();
 			this.TextEditor.GrabFocus ();
 		}
 

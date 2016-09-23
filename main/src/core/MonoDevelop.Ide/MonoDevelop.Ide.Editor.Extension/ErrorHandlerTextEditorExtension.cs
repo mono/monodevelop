@@ -140,6 +140,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			"CS1513" // } expected
 		};
 
+		static bool SkipError (DocumentContext ctx, Error error)
+		{
+			return (ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject)) && !lexicalError.Contains (error.Id);
+		}
+
 		async Task UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
 		{
 			if (parsedDocument == null || isDisposed)
@@ -160,7 +165,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 						// Else we underline the error
 						if (errors != null) {
 							foreach (var error in errors) {
-								if ((ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject)) && !lexicalError.Contains (error.Id))
+								if (SkipError (ctx, error))
 									continue;
 								UnderLineError (error);
 							}
@@ -213,7 +218,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return;
-					if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
+					if (SkipError (ctx, error))
 						continue;
 					int offset;
 					try {
@@ -234,7 +239,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				OnTasksUpdated (EventArgs.Empty);
 			});
 		}
-		#endregion
+
+	#endregion
 
 	}
 }

@@ -207,8 +207,8 @@ namespace Mono.TextTemplating
  			}
 
 			var assemblyName = new AssemblyName(assemblyReference);
-			if (assemblyName.Version != null)
-				return assemblyReference;
+			if (assemblyName.Version != null)//Load via GAC and return full path
+				return Assembly.Load (assemblyName).Location;
 
 			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
 				return assemblyReference + ".dll";

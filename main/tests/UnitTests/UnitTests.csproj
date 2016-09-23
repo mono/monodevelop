@@ -291,6 +291,7 @@
     <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
     <Compile Include="MonoDevelop.Core\RemoteProcessConnectionTests.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfigurations.cs" />
     <Compile Include="MonoDevelop.Core\RuntimeTests.cs" />
     <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />

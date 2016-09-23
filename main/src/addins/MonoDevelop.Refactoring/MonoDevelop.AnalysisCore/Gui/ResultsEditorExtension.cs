@@ -147,15 +147,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 					src = new CancellationTokenSource ();
 					var token = src.Token;
 					var ad = new AnalysisDocument (Editor, DocumentContext);
-					Task.Run (() => {
+					Task.Run (async () => {
 						try {
-							var result = CodeDiagnosticRunner.Check (ad, token).Result;
+							var result = await CodeDiagnosticRunner.Check (ad, token);
 							if (token.IsCancellationRequested)
 								return;
 							var updater = new ResultsUpdater (this, result, token);
 							updater.Update ();
-						} catch (OperationCanceledException) {
-						} catch (AggregateException) {
+						} catch (Exception) {
 						}
 					});
 					updateTimeout = 0;

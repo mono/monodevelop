@@ -125,7 +125,7 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
-			return base.OnGetSupportedFeatures () | ProjectFeatures.Execute;
+			return (base.OnGetSupportedFeatures () | ProjectFeatures.Execute) & ~ProjectFeatures.RunConfigurations;
 		}
 
 		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -159,13 +159,13 @@ namespace MonoDevelop.AspNet.Projects
 			};
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			var cmd = CreateExecutionCommand (configuration, GetConfiguration (configuration));
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			//check XSP is available
 
@@ -190,10 +190,7 @@ namespace MonoDevelop.AspNet.Projects
 					}
 				}
 
-				if (cfg.ExternalConsole)
-					console = context.ExternalConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput, monitor.CancellationToken);
-				else
-					console = context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+				console = context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 
 				// The running Port value is now captured in the XspBrowserLauncherConsole object
 				string url = String.Format ("http://{0}", XspParameters.Address);

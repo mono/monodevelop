@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Execution
 	class DefaultExecutionModeSet: IExecutionModeSet
 	{
 		public string Name {
-			get { return GettextCatalog.GetString ("Default"); }
+			get { return GettextCatalog.GetString ("Run"); }
 		}
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {

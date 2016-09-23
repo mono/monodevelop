@@ -514,7 +514,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var res = await sol.Build (Util.GetMonitor (), "Debug");
-			Assert.AreEqual (0, res.Errors.Count);
+			Assert.IsNull (res.Errors.FirstOrDefault ()?.ToString ());
 		}
 
 		[Test]
@@ -865,6 +865,80 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.That (savedXml, Contains.Substring ("<Import Project=\"MyImport.targets\""));
+		}
+
+		[Test]
+		public async Task AddRemoveReferenceEvents ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			int added = 0, removed = 0, modifiedRefs = 0, modifiedItems = 0, refsChanged = 0;
+
+			// We should get two ReferenceAdded events (one for each reference), but only one global modified and assemblies changed event.
+
+			var refs = new [] { ProjectReference.CreateAssemblyReference ("Foo"), ProjectReference.CreateAssemblyReference ("Bar") };
+
+			p.ReferenceAddedToProject += delegate {
+				added++;
+				Assert.IsTrue (refs.All (r => r.OwnerProject != null));
+			};
+			p.ReferenceRemovedFromProject += delegate {
+				removed++;
+				Assert.IsTrue (refs.All (r => r.OwnerProject == null));
+			};
+
+			EventHandler refsChangedHandler = delegate {
+				refsChanged++;
+				Assert.IsTrue (refs.All (r => r.OwnerProject != null));
+			};
+			p.ReferencedAssembliesChanged += refsChangedHandler;
+
+			SolutionItemModifiedEventHandler modifiedHandler = delegate (object sender, SolutionItemModifiedEventArgs e) {
+				foreach (var ev in e) {
+					if (ev.Hint == "References")
+						modifiedRefs++;
+					if (ev.Hint == "Items")
+						modifiedItems++;
+				}
+				Assert.IsTrue (refs.All (r => r.OwnerProject != null));
+			};
+			p.Modified += modifiedHandler;
+
+			p.References.AddRange (refs);
+
+			Assert.AreEqual (2, added);
+			Assert.AreEqual (1, modifiedRefs);
+			Assert.AreEqual (1, modifiedItems);
+			Assert.AreEqual (1, refsChanged);
+
+			modifiedRefs = modifiedItems = refsChanged = 0;
+			p.ReferencedAssembliesChanged -= refsChangedHandler;
+			p.Modified -= modifiedHandler;
+
+			refsChangedHandler = delegate {
+				refsChanged++;
+				Assert.IsTrue (refs.All (r => r.OwnerProject == null));
+			};
+			p.ReferencedAssembliesChanged += refsChangedHandler;
+
+			modifiedHandler = delegate (object sender, SolutionItemModifiedEventArgs e) {
+				foreach (var ev in e) {
+					if (ev.Hint == "References")
+						modifiedRefs++;
+					if (ev.Hint == "Items")
+						modifiedItems++;
+				}
+				Assert.IsTrue (refs.All (r => r.OwnerProject == null));
+			};
+			p.Modified += modifiedHandler;
+
+			p.References.RemoveRange (refs);
+
+			Assert.AreEqual (2, removed);
+			Assert.AreEqual (1, modifiedRefs);
+			Assert.AreEqual (1, modifiedItems);
+			Assert.AreEqual (1, refsChanged);
 		}
 	}
 

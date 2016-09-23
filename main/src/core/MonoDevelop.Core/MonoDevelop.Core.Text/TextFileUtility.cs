@@ -293,10 +293,11 @@ namespace MonoDevelop.Core.Text
 			WriteTextFinal (tmpPath, fileName);
 		}
 
+		const int DefaultBufferSize = 4096;
 		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
 		{
 			var tmpPath = WriteTextInit (fileName, text, encoding);
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write, bufferSize: DefaultBufferSize, useAsync: true)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
@@ -430,7 +431,7 @@ namespace MonoDevelop.Core.Text
 
 		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
-			using (var f = File.OpenRead (file)) {
+			using (var f = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: DefaultBufferSize, useAsync: true)) {
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;

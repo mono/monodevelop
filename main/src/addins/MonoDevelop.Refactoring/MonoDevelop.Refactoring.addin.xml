@@ -185,7 +185,9 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<CommandItem id = "MonoDevelop.Refactoring.AnalyzeSource" insertbefore="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<Condition id="ItemType" value="Solution|Project">
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeSource" insertbefore="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		</Condition>
 	</Extension>
 
 

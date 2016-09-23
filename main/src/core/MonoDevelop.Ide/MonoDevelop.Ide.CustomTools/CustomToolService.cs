@@ -71,19 +71,19 @@ namespace MonoDevelop.Ide.CustomTools
 			});
 			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, false);
+					Update (e.ProjectFile, e.Project, false);
 			};
 			IdeApp.Workspace.FilePropertyChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, false);
+					Update (e.ProjectFile, e.Project, false);
 			};
 			IdeApp.Workspace.FileRemovedFromProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, false);
+					Update (e.ProjectFile, e.Project, false);
 			};
 			IdeApp.Workspace.FileAddedToProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, false);
+					Update (e.ProjectFile, e.Project, false);
 			};
 			//FIXME: handle the rename
 			//MonoDevelop.Ide.Gui.IdeApp.Workspace.FileRenamedInProject
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.CustomTools
 			//forces static ctor to run
 		}
 		
-		static ISingleFileCustomTool GetGenerator (string name)
+		static SingleProjectFileCustomTool GetGenerator (string name)
 		{
 			if (string.IsNullOrEmpty (name))
 				return null;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 
-		static bool ShouldRunGenerator (ProjectFile file, bool force, out ISingleFileCustomTool tool, out ProjectFile genFile)
+		static bool ShouldRunGenerator (ProjectFile file, Project project, bool force, out SingleProjectFileCustomTool tool, out ProjectFile genFile)
 		{
 			tool = null;
 			genFile = null;
@@ -151,23 +151,29 @@ namespace MonoDevelop.Ide.CustomTools
 				return false;
 			}
 
+			if (project == null) {
+				// this might happen if the file is being removed from the project. Ideally we wouldn't hit this path
+				// because if we use the overload with the project param then we can pass the appropriate project
+				return false;
+			}
+
 			//ignore MSBuild tool for projects that aren't MSBuild or can't build
 			//we could emit a warning but this would get very annoying for Xamarin Forms + SAP
 			//in future we could consider running the MSBuild generator in context of every referencing project
 			if (tool is MSBuildCustomTool) {
-				if (!file.Project.SupportsBuild ()) {
+				if (!project.SupportsBuild ()) {
 					return false;
 				}
 				bool byDefault, require;
-				MonoDevelop.Projects.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
-				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+				var usesMSBuild = require || (project.UseMSBuildEngine ?? byDefault);
 				if (!usesMSBuild) {
 					return false;
 				}
 			}
 
 			if (!string.IsNullOrEmpty (file.LastGenOutput)) {
-				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
+				genFile = project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
 			}
 
 			return force
@@ -179,11 +185,11 @@ namespace MonoDevelop.Ide.CustomTools
 		static async Task Update (ProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int succeeded, int warnings, int errors)
 		{
 			ProjectFile file = fileEnumerator.Current;
-			ISingleFileCustomTool tool;
+			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
 
 			bool shouldRun;
-			while (!(shouldRun = ShouldRunGenerator (file, force, out tool, out genFile)) && fileEnumerator.MoveNext ())
+			while (!(shouldRun = ShouldRunGenerator (file, file.Project, force, out tool, out genFile)) && fileEnumerator.MoveNext ())
 				continue;
 
 			//no files which can be generated in remaining elements of the collection, nothing to do
@@ -198,7 +204,7 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 
 			try {
-				await tool.Generate (monitor, file, result);
+				await tool.Generate (monitor, file.Project, file, result);
 				if (!monitor.HasErrors && !monitor.HasWarnings) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' was generated successfully.", result.GeneratedFilePath));
 					succeeded++;
@@ -249,11 +255,17 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.Dispose ();
 		}
 
-		public static async void Update (ProjectFile file, bool force)
+		[Obsolete("Use the overload that specifies the project explicitly")]
+		public static void Update (ProjectFile file, bool force)
 		{
-			ISingleFileCustomTool tool;
+			Update (file, file.Project, force);
+		}
+
+		public static async void Update (ProjectFile file, Project project, bool force)
+		{
+			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
-			if (!ShouldRunGenerator (file, force, out tool, out genFile)) {
+			if (!ShouldRunGenerator (file, project, force, out tool, out genFile)) {
 				return;
 			}
 			
@@ -305,7 +317,7 @@ namespace MonoDevelop.Ide.CustomTools
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 
 				try {
-					await tool.Generate (monitor, file, result);
+					await tool.Generate (monitor, project, file, result);
 				} catch (Exception ex) {
 					error = ex;
 					result.UnhandledException = ex;
@@ -357,7 +369,12 @@ namespace MonoDevelop.Ide.CustomTools
 				if (result.UnhandledException != null) {
 					broken = true;
 					string msg = GettextCatalog.GetString ("The '{0}' code generator crashed", file.Generator);
-					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg + ": " + result.UnhandledException.Message));
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
+														  msg +
+														  ": " +
+														  result.UnhandledException.Message +
+														  Environment.NewLine +
+														  result.UnhandledException.StackTrace));
 					monitor.ReportError (msg, result.UnhandledException);
 					LoggingService.LogError (msg, result.UnhandledException);
 				}

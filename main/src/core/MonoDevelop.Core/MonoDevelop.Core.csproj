@@ -92,7 +92,6 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -116,6 +115,9 @@
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +212,6 @@
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyService.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MonoRuntimeInfo.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionModeSet.cs" />
-    <Compile Include="MonoDevelop.Core.Assemblies\CustomRuntimeExecutionModeSet.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionMode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionCommand.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DotNetExecutionCommand.cs" />
@@ -562,6 +563,21 @@
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
     <Compile Include="MonoDevelop.Projects\AssemblyReference.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionItemRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfigurationCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\AssemblyRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\MonoExecutionParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SingleItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\MultiItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfigurationCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\EnvironmentVariableCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\IRunTarget.cs" />
+    <Compile Include="MonoDevelop.Projects\ProcessRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Core\ErrorHelper.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetProjectRunConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -650,10 +666,6 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
-      <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
-      <Name>Mono.Addins.Gui</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\ikvm\reflect\IKVM.Reflection.csproj">
       <Project>{4CB170EF-DFE6-4A56-9E1B-A85449E827A7}</Project>
       <Name>IKVM.Reflection</Name>
@@ -673,7 +685,7 @@
     <Folder Include="MSBuild\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
-    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
+    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />

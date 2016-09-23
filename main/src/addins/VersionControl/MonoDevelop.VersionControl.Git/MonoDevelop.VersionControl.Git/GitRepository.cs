@@ -487,11 +487,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var file in repo.ToGitPath (localPaths)) {
 				var status = repo.RetrieveStatus (file);
-				AddStatus (repo, rev, file, versions, status);
+				AddStatus (repo, rev, file, versions, status, null);
 			}
 		}
 
-		static void AddStatus (LibGit2Sharp.Repository repo, GitRevision rev, string file, List<VersionInfo> versions, FileStatus status)
+		static void AddStatus (LibGit2Sharp.Repository repo, GitRevision rev, string file, List<VersionInfo> versions, FileStatus status, string directoryPath)
 		{
 			VersionStatus fstatus = VersionStatus.Versioned;
 
@@ -513,7 +513,12 @@ namespace MonoDevelop.VersionControl.Git
 			if (repo.Index.Conflicts [file] != null)
 				fstatus = VersionStatus.Versioned | VersionStatus.Conflicted;
 
-			versions.Add (new VersionInfo (repo.FromGitPath (file), "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
+			var versionPath = repo.FromGitPath (file);
+			if (directoryPath != null && versionPath.ParentDirectory != directoryPath) {
+				return;
+			}
+
+			versions.Add (new VersionInfo (versionPath, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 		}
 
 		static void GetDirectoryVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, FilePath directory, List<VersionInfo> versions, bool recursive)
@@ -525,11 +530,8 @@ namespace MonoDevelop.VersionControl.Git
 			});
 
 			foreach (var statusEntry in status) {
-				AddStatus (repo, rev, statusEntry.FilePath, versions, statusEntry.State);
+				AddStatus (repo, rev, statusEntry.FilePath, versions, statusEntry.State, recursive ? null : directory);
 			}
-
-			if (!recursive)
-				versions.RemoveAll (v => v.LocalPath.ParentDirectory != directory);
 		}
 
 		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)

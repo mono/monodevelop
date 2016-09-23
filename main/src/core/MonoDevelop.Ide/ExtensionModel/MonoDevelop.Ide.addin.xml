@@ -103,6 +103,11 @@
 		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/RunConfigurationEditors" name = "Run Configuration Editors">
+		<Description>Widgets which allow editing run configurations.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.RunConfigurationEditorExtensionNode" objectType="MonoDevelop.Ide.Execution.RunConfigurationEditor"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
 		<Description>Custom code templates.</Description>
 		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>
@@ -119,7 +124,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
-		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<Description>Custom code generation tools. Classes must be a subclass of SingleProjectFileCustomTool or ISingleFileCustomTool.</Description>
 		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
 	</ExtensionPoint>
 	
@@ -305,7 +310,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
 		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Arguments" />
-		<Customizer id="MonoDevelop.Ide.Execution.MonoExecutionCustomizer" _name="Mono Options" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
+		<Class class="MonoDevelop.Ide.Projects.OptionPanels.AssemblyRunConfigurationEditor" runConfigurationType="MonoDevelop.Projects.AssemblyRunConfiguration" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/Fonts">

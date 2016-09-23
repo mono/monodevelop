@@ -39,6 +39,8 @@ using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.CSharp.Highlighting;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -68,7 +70,8 @@ namespace MonoDevelop.CSharp.Refactoring
 							fileName = projectedName;
 							offset = projectedOffset;
 						}
-						var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
+						var sr = new MemberReference (symbol, fileName, offset, loc.SourceSpan.Length);
+						sr.ReferenceUsageType = ReferenceUsageType.Declariton;
 						antiDuplicatesSet.Add (sr);
 						monitor.ReportResult (sr);
 					}
@@ -85,8 +88,14 @@ namespace MonoDevelop.CSharp.Refactoring
 								fileName = projectedName;
 								offset = projectedOffset;
 							}
-							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
+							var sr = new MemberReference (symbol, fileName, offset, loc.Location.SourceSpan.Length);
 							if (antiDuplicatesSet.Add (sr)) {
+
+								var root = loc.Location.SourceTree.GetRoot ();
+								var node = root.FindNode (loc.Location.SourceSpan);
+								var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+								sr.ReferenceUsageType = HighlightUsagesExtension.GetUsage (node);
+
 								monitor.ReportResult (sr);
 							}
 						}

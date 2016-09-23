@@ -349,7 +349,7 @@
 		<Group color="User Types(Enums)"/>
 	</Match>
 	
-	<Match expression="\b([A-Z][\w]+)\b" ignorecase="False">
+	<Match expression="\b([A-Z][\w]*)\b" ignorecase="False">
 		<Group color="User Types"/>
 	</Match>
 
@@ -379,7 +379,7 @@
 		<Group color="Plain Text"/>
 	</Match>
 	
-	<Match expression="(module|type|and)(\s+)(\w+|``[^`]*``)" ignorecase="False">
+	<Match expression="(module|type|and)(\s+)(\w+|``[^`]+``)" ignorecase="False">
 		<Group color="Keyword(Namespace)"/>
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
@@ -432,7 +432,7 @@
 		<Group color="User Property Declaration"/>
 	</Match>
 
-	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)" ignorecase="False">
+	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b" ignorecase="False">
 		<!-- let mutable x = 1 -->
 		<Group color="Keyword(Iteration)"/>
 		<Group color="Plain Text" />

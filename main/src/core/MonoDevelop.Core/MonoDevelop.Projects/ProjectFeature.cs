@@ -33,7 +33,8 @@ namespace MonoDevelop.Projects
 		None = 0,
 		Build = 1,
 		Execute = 2,
-		Configurations = 4
+		Configurations = 4,
+		RunConfigurations = 8
 	}
 }
 

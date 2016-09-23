@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.Commands
 		DateTime lastUserInteraction;
 		KeyboardShortcut[] chords;
 		string chord;
-		internal const int SlowCommandWarningTime = 50;
+		internal const int SlowCommandWarningTime = 25;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -815,6 +815,18 @@ namespace MonoDevelop.Components.Commands
 		public ActionCommand GetActionCommand (object cmdId)
 		{
 			return GetCommand (cmdId) as ActionCommand;
+		}
+
+		/// <summary>
+		/// Gets all registered commands with the specified binding
+		/// </summary>
+		internal IEnumerable<Command> GetCommands (KeyBinding binding)
+		{
+			var commands = bindings.Commands (binding);
+			if (commands == null)
+				yield break;
+			foreach (var cmd in commands)
+				yield return cmd;
 		}
 		
 		/// <summary>
@@ -2402,7 +2414,14 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (customArrayHandlerChain != null) {
 				info.UpdateHandlerData = Method;
+
+				var sw = Stopwatch.StartNew ();
+
 				customArrayHandlerChain.CommandUpdate (cmdTarget, info);
+
+				sw.Stop ();
+				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)sw.ElapsedMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			} else {
 				if (Method == null)
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandArrayUpdateHandler was expected.");

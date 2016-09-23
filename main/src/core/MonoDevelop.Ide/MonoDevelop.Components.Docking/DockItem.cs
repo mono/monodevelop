@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Docking
 		DockVisualStyle itemStyle;
 		DockVisualStyle currentVisualStyle;
 
-		public event EventHandler VisibleChanged;
+		public event EventHandler<VisibilityChangeEventArgs> VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
 		
@@ -338,6 +338,21 @@ namespace MonoDevelop.Components.Docking
 			frame.SetDockLocation (this, location);
 		}
 
+		internal bool HasFocus {
+			get {
+				if (gtkContent.HasFocus || widget.HasFocus)
+					return true;
+				
+				Gtk.Window win = gtkContent.Toplevel as Gtk.Window;
+				if (win != null) {
+					if (Status == DockItemStatus.AutoHide)
+						return win.HasToplevelFocus;
+					return (win.HasToplevelFocus && win.Focus?.IsChildOf (widget) == true);
+				}
+				return false;
+			}
+		}
+
 		internal void SetFocus ()
 		{
 			SetFocus (gtkContent);
@@ -365,7 +380,7 @@ namespace MonoDevelop.Components.Docking
 			if (vis != lastVisibleStatus) {
 				lastVisibleStatus = vis;
 				if (VisibleChanged != null)
-					VisibleChanged (this, EventArgs.Empty);
+					VisibleChanged (this, new VisibilityChangeEventArgs { SwitchingLayout = frame.Container.IsSwitchingLayout});
 			}
 			UpdateContentVisibleStatus ();
 		}
@@ -421,9 +436,8 @@ namespace MonoDevelop.Components.Docking
 					a.RetVal = true;
 				};
 			}
-			floatingWindow.Move (rect.X, rect.Y);
-			floatingWindow.Resize (rect.Width, rect.Height);
 			floatingWindow.Show ();
+			Ide.DesktopService.PlaceWindow (floatingWindow, rect.X, rect.Y, rect.Width, rect.Height);
 			if (titleTab != null)
 				titleTab.UpdateBehavior ();
 			Widget.Show ();
@@ -586,5 +600,10 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		public Gtk.Window DockParent { get; private set; }
+	}
+
+	public class VisibilityChangeEventArgs: EventArgs
+	{
+		public bool SwitchingLayout { get; set; }
 	}
 }

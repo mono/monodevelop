@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 					Modal = true,
 				}) {
 					foreach (var m in monitor.Errors)
-						resultDialog.AddError (m.Message);
+						resultDialog.AddError (m.DisplayMessage);
 					foreach (var m in monitor.Warnings)
 						resultDialog.AddWarning (m);
 					MessageService.ShowCustomDialog (resultDialog);

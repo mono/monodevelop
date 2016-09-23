@@ -281,7 +281,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonStop.Sensitive = false;
 			treeviewSearchResults.Model = newStore;
 
-			store.Dispose ();
 			store = newStore;
 
 			treeviewSearchResults.ThawChildNotify ();
@@ -348,7 +347,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			while (idx > 0) {
 				idx += "foreground=\"".Length;
-				result.Append (markup.Substring (offset, idx - offset));
+				result.Append (markup, offset, idx - offset);
 				if (idx + 7 >= markup.Length) {
 					offset = idx;
 					break;
@@ -364,7 +363,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx, StringComparison.Ordinal);
 			}
-			result.Append (markup.Substring (offset, markup.Length - offset));
+			result.Append (markup, offset, markup.Length - offset);
 			return result.ToString ();
 		}
 		public static string ColorToPangoMarkup (Gdk.Color color)
@@ -902,7 +901,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								markupBuilder.Append ("</span>");
 								opened = false;
 							}
-							markupBuilder.Append (textMarkup.Substring(j + 1));
+							markupBuilder.Append (textMarkup, j + 1, textMarkup.Length - j - 1);
 							return ColorMarkupBackground (markupBuilder.ToString (), i, endIndex, searchColor);
 						}
 						continue;
@@ -915,7 +914,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						markupBuilder.Append ("</span>");
 						opened = false;
 					}
-					markupBuilder.Append (textMarkup.Substring (j));
+					markupBuilder.Append (textMarkup, j, textMarkup.Length - j);
 					closed = true;
 					break;
 				}

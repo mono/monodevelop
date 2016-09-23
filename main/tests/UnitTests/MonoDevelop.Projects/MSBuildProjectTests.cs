@@ -42,6 +42,15 @@ namespace MonoDevelop.Projects
 			return prj;
 		}
 
+		static MSBuildProject LoadAndEvaluate (string dir, string testFile)
+		{
+			string projectFile = Util.GetSampleProject (dir, testFile);
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			return p;
+		}
+
 		[Test]
 		public void Properties ()
 		{
@@ -71,6 +80,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("AnyCPU", pg.GetValue ("Platform"));
 			Assert.AreEqual ("ExtraVal", pg.GetValue ("ExtraProp"));
 			Assert.AreEqual ("ExtraVal", pg.GetValue ("EvalExtraProp"));
+			Assert.AreEqual ("value2", pg.GetValue ("Case2"));
+			Assert.AreEqual ("value2", pg.GetValue ("Case3"));
 		}
 
 		[Test]
@@ -197,10 +208,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void ImportGroups ()
 		{
-			string projectFile = Util.GetSampleProject ("project-with-import-groups", "import-group-test.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("project-with-import-groups", "import-group-test.csproj");
 
 			Assert.AreEqual ("v2", p.EvaluatedProperties.GetValue ("TestProp"));
 			Assert.AreEqual ("one", p.EvaluatedProperties.GetValue ("PropFromTest1"));
@@ -211,10 +219,8 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void ChooseElement ()
 		{
-			string projectFile = Util.GetSampleProject ("project-with-choose-element", "project.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("project-with-choose-element", "project.csproj");
+
 			Assert.AreEqual ("One", p.EvaluatedProperties.GetValue ("Foo"));
 
 			var pi = p.CreateInstance ();
@@ -230,30 +236,21 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void ParseConditionWithoutQuotes ()
 		{
-			string projectFile = Util.GetSampleProject ("msbuild-tests", "condition-parse.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual (new [] {"aa","vv","test"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
 		}
 
 		[Test]
 		public void EvalItemsAfterProperties ()
 		{
-			string projectFile = Util.GetSampleProject ("msbuild-tests", "property-eval-order.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("msbuild-tests", "property-eval-order.csproj");
 			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
 		}
 
 		[Test]
 		public void FunctionProperties ()
 		{
-			string projectFile = Util.GetSampleProject ("msbuild-tests", "functions.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("msbuild-tests", "functions.csproj");
 
 			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
 			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
@@ -278,18 +275,16 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("CharTrim"));
 			Assert.AreEqual ("2", p.EvaluatedProperties.GetValue ("SplitLength"));
 			Assert.AreEqual ("abcdefg", p.EvaluatedProperties.GetValue ("NewString"));
+			Assert.AreEqual ("100", p.EvaluatedProperties.GetValue ("CharConvert"));
 
-			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (projectFile), "foo"));
+			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (p.FileName), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
 		}
 
 		[Test]
 		public void ConditionedProperties ()
 		{
-			string projectFile = Util.GetSampleProject ("msbuild-tests", "conditioned-properties.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("msbuild-tests", "conditioned-properties.csproj");
 
 			Assert.That (new string [] { "cond1", "cond2", "cond9", "cond10", "cond13" }, Is.EquivalentTo (p.ConditionedProperties.GetAllProperties ().ToArray ()));
 
@@ -337,10 +332,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void StartWhitespaceForImportInsertedAsLastImport ()
 		{
-			string projectFile = Util.GetSampleProject ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
 
 			MSBuildImport import = p.AddNewImport ("MyImport.targets", beforeObject: null);
 
@@ -355,10 +347,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void StartWhitespaceForImportInsertedAsFirstChild ()
 		{
-			string projectFile = Util.GetSampleProject ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
 			var firstChild = p.GetAllObjects ().First ();
 
 			MSBuildImport import = p.AddNewImport ("MyImport.targets", beforeObject: firstChild);
@@ -371,12 +360,110 @@ namespace MonoDevelop.Projects
 		public void ParseConditionWithMethodInvoke ()
 		{
 			// XBC 40008
-			string projectFile = Util.GetSampleProject ("msbuild-tests", "condition-parse.csproj");
-			var p = new MSBuildProject ();
-			p.Load (projectFile);
-			p.Evaluate ();
+			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+		}
+
+		[Test]
+		public void ImplicitImportOfUserProject ()
+		{
+			var p = LoadAndEvaluate ("msbuild-project-test", "test-user.csproj");
+			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("TestProp"));
+		}
+
+		[Test]
+		public void Transforms ()
+		{
+			var p = LoadAndEvaluate ("msbuild-tests", "transforms.csproj");
+
+			Assert.AreEqual ("a-m1;b-m2;t1-", p.EvaluatedProperties.GetValue ("MetadataList"));
+
+			// Metedata is kept when transforming
+			Assert.AreEqual ("a-m1-b1_m1;b-m2-b1_m2;t1--b1_", p.EvaluatedProperties.GetValue ("MetadataList2"));
+
+			// Exlude item with empty include
+			Assert.AreEqual ("AA;BB;CC", p.EvaluatedProperties.GetValue ("EmptyItem"));
+
+			// Loader should not crash if metadata evaluation fails
+			Assert.AreEqual (";;", p.EvaluatedProperties.GetValue ("MetadataCatch"));
+
+			// Includes can contain several transforms
+			Assert.AreEqual ("a.txt;b.txt;t1.txt;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue"));
+			Assert.AreEqual ("a;b;t1;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue2"));
+		}
+
+		[Test]
+		public void TransformsWithReferences ()
+		{
+			var p = LoadAndEvaluate ("msbuild-tests", "transforms.csproj");
+
+			// Count
+			Assert.AreEqual ("3", p.EvaluatedProperties.GetValue ("TestCount"));
+
+			// DirectoryName
+			var dir = p.FileName.ParentDirectory.ToString ();
+			Assert.AreEqual (dir + ";" + dir + ";" + dir, p.EvaluatedProperties.GetValue ("TestDirectoryName"));
+
+			Assert.AreEqual ("m1;m2", p.EvaluatedProperties.GetValue ("TestVarInTransform"));
+
+			Assert.AreEqual ("t1 - [t0_a.txt;b.txt;t1.txt]", p.EvaluatedProperties.GetValue ("FadaRes"));
+
+			Assert.AreEqual ("abc@(File -> Count())", p.EvaluatedProperties.GetValue ("Func"));
+
+			Assert.AreEqual ("@", p.EvaluatedProperties.GetValue ("Func2"));
+
+			Assert.AreEqual ("t0 - []", p.EvaluatedProperties.GetValue ("FadaResPrev"));
+		}
+
+		[Test]
+		public void ItemFunctions ()
+		{
+			var p = LoadAndEvaluate ("msbuild-tests", "transforms.csproj");
+
+			// Count
+			Assert.AreEqual ("3", p.EvaluatedProperties.GetValue ("TestCount"));
+
+			// DirectoryName
+			var dir = p.FileName.ParentDirectory.ToString ();
+			Assert.AreEqual (dir + ";" + dir + ";" + dir, p.EvaluatedProperties.GetValue ("TestDirectoryName"));
+
+			// Distinct
+			Assert.AreEqual ("aa;bb", p.EvaluatedProperties.GetValue ("Distinct"));
+
+			// DistinctWithCase
+			Assert.AreEqual ("aa;bb;BB", p.EvaluatedProperties.GetValue ("DistinctWithCase"));
+
+			// Reverse
+			Assert.AreEqual ("BB;aa;bb;aa", p.EvaluatedProperties.GetValue ("Reverse"));
+
+			// AnyHaveMetadataValue
+			Assert.AreEqual ("true", p.EvaluatedProperties.GetValue ("AnyHaveMetadataValue"));
+			Assert.AreEqual ("false", p.EvaluatedProperties.GetValue ("AnyHaveMetadataValue2"));
+
+			// ClearMetadata
+			Assert.AreEqual ("false", p.EvaluatedProperties.GetValue ("ClearMetadata"));
+
+			// HasMetadata
+			Assert.AreEqual ("a.txt;b.txt", p.EvaluatedProperties.GetValue ("HasMetadata"));
+
+			// Metadata
+			Assert.AreEqual ("m1;m2", p.EvaluatedProperties.GetValue ("Metadata"));
+
+			// WithMetadataValue
+			Assert.AreEqual ("a.txt", p.EvaluatedProperties.GetValue ("WithMetadataValue"));
+
+			// IndexOf
+			Assert.AreEqual ("1;1;2", p.EvaluatedProperties.GetValue ("IndexOf"));
+
+			// Replace
+			Assert.AreEqual ("a_._txt;b_._txt;t1_._txt", p.EvaluatedProperties.GetValue ("Replace"));
+
+			// get_Length
+			Assert.AreEqual ("5;5;6", p.EvaluatedProperties.GetValue ("get_Length"));
+
+			// get_Chars
+			Assert.AreEqual ("t;t;.", p.EvaluatedProperties.GetValue ("get_Chars"));
 		}
 	}
 }

@@ -135,6 +135,8 @@ namespace MonoDevelop.Core.Serialization
 			get { return dataType; }
 			set { CheckReadOnly (); dataType = value; }
 		}
+
+		public bool WrapObject { get; set; }
 		
 		public bool SkipEmpty { get; set; }
 		

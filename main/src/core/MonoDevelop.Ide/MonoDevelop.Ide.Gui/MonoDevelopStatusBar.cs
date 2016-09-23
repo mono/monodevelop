@@ -37,42 +37,14 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
-using StockIcons = MonoDevelop.Ide.Gui.Stock;
-
 namespace MonoDevelop.Ide
 {
 	class MonoDevelopStatusBar : Gtk.HBox
 	{
-		Label modeLabel;
-		Label cursorLabel;
 		MiniButton feedbackButton;
 		Gtk.EventBox resizeGrip = new Gtk.EventBox ();
 
 		const int ResizeGripWidth = 14;
-
-		HBox statusBox;
-
-		readonly Label statusLabel = new Label ();
-		public readonly static HBox messageBox = new HBox ();
-
-		/// <summary>
-		/// For small size changes the caret label is grow only. That ensures that normal caret movement doesn't
-		/// update the whole status bar all the time. But for big jumps in size a resize is done.
-		/// </summary>
-		class CaretStatusLabel : Gtk.Label
-		{
-			public CaretStatusLabel (string label): base (label)
-			{
-			}
-
-			protected override void OnSizeRequested (ref Requisition requisition)
-			{
-				base.OnSizeRequested (ref requisition);
-				const int upperBound = 20;
-				if (Allocation.Width > 0 && Math.Abs (Allocation.Width - requisition.Width) < upperBound)
-					requisition.Width = Math.Max (Allocation.Width, requisition.Width);
-			}
-		}
 
 		internal MonoDevelopStatusBar ()
 		{
@@ -152,35 +124,6 @@ namespace MonoDevelop.Ide
 				}
 			};
 
-			// Status panels
-
-			statusBox = new HBox (false, 0);
-			statusBox.BorderWidth = 0;
-			
-			statusLabel.SetAlignment (0, 0.5f);
-			statusLabel.Wrap = false;
-			int w, h;
-			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
-			statusLabel.HeightRequest = h;
-			statusLabel.SetPadding (0, 0);
-			statusLabel.ShowAll ();
-			
-			messageBox.PackStart (statusLabel, true, true, 0);
-
-			var eventCaretBox = new EventBox ();
-			var caretStatusBox = new HBox ();
-			modeLabel = new Label (" ");
-			caretStatusBox.PackEnd (modeLabel, false, false, 8);
-			
-			cursorLabel = new CaretStatusLabel (" ");
-			caretStatusBox.PackEnd (cursorLabel, false, false, 0);
-			
-			caretStatusBox.GetSizeRequest (out w, out h);
-			caretStatusBox.WidthRequest = w;
-			caretStatusBox.HeightRequest = h;
-			eventCaretBox.Add (caretStatusBox);
-			statusBox.PackEnd (eventCaretBox, false, false, 0);
-			
 			this.ShowAll ();
 
 //			// todo: Move this to the CompletionWindowManager when it's possible.
@@ -228,24 +171,14 @@ namespace MonoDevelop.Ide
 			ignoreFeedbackButtonClick = false;
 		}
 
+		[Obsolete]
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
-			Runtime.AssertMainThread ();
-			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
-			if (cursorLabel.Text != cursorText)
-				cursorLabel.Text = cursorText;
-			
-			string modeStatusText = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
-			if (modeLabel.Text != modeStatusText)
-				modeLabel.Text = modeStatusText;
 		}
-		
+
+		[Obsolete]
 		public void ClearCaretState ()
 		{
-			if (cursorLabel.Text != "")
-				cursorLabel.Text = "";
-			if (modeLabel.Text != "")
-				modeLabel.Text = "";
 		}
 
 		bool hasResizeGrip;

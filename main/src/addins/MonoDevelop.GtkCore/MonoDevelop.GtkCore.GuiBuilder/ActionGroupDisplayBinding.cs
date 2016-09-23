@@ -87,6 +87,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) ownerProject);
 			
 			var content = db.CreateContent (fileName, mimeType, ownerProject);
+			content.Binding = db;
 			ActionGroupView view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;

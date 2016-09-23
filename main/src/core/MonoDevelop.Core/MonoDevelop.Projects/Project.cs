@@ -61,12 +61,15 @@ namespace MonoDevelop.Projects
 
 		string[] buildActions;
 		MSBuildProject sourceProject;
+		MSBuildProject userProject;
 
 		string productVersion;
 		string schemaVersion;
 		bool modifiedInMemory;
 		bool msbuildUpdatePending;
 		ProjectExtension projectExtension;
+		RunConfigurationCollection runConfigurations;
+		bool defaultRunConfigurationCreated;
 
 		List<string> defaultImports;
 
@@ -76,6 +79,7 @@ namespace MonoDevelop.Projects
 
 		protected Project ()
 		{
+			runConfigurations = new RunConfigurationCollection (this);
 			items = new ProjectItemCollection (this);
 			FileService.FileChanged += HandleFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
@@ -86,6 +90,13 @@ namespace MonoDevelop.Projects
 
 		public ProjectItemCollection Items {
 			get { return items; }
+		}
+
+		public RunConfigurationCollection RunConfigurations {
+			get {
+				CreateDefaultConfiguration ();
+				return runConfigurations; 
+			}
 		}
 
 		protected Project (params string[] flavorGuids): this()
@@ -289,6 +300,75 @@ namespace MonoDevelop.Projects
 			base.OnConfigurationRemoved (args);
 		}
 
+		protected override void OnItemReady ()
+		{
+			base.OnItemReady ();
+		}
+
+		internal virtual void ImportDefaultRunConfiguration (ProjectRunConfiguration config)
+		{
+		}
+
+		public ProjectRunConfiguration CreateRunConfiguration (string name)
+		{
+			var c = CreateRunConfigurationInternal (name);
+
+			// When creating a ProcessRunConfiguration, set the value of ExternalConsole and PauseConsoleOutput from the default configuration
+			var pc = c as ProcessRunConfiguration;
+			if (pc != null) {
+				var dc = RunConfigurations.FirstOrDefault (rc => rc.IsDefaultConfiguration) as ProcessRunConfiguration;
+				if (dc != null) {
+					pc.ExternalConsole = dc.ExternalConsole;
+					pc.PauseConsoleOutput = dc.PauseConsoleOutput;
+				}
+			}
+			return c;
+		}
+
+		ProjectRunConfiguration CreateRunConfigurationInternal (string name)
+		{
+			var c = CreateUninitializedRunConfiguration (name);
+			c.Initialize (this);
+			return c;
+		}
+
+		public ProjectRunConfiguration CreateUninitializedRunConfiguration (string name)
+		{
+			return ProjectExtension.OnCreateRunConfiguration (name);
+		}
+
+		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig)
+		{
+			var clone = CreateUninitializedRunConfiguration (runConfig.Name);
+			clone.CopyFrom (runConfig, false);
+			return clone;
+		}
+
+		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig, string newName)
+		{
+			var clone = CreateUninitializedRunConfiguration (newName);
+			clone.CopyFrom (runConfig, true);
+			return clone;
+		}
+
+		void CreateDefaultConfiguration ()
+		{
+			// If the project doesn't have a Default run configuration, create one
+			if (!defaultRunConfigurationCreated) {
+				defaultRunConfigurationCreated = true;
+				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
+					var rc = CreateRunConfigurationInternal ("Default");
+					ImportDefaultRunConfiguration (rc);
+					runConfigurations.Insert (0, rc);
+				}
+			}
+		}
+
+		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations ()
+		{
+			return RunConfigurations;
+		}
+
 		protected virtual void OnGetDefaultImports (List<string> imports)
 		{
 		}
@@ -417,12 +497,12 @@ namespace MonoDevelop.Projects
 			if (sourceProject == null)
 				return Task.FromResult (new ProjectFile [0]);
 
-			return BindTask<ProjectFile []> (async cancelToken => {
+			return BindTask<ProjectFile []> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await GetSourceFilesAsync (monitor, configuration);
+					return GetSourceFilesAsync (monitor, configuration);
 				}
 			});
 		}
@@ -466,10 +546,10 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			List<ProjectFile> result = null;
+			ProjectFile[] result = null;
 			lock (evaluatedCompileItemsTask) {
 				if (!evaluatedCoreCompileDependencies) {
-					result = new List<ProjectFile> ();
+					result = new ProjectFile[0];
 					evaluatedCoreCompileDependencies = true;
 				}
 			}
@@ -490,17 +570,15 @@ namespace MonoDevelop.Projects
 
 					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
 					if (evalResult != null && !evalResult.BuildResult.HasErrors && evalResult.Items != null) {
-						var evalItems = evalResult
+						result = evalResult
 							.Items
 							.Select (i => CreateProjectFile (i))
-							.ToList ();
-
-						result.AddRange (evalItems);
+							.ToArray ();
 					}
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 				}
-				evaluatedCompileItemsTask.SetResult (result.ToArray ());
+				evaluatedCompileItemsTask.SetResult (result);
 			}
 
 			return await evaluatedCompileItemsTask.Task;
@@ -533,6 +611,13 @@ namespace MonoDevelop.Projects
 
 			// Doesn't save the file to disk if the content did not change
 			if (await sourceProject.SaveAsync (FileName)) {
+				if (userProject != null) {
+					if (!userProject.GetAllObjects ().Any ())
+						File.Delete (userProject.FileName);
+					else
+						await userProject.SaveAsync (userProject.FileName);
+				}
+				
 				var pb = GetCachedProjectBuilder ();
 				if (pb != null) {
 					try {
@@ -909,7 +994,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context);
+			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
 		}
 
 		public bool SupportsTarget (string target)
@@ -988,7 +1073,8 @@ namespace MonoDevelop.Projects
 
 			try {
 				var tr = await OnRunTarget (monitor, target, configuration, context);
-				tr.BuildResult.SourceTarget = this;
+				if (tr != null)
+					tr.BuildResult.SourceTarget = this;
 				return tr;
 			} finally {
 				// If any of the project generated files changes, notify it
@@ -1746,7 +1832,7 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null)
@@ -2024,6 +2110,10 @@ namespace MonoDevelop.Projects
 
 		void ReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			if (File.Exists (msproject.FileName + ".user")) {
+				userProject = new MSBuildProject (msproject.EngineManager);
+				userProject.Load (msproject.FileName + ".user");
+			}
 			ProjectExtension.OnReadProjectHeader (monitor, msproject);
 			modifiedInMemory = false;
 			msbuildUpdatePending = false;
@@ -2070,6 +2160,8 @@ namespace MonoDevelop.Projects
 					InitMainGroupProperties (globalGroup);
 					foreach (ProjectConfiguration conf in Configurations)
 						InitConfiguration (conf);
+					foreach (var es in runConfigurations)
+						InitRunConfiguration ((ProjectRunConfiguration)es);
 				}
 
 				sourceProject.IsNewProject = false;
@@ -2082,7 +2174,7 @@ namespace MonoDevelop.Projects
 
 		class ConfigData
 		{
-			public ConfigData (string conf, string plt, IMSBuildPropertySet grp)
+			public ConfigData (string conf, string plt, MSBuildPropertyGroup grp)
 			{
 				Config = conf;
 				Platform = plt;
@@ -2091,7 +2183,7 @@ namespace MonoDevelop.Projects
 
 			public string Config;
 			public string Platform;
-			public IMSBuildPropertySet Group;
+			public MSBuildPropertyGroup Group;
 			public bool Exists;
 			public bool IsNew; // The group did not exist in the original file
 		}
@@ -2152,8 +2244,6 @@ namespace MonoDevelop.Projects
 			disableFastUpToDateCheck = msproject.EvaluatedProperties.GetValue ("DisableFastUpToDateCheck", false);
 
 			msproject.EvaluatedProperties.ReadObjectProperties (this, GetType (), true);
-
-			RemoveDuplicateItems (msproject);
 		}
 
 		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -2167,6 +2257,15 @@ namespace MonoDevelop.Projects
 
 			foreach (var cgrp in configData)
 				LoadConfiguration (monitor, cgrp, cgrp.Config, cgrp.Platform);
+
+			timer.Trace ("Read run configurations");
+
+			List<ConfigData> runConfigData = new List<ConfigData> ();
+			GetRunConfigData (runConfigData, msproject, true);
+			GetRunConfigData (runConfigData, userProject, true);
+
+			foreach (var cgrp in runConfigData)
+				LoadRunConfiguration (monitor, cgrp, cgrp.Config);
 
 			// Read extended properties
 
@@ -2321,57 +2420,118 @@ namespace MonoDevelop.Projects
 			config.Read (grp);
 		}
 
-		void RemoveDuplicateItems (MSBuildProject msproject)
+		void GetRunConfigData (List<ConfigData> configData, MSBuildProject msproject, bool includeEvaluated)
 		{
-/*			timer.Trace ("Checking for duplicate items");
-
-			var uniqueIncludes = new Dictionary<string,object> ();
-			var toRemove = new List<MSBuildItem> ();
-			foreach (MSBuildItem bi in msproject.GetAllItems ()) {
-				object existing;
-				string key = bi.Name + "<" + bi.Include;
-				if (!uniqueIncludes.TryGetValue (key, out existing)) {
-					uniqueIncludes[key] = bi;
-					continue;
-				}
-				var exBi = existing as MSBuildItem;
-				if (exBi != null) {
-					if (exBi.Condition != bi.Condition || exBi.Element.InnerXml != bi.Element.InnerXml) {
-						uniqueIncludes[key] = new List<MSBuildItem> { exBi, bi };
-					} else {
-						toRemove.Add (bi);
-					}
-					continue;
-				}
-
-				var exList = (List<MSBuildItem>)existing;
-				bool found = false;
-				foreach (var m in (exList)) {
-					if (m.Condition == bi.Condition && m.Element.InnerXml == bi.Element.InnerXml) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					exList.Add (bi);
-				} else {
-					toRemove.Add (bi);
+			if (msproject == null)
+				return;
+			
+			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
+				string configName;
+				if (ParseRunConfigurationCondition (cgrp.Condition, out configName)) {
+					// If a group for this configuration already was found, set the new group. If there are changes we want to modify the last group.
+					var existing = configData.FirstOrDefault (cd => cd.Config == configName);
+					if (existing == null)
+						configData.Add (new ConfigData (configName, null, cgrp));
+					else
+						existing.Group = cgrp;
 				}
 			}
-			if (toRemove.Count == 0)
-				return;
+			if (includeEvaluated) {
+				var configValues = msproject.ConditionedProperties.GetAllPropertyValues ("RunConfiguration");
 
-			timer.Trace ("Removing duplicate items");
+				foreach (var c in configValues) {
+					if (!configData.Any (cd => cd.Config == c))
+						configData.Add (new ConfigData (c, "", null));
+				}
+			}
+		}
 
-			foreach (var t in toRemove)
-				msproject.RemoveItem (t);*/
+		bool ParseRunConfigurationCondition (string cond, out string configName)
+		{
+			configName = null;
+			int i = cond.IndexOf ("==", StringComparison.Ordinal);
+			if (i == -1)
+				return false;
+			if (cond.Substring (0, i).Trim () == "'$(RunConfiguration)'")
+				return ExtractConfigName (cond.Substring (i + 2), out configName);
+			return false;
+		}
+
+		void LoadRunConfiguration (ProgressMonitor monitor, ConfigData cgrp, string configName)
+		{
+			var runConfig = (ProjectRunConfiguration)CreateUninitializedRunConfiguration (configName);
+			if (cgrp.Group != null) {
+				runConfig.MainPropertyGroup = cgrp.Group;
+				runConfig.StoreInUserFile = cgrp.Group.ParentProject == userProject;
+			}
+			runConfig.MainPropertyGroup.ResetIsNewFlags ();
+			InitRunConfiguration (runConfig);
+			projectExtension.OnReadRunConfiguration (monitor, runConfig, runConfig.Properties);
+			runConfigurations.Add (runConfig);
+		}
+
+		void InitRunConfiguration (ProjectRunConfiguration config)
+		{
+			var pi = CreateProjectInstaceForRunConfiguration (config.Name);
+			config.Properties = pi.GetPropertiesLinkedToGroup (config.MainPropertyGroup);
+			config.ProjectInstance = pi;
+		}
+
+		MSBuildProjectInstance CreateProjectInstaceForRunConfiguration (string name, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForRunConfiguration (name, onlyEvaluateProperties);
+			pi.Evaluate ();
+			return pi;
+		}
+
+		async Task<MSBuildProjectInstance> CreateProjectInstaceForRunConfigurationAsync (string name, bool onlyEvaluateProperties = true)
+		{
+			var pi = PrepareProjectInstaceForRunConfiguration (name, onlyEvaluateProperties);
+			await pi.EvaluateAsync ();
+			return pi;
+		}
+
+		MSBuildProjectInstance PrepareProjectInstaceForRunConfiguration (string name, bool onlyEvaluateProperties)
+		{
+			var pi = sourceProject.CreateInstance ();
+			pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
+			pi.SetGlobalProperty ("RunConfiguration", name);
+			pi.OnlyEvaluateProperties = onlyEvaluateProperties;
+			return pi;
+		}
+
+		protected virtual ProjectRunConfiguration OnCreateRunConfiguration (string name)
+		{
+			return new ProjectRunConfiguration (name);
+		}
+
+		protected virtual void OnReadRunConfiguration (ProgressMonitor monitor, ProjectRunConfiguration runConfig, IPropertySet grp)
+		{
+			runConfig.Read (grp);
+		}
+
+		internal void OnRunConfigurationsAdded (IEnumerable<SolutionItemRunConfiguration> items)
+		{
+			// Initialize the property group only if the project is not being loaded (in which case it will
+			// be initialized by the ReadProject method) or if the project is new (because it will be initialized
+			// after the project is fully written, since only then all imports are in place
+			if (!Loading && !sourceProject.IsNewProject) {
+				foreach (var s in items)
+					InitRunConfiguration ((ProjectRunConfiguration)s);
+			}
+		}
+
+		internal void OnRunConfigurationRemoved (IEnumerable<SolutionItemRunConfiguration> items)
+		{
+
 		}
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags, HashSet<MSBuildItem> loadedItems)
 		{
 			if (loadedItems != null)
 				loadedItems.Clear ();
-			
+
+			var localItems = new List<ProjectItem> ();
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
 				if (buildItem.IsImported)
 					continue;
@@ -2381,10 +2541,11 @@ namespace MonoDevelop.Projects
 				if (it == null)
 					continue;
 				it.Flags = flags;
-				Items.Add (it);
+				localItems.Add (it);
 				if (loadedItems != null)
 					loadedItems.Add (buildItem.SourceItem);
 			}
+			Items.AddRange (localItems);
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
@@ -2458,6 +2619,20 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+/*			if (runConfigurations.Count > 0) {
+				// Set the default configuration of the project.
+				// First of the properties that defines the default run configuration
+				var defaultConfProp = globalGroup.GetProperties ().FirstOrDefault (p => p.Name == "RunConfiguration" && IsDefaultSetter (p));
+
+				if (msproject.IsNewProject || (defaultConfProp != null)) {
+					// If there is no run configuration property, or if the configuration doesn't exist anymore, give it a new value
+					if (defaultConfProp == null || !runConfigurations.Any (c => c.Name == defaultConfProp.UnevaluatedValue)) {
+						var runConfig = runConfigurations.FirstOrDefault (c => c.Name == "Default") ?? runConfigurations [0];
+						globalGroup.SetValue ("RunConfiguration", runConfig.Name, condition: " '$(RunConfiguration)' == '' ");
+					}
+				}
+			}*/
+
 			if (TypeGuid == MSBuildProjectService.GenericItemGuid) {
 				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (GetType ());
 				globalGroup.SetValue ("ItemType", dt.Name);
@@ -2496,10 +2671,35 @@ namespace MonoDevelop.Projects
 		{
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
-			// Configurations
+			WriteConfigurations (monitor, msproject, globalGroup);
 
+			WriteRunConfigurations (monitor, msproject, globalGroup);
+
+			SaveProjectItems (monitor, msproject, usedMSBuildItems);
+
+			if (msproject.IsNewProject) {
+				foreach (var im in DefaultImports)
+					msproject.AddNewImport (im);
+			}
+
+			foreach (var im in importsAdded) {
+				if (msproject.GetImport (im.Name, im.Condition) == null)
+					msproject.AddNewImport (im.Name, im.Condition);
+			}
+			foreach (var im in importsRemoved) {
+				var i = msproject.GetImport (im.Name, im.Condition);
+				if (i != null)
+					msproject.RemoveImport (i);
+			}
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
+			msproject.WriteExternalProjectProperties (this, GetType (), true);
+		}
+
+		void WriteConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
+		{
 			if (Configurations.Count > 0) {
-				
+
 				List<ConfigData> configData = GetConfigData (msproject, false);
 
 				// Write configuration data, creating new property groups if necessary
@@ -2515,7 +2715,7 @@ namespace MonoDevelop.Projects
 						int i = Configurations.IndexOf (conf);
 						if (i != -1 && i + 1 < Configurations.Count)
 							nextConf = ((ProjectConfiguration)Configurations [i + 1]).MainPropertyGroup;
-						
+
 						msproject.AddPropertyGroup (pg, true, nextConf);
 						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 						cdata = new ConfigData (conf.Name, conf.Platform, pg);
@@ -2579,29 +2779,93 @@ namespace MonoDevelop.Projects
 				foreach (ProjectConfiguration config in Configurations)
 					config.MainPropertyGroup.ResetIsNewFlags ();
 			}
+		}
 
-			SaveProjectItems (monitor, msproject, usedMSBuildItems);
+		void WriteRunConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
+		{
+			List<ConfigData> configData = new List<ConfigData> ();
+			GetRunConfigData (configData, msproject, false);
+			GetRunConfigData (configData, userProject, false);
 
-			if (msproject.IsNewProject) {
-				foreach (var im in DefaultImports)
-					msproject.AddNewImport (im);
+			if (RunConfigurations.Count > 0) {
+
+				// Write configuration data, creating new property groups if necessary
+
+				var defaultConfig = CreateRunConfigurationInternal ("Default");
+
+				foreach (ProjectRunConfiguration runConfig in RunConfigurations) {
+
+					MSBuildPropertyGroup pg = runConfig.MainPropertyGroup;
+					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
+					var targetProject = runConfig.StoreInUserFile ? userProject : msproject;
+
+					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultConfig)) {
+						// If the default configuration has the default values, then there is no need to save it.
+						// If this configuration was added after loading the project, we are not adding it to the msproject and we are done.
+						// If this configuration was loaded from the project and later modified to the default values, we dont set cdata.Exists=true,
+						// so it will be removed from the msproject below.
+						continue;
+					}
+
+					// Create the user project file if it doesn't yet exist
+					if (targetProject == null)
+						targetProject = userProject = CreateUserProject (msproject);
+
+					if (cdata == null) {
+						// Try to keep the groups in the same order as the config list
+						MSBuildObject nextConfig = null;
+						int i = runConfigurations.IndexOf (runConfig);
+						if (i != -1 && i + 1 < runConfigurations.Count)
+							nextConfig = runConfigurations.Skip (i).Cast<ProjectRunConfiguration> ().FirstOrDefault (s => s.MainPropertyGroup.ParentProject == targetProject)?.MainPropertyGroup;
+						targetProject.AddPropertyGroup (pg, true, nextConfig);
+						pg.Condition = BuildRunConfigurationCondition (runConfig.Name);
+						cdata = new ConfigData (runConfig.Name, null, pg);
+						cdata.IsNew = true;
+						configData.Add (cdata);
+					} else {
+						// The configuration name may have changed
+						if (cdata.Config != runConfig.Name) {
+							((MSBuildPropertyGroup)cdata.Group).Condition = BuildRunConfigurationCondition (runConfig.Name);
+							cdata.Config = runConfig.Name;
+						}
+						var groupInUserProject = cdata.Group.ParentProject == userProject;
+						if (groupInUserProject != runConfig.StoreInUserFile) {
+							cdata.Group.ParentProject.Remove (cdata.Group);
+							targetProject.AddPropertyGroup (cdata.Group);
+						}
+					}
+
+					cdata.Exists = true;
+					ProjectExtension.OnWriteRunConfiguration (monitor, runConfig, runConfig.Properties);
+					runConfig.MainPropertyGroup.PurgeDefaultProperties ();
+				}
 			}
 
-			foreach (var im in importsAdded) {
-				if (msproject.GetImport (im.Name, im.Condition) == null)
-					msproject.AddNewImport (im.Name, im.Condition);
+			// Remove groups corresponding to configurations that have been removed
+			foreach (ConfigData cd in configData) {
+				if (!cd.Exists)
+					cd.Group.ParentProject.Remove (cd.Group);
 			}
-			foreach (var im in importsRemoved) {
-				var i = msproject.GetImport (im.Name, im.Condition);
-				if (i != null)
-					msproject.RemoveImport (i);
-			}
-			importsAdded.Clear ();
-			importsRemoved.Clear ();
-			msproject.WriteExternalProjectProperties (this, GetType (), true);
+
+			foreach (ProjectRunConfiguration runConfig in runConfigurations)
+				runConfig.MainPropertyGroup.ResetIsNewFlags ();
+		}
+
+		MSBuildProject CreateUserProject (MSBuildProject msproject)
+		{
+			var p = new MSBuildProject (msproject.EngineManager);
+			// Remove the main property group
+			p.Remove (p.PropertyGroups.First ());
+			p.FileName = msproject.FileName + ".user";
+			return p;
 		}
 
 		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
+		{
+			config.Write (pset);
+		}
+
+		protected virtual void OnWriteRunConfiguration (ProgressMonitor monitor, ProjectRunConfiguration config, IPropertySet pset)
 		{
 			config.Write (pset);
 		}
@@ -2781,11 +3045,25 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		ConfigData FindPropertyGroup (List<ConfigData> configData, ProjectRunConfiguration config)
+		{
+			foreach (ConfigData data in configData) {
+				if (data.Config == config.Name)
+					return data;
+			}
+			return null;
+		}
+
 		string BuildConfigCondition (string config, string platform)
 		{
 			if (platform.Length == 0)
 				platform = "AnyCPU";
 			return " '$(Configuration)|$(Platform)' == '" + config + "|" + platform + "' ";
+		}
+
+		string BuildRunConfigurationCondition (string name)
+		{
+			return " '$(RunConfiguration)' == '" + name + "' ";
 		}
 
 		bool IsMergeToProjectProperty (ItemProperty prop)
@@ -2948,6 +3226,21 @@ namespace MonoDevelop.Projects
 			internal protected override void OnGetTypeTags (HashSet<string> types)
 			{
 				Project.OnGetTypeTags (types);
+			}
+
+			internal protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
+			{
+				return Project.OnCreateRunConfiguration (name);
+			}
+
+			internal protected override void OnReadRunConfiguration (ProgressMonitor monitor, ProjectRunConfiguration runConfig, IPropertySet properties)
+			{
+				Project.OnReadRunConfiguration (monitor, runConfig, properties);
+			}
+
+			internal protected override void OnWriteRunConfiguration (ProgressMonitor monitor, ProjectRunConfiguration runConfig, IPropertySet properties)
+			{
+				Project.OnWriteRunConfiguration (monitor, runConfig, properties);
 			}
 
 			internal protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)

@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Selected ()
 		{
-			if (base.Selected () != null) {
+			if (toBeSelected >= 0) {
 				return noteBook.CurrentPage == toBeSelected ? this : null;
 			}
 			return null;

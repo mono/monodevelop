@@ -39,8 +39,15 @@ namespace MonoDevelop.Ide.Extensions
 			get { return name; }
 		}
 		
-		public ISingleFileCustomTool Tool {
-			get { return (ISingleFileCustomTool)base.GetInstance (); }
+		public SingleProjectFileCustomTool Tool {
+			get {
+				var instance = base.GetInstance ();
+				if (instance is ISingleFileCustomTool) {
+					return new SingleFileCustomToolWrapper ((ISingleFileCustomTool)instance);
+				}
+
+				return (SingleProjectFileCustomTool)instance; 
+			}
 		}
 	}
 }

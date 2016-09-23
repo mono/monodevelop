@@ -58,6 +58,9 @@
 	path = main/external/roslyn
 	url = git://github.com/mono/roslyn.git
 	branch = monodevelop_bin
+[submodule "main/external/macdoc"]
+	path = main/external/macdoc
+	url = git://github.com/xamarin/macdoc
 [submodule "main/external/NuGetizer3000"]
 	path = main/external/NuGetizer3000
 	url = git://github.com/mrward/NuGetizer3000.git

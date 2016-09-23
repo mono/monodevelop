@@ -45,9 +45,6 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public virtual bool IsInstalled {
 			get {
-				if (framework.Assemblies.Length == 0)
-					return false;
-
 				foreach (string dir in GetFrameworkFolders ()) {
 					if (Directory.Exists (dir)) {
 						string manifest = Path.Combine (dir, "RedistList", "FrameworkList.xml");

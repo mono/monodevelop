@@ -163,20 +163,20 @@ namespace MonoDevelop.Core.Serialization
 		
 		protected virtual void WriteAttributes (XmlElement elem, DataItem item)
 		{
-			if (StoreAllInElements)
-				return;
+			var defaultIsAtt = item.UniqueNames && !StoreAllInElements;
 			foreach (DataNode data in item.ItemData) {
 				DataValue val = data as DataValue;
-				if (val != null && (item.UniqueNames || val.StoreAsAttribute))
+				if (val != null && (StoreAsAttribute (val) || (defaultIsAtt && !val.StoreAsElementRequired)))
 					WriteAttribute (elem, val.Name, val.Value);
 			}
 		}
 		
 		protected virtual void WriteAttributes (XmlWriter writer, DataItem item)
 		{
+			var defaultIsAtt = item.UniqueNames && !StoreAllInElements;
 			foreach (DataNode data in item.ItemData) {
 				DataValue val = data as DataValue;
-				if (val != null && (item.UniqueNames || val.StoreAsAttribute) && StoreAsAttribute (val))
+				if (val != null && (StoreAsAttribute (val) || (defaultIsAtt && !val.StoreAsElementRequired)))
 					WriteAttribute (writer, val.Name, val.Value);
 			}
 		}
@@ -193,33 +193,21 @@ namespace MonoDevelop.Core.Serialization
 		
 		protected virtual void WriteChildren (XmlWriter writer, DataItem item)
 		{
-			if (item.UniqueNames) {
-				foreach (DataNode data in item.ItemData) {
-					if (!(data is DataValue) || !StoreAsAttribute ((DataValue)data))
-						WriteChild (writer, data);
-				}
-			} else {
-				foreach (DataNode data in item.ItemData) {
-					DataValue dval = data as DataValue;
-					if (dval == null || !dval.StoreAsAttribute || !StoreAsAttribute (dval))
-						WriteChild (writer, data);
-				}
+			var defaultIsAtt = item.UniqueNames && !StoreAllInElements;
+			foreach (DataNode data in item.ItemData) {
+				DataValue dval = data as DataValue;
+				if (dval == null || !(StoreAsAttribute (dval) || (defaultIsAtt && !dval.StoreAsElementRequired)))
+					WriteChild (writer, data);
 			}
 		}
 		
 		protected virtual void WriteChildren (XmlElement elem, DataItem item)
 		{
-			if (item.UniqueNames) {
-				foreach (DataNode data in item.ItemData) {
-					if (!(data is DataValue) || !StoreAsAttribute ((DataValue)data))
-						WriteChild (elem, data);
-				}
-			} else {
-				foreach (DataNode data in item.ItemData) {
-					DataValue dval = data as DataValue;
-					if (dval == null || !dval.StoreAsAttribute || !StoreAsAttribute (dval))
-						WriteChild (elem, data);
-				}
+			var defaultIsAtt = item.UniqueNames && !StoreAllInElements;
+			foreach (DataNode data in item.ItemData) {
+				DataValue dval = data as DataValue;
+				if (dval == null || !(StoreAsAttribute (dval) || (defaultIsAtt && !dval.StoreAsElementRequired)))
+					WriteChild (elem, data);
 			}
 		}
 		
@@ -235,10 +223,12 @@ namespace MonoDevelop.Core.Serialization
 		
 		public virtual bool StoreAsAttribute (DataValue val)
 		{
-			if (StoreAllInElements)
+			if (val.StoreAsAttributeRequired)
+				return true;
+			else if (StoreAllInElements)
 				return StoreInElementExceptions != null && ((IList)StoreInElementExceptions).Contains (val.Name);
 			else
-				return true;
+				return false;
 		}
 		
 		protected virtual XmlConfigurationWriter GetChildWriter (DataNode data)

@@ -984,7 +984,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (i == -1) {
 						res.Append (t);
 					} else {
-						res.Append (t.Substring (i + 1));
+						res.Append (t, i + 1, t.Length - i - 1);
 						return res.ToString ();
 					}
 				} else

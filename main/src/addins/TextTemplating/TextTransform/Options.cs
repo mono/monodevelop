@@ -1021,7 +1021,7 @@ namespace Mono.Options
 							sb.Append ("}");
 						}
 						else {
-							sb.Append (description.Substring (start, i - start));
+							sb.Append (description, start, i - start);
 							start = -1;
 						}
 						break;

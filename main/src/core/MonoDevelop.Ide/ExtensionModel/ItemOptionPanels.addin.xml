@@ -58,36 +58,37 @@
 			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel" icon = "md-prefs-generic" />
 		</Condition>
 		<Condition id="ItemType" value="Project">
-			<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
-			<Section id = "Compiler" _label="Compiler" />
-			<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferencesPanel"/>
-			<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel"/>
+			<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel" icon="md-prefs-project" />
+			<Section id = "Compiler" _label="Compiler" icon="md-prefs-compiler" />
+			<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferencesPanel" icon="md-prefs-signing" />
+			<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel" icon="md-prefs-output" />
 		</Condition>
 		<Condition id="ItemType" value="Solution">
-			<Section id = "SolutionConfigurations" _label="Configurations">
+			<Section id = "SolutionConfigurations" _label="Configurations" icon="md-prefs-solution">
 				<Panel id = "Configurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
 				<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanel"/>
 			</Section>
 		</Condition>
 		<Condition id="ItemType" value="Project">
 			<Condition id="SupportsTarget" value="RunCodeAnalysis">
-				<Section id = "CodeAnalysis" _label="Code Analysis">
+				<Section id = "CodeAnalysis" _label="Code Analysis" icon="md-prefs-code-analysis">
 					<Panel id = "CodeAnalysisPanel" _label="Code Analysis" class = "MonoDevelop.Ide.Projects.OptionPanels.CodeAnalysisPanel" />
 				</Section>
 			</Condition>
 		</Condition>
 	</Section>
 	<Section id="Run" _label="Run">
-		<Section id="General" _label="General" icon="md-prefs-play">
+		<Section id="General" _label="Configurations">
 			<Condition id="ItemType" value="Project">
-				<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>
+<!--				<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>-->
+				<Panel id = "RunConfigurationsPanel" _label = "Run Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunConfigurationsPanel"/>
 			</Condition>
 		</Section>
 		<Condition id="ItemType" value="Solution">
-			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
+			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel" icon="md-prefs-startup-project" />
 		</Condition>
 		<Condition id="ItemType" value="SolutionItem">
-			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />
+<!--			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />-->
 		</Condition>
 	</Section>
 	<Section id="SourceCode" _label="Source Code">

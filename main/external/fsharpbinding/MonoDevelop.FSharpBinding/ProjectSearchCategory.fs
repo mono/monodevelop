@@ -203,19 +203,19 @@ type ProjectSearchCategory() =
                 for projFile in Search.getAllFSharpProjects() do
                     try
                         let shortName = projFile.FileName |> string |> IO.Path.GetFileName
-                        LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
+                        //LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
                         let! allProjectSymbols = Search.getAllProjectSymbols projFile
             
-                        LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) shortName )
+                        //LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i project symbols from %s, for definitions" (allProjectSymbols |> Seq.length) shortName )
                         let definitions = allProjectSymbols |> Seq.filter (fun s -> s.IsFromDefinition)
             
-                        LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s" (definitions |> Seq.length) pattern.Tag shortName )
+                        //LoggingService.LogInfo(sprintf "F# Global Search: Filtering %i matching tag %s for %s" (definitions |> Seq.length) pattern.Tag shortName )
                         let tagFiltered = definitions |> Search.byTag pattern.Tag
             
-                        LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s" (tagFiltered |> Seq.length) pattern.Pattern shortName )
+                        //LoggingService.LogInfo(sprintf "F# Global Search: Caching search on %i typeFilteredSymbols for matching pattern %s on %s" (tagFiltered |> Seq.length) pattern.Pattern shortName )
                         let matchedSymbols = tagFiltered |> cachingSearch pattern.Pattern
             
-                        LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s" (matchedSymbols |> Seq.length) shortName )
+                        //LoggingService.LogInfo(sprintf "F# Global Search: Matched %i symbols from %s" (matchedSymbols |> Seq.length) shortName )
                         for symbol:FSharpSymbolUse, rank in matchedSymbols do
                             let sr = SymbolSearchResult(pattern.Pattern, symbol.Symbol.DisplayName, rank, symbol)
                             callback.ReportResult sr

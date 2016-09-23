@@ -29,6 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -69,5 +72,10 @@ namespace MonoDevelop.Core.Execution
 		/// The execution target
 		/// </summary>
 		ExecutionTarget Target { get; }
+	}
+
+	public interface IConfigurableExecutionHandler
+	{
+		Task<IExecutionHandler> Configure (IRunTarget target, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration);
 	}
 }

@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (Errors.Length > 0 || Warnings.Length > 0) {
 					if (Errors.Length > 0) {
-						statusBar.ShowError (Errors [Errors.Length - 1].Message);
+						statusBar.ShowError (Errors [Errors.Length - 1].DisplayMessage);
 					} else if (SuccessMessages.Length == 0) {
 						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
 					}

@@ -212,6 +212,9 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
+			if (!VersionControlSystem.InstallDependencies ()) {
+				throw new SubversionException (GettextCatalog.GetString ("Restart {0} after the installation process has completed", BrandingService.ApplicationName));
+			};
 			Svn.Checkout (this.Url, targetLocalPath, rev, recurse, monitor);
 		}
 

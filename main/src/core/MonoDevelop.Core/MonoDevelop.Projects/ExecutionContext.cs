@@ -69,5 +69,7 @@ namespace MonoDevelop.Projects
 		public ExternalConsoleFactory ExternalConsoleFactory {
 			get { return MonoDevelop.Core.Execution.ExternalConsoleFactory.Instance; }
 		}
+
+		internal object RunConfiguration { get; set; }
 	}
 }

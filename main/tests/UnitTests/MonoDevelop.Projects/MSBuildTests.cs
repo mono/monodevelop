@@ -1747,7 +1747,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty (IsExternal = true)]
 		public MyProjectData Data;
 
-		[ItemProperty]
+		[ItemProperty (WrapObject = false)]
 		public MyProjectData DataProperty;
 	}
 

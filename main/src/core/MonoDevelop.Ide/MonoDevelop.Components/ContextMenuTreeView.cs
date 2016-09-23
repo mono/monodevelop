@@ -89,6 +89,10 @@ namespace MonoDevelop.Components
 						//from doing any changes to selectiong we will do changes in OnButtonReleaseEvent
 						return false;
 					};
+				} else {
+					this.Selection.SelectFunction = (s, m, p, b) => {
+						return true;
+					};
 				}
 				return base.OnButtonPressEvent (evnt);
 			}

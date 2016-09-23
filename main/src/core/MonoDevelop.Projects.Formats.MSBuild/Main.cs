@@ -26,6 +26,8 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
@@ -38,28 +40,36 @@ namespace MonoDevelop.Projects.MSBuild
 	class MainClass
 	{
 		static readonly ManualResetEvent exitEvent = new ManualResetEvent (false);
-		
+		static string msbuildBinDir = null;
+
 		[STAThread]
-		public static void Main ()
+		public static void Main (string [] args)
 		{
 			try {
-				RegisterRemotingChannel ();
-				WatchProcess (Console.ReadLine ());
-				
-				var builderEngine = new BuildEngine ();
-				var bf = new BinaryFormatter ();
-				ObjRef oref = RemotingServices.Marshal (builderEngine);
-				var ms = new MemoryStream ();
-				bf.Serialize (ms, oref);
-				Console.Error.WriteLine ("[MonoDevelop]" + Convert.ToBase64String (ms.ToArray ()));
-				
-				if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
-					// Wait before exiting, so that the remote call that disposed the builder can be completed
-					Thread.Sleep (400);
-				}
-				
+				msbuildBinDir = Console.ReadLine ().Trim ();
+				AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
+
+				Start ();
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
+			}
+		}
+
+		static void Start()
+		{
+			RegisterRemotingChannel ();
+			WatchProcess (Console.ReadLine ());
+
+			var builderEngine = new BuildEngine ();
+			var bf = new BinaryFormatter ();
+			ObjRef oref = RemotingServices.Marshal (builderEngine);
+			var ms = new MemoryStream ();
+			bf.Serialize (ms, oref);
+			Console.Error.WriteLine ("[MonoDevelop]" + Convert.ToBase64String (ms.ToArray ()));
+
+			if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
+				// Wait before exiting, so that the remote call that disposed the builder can be completed
+				Thread.Sleep (400);
 			}
 		}
 		
@@ -96,6 +106,29 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 			t.IsBackground = true;
 			t.Start ();
+		}
+
+		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
+		{
+			var msbuildAssemblies = new string[] {
+							"Microsoft.Build",
+							"Microsoft.Build.Engine",
+							"Microsoft.Build.Framework",
+							"Microsoft.Build.Tasks.Core",
+							"Microsoft.Build.Utilities.Core" };
+
+			var asmName = new AssemblyName (args.Name);
+			if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
+				return null;
+
+			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
+			if (File.Exists (fullPath)) {
+				// If the file exists under the msbuild bin dir, then we need
+				// to load it only from there. If that fails, then let that exception
+				// escape
+				return Assembly.LoadFrom (fullPath);
+			} else
+				return null;
 		}
 	}
 }

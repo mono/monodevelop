@@ -410,6 +410,7 @@ namespace MonoDevelop.Core.Execution
 			lock (messageWaiters) {
 				foreach (var m in messageWaiters.Values)
 					NotifyResponse (m, m.Request.CreateErrorResponse ("Connection closed"));
+				messageWaiters.Clear ();
 				messageQueue.Clear ();
 			}
 		}
@@ -495,7 +496,9 @@ namespace MonoDevelop.Core.Execution
 							ProcessRemoteMessage (msg);
 					});
 					t.ContinueWith (ta => {
-						pendingMessageTasks.Remove (ta);
+						lock (pendingMessageTasks) {
+							pendingMessageTasks.Remove (ta);
+						}
 					});
 					pendingMessageTasks.Add (t);
 				}

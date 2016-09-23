@@ -147,6 +147,12 @@ namespace MonoDevelop.Ide.Gui
 				return ProjectReloadCapability.None;
 			}
 		}
+
+		/// <summary>
+		/// Gets the display binding of this view.
+		/// </summary>
+		/// <value>The display binding used to create this view.</value>
+		public IDisplayBinding Binding { get; internal set; }
 	}
 
 	public enum ProjectReloadCapability

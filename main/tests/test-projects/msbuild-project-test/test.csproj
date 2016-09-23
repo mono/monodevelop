@@ -13,6 +13,10 @@
     <EvalProp>$(TestProp)</EvalProp>
   	<Foo>support\file1.txt</Foo>
   	<ExistsTest Condition="Exists('$(Foo)')">OK</ExistsTest>
+  	<CASE1>value1</CASE1>
+  	<Case1>value2</Case1>
+  	<Case2>$(CasE1)</Case2>
+  	<Case3>$(CASE1)</Case3>
   	<TestRewrite>Val</TestRewrite>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

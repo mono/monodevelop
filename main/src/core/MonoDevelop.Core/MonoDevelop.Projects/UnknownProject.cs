@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (r);
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			return new Task (delegate {
 			});

@@ -90,6 +90,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		CancellationTokenSource completionTokenSrc = new CancellationTokenSource ();
 		CancellationTokenSource parameterHintingSrc = new CancellationTokenSource ();
+		bool parameterHingtingCursorPositionChanged = false;
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
@@ -255,24 +256,30 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			if (CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
-				parameterHintingSrc.Cancel ();
-				parameterHintingSrc = new CancellationTokenSource ();
-				var token = parameterHintingSrc.Token;
+				var newparameterHintingSrc = new CancellationTokenSource ();
+				var token = newparameterHintingSrc.Token;
 				try {
 					var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
 					if (task != null) {
+						parameterHintingSrc.Cancel ();
+						parameterHintingSrc = newparameterHintingSrc;
+						parameterHingtingCursorPositionChanged = false;
 						task.ContinueWith (t => {
-							if (!token.IsCancellationRequested && t.Result != null)
+							if (!token.IsCancellationRequested && t.Result != null) {
 								ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, t.Result);
-						}, Runtime.MainTaskScheduler);
+								if (parameterHingtingCursorPositionChanged)
+									ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
+							}
+						}, token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+					} else {
+						//Key was typed that was filtered out, no heavy processing will be performed(task==null)
+						//but we still want to update ParameterInfo window to avoid displaying it outside method call
+						parameterHingtingCursorPositionChanged = true;
 					}
 				} catch (TaskCanceledException) {
 				} catch (AggregateException) {
 				}
-
 			}
-			/*			autoHideCompletionWindow = true;
-						autoHideParameterWindow = keyChar != ':';*/
 			return res;
 		}
 

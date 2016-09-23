@@ -173,10 +173,14 @@ namespace MonoDevelop.Core
 
 		public bool IsChildPathOf (FilePath basePath)
 		{
-			if (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar)
-				return fileName.StartsWith (basePath.fileName + Path.DirectorySeparatorChar, PathComparison);
-			else
-				return fileName.StartsWith (basePath.fileName, PathComparison);
+			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
+			if (startsWith && basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar) {
+				// If the last character isn't a path separator character, check whether the string we're searching in
+				// has more characters than the string we're looking for then check the character.
+				if (fileName.Length > basePath.fileName.Length)
+					startsWith &= fileName [basePath.fileName.Length] == Path.DirectorySeparatorChar;
+			}
+			return startsWith;
 		}
 
 		public FilePath ChangeExtension (string ext)

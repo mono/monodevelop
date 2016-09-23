@@ -47,7 +47,13 @@ namespace MonoDevelop.Ide.Execution
 			this.project = project;
 			this.cmd = cmd;
 		}
-		
+
+		public CommandExecutionContext (IRunTarget project, CanExecuteDelegate runCheckDelegate)
+		{
+			this.project = project as SolutionItem;
+			this.runCheckDelegate = runCheckDelegate;
+		}
+
 		public SolutionItem Project {
 			get { return project; }
 		}

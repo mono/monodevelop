@@ -136,14 +136,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		bool IsReachable (SemanticModel model, ITypeSymbol type, SyntaxNode node)
 		{
-			if (type.ContainingNamespace.IsGlobalNamespace)
-				return true;
-			var ds = type.ContainingNamespace.ToDisplayString ();
-			foreach (var ns in model.GetUsingNamespacesInScope (node)) {
-				if (ns.ToDisplayString  () == ds)
-					return true;
-			}
-			return false;
+			return type.ToMinimalDisplayString (model, node.SpanStart).IndexOf ('.') < 0;
 		}
 	}
 

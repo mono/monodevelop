@@ -57,8 +57,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public static CodeFormatter GetFormatter (string mimeType)
 		{
-			//find the most specific formatter that can handle the document
-			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType).ToList ();
+			//find the most specific formatter that can handle the document			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			foreach (var mt in chain) {
 				var node = nodes.FirstOrDefault (f => f.MimeType == mt);
 				if (node != null)

@@ -961,9 +961,9 @@ namespace MonoDevelop.DocFood
 							continue;
 						}
 						if (i != j)
-							result.Append (name.Substring (j, i - j));
+							result.Append (name, j, i - j);
 						if (i + 1 < name.Length) {
-							result.Append (" ");
+							result.Append (' ');
 							result.Append (char.ToLower (name [i]));
 						}
 						continue;

@@ -482,7 +482,8 @@ namespace MonoDevelop.Projects
 					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
 						DotNetProject p = ResolveProject (ownerProject.ParentSolution) as DotNetProject;
 						if (p != null) {
-							string reason = null;
+							string reason;
+
 							if (!ownerProject.CanReferenceProject (p, out reason))
 								return reason;
 						}

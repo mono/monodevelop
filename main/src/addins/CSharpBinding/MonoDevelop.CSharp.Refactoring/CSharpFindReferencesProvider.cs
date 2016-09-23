@@ -38,6 +38,7 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using MonoDevelop.CSharp.Highlighting;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -75,7 +76,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			int reminderIndex = 2;
 			var comp = await prj.GetCompilationAsync (token).ConfigureAwait (false);
 			return await Task.Run (() => {
-				var current = LookupNamespace (documentationCommentId, ref reminderIndex, comp.GlobalNamespace);
+				var current = LookupNamespace (documentationCommentId, ref reminderIndex, comp.GlobalNamespace, token);
 				if (current == null)
 					return LookupResult.Failure;
 				if (searchNs) {
@@ -83,10 +84,11 @@ namespace MonoDevelop.CSharp.Refactoring
 						return new LookupResult (current, prj.Solution, comp);
 					return LookupResult.Failure;
 				}
-
 				INamedTypeSymbol type = null;
 				foreach (var t in current.GetTypeMembers ()) {
-					type = LookupType (documentationCommentId, reminderIndex, t);
+					if (token.IsCancellationRequested)
+						return LookupResult.Failure;
+					type = LookupType (documentationCommentId, reminderIndex, t, token);
 					if (type != null) {
 						if (searchType) {
 							return new LookupResult (type, prj.Solution, comp);
@@ -97,12 +99,15 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (type == null)
 					return LookupResult.Failure;
 				foreach (var member in type.GetMembers ()) {
+					if (token.IsCancellationRequested)
+						return LookupResult.Failure;
+					
 					if (member.GetDocumentationCommentId () == documentationCommentId) {
 						return new LookupResult (member, prj.Solution, comp);
 					}
 				}
 				return LookupResult.Failure;
-			});
+			}, token);
 		}
 
 		internal static async Task<LookupResult> TryLookupSymbol (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
@@ -139,7 +144,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		static INamedTypeSymbol LookupType (string documentationCommentId, int reminder, INamedTypeSymbol current)
+		static INamedTypeSymbol LookupType (string documentationCommentId, int reminder, INamedTypeSymbol current, CancellationToken token)
 		{
 			var idx = documentationCommentId.IndexOf ('.', reminder);
 			var exact = idx < 0;
@@ -156,7 +161,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (typeId.Length > idx)
 					return null;
 				foreach (var subType in current.GetTypeMembers ()) {
-					var child = LookupType (documentationCommentId, idx  + 1, subType);
+					if (token.IsCancellationRequested)
+						return null;
+					
+					var child = LookupType (documentationCommentId, idx  + 1, subType, token);
 					if (child != null) {
 						return child;
 					}
@@ -167,11 +175,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			return null;
 		}
 
-		static INamespaceSymbol LookupNamespace (string documentationCommentId, ref int reminder, INamespaceSymbol current)
+		static INamespaceSymbol LookupNamespace (string documentationCommentId, ref int reminder, INamespaceSymbol current, CancellationToken token)
 		{
 			var exact = documentationCommentId.IndexOf ('.', reminder) < 0;
 
 			foreach (var subNamespace in current.GetNamespaceMembers ()) {
+				if (token.IsCancellationRequested)
+					return null;
+				
 				if (exact) {
 					if (subNamespace.Name.Length == documentationCommentId.Length - reminder &&
 					    string.CompareOrdinal (documentationCommentId, reminder, subNamespace.Name, 0, subNamespace.Name.Length) == 0)
@@ -181,7 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						string.CompareOrdinal (documentationCommentId, reminder, subNamespace.Name, 0, subNamespace.Name.Length) == 0 &&
 						documentationCommentId [reminder + subNamespace.Name.Length] == '.') {
 						reminder += subNamespace.Name.Length + 1;
-						return LookupNamespace (documentationCommentId, ref reminder, subNamespace);
+						return LookupNamespace (documentationCommentId, ref reminder, subNamespace, token);
 					}
 				}
 			}
@@ -198,6 +209,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					LookupResult lookup = null;
 
 					foreach (var project in workspace.CurrentSolution.Projects) {
+						if (token.IsCancellationRequested)
+							return result;
+						
 						lookup = await TryLookupSymbolInProject (project, documentationCommentId, token);
 						if (lookup.Success)
 							break;
@@ -221,12 +235,13 @@ namespace MonoDevelop.CSharp.Refactoring
 							fileName = projectedName;
 							offset = projectedOffset;
 						}
-						var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
+						var sr = new MemberReference (lookup.Symbol, fileName, offset, loc.SourceSpan.Length);
+						sr.ReferenceUsageType = ReferenceUsageType.Declariton;
 						antiDuplicatesSet.Add (sr);
 						result.Add (sr);
 					}
 
-					foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution).ConfigureAwait (false)) {
+					foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution, token).ConfigureAwait (false)) {
 						foreach (var loc in mref.Locations) {
 							if (token.IsCancellationRequested)
 								break;
@@ -238,8 +253,14 @@ namespace MonoDevelop.CSharp.Refactoring
 								fileName = projectedName;
 								offset = projectedOffset;
 							}
-							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
+							var sr = new MemberReference (lookup.Symbol, fileName, offset, loc.Location.SourceSpan.Length);
+
+
 							if (antiDuplicatesSet.Add (sr)) {
+								var root = loc.Location.SourceTree.GetRoot ();
+								var node = root.FindNode (loc.Location.SourceSpan);
+								var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+								sr.ReferenceUsageType = HighlightUsagesExtension.GetUsage (node);
 								result.Add (sr);
 							}
 						}

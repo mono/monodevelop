@@ -170,8 +170,7 @@ namespace WindowsPlatform.MainToolbar
 			var item = (ConfigurationMenuItem)sender;
 			var old = active;
 
-			if (SelectionChanged != null)
-				SelectionChanged (this, new SelectionChangedEventArgs<IConfigurationModel> (item.Model, old));
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IConfigurationModel> (item.Model, old));
         }
 
 		class ConfigurationMenuItem : SimpleMenuItem
@@ -186,6 +185,83 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public override event EventHandler<SelectionChangedEventArgs<IConfigurationModel>> SelectionChanged;
+	}
+
+	public class RunConfigurationComboMenu : ComboMenu<IRunConfigurationModel>
+	{
+		public RunConfigurationComboMenu ()
+		{
+		}
+
+		IRunConfigurationModel active;
+		public override IRunConfigurationModel Active {
+			get {
+				return active;
+			}
+
+			set {
+				active = model.FirstOrDefault (cm => cm.OriginalId == value.OriginalId);
+				if (active == null) {
+					DropMenuText = "Default";
+					IsEnabled = false;
+				} else {
+					DropMenuText = active.DisplayString;
+					IsEnabled = true;
+				}
+			}
+		}
+
+		IEnumerable<IRunConfigurationModel> model;
+		public override IEnumerable<IRunConfigurationModel> Model {
+			get {
+				return model;
+			}
+
+			set {
+				int count = value.Count ();
+				model = value;
+
+				var dropMenu = DropMenu;
+				var open = dropMenu.IsSubmenuOpen;
+				if (open)
+					dropMenu.IsSubmenuOpen = false;
+
+				foreach (MenuItem item in dropMenu.Items)
+					item.Click -= OnMenuItemClicked;
+				dropMenu.Items.Clear ();
+				foreach (var item in value) {
+					var menuItem = new ConfigurationMenuItem (item);
+					menuItem.Click += OnMenuItemClicked;
+					dropMenu.Items.Add (menuItem);
+				}
+				IsEnabled = Focusable = IsHitTestVisible = dropMenu.Items.Count > 1;
+				if (count == 0)
+					DropMenuText = "Default";
+
+				dropMenu.IsSubmenuOpen = open;
+			}
+		}
+
+		void OnMenuItemClicked (object sender, RoutedEventArgs args)
+		{
+			var item = (ConfigurationMenuItem)sender;
+			var old = active;
+
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IRunConfigurationModel> (item.Model, old));
+		}
+
+		class ConfigurationMenuItem : SimpleMenuItem
+		{
+			public ConfigurationMenuItem (IRunConfigurationModel model)
+			{
+				Model = model;
+				Header = model.DisplayString;
+				UseLayoutRounding = true;
+			}
+			public IRunConfigurationModel Model { get; private set; }
+		}
+
+		public override event EventHandler<SelectionChangedEventArgs<IRunConfigurationModel>> SelectionChanged;
 	}
 
 	public class RuntimeComboMenu : ComboMenu<IRuntimeModel>
@@ -264,8 +340,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			var item = (RuntimeMenuItem)sender;
 
-			if (SelectionChanged != null)
-				SelectionChanged (this, new SelectionChangedEventArgs<IRuntimeModel> (item.Model, Active));
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IRuntimeModel> (item.Model, Active));
 		}
 
 		void FillSource (ItemCollection source, IEnumerable<IRuntimeModel> model)

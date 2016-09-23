@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var editor = doc.Editor;
 			if (editor == null)
 				return null;
-			return editor == null ? null : CodeFormatterService.GetFormatter (editor.MimeType);
+			return CodeFormatterService.GetFormatter (editor.MimeType);
 		}
 
 		protected override void Update (CommandInfo info)

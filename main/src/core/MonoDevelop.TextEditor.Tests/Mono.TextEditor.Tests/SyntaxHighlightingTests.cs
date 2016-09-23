@@ -27,6 +27,7 @@
 using System;
 using NUnit.Framework;
 using Mono.TextEditor.Highlighting;
+using System.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -140,6 +141,27 @@ namespace Mono.TextEditor.Tests
 				"\n\n\nlet x = 2",
 				"<span foreground=\"#009695\">let</span><span foreground=\"#222222\"> x = </span><span foreground=\"#DB7100\">2</span>",
 				"text/x-fsharp");
+		}
+
+		[Test]
+		public void TestChunkValidity()
+		{
+			const string text = @"System.Console.WriteLine();";
+			var data = new TextEditorData (new TextDocument (@"namespace FooBar
+{
+    class Test
+    {
+   " + text + @"
+    }
+}"));
+			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Light");
+			var line = data.GetLine (5);
+			var chunks = data.GetChunks (line, line.Offset + 3, line.Length - 3);
+			StringBuilder sb = new StringBuilder ();
+			foreach (var chunk in chunks)
+				sb.Append (data.GetTextAt (chunk));
+			Assert.AreEqual (text, sb.ToString ());
 		}
 	}
 }
