@@ -24,6 +24,7 @@ clean-local: sln_clean
 restore-packages:
 	mono .nuget/NuGet.exe restore
 	nuget restore external/NuGetizer3000/src/NuGet.Packaging.Tasks.sln
+	nuget restore external/NuGetizer3000/external/ApiIntersect/ApiIntersect.sln 
 
 vcrevision:
 	touch vcrevision
