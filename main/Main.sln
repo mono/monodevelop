@@ -321,6 +321,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIThreadMonitorDaemon", "src\addins\PerformanceDiagnostics\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj", "{3FDB97B5-916E-4817-8098-41659687A8FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.ConnectedServices", "src\addins\MonoDevelop.ConnectedServices\MonoDevelop.ConnectedServices.csproj", "{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
 EndProject
 Global
