@@ -85,8 +85,17 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				LoggingService.LogError ("Can't copy syntax mode file.", ex);
 			}
 			if (success) {
-				SyntaxHighlightingService.LoadStyleOrMode (newFileName);
-				FillBundles ();
+				var bundle = SyntaxHighlightingService.LoadStyleOrMode (newFileName) as LanguageBundle;
+				if (bundle != null) {
+					foreach (var h in bundle.Highlightings)
+						h.PrepareMatches ();
+					FillBundles ();
+				} else {
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid bundle: " + dialog.SelectedFile.FileName));
+					try {
+						File.Delete (newFileName);
+					} catch (Exception) {}
+ 				}
 			}
 		}
 
