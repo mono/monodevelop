@@ -40,9 +40,9 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		struct KeySet
 		{
-			string [] keys;
+			IList<string> keys;
 
-			public KeySet (string [] keys)
+			public KeySet (IList<string> keys)
 			{
 				this.keys = keys;
 			}
@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 					return false;
 				
 				var other = (KeySet)obj;
-				if (other.keys.Length != keys.Length)
+				if (other.keys.Count != keys.Count)
 					return false;
 				
 				foreach (var k in keys) {
@@ -79,8 +79,8 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public struct ValueSet
 		{
-			internal string [] ReferenceKeys;
-			internal string [] Values;
+			internal IList<string> ReferenceKeys;
+			internal IList<string> Values;
 
 			/// <summary>
 			/// Initializes a new ValueSet
@@ -88,16 +88,16 @@ namespace MonoDevelop.Projects
 			/// <param name="referenceKeys">Array of keys that specifies the order in which values are stored</param>
 			/// <param name="names">Array of keys, ordered according to the values parameter</param>
 			/// <param name="values">Values of the keys.</param>
-			internal ValueSet (string [] referenceKeys, string[] names, string[] values)
+			internal ValueSet (IList<string> referenceKeys, IList<string> names, IList<string> values)
 			{
 				this.ReferenceKeys = referenceKeys;
-				this.Values = new string [values.Length];
-				if (referenceKeys.Length == 1)
+				this.Values = new string [values.Count];
+				if (referenceKeys.Count == 1)
 					this.Values [0] = values [0];
 				else {
-					for (int n = 0; n < names.Length; n++) {
+					for (int n = 0; n < names.Count; n++) {
 						// Store the values using the order of the reference keys
-						int i = Array.IndexOf (referenceKeys, names [n]);
+						int i = referenceKeys.IndexOf (names [n]);
 						this.Values [i] = values [n];
 					}
 				}
@@ -112,14 +112,14 @@ namespace MonoDevelop.Projects
 			/// </summary>
 			public string GetValue (string property)
 			{
-				if (ReferenceKeys.Length == 1) {
+				if (ReferenceKeys.Count == 1) {
 					// Fast path when there is only one property in the set
 					if (ReferenceKeys [0] == property)
 						return Values [0];
 					else
 						return null;
 				} else {
-					int i = Array.IndexOf (ReferenceKeys, property);
+					int i = ReferenceKeys.IndexOf (property);
 					if (i != -1)
 						return Values [i];
 					else
@@ -136,19 +136,19 @@ namespace MonoDevelop.Projects
 
 				if (ReferenceKeys == other.ReferenceKeys) {
 					// Fast path, used when both sets are based on the same reference keys
-					for (int n = 0; n < Values.Length; n++)
+					for (int n = 0; n < Values.Count; n++)
 						if (Values [n] != other.Values [n])
 							return false;
 					return true;
 				}
 
-				if (other.ReferenceKeys.Length != ReferenceKeys.Length)
+				if (other.ReferenceKeys.Count != ReferenceKeys.Count)
 					return false;
 
-				if (other.ReferenceKeys.Length == 1)
+				if (other.ReferenceKeys.Count == 1)
 					return ReferenceKeys[0] == other.ReferenceKeys[0] && Values [0] == other.Values [0];
 
-				for (int n = 0; n < ReferenceKeys.Length; n++) {
+				for (int n = 0; n < ReferenceKeys.Count; n++) {
 					if (other.GetValue (ReferenceKeys[n]) != Values[n])
 						return false;
 				}
@@ -198,7 +198,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void AddPropertyValues (string[] names, string[] values)
+		internal void AddPropertyValues (IList<string> names, IList<string> values)
 		{
 			var key = new KeySet (names);
 			ImmutableList<ValueSet> list;
@@ -221,7 +221,7 @@ namespace MonoDevelop.Projects
 			// Now register each value individually
 
 			ImmutableList<string> valList;
-			for (int n = 0; n < names.Length; n++) {
+			for (int n = 0; n < names.Count; n++) {
 				var name = names [n];
 				var val = values [n];
 				if (!props.TryGetValue (name, out valList))
