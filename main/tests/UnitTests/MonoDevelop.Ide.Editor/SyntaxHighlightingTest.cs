@@ -406,6 +406,8 @@ typedef struct
 			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([:A-Z_a-z][\\w-.:]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
 			Assert.AreEqual ("[\\w-]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
 			Assert.AreEqual ("\\[(\\\\]|[^\\]])*\\]", Sublime3Format.CompileRegex ("\\[(\\\\]|[^\\]])*\\]"));
+
+			Assert.AreEqual ("[\\p{Lu}]", Sublime3Format.CompileRegex ("[\\p{Lu}]"));
 		}
 
 		[Test]

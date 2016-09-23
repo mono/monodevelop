@@ -202,13 +202,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			bool first = true;
 			bool negativeGroup;
 			StringBuilder wordBuilder;
+			StringBuilder unicodeGroupBuilder = new StringBuilder ();
 
 			bool hasLast;
-			bool escape, range;
+			bool escape, range, readUnicodeGroup;
 			char lastChar = '\0';
 			char lastPushedChar;
 			int[] table = new int [256];
 			StringBuilder org = new StringBuilder ();
+			List<string> unicodeGroups = new List<string> ();
 
 			public void Push (char ch)
 			{
@@ -224,6 +226,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						break;
 					}
 					goto default;
+				case '{':
+					if (readUnicodeGroup)
+						return;
+					break;
+				case '}':
+					if (readUnicodeGroup) {
+						readUnicodeGroup = false;
+						unicodeGroups.Add (unicodeGroupBuilder.ToString ());
+						unicodeGroupBuilder.Length = 0;
+						return;
+					}
+					break;
 				case '[':
 					if (escape)
 						goto default;
@@ -243,6 +257,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					range = true;
 					break;
 				default:
+					if (readUnicodeGroup) {
+						unicodeGroupBuilder.Append (ch);
+						return;
+					}
 					if (escape) {
 						PushLastChar ();
 
@@ -326,6 +344,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							break;
 						case 'n':
 							table ['\n'] = negativeGroup ? -1 : 1;
+							break;
+						case 'p':
+							readUnicodeGroup = true;
 							break;
 						default:
 							lastChar = ch;
@@ -463,6 +484,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						}
 					}
 				}
+				foreach (var grp in unicodeGroups) {
+					result.Append ("\\p{");
+					result.Append (grp);
+					result.Append ("}");
+}
 				result.Append (']');
 				return result.ToString ();
 			}
