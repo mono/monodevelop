@@ -180,11 +180,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 									}
 								}
 							}
+							AddSelectedServices (service, servicesToAdd);
 						}
 					});
-				}
-
-				AddSelectedServices (service, servicesToAdd);
+				} else
+					AddSelectedServices (service, servicesToAdd);
 			}
 		}
 
