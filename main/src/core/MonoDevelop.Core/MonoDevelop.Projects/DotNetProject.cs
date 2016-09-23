@@ -812,9 +812,10 @@ namespace MonoDevelop.Projects
 			if (ParentSolution == null)
 				return items;
 
+			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
 			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project && (string.IsNullOrEmpty (pref.Condition) ||
-				    ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
+				if (pref.ReferenceType == ReferenceType.Project &&
+				    (string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
 					Project rp = pref.ResolveProject (ParentSolution);
 					if (rp != null)
 						items.Add (rp);
