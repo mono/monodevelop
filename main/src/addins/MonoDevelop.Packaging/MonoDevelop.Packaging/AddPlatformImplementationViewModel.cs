@@ -192,7 +192,13 @@ namespace MonoDevelop.Packaging
 			var fileTemplate = new FileTemplateReference ();
 			fileTemplate.Load (doc.DocumentElement, null);
 
+			var parameters = new ProjectCreateParameters();
+			parameters["UseCustomAssemblyInfoVersion"] = "true";
+			parameters["AssemblyInfoVersion"] = "1.0.0.0";
+
+			fileTemplate.SetProjectTagModel(parameters);
 			fileTemplate.AddToProject (project.ParentFolder, project, "C#", project.BaseDirectory, "");
+			fileTemplate.SetProjectTagModel(null);
 		}
 
 		Task SaveProject (ProgressMonitor monitor, Project project)

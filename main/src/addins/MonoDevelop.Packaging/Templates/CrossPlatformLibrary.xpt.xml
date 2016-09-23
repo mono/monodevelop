@@ -12,6 +12,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>A project template for creating a multiplatform library project and its corresponding NuGet package.</_Description>
 		<Wizard>MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard</Wizard>
+		<DefaultParameters>UseCustomAssemblyInfoVersion=true;AssemblyInfoVersion=1.0.0.0</DefaultParameters>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">
