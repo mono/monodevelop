@@ -296,22 +296,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						bundle.Add (snippet);
 					return snippet;
 				}
-			} else if (file.EndsWith (".plist", StringComparison.OrdinalIgnoreCase)) {
-				using (var stream = openStream ()) {
-					var dict = PDictionary.FromStream (stream);
-					// guess if we've a highlighting or preference file
-					if (dict.ContainsKey ("fileTypes")) {
-						var highlighting = TextMateFormat.ReadHighlighting (dict);
-						if (highlighting != null)
-							bundle.Add (highlighting);
-						return highlighting;
-					}
-
-					var preference = TextMateFormat.ReadPreferences (dict);
-					if (preference != null)
-						bundle.Add (preference);
-					return preference;
-				}
 			}
 			return null;
 		}
