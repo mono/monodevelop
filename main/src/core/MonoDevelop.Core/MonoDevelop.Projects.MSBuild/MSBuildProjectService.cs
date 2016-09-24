@@ -100,6 +100,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			LoadExtensionData ();
+
+			specialCharactersEscaped = new Dictionary<char, string> (specialCharacters.Length);
+			for (int i = 0; i < specialCharacters.Length; ++i)
+				specialCharactersEscaped [specialCharacters [i]] = '%' + ((int)specialCharacters [i]).ToString ("X");
 		}
 
 		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
@@ -671,13 +675,25 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 		
 		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?' };
+		static Dictionary<char, string> specialCharactersEscaped;
 		
 		public static string EscapeString (string str)
 		{
 			int i = str.IndexOfAny (specialCharacters);
-			while (i != -1) {
-				str = str.Substring (0, i) + '%' + ((int) str [i]).ToString ("X") + str.Substring (i + 1);
-				i = str.IndexOfAny (specialCharacters, i + 3);
+			if (i != -1) {
+				var sb = new System.Text.StringBuilder ();
+				int start = 0;
+				while (i != -1) {
+					sb.Append (str, start, i - start);
+					sb.Append (specialCharactersEscaped [str [i]]);
+					if (i >= str.Length)
+						break;
+					start = i + 1;
+					i = str.IndexOfAny (specialCharacters, start);
+				}
+				if (start < str.Length)
+					sb.Append (str, start, str.Length - start);
+				return sb.ToString ();
 			}
 			return str;
 		}
