@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		struct KeySet
 		{
-			IList<string> keys;
+			readonly IList<string> keys;
 
 			public KeySet (IList<string> keys)
 			{
@@ -67,8 +67,8 @@ namespace MonoDevelop.Projects
 			{
 				unchecked {
 					int r = 0;
-					foreach (var k in keys)
-						r ^= k.GetHashCode ();
+					for (int i = 0; i < keys.Count; ++i)
+						r ^= keys[i].GetHashCode ();
 					return r;
 				}
 			}
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 		public struct ValueSet
 		{
 			internal IList<string> ReferenceKeys;
-			internal IList<string> Values;
+			readonly internal IList<string> Values;
 
 			/// <summary>
 			/// Initializes a new ValueSet
@@ -159,8 +159,8 @@ namespace MonoDevelop.Projects
 			{
 				unchecked {
 					int r = 0;
-					foreach (var k in Values)
-						r ^= k.GetHashCode ();
+					for (int i = 0; i < Values.Count; ++i)
+						r ^= Values [i].GetHashCode ();
 					return r;
 				}
 			}
