@@ -173,11 +173,12 @@ namespace MonoDevelop.Projects
 				var key = e.Key;
 				ImmutableList<string> list;
 				if (props.TryGetValue (key, out list)) {
+					var lb = list.ToBuilder ();
 					foreach (var c in otherList) {
-						if (!list.Contains (c))
-							list = list.Add (c);
+						if (!lb.Contains (c))
+							lb.Add (c);
 					}
-					props [key] = list;
+					props [key] = lb.ToImmutableList ();
 				} else
 					props [key] = otherList;
 			}
@@ -187,12 +188,13 @@ namespace MonoDevelop.Projects
 				var key = e.Key;
 				ImmutableList<ValueSet> thisList;
 				if (combinedProps.TryGetValue (key, out thisList)) {
+					var list = thisList.ToBuilder ();
 					foreach (var c in otherList) {
-						if (!thisList.Contains (c))
+						if (!list.Contains (c))
 							// Create a new ValueSet so that the reference keys of this collection are reused
-							thisList = thisList.Add (new ValueSet (thisList [0].ReferenceKeys, c.ReferenceKeys, c.Values));
+							list.Add (new ValueSet (list [0].ReferenceKeys, c.ReferenceKeys, c.Values));
 					}
-					combinedProps [key] = thisList;
+					combinedProps [key] = list.ToImmutable ();
 				} else
 					combinedProps [key] = otherList;
 			}
