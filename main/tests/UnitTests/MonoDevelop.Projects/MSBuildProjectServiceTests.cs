@@ -36,10 +36,21 @@ namespace MonoDevelop.Projects
 		[TestCase ("a(b)", "a%28b%29")]
 		[TestCase ("a%bcd", "a%25bcd")]
 		[TestCase ("%a%b%c%d%", "%25a%25b%25c%25d%25")]
+		[TestCase ("%%%", "%25%25%25")]
 		[TestCase ("abc", "abc")]
 		public void EscapeString (string input, string expected)
 		{
 			Assert.AreEqual (expected, MSBuildProjectService.EscapeString (input));
+		}
+
+		[TestCase ("a%28b%29", "a(b)")]
+		[TestCase ("a%25bcd", "a%bcd")]
+		[TestCase ("%25a%25b%25c%25d%25", "%a%b%c%d%")]
+		[TestCase ("%25%25%25", "%%%")]
+		[TestCase ("abc", "abc")]
+		public void UnescapeString (string input, string expected)
+		{
+			Assert.AreEqual (expected, MSBuildProjectService.UnscapeString (input));
 		}
 	}
 }
