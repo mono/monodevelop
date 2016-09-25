@@ -1344,7 +1344,7 @@ namespace ICSharpCode.NRefactory6.Utils
 	/// a different version of the class than the current one.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum)]
-	class FastSerializerVersionAttribute : Attribute
+	sealed class FastSerializerVersionAttribute : Attribute
 	{
 		readonly int versionNumber;
 		
