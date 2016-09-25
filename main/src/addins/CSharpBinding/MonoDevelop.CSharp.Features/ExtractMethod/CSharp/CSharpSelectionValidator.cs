@@ -352,20 +352,20 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
         public override bool ContainsNonReturnExitPointsStatements(IEnumerable<SyntaxNode> jumpsOutOfRegion)
         {
-            return jumpsOutOfRegion.Where(n => !(n is ReturnStatementSyntax)).Any();
+            return jumpsOutOfRegion.Any (n => !(n is ReturnStatementSyntax));
         }
 
         public override IEnumerable<SyntaxNode> GetOuterReturnStatements(SyntaxNode commonRoot, IEnumerable<SyntaxNode> jumpsOutOfRegion)
         {
             var returnStatements = jumpsOutOfRegion.Where(s => s is ReturnStatementSyntax);
 
-            var container = commonRoot.GetAncestorsOrThis<SyntaxNode>().Where(a => a.IsReturnableConstruct()).FirstOrDefault();
+            var container = commonRoot.GetAncestorsOrThis<SyntaxNode> ().FirstOrDefault (SyntaxNodeExtensions.IsReturnableConstruct);
             if (container == null)
             {
                 return SpecializedCollections.EmptyEnumerable<SyntaxNode>();
             }
 
-            var returnableConstructPairs = returnStatements.Select(r => Tuple.Create(r, r.GetAncestors<SyntaxNode>().Where(a => a.IsReturnableConstruct()).FirstOrDefault()))
+            var returnableConstructPairs = returnStatements.Select(r => Tuple.Create(r, r.GetAncestors<SyntaxNode> ().FirstOrDefault (SyntaxNodeExtensions.IsReturnableConstruct)))
                                                            .Where(p => p.Item2 != null);
 
             // now filter return statements to only include the one under outmost container
@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
                 return false;
             }
 
-            var container = lastToken.GetAncestors<SyntaxNode>().FirstOrDefault(n => n.IsReturnableConstruct());
+            var container = lastToken.GetAncestors<SyntaxNode>().FirstOrDefault(SyntaxNodeExtensions.IsReturnableConstruct);
             if (container == null)
             {
                 return false;

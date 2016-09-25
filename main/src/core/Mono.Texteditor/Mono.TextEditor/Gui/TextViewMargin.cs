@@ -2251,7 +2251,7 @@ namespace Mono.TextEditor
 
 			if (line != null) {
 				newMarkers.Clear ();
-				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextLineMarker).Cast <IActionTextLineMarker> ());
+				newMarkers.AddRange (line.Markers.OfType<IActionTextLineMarker> ());
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);

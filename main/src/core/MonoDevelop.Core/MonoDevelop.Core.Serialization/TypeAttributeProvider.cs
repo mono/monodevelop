@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Serialization
 		{
 			if (ob is MemberInfo) {
 				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
-					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).FirstOrDefault (a => type.IsInstanceOfType (a));
+					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).FirstOrDefault (type.IsInstanceOfType);
 				else
 					return Attribute.GetCustomAttribute ((MemberInfo)ob, type, inherit);
 			}
@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.Serialization
 		{
 			if (ob is MemberInfo) {
 				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
-					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).Where (a => type.IsInstanceOfType (a)).ToArray ();
+					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).Where (type.IsInstanceOfType).ToArray ();
 				else
 					return Attribute.GetCustomAttributes ((MemberInfo)ob, type, inherit);
 			}
@@ -64,7 +64,7 @@ namespace MonoDevelop.Core.Serialization
 			MemberInfo mi = ob as MemberInfo;
 			if (mi != null) {
 				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
-					return Attribute.GetCustomAttributes (mi, inherit).Any (a => type.IsInstanceOfType (a));
+					return Attribute.GetCustomAttributes (mi, inherit).Any (type.IsInstanceOfType);
 				else
 					return Attribute.IsDefined (mi, type, inherit);
 			}

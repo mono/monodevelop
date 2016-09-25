@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp
 
 			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
 			if (ownerProjects.Count > 1) {
-				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (p => TypeSystemService.GetCodeAnalysisProject (p)).ToList ();
+				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (TypeSystemService.GetCodeAnalysisProject).ToList ();
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;
 				Task.Run (async delegate {

@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Gui
 			if (widget.CanFocus)
 				yield return widget;
 			if (c != null) {
-				foreach (var f in c.FocusChain.SelectMany (x => GetFocussableWidgets (x)).Where (y => y != null))
+				foreach (var f in c.FocusChain.SelectMany (GetFocussableWidgets).Where (y => y != null))
 					yield return f;
 			}
 		}

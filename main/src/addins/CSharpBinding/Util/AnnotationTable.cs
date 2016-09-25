@@ -254,7 +254,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public IEnumerable<SyntaxNodeOrToken> GetAnnotatedNodesAndTokens<TSpecificAnnotation>(SyntaxNode node) where TSpecificAnnotation : TAnnotation
 		{
-			return node.GetAnnotatedNodesAndTokens(_annotationKind).Where(nt => this.HasAnnotations<TSpecificAnnotation>(nt));
+			return node.GetAnnotatedNodesAndTokens(_annotationKind).Where(HasAnnotations<TSpecificAnnotation>);
 		}
 
 		public IEnumerable<SyntaxNode> GetAnnotatedNodes<TSpecificAnnotation>(SyntaxNode node) where TSpecificAnnotation : TAnnotation
@@ -269,7 +269,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public IEnumerable<SyntaxTrivia> GetAnnotatedTrivia<TSpecificAnnotation>(SyntaxNode node) where TSpecificAnnotation : TAnnotation
 		{
-			return node.GetAnnotatedTrivia(_annotationKind).Where(tr => this.HasAnnotations<TSpecificAnnotation>(tr));
+			return node.GetAnnotatedTrivia(_annotationKind).Where(HasAnnotations<TSpecificAnnotation>);
 		}
 	}
 }
