@@ -176,11 +176,6 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				nativeNext.KeyEquivalent = "\r";
 				#endif
 			} else {
-				if (Toolkit.CurrentEngine.Type == ToolkitType.Gtk) {
-					var nativeNext = nextButton.Surface.NativeWidget as Gtk.Button;
-					nativeNext.CanDefault = true;
-					nativeNext.GrabDefault ();
-				}
 				cancelButton.MinWidth = 70;
 				backButton.MinWidth = 70;
 				nextButton.MinWidth = 70;
@@ -224,6 +219,12 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			container.PackEnd (buttonFrame);
 
 			Dialog.Content = container;
+
+			if (Toolkit.CurrentEngine.Type == ToolkitType.Gtk) {
+				var nativeNext = nextButton.Surface.NativeWidget as Gtk.Button;
+				nativeNext.CanDefault = true;
+				nativeNext.GrabDefault ();
+			}
 
 			CurrentPage = controller.CurrentPage;
 
