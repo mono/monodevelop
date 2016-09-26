@@ -42,11 +42,16 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			private set;
 		}
 
-		#region IReadOnlyList<IParameterHintingData> implementation
-		
-		public IEnumerator<IParameterHintingData> GetEnumerator()
+		public List<IParameterHintingData>.Enumerator GetEnumerator ()
 		{
-			return data.GetEnumerator();
+			return data.GetEnumerator ();
+		}
+
+		#region IReadOnlyList<IParameterHintingData> implementation
+
+		IEnumerator<IParameterHintingData> IEnumerable<IParameterHintingData>.GetEnumerator ()
+		{
+			return data.GetEnumerator ();
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

@@ -67,15 +67,20 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		public readonly List<IMethodSymbol> PossibleDelegates = new List<IMethodSymbol>();
 
-		#region IReadOnlyList<ICompletionData> implemenation
-		public IEnumerator<CompletionData> GetEnumerator()
+		public List<CompletionData>.Enumerator GetEnumerator ()
 		{
-			return data.GetEnumerator();
+			return data.GetEnumerator ();
+		}
+
+		#region IReadOnlyList<ICompletionData> implemenation
+		IEnumerator<CompletionData> IEnumerable<CompletionData>.GetEnumerator ()
+		{
+			return data.GetEnumerator ();
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return ((System.Collections.IEnumerable)data).GetEnumerator();
+			return data.GetEnumerator();
 		}
 		
 		public CompletionData this[int index] {
