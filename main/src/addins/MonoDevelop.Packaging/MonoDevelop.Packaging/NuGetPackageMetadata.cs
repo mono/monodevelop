@@ -108,15 +108,16 @@ namespace MonoDevelop.Packaging
 			SetProperty (propertyGroup, "NuGetAuthors", Authors);
 			SetProperty (propertyGroup, "NuGetDescription", Description);
 			SetProperty (propertyGroup, "NuGetDevelopmentDependency", DevelopmentDependency);
+			SetProperty (propertyGroup, "NuGetIconUrl", IconUrl);
 			SetProperty (propertyGroup, "NuGetLanguage", Language);
 			SetProperty (propertyGroup, "NuGetLicenseUrl", LicenseUrl);
 			SetProperty (propertyGroup, "NuGetOwners", Owners);
 			SetProperty (propertyGroup, "NuGetProjectUrl", ProjectUrl);
+			SetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", RequireLicenseAcceptance);
 			SetProperty (propertyGroup, "NuGetReleaseNotes", ReleaseNotes);
 			SetProperty (propertyGroup, "NuGetSummary", Summary);
 			SetProperty (propertyGroup, "NuGetTags", Tags);
 			SetProperty (propertyGroup, "NuGetTitle", Title);
-			SetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", RequireLicenseAcceptance);
 		}
 
 		void SetProperty (MSBuildPropertyGroup propertyGroup, string name, string value)
