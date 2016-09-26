@@ -94,7 +94,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 	interface IExpressionContext
 	{
+		string FullDirectoryName { get; }
 		string FullFileName { get; }
 		string EvaluateString (string value);
+		System.Collections.Generic.Dictionary<string, bool> ExistsEvaluationCache { get; }
 	}
 }

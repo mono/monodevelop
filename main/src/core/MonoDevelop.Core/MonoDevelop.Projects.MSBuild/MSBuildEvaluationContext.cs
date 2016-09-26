@@ -45,14 +45,16 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> envVars = new Dictionary<string, string> ();
+		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
 		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
 		List<string> propertiesWithTransformsSorted = new List<string> ();
+		public Dictionary<string, bool> ExistsEvaluationCache { get; } = new Dictionary<string, bool> ();
 
 		bool allResolved;
 		MSBuildProject project;
 		MSBuildEvaluationContext parentContext;
 		IMSBuildPropertyGroupEvaluated itemMetadata;
+		string directoryName;
 
 		string itemFile;
 		string recursiveDir;
@@ -358,7 +360,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		readonly static char[] tagStart = new [] {'$','%','@'};
 
-		StringBuilder evaluationSb = new StringBuilder ();
+		Queue<StringBuilder> evaluationSbs = new Queue<StringBuilder> ();
+		StringBuilder GetEvaluationSb ()
+		{
+			if (evaluationSbs.Count == 0)
+				return new StringBuilder ();
+			return evaluationSbs.Dequeue ().Clear ();
+		}
 
 		string Evaluate (string str, StringBuilder sb, List<MSBuildItemEvaluated> evaluatedItemsCollection, out bool needsItemEvaluation)
 		{
@@ -372,16 +380,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int last = 0;
 
-			bool usingSharedSb = false;
-			if (sb == null) {
-				if (evaluationSb != null) {
-					evaluationSb.Length = 0;
-					sb = evaluationSb;
-					evaluationSb = null; // Evaluation calls can be recursive. Make sure this sb is not reused in recursive calls
-					usingSharedSb = true;
-				} else
-					sb = new StringBuilder ();
-			}
+			if (sb == null)
+				sb = GetEvaluationSb ();
 
 			try {
 				do {
@@ -403,8 +403,7 @@ namespace MonoDevelop.Projects.MSBuild
 				sb.Append (str, last, str.Length - last);
 				return sb.ToString ();
 			} finally {
-				if (usingSharedSb)
-					evaluationSb = sb;
+				evaluationSbs.Enqueue (sb);
 			}
 		}
 
@@ -653,7 +652,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
 					arg = arg.Substring (1, arg.Length - 2);
 
-				list.Add (Evaluate (arg, new StringBuilder ()));
+				list.Add (Evaluate (arg));
 
 				if (str [j] == ')') {
 					// End of parameters list
@@ -900,6 +899,17 @@ namespace MonoDevelop.Projects.MSBuild
 		public string FullFileName {
 			get {
 				return project.FileName;
+			}
+		}
+
+		public string FullDirectoryName {
+			get {
+				if (FullFileName == String.Empty)
+					return null;
+				if (directoryName == null)
+					directoryName = Path.GetDirectoryName (FullFileName);
+
+				return directoryName;
 			}
 		}
 
