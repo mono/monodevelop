@@ -129,7 +129,12 @@ namespace MonoDevelop.Components.Commands
 			get { return defaultInfo; }
 		}
 
-		public IEnumerator<CommandInfo> GetEnumerator ()
+		public List<CommandInfo>.Enumerator GetEnumerator ()
+		{
+			return list.GetEnumerator ();
+		}
+
+		IEnumerator<CommandInfo> IEnumerable<CommandInfo>.GetEnumerator ()
 		{
 			return list.GetEnumerator ();
 		}
