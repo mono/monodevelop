@@ -13,12 +13,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// </summary>
 	class ConnectedServicesWidget : Widget
 	{
-		/*
-		 * This widget has a container to hold the current widget (services gallery or service details)
-		 * 
-		 */
-
-		ScrollView scrollContainer;
+		HBox contentContainer;
+		ScrollView galleryScrollContainer;
+		ScrollView detailsScrollContainer;
 		ExtendedHeaderBox header;
 		ServicesGalleryWidget gallery;
 		ServiceDetailsWidget details;
@@ -35,13 +32,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			};
 			header.BackButtonTooltip = GettextCatalog.GetString ("Back to Service Gallery");
 
-			scrollContainer = new ScrollView ();
-			scrollContainer.BorderVisible = false;
+			contentContainer = new HBox ();
+			contentContainer.Spacing = 0;
+			galleryScrollContainer = new ScrollView () { Visible = false };
+			detailsScrollContainer = new ScrollView () { Visible = false };
+			galleryScrollContainer.BorderVisible = false;
+			detailsScrollContainer.BorderVisible = false;
+			contentContainer.PackStart (galleryScrollContainer, true);
+			contentContainer.PackStart (detailsScrollContainer, true);
 
 			var container = new VBox ();
 			container.Spacing = 0;
 			container.PackStart (header);
-			container.PackStart (scrollContainer, true, true);
+			container.PackStart (contentContainer, true, true);
 			Content = container;
 		}
 
@@ -57,11 +60,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			if (gallery == null) {
 				gallery = new ServicesGalleryWidget ();
+				galleryScrollContainer.Content = gallery;
 				gallery.ServiceSelected += HandleServiceSelected;
-			}
-
-			if (gallery.Parent == null) {
-				scrollContainer.Content = gallery;
 			}
 
 			gallery.LoadServices (services);
@@ -71,6 +71,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.BackButtonVisible = false;
 
 			ShowingService = null;
+			detailsScrollContainer.Visible = false;
+			galleryScrollContainer.Visible = true;
 			GalleryShown?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -84,11 +86,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowServiceDetails (IConnectedService service)
 		{
-			if (details == null)
+			if (details == null) {
 				details = new ServiceDetailsWidget ();
-
-			if (details.Parent == null)
-				scrollContainer.Content = details;
+				detailsScrollContainer.Content = details;
+			}
 
 			details.LoadService (service);
 
@@ -96,6 +97,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.BackButtonVisible = true;
 
 			ShowingService = service;
+			detailsScrollContainer.Visible = true;
+			galleryScrollContainer.Visible = false;
 			ServiceShown?.Invoke (this, new ServiceEventArgs (service));
 		}
 
