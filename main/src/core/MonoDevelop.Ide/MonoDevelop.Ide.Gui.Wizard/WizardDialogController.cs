@@ -28,19 +28,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Xwt.Drawing;
 namespace MonoDevelop.Ide.Gui.Wizard
 {
-	public class WizardDialogController : IWizardDialogController
+	public abstract class WizardDialogControllerBase : IWizardDialogController
 	{
 		string title;
 		Image image;
 		Control rightSideWidget;
 		Xwt.Size defaultPageSize;
 		IWizardDialogPage currentPage;
-		ReadOnlyCollection<IWizardDialogPage> pages;
 
 		public string Title {
 			get { return title; }
@@ -74,8 +75,6 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			}
 		}
 
-		public IReadOnlyCollection<IWizardDialogPage> Pages { get { return pages; } }
-
 		public IWizardDialogPage CurrentPage {
 			get {
 				return currentPage;
@@ -86,50 +85,43 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			}
 		}
 
-		public bool CurrentPageIsLast {
-			get { return Pages.IndexOf (CurrentPage) == Pages.Count - 1; }
-		}
+		public abstract bool CurrentPageIsLast { get; }
 
-		public bool CanGoBack {
-			get {
-				return pages.Count > 1 && pages.IndexOf (CurrentPage) > 0;
-			}
-		}
+		public abstract bool CanGoBack { get; }
 
-		public WizardDialogController (string title, Image image,Control rightSideWidget, IWizardDialogPage page)
-			: this (title, image, rightSideWidget, new IWizardDialogPage [] { page })
+		public WizardDialogControllerBase (string title, Image icon, Control rightSideWidget, IWizardDialogPage firstPage)
 		{
-		}
-
-		public WizardDialogController (string title, Image icon, Control rightSideWidget, IEnumerable <IWizardDialogPage> pages)
-		{
-			this.pages = new ReadOnlyCollection<IWizardDialogPage> (pages.ToList ());
-			if (this.pages.Count == 0)
-				throw new ArgumentException ("pages must contain at least one page.", nameof (pages));
 			Title = title;
 			Icon = icon;
-			CurrentPage = this.pages [0];
+			CurrentPage = firstPage;
 			RightSideWidget = rightSideWidget;
 		}
 
-		public void GoNext ()
+		public async Task GoNext (CancellationToken token)
 		{
-			if (CurrentPage.CanGoNext) {
-				var currentIndex = Pages.IndexOf (CurrentPage);
-				if (currentIndex == Pages.Count - 1)
-					OnCompleted ();
-				else
-					CurrentPage = pages [currentIndex + 1];
+			if (currentPage.CanGoNext) {
+				if (CurrentPageIsLast) {
+					await OnCompleted (token).ConfigureAwait (false);
+					if (!token.IsCancellationRequested)
+						Completed?.Invoke (this, EventArgs.Empty);
+				} else {
+					var page = await OnGoNext (token).ConfigureAwait (false);
+					if (!token.IsCancellationRequested)
+						CurrentPage = page;
+				}
 			}
 		}
 
-		public void GoBack ()
+		protected abstract Task<IWizardDialogPage> OnGoNext (CancellationToken token);
+
+		public async Task GoBack (CancellationToken token)
 		{
-			if (CanGoBack) {
-				var currentIndex = Pages.IndexOf (CurrentPage);
-				CurrentPage = pages [currentIndex - 1];
+			if (CanGoBack && currentPage.CanGoBack) {
+				CurrentPage = await OnGoBack (token).ConfigureAwait (true);
 			}
 		}
+
+		protected abstract Task<IWizardDialogPage> OnGoBack (CancellationToken token);
 
 		public bool RunWizard ()
 		{
@@ -147,18 +139,65 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected virtual void OnCompleted ()
+		protected virtual Task OnCompleted (CancellationToken token)
 		{
-			Completed?.Invoke (this, EventArgs.Empty);
+			return Task.FromResult (true);
 		}
 
 		protected virtual void OnPropertyChanged (string propertyName)
 		{
-			PropertyChanged?.Invoke (this, new System.ComponentModel.PropertyChangedEventArgs (propertyName));
+			Runtime.RunInMainThread (() => {
+				PropertyChanged?.Invoke (this, new System.ComponentModel.PropertyChangedEventArgs (propertyName));
+			});
 		}
 
 		public void Dispose ()
 		{
+		}
+	}
+
+	public class WizardDialogController : WizardDialogControllerBase
+	{
+		ReadOnlyCollection<IWizardDialogPage> pages;
+
+		public IReadOnlyCollection<IWizardDialogPage> Pages { get { return pages; } }
+
+		public override bool CanGoBack {
+			get {
+				return pages.Count > 1 && pages.IndexOf (CurrentPage) > 0;
+			}
+		}
+
+		public override bool CurrentPageIsLast {
+			get { return Pages.IndexOf (CurrentPage) == Pages.Count - 1; }
+		}
+
+		public WizardDialogController (string title, Image icon, Control rightSideWidget, IWizardDialogPage page)
+			: this (title, icon, rightSideWidget, new IWizardDialogPage [] { page })
+		{
+		}
+
+		public WizardDialogController (string title, Image icon, Control rightSideWidget, IEnumerable<IWizardDialogPage> pages)
+			: base (title, icon, rightSideWidget, pages.FirstOrDefault ())
+		{
+			this.pages = new ReadOnlyCollection<IWizardDialogPage> (pages.ToList ());
+			if (this.pages.Count == 0)
+				throw new ArgumentException ("pages must contain at least one page.", nameof (pages));
+		}
+
+		protected override async Task<IWizardDialogPage> OnGoNext (CancellationToken token)
+		{
+			var currentIndex = Pages.IndexOf (CurrentPage);
+			if (currentIndex == Pages.Count - 1)
+				throw new InvalidOperationException ();
+			else
+				return await Task.FromResult (pages [currentIndex + 1]);
+		}
+
+		protected override async Task<IWizardDialogPage> OnGoBack (CancellationToken token)
+		{
+			var currentIndex = Pages.IndexOf (CurrentPage);
+			return await Task.FromResult (pages [currentIndex - 1]);
 		}
 	}
 }

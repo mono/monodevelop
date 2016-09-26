@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using Xwt;
 using Xwt.Backends;
@@ -38,6 +40,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		readonly Dialog Dialog;
 		readonly MonoDevelop.Components.ExtendedHeaderBox header;
 		readonly Button cancelButton, backButton, nextButton;
+		readonly ImageView statusImage;
 		readonly HBox buttonBox;
 		IWizardDialogPage currentPage;
 		Widget currentPageWidget;
@@ -45,6 +48,11 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		readonly FrameBox rightSideFrame;
 		readonly VBox container;
 		Dictionary<IWizardDialogPage, Widget> pageWidgets = new Dictionary<IWizardDialogPage, Widget> ();
+
+		Components.AnimatedIcon animatedStatusIcon;
+		IDisposable statusIconAnimation;
+		CancellationTokenSource cancelTransitionRequest;
+		Task currentTransitionTask;
 
 		public IWizardDialogPage CurrentPage {
 			get {
@@ -58,8 +66,10 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				if (value == null)
 					throw new InvalidOperationException ("CurrentPage can not be set to null");
 
-				if (currentPage != null)
+				if (currentPage != null) {
+					currentPageWidget.Sensitive = true; // reset after page transition
 					currentPage.PropertyChanged -= HandleCurrentPagePropertyChanged;
+				}
 
 				currentPage = value;
 				if (!pageWidgets.TryGetValue (currentPage, out currentPageWidget))
@@ -92,8 +102,12 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			var contentHeight = pageRequest.Height;
 			var rightSideWidget = currentPage.GetRightSideWidget () ?? Controller.RightSideWidget;
 			if (rightSideWidget != null) {
-				rightSideFrame.Content = rightSideWidget;
-				rightSideFrame.Visible = true;
+				var widget = (Xwt.Widget)rightSideWidget;
+				if (rightSideFrame.Content != widget) {
+					rightSideFrame.Content = widget;
+					rightSideFrame.Content.VerticalPlacement = rightSideFrame.Content.HorizontalPlacement = WidgetPlacement.Fill;
+					rightSideFrame.Visible = true;
+				}
 				Dialog.Width = contentWidth + RightSideWidgetWidth;
 			} else {
 				rightSideFrame.Visible = false;
@@ -124,6 +138,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			
 			Dialog.ShowInTaskbar = false;
 			Dialog.Shown += HandleDialogShown;
+			Dialog.CloseRequested += HandleDialogCloseRequested;
 
 			container = new VBox ();
 			container.Spacing = 0;
@@ -136,16 +151,16 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 			buttonBox = new HBox ();
 			var buttonFrame = new FrameBox (buttonBox);
-			buttonFrame.Padding = 10;
+			buttonFrame.Padding = 20;
+			buttonFrame.PaddingRight = 0;
 
 			cancelButton = new Button (GettextCatalog.GetString ("Cancel"));
-			cancelButton.Clicked += (sender, e) => {
-				Respond (false);
-			};
+			cancelButton.Clicked += HandleCancelButtonClicked;
 			backButton = new Button (GettextCatalog.GetString ("Back"));
-			backButton.Clicked += (sender, e) => Controller.GoBack ();
+			backButton.Clicked += HandleBackButtonClicked;
 			nextButton = new Button (GettextCatalog.GetString ("Next"));
-			nextButton.Clicked += (sender, e) => Controller.GoNext ();
+			nextButton.Clicked += HandleNextButtonClicked;
+			statusImage = new ImageView (ImageService.GetIcon ("md-empty", Gtk.IconSize.Button));
 
 			if (Toolkit.CurrentEngine.Type == ToolkitType.XamMac) {
 				var s = cancelButton.Surface.GetPreferredSize ();
@@ -154,11 +169,24 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				backButton.WidthRequest = Math.Max (s.Width + 16, 77);
 				s = nextButton.Surface.GetPreferredSize ();
 				nextButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				buttonBox.Spacing = 0;
+				statusImage.MarginRight = 6;
+			} else {
+				cancelButton.MinWidth = 70;
+				backButton.MinWidth = 70;
+				nextButton.MinWidth = 70;
+				statusImage.MarginRight = 3;
+			}
+
+			if (ImageService.IsAnimation ("md-spinner-18", Gtk.IconSize.Button)) {
+				animatedStatusIcon = ImageService.GetAnimatedIcon ("md-spinner-18", Gtk.IconSize.Button);
 			}
 
 			buttonBox.PackStart (cancelButton, false, false);
+			buttonBox.PackEnd (statusImage, false, false);
 			buttonBox.PackEnd (nextButton, false, false);
 			buttonBox.PackEnd (backButton, false, false);
+			statusImage.VerticalPlacement = WidgetPlacement.Center;
 
 			container.PackStart (header);
 
@@ -175,6 +203,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			rightSideFrame.WidthRequest = RightSideWidgetWidth;
 			rightSideFrame.BackgroundColor = Styles.Wizard.RightSideBackgroundColor;
 			contentHBox.PackEnd (rightSideFrame, false, true);
+			rightSideFrame.VerticalPlacement = rightSideFrame.HorizontalPlacement = WidgetPlacement.Fill;
 
 			var contentFrame = new FrameBox (contentHBox);
 			contentFrame.Padding = 0;
@@ -193,6 +222,75 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			controller.Completed += HandleControllerCompleted;
 		}
 
+		async void HandleNextButtonClicked (object sender, EventArgs e)
+		{
+			nextButton.Sensitive = backButton.Sensitive = currentPageWidget.Sensitive = false;
+			using (cancelTransitionRequest = new CancellationTokenSource ()) {
+				currentTransitionTask = Controller.GoNext (cancelTransitionRequest.Token);
+				if (await Task.WhenAny (currentTransitionTask, Task.Delay (200, cancelTransitionRequest.Token)).ConfigureAwait (false) != currentTransitionTask) {
+					StartWorkingSpinner ();
+				}
+				await currentTransitionTask.ConfigureAwait (false);
+				StopWorkingSpinner ();
+			}
+			cancelTransitionRequest = null;
+		}
+
+		async void HandleBackButtonClicked (object sender, EventArgs e)
+		{
+			nextButton.Sensitive = backButton.Sensitive = currentPageWidget.Sensitive = false;
+			using (cancelTransitionRequest = new CancellationTokenSource ()) {
+				currentTransitionTask = Controller.GoBack (cancelTransitionRequest.Token);
+				if (await Task.WhenAny (currentTransitionTask, Task.Delay (200, cancelTransitionRequest.Token)).ConfigureAwait (false) != currentTransitionTask) {
+					StartWorkingSpinner ();
+				}
+				await currentTransitionTask.ConfigureAwait (false);
+				StopWorkingSpinner ();
+			}
+			cancelTransitionRequest = null;
+		}
+
+		void HandleCancelButtonClicked (object sender, EventArgs e)
+		{
+			if (cancelTransitionRequest != null && cancelTransitionRequest.IsCancellationRequested != true)
+				cancelTransitionRequest.Cancel ();
+			Respond (false);
+		}
+
+		void HandleDialogCloseRequested (object sender, CloseRequestedEventArgs args)
+		{
+			if (cancelTransitionRequest != null && cancelTransitionRequest.IsCancellationRequested != true)
+				cancelTransitionRequest.Cancel ();
+		}
+
+		void StartWorkingSpinner ()
+		{
+			Runtime.RunInMainThread (() => {
+				if (statusIconAnimation != null)
+					StopWorkingSpinner ();
+
+				if (animatedStatusIcon != null) {
+					statusImage.Image = animatedStatusIcon.FirstFrame.WithAlpha (0.4).ToBitmap ();
+					statusIconAnimation = animatedStatusIcon.StartAnimation (p => {
+						statusImage.Image = p.WithAlpha (0.4).ToBitmap ();
+					});
+				} else {
+					statusImage.Image = ImageService.GetIcon ("md-spinner-Button", Gtk.IconSize.Button);
+				}
+			});
+		}
+
+		void StopWorkingSpinner ()
+		{
+			Runtime.RunInMainThread (() => {
+				if (statusIconAnimation != null) {
+					statusIconAnimation.Dispose ();
+					statusIconAnimation = null;
+				}
+				statusImage.Image = ImageService.GetIcon ("md-empty", Gtk.IconSize.Button);
+			});
+		}
+
 		void HandleControllerPropertyChanged (object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (sender != Controller)
@@ -203,6 +301,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				// FIXME: Gtk dialogs don't support ThemedImage
 				//case nameof (Controller.Icon): Dialog.Icon = Controller.Icon.WithSize (IconSize.Large); break;
 				case nameof (Controller.CurrentPage): CurrentPage = Controller.CurrentPage; break;
+				case nameof (Controller.CanGoBack): backButton.Visible = Controller.CanGoBack; break;
 				case nameof (Controller.RightSideWidget): Reallocate (); break;
 				case nameof (Controller.DefaultPageSize): Reallocate (); break;
 			}
@@ -224,10 +323,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 					nextButton.Label = Controller.CurrentPageIsLast ? GettextCatalog.GetString ("Finish") : GettextCatalog.GetString ("Next");
 				break;
 			case nameof (CurrentPage.CanGoNext): nextButton.Sensitive = currentPage.CanGoNext; break;
-			case nameof (CurrentPage.CanGoBack):
-				backButton.Visible = Controller.CanGoBack;
-				backButton.Sensitive = currentPage.CanGoBack;
-				break;
+			case nameof (CurrentPage.CanGoBack): backButton.Sensitive = currentPage.CanGoBack; break;
 			}
 		}
 
@@ -235,7 +331,9 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		{
 			if (sender != Controller)
 				throw new InvalidOperationException ();
-			Respond (true);
+			Runtime.RunInMainThread (() => {
+				Respond (true);
+			});
 		}
 
 		void HandleDialogShown (object sender, EventArgs e)

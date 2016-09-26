@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Xwt;
@@ -50,13 +52,12 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		bool CurrentPageIsLast { get; }
 
-		void GoNext ();
+		Task GoNext (CancellationToken token);
 
-		void GoBack ();
+		Task GoBack (CancellationToken token);
 
 		Size DefaultPageSize { get; }
 
 		event EventHandler Completed;
 	}
-	
 }
