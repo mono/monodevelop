@@ -72,8 +72,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal void PrepareMatches()
 		{
-			Console.WriteLine ("PREPARE MATCHES FOR : " + Name);
-			Console.WriteLine ("-----");
 			foreach (var ctx in Contexts) {
 				ctx.PrepareMatches ();
 			}
@@ -151,7 +149,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (metaScope != null)
 				this.metaScope.AddRange (metaScope);
 			if (metaContentScope !=  null)
-				this.metaContentScope.AddRange (metaScope);
+				this.metaContentScope.AddRange (metaContentScope);
 			
 			MetaIncludePrototype = metaIncludePrototype;
 		}

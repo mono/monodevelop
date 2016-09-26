@@ -400,7 +400,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (patternsArray != null) {
 						ReadPatterns (patternsArray, list);
 					}
-					pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
+
+					List<string> metaContent = null;
+					var contentScope = (dict ["contentName"] as PString)?.Value;
+					if (contentScope != null) {
+						metaContent = new List<string> { contentScope };
+					}
+
+					var ctx = new SyntaxContext ("__generated begin/end capture context", list, metaContentScope: metaContent);
+
+					pushContext = new AnonymousMatchContextReference (ctx);
+
 				}
 
 				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
