@@ -148,9 +148,14 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		public ImmutableList<T>.Enumerator GetEnumerator ()
+		{
+			return list.GetEnumerator ();
+		}
+
 		#region IEnumerable implementation
 
-		public IEnumerator<T> GetEnumerator ()
+		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
 		{
 			return list.GetEnumerator ();
 		}

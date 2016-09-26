@@ -185,9 +185,14 @@ namespace MonoDevelop.Core.Execution
 
 		#endregion
 
+		public List<ExecutionTarget>.Enumerator GetEnumerator ()
+		{
+			return targets.GetEnumerator ();
+		}
+
 		#region IEnumerable implementation
 
-		public IEnumerator<ExecutionTarget> GetEnumerator ()
+		IEnumerator<ExecutionTarget> IEnumerable<ExecutionTarget>.GetEnumerator ()
 		{
 			return targets.GetEnumerator ();
 		}
