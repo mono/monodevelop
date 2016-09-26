@@ -164,14 +164,23 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 			if (Toolkit.CurrentEngine.Type == ToolkitType.XamMac) {
 				var s = cancelButton.Surface.GetPreferredSize ();
-				cancelButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				cancelButton.MinWidth = Math.Max (s.Width + 16, 100);
 				s = backButton.Surface.GetPreferredSize ();
-				backButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				backButton.MinWidth = Math.Max (s.Width + 16, 100);
 				s = nextButton.Surface.GetPreferredSize ();
-				nextButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				nextButton.MinWidth = Math.Max (s.Width + 16, 100);
 				buttonBox.Spacing = 0;
 				statusImage.MarginRight = 6;
+				#if MAC
+				var nativeNext = nextButton.Surface.NativeWidget as AppKit.NSButton;
+				nativeNext.KeyEquivalent = "\r";
+				#endif
 			} else {
+				if (Toolkit.CurrentEngine.Type == ToolkitType.Gtk) {
+					var nativeNext = nextButton.Surface.NativeWidget as Gtk.Button;
+					nativeNext.CanDefault = true;
+					nativeNext.GrabDefault ();
+				}
 				cancelButton.MinWidth = 70;
 				backButton.MinWidth = 70;
 				nextButton.MinWidth = 70;
@@ -186,7 +195,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			buttonBox.PackEnd (statusImage, false, false);
 			buttonBox.PackEnd (nextButton, false, false);
 			buttonBox.PackEnd (backButton, false, false);
-			statusImage.VerticalPlacement = WidgetPlacement.Center;
+			statusImage.VerticalPlacement = cancelButton.VerticalPlacement = nextButton.VerticalPlacement = backButton.VerticalPlacement = WidgetPlacement.Center;
 
 			container.PackStart (header);
 
