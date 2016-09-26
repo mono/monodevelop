@@ -122,8 +122,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (disposed)
 				return;
 
-			// FIXME: the section widget should be disabled if the service is not added
-			//sectionWidget.Sensitive = Service.Status == ServiceStatus.Added;
 			addBtn.Sensitive = Service.Status == Status.Added;
 
 			if (Section.IsAdded && (Section.CanBeAdded || Section == Section.Service.DependenciesSection)) {
@@ -138,7 +136,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				statusBox.Visible = false;
 				addBtn.Visible = Section.CanBeAdded;
 			}
-			sectionWidget.Sensitive = Service.Status == Status.Added;
+			if (Section != Section.Service.DependenciesSection)
+				Expanded = Sensitive = Service.Status == Status.Added;
 		}
 
 		/// <summary>

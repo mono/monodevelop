@@ -138,16 +138,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					statusLabel.Visible = true;
 				}
 			} else {
-				double iconAlpha = 0.4;
-				if (Service.Status == Status.Adding && Dependency.Status == Status.Added) {
-					iconAlpha = 1.0;
-					nameLabel.TextColor = Styles.BaseForegroundColor;
-				} else
-					nameLabel.TextColor = Styles.DimTextColor;
-				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (iconAlpha);
+				nameLabel.TextColor = Styles.BaseForegroundColor;
+				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
 				statusLabel.Visible = false;
 				if (Dependency.Status == Status.Added)
-					SetStatusIcon ("md-done", iconAlpha);
+					SetStatusIcon ("md-done");
+				else if (Dependency.Status == Status.Adding)
+					SetStatusIcon ("md-spinner-16");
 				else
 					SetStatusIcon (IconId.Null);
 			}
