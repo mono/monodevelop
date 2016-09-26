@@ -391,8 +391,7 @@ namespace MonoDevelop.Projects.MSBuild
 					bool nie;
 					if (!EvaluateReference (str, evaluatedItemsCollection, ref j, out val, out nie))
 						allResolved = false;
-					if (nie)
-						needsItemEvaluation = true;
+					needsItemEvaluation |= nie;
 					sb.Append (ValueToString (val));
 					last = j;
 
@@ -455,7 +454,7 @@ namespace MonoDevelop.Projects.MSBuild
 					case '$': {
 						bool nie;
 						res = EvaluateProperty (prop, evaluatedItemsCollection != null, out val, out nie);
-						if (nie) needsItemEvaluation = true;
+						needsItemEvaluation |= nie;
 						break;
 					}
 				case '%': res = EvaluateMetadata (prop, out val); break;
@@ -498,8 +497,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			int n = prop.IndexOf ('.');
 			if (n == -1) {
-				if (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop))
-					needsItemEvaluation = true;
+				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop));
 				val = GetPropertyValue (prop) ?? string.Empty;
 				return true;
 			} else {
