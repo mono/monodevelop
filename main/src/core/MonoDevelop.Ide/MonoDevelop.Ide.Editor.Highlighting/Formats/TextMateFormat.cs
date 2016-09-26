@@ -468,10 +468,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (!val.ContainsKey (name)) {
 						val.Add (name, Convert (subElement));
 					} else {
-						LoggingService.LogWarning ("Warning while converting json highlighting to textmate 'key' " + name + " is duplicated in : " + f); 
+						LoggingService.LogWarning ("Warning while converting json highlighting to textmate 'key' " + name + " is duplicated in : " + f);
 					}
 				}
 				return val;
+			case "number":
+				return new PNumber (int.Parse (f.Value));
+			default:
+				LoggingService.LogWarning ("Can't convert element of type: " + type +"/"+ f);
+				break;
+
 			}
 			return null;
 		}

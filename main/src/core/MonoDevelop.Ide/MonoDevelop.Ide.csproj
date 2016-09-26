@@ -7729,35 +7729,52 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\YAML.sublime-syntax">
-      <LogicalName>YAML.sublime-syntax</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax">
       <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\Xml.tmLanguage">
-      <LogicalName>Xml.tmLanguage</LogicalName>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\html\syntaxes\html.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html.json</Link>
+      <LogicalName>html.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\Xsl.tmLanguage">
-      <LogicalName>Xsl.tmLanguage</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\XmlComments.tmPreferences">
-      <LogicalName>XmlComments.tmPreferences</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\fsharp.json">
-      <LogicalName>fsharp.json</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\diff.tmLanguage">
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\diff\syntaxes\diff.tmLanguage">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\diff.tmLanguage</Link>
       <LogicalName>diff.tmLanguage</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\JSON.tmLanguage">
-      <LogicalName>JSON.tmLanguage</LogicalName>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\css\syntaxes\css.plist">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\css.plist</Link>
+      <LogicalName>css.tmLanguage</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\Html.tmLanguage">
-      <LogicalName>Html.tmLanguage</LogicalName>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\fsharp\syntaxes\fsharp.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\fsharp.json</Link>
+      <LogicalName>fsharp.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript\JavaScript.tmLanguage.json">
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\javascript\syntaxes\JavaScript.tmLanguage.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\JavaScript.tmLanguage.json</Link>
       <LogicalName>JavaScript.tmLanguage.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\javascript\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\Regular Expressions %28JavaScript%29.tmLanguage</Link>
+      <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\less\syntaxes\LESS.tmLanguage">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\LESS.tmLanguage</Link>
+      <LogicalName>LESS.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\xml\syntaxes\XSL.plist">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\XSL.plist</Link>
+      <LogicalName>XSL.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\xml\syntaxes\XML.plist">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\XML.plist</Link>
+      <LogicalName>XML.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\typescript\syntaxes\TypeScriptReact.tmLanguage.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\TypeScriptReact.tmLanguage.json</Link>
+      <LogicalName>TypeScriptReact.tmLanguage.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\external\vscode\extensions\typescript\syntaxes\TypeScript.tmLanguage.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\TypeScript.tmLanguage.json</Link>
+      <LogicalName>TypeScript.tmLanguage.json</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -8798,6 +8815,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="..\..\..\external\vscode\extensions\json\syntaxes\JSON.tmLanguage">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\JSON.tmLanguage</Link>
+    </None>
+    <None Include="..\..\..\external\vscode\extensions\yaml\syntaxes\yaml.json">
+      <Link>MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\yaml.json</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8841,12 +8864,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.TextMate\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\Formats\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

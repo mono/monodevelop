@@ -72,6 +72,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal void PrepareMatches()
 		{
+			Console.WriteLine ("PREPARE MATCHES FOR : " + Name);
+			Console.WriteLine ("-----");
 			foreach (var ctx in Contexts) {
 				ctx.PrepareMatches ();
 			}

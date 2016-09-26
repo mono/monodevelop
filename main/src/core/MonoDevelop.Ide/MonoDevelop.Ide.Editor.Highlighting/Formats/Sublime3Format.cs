@@ -572,7 +572,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '*':
 					if (readStarQuantifier)
 						continue;
-					if (readPlusQuantifier) {
+					if (readPlusQuantifier && result.Length > 0) {
 						result.Length--;
 						if (!recordGroupName && groupStack.Count > 0 && groupStack.Peek ().groupContent.Length > 0) {
 							groupStack.Peek ().groupContent.Length--;
