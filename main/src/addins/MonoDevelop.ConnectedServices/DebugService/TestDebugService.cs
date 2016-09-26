@@ -71,6 +71,7 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.Id = "MonoDevelop.ConnectedServices.DebugService.TestDebugService";
 			this.DisplayName = "Test Service";
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
+			this.DetailsDescription = "This is a simple service example to show how you might construct your own service implementation.\nSome more text.";
 
 			this.Dependencies = ImmutableArray.Create<IConnectedServiceDependency>(
 				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8")

@@ -42,7 +42,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service = value;
 				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-service")).WithSize (IconSize.Medium);
 				title.Markup = "<b>" + service.DisplayName + "</b>";
-				description.Markup = "<span foreground='" + Styles.SecondaryTextColor.ToHexString (false) + "'>" + service.Description + "</span>";
+				UpdateDescription ();
 
 				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
 
@@ -63,6 +63,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				statusWidget.Visible = service?.Status == Status.Added && !showDetails;
 				description.HorizontalPlacement = value ? WidgetPlacement.Start : WidgetPlacement.Fill;
 				Cursor = value ? CursorType.Arrow : CursorType.Hand;
+				UpdateDescription ();
 			}
 		}
 
@@ -246,6 +247,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					break;
 				}
 			});
+		}
+
+		void UpdateDescription()
+		{
+			if (this.service == null) {
+				return;
+			}
+
+			if (showDetails) {
+				description.Markup = "<span foreground='" + Styles.SecondaryTextColor.ToHexString (false) + "'>" + (service.DetailsDescription ?? service.Description) + "</span>";
+			} else {
+				description.Markup = "<span foreground='" + Styles.SecondaryTextColor.ToHexString (false) + "'>" + service.Description + "</span>";
+			}
 		}
 
 		void StopIconAnimations ()

@@ -31,6 +31,11 @@ namespace MonoDevelop.ConnectedServices
 		string Description { get; }
 
 		/// <summary>
+		/// Gets the description of the service to display to the user in the service details tab.
+		/// </summary>
+		string DetailsDescription { get; }
+
+		/// <summary>
 		/// Gets a description of the supported platforms. This is largely just informational as the service provider decides
 		/// whether a project is supported or not.
 		/// </summary>
