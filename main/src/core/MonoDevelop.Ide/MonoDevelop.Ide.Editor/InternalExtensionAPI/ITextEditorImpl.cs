@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void RunWhenLoaded (Action action);
 
+		void RunWhenRealized (Action action);
+
 		string FormatString (int offset, string code);
 
 		void StartInsertionMode (InsertionModeOptions insertionModeOptions);

@@ -1789,6 +1789,7 @@ namespace Mono.TextEditor
 		//           at that point the outstanding actions are run.
 		bool isLoaded;
 		List<Action> loadedActions = new List<Action> ();
+		List<Action> realizedActions = new List<Action> ();
 		
 		/// <summary>
 		/// Gets a value indicating whether this instance is loaded.
@@ -1798,6 +1799,11 @@ namespace Mono.TextEditor
 		/// </value>
 		public bool IsLoaded {
 			get { return isLoaded; }
+		}
+
+		public bool IsRealized {
+			get;
+			private set;
 		}
 		
 		/// <summary>
@@ -1810,6 +1816,16 @@ namespace Mono.TextEditor
 			isLoaded = true;
 			loadedActions.ForEach (act => act ());
 			loadedActions = null;
+		}
+
+		public void InformRealizedComplete ()
+		{
+			if (IsRealized)
+				return;
+
+			IsRealized = true;
+			realizedActions.ForEach (act => act ());
+			realizedActions = null;
 		}
 		
 		/// <summary>
@@ -1825,6 +1841,15 @@ namespace Mono.TextEditor
 				return;
 			}
 			loadedActions.Add (action);
+		}
+
+		public void RunWhenRealized (Action action)
+		{
+			if (IsRealized) {
+				action ();
+				return;
+			}
+			realizedActions.Add (action);
 		}
 		#endregion
 
