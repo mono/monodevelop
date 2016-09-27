@@ -48,12 +48,12 @@ using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
-using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
 using System.Diagnostics;
 using Xwt.Mac;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -335,7 +335,7 @@ namespace MonoDevelop.MacIntegration
 		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
 		{
 			if (view.Class.Name == "NSPageableTableView")
-					((NSTableView)view).BackgroundColor = Styles.BackgroundColor.ToNSColor ();
+					((NSTableView)view).BackgroundColor = Xwt.Mac.Util.ToNSColor (Styles.BackgroundColor);
 			view.Appearance = appearance;
 
 			foreach (var subview in view.Subviews)

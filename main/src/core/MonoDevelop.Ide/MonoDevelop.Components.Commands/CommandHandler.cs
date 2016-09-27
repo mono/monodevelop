@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -48,7 +50,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		protected virtual void Run ()
-		{			
+		{
 		}
 	
 		protected virtual void Run (object dataItem)
@@ -58,10 +60,26 @@ namespace MonoDevelop.Components.Commands
 	
 		protected virtual void Update (CommandInfo info)
 		{
+			var t = UpdateAsync (info, info.AsyncUpdateCancellationToken);
+			if (t != null)
+				info.SetUpdateTask (t);
 		}
 	
+		protected virtual Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
+		{
+			return null;
+		}
+
 		protected virtual void Update (CommandArrayInfo info)
 		{
+			var t = UpdateAsync (info, info.AsyncUpdateCancellationToken);
+			if (t != null)
+				info.SetUpdateTask (t);
+		}
+
+		protected virtual Task UpdateAsync (CommandArrayInfo info, CancellationToken cancelToken)
+		{
+			return null;
 		}
 	}
 }

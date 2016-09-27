@@ -146,10 +146,19 @@ namespace MonoDevelop.Components.Commands
 				commandManager.NotifyDeselected ();
 			base.OnDeselected ();
 		}
-		
+
+		void CommandInfoChanged (object sender, EventArgs e)
+		{
+			Update ((CommandInfo)sender);
+		}
+
 		void Update (CommandInfo cmdInfo)
 		{
+			if (lastCmdInfo != null)
+				lastCmdInfo.Changed -= CommandInfoChanged;
 			lastCmdInfo = cmdInfo;
+			lastCmdInfo.Changed += CommandInfoChanged;
+
 			if (isArray && !isArrayItem) {
 				this.Visible = false;
 				Gtk.Menu menu = (Gtk.Menu) Parent;  
@@ -259,7 +268,10 @@ namespace MonoDevelop.Components.Commands
 			itemArray = null;
 			initialTarget = null;
 			arrayDataItem = null;
-			lastCmdInfo = null;
+			if (lastCmdInfo != null) {
+				lastCmdInfo.Changed -= CommandInfoChanged;
+				lastCmdInfo = null;
+			}
 		}
 	}
 }

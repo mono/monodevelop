@@ -146,13 +146,34 @@ namespace MonoDevelop.Components.Mac
 
 				var mdItem = item as IUpdatableMenuItem;
 				if (mdItem != null) {
-					mdItem.Update (this, ref lastSeparator, ref i);
+					mdItem.Update (this, ref i);
 					continue;
 				}
 
 				//hide unknown builtins
 				item.Hidden = true;
 			}
+			UpdateSeparators ();
+		}
+
+		public void UpdateSeparators ()
+		{
+			bool previousWasSeparator = true;
+			NSMenuItem lastSeparator = null;
+
+			for (int i = 0; i < Count; i++) {
+				var item = this.ItemAt (i);
+
+				if (item.IsSeparatorItem) {
+					item.Hidden = previousWasSeparator;
+					previousWasSeparator = true;
+					lastSeparator = item;
+				} else if (!item.Hidden) {
+					previousWasSeparator = false;
+				}
+			}
+			if (previousWasSeparator && lastSeparator != null)
+				lastSeparator.Hidden = true;
 		}
 
 		[Export ("menuNeedsUpdate:")]
@@ -189,7 +210,7 @@ namespace MonoDevelop.Components.Mac
 
 	interface IUpdatableMenuItem
 	{
-		void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index);
+		void Update (MDMenu parent, ref int index);
 	}
 }
 #endif

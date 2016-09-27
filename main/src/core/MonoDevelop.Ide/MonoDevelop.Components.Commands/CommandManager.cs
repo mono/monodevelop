@@ -41,6 +41,8 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -1404,6 +1406,7 @@ namespace MonoDevelop.Components.Commands
 							// Make sure that the option is still active
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
+							info.ArrayInfo.CancelAsyncUpdate ();
 							if (!info.ArrayInfo.Bypass) {
 								if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
 									return false;
@@ -1412,6 +1415,7 @@ namespace MonoDevelop.Components.Commands
 						} else {
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
+							info.CancelAsyncUpdate ();
 							bypass = info.Bypass;
 							
 							if (!bypass && (!info.Enabled || !info.Visible))
@@ -1482,6 +1486,7 @@ namespace MonoDevelop.Components.Commands
 		bool DefaultDispatchCommand (ActionCommand cmd, CommandInfo info, object dataItem, object target, CommandSource source)
 		{
 			DefaultUpdateCommandInfo (cmd, info);
+			info.CancelAsyncUpdate ();
 			
 			if (cmd.CommandArray) {
 				//if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
@@ -1541,7 +1546,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			return GetCommandInfo (commandId, new CommandTargetRoute ());
 		}
-		
+
 		/// <summary>
 		/// Retrieves status information about a command by looking for a handler in the active command route.
 		/// </summary>
@@ -1555,6 +1560,23 @@ namespace MonoDevelop.Components.Commands
 		/// Command route origin
 		/// </param>
 		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute)
+		{
+			return GetCommandInfo (commandId, targetRoute, default (CancellationToken));
+		}
+		
+		/// <summary>
+		/// Retrieves status information about a command by looking for a handler in the active command route.
+		/// </summary>
+		/// <returns>
+		/// The command information.
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command.
+		/// </param>
+		/// <param name='targetRoute'>
+		/// Command route origin
+		/// </param>
+		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute, CancellationToken cancelToken)
 		{
 			commandId = CommandManager.ToCommandId (commandId);
 			ActionCommand cmd = GetActionCommand (commandId);
@@ -2506,15 +2528,23 @@ namespace MonoDevelop.Components.Commands
 		{
 			base.Init (method, attr);
 			ParameterInfo[] pars = method.GetParameters ();
-			if (pars.Length == 1) {
-				Type t = pars[0].ParameterType;
-				
-				if (t == typeof(CommandArrayInfo)) {
+			if (pars.Length > 0 && pars.Length <= 2) {
+				if (pars.Length == 2) {
+					if (method.ReturnType != typeof (Task) || pars [1].ParameterType != typeof (CancellationToken))
+						ReportInvalidSignature (method);
+				}
+				Type t = pars [0].ParameterType;
+				if (t == typeof (CommandArrayInfo)) {
 					isArray = true;
 					return;
-				} else if (t == typeof(CommandInfo))
+				} else if (t == typeof (CommandInfo))
 					return;
 			}
+			ReportInvalidSignature (method);
+		}
+
+		void ReportInvalidSignature (MethodInfo method)
+		{
 			throw new InvalidOperationException ("Invalid signature for command update handler: " + method.DeclaringType + "." + method.Name + "()");
 		}
 
@@ -2542,7 +2572,12 @@ namespace MonoDevelop.Components.Commands
 
 				var sw = Stopwatch.StartNew ();
 
-				Method.Invoke (cmdTarget, new object[] {info} );
+				if (Method.ReturnType == typeof (Task)) {
+					var t = (Task) Method.Invoke (cmdTarget, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				}
+				else
+					Method.Invoke (cmdTarget, new object [] { info });
 
 				sw.Stop ();
 				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
@@ -2570,7 +2605,11 @@ namespace MonoDevelop.Components.Commands
 
 				var sw = Stopwatch.StartNew ();
 
-				Method.Invoke (cmdTarget, new object[] {info} );
+				if (Method.ReturnType == typeof (Task)) {
+					var t = (Task)Method.Invoke (cmdTarget, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				} else
+					Method.Invoke (cmdTarget, new object [] { info });
 
 				sw.Stop ();
 				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
@@ -2586,15 +2625,26 @@ namespace MonoDevelop.Components.Commands
 		public void CommandUpdate (object target, CommandInfo info)
 		{
 			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
-			if (mi != null)
-				mi.Invoke (target, new object[] {info} );
+			if (mi != null) {
+				if (mi.ReturnType == typeof (Task)) {
+					var t = (Task) mi.Invoke (target, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				}
+				else
+					mi.Invoke (target, new object [] { info });
+			}
 		}
 		
 		public void CommandUpdate (object target, CommandArrayInfo info)
 		{
 			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
-			if (mi != null)
-				mi.Invoke (target, new object[] {info} );
+			if (mi != null) {
+				if (mi.ReturnType == typeof (Task)) {
+					var t = (Task)mi.Invoke (target, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				} else
+					mi.Invoke (target, new object [] { info });
+			}
 		}
 
 		public void Run (object target, Command cmd)

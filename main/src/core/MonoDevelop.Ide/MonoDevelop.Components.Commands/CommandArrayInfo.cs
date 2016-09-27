@@ -30,6 +30,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -39,15 +41,20 @@ namespace MonoDevelop.Components.Commands
 		CommandInfo defaultInfo;
 		bool bypass;
 		internal object UpdateHandlerData;
+		Task updateTask;
+		CancellationTokenSource cancellationTokenSource;
 		
 		internal CommandArrayInfo (CommandInfo defaultInfo)
 		{
 			this.defaultInfo = defaultInfo;
 		}
 
+		internal CommandInfo ParentCommandInfo { get; set; }
+
 		public void Clear ()
 		{
 			list.Clear ();
+			NotifyChanged ();
 		}
 		
 		public CommandInfo FindCommandInfo (object dataItem)
@@ -80,6 +87,7 @@ namespace MonoDevelop.Components.Commands
 			if (info.Text == null) info.Text = defaultInfo.Text;
 			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Insert (index, info);
+			NotifyChanged ();
 		}
 
 		public CommandInfo Insert (int index, string text, object dataItem)
@@ -100,6 +108,7 @@ namespace MonoDevelop.Components.Commands
 			if (info.Text == null) info.Text = defaultInfo.Text;
 			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Add (info);
+			NotifyChanged ();
 		}
 
 		public CommandInfo Add (string text, object dataItem)
@@ -149,6 +158,38 @@ namespace MonoDevelop.Components.Commands
 		public bool Bypass {
 			get { return bypass; }
 			set { bypass = value; }
+		}
+
+		internal void NotifyChanged ()
+		{
+			Changed?.Invoke (this, EventArgs.Empty);
+			if (ParentCommandInfo != null)
+				ParentCommandInfo.NotifyChanged ();
+		}
+
+		public event EventHandler Changed;
+
+		public CancellationToken AsyncUpdateCancellationToken {
+			get {
+				if (cancellationTokenSource == null)
+					cancellationTokenSource = new CancellationTokenSource ();
+				return cancellationTokenSource.Token;
+			}
+		}
+
+		public bool IsUpdatingAsynchronously {
+			get { return updateTask != null; }
+		}
+
+		public void SetUpdateTask (Task task)
+		{
+			updateTask = task;
+		}
+
+		internal void CancelAsyncUpdate ()
+		{
+			if (cancellationTokenSource != null)
+				cancellationTokenSource.Cancel ();
 		}
 	}
 }
