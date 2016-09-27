@@ -140,7 +140,14 @@ namespace MonoDevelop.Ide.Gui
 		internal DockNotebookTab TabLabel {
 			get { return tab; }
 		}
-		
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			if (tabPage == null)
+				box.PackStart (TabPage);
+		}
+
 		Document document;
 		public Document Document {
 			get {
