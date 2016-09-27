@@ -215,7 +215,7 @@
                         <property name="WidthRequest">132</property>
                         <property name="Xpad">5</property>
                         <property name="Xalign">1</property>
-                        <property name="LabelProp" translatable="yes">Id:</property>
+                        <property name="LabelProp" translatable="yes">ID:</property>
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
@@ -251,47 +251,22 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="packageVersionLabel">
+                      <widget class="Gtk.DrawingArea" id="separator">
                         <property name="MemberName" />
-                        <property name="Xpad">5</property>
-                        <property name="Xalign">1</property>
-                        <property name="LabelProp" translatable="yes">Version:</property>
-                        <property name="Justify">Right</property>
+                        <property name="HeightRequest">1</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">1</property>
                         <property name="BottomAttach">2</property>
-                        <property name="AutoSize">True</property>
+                        <property name="RightAttach">3</property>
+                        <property name="AutoSize">False</property>
                         <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
+                        <property name="YOptions">0</property>
                         <property name="XExpand">False</property>
                         <property name="XFill">True</property>
                         <property name="XShrink">False</property>
                         <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Entry" id="packageVersionTextBox">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="IsEditable">True</property>
-                        <property name="InvisibleChar">●</property>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">1</property>
-                        <property name="BottomAttach">2</property>
-                        <property name="LeftAttach">1</property>
-                        <property name="RightAttach">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">False</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
+                        <property name="YFill">False</property>
                         <property name="YShrink">False</property>
                       </packing>
                     </child>
@@ -326,10 +301,10 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.EventBox" id="deviceLargeImageEventBox">
+          <widget class="Gtk.EventBox" id="backgroundLargeImageEventBox">
             <property name="MemberName" />
             <child>
-              <widget class="Gtk.VBox" id="deviceLargeImageVBox">
+              <widget class="Gtk.VBox" id="backgroundLargeImageVBox">
                 <property name="MemberName" />
                 <child>
                   <placeholder />
@@ -1266,7 +1241,7 @@
                         <property name="MemberName" />
                         <property name="Xpad">5</property>
                         <property name="Xalign">1</property>
-                        <property name="Yalign">1</property>
+                        <property name="Yalign">0.8</property>
                         <property name="LabelProp" translatable="yes">Implementation:</property>
                         <property name="Justify">Right</property>
                       </widget>
@@ -1463,10 +1438,11 @@
                           <widget class="Gtk.HBox" id="usePortableClassLibraryHBox">
                             <property name="MemberName" />
                             <child>
-                              <widget class="Gtk.RadioButton" id="portableClassLibraryRadioButton">
+                              <widget class="Gtk.RadioButton" id="sharedProjectRadioButton">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">Single for all platforms</property>
+                                <property name="Label" translatable="yes">Platform specific</property>
+                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1527,10 +1503,10 @@
                           <widget class="Gtk.HBox" id="useSharedLibraryHBox">
                             <property name="MemberName" />
                             <child>
-                              <widget class="Gtk.RadioButton" id="sharedProjectRadioButton">
+                              <widget class="Gtk.RadioButton" id="portableClassLibraryRadioButton">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">Platform specific</property>
+                                <property name="Label" translatable="yes">Single for all platforms</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1609,7 +1585,7 @@
                         <property name="MemberName" />
                         <property name="Xpad">5</property>
                         <property name="Xalign">1</property>
-                        <property name="Yalign">1</property>
+                        <property name="Yalign">0.8</property>
                         <property name="LabelProp" translatable="yes">Target Platforms:</property>
                         <property name="Justify">Right</property>
                       </widget>
@@ -1695,12 +1671,12 @@
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
+                        <property name="YOptions">0</property>
                         <property name="XExpand">False</property>
                         <property name="XFill">True</property>
                         <property name="XShrink">False</property>
                         <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
+                        <property name="YFill">False</property>
                         <property name="YShrink">False</property>
                       </packing>
                     </child>
@@ -1735,10 +1711,10 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.EventBox" id="deviceLargeImageEventBox">
+          <widget class="Gtk.EventBox" id="backgroundLargeImageEventBox">
             <property name="MemberName" />
             <child>
-              <widget class="Gtk.VBox" id="deviceLargeImageVBox">
+              <widget class="Gtk.VBox" id="backgroundLargeImageVBox">
                 <property name="MemberName" />
                 <child>
                   <placeholder />

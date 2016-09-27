@@ -157,6 +157,30 @@
     <EmbeddedResource Include="Templates\CrossPlatformLibrary.xpt.xml">
       <LogicalName>CrossPlatformLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-multiplatform-library.png">
+      <LogicalName>preview-multiplatform-library.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-multiplatform-library%402x.png">
+      <LogicalName>preview-multiplatform-library@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-multiplatform-library~dark.png">
+      <LogicalName>preview-multiplatform-library~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-multiplatform-library~dark%402x.png">
+      <LogicalName>preview-multiplatform-library~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-nuget.png">
+      <LogicalName>preview-nuget.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-nuget%402x.png">
+      <LogicalName>preview-nuget@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-nuget~dark.png">
+      <LogicalName>preview-nuget~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\Images\preview-nuget~dark%402x.png">
+      <LogicalName>preview-nuget~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

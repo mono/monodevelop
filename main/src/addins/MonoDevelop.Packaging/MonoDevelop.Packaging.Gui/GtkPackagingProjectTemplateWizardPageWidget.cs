@@ -41,18 +41,28 @@ namespace MonoDevelop.Packaging.Gui
 		PackagingProjectTemplateWizardPage wizardPage;
 		Color backgroundColor;
 		EventBoxTooltip idTooltip;
-		EventBoxTooltip versionTooltip;
+		ImageView backgroundImageView;
+		Xwt.Drawing.Image backgroundImage;
 
 		public GtkPackagingProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
+
+			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-nuget.png");
+			backgroundImageView = new ImageView (backgroundImage);
+			backgroundImageView.Xalign = 1.0f;
+			backgroundImageView.Yalign = 1.0f;
+			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
+
+			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
+			separator.ModifyBg (StateType.Normal, separatorColor);
 
 			backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
 			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
-			deviceLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkPackagingProjectTemplateWizardPageWidget (PackagingProjectTemplateWizardPage wizardPage)
@@ -61,21 +71,17 @@ namespace MonoDevelop.Packaging.Gui
 			this.wizardPage = wizardPage;
 
 			packageAuthorsTextBox.Text = wizardPage.Authors;
-			packageVersionTextBox.Text = wizardPage.Version;
 
 			packageIdTextBox.TextInserted += PackageIdTextInserted;
 			packageIdTextBox.Changed += PackageIdTextBoxChanged;
-			packageVersionTextBox.Changed += PackageVersionTextBoxChanged;
 			packageAuthorsTextBox.Changed += PackageAuthorsTextBoxChanged;
 			packageDescriptionTextBox.Changed += PackageDescriptionTextChanged;
 
 			packageIdTextBox.ActivatesDefault = true;
-			packageVersionTextBox.ActivatesDefault = true;
 			packageAuthorsTextBox.ActivatesDefault = true;
 			packageDescriptionTextBox.ActivatesDefault = true;
 
 			packageIdTextBox.TruncateMultiline = true;
-			packageVersionTextBox.TruncateMultiline = true;
 			packageAuthorsTextBox.TruncateMultiline = true;
 			packageDescriptionTextBox.TruncateMultiline = true;
 		}
@@ -109,22 +115,6 @@ namespace MonoDevelop.Packaging.Gui
 			}
 		}
 
-		void PackageVersionTextBoxChanged (object sender, EventArgs e)
-		{
-			wizardPage.Version = packageVersionTextBox.Text;
-
-			if (wizardPage.HasVersionError ()) {
-				if (versionTooltip == null) {
-					versionTooltip = ShowErrorTooltip (versionEventBox, wizardPage.VersionError);
-				}
-			} else {
-				if (versionTooltip != null) {
-					HideTooltip (versionEventBox, versionTooltip);
-					versionTooltip = null;
-				}
-			}
-		}
-
 		void PackageAuthorsTextBoxChanged (object sender, EventArgs e)
 		{
 			wizardPage.Authors = packageAuthorsTextBox.Text;
@@ -138,7 +128,7 @@ namespace MonoDevelop.Packaging.Gui
 		public override void Dispose ()
 		{
 			Dispose (idTooltip);
-			Dispose (versionTooltip);
+			Dispose (backgroundImage);
 		}
 
 		void Dispose (IDisposable disposable)

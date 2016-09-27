@@ -41,10 +41,18 @@ namespace MonoDevelop.Packaging.Gui
 		CrossPlatformLibraryTemplateWizardPage wizardPage;
 		Color backgroundColor;
 		EventBoxTooltip nameTooltip;
+		ImageView backgroundImageView;
+		Xwt.Drawing.Image backgroundImage;
 
 		public GtkCrossPlatformLibraryProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
+
+			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-multiplatform-library.png");
+			backgroundImageView = new ImageView (backgroundImage);
+			backgroundImageView.Xalign = 1.0f;
+			backgroundImageView.Yalign = 1.0f;
+			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
 			targetPlatformsSeparator.ModifyBg (StateType.Normal, separatorColor);
@@ -55,7 +63,7 @@ namespace MonoDevelop.Packaging.Gui
 			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
-			deviceLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkCrossPlatformLibraryProjectTemplateWizardPageWidget (CrossPlatformLibraryTemplateWizardPage wizardPage)
@@ -145,6 +153,7 @@ namespace MonoDevelop.Packaging.Gui
 		public override void Dispose ()
 		{
 			Dispose (nameTooltip);
+			Dispose (backgroundImage);
 		}
 
 		void Dispose (IDisposable disposable)

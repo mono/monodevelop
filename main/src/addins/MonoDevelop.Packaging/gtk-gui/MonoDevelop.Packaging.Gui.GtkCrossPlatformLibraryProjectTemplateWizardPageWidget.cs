@@ -42,7 +42,7 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.HBox usePortableClassLibraryHBox;
 
-		private global::Gtk.RadioButton portableClassLibraryRadioButton;
+		private global::Gtk.RadioButton sharedProjectRadioButton;
 
 		private global::Gtk.VBox usePortableLibraryInfoVBox;
 
@@ -52,7 +52,7 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.HBox useSharedLibraryHBox;
 
-		private global::Gtk.RadioButton sharedProjectRadioButton;
+		private global::Gtk.RadioButton portableClassLibraryRadioButton;
 
 		private global::Gtk.VBox useSharedLibraryInfoVBox;
 
@@ -72,9 +72,9 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.EventBox configurationBottomEventBox;
 
-		private global::Gtk.EventBox deviceLargeImageEventBox;
+		private global::Gtk.EventBox backgroundLargeImageEventBox;
 
-		private global::Gtk.VBox deviceLargeImageVBox;
+		private global::Gtk.VBox backgroundLargeImageVBox;
 
 		protected virtual void Build ()
 		{
@@ -143,7 +143,7 @@ namespace MonoDevelop.Packaging.Gui
 			this.implementationLabel.Name = "implementationLabel";
 			this.implementationLabel.Xpad = 5;
 			this.implementationLabel.Xalign = 1F;
-			this.implementationLabel.Yalign = 1F;
+			this.implementationLabel.Yalign = 0.8F;
 			this.implementationLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Implementation:");
 			this.implementationLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add (this.implementationLabel);
@@ -253,14 +253,15 @@ namespace MonoDevelop.Packaging.Gui
 			this.usePortableClassLibraryHBox = new global::Gtk.HBox ();
 			this.usePortableClassLibraryHBox.Name = "usePortableClassLibraryHBox";
 			// Container child usePortableClassLibraryHBox.Gtk.Box+BoxChild
-			this.portableClassLibraryRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Single for all platforms"));
-			this.portableClassLibraryRadioButton.CanFocus = true;
-			this.portableClassLibraryRadioButton.Name = "portableClassLibraryRadioButton";
-			this.portableClassLibraryRadioButton.DrawIndicator = true;
-			this.portableClassLibraryRadioButton.UseUnderline = true;
-			this.portableClassLibraryRadioButton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
-			this.usePortableClassLibraryHBox.Add (this.portableClassLibraryRadioButton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.usePortableClassLibraryHBox [this.portableClassLibraryRadioButton]));
+			this.sharedProjectRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Platform specific"));
+			this.sharedProjectRadioButton.CanFocus = true;
+			this.sharedProjectRadioButton.Name = "sharedProjectRadioButton";
+			this.sharedProjectRadioButton.Active = true;
+			this.sharedProjectRadioButton.DrawIndicator = true;
+			this.sharedProjectRadioButton.UseUnderline = true;
+			this.sharedProjectRadioButton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.usePortableClassLibraryHBox.Add (this.sharedProjectRadioButton);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.usePortableClassLibraryHBox [this.sharedProjectRadioButton]));
 			w14.Position = 0;
 			// Container child usePortableClassLibraryHBox.Gtk.Box+BoxChild
 			this.usePortableLibraryInfoVBox = new global::Gtk.VBox ();
@@ -297,14 +298,14 @@ namespace MonoDevelop.Packaging.Gui
 			this.useSharedLibraryHBox = new global::Gtk.HBox ();
 			this.useSharedLibraryHBox.Name = "useSharedLibraryHBox";
 			// Container child useSharedLibraryHBox.Gtk.Box+BoxChild
-			this.sharedProjectRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Platform specific"));
-			this.sharedProjectRadioButton.CanFocus = true;
-			this.sharedProjectRadioButton.Name = "sharedProjectRadioButton";
-			this.sharedProjectRadioButton.DrawIndicator = true;
-			this.sharedProjectRadioButton.UseUnderline = true;
-			this.sharedProjectRadioButton.Group = this.portableClassLibraryRadioButton.Group;
-			this.useSharedLibraryHBox.Add (this.sharedProjectRadioButton);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.useSharedLibraryHBox [this.sharedProjectRadioButton]));
+			this.portableClassLibraryRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Single for all platforms"));
+			this.portableClassLibraryRadioButton.CanFocus = true;
+			this.portableClassLibraryRadioButton.Name = "portableClassLibraryRadioButton";
+			this.portableClassLibraryRadioButton.DrawIndicator = true;
+			this.portableClassLibraryRadioButton.UseUnderline = true;
+			this.portableClassLibraryRadioButton.Group = this.sharedProjectRadioButton.Group;
+			this.useSharedLibraryHBox.Add (this.portableClassLibraryRadioButton);
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.useSharedLibraryHBox [this.portableClassLibraryRadioButton]));
 			w19.Position = 0;
 			// Container child useSharedLibraryHBox.Gtk.Box+BoxChild
 			this.useSharedLibraryInfoVBox = new global::Gtk.VBox ();
@@ -350,7 +351,7 @@ namespace MonoDevelop.Packaging.Gui
 			this.targetPlatformsLabel.Name = "targetPlatformsLabel";
 			this.targetPlatformsLabel.Xpad = 5;
 			this.targetPlatformsLabel.Xalign = 1F;
-			this.targetPlatformsLabel.Yalign = 1F;
+			this.targetPlatformsLabel.Yalign = 0.8F;
 			this.targetPlatformsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Target Platforms:");
 			this.targetPlatformsLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add (this.targetPlatformsLabel);
@@ -409,7 +410,7 @@ namespace MonoDevelop.Packaging.Gui
 			w29.LeftAttach = ((uint)(1));
 			w29.RightAttach = ((uint)(2));
 			w29.XOptions = ((global::Gtk.AttachOptions)(4));
-			w29.YOptions = ((global::Gtk.AttachOptions)(4));
+			w29.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.configurationTableEventBox.Add (this.configurationTable);
 			this.configurationVBox.Add (this.configurationTableEventBox);
 			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.configurationVBox [this.configurationTableEventBox]));
@@ -428,14 +429,14 @@ namespace MonoDevelop.Packaging.Gui
 			w33.Expand = false;
 			w33.Fill = false;
 			// Container child mainHBox.Gtk.Box+BoxChild
-			this.deviceLargeImageEventBox = new global::Gtk.EventBox ();
-			this.deviceLargeImageEventBox.Name = "deviceLargeImageEventBox";
-			// Container child deviceLargeImageEventBox.Gtk.Container+ContainerChild
-			this.deviceLargeImageVBox = new global::Gtk.VBox ();
-			this.deviceLargeImageVBox.Name = "deviceLargeImageVBox";
-			this.deviceLargeImageEventBox.Add (this.deviceLargeImageVBox);
-			this.mainHBox.Add (this.deviceLargeImageEventBox);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.deviceLargeImageEventBox]));
+			this.backgroundLargeImageEventBox = new global::Gtk.EventBox ();
+			this.backgroundLargeImageEventBox.Name = "backgroundLargeImageEventBox";
+			// Container child backgroundLargeImageEventBox.Gtk.Container+ContainerChild
+			this.backgroundLargeImageVBox = new global::Gtk.VBox ();
+			this.backgroundLargeImageVBox.Name = "backgroundLargeImageVBox";
+			this.backgroundLargeImageEventBox.Add (this.backgroundLargeImageVBox);
+			this.mainHBox.Add (this.backgroundLargeImageEventBox);
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.backgroundLargeImageEventBox]));
 			w35.Position = 2;
 			this.Add (this.mainHBox);
 			if ((this.Child != null)) {
