@@ -129,12 +129,5 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		}
 
 		public event EventHandler<ServiceEventArgs> ServiceSelected;
-
-		protected override void Dispose (bool disposing)
-		{
-			if (disposing)
-				ClearServices ();
-			base.Dispose (disposing);
-		}
 	}
 }
