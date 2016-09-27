@@ -31,25 +31,49 @@ namespace MonoDevelop.Components
 	public class XwtBoxTooltip : Widget
 	{
 		string tip;
+		TaskSeverity? severity;
 		TooltipPopoverWindow tooltipWindow;
-		bool mouseOver;
+		bool mouseOver, mouseOverTooltip;
 
 		public string ToolTip {
 			get { return tip; }
 			set {
 				tip = value;
-				if (tooltipWindow != null) {
-					if (!string.IsNullOrEmpty (tip))
-						tooltipWindow.Markup = value;
-					else
-						HideTooltip ();
-				} else if (!string.IsNullOrEmpty (tip) && mouseOver)
-					ShowTooltip ();
+				if (!string.IsNullOrEmpty (tip))
+					tooltipWindow.Markup = value;
+				else {
+					tooltipWindow.Markup = string.Empty;
+					HideTooltip ();
+				}
 			}
 		}
 
-		public TaskSeverity? Severity { get; set; }
-		public PopupPosition Position { get; set; }
+		public TaskSeverity? Severity {
+			get {
+				return severity;
+			}
+			set {
+				severity = value;
+				tooltipWindow.Severity = Severity;
+			}
+		}
+
+		PopupPosition position;
+
+		public PopupPosition Position {
+			get {
+				return position;
+			}
+			set {
+				if (position != value) {
+					position = value;
+					if (tooltipWindow.Visible) {
+						HideTooltip ();
+						ShowTooltip ();
+					}
+				}
+			}
+		}
 
 		public XwtBoxTooltip (Widget child)
 		{
@@ -57,6 +81,8 @@ namespace MonoDevelop.Components
 				throw new ArgumentNullException (nameof (child));
 			
 			Content = child;
+			tooltipWindow = new TooltipPopoverWindow ();
+			tooltipWindow.ShowArrow = true;
 			Position = PopupPosition.Top;
 			Severity = TaskSeverity.Information;
 		}
@@ -78,11 +104,6 @@ namespace MonoDevelop.Components
 		bool ShowTooltip ()
 		{
 			if (!string.IsNullOrEmpty (tip)) {
-				HideTooltip ();
-				tooltipWindow = new TooltipPopoverWindow ();
-				tooltipWindow.ShowArrow = true;
-				tooltipWindow.Markup = tip;
-				tooltipWindow.Severity = Severity;
 				var rect = new Rectangle (0, 0, Content.Size.Width, Content.Size.Height);
 				tooltipWindow.ShowPopup (Content, rect, Position);
 			}
@@ -92,8 +113,7 @@ namespace MonoDevelop.Components
 		void HideTooltip ()
 		{
 			if (tooltipWindow != null) {
-				tooltipWindow.Destroy ();
-				tooltipWindow = null;
+				tooltipWindow.Hide ();
 			}
 		}
 
@@ -101,6 +121,7 @@ namespace MonoDevelop.Components
 		{
 			if (disposing) {
 				HideTooltip ();
+				tooltipWindow?.Dispose ();
 			}
 			base.Dispose (disposing);
 		}
