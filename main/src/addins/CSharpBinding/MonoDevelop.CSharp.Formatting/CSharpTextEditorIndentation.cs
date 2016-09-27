@@ -549,7 +549,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (descriptor.KeyChar == '{')
 				return;
 			SafeUpdateIndentEngine (Editor.CaretOffset);
-			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString || stateTracker.IsInsidePreprocessorDirective;
+			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.GetAst<SemanticModel> () == null)
 					return;
@@ -823,7 +823,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal void DoReSmartIndent (int cursor)
 		{
 			SafeUpdateIndentEngine (cursor);
-			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)
+			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment || stateTracker.IsInsidePreprocessorDirective)
 				return;
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
 				Editor.FixVirtualIndentation ();

@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public CSharpEditorFormattingService()
 		{
-			_autoFormattingTriggerChars = ImmutableHashSet.CreateRange<char>(";}");
+			_autoFormattingTriggerChars = ImmutableHashSet.CreateRange<char>(";}#n");
 
 			// add all auto formatting trigger to supported char
 			_supportedChars = _autoFormattingTriggerChars.Union("{}#nte:)");
