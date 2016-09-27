@@ -135,17 +135,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			HslColor result = default (HslColor);
 			foreach (var scope in scopeStack) {
-				var found = false;
+				string found = null;
 				foreach (var setting in settings) {
-					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope))) {
+					string compatibleScope = null;
+					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope, ref compatibleScope))) {
+						if (found != null && found.Length > compatibleScope.Length)
+							continue;
 						HslColor tryC;
 						if (setting.TryGetColor (key, out tryC)) {
-							found = true;
+							found = compatibleScope;
 							result = tryC;
 						}
 					}
 				}
-				if (found) {
+				if (found != null) {
 					return result;
 				}
 			}
@@ -156,17 +159,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			string result = null;
 			foreach (var scope in scopeStack) {
-				var found = false;
+				string found = null;
 				foreach (var setting in settings) {
-					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope))) {
+					string compatibleScope = null;
+					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope, ref compatibleScope))) {
+						if (found != null && found.Length > compatibleScope.Length)
+							continue;
+
 						string tryC;
 						if (setting.TryGetSetting (key, out tryC)) {
-							found = true;
+							found = compatibleScope;
 							result = tryC;
 						}
 					}
 				}
-				if (found) {
+				if (found != null) {
 					return result;
 				}
 			}
@@ -175,15 +182,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public bool TryGetColor (string scope, string key, out HslColor result)
 		{
-			bool found = false;
+			string found = null;
 			var foundColor = default (HslColor);
 			foreach (var setting in settings) {
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scope))) {
+				string compatibleScope = null;
+				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scope, ref compatibleScope))) {
+					if (found != null && found.Length > compatibleScope.Length)
+						continue;
+				
 					if (setting.TryGetColor (key, out foundColor))
-						found = true;
+						found = compatibleScope;
 				}
 			}
-			if (found) {
+			if (found != null) {
 				result = foundColor;
 				return true;
 			}
@@ -201,12 +212,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-		internal static bool IsCompatibleScope (string key, string scope)
+		internal static bool IsCompatibleScope (string key, string scope, ref string matchingKey)
 		{
 			var idx = key.IndexOf (' ');
 			if (idx >= 0)
 				key = key.Substring (0, idx);
 			bool isCompatible = scope.Contains (key);
+			matchingKey = key;
 			return isCompatible;
 		}
 

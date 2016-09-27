@@ -130,8 +130,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static ThemeSetting GetSetting (List<ThemeSetting> settings, string scope, bool exact = true)
 		{
 			ThemeSetting result = null;
+			string cs = null;
 			foreach (var s in settings.Skip (1)) {
-				if (s.Scopes.Any (a => exact ? a == scope : EditorTheme.IsCompatibleScope (a, scope))) {
+				if (s.Scopes.Any (a => exact ? a == scope : EditorTheme.IsCompatibleScope (a, scope, ref cs))) {
 					if (result == null || result.Scopes.Last ().Length < s.Scopes.Last ().Length)
 						result = s;
 				}

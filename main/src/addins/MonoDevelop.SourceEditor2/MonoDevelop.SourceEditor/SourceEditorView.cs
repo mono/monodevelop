@@ -1437,7 +1437,7 @@ namespace MonoDevelop.SourceEditor
 		void OnIconMarginMouseMoved (object sender, MarginMouseEventArgs e)
 		{
 			if (hoverDebugLineMarker != null) {
-				if (hoverDebugLineMarker.LineSegment.LineNumber != e.LineSegment.LineNumber) {
+				if (hoverDebugLineMarker.LineSegment?.LineNumber != e.LineSegment?.LineNumber) {
 					e.Editor.Document.RemoveMarker (hoverDebugLineMarker);
 					hoverDebugLineMarker = null;
 				}
