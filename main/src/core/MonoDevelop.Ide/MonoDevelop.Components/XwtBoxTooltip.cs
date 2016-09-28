@@ -101,7 +101,7 @@ namespace MonoDevelop.Components
 			HideTooltip ();
 		}
 
-		bool ShowTooltip ()
+		public bool ShowTooltip ()
 		{
 			if (!string.IsNullOrEmpty (tip)) {
 				var rect = new Rectangle (0, 0, Content.Size.Width, Content.Size.Height);
@@ -110,7 +110,7 @@ namespace MonoDevelop.Components
 			return false;
 		}
 
-		void HideTooltip ()
+		public void HideTooltip ()
 		{
 			if (tooltipWindow != null) {
 				tooltipWindow.Hide ();
