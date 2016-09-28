@@ -1421,16 +1421,28 @@ namespace MonoDevelop.Ide.Editor
 				return;
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Completion) != DisabledProjectionFeatures.Completion) {
-				TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
-				while (lastExtension != null && lastExtension.Next != null) {
-					var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
+				TextEditorExtension curExtension = textEditorImpl.EditorExtension;
+				TextEditorExtension lastExtension = null;
+				while (curExtension != null) {
+					var completionTextEditorExtension = curExtension as CompletionTextEditorExtension;
 					if (completionTextEditorExtension != null) {
 						var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+						var completionWidget = completionTextEditorExtension.CompletionWidget;
 						completionTextEditorExtension.Deinitialize ();
-						lastExtension.Next = projectedFilterExtension;
+						projectedFilterExtension.Next = curExtension.Next;
+
+						if (lastExtension != null) {
+							lastExtension.Next = projectedFilterExtension;
+						} else {
+							textEditorImpl.EditorExtension = projectedFilterExtension;
+							curExtension = projectedFilterExtension;
+						}
 						projectedFilterExtension.Initialize (this, DocumentContext);
+						projectedFilterExtension.CompletionWidget = completionWidget;
+						break;
 					}
-					lastExtension = lastExtension.Next;
+					lastExtension = curExtension;
+					curExtension = curExtension.Next;
 				}
 
 

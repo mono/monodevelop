@@ -175,6 +175,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (string file in Directory.GetFiles (path)) {
 				LoadStyleOrMode (file);
 			}
+		}
+
+		static void PrepareMatches ()
+		{
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings)
 					h.PrepareMatches ();
@@ -425,6 +429,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				}
 			}
+			PrepareMatches ();
 		}
 
 		public static HslColor GetColor (EditorTheme style, string key)
@@ -457,6 +462,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
+			if (fileName == null)
+				return null;
 			var ext = fileName.Extension.TrimStart ('.');
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
@@ -476,12 +483,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ImmutableStack<string> GetScopeForFileName (string fileName)
 		{
 			string scope = null;
-
-			foreach (var bundle in languageBundles) {
-				foreach (var highlight in bundle.Highlightings) {
-					if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
-						scope = highlight.Scope;
-						break;
+			if (fileName != null) {
+				foreach (var bundle in languageBundles) {
+					foreach (var highlight in bundle.Highlightings) {
+						if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
+							scope = highlight.Scope;
+							break;
+						}
 					}
 				}
 			}

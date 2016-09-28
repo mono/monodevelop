@@ -110,8 +110,8 @@ namespace MonoDevelop.Ide.Editor
 			projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
 			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
 
-			var markup = editor.GetPangoMarkup (0, editor.Length);
-			var color = "#75507B";
+			var markup = editor.GetMarkup (0, editor.Length, new MarkupOptions (MarkupFormat.Pango));
+			var color = "#3363a4";
 			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#222222\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#222222\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#222222\">0</span>", markup);
 		}
 
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Editor
 				for (int i = 0; i < segment.Length; i++) {
 					char ch = base.editor.GetCharAt (segment.Offset + i);
 					if (ch == '1' || ch == '5' || ch == '9')
-						yield return new ColoredSegment (segment.Offset + i, 1, ImmutableStack<string>.Empty.Push ("entity.name.type.namespace.source.cs"));
+						yield return new ColoredSegment (segment.Offset + i, 1, ImmutableStack<string>.Empty.Push ("keyword"));
 				}
 			}
 
@@ -161,12 +161,9 @@ namespace MonoDevelop.Ide.Editor
 			var originalContext = new Document (tww);
 			var projectedEditor = projection.CreateProjectedEditor (originalContext);
 			TestCompletionExtension orignalExtension;
-			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) });
+			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (editor)  } });
 			TestCompletionExtension projectedExtension;
-			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) });
-
-			orignalExtension.CompletionWidget = new EmptyCompletionWidget (editor);
-			projectedExtension.CompletionWidget = new EmptyCompletionWidget (projectedEditor);
+			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (projectedEditor) } });
 
 			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
 			editor.CaretOffset = 1;
@@ -178,7 +175,7 @@ namespace MonoDevelop.Ide.Editor
 			Assert.IsTrue (projectedExtension.CompletionRun);
 
 			editor.CaretOffset = 15;
-
+			CompletionWindowManager.HideWindow ();
 			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
 			Assert.IsTrue (orignalExtension.CompletionRun);
 		}

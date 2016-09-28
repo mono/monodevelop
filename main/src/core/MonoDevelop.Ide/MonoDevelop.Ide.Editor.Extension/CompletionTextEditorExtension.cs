@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			{
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+				if (completionWidget != null && value == null)
+					Console.WriteLine ("SET TO NULL : " + Environment.StackTrace);
 				completionWidget = value;
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
@@ -619,7 +621,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
+			CompletionWidget = CompletionWidget ?? DocumentContext.GetContent <ICompletionWidget> ();
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 			Editor.FocusLost += HandleFocusOutEvent;

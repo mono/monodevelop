@@ -44,6 +44,15 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		internal override CodeCompletion.ICompletionWidget CompletionWidget {
+			get {
+				return completionTextEditorExtension.CompletionWidget;
+			}
+			set {
+				completionTextEditorExtension.CompletionWidget = value;
+			}
+		}
+
 		public ProjectedFilterCompletionTextEditorExtension (CompletionTextEditorExtension completionTextEditorExtension, IReadOnlyList<Projection> projections)
 		{
 			this.completionTextEditorExtension = completionTextEditorExtension;

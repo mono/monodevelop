@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '{':
 					if (readUnicodeGroup)
 						return;
-					break;
+					goto default;
 				case '}':
 					if (readUnicodeGroup) {
 						readUnicodeGroup = false;
@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						unicodeGroupBuilder.Length = 0;
 						return;
 					}
-					break;
+					goto default;
 				case '[':
 					if (escape)
 						goto default;
