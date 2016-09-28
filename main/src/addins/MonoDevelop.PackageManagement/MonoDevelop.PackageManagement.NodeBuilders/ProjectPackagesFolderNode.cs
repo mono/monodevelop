@@ -87,8 +87,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (nugetProject is INuGetIntegratedProject) {
 				PackagesFolderPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings); 
 				packagePathResolver = new VersionFolderPathResolver ( 
-					PackagesFolderPath, 
-					normalizePackageId: false);
+					PackagesFolderPath);
 			} else {
 				PackagesFolderPath = nugetProject.GetPackagesFolderPath (solutionManager);
 				folder = new FolderNuGetProject (PackagesFolderPath);

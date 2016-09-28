@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
@@ -20,24 +21,38 @@ namespace NuGet.PackageManagement.UI
 	{
 		private readonly IEnumerable<SourceRepository> _sourceRepositories;
 		private readonly SourceRepository _localRepository;
-		private readonly SourceRepository _globalLocalRepository;
-		private readonly Logging.ILogger _logger;
+		private readonly IEnumerable<SourceRepository> _globalLocalRepositories;
+		private readonly Common.ILogger _logger;
+		private readonly NuGetProject[] _projects;
+		private readonly bool _isSolution;
+		private IEnumerable<Packaging.PackageReference> _packageReferences;
 
 		public MultiSourcePackageMetadataProvider(
 			IEnumerable<SourceRepository> sourceRepositories,
 			SourceRepository optionalLocalRepository,
-			SourceRepository optionalGlobalLocalRepository,
-			Logging.ILogger logger)
+			IEnumerable<SourceRepository> optionalGlobalLocalRepositories,
+			NuGetProject[] projects,
+			bool isSolution,
+			Common.ILogger logger)
 		{
 			if (sourceRepositories == null)
 			{
 				throw new ArgumentNullException(nameof(sourceRepositories));
 			}
+
+			if (projects == null)
+			{
+				throw new ArgumentNullException(nameof(projects));
+			}
 			_sourceRepositories = sourceRepositories;
 
 			_localRepository = optionalLocalRepository;
 
-			_globalLocalRepository = optionalGlobalLocalRepository;
+			_globalLocalRepositories = optionalGlobalLocalRepositories;
+
+			_projects = projects;
+
+			_isSolution = isSolution;
 
 			if (logger == null)
 			{
@@ -75,8 +90,33 @@ namespace NuGet.PackageManagement.UI
 		public async Task<IPackageSearchMetadata> GetLatestPackageMetadataAsync(PackageIdentity identity,
 			bool includePrerelease, CancellationToken cancellationToken)
 		{
+			VersionRange allowedVersions = VersionRange.All;
+
+			// at this time, allowed version range should be applied at project level. 
+			// For solution level, we will apply allowed version range for all the selected projects in detail control model
+			if (!_isSolution)
+			{
+				if (_packageReferences == null)
+				{
+					// get all package references for all the projects and cache locally
+					var packageReferencesTasks = _projects.Select(project => project.GetInstalledPackagesAsync(cancellationToken));
+					_packageReferences = (await Task.WhenAll(packageReferencesTasks)).SelectMany(p => p).Where(p => p != null);
+				}
+
+				// filter package references for current package identity
+				var matchedPackageReferences = _packageReferences.Where(r => StringComparer.OrdinalIgnoreCase.Equals(r.PackageIdentity.Id, identity.Id));
+
+				// Allowed version range for current package across all selected projects
+				var allowedVersionsRange = matchedPackageReferences.Select(r => r.AllowedVersions).Where(v => v != null).ToArray();
+
+				if (allowedVersionsRange.Length > 0)
+				{                    
+					allowedVersions = allowedVersionsRange[0];
+				}
+			}
+
 			var tasks = _sourceRepositories
-				.Select(r => r.GetLatestPackageMetadataAsync(identity.Id, includePrerelease, cancellationToken))
+				.Select(r => r.GetLatestPackageMetadataAsync(identity.Id, includePrerelease, cancellationToken, allowedVersions))
 				.ToArray();
 
 			var ignored = tasks
@@ -110,22 +150,39 @@ namespace NuGet.PackageManagement.UI
 			return completed.SelectMany(p => p);
 		}
 
-		public async Task<IPackageSearchMetadata> GetLocalPackageMetadataAsync(PackageIdentity identity, bool includePrerelease, CancellationToken cancellationToken)
+		/// <summary>
+		/// Get package metadata from the package folders.
+		/// </summary>
+		public async Task<IPackageSearchMetadata> GetLocalPackageMetadataAsync(
+			PackageIdentity identity,
+			bool includePrerelease,
+			CancellationToken cancellationToken)
 		{
-			var result = await _localRepository.GetPackageMetadataFromLocalSourceAsync(identity, cancellationToken);
+			var sources = new List<SourceRepository>();
 
-			if (result == null)
+			if (_localRepository != null)
 			{
-				if (_globalLocalRepository != null)
-					result = await _globalLocalRepository.GetPackageMetadataFromLocalSourceAsync(identity, cancellationToken);
+				sources.Add(_localRepository);
+			}
 
-				if (result == null)
+			if (_globalLocalRepositories != null)
+			{
+				sources.AddRange(_globalLocalRepositories);
+			}
+
+			// Take the package from the first source it is found in
+			foreach (var source in sources)
+			{
+				var result = await source.GetPackageMetadataFromLocalSourceAsync(identity, cancellationToken);
+
+				if (result != null)
 				{
-					return null;
+					return result.WithVersions(asyncValueFactory: 
+					                           () => FetchAndMergeVersionsAsync(identity, includePrerelease, cancellationToken));
 				}
 			}
 
-			return result.WithVersions(asyncValueFactory: () => FetchAndMergeVersionsAsync(identity, includePrerelease, cancellationToken));
+			return null;
 		}
 
 		private static async Task<IEnumerable<VersionInfo>> MergeVersionsAsync(PackageIdentity identity, IEnumerable<IPackageSearchMetadata> packages)
@@ -137,8 +194,8 @@ namespace NuGet.PackageManagement.UI
 				.Concat(new[] { new VersionInfo(identity.Version) });
 
 			return allVersions
-				.GroupBy(v => v.Version, v => v.DownloadCount)
-				.Select(g => new VersionInfo(g.Key, g.Max()))
+				.GroupBy(v => v.Version)
+				.Select(g => g.OrderBy(v => v.DownloadCount).First())
 				.ToArray();
 		}
 
@@ -170,5 +227,6 @@ namespace NuGet.PackageManagement.UI
 				_logger.LogError(ex.ToString());
 			}
 		}
+
 	}
 }
