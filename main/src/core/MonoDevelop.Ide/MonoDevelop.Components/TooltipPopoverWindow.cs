@@ -167,7 +167,8 @@ namespace MonoDevelop.Components
 				label.Wrap = false;
 				label.WidthRequest = -1;
 			}
-			RepositionWindow ();
+			if (Visible)
+				RepositionWindow ();
 		}
 	}
 }
