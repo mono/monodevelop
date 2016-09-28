@@ -127,6 +127,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
+			CompletionWindowManager.WindowClosed += CompletionWindowManager_WindowClosed;
 		}
 
 		bool indentationDisabled;
@@ -188,6 +189,8 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.TextChanged -= HandleTextReplaced;
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
+			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;
+			
 			stateTracker = null;
 			base.Dispose ();
 		}
@@ -566,6 +569,7 @@ namespace MonoDevelop.CSharp.Formatting
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
 							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+							CompletionWindowManager.HideWindow ();
 						}
 					}
 				}
@@ -579,24 +583,43 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		async void FormatOnReturn (CancellationToken cancellationToken = default(CancellationToken))
+		async void CompletionWindowManager_WindowClosed (object sender, EventArgs e)
 		{
 			var document = DocumentContext.AnalysisDocument;
 			if (document == null)
 				return;
 			var caretPosition = Editor.CaretOffset;
-			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync(document, caretPosition, cancellationToken).ConfigureAwait(false);
+			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default (CancellationToken)).ConfigureAwait (false);
+			if (token.IsMissing || !token.Parent.IsKind (SyntaxKind.ElseDirectiveTrivia))
+				return;
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
+				return;
+			
+			var value = tokenRange.Value;
+			using (var undo = Editor.OpenUndoGroup ()) {
+				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
+			}
+		}
+
+		async void FormatOnReturn (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var document = DocumentContext.AnalysisDocument;
+			if (document == null)
+				return;
+			var caretPosition = Editor.CaretOffset;
+			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, cancellationToken).ConfigureAwait (false);
 			if (token.IsMissing)
 				return;
 
 			string text = null;
-			if (service.IsInvalidToken(token, ref text))
+			if (service.IsInvalidToken (token, ref text))
 				return;
 			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
-			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn(token))
+			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn (token))
 				return;
-			var tokenRange = FormattingRangeHelper.FindAppropriateRange(token);
-			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals(tokenRange.Value.Item2))
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
 			var value = tokenRange.Value;
 			using (var undo = Editor.OpenUndoGroup ()) {

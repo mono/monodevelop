@@ -59,7 +59,6 @@ namespace MonoDevelop.SourceEditor
 
 			set {
 				if (value) {
-					Console.WriteLine ("add marker");
 					selectionMarker = new SearchInSelectionMarker (SelectionSegment);
 					this.textEditor.Document.AddMarker (selectionMarker);
 				} else {
