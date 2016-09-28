@@ -58,6 +58,3 @@
 	path = main/external/roslyn
 	url = git://github.com/mono/roslyn.git
 	branch = monodevelop_bin
-[submodule "main/external/vscode"]
-	path = main/external/vscode
-	url = https://github.com/Microsoft/vscode

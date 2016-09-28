@@ -1,0 +1,19 @@
+{
+	"name": "fsharp",
+	"version": "0.1.0",
+	"publisher": "vscode",
+	"engines": { "vscode": "*" },
+	"contributes": {
+		"languages": [{
+			"id": "fsharp",
+			"extensions": [ ".fs", ".fsi", ".fsx", ".fsscript" ],
+			"aliases": [ "F#", "FSharp", "fsharp" ],
+			"configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "fsharp",
+			"scopeName": "source.fsharp",
+			"path": "./syntaxes/fsharp.json"
+		}]
+	}
+}
