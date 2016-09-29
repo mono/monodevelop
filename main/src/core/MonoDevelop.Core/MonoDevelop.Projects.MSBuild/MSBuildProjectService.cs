@@ -919,7 +919,7 @@ namespace MonoDevelop.Projects.MSBuild
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
 		
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool lockBuilder = false)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
 			using (await buildersLock.EnterAsync ())
 			{
@@ -958,7 +958,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return await Task.Run (async () => {
 					//always start the remote process explicitly, even if it's using the current runtime and fx
 					//else it won't pick up the assembly redirects from the builder exe
-					var exe = GetExeLocation (runtime, toolsVersion);
+					var exe = GetExeLocation (runtime, toolsVersion, requiresMicrosoftBuild);
 
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 					var pinfo = new ProcessStartInfo (exe) {
@@ -1063,12 +1063,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return dictionary;;
 		}
 		
-		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
+		static string GetExeLocation (TargetRuntime runtime, string toolsVersion, bool requiresMicrosoftBuild)
 		{
 			var builderDir = new FilePath (typeof(MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
 
 			var version = Version.Parse (toolsVersion);
-			bool useMicrosoftBuild =
+			bool useMicrosoftBuild = 
+				requiresMicrosoftBuild ||
 				((version >= new Version (15, 0)) && Runtime.Preferences.BuildWithMSBuild) ||
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 
