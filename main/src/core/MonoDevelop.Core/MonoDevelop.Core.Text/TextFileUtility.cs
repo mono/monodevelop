@@ -432,7 +432,7 @@ namespace MonoDevelop.Core.Text
 		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
 			using (var f = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: DefaultBufferSize, options: FileOptions.Asynchronous | FileOptions.SequentialScan)) {
-				var res = new byte [bs.Length];
+				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
 				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
