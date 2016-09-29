@@ -34,6 +34,7 @@ using MonoDevelop.Core.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using MonoDevelop.Core;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -131,13 +132,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			ThemeSetting result = null;
 			string cs = null;
+			var stack = ImmutableStack<string>.Empty.Push (scope);
 			foreach (var s in settings.Skip (1)) {
-				if (s.Scopes.Any (a => exact ? a == scope : EditorTheme.IsCompatibleScope (a, scope, ref cs))) {
-					if (result == null || result.Scopes.Last ().Length < s.Scopes.Last ().Length)
-						result = s;
+				if (s.Scopes.Any (a => EditorTheme.IsCompatibleScope (a, stack, ref cs))) {
+					result = s;
 				}
 			}
-			
 			return result;
 		}
 
@@ -210,14 +210,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static TmSetting ReadPreferences (PDictionary dict)
 		{
 			string name = null;
-			var scopes = new List<string> ();
+			var scopes = new List<StackMatchExpression> ();
 			var settings = new Dictionary<string, PObject> ();
 
 			PObject val;
 			if (dict.TryGetValue ("name", out val))
 				name = ((PString)val).Value;
 			if (dict.TryGetValue ("scope", out val)) {
-				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+				foreach (var scope in ((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+					scopes.Add (StackMatchExpression.Parse (scope));
+				}
 			}
 			if (dict.TryGetValue ("settings", out val)) {
 				var settingsDictionary = val as PDictionary;
@@ -236,7 +238,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			string name = null;
 			string content = null;
 			string tabTrigger = null;
-			var scopes = new List<string> ();
+			var scopes = new List<StackMatchExpression> ();
 
 			PObject val;
 			if (dict.TryGetValue ("name", out val))
@@ -246,7 +248,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (dict.TryGetValue ("tabTrigger", out val))
 				tabTrigger = ((PString)val).Value;
 			if (dict.TryGetValue ("scope", out val)) {
-				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+				foreach (var scope in ((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+					scopes.Add (StackMatchExpression.Parse (scope));
+				}
 			}
 
 			return new TmSnippet (name, scopes, content, tabTrigger);

@@ -39,8 +39,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		public readonly string Name = ""; // not defined in vs.net
 
-		IReadOnlyList<string> scopes;
-		public IReadOnlyList<string> Scopes { get { return scopes; } }
+		IReadOnlyList<StackMatchExpression> scopes;
+		public IReadOnlyList<StackMatchExpression> Scopes { get { return scopes; } }
 
 		IReadOnlyDictionary<string, PObject> settings;
 
@@ -50,10 +50,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal TmSetting (string name, IReadOnlyList<string> scopes, IReadOnlyDictionary<string, PObject> settings)
+		internal TmSetting (string name, IReadOnlyList<StackMatchExpression> scopes, IReadOnlyDictionary<string, PObject> settings)
 		{
 			Name = name;
-			this.scopes = scopes ?? new List<string> ();
+			this.scopes = scopes ?? new List<StackMatchExpression> ();
 			this.settings = settings ?? new Dictionary<string, PObject> ();
 		}
 
@@ -84,13 +84,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return string.Format ("[ThemeSetting: Name={0}]", Name);
 		}
 
-		internal static bool IsSettingMatch (ImmutableStack<string> scopes, string matchScope)
+		internal static bool IsSettingMatch (ImmutableStack<string> scopes, StackMatchExpression expr)
 		{
 			string cs = null;
-			foreach (var scope in scopes) {
-				if (EditorTheme.IsCompatibleScope (scope, matchScope, ref cs)) {
-					return true;
-				}
+			if (EditorTheme.IsCompatibleScope (expr, scopes, ref cs)) {
+				return true;
 			}
 			return false;
 		}

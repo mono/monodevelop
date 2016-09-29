@@ -34,11 +34,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string Name { get; private set; }
 
-		public List<string> Scopes { get; private set; }
+		public List<StackMatchExpression> Scopes { get; private set; }
 
 		public string TabTrigger { get; private set; }
 
-		public TmSnippet (string name, List<string> scopes, string content, string tabTrigger)
+		public TmSnippet (string name, List<StackMatchExpression> scopes, string content, string tabTrigger)
 		{
 			this.Name = name;
 			this.Scopes = scopes;

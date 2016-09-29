@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			defaultSettings [EditorThemeColors.PreviewDiffAdded] = colorScheme.PreviewDiffAddedd.Foreground.ToPangoString ();
 			defaultSettings [EditorThemeColors.PreviewDiffAddedBackground] = colorScheme.PreviewDiffAddedd.Background.ToPangoString ();
 			
-			settings.Add (new ThemeSetting (null, null, defaultSettings));
+			settings.Add (new ThemeSetting (null, new List<string>(), defaultSettings));
 
 			settings.Add (new ThemeSetting ("Comment", new List<string> { "comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
 			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));

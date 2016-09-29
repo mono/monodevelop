@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -329,7 +330,8 @@ typedef struct
 						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries)) {
 							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
 							string mk = null;
-							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (segi, ss, ref mk)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
+							var expr = StackMatchExpression.Parse (segi);
+							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, ImmutableStack<string>.Empty.Push (ss), ref mk)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 						}
 						expectedSegments.RemoveAt (i);
 						i--;

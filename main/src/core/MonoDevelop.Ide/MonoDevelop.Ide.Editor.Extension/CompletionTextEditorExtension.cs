@@ -59,8 +59,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			{
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
-				if (completionWidget != null && value == null)
-					Console.WriteLine ("SET TO NULL : " + Environment.StackTrace);
 				completionWidget = value;
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged += OnCompletionContextChanged;

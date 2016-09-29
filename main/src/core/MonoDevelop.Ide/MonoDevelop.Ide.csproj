@@ -8810,6 +8810,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateBundleOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\LanguageBundle.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\StackMatchExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

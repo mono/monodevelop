@@ -837,7 +837,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			string name = null;
 			string content = null;
 			string tabTrigger = null;
-			var scopes = new List<string> ();
+			var scopes = new List<StackMatchExpression> ();
 			using (var reader = XmlReader.Create (stream)) {
 				while (reader.Read ()) {
 					if (reader.NodeType != XmlNodeType.Element)
@@ -853,7 +853,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						break;
 					case "scope":
 						if (reader.Read ())
-							scopes.Add (reader.Value);
+							scopes.Add (StackMatchExpression.Parse (reader.Value));
 						break;
 					case "description":
 						if (reader.Read ())
