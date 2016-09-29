@@ -1028,11 +1028,7 @@ namespace MonoDevelop.Ide.Gui
 		public static string[] GetCommentTags (string fileName)
 		{
 			//Document doc = IdeApp.Workbench.ActiveDocument;
-			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
-
-
 			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (fileName));
-
 			if (lang.LineComments.Count > 0)
 				return lang.LineComments.ToArray ();
 

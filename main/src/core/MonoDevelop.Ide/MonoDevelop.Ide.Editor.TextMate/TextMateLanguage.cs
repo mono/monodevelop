@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			lineComments = new List<string> ();
 			blockComments = new List<Tuple<string, string>> ();
-			int i = 0;
+			int i = 1;
 			while (true) {
 				string start, end;
 				if (!ShellVariables.TryGetValue (GetCommentStartString (i), out start))
