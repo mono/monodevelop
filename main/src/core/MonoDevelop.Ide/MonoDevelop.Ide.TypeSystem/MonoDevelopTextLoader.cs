@@ -31,6 +31,7 @@ using MonoDevelop.Core.Text;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -52,9 +53,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workbench?.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0) == true) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			} else {
-				if (!File.Exists (fileName))
+				try {
+					text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken).ConfigureAwait (false));
+				} catch (Exception e) {
+					LoggingService.LogError ($"Failed to get file text for {fileName}", e);
 					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ());
-				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken).ConfigureAwait(false));
+				}
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}
