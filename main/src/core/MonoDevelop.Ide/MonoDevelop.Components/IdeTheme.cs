@@ -227,9 +227,8 @@ namespace MonoDevelop.Components
 			else
 				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
 
-			UpdateXwtDefaults ();
-
 			Styles.LoadStyle ();
+			UpdateXwtDefaults ();
 			#if MAC
 			UpdateMacWindows ();
 			#endif
@@ -258,6 +257,9 @@ namespace MonoDevelop.Components
 				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.QuestionIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
 				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.ConfirmationIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
 			}
+
+			Xwt.Toolkit.CurrentEngine.Defaults.FallbackLinkColor = Styles.LinkForegroundColor;
+			Xwt.Toolkit.NativeEngine.Defaults.FallbackLinkColor = Styles.LinkForegroundColor;
 		}
 
 		internal static string[] gtkThemeFallbacks = new string[] {
