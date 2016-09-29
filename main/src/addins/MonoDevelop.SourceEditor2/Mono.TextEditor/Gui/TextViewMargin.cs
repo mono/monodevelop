@@ -451,7 +451,6 @@ namespace Mono.TextEditor
 			textEditor.UpdatePreeditLineHeight ();
 
 			DisposeLayoutDict ();
-			chunkDict.Clear ();
 			caretX = caretY = -LineHeight;
 		}
 
@@ -1040,10 +1039,6 @@ namespace Mono.TextEditor
 				layoutDict.Remove (line);
 			}
 
-			ChunkDescriptor chunkDesriptor;
-			if (chunkDict.TryGetValue (line, out chunkDesriptor)) {
-				chunkDict.Remove (line);
-			}
 		}
 
 		internal void DisposeLayoutDict ()
@@ -1058,8 +1053,6 @@ namespace Mono.TextEditor
 		public void PurgeLayoutCache ()
 		{
 			DisposeLayoutDict ();
-			if (chunkDict != null)
-				chunkDict.Clear ();
 		}
 
 		class ChunkDescriptor : LineDescriptor
@@ -1075,23 +1068,10 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Dictionary<DocumentLine, ChunkDescriptor> chunkDict = new Dictionary<DocumentLine, ChunkDescriptor> ();
-
 		List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
-			ChunkDescriptor descriptor;
-			if (chunkDict.TryGetValue (line, out descriptor)) {
-				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, out isInvalid))
-					return descriptor.Chunk;
-				chunkDict.Remove (line);
-			}
-
 			var highlightedLine = doc.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).Result;
-			var chunks = TrimChunks(highlightedLine.Segments, offset, length);
-			descriptor = new ChunkDescriptor (line, offset, length, chunks);
-			chunkDict [line] = descriptor;
-			return chunks;
+			return TrimChunks(highlightedLine.Segments, offset, length);
 		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
