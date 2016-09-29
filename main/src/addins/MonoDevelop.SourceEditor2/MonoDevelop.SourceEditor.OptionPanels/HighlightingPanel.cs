@@ -86,6 +86,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		string GetMarkup (string name, string description)
 		{
+			if (string.IsNullOrEmpty (description)) 
+				return String.Format ("<b>{0}</b>", GLib.Markup.EscapeText (name));
 			return String.Format ("<b>{0}</b> - {1}", GLib.Markup.EscapeText (name), GLib.Markup.EscapeText (description));
 		}
 
@@ -149,6 +151,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					continue;
 				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";
+				if (string.IsNullOrEmpty (name))
+					continue;
 				string description = "";
 				// translate only build-in sheme names
 				if (string.IsNullOrEmpty (style.FileName)) {
