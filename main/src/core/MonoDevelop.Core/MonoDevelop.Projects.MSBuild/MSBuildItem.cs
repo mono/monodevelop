@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 		string name;
 		string include;
 		string exclude;
+		string remove;
 
 		public MSBuildItem ()
 		{
@@ -51,7 +52,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.name = name;
 		}
 
-		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label" };
+		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove" };
 
 		internal override string [] GetKnownAttributes ()
 		{
@@ -64,6 +65,8 @@ namespace MonoDevelop.Projects.MSBuild
 				include = value;
 			else if (name == "Exclude")
 				exclude = value;
+			else if (name == "Remove")
+				remove = value;
 			else
 				base.ReadAttribute (name, value);
 		}
@@ -74,6 +77,8 @@ namespace MonoDevelop.Projects.MSBuild
 				return include;
 			else if (name == "Exclude")
 				return exclude;
+			else if (name == "Remove")
+				return remove;
 			else
 				return base.WriteAttribute (name);
 		}
@@ -123,6 +128,15 @@ namespace MonoDevelop.Projects.MSBuild
 			set {
 				AssertCanModify ();
 				exclude = value;
+				NotifyChanged ();
+			}
+		}
+
+		public string Remove {
+			get { return remove; }
+			set {
+				AssertCanModify ();
+				remove = value;
 				NotifyChanged ();
 			}
 		}
