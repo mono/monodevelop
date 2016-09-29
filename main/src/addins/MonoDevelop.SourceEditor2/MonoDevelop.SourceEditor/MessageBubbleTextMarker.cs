@@ -544,12 +544,12 @@ namespace MonoDevelop.SourceEditor
 
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			var tx = Math.Round (metrics.X + (metrics.Width - cache.errorPixbuf.Width) / 2) - 1;
-			var ty = Math.Floor (metrics.Y + (metrics.Height - cache.errorPixbuf.Height) / 2);
+			var tx = Math.Round (metrics.X + (metrics.Width - MessageBubbleCache.errorPixbuf.Width) / 2) - 1;
+			var ty = Math.Floor (metrics.Y + (metrics.Height - MessageBubbleCache.errorPixbuf.Height) / 2);
 
 			cr.Save ();
 			cr.Translate (tx, ty);
-			cr.DrawImage (editor, errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
+			cr.DrawImage (editor, errors.Any (e => e.IsError) ? MessageBubbleCache.errorPixbuf : MessageBubbleCache.warningPixbuf, 0, 0);
 			cr.Restore ();
 		}
 
@@ -593,7 +593,7 @@ namespace MonoDevelop.SourceEditor
 			bool isCaretInLine = metrics.TextStartOffset <= editor.Caret.Offset && editor.Caret.Offset <= metrics.TextEndOffset;
 			int errorCounterWidth = GetErrorCountBounds (metrics).Item1;
 
-			var min = right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth;
+			var min = right - LayoutWidth - border - (ShowIconsInBubble ? MessageBubbleCache.errorPixbuf.Width : 0) - errorCounterWidth;
 			var max = Math.Round (editor.TextViewMargin.XOffset + editor.LineHeight / 2);
 			double x2 = Math.Max (min, max);
 
