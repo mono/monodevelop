@@ -7735,17 +7735,11 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\css\syntaxes\css.plist">
       <LogicalName>css.tmLanguage</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\java\syntaxes\Java.plist">
-      <LogicalName>Java.tmLanguage</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\JavaScript.tmLanguage.json">
       <LogicalName>JavaScript.tmLanguage.json</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
       <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\vb\syntaxes\ASPVBnet.plist">
-      <LogicalName>ASPVBnet.tmLanguage</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\XML.plist">
       <LogicalName>XML.tmLanguage</LogicalName>
@@ -7758,12 +7752,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\syntaxes\TypeScriptReact.tmLanguage.json">
       <LogicalName>TypeScriptReact.tmLanguage.json</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\syntaxes\swift.json">
-      <LogicalName>swift.json</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\syntaxes\Objective-C.tmLanguage">
-      <LogicalName>Objective-C.tmLanguage</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\less\syntaxes\LESS.tmLanguage">
       <LogicalName>LESS.tmLanguage</LogicalName>
@@ -8823,7 +8811,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\yaml\syntaxes\yaml.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8880,7 +8867,6 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\java\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\" />
@@ -8891,7 +8877,6 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\json\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\json\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\less\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
@@ -8899,11 +8884,8 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\vb\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\vb\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\yaml\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\" />
   </ItemGroup>
   <ItemGroup>
