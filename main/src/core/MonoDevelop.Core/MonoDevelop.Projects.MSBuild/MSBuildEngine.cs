@@ -110,6 +110,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public abstract void RemoveGlobalProperty (object projectInstance, string property);
 
 		public abstract ConditionedPropertyCollection GetConditionedProperties (object projectInstance);
+
+		public abstract IEnumerable<MSBuildItem> FindGlobItemsIncludingFile  (object projectInstance, string include);
 	}
 }
 

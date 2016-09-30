@@ -635,6 +635,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance.TargetsIgnoringCondition; }
 		}
 
+		public IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (string include)
+		{
+			return mainProjectInstance.FindGlobItemsIncludingFile (include);
+		}
+
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);

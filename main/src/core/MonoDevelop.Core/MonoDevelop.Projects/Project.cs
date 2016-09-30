@@ -2261,6 +2261,7 @@ namespace MonoDevelop.Projects
 		{
 			timer.Trace ("Read project items");
 			LoadProjectItems (msproject, ProjectItemFlags.None, usedMSBuildItems);
+			loadedProjectItems = new HashSet<ProjectItem> (Items);
 
 			timer.Trace ("Read configurations");
 
@@ -2942,9 +2943,16 @@ namespace MonoDevelop.Projects
 		{
 			public ProjectItem ProjectItem;
 			public MSBuildItem MSBuildItem;
+			public bool Modified;
 		}
 
+		/// <summary>
+		/// When set to true, the project will make use of improved globbing logic to avoid expanding glob in multiple items when
+		/// there are changes. Requires the latest version of msbuild to work.
+		public bool UseAdvancedGlobSupport { get; set; }
+
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
+		HashSet<ProjectItem> loadedProjectItems = new HashSet<ProjectItem> ();
 
 		internal virtual void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
@@ -2959,12 +2967,28 @@ namespace MonoDevelop.Projects
 			// Process items generated from wildcards
 
 			foreach (var itemInfo in expandedItems) {
-				if (itemInfo.Value.Modified || msproject.EvaluatedItemsIgnoringCondition.Where (i => i.SourceItem == itemInfo.Key).Count () != itemInfo.Value.Count) {
-					// Expand the list
-					unusedItems.Add (itemInfo.Key);
-					foreach (var it in itemInfo.Value) {
-						it.ProjectItem.BackingItem = it.MSBuildItem;
-						msproject.AddItem (it.MSBuildItem);
+				var expandedList = itemInfo.Value;
+				var globItem = itemInfo.Key;
+				if (expandedList.Modified || loadedProjectItems.Where (i => i.BackingItem == globItem).Count () != expandedList.Count) {
+					if (UseAdvancedGlobSupport) {
+						// Add remove items if necessary
+						foreach (var removed in loadedProjectItems.Where (i => i.BackingItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
+							var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
+							msproject.AddItem (removeItem);
+						}
+						// Exclude modified items
+						foreach (var it in expandedList.Where (it => it.Modified)) {
+							globItem.AddExclude (it.ProjectItem.Include);
+							it.ProjectItem.BackingItem = it.MSBuildItem;
+							msproject.AddItem (it.MSBuildItem);
+						}
+					} else {
+						// Expand the list
+						unusedItems.Add (globItem);
+						foreach (var it in expandedList) {
+							it.ProjectItem.BackingItem = it.MSBuildItem;
+							msproject.AddItem (it.MSBuildItem);
+						}
 					}
 				}
 			}
@@ -2976,6 +3000,7 @@ namespace MonoDevelop.Projects
 					msproject.RemoveItem (it);
 				loadedItems.Remove (it);
 			}
+			loadedProjectItems = new HashSet<ProjectItem> (Items);
 		}
 
 		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
@@ -2990,35 +3015,63 @@ namespace MonoDevelop.Projects
 				// must be individually included
 				var bitem = msproject.CreateItem (item.ItemName, GetPrefixedInclude (pathPrefix, item.Include));
 				item.Write (this, bitem);
-				items.Add (new ExpandedItemInfo {
+
+				var einfo = new ExpandedItemInfo {
 					ProjectItem = item,
 					MSBuildItem = bitem
-				});
+				};
+				items.Add (einfo);
 
 				unusedItems.Remove (item.BackingItem);
 
-				if (!items.Modified && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingEvalItem)))
+				if ((!items.Modified || UseAdvancedGlobSupport) && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingEvalItem))) {
 					items.Modified = true;
+					einfo.Modified = true;
+				}
 				return;
 			}
 
 			var include = GetPrefixedInclude (pathPrefix, item.UnevaluatedInclude ?? item.Include);
 
-			MSBuildItem buildItem;
+			MSBuildItem buildItem = null;
 			if (item.BackingItem?.ParentObject != null && item.BackingItem.Name == item.ItemName) {
 				buildItem = item.BackingItem;
 			} else {
-				buildItem = msproject.AddNewItem (item.ItemName, include);
+				if (UseAdvancedGlobSupport) {
+					// It is a new item. Before adding it, check if there is a Remove for the item. If there is, it is likely the file was excluded from a glob.
+					var toRemove = msproject.GetAllItems ().Where (it => it.Name == item.ItemName && it.Remove == include).ToList ();
+					if (toRemove.Count > 0) {
+						// Remove the "Remove" items
+						foreach (var it in toRemove)
+							msproject.RemoveItem (it);
+					}
+					// Check if the file is included in a glob.
+					var globItem = msproject.FindGlobItemsIncludingFile (item.Include).FirstOrDefault (gi => gi.Name == item.ItemName);
+
+					if (globItem != null) {
+						// Globbing magic can only be done if there is no metadata (for now)
+						if (globItem.Metadata.GetProperties ().Count () == 0) {
+							var it = new MSBuildItem (item.ItemName);
+							item.Write (this, it);
+							if (it.Metadata.GetProperties ().Count () == 0)
+								buildItem = globItem;
+					}
+				}
+				}
+				if (buildItem == null)
+					buildItem = msproject.AddNewItem (item.ItemName, include);
 				item.BackingItem = buildItem;
-				item.BackingEvalItem = null;
+				item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, buildItem, include);
 			}
 
 			loadedItems.Add (buildItem);
 			unusedItems.Remove (buildItem);
 
-			item.Write (this, buildItem);
-			if (buildItem.Include != include)
-				buildItem.Include = include;
+			if (!buildItem.IsWildcardItem) {
+				item.Write (this, buildItem);
+				if (buildItem.Include != include)
+					buildItem.Include = include;
+			}
 		}
 
 		bool ItemsAreEqual (MSBuildItem item, IMSBuildItemEvaluated evalItem)
@@ -3037,6 +3090,21 @@ namespace MonoDevelop.Projects
 			if (evalItem.SourceItem.Metadata.GetProperties ().Count () != n)
 				return false;
 			return true;
+		}
+
+		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include)
+		{
+			// Create the item
+			var eit = new MSBuildItemEvaluated (msproject, item.Name, item.Include, include);
+
+			// Copy the metadata
+			var md = new Dictionary<string, IMSBuildPropertyEvaluated> ();
+			var col = (MSBuildPropertyGroupEvaluated)eit.Metadata;
+			foreach (var p in item.Metadata.GetProperties ())
+				md [p.Name] = new MSBuildPropertyEvaluated (msproject, p.Name, p.UnevaluatedValue, p.Value);
+			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
+			eit.SourceItem = item;
+			return eit;
 		}
 
 		string GetPrefixedInclude (string pathPrefix, string include)
@@ -3084,6 +3152,26 @@ namespace MonoDevelop.Projects
 					return true;
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Checks if a file is included in any project item glob, and in this case it adds the require project files.
+		/// </summary>
+		/// <returns><c>true</c>, if any item was added, <c>false</c> otherwise.</returns>
+		/// <param name="file">File path</param>
+		/// <remarks>This method is useful to add items for a file that has been created in the project directory,
+		/// when the file is included in a glob defined by a project item.
+		/// Project items that define custom metadata will be ignored.</remarks>
+		public IEnumerable<ProjectItem> AddItemsForFileIncludedInGlob (FilePath file)
+		{
+			var include = MSBuildProjectService.ToMSBuildPath (ItemDirectory, file);
+			foreach (var it in sourceProject.FindGlobItemsIncludingFile (include).Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+				var eit = CreateFakeEvaluatedItem (sourceProject, it, include);
+				var pi = CreateProjectItem (eit);
+				pi.Read (this, eit);
+				Items.Add (pi);
+				yield return pi;
+			}
 		}
 
 		public void AddImportIfMissing (string name, string condition)

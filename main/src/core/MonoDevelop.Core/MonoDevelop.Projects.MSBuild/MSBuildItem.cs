@@ -28,6 +28,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 
 
 namespace MonoDevelop.Projects.MSBuild
@@ -160,6 +161,18 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal bool IsWildcardItem {
 			get { return EvaluatedItemCount > 1 && (Include.Contains ("*") || Include.Contains (";")); }
+		}
+
+		public void AddExclude (string excludePath)
+		{
+			if (string.IsNullOrWhiteSpace (exclude))
+				exclude = excludePath;
+			else if (!exclude.Contains (excludePath)){
+				exclude += ";" + excludePath;
+			} else {
+				if (exclude.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (e => e.Trim ()).Contains (excludePath))
+					exclude += ";" + excludePath;
+			}
 		}
 	}
 

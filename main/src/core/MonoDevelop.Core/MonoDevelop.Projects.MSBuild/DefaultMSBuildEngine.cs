@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
+			public List<GlobInfo> GlobIncludes = new List<GlobInfo> ();
         }
 
 		class PropertyInfo
@@ -69,6 +70,13 @@ namespace MonoDevelop.Projects.MSBuild
 			public string Value;
 			public string FinalValue;
 			public bool IsImported;
+		}
+
+		class GlobInfo
+		{
+			public MSBuildItem Item;
+			public string Include;
+			public Regex ExcludeRegex;
 		}
 
 		#region implemented abstract members of MSBuildEngine
@@ -321,6 +329,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 			} else if (IsWildcardInclude (include)) {
+				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, ExcludeRegex = excludeRegex });
 				foreach (var eit in ExpandWildcardFilePath (project, context, item, include)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
@@ -1070,6 +1079,83 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var pi = (ProjectInfo)projectInstance;
 			return pi.ConditionedProperties;
+		}
+
+		public override IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (object projectInstance, string include)
+		{
+			var pi = (ProjectInfo)projectInstance;
+			string filePath = MSBuildProjectService.FromMSBuildPath (pi.Project.BaseDirectory, include);
+			foreach (var g in pi.GlobIncludes) {
+				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath)) {
+					if (g.ExcludeRegex != null) {
+						if (g.ExcludeRegex.IsMatch (include))
+							continue;
+					}
+					yield return g.Item;
+				}
+			}
+		}
+
+		bool IsIncludedInGlob (string globInclude, string basePath, FilePath file)
+		{
+			if (globInclude == "**" || globInclude.EndsWith ("\\**", StringComparison.Ordinal))
+				globInclude = globInclude + "/*";
+			var subpath = globInclude.Split ('\\');
+			return IsIncludedInGlob (basePath, file, false, subpath, 0);
+		}
+
+		bool IsIncludedInGlob (FilePath basePath, FilePath file, bool recursive, string [] filePath, int index)
+		{
+			if (index >= filePath.Length)
+				return false;
+
+			var path = filePath [index];
+
+			if (path == "..")
+				return IsIncludedInGlob (basePath.ParentDirectory, file, recursive, filePath, index + 1);
+
+			if (path == ".")
+				return IsIncludedInGlob (basePath, file, recursive, filePath, index + 1);
+
+			if (!Directory.Exists (basePath))
+				return false;
+
+			if (path == "**") {
+				// if this is the last component of the path, there isn't any file specifier, so there is no possible match
+				if (index + 1 >= filePath.Length)
+					return false;
+				return IsIncludedInGlob (basePath, file, true, filePath, index + 1);
+			}
+
+			if (index == filePath.Length - 1) {
+				// Last path component. It has to be a file specifier.
+				if (!file.IsChildPathOf (basePath))
+					return false;
+				if (Directory.GetFiles (basePath, path).Any (f => f == file))
+					return true;
+			} else {
+				// Directory specifier
+				// Look for matching directories.
+				// The search here is non-recursive, not matter what the 'recursive' parameter says, since we are trying to match a subpath.
+				// The recursive search is done below.
+
+				if (path.IndexOfAny (wildcards) != -1) {
+					foreach (var dir in Directory.GetDirectories (basePath, path)) {
+						if (IsIncludedInGlob (dir, file, false, filePath, index + 1))
+							return true;
+					}
+				} else if (IsIncludedInGlob (basePath.Combine (path), file, false, filePath, index + 1))
+					return true;
+			}
+
+			if (recursive) {
+				// Recursive search. Try to match the remaining subpath in all subdirectories.
+				foreach (var dir in Directory.GetDirectories (basePath))
+					if (IsIncludedInGlob (dir, file, true, filePath, index))
+						return true;
+			}
+
+			return false;
 		}
 
 		#endregion
