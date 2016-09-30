@@ -45,6 +45,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				UpdateDescription ();
 
 				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
+				platformWidget.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 
 				service.StatusChanged += HandleServiceStatusChanged;
 
