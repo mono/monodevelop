@@ -827,8 +827,13 @@ namespace MonoDevelop.Projects
 
 			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
 			if (msc != null) {
+				var multiProject = context.ExecutionTarget as MultiProjectExecutionTarget;
 				foreach (StartupItem it in msc.Items) {
-					if (it.SolutionItem.CanExecute (context, configuration, it.RunConfiguration))
+					var localContext = context;
+					//Set project specific execution target to context if exists
+					if (multiProject?.GetTarget (it.SolutionItem) != null)
+						localContext = new ExecutionContext (context.ExecutionHandler, context.ExternalConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
+					if (it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						return true;
 				}
 				return false;
@@ -849,13 +854,18 @@ namespace MonoDevelop.Projects
 				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
 
+				var multiProject = context.ExecutionTarget as MultiProjectExecutionTarget;
 				foreach (StartupItem it in msc.Items) {
-					if (!it.SolutionItem.CanExecute (context, configuration, it.RunConfiguration))
+					var localContext = context;
+					//Set project specific execution target to context if exists
+					if (multiProject?.GetTarget (it.SolutionItem) != null)
+						localContext = new ExecutionContext (context.ExecutionHandler, context.ExternalConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
+					if (!it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 					mon.AddFollowerMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.FollowerCancel);
 					monitors.Add (mon);
-					tasks.Add (it.SolutionItem.Execute (mon, context, configuration, it.RunConfiguration));
+					tasks.Add (it.SolutionItem.Execute (mon, localContext, configuration, it.RunConfiguration));
 				}
 				try {
 					await Task.WhenAll (tasks);
