@@ -111,6 +111,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			sb.Length = 0;
 			return result;
 		}
+
 		abstract class BinaryExpression : StackMatchExpression
 		{
 			protected StackMatchExpression left, right;
@@ -206,7 +207,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 				if (scopeStack.IsEmpty)
 					return Tuple.Create (false, scopeStack);
-				bool found = scopeStack.Peek ().Contains (scope);
+				bool found = scopeStack.Peek ().StartsWith (scope, StringComparison.Ordinal);
 				return Tuple.Create (found, scopeStack.Pop ());
 			}
 
@@ -216,5 +217,4 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 	}
-
 }
