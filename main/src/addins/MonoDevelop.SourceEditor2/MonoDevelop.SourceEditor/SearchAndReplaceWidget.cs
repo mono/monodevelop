@@ -45,6 +45,7 @@ namespace MonoDevelop.SourceEditor
 		const int  historyLimit = 20;
 		const string seachHistoryProperty = "MonoDevelop.FindReplaceDialogs.FindHistory";
 		const string replaceHistoryProperty = "MonoDevelop.FindReplaceDialogs.ReplaceHistory";
+		static Xwt.Drawing.Image SearchEntryFilterImage = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
 		public TextSegment SelectionSegment {
 			get;
 			set;
@@ -59,7 +60,6 @@ namespace MonoDevelop.SourceEditor
 
 			set {
 				if (value) {
-					Console.WriteLine ("add marker");
 					selectionMarker = new SearchInSelectionMarker (SelectionSegment);
 					this.textEditor.Document.AddMarker (selectionMarker);
 				} else {
@@ -306,7 +306,7 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			searchEntry.FilterButtonPixbuf = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
+			searchEntry.FilterButtonPixbuf = SearchEntryFilterImage;
 
 			if (textEditor.IsSomethingSelected) {
 				if (textEditor.MainSelection.MinLine == textEditor.MainSelection.MaxLine || ClipboardContainsSelection()) {

@@ -416,6 +416,7 @@ namespace MonoDevelop.Projects.MSBuild
 			List<string> sortedList = new List<string> ();
 
 			List<Task> loadTasks = new List<Task> ();
+			var solDirectory = Path.GetDirectoryName (sol.FileName);
 
 			foreach (SlnProject sec in sln.Projects) {
 				try {
@@ -448,7 +449,7 @@ namespace MonoDevelop.Projects.MSBuild
 					DeserializeSolutionItem (monitor, sol, sfolder, sec);
 					
 					foreach (string f in ReadFolderFiles (sec))
-						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), f));
+						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (solDirectory, f));
 
 					lock (items)
 						items.Add (projectGuid, sfolder);
@@ -465,7 +466,7 @@ namespace MonoDevelop.Projects.MSBuild
 					continue;
 				}
 
-				string path = MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), projectPath);
+				string path = MSBuildProjectService.FromMSBuildPath (solDirectory, projectPath);
 				if (String.IsNullOrEmpty (path)) {
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"Invalid project path found in {0} : {1}", sol.FileName, projectPath));

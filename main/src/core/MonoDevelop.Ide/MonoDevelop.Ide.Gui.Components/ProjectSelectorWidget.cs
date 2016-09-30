@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		IEnumerable<WorkspaceObject> GetAllChildren (WorkspaceObject item)
 		{
 			var res = GetChildren (item);
-			return res.Concat (res.SelectMany (i => GetAllChildren (i)));
+			return res.Concat (res.SelectMany (GetAllChildren));
 		}
 		
 		IEnumerable<WorkspaceObject> GetChildren (WorkspaceObject item)

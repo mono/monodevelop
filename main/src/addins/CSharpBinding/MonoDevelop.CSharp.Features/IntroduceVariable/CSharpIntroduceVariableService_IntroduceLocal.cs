@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 			}
 
 			var oldInnerMostCommonBlock = matches.FindInnermostCommonBlock();
-			var allAffectedStatements = new HashSet<StatementSyntax>(matches.SelectMany(expr => expr.GetAncestorsOrThis<StatementSyntax>()));
+			var allAffectedStatements = new HashSet<StatementSyntax>(matches.SelectMany(SyntaxNodeExtensions.GetAncestorsOrThis<StatementSyntax>));
 			var firstStatementAffectedInBlock = oldInnerMostCommonBlock.Statements.First(allAffectedStatements.Contains);
 
 			var firstStatementAffectedIndex = oldInnerMostCommonBlock.Statements.IndexOf(firstStatementAffectedInBlock);

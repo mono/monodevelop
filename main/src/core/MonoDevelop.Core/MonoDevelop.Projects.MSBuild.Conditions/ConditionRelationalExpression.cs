@@ -179,7 +179,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				// the combination of values. So for example if the condition has "$(Configuration)|$(Platform) == Foo|Bar",
 				// the conditioned property collection would contain Configuration=Foo, Platform=Bar, (Configuration|Platfrom)=Foo|Bar
 				if (combinedProperty != null)
-					properties.AddPropertyValues (combinedProperty.ToArray (), combinedValue.ToArray ());
+					properties.AddPropertyValues (combinedProperty, combinedValue);
 			}
 		}
 

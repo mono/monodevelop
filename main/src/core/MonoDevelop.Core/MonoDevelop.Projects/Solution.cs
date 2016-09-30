@@ -259,7 +259,7 @@ namespace MonoDevelop.Projects
 			var sitems = UserProperties.GetValue<string []> ("StartupItems");
 			if (sitems != null && sitems.Length > 0) {
 				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
-				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (file => FindSolutionItem (file)).Where (i => i != null);
+				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (FindSolutionItem).Where (i => i != null);
 				multiStartupConfig.Items.Clear ();
 				multiStartupConfig.Items.AddRange (multiStartupItems.ToArray ());
 				runConfigurations.Add (multiStartupConfig);

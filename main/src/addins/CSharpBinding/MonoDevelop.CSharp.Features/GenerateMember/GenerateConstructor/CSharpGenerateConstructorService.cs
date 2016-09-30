@@ -214,9 +214,8 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateConstructor
 			else
 			{
 				var oldNode = oldToken.Parent
-					.AncestorsAndSelf(ascendOutOfTrivia: false)
-					.Where(node => SpeculationAnalyzer.CanSpeculateOnNode(node))
-					.LastOrDefault();
+					.AncestorsAndSelf (ascendOutOfTrivia: false)
+					.LastOrDefault (SpeculationAnalyzer.CanSpeculateOnNode);
 
 				var typeNameToReplace = (TypeSyntax)oldToken.Parent;
 				TypeSyntax newTypeName;

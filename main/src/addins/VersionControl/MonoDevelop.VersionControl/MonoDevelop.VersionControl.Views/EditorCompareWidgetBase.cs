@@ -315,8 +315,8 @@ namespace MonoDevelop.VersionControl.Views
 			var words = BreakTextInWords (editor, hunk.RemoveStart, hunk.Removed);
 			var cmpWords = BreakTextInWords (MainEditor, hunk.InsertStart, hunk.Inserted);
 			
-			var wordDiff = new List<Hunk> (Diff.GetDiff (words.Select (w => editor.GetTextAt (w)).ToArray (),
-				cmpWords.Select (w => MainEditor.GetTextAt (w)).ToArray ()));
+			var wordDiff = new List<Hunk> (Diff.GetDiff (words.Select (editor.GetTextAt).ToArray (),
+				cmpWords.Select (MainEditor.GetTextAt).ToArray ()));
 			
 			result = Tuple.Create (CalculateChunkPath (editor, wordDiff, words, true), 
 				CalculateChunkPath (MainEditor, wordDiff, cmpWords, false));
