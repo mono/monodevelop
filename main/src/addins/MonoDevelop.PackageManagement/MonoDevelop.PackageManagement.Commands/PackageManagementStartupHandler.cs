@@ -141,6 +141,9 @@ namespace MonoDevelop.PackageManagement.Commands
 		//auto-restore project.json files when they're saved
 		void FileChanged (object sender, FileEventArgs e)
 		{
+			if (PackageManagementServices.BackgroundPackageActionRunner.IsRunning)
+				return;
+
 			List<DotNetProject> projects = null;
 
 			//collect all the projects with modified project.json files
