@@ -301,21 +301,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
+			NSImage projectImage = MultiResImage.CreateMultiResImage ("project", "");
+			NSImage projectImageDisabled = MultiResImage.CreateMultiResImage ("project", "disabled");
+			NSImage deviceImage = MultiResImage.CreateMultiResImage ("device", "");
+			NSImage deviceImageDisabled = MultiResImage.CreateMultiResImage ("device", "disabled");
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				Cells = new [] {
 					new NSPathComponentCell {
-						Image = MultiResImage.CreateMultiResImage ("project", "disabled"),
+						Image = projectImageDisabled,
 						Title = TextForActiveRunConfiguration,
 						Enabled = false,
 					},
 					new NSPathComponentCell {
-						Image = MultiResImage.CreateMultiResImage ("project", "disabled"),
+						Image = projectImageDisabled,
 						Title = TextForActiveConfiguration,
 						Enabled = false,
 					},
 					new NSPathComponentCell {
-						Image = MultiResImage.CreateMultiResImage ("device", "disabled"),
+						Image = deviceImageDisabled,
 						Title = TextForRuntimeConfiguration,
 						Enabled = false,
 					}
@@ -507,18 +511,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void UpdateImages ()
 			{
-				string runStyle = "";
-				string projectStyle = "";
-				string deviceStyle = "";
+				NSImage runConfigImage = projectImage;
+				NSImage configImage = projectImage;
+				NSImage runtimeImage = deviceImage;
 
 				if (!Cells [RunConfigurationIdx].Enabled)
-					runStyle = "disabled";
-			
-				if (!Cells [ConfigurationIdx].Enabled)
-					projectStyle = "disabled";
+					runConfigImage = projectImageDisabled;
 
 				if (!Cells [ConfigurationIdx].Enabled)
-					deviceStyle = "disabled";
+					configImage = projectImageDisabled;
+
+				if (!Cells [ConfigurationIdx].Enabled)
+					runtimeImage = deviceImageDisabled;
 
 				// HACK
 				// For some reason NSPathControl does not like the images that ImageService provides. To use them it requires
@@ -526,9 +530,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// for its icons. It may be related to the images being initially loaded through the Gtk backend and then converted to NSImage
 				// at a later date.
 				// For whatever reason, we custom load the images here through NSImage, providing both 1x and 2x image reps.
-				Cells [RunConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", runStyle);
-				Cells [ConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", projectStyle);
-				Cells [RuntimeIdx].Image = MultiResImage.CreateMultiResImage ("device", deviceStyle);
+				Cells [RunConfigurationIdx].Image = runConfigImage;
+				Cells [ConfigurationIdx].Image = configImage;;
+				Cells [RuntimeIdx].Image = runtimeImage;
 				RealignTexts ();
 			}
 

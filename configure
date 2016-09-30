@@ -143,7 +143,7 @@ handle_config_error ()
 {
 	if test `uname` = "Darwin"; then
 		echo ""
-		echo "Have you followed http://monodevelop.com/Developers/Mac_Support/Building_MonoDevelop_on_OS_X ?"
+		echo "Have you followed http://www.monodevelop.com/developers/building-monodevelop/#macosx ?"
 		echo ""
 	fi
 	exit 1

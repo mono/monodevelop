@@ -269,7 +269,7 @@ namespace MonoDevelop.Projects
 			if (sitems != null && sitems.Length > 0) {
 				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
 				UserProperties.RemoveValue ("StartupItems");
-				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (file => FindSolutionItem (file)).Where (i => i != null);
+				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (FindSolutionItem).Where (i => i != null);
 				var msc = new MultiItemSolutionRunConfiguration ("Multi-Startup", "Multi-Startup");
 				foreach (var si in multiStartupItems)
 					msc.Items.Add (new StartupItem (si, si.GetDefaultRunConfiguration ()));

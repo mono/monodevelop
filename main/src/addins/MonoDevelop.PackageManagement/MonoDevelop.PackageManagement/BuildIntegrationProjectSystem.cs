@@ -72,6 +72,10 @@ namespace MonoDevelop.PackageManagement
 
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
 		{
+			Runtime.RunInMainThread (() => {
+				dotNetProject.DotNetProject.NotifyModified ("References");
+			});
+
 			packageManagementEvents.OnFileChanged (JsonConfigPath);
 
 			return base.PostProcessAsync (nuGetProjectContext, token);

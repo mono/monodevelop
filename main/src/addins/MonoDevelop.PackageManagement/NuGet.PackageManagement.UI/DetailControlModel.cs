@@ -250,8 +250,7 @@ namespace NuGet.PackageManagement.UI
 			}
 
 			DisplayVersion versionToSelect = _versions
-				.Where(v => v != null && v.Version.Equals(_searchResultPackage.Version))
-				.FirstOrDefault();
+				.FirstOrDefault (v => v != null && v.Version.Equals (_searchResultPackage.Version));
 			if (versionToSelect == null)
 			{
 				versionToSelect = _versions[0];

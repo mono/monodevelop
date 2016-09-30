@@ -814,7 +814,8 @@ namespace MonoDevelop.Components.DockNotebook
 				tw -= closeButtonAlloation.Width / 2;
 
 			double tx = tabBounds.X + leftPadding;
-			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
+			var line = la.GetLine (0);
+			var baseline = line.Layout.GetPixelBaseline ();
 			double ty = tabBounds.Height - bottomPadding - baseline;
 
 			ctx.MoveTo (tx, ty);
@@ -825,7 +826,7 @@ namespace MonoDevelop.Components.DockNotebook
 				la.Ellipsize = Pango.EllipsizeMode.End;
 				la.Width = (int)(tw * Pango.Scale.PangoScale);
 				ctx.SetSourceColor ((tab.Notify ? Styles.TabBarNotifyTextColor : (active ? Styles.TabBarActiveTextColor : Styles.TabBarInactiveTextColor)).ToCairoColor ());
-				Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+				Pango.CairoHelper.ShowLayout (ctx, line.Layout);
 			} else {
 				// ellipses are for space wasting ..., we cant afford that
 				using (var lg = new LinearGradient (tx + tw - 10, 0, tx + tw, 0)) {
@@ -835,7 +836,7 @@ namespace MonoDevelop.Components.DockNotebook
 					color.A = 0;
 					lg.AddColorStop (1, color);
 					ctx.SetSource (lg);
-					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
+					Pango.CairoHelper.ShowLayout (ctx, line.Layout);
 				}
 			}
             la.Dispose ();

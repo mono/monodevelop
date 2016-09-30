@@ -296,7 +296,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				arguments.Select(a => a.NameColon != null)).ToList();
 
 			var parameterNames = reservedNames.Concat(
-				arguments.Select(a => semanticModel.GenerateNameForArgument(a))).ToList();
+				arguments.Select(semanticModel.GenerateNameForArgument)).ToList();
 
 			return NameGenerator.EnsureUniqueness(parameterNames, isFixed).Skip(reservedNames.Count).ToList();
 		}
@@ -313,7 +313,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				arguments.Select(a => a.NameEquals != null)).ToList();
 
 			var parameterNames = reservedNames.Concat(
-				arguments.Select(a => semanticModel.GenerateNameForArgument(a))).ToList();
+				arguments.Select(semanticModel.GenerateNameForArgument)).ToList();
 
 			return NameGenerator.EnsureUniqueness(parameterNames, isFixed).Skip(reservedNames.Count).ToList();
 		}

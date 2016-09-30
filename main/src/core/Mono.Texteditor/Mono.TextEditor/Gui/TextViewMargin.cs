@@ -46,6 +46,7 @@ namespace Mono.TextEditor
 		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
+		Pango.FontDescription markerLayoutFont;
 		Pango.Layout[] eolMarkerLayout;
 		Pango.Rectangle[] eolMarkerLayoutRect;
 
@@ -386,11 +387,11 @@ namespace Mono.TextEditor
 			selectionColor = null;
 			currentLineColor = null;
 		
-			var markerFont = textEditor.Options.Font.Copy ();
-			markerFont.Size = markerFont.Size * 8 / 10;
-			markerLayout.FontDescription = markerFont;
-			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
-			markerLayout.FontDescription.Style = Pango.Style.Normal;
+			markerLayoutFont = textEditor.Options.Font.Copy ();
+			markerLayoutFont.Size = markerLayoutFont.Size * 8 / 10;
+			markerLayoutFont.Style = Pango.Style.Normal;
+			markerLayoutFont.Weight = Pango.Weight.Normal;
+			markerLayout.FontDescription = markerLayoutFont;
 
 			defaultLayout.FontDescription = textEditor.Options.Font;
 			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
@@ -475,6 +476,7 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
+			markerLayoutFont = null;
 
 			if (defaultLayout!= null) 
 				defaultLayout.Dispose ();
@@ -2251,7 +2253,7 @@ namespace Mono.TextEditor
 
 			if (line != null) {
 				newMarkers.Clear ();
-				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextLineMarker).Cast <IActionTextLineMarker> ());
+				newMarkers.AddRange (line.Markers.OfType<IActionTextLineMarker> ());
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
@@ -2479,7 +2481,7 @@ namespace Mono.TextEditor
 				calcTextLayout.FontDescription = textEditor.Options.Font;
 				calcTextLayout.Tabs = this.tabArray;
 
-				calcFoldingLayout.FontDescription = markerLayout.FontDescription;
+				calcFoldingLayout.FontDescription = markerLayoutFont;
 				calcFoldingLayout.Tabs = this.tabArray;
 				foreach (var folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column - 1;

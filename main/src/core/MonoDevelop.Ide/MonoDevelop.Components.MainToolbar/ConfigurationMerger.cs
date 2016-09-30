@@ -78,7 +78,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (!targets.Any ()) {
 						targets = new ExecutionTarget[] { dummyExecutionTarget };
 					}
-					var parts = partitions.Where (p => targets.Any (t => p.Targets.Contains (t))).ToArray();
+					var parts = partitions.Where (p => targets.Any (p.Targets.Contains)).ToArray();
 					if (parts.Length == 0) {
 						// Create a new partition for this configuration
 						var p = new TargetPartition ();

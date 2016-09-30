@@ -1564,6 +1564,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.RunWhenLoaded (action);
 		}
+
+		public void RunWhenRealized (System.Action action)
+		{
+			Document.RunWhenRealized (action);
+		}
 		#endregion
 		
 		public int CursorPosition { 
@@ -2615,8 +2620,13 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GetTextEditorData ().FixVirtualIndentation ();
 		}
 
+		bool viewContentCreated;
 		object ITextEditorImpl.CreateNativeControl ()
 		{
+			if (!viewContentCreated) {
+				viewContentCreated = true;
+				Document.InformRealizedComplete ();
+			}
 			return widget != null ? widget.Vbox : null;
 		}
 

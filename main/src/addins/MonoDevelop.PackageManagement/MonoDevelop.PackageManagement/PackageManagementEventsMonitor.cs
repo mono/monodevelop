@@ -151,7 +151,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			GuiSyncDispatch (() => {
 				FilePath[] files = fileChangedEvents
-					.SelectMany (fileChangedEvent => fileChangedEvent.ToArray ())
+					.SelectMany (Enumerable.ToArray)
 					.Select (fileInfo => fileInfo.FileName)
 					.ToArray ();
 
