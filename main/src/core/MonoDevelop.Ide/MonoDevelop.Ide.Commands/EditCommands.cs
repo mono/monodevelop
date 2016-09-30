@@ -178,14 +178,15 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CopyClipboard (clipboard);
 					return;
 				}
-#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
-				if (mactv != null) {
-					mactv.Copy (mactv);
-					return;
-				}
-#endif
 			}
+
+			#if MAC
+			var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+			if (mactv != null) {
+				mactv.Copy (mactv);
+				return;
+			}
+			#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -229,14 +230,15 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CutClipboard (clipboard, true);
 					return;
 				}
-#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
-				if (mactv != null) {
-					mactv.Cut (mactv);
-					return;
-				}
-#endif
 			}
+
+			#if MAC
+			var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+			if (mactv != null) {
+				mactv.Cut (mactv);
+				return;
+			}
+			#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -287,14 +289,15 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.PasteClipboard (clipboard);
 					return;
 				}
-#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
-				if (mactv != null) {
-					mactv.Paste (mactv);
-					return;
-				}
-#endif
 			}
+
+			#if MAC
+			var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+			if (mactv != null) {
+				mactv.Paste (mactv);
+				return;
+			}
+			#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -363,14 +366,15 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.SelectRange (tv.Buffer.StartIter, tv.Buffer.EndIter);
 					return;
 				}
-#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
-				if (mactv != null) {
-					mactv.SelectAll (mactv);
-					return;
-				}
-#endif
 			}
+
+			#if MAC
+			var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+			if (mactv != null) {
+				mactv.SelectAll (mactv);
+				return;
+			}
+			#endif
 		}
 
 		protected override void Update (CommandInfo info)
