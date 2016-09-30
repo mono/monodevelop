@@ -41,16 +41,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var stackStack = new Stack<Stack<StackMatchExpression>> ();
 			var exprStack = new Stack<StackMatchExpression> ();
+			char lastChar = '\0';
 
 			foreach (var ch in expression) {
 				switch (ch) {
 				case ' ':
 					if (sb.Length > 0)
 						exprStack.Push (CreateMatchExpression (sb));
+					lastChar = ch;
 					continue;
 				case '(':
 					stackStack.Push (exprStack);
 					exprStack = new Stack<StackMatchExpression> ();
+					lastChar = ch;
 					continue;
 				case ')':
 					if (sb.Length > 0)
@@ -59,6 +62,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var newStack = stackStack.Pop ();
 					newStack.Push (exprStack.Peek ());
 					exprStack = newStack;
+					lastChar = ch;
 					continue;
 				case ',':
 				case '|':
@@ -66,20 +70,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						exprStack.Push (CreateMatchExpression (sb));
 					ShrinkStack (exprStack);
 					exprStack.Push (new OrExpression (exprStack.Pop ())); ;
+					lastChar = ch;
 					continue;
 				case '-':
+					if (lastChar != ' ')
+						break;
 					if (sb.Length > 0)
 						exprStack.Push (CreateMatchExpression (sb));
 					ShrinkStack (exprStack);
 					exprStack.Push (new MinusExpression (exprStack.Pop ())); ;
+					lastChar = ch;
 					continue;
 				}
 				sb.Append (ch);
+				lastChar = ch;
 			}
 			if (sb.Length > 0)
 				exprStack.Push (CreateMatchExpression (sb));
 			ShrinkStack (exprStack);
-			Console.WriteLine (exprStack.Peek ());
 			return exprStack.Peek ();
 		}
 

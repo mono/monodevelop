@@ -51,6 +51,13 @@ namespace MonoDevelop.Ide.Editor
 			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar")).Item1);
 		}
 
+		[Test]
+		public void TestDashChar ()
+		{
+			var expr = StackMatchExpression.Parse ("entity.other.attribute-name");
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("entity.other.attribute-name")).Item1);
+		}
+
 
 		[Test]
 		public void TestSubstringMatch ()
@@ -69,7 +76,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		public void TestMinus ()
+		public void TestSubtraction ()
 		{
 			var expr = StackMatchExpression.Parse ("foo - foo.bar");
 			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo")).Item1);

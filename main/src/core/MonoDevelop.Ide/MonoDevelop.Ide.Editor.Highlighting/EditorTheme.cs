@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (var setting in settings) {
 				string compatibleScope = null;
 				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scopeStack, ref compatibleScope))) {
-					if (found != null && found.Length > compatibleScope.Length)
+					if (found != null && found.Length >= compatibleScope.Length)
 						continue;
 					HslColor tryC;
 					if (setting.TryGetColor (key, out tryC)) {
@@ -225,8 +225,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			while (!scope.IsEmpty) {
 				var result = expr.MatchesStack (scope);
-				if (result.Item1) 
+				if (result.Item1) {
+					matchingKey = scope.Peek ();
 					return true;
+				}
 				scope = scope.Pop ();
 			}
 			return false;
