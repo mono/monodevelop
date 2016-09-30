@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			return 1;
+			return -1;
 		}
 
 		public override void OnNodeAdded (object dataObject)

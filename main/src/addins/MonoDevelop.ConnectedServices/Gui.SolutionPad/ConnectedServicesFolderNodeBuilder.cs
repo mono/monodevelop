@@ -63,8 +63,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			// we want to go after the project references node
-			return (otherNode.DataItem is MonoDevelop.Projects.ProjectReferenceCollection) ? 1 : -1;
+			return (otherNode.DataItem is Ide.Gui.Pads.ProjectPad.GettingStartedNode) ? 1 : -1;
 		}
 
 		public override void OnNodeAdded (object dataObject)

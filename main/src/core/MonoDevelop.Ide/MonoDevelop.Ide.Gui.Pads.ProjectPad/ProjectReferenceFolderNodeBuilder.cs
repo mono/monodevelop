@@ -94,6 +94,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
+			if (otherNode.DataItem is GettingStartedNode)
+				return 1;
 			return -1;
 		}
 
