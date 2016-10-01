@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (parsedDocument == null || !Editor.Options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (parsedDocument.HasErrors)
+			if (await parsedDocument.HasErrorsAsync (token))
 				return;
 
 			try {
