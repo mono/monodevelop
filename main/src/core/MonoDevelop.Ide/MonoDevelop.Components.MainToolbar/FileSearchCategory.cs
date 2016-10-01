@@ -109,7 +109,7 @@ namespace MonoDevelop.Components.MainToolbar
 				//we don't want to use all CPU doing same thing, instead 1st one will create cache, others will wait here
 				//and then all will use cached version...
 				try {
-					await allFilesLock.WaitAsync ();
+					await allFilesLock.WaitAsync (token);
 					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
 					if (token.IsCancellationRequested)
 						return;

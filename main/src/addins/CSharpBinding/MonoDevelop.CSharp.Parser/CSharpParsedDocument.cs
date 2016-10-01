@@ -286,7 +286,7 @@ namespace MonoDevelop.CSharp.Parser
 			if (foldings == null) {
 				return Task.Run (async delegate {
 					try {
-						await foldingsSemaphore.WaitAsync ();
+						await foldingsSemaphore.WaitAsync (cancellationToken);
 						if (foldings == null)
 							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
 					} finally {
@@ -301,7 +301,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		async Task<IEnumerable<FoldingRegion>> GenerateFoldings (CancellationToken cancellationToken)
 		{
-			return GenerateFoldingsInternal (await GetCommentsAsync (), cancellationToken);
+			return GenerateFoldingsInternal (await GetCommentsAsync (cancellationToken), cancellationToken);
 		}
 
 		IEnumerable<FoldingRegion> GenerateFoldingsInternal (IReadOnlyList<Comment> comments, CancellationToken cancellationToken)
