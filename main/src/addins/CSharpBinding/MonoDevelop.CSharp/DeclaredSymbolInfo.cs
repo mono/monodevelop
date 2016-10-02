@@ -196,7 +196,10 @@ namespace MonoDevelop.CSharp
 			while (parent is TypeDeclarationSyntax)
 			{
 				var currentParent = (TypeDeclarationSyntax)parent;
-				names.Add(currentParent.Identifier.ValueText + (immediate ? ExpandTypeParameterList(currentParent.TypeParameterList) : ""));
+				if (immediate)
+					names.Add (ExpandTypeParameterList (currentParent.Identifier.ValueText, currentParent.TypeParameterList));
+				else
+					names.Add (currentParent.Identifier.ValueText);
 				parent = currentParent.Parent;
 			}
 
@@ -261,14 +264,16 @@ namespace MonoDevelop.CSharp
 				return null;
 			}
 
-			return name + (includeTypeParameters ? ExpandTypeParameterList(typeParameterList) : "");
+			if (includeTypeParameters)
+				return ExpandTypeParameterList (name, typeParameterList);
+			return name;
 		}
 
-		private static string ExpandTypeParameterList(TypeParameterListSyntax typeParameterList)
+		private static string ExpandTypeParameterList(string prefix, TypeParameterListSyntax typeParameterList)
 		{
 			if (typeParameterList != null && typeParameterList.Parameters.Count > 0)
 			{
-				var builder = new StringBuilder();
+				var builder = new StringBuilder(prefix);
 				builder.Append('<');
 				builder.Append(typeParameterList.Parameters[0].Identifier.ValueText);
 				for (int i = 1; i < typeParameterList.Parameters.Count; i++)
@@ -282,7 +287,7 @@ namespace MonoDevelop.CSharp
 			}
 			else
 			{
-				return null;
+				return prefix;
 			}
 		}
 
