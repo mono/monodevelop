@@ -225,7 +225,7 @@ namespace MonoDevelop.Projects
 				if (combinedProps.TryGetValue (key, out thisList)) {
 					var list = thisList.ToBuilder ();
 					foreach (var c in otherList) {
-						if (!list.Contains (c, ValueSetEqualityComparer.Instance))
+						if (list.IndexOf (c, 0, list.Count, ValueSetEqualityComparer.Instance) < 0)
 							// Create a new ValueSet so that the reference keys of this collection are reused
 							list.Add (new ValueSet (list [0].ReferenceKeys, c.ReferenceKeys, c.Values));
 					}
