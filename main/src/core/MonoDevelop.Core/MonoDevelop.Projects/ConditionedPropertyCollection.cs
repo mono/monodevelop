@@ -27,18 +27,19 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	public class ConditionedPropertyCollection
 	{
 		Dictionary<string, ImmutableList<string>> props = new Dictionary<string, ImmutableList<string>> ();
-		Dictionary<KeySet, ImmutableList<ValueSet>> combinedProps = new Dictionary<KeySet, ImmutableList<ValueSet>> (KeySetEqualityComparer.Instance);
+		Dictionary<KeySet, ImmutableList<ValueSet>> combinedProps = new Dictionary<KeySet, ImmutableList<ValueSet>> (StructEqualityComparer<KeySet>.Instance);
 
 		/// <summary>
 		/// A set of strings, which can be compared to other sets ignoring the order.
 		/// </summary>
-		struct KeySet
+		struct KeySet : IEquatable<KeySet>
 		{
 			readonly IList<string> keys;
 
@@ -77,24 +78,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		class KeySetEqualityComparer : IEqualityComparer<KeySet>
-		{
-			public static readonly KeySetEqualityComparer Instance = new KeySetEqualityComparer ();
-
-			public bool Equals (KeySet x, KeySet y)
-			{
-				return x.Equals(y);
-			}
-
-			public int GetHashCode (KeySet obj)
-			{
-				return obj.GetHashCode ();
-			}
-		}
 		/// <summary>
 		/// A set of key/value pairs
 		/// </summary>
-		public struct ValueSet
+		public struct ValueSet : IEquatable<ValueSet>
 		{
 			internal IList<string> ReferenceKeys;
 			readonly internal IList<string> Values;
@@ -186,21 +173,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		class ValueSetEqualityComparer : IEqualityComparer<ValueSet>
-		{
-			public static readonly ValueSetEqualityComparer Instance = new ValueSetEqualityComparer ();
-
-			public bool Equals (ValueSet x, ValueSet y)
-			{
-				return x.Equals (y);
-			}
-
-			public int GetHashCode (ValueSet obj)
-			{
-				return obj.GetHashCode ();
-			}
-		}
-
 		internal void Append (ConditionedPropertyCollection other)
 		{
 			foreach (var e in other.props) {
@@ -225,7 +197,7 @@ namespace MonoDevelop.Projects
 				if (combinedProps.TryGetValue (key, out thisList)) {
 					var list = thisList.ToBuilder ();
 					foreach (var c in otherList) {
-						if (list.IndexOf (c, 0, list.Count, ValueSetEqualityComparer.Instance) < 0)
+						if (list.IndexOf (c, 0, list.Count, StructEqualityComparer<ValueSet>.Instance) < 0)
 							// Create a new ValueSet so that the reference keys of this collection are reused
 							list.Add (new ValueSet (list [0].ReferenceKeys, c.ReferenceKeys, c.Values));
 					}
@@ -252,7 +224,7 @@ namespace MonoDevelop.Projects
 				valueSet = new ValueSet (list [0].ReferenceKeys, names, values);
 			}
 
-			if (list.IndexOf (valueSet, ValueSetEqualityComparer.Instance) < 0)
+			if (list.IndexOf (valueSet, StructEqualityComparer<ValueSet>.Instance) < 0)
 				combinedProps[key] = list.Add (valueSet);
 
 			// Now register each value individually
