@@ -115,7 +115,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.PackStart (statusWidget);
 
 			var vbox = new VBox ();
-			vbox.Spacing = 10;
+			vbox.Spacing = 6;
 			vbox.PackStart (header);
 
 			description = new MarkupView {
@@ -129,11 +129,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			platforms.TextColor = Styles.SecondaryTextColor;
 
 			platformWidget = new HBox ();
-			platformWidget.PackStart (new Label { Text = GettextCatalog.GetString ("Platforms:"), TextColor = Styles.SecondaryTextColor }, false, (WidgetPlacement)4, (WidgetPlacement)4, -1, -1, 20, -1, -1);
+			platformWidget.PackStart (new Label { Text = GettextCatalog.GetString ("Platforms:"), TextColor = Styles.SecondaryTextColor }, marginRight: 20);
 			platformWidget.PackStart (platforms);
 
 			vbox.PackStart (description, false, hpos: WidgetPlacement.Start);
-			vbox.PackStart (platformWidget, false, marginTop: 10);
+			vbox.PackStart (platformWidget, false);
 
 			var container = new HBox { Spacing = 0 };
 			container.Margin = 30;
