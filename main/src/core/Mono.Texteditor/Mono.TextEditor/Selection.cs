@@ -3,7 +3,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public struct Selection
+	public struct Selection : IEquatable<Selection>
 	{
 		public static readonly Selection Empty = new Selection (true);
 
@@ -146,11 +146,13 @@ namespace Mono.TextEditor
 		
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			if (!(obj is Selection))
 				return false;
-			if (obj.GetType () != typeof(Selection))
-				return false;
-			Mono.TextEditor.Selection other = (Mono.TextEditor.Selection)obj;
+			return Equals ((Selection)obj);
+		}
+
+		public bool Equals (Selection other)
+		{
 			return Anchor == other.Anchor && Lead == other.Lead && SelectionMode == other.SelectionMode;
 		}
 		
