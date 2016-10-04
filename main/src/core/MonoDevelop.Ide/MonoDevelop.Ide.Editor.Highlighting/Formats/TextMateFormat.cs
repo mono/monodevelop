@@ -329,11 +329,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						var newMatch = ReadMatch (contents);
 						if (newMatch != null) {
 							includes.Add (newMatch);
-						}
-
-						patternsArray = contents ["patterns"] as PArray;
-						if (patternsArray != null) {
-							ReadPatterns (patternsArray, includes);
+						} else {
+							patternsArray = contents ["patterns"] as PArray;
+							if (patternsArray != null) {
+								ReadPatterns (patternsArray, includes);
+							}
 						}
 					}
 
