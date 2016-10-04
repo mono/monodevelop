@@ -65,7 +65,7 @@ namespace MonoDevelop.Packaging.Gui
 			pclProfiles = targetFrameworks.Select (fx => CreatePortableProfileViewModel (fx, selectedTargetFrameworks)).ToList ();
 
 			foreach (PortableProfileViewModel profile in pclProfiles) {
-				pclProfilesStore.AppendValues (profile.IsEnabled, profile.GetDisplayName (), profile);
+				pclProfilesStore.AppendValues (profile.IsEnabled, profile.ProfileName, profile.GetProfileDescription (), profile);
 			}
 		}
 
@@ -119,7 +119,7 @@ namespace MonoDevelop.Packaging.Gui
 		{
 			TreeIter iter;
 			pclProfilesStore.GetIterFromString (out iter, args.Path);
-			var viewModel = pclProfilesStore.GetValue (iter, 2) as PortableProfileViewModel;
+			var viewModel = pclProfilesStore.GetValue (iter, 3) as PortableProfileViewModel;
 			viewModel.IsEnabled = !viewModel.IsEnabled;
 			pclProfilesStore.SetValue (iter, IsEnabledCheckBoxColumn, viewModel.IsEnabled);
 		}
@@ -135,11 +135,13 @@ namespace MonoDevelop.Packaging.Gui
 			public bool IsEnabled { get; set; }
 			public TargetFramework Framework { get; set; }
 
-			public string GetDisplayName ()
+			public string ProfileName {
+				get { return Framework.Id.Profile; }
+			}
+
+			public string GetProfileDescription ()
 			{
-				return String.Format ("{0} {1}",
-					Framework.Id.Profile,
-					GetSupportedFrameworksDisplayName ());
+				return GetSupportedFrameworksDisplayName ();
 			}
 
 			string GetSupportedFrameworksDisplayName ()
@@ -147,7 +149,7 @@ namespace MonoDevelop.Packaging.Gui
 				int openingBracket = Framework.Name.IndexOf ('(');
 				int closingBracket = Framework.Name.LastIndexOf (')');
 				if (openingBracket != -1 && closingBracket != -1 && openingBracket < closingBracket) {
-					return Framework.Name.Substring (openingBracket, closingBracket - openingBracket + 1);
+					return Framework.Name.Substring (openingBracket + 1, closingBracket - openingBracket - 1);
 				}
 
 				return Framework.Name;

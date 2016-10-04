@@ -44,23 +44,19 @@ namespace MonoDevelop.Packaging.Gui
 			var vbox = new VBox ();
 			vbox.Spacing = 6;
 
-			var pclSectionLabel = new Gtk.Label ();
-			pclSectionLabel.Markup = GetBoldMarkup (GettextCatalog.GetString ("Portable Class Library Profiles"));
-			pclSectionLabel.UseMarkup = true;
-			pclSectionLabel.Xalign = 0;
-			vbox.PackStart (pclSectionLabel, false, false, 0);
-
 			var scrolledWindow = new ScrolledWindow ();
-			scrolledWindow.BorderWidth = 1;
+			scrolledWindow.ShadowType = ShadowType.In;
 			pclProfilesTreeView = new TreeView ();
 			pclProfilesTreeView.CanFocus = true;
 			pclProfilesTreeView.Name = "pclProfilesTreeView";
-			pclProfilesTreeView.HeadersVisible = false;
+			pclProfilesTreeView.HeadersVisible = true;
 			scrolledWindow.Add (pclProfilesTreeView);
 			pclProfilesTreeView.SearchColumn = -1; // disable the interactive search
-			pclProfilesTreeView.AppendColumn (CreateTreeViewColumn ());
+			pclProfilesTreeView.AppendColumn (CreateCheckBoxTreeViewColumn ());
+			pclProfilesTreeView.AppendColumn (CreateProfileTreeViewColumn ());
+			pclProfilesTreeView.AppendColumn (CreateProfileDescriptionTreeViewColumn ());
 
-			pclProfilesStore = new ListStore (typeof (bool), typeof (string), typeof (object));
+			pclProfilesStore = new ListStore (typeof (bool), typeof (string), typeof (string), typeof (object));
 			pclProfilesTreeView.Model = pclProfilesStore;
 
 			vbox.PackStart (scrolledWindow);
@@ -75,7 +71,7 @@ namespace MonoDevelop.Packaging.Gui
 			return "<b>" + text + "</b>";
 		}
 
-		TreeViewColumn CreateTreeViewColumn ()
+		TreeViewColumn CreateCheckBoxTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
 
@@ -84,9 +80,29 @@ namespace MonoDevelop.Packaging.Gui
 			column.PackStart (checkBoxRenderer, false);
 			column.AddAttribute (checkBoxRenderer, "active", IsEnabledCheckBoxColumn);
 
+			return column;
+		}
+
+		TreeViewColumn CreateProfileTreeViewColumn ()
+		{
+			var column = new TreeViewColumn ();
+			column.Title = GettextCatalog.GetString ("Profile");
+
 			var textRenderer = new CellRendererText ();
 			column.PackStart (textRenderer, true);
 			column.AddAttribute (textRenderer, "text", column: 1);
+
+			return column;
+		}
+
+		TreeViewColumn CreateProfileDescriptionTreeViewColumn ()
+		{
+			var column = new TreeViewColumn ();
+			column.Title = GettextCatalog.GetString ("Description");
+
+			var textRenderer = new CellRendererText ();
+			column.PackStart (textRenderer, true);
+			column.AddAttribute (textRenderer, "text", column: 2);
 
 			return column;
 		}
