@@ -552,13 +552,13 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			if (Line == 0)
 				Line = currentLine;
-			line = line.Trim ();
 			int k = line.IndexOf ('=');
 			if (k != -1) {
 				var name = line.Substring (0, k).Trim ();
 				var val = line.Substring (k + 1).Trim ();
 				values [name] = val;
 			} else {
+				line = line.Trim ();
 				values.Add (line, null);
 			}
 		}

@@ -308,6 +308,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceDiagnosticsAddIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIThreadMonitorDaemon", "src\addins\PerformanceDiagnostics\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj", "{3FDB97B5-916E-4817-8098-41659687A8FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2064,6 +2066,18 @@ Global
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{74704C00-5861-4F86-920C-865148A175C5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2201,6 +2215,7 @@ Global
 		{19C4CC37-7050-4944-B11F-60F52121B24C} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{DD14AD77-6FBB-4F0D-8083-CEC28A9D0BBD} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{3FDB97B5-916E-4817-8098-41659687A8FF} = {19C4CC37-7050-4944-B11F-60F52121B24C}
+		{74704C00-5861-4F86-920C-865148A175C5} = {8F47F5EC-2F57-4030-B658-7B1002DA90C2}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

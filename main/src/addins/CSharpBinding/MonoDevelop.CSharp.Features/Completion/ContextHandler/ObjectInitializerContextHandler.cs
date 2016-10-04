@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var alreadyTypedMembers = GetInitializedMembers (semanticModel.SyntaxTree, position, cancellationToken);
 			var uninitializedMembers = members.Where (m => !alreadyTypedMembers.Contains (m.Name));
 
-			uninitializedMembers = uninitializedMembers.Where (m => m.IsEditorBrowsable ());
+			uninitializedMembers = uninitializedMembers.Where (SymbolExtensions.IsEditorBrowsable);
 
 			// var text = await semanticModel.SyntaxTree.GetTextAsync(cancellationToken).ConfigureAwait(false);
 			// var changes = GetTextChangeSpan(text, position);

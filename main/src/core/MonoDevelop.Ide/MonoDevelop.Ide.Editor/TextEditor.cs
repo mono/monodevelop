@@ -518,6 +518,13 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.RunWhenLoaded (action);
 		}
 
+		public void RunWhenRealized (Action action)
+		{
+			if (action == null)
+				throw new ArgumentNullException (nameof (action));
+			textEditorImpl.RunWhenRealized (action);
+		}
+
 		public string FormatString (DocumentLocation insertPosition, string code)
 		{
 			return textEditorImpl.FormatString (LocationToOffset (insertPosition), code);

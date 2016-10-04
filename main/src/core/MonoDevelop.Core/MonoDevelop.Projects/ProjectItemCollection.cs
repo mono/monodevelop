@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 			subCollections.Add (subCollection);
 			subCollection.parentCollection = this;
 			IItemListHandler list = subCollection;
-			list.InternalAdd (this.Where (ob => list.CanHandle (ob)), true);
+			list.InternalAdd (this.Where (list.CanHandle), true);
 		}
 		
 		public void Unbind<U> (ProjectItemCollection<U> subCollection) where U:T
@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects
 			if (comesFromParent) {
 				if (subCollections != null) {
 					foreach (IItemListHandler col in subCollections)
-						col.InternalAdd (items.Where (i => col.CanHandle (i)), true);
+						col.InternalAdd (items.Where (col.CanHandle), true);
 				}
 			} else {
 				if (parentCollection != null)
@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects
 			if (comesFromParent) {
 				if (subCollections != null) {
 					foreach (IItemListHandler col in subCollections)
-						col.InternalRemove (items.Where (i => col.CanHandle (i)), true);
+						col.InternalRemove (items.Where (col.CanHandle), true);
 				}
 			} else {
 				if (parentCollection != null)

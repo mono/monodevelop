@@ -206,7 +206,7 @@ namespace MonoDevelop.PackageManagement
 		static IEnumerable<PackageManagementPackageReference> GetPackagesBeingInstalled (DotNetProject project)
 		{
 			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project)
-				.Select (installAction => CreatePackageReference (installAction));
+				.Select (CreatePackageReference);
 		}
 
 		static PackageManagementPackageReference CreatePackageReference (PackageIdentity package)

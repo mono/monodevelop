@@ -63,7 +63,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (projectTemplateRepositories == null) {
 				projectTemplateRepositories = GetProjectTemplatePackageSources ()
-					.Select (packageSource => provider.CreateRepository (packageSource))
+					.Select (provider.CreateRepository)
 					.ToList ();
 			}
 

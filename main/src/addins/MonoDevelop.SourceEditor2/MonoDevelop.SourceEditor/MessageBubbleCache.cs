@@ -37,8 +37,8 @@ namespace MonoDevelop.SourceEditor
 {
 	class MessageBubbleCache : IDisposable
 	{
-		internal Xwt.Drawing.Image errorPixbuf;
-		internal Xwt.Drawing.Image warningPixbuf;
+		internal static Xwt.Drawing.Image errorPixbuf = Xwt.Drawing.Image.FromResource ("gutter-error-15.png");
+		internal static Xwt.Drawing.Image warningPixbuf = Xwt.Drawing.Image.FromResource ("gutter-warning-15.png");
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
@@ -54,8 +54,6 @@ namespace MonoDevelop.SourceEditor
 		public MessageBubbleCache (MonoTextEditor editor)
 		{
 			this.editor = editor;
-			errorPixbuf = Xwt.Drawing.Image.FromResource ("gutter-error-15.png");
-			warningPixbuf = Xwt.Drawing.Image.FromResource ("gutter-warning-15.png");
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
 			editor.TextArea.LeaveNotifyEvent += HandleLeaveNotifyEvent;
@@ -129,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 						int h;
 						drawingLayout.GetPixelSize (out w, out h);
 						if (marker.Layouts.Count > 1) 
-							w += (int)cache.warningPixbuf.Width + iconTextSpacing;
+							w += (int)warningPixbuf.Width + iconTextSpacing;
 
 						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
 						y += h + verticalTextSpace - 3;
@@ -158,7 +156,7 @@ namespace MonoDevelop.SourceEditor
 					var showBulletedList = marker.Errors.Count > 1;
 
 					foreach (var msg in marker.Errors) {
-						var icon = msg.IsError ? cache.errorPixbuf : cache.warningPixbuf;
+						var icon = msg.IsError ? errorPixbuf : warningPixbuf;
 						int w, h;
 
 						if (!showBulletedList)

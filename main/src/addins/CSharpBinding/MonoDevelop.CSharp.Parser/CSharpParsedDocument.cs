@@ -279,15 +279,18 @@ namespace MonoDevelop.CSharp.Parser
 		}
 
 		IReadOnlyList<FoldingRegion> foldings;
-		object foldingLock = new object ();
+		SemaphoreSlim foldingsSemaphore = new SemaphoreSlim (1, 1);
 
 		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (foldings == null) {
-				return Task.Run (delegate {
-					lock (foldingLock) {
+				return Task.Run (async delegate {
+					try {
+						await foldingsSemaphore.WaitAsync (cancellationToken);
 						if (foldings == null)
-							foldings = GenerateFoldings (cancellationToken).ToList ();
+							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
+					} finally {
+						foldingsSemaphore.Release ();
 					}
 					return foldings;
 				});
@@ -296,9 +299,14 @@ namespace MonoDevelop.CSharp.Parser
 			return Task.FromResult (foldings);
 		}
 
-		IEnumerable<FoldingRegion> GenerateFoldings (CancellationToken cancellationToken)
+		async Task<IEnumerable<FoldingRegion>> GenerateFoldings (CancellationToken cancellationToken)
 		{
-			foreach (var fold in GetCommentsAsync().Result.ToFolds ())
+			return GenerateFoldingsInternal (await GetCommentsAsync (cancellationToken), cancellationToken);
+		}
+
+		IEnumerable<FoldingRegion> GenerateFoldingsInternal (IReadOnlyList<Comment> comments, CancellationToken cancellationToken)
+		{
+			foreach (var fold in comments.ToFolds ())
 				yield return fold;
 
 			var visitor = new FoldingVisitor (cancellationToken);

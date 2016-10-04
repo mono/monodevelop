@@ -164,6 +164,9 @@
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.4.0.0\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">

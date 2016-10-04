@@ -68,7 +68,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			highlighters = typeof (HighlightUsagesExtension).Assembly
 				.GetTypes ()
 				.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
-				.Select (t => (IHighlighter)Activator.CreateInstance (t)).ToArray ();
+				.Select (Activator.CreateInstance)
+				.Cast<IHighlighter> ()
+				.ToArray ();
 		}
 		protected override void Initialize ()
 		{

@@ -192,27 +192,21 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public IReadOnlyList<DeclaredSymbolInfo> GetAllTypes(string tag, CancellationToken token)
+			public IEnumerable<DeclaredSymbolInfo> GetAllTypes(string tag, CancellationToken token)
 			{
-				int count = 0;
 				var kinds = TagToKinds (tag).ToArray ();
+
 				foreach (var infosByKind in documentInfos.Values) {
 					if (token.IsCancellationRequested)
-						return new DeclaredSymbolInfo [0];
+						yield break;
 
 					foreach (var kind in kinds)
-						count += infosByKind[kind].Count;
+						foreach (var info in infosByKind [kind]) {
+							if (token.IsCancellationRequested)
+								yield break;
+							yield return info;
+						}
 				}
-
-				var result = new List<DeclaredSymbolInfo>(count);
-				foreach (var infosByKind in documentInfos.Values) {
-					if (token.IsCancellationRequested)
-						return new DeclaredSymbolInfo [0];
-
-					foreach (var kind in kinds)
-						result.AddRange (infosByKind [kind]);
-				}
-				return result;
 			}
 
 			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
@@ -406,12 +400,10 @@ namespace MonoDevelop.CSharp
 					if (token.IsCancellationRequested)
 						return;
 					
-					IReadOnlyList<DeclaredSymbolInfo> allTypes = null;
-					if (!IsSameFilterStart (oldLastResult, newResult))
-						allTypes = cache.GetAllTypes (searchPattern.Tag, token);
+					var allTypes = cache.GetAllTypes (searchPattern.Tag, token);
 					
 //					var now = DateTime.Now;
-					AllResults (searchResultCallback, newResult, allTypes ?? lastResult.filteredSymbols, token);
+					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
 					//newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 					//					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
@@ -427,10 +419,12 @@ namespace MonoDevelop.CSharp
 			return oldLastResult.pattern != null && newResult.pattern.StartsWith (oldLastResult.pattern, StringComparison.Ordinal) && oldLastResult.filteredSymbols != null;
 		}
 
-		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> allTypes, CancellationToken token)
+		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IEnumerable<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
+			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
+			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 			foreach (var type in allTypes) {
 				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;

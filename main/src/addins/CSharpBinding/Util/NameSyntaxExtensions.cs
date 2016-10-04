@@ -88,27 +88,28 @@ namespace ICSharpCode.NRefactory6.CSharp
 			_name = name;
 		}
 
-		public IEnumerator<NameSyntax> GetEnumerator()
+		public LinkedList<NameSyntax>.Enumerator GetEnumerator ()
 		{
-			var nodes = new LinkedList<NameSyntax>();
+			var nodes = new LinkedList<NameSyntax> ();
 
 			var currentNode = _name;
-			while (true)
-			{
-				if (currentNode.Kind() == SyntaxKind.QualifiedName)
-				{
+			while (true) {
+				if (currentNode.Kind () == SyntaxKind.QualifiedName) {
 					var qualifiedName = currentNode as QualifiedNameSyntax;
-					nodes.AddFirst(qualifiedName.Right);
+					nodes.AddFirst (qualifiedName.Right);
 					currentNode = qualifiedName.Left;
-				}
-				else
-				{
-					nodes.AddFirst(currentNode);
+				} else {
+					nodes.AddFirst (currentNode);
 					break;
 				}
 			}
 
-			return nodes.GetEnumerator();
+			return nodes.GetEnumerator ();
+		}
+
+		IEnumerator<NameSyntax> IEnumerable<NameSyntax>.GetEnumerator()
+		{
+			return GetEnumerator ();
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

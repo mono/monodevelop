@@ -566,7 +566,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 
 			AddInfo (GettextCatalog.GetString ("The following frameworks have been implicitly selected:"));
-			AddInfo ("   " + string.Join (", ", common.Select (c => GetDisplayName (c))));
+			AddInfo ("   " + string.Join (", ", common.Select (GetDisplayName)));
 
 			// Implicitly select them.
 			var implicitlySelected = new List<SupportedFramework> ();

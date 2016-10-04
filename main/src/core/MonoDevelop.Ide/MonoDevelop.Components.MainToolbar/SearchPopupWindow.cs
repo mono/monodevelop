@@ -879,7 +879,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var adjustedMarginSize = alloc.X - Allocation.X  + headerMarginSize;
 
 			var r = results.Where (res => res.Item2.Count > 0).ToArray ();
-			if (r.Any ()) {
+			var length = r.Length;
+
+			if (length > 0) {
 				context.SetSourceColor (lightSearchBackground);
 				context.Rectangle (Allocation.X, Allocation.Y, adjustedMarginSize, Allocation.Height);
 				context.Fill ();
@@ -938,7 +940,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			}
 
-			foreach (var result in r) {
+			for (int n = 0; n < length; ++n) {
+				var result = r [n];
 				var category = result.Item1;
 				var dataSrc = result.Item2;
 				if (dataSrc.Count == 0)
@@ -988,7 +991,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					y += h + itemSeparatorHeight + itemPadding * 2;
 				}
-				if (result != r.Last ()) {
+				if (n != length - 1) {
 					y += categorySeparatorHeight;
 				}
 			}

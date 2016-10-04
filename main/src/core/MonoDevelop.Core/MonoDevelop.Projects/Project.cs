@@ -572,7 +572,7 @@ namespace MonoDevelop.Projects
 					if (evalResult != null && !evalResult.BuildResult.HasErrors && evalResult.Items != null) {
 						result = evalResult
 							.Items
-							.Select (i => CreateProjectFile (i))
+							.Select (CreateProjectFile)
 							.ToArray ();
 					}
 				} catch (Exception ex) {

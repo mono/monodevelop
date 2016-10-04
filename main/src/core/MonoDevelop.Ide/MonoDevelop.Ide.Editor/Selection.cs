@@ -28,7 +28,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class Selection
+	public struct Selection : IEquatable<Selection>
 	{
 		public static readonly Selection Empty = new Selection (true);
 
@@ -137,11 +137,13 @@ namespace MonoDevelop.Ide.Editor
 
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			if (!(obj is Selection))
 				return false;
-			if (obj.GetType () != typeof (Selection))
-				return false;
-			var other = (Selection)obj;
+			return Equals ((Selection)obj);
+		}
+
+		public bool Equals (Selection other)
+		{
 			return Anchor == other.Anchor && Lead == other.Lead && SelectionMode == other.SelectionMode;
 		}
 
