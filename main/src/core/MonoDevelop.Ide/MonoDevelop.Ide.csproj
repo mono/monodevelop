@@ -8939,6 +8939,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialogPageBase.cs" />
     <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
+    <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
