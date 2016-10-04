@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
+		public static Color BorderColor { get; internal set; }
 		public static Color SecondaryTextColor { get; internal set; }
 		public static Color SecondarySelectionTextColor { get; internal set; }
 
@@ -437,6 +438,7 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadLightStyle ()
 		{
 			BaseIconColor = Color.FromName ("#575757");
+			BorderColor = Color.FromName ("#eeeeee");
 			ThinSplitterColor = Color.FromName ("#dadada");
 			SeparatorColor = Color.FromName ("#f2f2f4");
 			PrimaryBackgroundColor = BaseBackgroundColor;
@@ -553,7 +555,8 @@ namespace MonoDevelop.Ide.Gui
 		internal static void LoadDarkStyle ()
 		{
 			BaseIconColor = Color.FromName ("#bfbfbf");
-			ThinSplitterColor = Color.FromName ("#2e2e2e");
+			BorderColor = Color.FromName ("#2e2e2e");
+			ThinSplitterColor = BorderColor;
 			SeparatorColor = Color.FromName ("#4b4b4b");
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#484848");

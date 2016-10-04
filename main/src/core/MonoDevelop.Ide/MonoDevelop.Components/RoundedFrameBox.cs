@@ -37,7 +37,7 @@ namespace MonoDevelop.Components
 		WidgetSpacing padding;
 		BorderCornerRadius cornerRadius;
 		FrameCanvas canvas;
-		Color borderColor = Styles.ThinSplitterColor;
+		Color borderColor = Styles.BorderColor;
 		Color innerColor = Colors.Transparent;
 
 		class FrameCanvas: Canvas
