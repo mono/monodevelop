@@ -84,8 +84,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Padding = 30;
 
 			image = new ImageView ();
+			image.MarginBottom = 2;
 			title = new Label ();
-			title.Font = title.Font.WithSize (16);
+			title.Font = Xwt.Drawing.Font.SystemFont.WithSize (16);
 
 			statusWidget = new HBox ();
 			statusWidget.Spacing = 3;
