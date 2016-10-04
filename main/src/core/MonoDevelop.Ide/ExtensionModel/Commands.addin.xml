@@ -1138,7 +1138,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowTextMateScopesHandler"
 			defaultHandler = "MonoDevelop.Ide.Editor.TextMate.ShowTextMateScopesHandler"
 			_label = "Show Scopes"
-			macShortcut = "Meta|Alt|Shift|p/"
+			macShortcut = "Meta|Alt|Shift|p"
 			shortcut = "Ctrl|Alt|Shift|p"/>
 	</Category>
 </Extension>
