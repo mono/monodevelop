@@ -25,23 +25,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			var container = new VBox ();
 
 			details = new ServiceWidget (true);
-			details.BorderWidth = 0;
+			details.BorderWidth = 1;
+			details.CornerRadius = new Components.RoundedFrameBox.BorderCornerRadius (6, 6, 0, 0);
 			sections = new VBox ();
 
 			container.Spacing = sections.Spacing = 0;
 			container.PackStart (details);
 			container.PackStart (sections);
 
-			var frame = new FrameBox (container);
-			frame.BackgroundColor = Styles.BaseBackgroundColor;
-			frame.BorderColor = Styles.ThinSplitterColor;
-			frame.BorderWidth = 1;
-
-			// pack the frame into an additional VBox, to prevent it
-			// from filling the parent widget.
-			var contentBox = new VBox ();
-			contentBox.PackStart (frame);
-			Content = contentBox;
+			Content = container;
 		}
 
 		/// <summary>
@@ -58,18 +50,29 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 			
 			this.service = details.Service = service;
+			ConfigurationSectionWidget lastSection = null;
 
 			if (service.DependenciesSection != null) {
-				var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
+				var dependencies = lastSection = new ConfigurationSectionWidget (service.DependenciesSection);
+				dependencies.BorderLeft = dependencies.BorderRight = dependencies.BorderBottom = true;
+				dependencies.BorderTop = false;
+				dependencies.BorderWidth = 1;
 				sections.PackStart (dependencies);
 				if (service.Status != Status.Added)
 					dependencies.Expanded = true;
 			}
 
 			foreach (var section in service.Sections) {
-				var w = new ConfigurationSectionWidget (section);
+				var w = lastSection = new ConfigurationSectionWidget (section);
+				w.BorderLeft = w.BorderRight = w.BorderBottom = true;
+				w.BorderTop = false;
+				w.BorderWidth = 1;
 				sections.PackStart (w);
 			}
+
+			if (lastSection != null)
+				lastSection.CornerRadius = new Components.RoundedFrameBox.BorderCornerRadius (0, 0, 6, 6);
+
 
 			service.StatusChanged += HandleServiceStatusChanged;
 

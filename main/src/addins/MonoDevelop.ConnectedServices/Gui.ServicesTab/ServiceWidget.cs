@@ -10,7 +10,7 @@ using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
-	class ServiceWidget : FrameBox
+	class ServiceWidget : Components.RoundedFrameBox
 	{
 		HBox statusWidget;
 		ImageView statusIcon;
@@ -77,9 +77,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ServiceWidget (bool showDetails = false)
 		{
-			BackgroundColor = Styles.BaseBackgroundColor;
+			InnerBackgroundColor = Styles.BaseBackgroundColor;
 			BorderColor = Styles.ThinSplitterColor;
 			BorderWidth = 1;
+			CornerRadius = new BorderCornerRadius (6, 6, 6, 6);
+			Padding = 30;
 
 			image = new ImageView ();
 			title = new Label ();
@@ -95,6 +97,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusWidget.PackStart (statusIcon);
 			statusWidget.PackStart (statusText);
 			statusWidget.Visible = false;
+			statusWidget.MarginLeft = 5;
 
 			addButton = new Button ();
 			addButton.BackgroundColor = Styles.BaseSelectionBackgroundColor;
@@ -109,7 +112,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 
 			var header = new HBox ();
-			header.Spacing = 10;
+			header.Spacing = 5;
 			header.PackStart (image);
 			header.PackStart (title);
 			header.PackStart (statusWidget);
@@ -136,7 +139,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			vbox.PackStart (platformWidget, false);
 
 			var container = new HBox { Spacing = 0 };
-			container.Margin = 30;
 			container.PackStart (vbox, true);
 			container.PackEnd (addButton, vpos: WidgetPlacement.Start);
 

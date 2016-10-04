@@ -11,7 +11,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// <summary>
 	/// Default widget that displays a ConfigurationSection
 	/// </summary>
-	public class ConfigurationSectionWidget : FrameBox
+	public class ConfigurationSectionWidget : Components.RoundedFrameBox
 	{
 		static readonly Image arrowRight = ImageService.GetIcon ("md-expander-arrow-closed").WithSize (8, 8);
 		static readonly Image arrowDown = ImageService.GetIcon ("md-expander-arrow-expanded").WithSize (8, 8);
@@ -39,7 +39,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				if (expanded != value) {
 					if (value) {
 						expanderImage.Image = arrowDown;
-						BackgroundColor = Styles.BaseBackgroundColor;
+						InnerBackgroundColor = Styles.BaseBackgroundColor;
 					} else {
 						expanderImage.Image = arrowRight;
 					}
@@ -61,15 +61,18 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Section = section;
 			Service = section.Service;
 
-			BackgroundColor = Styles.BaseBackgroundColor;
+			BackgroundColor = Styles.BackgroundColor;
+			InnerBackgroundColor = Styles.BaseBackgroundColor;
 			BorderColor = Styles.ThinSplitterColor;
-			BorderWidthTop = 1;
+			BorderWidth = 0;
+			Padding = new WidgetSpacing (15, 4, 15, 5);
 
 			header = new HBox ();
+
 			header.Spacing = 7;
-			header.MarginLeft = 15;
-			header.MarginRight = 30;
-			header.MinHeight = 46;
+			header.MarginLeft = 0;
+			header.MarginRight = 15;
+			header.MinHeight = 36;
 
 			expanderImage = new ImageView (arrowRight);
 
@@ -103,7 +106,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			var container = new VBox ();
 			sectionWidget = GetSectionWidget ();
-			sectionWidget.MarginLeft = sectionWidget.MarginRight = 30;
+			sectionWidget.MarginLeft = sectionWidget.MarginRight = 15;
 			sectionWidget.MarginBottom = 20;
 			sectionWidget.Visible = false;
 
@@ -200,14 +203,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			base.OnMouseEntered (args);
 			if (!Expanded) {
-				BackgroundColor = Styles.BackgroundColor;
+				InnerBackgroundColor = Styles.BackgroundColor;
 			}
 		}
 
 		protected override void OnMouseExited (EventArgs args)
 		{
 			base.OnMouseExited (args);
-			BackgroundColor = Styles.BaseBackgroundColor;
+			InnerBackgroundColor = Styles.BaseBackgroundColor;
 		}
 
 		/// <summary>
