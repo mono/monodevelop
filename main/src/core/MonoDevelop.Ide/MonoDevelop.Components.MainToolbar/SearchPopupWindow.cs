@@ -1003,18 +1003,14 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		static string selectedResultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultTextColor);
-		static string resultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultTextColor);
-		static string selectedResultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultDescriptionTextColor);
-		static string resultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultDescriptionTextColor);
 		string GetRowMarkup (SearchResult result, bool selected = false)
 		{
-			var resultFgColor = selected ? selectedResultTextColor : resultTextColor;
-			var descFgColor = selected ? selectedResultDescriptionTextColor : resultDescriptionTextColor;
-			string txt = "<span foreground=\"" + resultFgColor + "\">" + result.GetMarkupText(selected) +"</span>";
+			var resultFgColor = selected ? Styles.GlobalSearch.SelectedResultTextColor : Styles.GlobalSearch.ResultTextColor;
+			var descFgColor = selected ? Styles.GlobalSearch.SelectedResultDescriptionTextColor : Styles.GlobalSearch.ResultDescriptionTextColor;
+			string txt = "<span foreground=\"" + Styles.ColorGetHex (resultFgColor) + "\">" + result.GetMarkupText(selected) +"</span>";
 			string desc = result.GetDescriptionMarkupText ();
 			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"" + descFgColor + "\" size=\"small\">\n" + desc + "</span>";
+				txt += "<span foreground=\"" + Styles.ColorGetHex (descFgColor) + "\" size=\"small\">\n" + desc + "</span>";
 			return txt;
 		}
 	}
