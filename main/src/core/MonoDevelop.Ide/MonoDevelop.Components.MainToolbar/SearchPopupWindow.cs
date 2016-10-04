@@ -1011,23 +1011,11 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var resultFgColor = selected ? selectedResultTextColor : resultTextColor;
 			var descFgColor = selected ? selectedResultDescriptionTextColor : resultDescriptionTextColor;
-			string text = result.GetMarkupText (selected);
+			string txt = "<span foreground=\"" + resultFgColor + "\">" + result.GetMarkupText(selected) +"</span>";
 			string desc = result.GetDescriptionMarkupText ();
-
-			var sb = new System.Text.StringBuilder (text.Length + resultFgColor.Length + desc.Length + descFgColor.Length + 68);
-			sb.Append ("<span foreground=\"");
-			sb.Append (resultFgColor);
-			sb.Append ("\">");
-			sb.Append (text);
-			sb.Append ("</span>");
-			if (!string.IsNullOrEmpty (desc)) {
-				sb.Append ("<span foreground=\"");
-				sb.Append (descFgColor);
-				sb.Append ("\" size=\"small\">\n");
-				sb.Append (desc);
-				sb.Append ("</span>");
-			}
-			return sb.ToString ();
+			if (!string.IsNullOrEmpty (desc))
+				txt += "<span foreground=\"" + descFgColor + "\" size=\"small\">\n" + desc + "</span>";
+			return txt;
 		}
 	}
 }

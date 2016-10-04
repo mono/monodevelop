@@ -99,13 +99,12 @@ namespace MonoDevelop.Components.MainToolbar
 			this.MatchedString = matchedString;
 			Rank = rank;
 		}
-
-		static string selectedResultMatchTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultMatchTextColor);
-		static string resultMatchTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultMatchTextColor);
+		
 		protected static string HighlightMatch (string text, string toMatch, bool selected)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
-			var matchHexColor = selected ? selectedResultMatchTextColor : resultMatchTextColor;
+			var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
+			var matchHexColor = Styles.ColorGetHex (matchColor);
 			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
 				int lastPos = 0;
