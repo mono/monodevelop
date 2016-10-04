@@ -106,7 +106,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			var matchHexColor = selected ? selectedResultMatchTextColor : resultMatchTextColor;
-			StringBuilder result = new StringBuilder (text.Length + matchHexColor.Length + 46);
+			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
