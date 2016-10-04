@@ -48,10 +48,12 @@ namespace MonoDevelop.Packaging.Gui
 
 			// Platforms selection.
 			var platformsVBox = new VBox ();
+			platformsVBox.Spacing = 0;
 			mainVBox.PackStart (platformsVBox);
 
 			var platformsLabel = new Label ();
 			platformsLabel.Text = GettextCatalog.GetString ("Select the platform implementations you would like to add:");
+			platformsLabel.MarginBottom = 6;
 			platformsVBox.PackStart (platformsLabel);
 
 			androidCheckBox = new CheckBox ();
@@ -64,11 +66,13 @@ namespace MonoDevelop.Packaging.Gui
 
 			// Use shared project.
 			var sharedProjectVBox = new VBox ();
+			sharedProjectVBox.Spacing = 0;
 			sharedProjectVBox.MarginTop = 20;
 			mainVBox.PackStart (sharedProjectVBox);
 
 			var useSharedProjectLabel = new Label ();
 			useSharedProjectLabel.Text = GettextCatalog.GetString ("Create a Shared Project from the Portable Class Library:");
+			useSharedProjectLabel.MarginBottom = 6;
 			sharedProjectVBox.PackStart (useSharedProjectLabel);
 
 			useSharedProjectCheckBox = new CheckBox ();
