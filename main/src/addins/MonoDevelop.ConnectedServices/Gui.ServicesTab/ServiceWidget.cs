@@ -78,7 +78,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		public ServiceWidget (bool showDetails = false)
 		{
 			InnerBackgroundColor = Styles.BaseBackgroundColor;
-			BorderColor = Styles.ThinSplitterColor;
 			BorderWidth = 1;
 			CornerRadius = new BorderCornerRadius (6, 6, 6, 6);
 			Padding = 30;

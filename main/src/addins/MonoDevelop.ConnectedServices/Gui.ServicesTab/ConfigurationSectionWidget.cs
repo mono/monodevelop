@@ -63,7 +63,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			BackgroundColor = Styles.BackgroundColor;
 			InnerBackgroundColor = Styles.BaseBackgroundColor;
-			BorderColor = Styles.ThinSplitterColor;
 			BorderWidth = 0;
 			Padding = new WidgetSpacing (15, 4, 15, 5);
 
