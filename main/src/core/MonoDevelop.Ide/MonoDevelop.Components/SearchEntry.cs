@@ -673,11 +673,17 @@ namespace MonoDevelop.Components
 
 			private void RefreshGC ()
 			{
+				text_gc?.Dispose ();
 				text_gc = null;
 			}
 
 			protected override void OnDestroyed ()
 			{
+				RefreshGC ();
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
 				parent.StyleSet -= OnParentStyleSet;
 				base.OnDestroyed ();
 			}

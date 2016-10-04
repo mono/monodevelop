@@ -53,9 +53,9 @@ namespace MonoDevelop.Projects.MSBuild
 			public MSBuildProject Project;
 			public List<MSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			public List<MSBuildItemEvaluated> EvaluatedItems = new List<MSBuildItemEvaluated> ();
-			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> ();
+			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> (StringComparer.OrdinalIgnoreCase);
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
-			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> ();
+			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 			public List<MSBuildTarget> Targets = new List<MSBuildTarget> ();
 			public List<MSBuildTarget> TargetsIgnoringCondition = new List<MSBuildTarget> ();
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
@@ -72,6 +72,22 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		#region implemented abstract members of MSBuildEngine
+
+		static HashSet<string> knownItemFunctions;
+		static HashSet<string> knownStringItemFunctions;
+
+
+		static DefaultMSBuildEngine ()
+		{
+			// List of string functions that can be used as item functions
+			knownStringItemFunctions = new HashSet<string> (typeof (string).GetMethods (System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Select (m => m.Name));
+
+			// List of known item functions
+			knownItemFunctions = new HashSet<string> (new [] { "Count", "DirectoryName", "Distinct", "DistinctWithCase", "Reverse", "AnyHaveMetadataValue", "ClearMetadata", "HasMetadata", "Metadata", "WithMetadataValue" });
+
+			// This collection will contain all item functions, including the string functions
+			knownItemFunctions.UnionWith (knownStringItemFunctions);
+		}
 
 		public DefaultMSBuildEngine (MSBuildEngineManager manager): base (manager)
 		{
@@ -165,7 +181,6 @@ namespace MonoDevelop.Projects.MSBuild
 			finally {
 				foreach (var p in oldRefProjects)
 					UnloadProject (p);
-				DisposeImportedProjects (pi);
 				pi.ImportedProjects.Clear ();
 			}
 		}
@@ -181,6 +196,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 			EvaluateObjects (pi, context, objects, false);
 			EvaluateObjects (pi, context, objects, true);
+
+			// Once items have been evaluated, we need to re-evaluate properties that contain item transformations
+			// (or that contain references to properties that have transformations).
+
+			foreach (var propName in context.GetPropertiesNeedingTransformEvaluation ()) {
+				PropertyInfo prop;
+				if (pi.Properties.TryGetValue (propName, out prop)) {
+					// Execute the transformation
+					prop.FinalValue = context.EvaluateWithItems (prop.FinalValue, pi.EvaluatedItems);
+
+					// Set the resulting value back to the context, so other properties depending on this
+					// one will get the new value when re-evaluated.
+					context.SetPropertyValue (propName, prop.FinalValue);
+				}
+			}
 		}
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context, bool evalItems)
@@ -248,7 +278,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
 		{
-			if (include.IndexOf ('*') != -1) {
+			// Don't add the result from any item that has an empty include. MSBuild never returns those.
+			if (include == string.Empty)
+				return;
+			
+			if (include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')') {
+				// This is a transform
+				List<MSBuildItemEvaluated> evalItems;
+				var transformExp = include.Substring (2, include.Length - 3);
+				if (ExecuteTransform (project, context, item, transformExp, out evalItems)) {
+					foreach (var newItem in evalItems) {
+						project.EvaluatedItemsIgnoringCondition.Add (newItem);
+						if (trueCond)
+							project.EvaluatedItems.Add (newItem);
+					}
+				}
+			} else if (include.IndexOf ('*') != -1) {
 				var path = include;
 				if (path == "**" || path.EndsWith ("\\**"))
 					path = path + "/*";
@@ -260,22 +305,297 @@ namespace MonoDevelop.Projects.MSBuild
 					if (trueCond)
 						project.EvaluatedItems.Add (eit);
 				}
-			}
-			else if (include != it.Include) {
+			} else if (include != it.Include) {
 				if (excludeRegex != null && excludeRegex.IsMatch (include))
 					return;
 				it = CreateEvaluatedItem (context, project, project.Project, item, include);
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
-			}
-			else {
+			} else {
 				if (excludeRegex != null && excludeRegex.IsMatch (include))
 					return;
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
 			}
+		}
+
+		static bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
+		{
+			bool ignoreMetadata = false;
+
+			items = new List<MSBuildItemEvaluated> ();
+			string itemName, expression, itemFunction; object [] itemFunctionArgs;
+
+			// This call parses the transforms and extracts: the name of the item list to transform, the whole transform expression (or null if there isn't). If the expression can be
+			// parsed as an item funciton, then it returns the function name and the list of arguments. Otherwise those parameters are null.
+			if (!ParseTransformExpression (context, transformExp, out itemName, out expression, out itemFunction, out itemFunctionArgs))
+				return false;
+
+			// Get the items mathing the referenced item list
+			var transformItems = project.EvaluatedItems.Where (i => i.Name == itemName).ToArray ();
+
+			if (itemFunction != null) {
+				// First of all, try to execute the function as a summary function, that is, a function that returns a single value for
+				// the whole list (such as Count).
+				// After that, try executing as a list transformation function: a function that changes the order or filters out items from the list.
+
+				string result;
+				if (ExecuteSummaryItemFunction (transformItems, itemFunction, itemFunctionArgs, out result)) {
+					// The item function returns a value. Just create an item with that value
+					var newItem = new MSBuildItemEvaluated (project.Project, item.Name, item.Include, result);
+					project.EvaluatedItemsIgnoringCondition.Add (newItem);
+					items.Add (newItem);
+					return true;
+				} else if (ExecuteTransformItemListFunction (ref transformItems, itemFunction, itemFunctionArgs, out ignoreMetadata)) {
+					expression = null;
+					itemFunction = null;
+				}
+			}
+
+			foreach (var eit in transformItems) {
+				// Some item functions cause the erasure of metadata. Take that into account now.
+				context.SetItemContext (eit.Include, null, ignoreMetadata || item == null ? null : eit.Metadata);
+				try {
+					// If there is a function that transforms the include of the item, it needs to be applied now. Otherwise just use the transform expression
+					// as include, or the transformed item include if there is no expression.
+
+					string evaluatedInclude; bool skip;
+					if (itemFunction != null && ExecuteTransformIncludeItemFunction (context, eit, itemFunction, itemFunctionArgs, out evaluatedInclude, out skip)) {
+						if (skip) continue;
+					} else if (expression != null)
+						evaluatedInclude = context.EvaluateString (expression);
+					else
+						evaluatedInclude = eit.Include;
+
+					var newItem = new MSBuildItemEvaluated (project.Project, item.Name, item.Include, evaluatedInclude);
+					if (!ignoreMetadata) {
+						var md = new Dictionary<string, IMSBuildPropertyEvaluated> ();
+						// Add metadata from the evaluated item
+						var col = (MSBuildPropertyGroupEvaluated)eit.Metadata;
+						foreach (var p in col.GetRegisteredProperties ()) {
+							md [p.Name] = new MSBuildPropertyEvaluated (project.Project, p.Name, p.UnevaluatedValue, p.Value);
+						}
+						// Now override metadata from the new item definition
+						foreach (var c in item.Metadata.GetProperties ()) {
+							if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (project, context, c.Condition, true))
+								md [c.Name] = new MSBuildPropertyEvaluated (project.Project, c.Name, c.Value, context.EvaluateString (c.Value));
+						}
+						((MSBuildPropertyGroupEvaluated)newItem.Metadata).SetProperties (md);
+					}
+					newItem.SourceItem = item;
+					newItem.Condition = item.Condition;
+					items.Add (newItem);
+				} finally {
+					context.ClearItemContext ();
+				}
+			}
+			return true;
+		}
+
+		internal static bool ExecuteStringTransform (List<MSBuildItemEvaluated> evaluatedItemsCollection, MSBuildEvaluationContext context, string transformExp, out string items)
+		{
+			// This method works mostly like ExecuteTransform, but instead of returning a list of items, it returns a string as result.
+			// Since there is no need to create full blown evaluated items, it can be more efficient than ExecuteTransform.
+
+			items = "";
+
+			string itemName, expression, itemFunction; object [] itemFunctionArgs;
+			if (!ParseTransformExpression (context, transformExp, out itemName, out expression, out itemFunction, out itemFunctionArgs))
+				return false;
+
+			var transformItems = evaluatedItemsCollection.Where (i => i.Name == itemName).ToArray ();
+			if (itemFunction != null) {
+				string result; bool ignoreMetadata;
+				if (ExecuteSummaryItemFunction (transformItems, itemFunction, itemFunctionArgs, out result)) {
+					// The item function returns a value. Just return it.
+					items = result;
+					return true;
+				} else if (ExecuteTransformItemListFunction (ref transformItems, itemFunction, itemFunctionArgs, out ignoreMetadata)) {
+					var sb = new StringBuilder ();
+					for (int n = 0; n < transformItems.Length; n++) {
+						if (n > 0)
+							sb.Append (';');
+						sb.Append (transformItems[n].Include);
+					}	
+					items = sb.ToString ();
+					return true;
+				}
+			}
+
+			var sbi = new StringBuilder ();
+
+			int count = 0;
+			foreach (var eit in transformItems) {
+				context.SetItemContext (eit.Include, null, eit.Metadata);
+				try {
+					string evaluatedInclude; bool skip;
+					if (itemFunction != null && ExecuteTransformIncludeItemFunction (context, eit, itemFunction, itemFunctionArgs, out evaluatedInclude, out skip)) {
+						if (skip) continue;
+					} else if (expression != null)
+						evaluatedInclude = context.EvaluateString (expression);
+					else
+						evaluatedInclude = eit.Include;
+
+					if (count++ > 0)
+						sbi.Append (';');
+					sbi.Append (evaluatedInclude);
+
+				} finally {
+					context.ClearItemContext ();
+				}
+			}
+			items = sbi.ToString ();
+			return true;
+		}
+
+		static bool ParseTransformExpression (MSBuildEvaluationContext context, string include, out string itemName, out string expression, out string itemFunction, out object [] itemFunctionArgs)
+		{
+			// This method parses the transforms and extracts: the name of the item list to transform, the whole transform expression (or null if there isn't). If the expression can be
+			// parsed as an item funciton, then it returns the function name and the list of arguments. Otherwise those parameters are null.
+		
+			expression = null;
+			itemFunction = null;
+			itemFunctionArgs = null;
+		
+			int i = include.IndexOf ("->", StringComparison.Ordinal);
+			if (i == -1) {
+				itemName = include.Trim ();
+				return itemName.Length > 0;
+			}
+			itemName = include.Substring (0, i).Trim ();
+			if (itemName.Length == 0)
+				return false;
+			
+			expression = include.Substring (i + 2).Trim ();
+			if (expression.Length > 1 && expression[0]=='\'' && expression[expression.Length - 1] == '\'') {
+				expression = expression.Substring (1, expression.Length - 2);
+				return true;
+			}
+			i = expression.IndexOf ('(');
+			if (i == -1)
+				return true;
+
+			var func = expression.Substring (0, i).Trim ();
+			if (knownItemFunctions.Contains (func)) {
+				itemFunction = func;
+				i++;
+				context.EvaluateParameters (expression, ref i, out itemFunctionArgs);
+				return true;
+			}
+			return true;
+		}
+
+		static bool ReadItemFunctionArg (string include, ref int i, out string arg)
+		{
+			arg = null;
+			if (!SkipWhitespace (include, ref i))
+				return false;
+			var quote = include [i];
+			if (quote == ')')
+				return true;
+			if (quote != '"' && quote != '\'')
+				return false;
+			int k = include.IndexOf (quote, ++i);
+			if (k == -1)
+				return false;
+			arg = include.Substring (i, k - i);
+			i = k + 1;
+			return SkipWhitespace (include, ref i);
+		}
+
+		static bool SkipWhitespace (string include, ref int i)
+		{
+			while (i < include.Length && char.IsWhiteSpace (include [i]))
+				i++;
+			return i < include.Length;
+		}
+
+		static bool ExecuteTransformIncludeItemFunction (MSBuildEvaluationContext context, MSBuildItemEvaluated item, string itemFunction, object [] itemFunctionArgs, out string evaluatedInclude, out bool skip)
+		{
+			evaluatedInclude = null;
+			skip = false;
+
+			switch (itemFunction) {
+			case "DirectoryName":
+				var path = MSBuildProjectService.FromMSBuildPath (context.Project.BaseDirectory, item.Include);
+				evaluatedInclude = Path.GetDirectoryName (path);
+				return true;
+			case "Metadata":
+				if (itemFunctionArgs.Length != 1)
+					return false;
+				var p = item.Metadata.GetProperty (itemFunctionArgs [0].ToString ());
+				if (p == null) {
+					skip = true;
+					return true;
+				} else {
+					evaluatedInclude = p.Value;
+					return true;
+				}
+			}
+			if (knownStringItemFunctions.Contains (itemFunction)) {
+				object res;
+				if (context.EvaluateMember (itemFunction, typeof (string), itemFunction, item.Include, itemFunctionArgs, out res)) {
+					evaluatedInclude = res.ToString ();
+					return true;
+				}
+			}
+			return false;
+		}
+
+		static bool ExecuteSummaryItemFunction (MSBuildItemEvaluated [] transformItems, string itemFunction, object [] itemFunctionArgs, out string result)
+		{
+			result = null;
+			switch (itemFunction) {
+			case "Count":
+				result = transformItems.Length.ToString ();
+				return true;
+			case "AnyHaveMetadataValue":
+				if (itemFunctionArgs.Length != 2)
+					return false;
+				result = transformItems.Any (it => string.Compare (it.Metadata.GetValue (itemFunctionArgs [0].ToString ()), itemFunctionArgs [1].ToString (), true) == 0).ToString ().ToLower ();
+				return true;
+			}
+			return false;
+		}
+
+		static bool ExecuteTransformItemListFunction (ref MSBuildItemEvaluated[] transformItems, string itemFunction, object[] itemFunctionArgs, out bool ignoreMetadata)
+		{
+			switch (itemFunction) {
+			case "Reverse":
+				ignoreMetadata = false;
+				transformItems = transformItems.Reverse ().ToArray ();
+				return true;
+			case "HasMetadata":
+				ignoreMetadata = false;
+				if (itemFunctionArgs.Length != 1)
+					return false;
+				transformItems = transformItems.Where (it => it.Metadata.HasProperty (itemFunctionArgs [0].ToString ())).ToArray ();
+				return true;
+			case "WithMetadataValue":
+				ignoreMetadata = false;
+				if (itemFunctionArgs.Length != 2)
+					return false;
+				transformItems = transformItems.Where (it => string.Compare (it.Metadata.GetValue (itemFunctionArgs [0].ToString ()), itemFunctionArgs [1].ToString (), true) == 0).ToArray ();
+				return true;
+			case "ClearMetadata":
+				ignoreMetadata = true;
+				return true;
+			case "Distinct":
+			case "DistinctWithCase":
+				var values = new HashSet<string> (itemFunction == "Distinct" ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+				var result = new List<MSBuildItemEvaluated> ();
+				foreach (var it in transformItems) {
+					if (values.Add (it.Include))
+						result.Add (it);
+				}
+				transformItems = result.ToArray ();
+				ignoreMetadata = true;
+				return true;
+			}
+			ignoreMetadata = false;
+			return false;
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports, bool evalItems)
@@ -407,7 +727,10 @@ namespace MonoDevelop.Projects.MSBuild
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
 			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (project, context, prop.Condition, true)) {
-				var val = context.EvaluateString (prop.UnevaluatedValue);
+				bool needsItemEvaluation;
+				var val = context.Evaluate (prop.UnevaluatedValue, out needsItemEvaluation);
+				if (needsItemEvaluation)
+					context.SetPropertyNeedsTransformEvaluation (prop.Name);
 				project.Properties [prop.Name] = new PropertyInfo { Name = prop.Name, Value = prop.UnevaluatedValue, FinalValue = val };
 				context.SetPropertyValue (prop.Name, val);
 			}

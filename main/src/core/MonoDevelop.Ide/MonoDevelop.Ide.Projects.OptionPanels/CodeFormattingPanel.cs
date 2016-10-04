@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		MimeTypePanelData AddPanel (string mt)
 		{
-			var chain = new List<string> (DesktopService.GetMimeTypeInheritanceChain (mt).Where (x => mimeTypesWithPolicies.Contains (x)));
+			var chain = new List<string> (DesktopService.GetMimeTypeInheritanceChain (mt).Where (mimeTypesWithPolicies.Contains));
 			if (chain.Count == 0)
 				return null;
 			MimeTypePanelData data = new MimeTypePanelData ();

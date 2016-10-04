@@ -398,10 +398,6 @@ namespace MonoDevelop.VersionControl.Views
 				colFile.Destroy ();
 				colFile = null;
 			}
-			if (filestore != null) {
-				filestore.Dispose ();
-				filestore = null;
-			}
 			if (filelist != null) {
 				filelist.DoPopupMenu = null;
 				filelist.RowActivated -= OnRowActivated;
@@ -476,7 +472,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		void LoadStatus (List<VersionInfo> newList)
 		{
-			statuses = newList.Where (f => FileVisible (f)).ToList ();
+			statuses = newList.Where (FileVisible).ToList ();
 
 			// Remove from the changeset files/folders which have been deleted
 			var toRemove = new List<ChangeSetItem> ();

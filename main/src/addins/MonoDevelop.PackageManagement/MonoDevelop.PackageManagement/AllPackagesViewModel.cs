@@ -575,7 +575,7 @@ namespace MonoDevelop.PackageManagement
 				String.IsNullOrEmpty (SearchTerms) &&
 				selectedPackageSource != null) {
 				return recentPackagesRepository.GetPackages (SelectedPackageSource.Name)
-					.Where (recentPackage => SelectedVersionMatchesIncludePreleaseFilter (recentPackage));
+					.Where (SelectedVersionMatchesIncludePreleaseFilter);
 			}
 
 			return Enumerable.Empty<PackageSearchResultViewModel> ();

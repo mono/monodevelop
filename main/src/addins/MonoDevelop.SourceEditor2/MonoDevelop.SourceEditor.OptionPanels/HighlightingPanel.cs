@@ -78,11 +78,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
 
-			if (styleStore != null) {
-				styleStore.Dispose ();
-				styleStore = null;
-			}
-
 			MonoDevelop.Ide.Gui.Styles.Changed -= HandleThemeChanged;
 			base.OnDestroyed ();
 		}

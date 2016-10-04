@@ -578,6 +578,7 @@
     <Compile Include="MonoDevelop.Projects\ProcessRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Core\ErrorHelper.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Core\StructEqualityComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -685,7 +686,7 @@
     <Folder Include="MSBuild\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
-    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
+    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />

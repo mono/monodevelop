@@ -50,6 +50,7 @@ namespace MonoDevelop.RegexToolkit
 				entryRegEx.Text = value;
 			}
 		}
+
 		public RegexToolkitWidget ()
 		{
 			this.Build ();
@@ -58,31 +59,9 @@ namespace MonoDevelop.RegexToolkit
 			
 			FillOptionsBox ();
 			
-			this.buttonStart.Sensitive = false;
 			this.entryRegEx.Changed += UpdateStartButtonSensitivity;
 			this.inputTextview.Buffer.Changed += UpdateStartButtonSensitivity;
-			
-			this.buttonStart.Clicked += delegate {
-				if (regexThread != null && regexThread.IsAlive) {
-					regexThread.Abort ();
-					regexThread.Join ();
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
-					regexThread = null;
-					return;
-				}
-				
-				regexThread = new Thread (delegate() {
-					PerformQuery (inputTextview.Buffer.Text, this.entryRegEx.Text, this.entryReplace.Text, GetOptions ());
-				});
-				
-				regexThread.IsBackground = true;
-				regexThread.Name = "regex thread";
-				regexThread.Start ();
-				SetButtonStart (GettextCatalog.GetString ("Stop e_xecution"), "gtk-media-stop");
-				
-				SetFindMode (!checkbuttonReplace.Active);
-			};
-			
+
 			SetFindMode (true);
 			
 			var cellRendText = new CellRendererText ();
@@ -123,13 +102,38 @@ namespace MonoDevelop.RegexToolkit
 			};
 			
 			this.entryReplace.Sensitive = this.checkbuttonReplace.Active = false;
+			this.entryReplace.Changed += delegate {
+				UpdateRegex ();
+			};
 			this.checkbuttonReplace.Toggled += delegate {
 				this.entryReplace.Sensitive = this.checkbuttonReplace.Active;
+				UpdateRegex ();
+			};
+			this.expandMatches.Toggled += delegate {
+				UpdateRegex ();
 			};
 			this.vbox4.WidthRequest = 380;
 			this.scrolledwindow5.HeightRequest = 150;
 			this.scrolledwindow1.HeightRequest = 150;
 			Show ();
+		}
+
+		void UpdateRegex ()
+		{
+			if (regexThread != null && regexThread.IsAlive) {
+				regexThread.Abort ();
+				regexThread.Join ();
+				regexThread = null;
+			}
+
+			regexThread = new Thread (delegate () {
+				PerformQuery (inputTextview.Buffer.Text, this.entryRegEx.Text, this.entryReplace.Text, GetOptions ());
+			});
+
+			regexThread.IsBackground = true;
+			regexThread.Name = "regex thread";
+			regexThread.Start ();
+			SetFindMode (!checkbuttonReplace.Active);
 		}
 
 		public void InsertText (string text)
@@ -177,19 +181,10 @@ namespace MonoDevelop.RegexToolkit
 				});
 			} finally {
 				regexThread = null;
-				Application.Invoke (delegate {
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
-				});
 			}
 		}
 
-		void SetButtonStart (string text, string icon)
-		{
-			buttonStartLabel.Text = text;
-			buttonStartLabel.UseUnderline = true;
-			buttonStartIcon.SetIcon (icon, IconSize.Menu);
-		}
-		
+
 		
 		void SetFindMode (bool findMode)
 		{
@@ -200,21 +195,8 @@ namespace MonoDevelop.RegexToolkit
 		
 		void UpdateStartButtonSensitivity (object sender, EventArgs args)
 		{
-			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
 			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
-		}
-		
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			if (optionsStore != null) {
-				optionsStore.Dispose ();
-				optionsStore = null;
-			}
-			if (resultStore != null) {
-				resultStore.Dispose ();
-				resultStore = null;
-			}
+			UpdateRegex ();
 		}
 		
 		
@@ -239,6 +221,7 @@ namespace MonoDevelop.RegexToolkit
 			if (this.optionsStore.GetIterFromString (out iter, e.Path)) {
 				bool toggled = (bool)this.optionsStore.GetValue (iter, 0);
 				this.optionsStore.SetValue (iter, 0, !toggled);
+				UpdateRegex ();
 			}
 		}
 		

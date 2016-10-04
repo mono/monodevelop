@@ -31,7 +31,7 @@ namespace MonoDevelop.Core
 	[System.Diagnostics.DebuggerDisplay ("{id}")]
 	public struct IconId: IEquatable<IconId>
 	{
-		string id;
+		readonly string id;
 		
 		public static readonly IconId Null = new IconId (null);
 		

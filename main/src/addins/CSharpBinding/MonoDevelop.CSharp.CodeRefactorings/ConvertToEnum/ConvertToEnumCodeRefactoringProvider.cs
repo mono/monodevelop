@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static void ReplaceVariableReferences(RefactoringContext context, AstNode root, AstType baseType, string enumName, Script script, Dictionary<string, string> newNames, IEnumerable<VariableInitializer> variables)
 		{
-			var resolveResults = variables.Select(variable => (MemberResolveResult)context.Resolve(variable));
+			var resolveResults = variables.Select(context.Resolve).Cast<MemberResolveResult> ();
 			var resolvedFields = resolveResults.Select(resolveResult => resolveResult.Member);
 			script.DoGlobalOperationOn(resolvedFields, (newCtx, newScript, foundNodes) =>  {
 				foreach (var foundNode in foundNodes) {

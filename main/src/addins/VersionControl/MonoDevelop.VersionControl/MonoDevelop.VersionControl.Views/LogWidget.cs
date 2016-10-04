@@ -64,7 +64,6 @@ namespace MonoDevelop.VersionControl.Views
 		CellRendererDiff diffRenderer = new CellRendererDiff ();
 		CellRendererText messageRenderer = new CellRendererText ();
 		CellRendererText textRenderer = new CellRendererText ();
-		CellRendererText contentRenderer = new CellRendererText ();
 		CellRendererImage pixRenderer = new CellRendererImage ();
 		
 		bool currentRevisionShortened;
@@ -211,19 +210,20 @@ namespace MonoDevelop.VersionControl.Views
 			
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
+			var crt = new CellRendererText ();
 			colChangedFile.Title = GettextCatalog.GetString ("File");
 			colChangedFile.PackStart (crp, false);
-			colChangedFile.PackStart (contentRenderer, true);
+			colChangedFile.PackStart (crt, true);
 			colChangedFile.AddAttribute (crp, "image", 2);
-			colChangedFile.AddAttribute (contentRenderer, "text", 3);
+			colChangedFile.AddAttribute (crt, "text", 3);
 			treeviewFiles.AppendColumn (colChangedFile);
 			
 			TreeViewColumn colOperation = new TreeViewColumn ();
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
-			colOperation.PackStart (contentRenderer, true);
+			colOperation.PackStart (crt, true);
 			colOperation.AddAttribute (crp, "image", 0);
-			colOperation.AddAttribute (contentRenderer, "text", 1);
+			colOperation.AddAttribute (crt, "text", 1);
 			treeviewFiles.AppendColumn (colOperation);
 			
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
@@ -256,25 +256,6 @@ namespace MonoDevelop.VersionControl.Views
 
 			UpdateStyle ();
 			Ide.Gui.Styles.Changed += HandleStylesChanged;
-
-			IdeApp.Preferences.CustomOutputPadFont.Changed += OnFontChanged;
-			IdeApp.Preferences.CustomPadFont.Changed += OnFontChanged;
-
-			OnFontChanged (null, null);
-		}
-
-		void OnFontChanged (object sender, EventArgs args)
-		{
-			var outputFont = IdeApp.Preferences.CustomOutputPadFont;
-			textRenderer.FontDesc = outputFont;
-			messageRenderer.FontDesc = outputFont;
-			contentRenderer.FontDesc = outputFont;
-
-			var padFont = IdeApp.Preferences.CustomPadFont.Value;
-			labelAuthor.ModifyFont (padFont);
-			labelDate.ModifyFont (padFont);
-			labelRevision.ModifyFont (padFont);
-			label3.ModifyFont (padFont);
 		}
 
 		protected override void OnRealized ()
@@ -519,11 +500,6 @@ namespace MonoDevelop.VersionControl.Views
 			revertToButton.Clicked -= RevertToRevisionClicked;
 			refreshButton.Clicked -= RefreshClicked;
 			Ide.Gui.Styles.Changed -= HandleStylesChanged;
-			IdeApp.Preferences.CustomPadFont.Changed -= OnFontChanged;
-			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnFontChanged;
-
-			logstore.Dispose ();
-			changedpathstore.Dispose ();
 
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();

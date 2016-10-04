@@ -56,6 +56,9 @@ namespace ICSharpCode.NRefactory6.CSharp
 		///     Text editor options.
 		/// </summary>
 		internal readonly OptionSet options;
+
+		internal bool InUnitTestMode { get; set; }
+
 		#endregion
 
 		#region Constructors
@@ -123,12 +126,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 
 			// on the fly formatting is done in post formatting, if turned off just correct indenting.
-			try {
-				if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-					return text;
-				}
-			} catch {
-				// may happen in unit tests -> ignore
+			if (!InUnitTestMode && DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
+				return text;
 			}
 
 			var line = sourceText.Lines.GetLineFromPosition (offset);

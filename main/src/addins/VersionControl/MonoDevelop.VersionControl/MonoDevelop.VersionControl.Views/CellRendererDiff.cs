@@ -41,8 +41,6 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			isDisposed = true;
-			FontService.RemoveCallback (OnDiffFontChanged);
-			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnTextFontChanged;
 			DisposeLayout ();
 			base.OnDestroyed ();
 		}
@@ -88,35 +86,14 @@ namespace MonoDevelop.VersionControl.Views
 				layout = CreateLayout (container, string.Join (Environment.NewLine, lines));
 				layout.GetPixelSize (out width, out height);
 			}
-			FontService.RegisterFontChangedCallback ("Editor", OnDiffFontChanged);
-			IdeApp.Preferences.CustomOutputPadFont.Changed += OnTextFontChanged;
-		}
-
-		void UpdateFont (Pango.Layout forLayout)
-		{
-			forLayout = forLayout ?? layout;
-			if (diffMode)
-				layout.FontDescription = Pango.FontDescription.FromString (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.FontName);
-			else
-				layout.FontDescription = IdeApp.Preferences.CustomOutputPadFont;
-		}
-
-		void OnDiffFontChanged ()
-		{
-			UpdateFont (forLayout: null);
-		}
-
-		void OnTextFontChanged (object sender, EventArgs args)
-		{
-			UpdateFont (forLayout: null);
 		}
 		
 		Pango.Layout CreateLayout (Widget container, string text)
 		{
 			Pango.Layout layout = new Pango.Layout (container.PangoContext);
 			layout.SingleParagraphMode = false;
-			UpdateFont (layout);
 			if (diffMode) {
+				layout.FontDescription = FontService.MonospaceFont;
 				layout.SetText (text);
 			} else {
 				layout.SetMarkup (text);

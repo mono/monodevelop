@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static string Format (string format, params string[] args)
 		{
-			string[] escapedArgs = args.Select (s => Markup.EscapeText (s)).ToArray();
+			string[] escapedArgs = args.Select (Markup.EscapeText).ToArray();
 			return String.Format (format, escapedArgs);
 		}
 	}

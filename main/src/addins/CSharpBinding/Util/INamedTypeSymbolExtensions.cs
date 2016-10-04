@@ -367,8 +367,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 			IEnumerable<INamedTypeSymbol> abstractClasses,
 			CancellationToken cancellationToken)
 		{
-			return abstractClasses.SelectMany(a => a.GetBaseTypesAndThis())
-				.Where(t => t.IsAbstractClass())
+			return abstractClasses.SelectMany(GetBaseTypesAndThis)
+				.Where(ITypeSymbolExtensions.IsAbstractClass)
 				.ToList();
 		}
 
@@ -382,7 +382,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			// inherits from.
 			cancellationToken.ThrowIfCancellationRequested();
 			var interfacesToImplement = new List<INamedTypeSymbol>(
-				interfaces.SelectMany(i => i.GetAllInterfacesIncludingThis()).Distinct());
+				interfaces.SelectMany(ITypeSymbolExtensions.GetAllInterfacesIncludingThis).Distinct());
 
 			// However, there's no need to reimplement any interfaces that our base types already
 			// implement.  By definition they must contain all the necessary methods.
