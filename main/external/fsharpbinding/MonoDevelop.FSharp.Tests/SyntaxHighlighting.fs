@@ -11,35 +11,36 @@ open FsUnit
 [<TestFixture>]
 type SyntaxHighlighting() =
     let assertStyle (input:string, expectedStyle:string) =
-        let offset = input.IndexOf("$")
-        let length = input.LastIndexOf("$") - offset - 1
-        let input = input.Replace("$", "")
-        let data = new TextEditorData (new TextDocument (input))
-        let syntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
-        let style = SyntaxModeService.GetColorStyle ("Gruvbox")
-        let line = data.Lines |> Seq.head
-        let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
-        let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
+        Assert.Fail()
+        //let offset = input.IndexOf("$")
+        //let length = input.LastIndexOf("$") - offset - 1
+        //let input = input.Replace("$", "")
+        //let data = new TextEditorData (new TextDocument (input))
+        //let syntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
+        //let style = SyntaxModeService.GetColorStyle ("Gruvbox")
+        //let line = data.Lines |> Seq.head
+        //let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
+        //let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
 
-        let chunks = syntaxMode.GetChunks(style, line, 0, line.Length)
-        let printChunks() =
-            chunks |> Seq.iter (fun chunk -> printfn "%A %s" chunk input.[chunk.Offset..chunk.Offset+chunk.Length-1])
+        //let chunks = syntaxMode.GetChunks(style, line, 0, line.Length)
+        //let printChunks() =
+        //    chunks |> Seq.iter (fun chunk -> printfn "%A %s" chunk input.[chunk.Offset..chunk.Offset+chunk.Length-1])
 
         
-        match chunk with
-        | Some (c) -> c.Style |> should equal expectedStyle
-        | _ -> printfn "Offset - %d, Length - %d" offset length
-               printChunks()
-               Assert.Fail()
+        //match chunk with
+        //| Some (c) -> c.Style |> should equal expectedStyle
+        //| _ -> printfn "Offset - %d, Length - %d" offset length
+        //       printChunks()
+        //       Assert.Fail()
 
-        let assertOffsets expectedOffset (chunk:Chunk) =
-            //printfn "%d %d" chunk.Offset expectedOffset
-            if chunk.Offset <> expectedOffset then
-                printChunks()
-                Assert.Fail("Overlapping chunks detected")
-            chunk.Offset + chunk.Length
+        //let assertOffsets expectedOffset (chunk:Chunk) =
+        //    //printfn "%d %d" chunk.Offset expectedOffset
+        //    if chunk.Offset <> expectedOffset then
+        //        printChunks()
+        //        Assert.Fail("Overlapping chunks detected")
+        //    chunk.Offset + chunk.Length
 
-        Seq.fold assertOffsets 0 chunks |> ignore
+        //Seq.fold assertOffsets 0 chunks |> ignore
 
     [<TestCase("let simpleBinding = $1$", "Number")>]
     [<TestCase("$let$ simpleBinding = 1", "Keyword(Iteration)")>]

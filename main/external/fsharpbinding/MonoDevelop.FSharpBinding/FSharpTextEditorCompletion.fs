@@ -184,17 +184,17 @@ module Completion =
             None
 
     let (|LetIdentifier|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=]+$", RegexOptions.Compiled) then
-             let document = new TextDocument(context.lineToCaret)
-             let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+        //if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=]+$", RegexOptions.Compiled) then
+        //     let document = new TextDocument(context.lineToCaret)
+        //     let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
 
-             let documentLine = document.GetLine 1
+        //     let documentLine = document.GetLine 1
 
-             let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
-                              |> Seq.map (fun c -> c.Style)   
-                              |> Seq.tryHead
-             chunkStyle |> Option.bind (fun cs -> if cs <> "User Types" then Some LetIdentifier else None)
-        else
+        //     let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
+        //                      |> Seq.map (fun c -> c.Style)   
+        //                      |> Seq.tryHead
+        //     chunkStyle |> Option.bind (fun cs -> if cs <> "User Types" then Some LetIdentifier else None)
+        //else
             None
 
     let symbolToIcon (symbolUse:FSharpSymbolUse) =

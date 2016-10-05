@@ -338,8 +338,8 @@ module internal Highlight =
     type HighlightType =
     | Symbol | Brackets | Keyword | UserType | Number
 
-    let getColourScheme () =
-        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
+    //let getColourScheme () =
+    //    Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
     let getColourPart x = round(x * 255.0) |> int
 
     let argbToHex (c : Cairo.Color) =
@@ -347,8 +347,8 @@ module internal Highlight =
 
     let syntaxHighlight s =
         let data = new TextEditorData (new TextDocument (s))
-        data.Document.SyntaxMode <- SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
-        data.ColorStyle <- getColourScheme()
+        //data.Document.SyntaxMode <- SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
+        //data.ColorStyle <- getColourScheme()
         data.GetMarkup (0, data.Length, false)
 
     let asUnderline = sprintf "_STARTUNDERLINE_%s_ENDUNDERLINE_" // we replace with real markup after highlighting

@@ -20,8 +20,8 @@ type HighlightUsagesExtension() =
 
     override x.Initialize() =
         base.Initialize ()
-        let syntaxMode = new FSharpSyntaxMode (x.Editor, x.DocumentContext)
-        x.Editor.SemanticHighlighting <- syntaxMode
+        //let syntaxMode = new FSharpSyntaxMode (x.Editor, x.DocumentContext)
+        //x.Editor.SemanticHighlighting <- syntaxMode
 
     override x.ResolveAsync (token) =
         match IdeApp.Workbench.ActiveDocument with
