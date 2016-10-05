@@ -298,6 +298,18 @@ Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{9E06
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnit3Runner", "src\addins\MonoDevelop.UnitTesting.NUnit\NUnit3Runner\NUnit3Runner.csproj", "{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpBinding", "FSharpBinding", "{4804F98F-A891-463C-893D-7134D66C234F}"
+EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "external\fsharpbinding\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
+EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "external\fsharpbinding\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
+EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "external\fsharpbinding\MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
+EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono.TextEditor.Shared", "src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.shproj", "{FBAAD910-F29B-4AC5-9FC0-27F6EB36C495}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.1", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.1.csproj", "{7F5B649A-3572-4713-83FD-C28A6AA70445}"
@@ -2216,6 +2228,11 @@ Global
 		{DD14AD77-6FBB-4F0D-8083-CEC28A9D0BBD} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{3FDB97B5-916E-4817-8098-41659687A8FF} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{74704C00-5861-4F86-920C-865148A175C5} = {8F47F5EC-2F57-4030-B658-7B1002DA90C2}
+		{4804F98F-A891-463C-893D-7134D66C234F} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
+		{4C10F8F9-3816-4647-BA6E-85F5DE39883A} = {4804F98F-A891-463C-893D-7134D66C234F}
+		{FD0D1033-9145-48E5-8ED8-E2365252878C} = {4804F98F-A891-463C-893D-7134D66C234F}
+		{AF5FEAD5-B50E-4F07-A274-32F23D5C504D} = {4804F98F-A891-463C-893D-7134D66C234F}
+		{20D6EC2C-B62E-49D1-B685-90D8967A5B5D} = {4804F98F-A891-463C-893D-7134D66C234F}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -2223,11 +2240,10 @@ Global
 		$1.Text = @\n${FileName}\n \nAuthor:\n      ${AuthorName} <${AuthorEmail}>\n\nCopyright (c) ${Year} ${CopyrightHolder}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.
 		$1.IncludeInNewFiles = True
 		$0.TextStylePolicy = $2
-		$2.FileWidth = 120
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/json
+		$2.scope = application/config+xml
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2263,8 +2279,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = null
-		$13.scope = application/config+xml
+		$13.inheritsSet = Mono
+		$13.scope = application/xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False
