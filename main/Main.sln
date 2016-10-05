@@ -2094,6 +2094,10 @@ Global
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2248,7 +2252,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/config+xml
+		$2.scope = application/json
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2284,8 +2288,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = Mono
-		$13.scope = application/xml
+		$13.inheritsSet = null
+		$13.scope = application/config+xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False
