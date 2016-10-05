@@ -244,9 +244,7 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    base[SELECTED] = @selected_bg_color
-    base[ACTIVE] = @selected_bg_color
-    text[SELECTED] = @selected_fg_color
+    base[ACTIVE] = "#a0a0a0"
     text[ACTIVE] = @selected_fg_color
 
     engine "xamarin" {
