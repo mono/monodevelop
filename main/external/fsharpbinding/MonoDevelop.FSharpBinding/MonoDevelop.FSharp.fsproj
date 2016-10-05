@@ -235,7 +235,7 @@
     </ProjectReference>
     <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\BackendBindings\MonoDevelop.SourceEditor.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
