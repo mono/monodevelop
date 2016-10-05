@@ -492,8 +492,12 @@ namespace MonoDevelop.Components.Commands
 				
 				str = shortcut.Substring (i, j - i);
 				if ((mod = ModifierMask (str)) == Gdk.ModifierType.None) {
-					if (str.Length > 1)
-						key = (Gdk.Key) Gdk.Key.Parse (typeof (Gdk.Key), str);
+					if (str.Length > 1) {
+						if (!Gdk.Key.TryParse (str, out key)) {
+							Console.WriteLine ("WARNING: invalid Gdk.Key portion of shortcut {0}", shortcut);
+							return null;
+						}
+					}
 					else if (str[0] >= 'a' && str[0] <= 'z')
 						key = (Gdk.Key) str[0] - 32;
 					else
