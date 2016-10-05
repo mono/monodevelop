@@ -25,7 +25,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging.Gui
@@ -38,6 +43,13 @@ namespace MonoDevelop.Packaging.Gui
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
 			this.Build ();
+
+			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
+			separator.ModifyBg (StateType.Normal, separatorColor);
+
+			seeMoreDetailsLabel.SetLinkHandler (OpenDetailsTab);
+
+			PopulateLanguages ();
 		}
 
 		internal void Load (PackagingProject project)
@@ -63,7 +75,7 @@ namespace MonoDevelop.Packaging.Gui
 			packageCopyrightTextBox.Text = GetTextBoxText (metadata.Copyright);
 			packageDevelopmentDependencyCheckBox.Active = metadata.DevelopmentDependency;
 			packageIconUrlTextBox.Text = GetTextBoxText (metadata.IconUrl);
-			packageLanguageTextBox.Text = GetTextBoxText (metadata.Language);
+			packageLanguageComboBox.Entry.Text = GetTextBoxText (metadata.Language);
 			packageLicenseUrlTextBox.Text = GetTextBoxText (metadata.LicenseUrl);
 			packageOwnersTextBox.Text = GetTextBoxText (metadata.Owners);
 			packageProjectUrlTextBox.Text = GetTextBoxText (metadata.ProjectUrl);
@@ -105,7 +117,7 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Copyright = packageCopyrightTextBox.Text;
 			metadata.DevelopmentDependency = packageDevelopmentDependencyCheckBox.Active;
 			metadata.IconUrl = packageIconUrlTextBox.Text;
-			metadata.Language = packageLanguageTextBox.Text;
+			metadata.Language = packageLanguageComboBox.Entry.Text;
 			metadata.LicenseUrl = packageLicenseUrlTextBox.Text;
 			metadata.Owners = packageOwnersTextBox.Text;
 			metadata.ProjectUrl = packageProjectUrlTextBox.Text;
@@ -114,6 +126,27 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Summary = packageSummaryTextBox.Text;
 			metadata.Tags = packageTagsTextBox.Text;
 			metadata.Title = packageTitleTextBox.Text;
+		}
+
+		void OpenDetailsTab (string url)
+		{
+			notebook.CurrentPage = 1;
+		}
+
+		void PopulateLanguages ()
+		{
+			var languagesListStore = new ListStore (typeof (string));
+			packageLanguageComboBox.Model = languagesListStore;
+
+			List<string> languages = CultureInfo.GetCultures(CultureTypes.AllCultures)
+				.Select (c => c.Name)
+				.ToList ();
+
+			languages.Sort ();
+
+			foreach (string language in languages) {
+				languagesListStore.AppendValues (language);
+			}
 		}
 	}
 }
