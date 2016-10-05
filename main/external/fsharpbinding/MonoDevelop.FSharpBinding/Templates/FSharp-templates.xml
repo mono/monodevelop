@@ -1,0 +1,462 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FSharpCodeTemplates version="1.0">
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>agent</Shortcut>
+      <_Description>Creates boilerplate code for an agent</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="var">
+        <Default>myAgent</Default>
+      </Variable>
+      <Variable name="typename">
+        <Default>string</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[let $var$ =
+    new MailboxProcessor<$typename$>(fun inbox ->
+       let rec loop () = 
+           async {
+               let! msg = inbox.Receive()
+               return! loop () }
+       loop ())
+$end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>outlet</Shortcut>
+      <_Description>Creates an iOS outlet with attribute</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>Name</Default>
+      </Variable>
+      <Variable name="type">
+        <Default>UILabel</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[[<Outlet>]
+member val $name$ : $type$ = null with get, set]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>action</Shortcut>
+      <_Description>Creates an iOS action with attribute</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>Name</Default>
+      </Variable>
+      <Variable name="type">
+        <Default>NSObject</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[[<Action("$name$:")>]
+member this.$name$ (sender : $type$) =
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>uncheck</Shortcut>
+      <_Description>Creates an unchecked default value</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="type">
+        <Default>type</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[Unchecked.defaultof<$type$>]]></Code>
+  </CodeTemplate>
+
+    <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>check</Shortcut>
+      <_Description>Checks variable type</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="var">
+        <Default>name</Default>
+      </Variable>
+      <Variable name="type">
+        <Default>type</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[match $var$ with
+| :? $type$ -> ()
+| _ -> ()]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>virt</Shortcut>
+      <_Description>Adds a virtual member</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="funName">
+        <Default>name</Default>
+      </Variable>
+      <Variable name="delta">
+        <Default>delta</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[abstract member $funName$ : int -> unit
+default this.$funName$ (delta:int) = ()]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>abstract</Shortcut>
+      <_Description>Creates an abstract method</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="funName">
+        <Default>name</Default>
+      </Variable>
+      <Variable name="funSignature">
+        <Default>parameters</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[abstract member $funName$ : $funSignature$
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>abstractp</Shortcut>
+      <_Description>Creates an abstract property</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>name</Default>
+      </Variable>
+      <Variable name="type">
+        <Default>int</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[abstract $name$ : $type$ with get, set$end$]]></Code>
+  </CodeTemplate>
+
+   <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>seq</Shortcut>
+      <_Description>Creates a sequence</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables />
+    <Code><![CDATA[seq {$end$}]]></Code>
+  </CodeTemplate>
+
+   <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>list</Shortcut>
+      <_Description>Creates a list</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>name</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[let $name$ = [$end$]]]></Code>
+  </CodeTemplate>
+
+     <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>array</Shortcut>
+      <_Description>Creates an array</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>name</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[let $name$ = [|$end$|]]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>struct</Shortcut>
+      <_Description>Creates a struct</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>name</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[[<Struct>]
+type $name$ = 
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>if</Shortcut>
+      <_Description>Template for if...then</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="condition">
+        <Default>condition</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[if $condition$ then $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>elif</Shortcut>
+      <_Description>Template for elif...then</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="condition">
+        <Default>condition</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[elif $condition$ then $end$
+else]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>ifelse</Shortcut>
+      <_Description>Template for if...then...else</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="condition">
+        <Default>condition</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[if $condition$ then 
+    $end$
+else]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>while</Shortcut>
+      <_Description>Template for while</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="condition">
+        <Default>condition</Default>
+      </Variable>
+    </Variables>
+    <Code>><![CDATA[while $condition$ do 
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>fort</Shortcut>
+      <_Description>Template for for...to</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="identifier">
+        <Default>identifier</Default>
+      </Variable>
+      <Variable name="start">
+        <Default>start</Default>
+      </Variable>
+      <Variable name="finish">
+        <Default>finish</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[for $identifier$ = $start$ to $finish$ do 
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>fordt</Shortcut>
+      <_Description>Template for for...downto</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="identifier">
+        <Default>identifier</Default>
+      </Variable>
+      <Variable name="start">
+        <Default>start</Default>
+      </Variable>
+      <Variable name="finish">
+        <Default>finish</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[for $identifier$ = $start$ downto $finish$ do 
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>fori</Shortcut>
+      <_Description>Template for for...in</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="pattern">
+        <Default>pattern</Default>
+      </Variable>
+      <Variable name="expression">
+        <Default>expression</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[for $pattern$ in $expression$ do 
+    $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>match</Shortcut>
+      <_Description>Template for match</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>expression</Default>
+      </Variable>
+      <Variable name="pattern">
+        <Default>pattern</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[match $expression$ with
+| $pattern$ -> $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>fun</Shortcut>
+      <_Description>Template for fun</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="parameter">
+        <Default>()</Default>
+      </Variable>
+      <Variable name="expression">
+        <Default>expression</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[fun $parameter$ -> $expression$ $end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>main</Shortcut>
+      <_Description>Template for main</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>main</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[[<EntryPoint>]
+let $name$ argv = 
+    printfn "%A" argv
+    0]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>tomap</Shortcut>
+      <_Description>Converts dictionary to F# map</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>toMap</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[let $name$ (dictionary:#seq<_>) = 
+    dictionary
+    |> Seq.map (|KeyValue|)
+    |> Map.ofSeq
+$end$]]></Code>
+  </CodeTemplate>
+</FSharpCodeTemplates>

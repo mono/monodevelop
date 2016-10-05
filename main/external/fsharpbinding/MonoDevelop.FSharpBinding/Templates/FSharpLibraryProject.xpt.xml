@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<Template Originator="Community" Created="10/6/2010" LastModified="10/6/2010">
+
+  <!-- Template Header -->
+  <TemplateConfiguration>
+    <_Name>Library</_Name>
+    <Icon>md-library-project</Icon>
+    <Image id="md-library-project" />
+    <_Description>An F# project for creating an F# library</_Description>
+    <Category>other/net/general</Category>
+    <LanguageName>F#</LanguageName>
+    <GroupId>md-project-library</GroupId>
+  </TemplateConfiguration>
+
+  <!-- Actions -->
+  <Actions>
+    <Open filename = "Component1.fs"/>
+  </Actions>
+
+  <!-- Template Content -->
+  <Combine name = "${ProjectName}" directory = ".">
+    <Options>
+      <StartupProject>${ProjectName}</StartupProject>
+    </Options>
+
+    <Project name = "${ProjectName}" directory = ".">
+      <Options Target="Library" TargetFrameworkVersion="4.5.1" PauseConsole="False"/>
+      <References>
+        <Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Gac" refto="FSharp.Core" />
+        <Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Package" refto="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />	
+      </References>
+      <Files>
+        <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+        <UnformattedFile name = "Component1.fs" AddStandardHeader="True">
+        <![CDATA[namespace ${Namespace}
+
+type Class1() = 
+    member this.X = "F#"
+]]></UnformattedFile>
+	<UnformattedFile name = "Script.fsx" AddStandardHeader="True">
+	<![CDATA[// Learn more about F# at http://fsharp.net. See the 'F# Tutorial' project
+// for more guidance on F# programming.
+
+#load "Component1.fs"
+open ${Namespace}
+]]></UnformattedFile>
+      </Files>
+    </Project>
+  </Combine>
+</Template>

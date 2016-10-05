@@ -1,0 +1,8 @@
+﻿<TextStylePolicy scope="text/x-fsharp">
+    <FileWidth>120</FileWidth>
+    <TabWidth>4</TabWidth>
+    <TabsToSpaces>True</TabsToSpaces>
+    <NoTabsAfterNonTabs>True</NoTabsAfterNonTabs>
+    <RemoveTrailingWhitespace>True</RemoveTrailingWhitespace>
+    <EolMarker>Native</EolMarker>
+</TextStylePolicy>

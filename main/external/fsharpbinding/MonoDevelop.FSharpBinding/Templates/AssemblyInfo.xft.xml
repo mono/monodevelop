@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<Template
+    Originator="Ihor Sihuta"
+    Created="2012/08/14"
+    LastModified="2012/08/14">
+
+    <!-- Template Header -->
+    <TemplateConfiguration>
+        <_Name>Assembly Information</_Name>
+        <_Category>Misc</_Category>
+        <Icon>md-file-source</Icon>
+        <LanguageName>F#</LanguageName>
+        <DefaultFilename IsFixed="True">AssemblyInfo.fs</DefaultFilename>
+        <_Description>A file defining assembly information attributes.</_Description>
+    </TemplateConfiguration>
+
+    <Conditions>
+        <ParentProject PermittedCreationPaths="" ExcludedFiles="AssemblyInfo.fs" RequireProject="True"/>
+    </Conditions>
+
+    <!-- Template Content -->
+    <TemplateFiles>
+        <UnformattedFile name="AssemblyInfo.fs" AddStandardHeader="True">
+            <![CDATA[namespace ${Namespace}
+open System.Reflection
+open System.Runtime.CompilerServices
+
+[<assembly: AssemblyTitle("${ProjectName}")>]
+[<assembly: AssemblyDescription("")>]
+[<assembly: AssemblyConfiguration("")>]
+[<assembly: AssemblyCompany("${AuthorCompany}")>]
+[<assembly: AssemblyProduct("")>]
+[<assembly: AssemblyCopyright("${AuthorCopyright}")>]
+[<assembly: AssemblyTrademark("${AuthorTrademark}")>]
+
+// The assembly version has the format {Major}.{Minor}.{Build}.{Revision}
+
+[<assembly: AssemblyVersion("1.0.0.0")>]
+
+//[<assembly: AssemblyDelaySign(false)>]
+//[<assembly: AssemblyKeyFile("")>]
+
+()]]></UnformattedFile>
+    </TemplateFiles>
+</Template>
