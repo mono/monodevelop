@@ -150,6 +150,11 @@ namespace MonoDevelop.Projects
 			next.OnWriteConfiguration (monitor, config, pset);
 		}
 
+		internal protected virtual Task OnReevaluateProject (ProgressMonitor monitor)
+		{
+			return next.OnReevaluateProject (monitor);
+		}
+
 		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return next.OnGetSourceFiles (monitor, configuration);

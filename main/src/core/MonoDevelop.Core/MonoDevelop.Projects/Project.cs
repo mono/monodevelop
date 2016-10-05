@@ -74,6 +74,7 @@ namespace MonoDevelop.Projects
 		List<string> defaultImports;
 
 		ProjectItemCollection items;
+		List<string> projectCapabilities;
 
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
@@ -186,6 +187,15 @@ namespace MonoDevelop.Projects
 				sourceProject.FileName = FileName;
 			}
 
+			// Loads minimal data required to instantiate extensions and prepare for project loading
+			InitBeforeProjectExtensionLoad ();
+		}
+
+		/// <summary>
+		/// Initialization to be done before extensions are loaded
+		/// </summary>
+		void InitBeforeProjectExtensionLoad ()
+		{
 			var ggroup = sourceProject.GetGlobalPropertyGroup ();
 			// Avoid crash if there is not global group
 			if (ggroup == null)
@@ -193,6 +203,9 @@ namespace MonoDevelop.Projects
 
 			// Load the evaluated properties
 			InitMainGroupProperties (ggroup);
+
+			// Capabilities have to be loaded here since extensions may be activated or deactivated depending on them
+			LoadProjectCapabilities ();
 		}
 
 		void InitMainGroupProperties (MSBuildPropertyGroup globalGroup)
@@ -402,22 +415,32 @@ namespace MonoDevelop.Projects
 		protected override Task OnLoad (ProgressMonitor monitor)
 		{
 			return Task.Run (async delegate {
-				if (sourceProject == null || sourceProject.IsNewProject) {
-					sourceProject = await MSBuildProject.LoadAsync (FileName);
-					if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
-						sourceProject.UseMSBuildEngine = false;
-					sourceProject.Evaluate ();
-				}
-
-				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
-				// Avoid crash if there is not global group
-				if (globalGroup == null)
-					sourceProject.AddNewPropertyGroup (false);
-
-				ProjectExtension.OnPrepareForEvaluation (sourceProject);
-
-				ReadProject (monitor, sourceProject);
+				await LoadAsync (monitor);
 			});
+		}
+
+		async Task LoadAsync (ProgressMonitor monitor)
+		{
+			if (sourceProject == null || sourceProject.IsNewProject) {
+				sourceProject = await MSBuildProject.LoadAsync (FileName);
+				if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
+					sourceProject.UseMSBuildEngine = false;
+				sourceProject.Evaluate ();
+			}
+
+			IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
+			// Avoid crash if there is not global group
+			if (globalGroup == null)
+				sourceProject.AddNewPropertyGroup (false);
+
+			ProjectExtension.OnPrepareForEvaluation (sourceProject);
+
+			ReadProject (monitor, sourceProject);
+		}
+
+		void LoadProjectCapabilities ()
+		{
+			projectCapabilities = sourceProject.EvaluatedItems.Where (it => it.Name == "ProjectCapability").Select (it => it.Include).ToList ();
 		}
 
 		/// <summary>
@@ -760,6 +783,32 @@ namespace MonoDevelop.Projects
 		internal IEnumerable<ProjectExtension> GetFlavors ()
 		{
 			return ExtensionChain.GetAllExtensions ().OfType<ProjectExtension> ();
+		}
+
+		public IEnumerable<string> GetProjectCapabilities ()
+		{
+			return (IEnumerable<string>)projectCapabilities ?? ImmutableList<string>.Empty;
+		}
+
+		/// <summary>
+		/// Checks if the project has a capability or a combination of capabilities (including AND, OR, NOT logic).
+		/// </summary>
+		/// <returns><c>true</c> if the project has the required capabilities.</returns>
+		/// <param name="capabilityExpression">Expression of capabilities</param>
+		/// <remarks>The expression can be something like "(VisualC | CSharp) + (MSTest | NUnit)".
+		/// The "|" is the OR operator. The "&amp;" and "+" characters are both AND operators.
+		/// The "!" character is the NOT operator. Parentheses force evaluation precedence order.
+		/// A null or empty expression is evaluated as a match.</remarks>
+		public bool IsCapabilityMatch (string capabilityExpression)
+		{
+			return SimpleExpressionEvaluator.Evaluate (capabilityExpression, (IList<string>)projectCapabilities ?? ImmutableList<string>.Empty);
+		}
+
+		public event EventHandler ProjectCapabilitiesChanged;
+
+		void NotifyProjectCapabilitiesChanged ()
+		{
+			ProjectCapabilitiesChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -2213,18 +2262,20 @@ namespace MonoDevelop.Projects
 			productVersion = msproject.EvaluatedProperties.GetValue ("ProductVersion");
 			schemaVersion = msproject.EvaluatedProperties.GetValue ("SchemaVersion");
 
-			// Get the project ID
+			if (!IsReevaluating) {
+				// Get the project ID
 
-			string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
-			if (itemGuid == null)
-				throw new UserException (GettextCatalog.GetString ("Project file doesn't have a valid ProjectGuid"));
+				string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
+				if (itemGuid == null)
+					throw new UserException (GettextCatalog.GetString ("Project file doesn't have a valid ProjectGuid"));
 
-			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
-			// of shared projects.
-			if (!itemGuid.StartsWith ("{", StringComparison.Ordinal))
-				itemGuid = "{" + itemGuid + "}";
+				// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
+				// of shared projects.
+				if (!itemGuid.StartsWith ("{", StringComparison.Ordinal))
+					itemGuid = "{" + itemGuid + "}";
 
-			ItemId = itemGuid.ToUpper ();
+				ItemId = itemGuid.ToUpper ();
+			}
 
 			// Get the project GUIDs
 
@@ -2267,8 +2318,11 @@ namespace MonoDevelop.Projects
 
 			List<ConfigData> configData = GetConfigData (msproject, true);
 
+			var configs = new List<ProjectConfiguration> ();
 			foreach (var cgrp in configData)
-				LoadConfiguration (monitor, cgrp, cgrp.Config, cgrp.Platform);
+				configs.Add (LoadConfiguration (monitor, cgrp, cgrp.Config, cgrp.Platform));
+
+			Configurations.SetItems (configs);
 
 			timer.Trace ("Read run configurations");
 
@@ -2276,8 +2330,11 @@ namespace MonoDevelop.Projects
 			GetRunConfigData (runConfigData, msproject, true);
 			GetRunConfigData (runConfigData, userProject, true);
 
+			var runConfigs = new List<ProjectRunConfiguration> ();
 			foreach (var cgrp in runConfigData)
-				LoadRunConfiguration (monitor, cgrp, cgrp.Config);
+				runConfigs.Add (LoadRunConfiguration (monitor, cgrp, cgrp.Config));
+
+			runConfigurations.SetItems (runConfigs);
 
 			// Read extended properties
 
@@ -2386,15 +2443,26 @@ namespace MonoDevelop.Projects
 			return config.IndexOf ('\'') == -1;
 		}
 
-		void LoadConfiguration (ProgressMonitor monitor, ConfigData cgrp, string conf, string platform)
+		ProjectConfiguration LoadConfiguration (ProgressMonitor monitor, ConfigData cgrp, string conf, string platform)
 		{
-			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf + "|" + (platform  != "AnyCPU" ? platform : ""));
+			ProjectConfiguration config = null;
+			if (platform == "AnyCPU")
+				platform = "";
+			
+			string id = string.IsNullOrEmpty (platform) ? conf : conf + "|" + platform;
+
+			if (IsReevaluating)
+				config = Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Id == id);
+
+			if (config == null)
+				config = CreateConfiguration (id);
+			
 			if (cgrp.Group != null)
 				config.MainPropertyGroup = (MSBuildPropertyGroup) cgrp.Group;
 			config.MainPropertyGroup.ResetIsNewFlags ();
 			InitConfiguration (config);
 			projectExtension.OnReadConfiguration (monitor, config, config.Properties);
-			Configurations.Add (config);
+			return config;
 		}
 
 		MSBuildProjectInstance CreateProjectInstaceForConfiguration (string conf, string platform, bool onlyEvaluateProperties = true)
@@ -2469,9 +2537,16 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		void LoadRunConfiguration (ProgressMonitor monitor, ConfigData cgrp, string configName)
+		ProjectRunConfiguration LoadRunConfiguration (ProgressMonitor monitor, ConfigData cgrp, string configName)
 		{
-			var runConfig = (ProjectRunConfiguration)CreateUninitializedRunConfiguration (configName);
+			ProjectRunConfiguration runConfig = null;
+
+			if (IsReevaluating)
+				runConfig = runConfigurations.FirstOrDefault (c => c.Id == configName);
+
+			if (runConfig == null)
+				runConfig = CreateUninitializedRunConfiguration (configName);
+			
 			if (cgrp.Group != null) {
 				runConfig.MainPropertyGroup = cgrp.Group;
 				runConfig.StoreInUserFile = cgrp.Group.ParentProject == userProject;
@@ -2479,7 +2554,7 @@ namespace MonoDevelop.Projects
 			runConfig.MainPropertyGroup.ResetIsNewFlags ();
 			InitRunConfiguration (runConfig);
 			projectExtension.OnReadRunConfiguration (monitor, runConfig, runConfig.Properties);
-			runConfigurations.Add (runConfig);
+			return runConfig;
 		}
 
 		void InitRunConfiguration (ProjectRunConfiguration config)
@@ -2557,7 +2632,10 @@ namespace MonoDevelop.Projects
 				if (loadedItems != null)
 					loadedItems.Add (buildItem.SourceItem);
 			}
-			Items.AddRange (localItems);
+			if (IsReevaluating)
+				Items.SetItems (localItems);
+			else
+				Items.AddRange (localItems);
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
@@ -2579,6 +2657,16 @@ namespace MonoDevelop.Projects
 
 		internal ProjectItem ReadItem (IMSBuildItemEvaluated buildItem)
 		{
+			if (IsReevaluating) {
+				// If this item already exists in the current collection of items, reuse it
+				var eit = Items.FirstOrDefault (it => it.BackingItem != null && it.BackingEvalItem != null && it.BackingEvalItem.Name == buildItem.Name && it.BackingEvalItem.Include == buildItem.Include && ItemsAreEqual (buildItem, it.BackingEvalItem));
+				if (eit != null) {
+					eit.BackingItem = buildItem.SourceItem;
+					eit.BackingEvalItem = buildItem;
+					return eit;
+				}
+			}
+
 			var item = CreateProjectItem (buildItem);
 			item.Read (this, buildItem);
 			item.BackingItem = buildItem.SourceItem;
@@ -3092,6 +3180,24 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
+		bool ItemsAreEqual (IMSBuildItemEvaluated item1, IMSBuildItemEvaluated item2)
+		{
+			// Compare only metadata, since item name and include can't change
+
+			if (item1.SourceItem == null || item2.SourceItem == null || item1.SourceItem.Metadata.GetProperties ().Count () != item2.SourceItem.Metadata.GetProperties ().Count ())
+				return false;
+
+			foreach (var p in item1.SourceItem.Metadata.GetProperties ()) {
+				var p1 = item1.Metadata.GetProperty (p.Name);
+				var p2 = item2.Metadata.GetProperty (p.Name);
+				if (p2 == null || p2 == null)
+					return false;
+				if (!p.ValueType.Equals (p1.Value, p2.Value))
+					return false;
+			}
+			return true;
+		}
+
 		IMSBuildItemEvaluated CreateFakeEvaluatedItem (MSBuildProject msproject, MSBuildItem item, string include)
 		{
 			// Create the item
@@ -3153,6 +3259,47 @@ namespace MonoDevelop.Projects
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Reevaluates the MSBuild project
+		/// </summary>
+		/// <remarks>
+		/// Reevaluates the underlying msbuild project and updates the project information acording to the new items and properties.
+		/// </remarks>
+		public async Task ReevaluateProject (ProgressMonitor monitor)
+		{
+			var oldCapabilities = new HashSet<string> (projectCapabilities);
+
+			try {
+				IsReevaluating = true;
+
+				// Reevaluate the msbuild project
+				await sourceProject.EvaluateAsync ();
+
+				// Loads minimal data required to instantiate extensions and prepare for project loading
+				InitBeforeProjectExtensionLoad ();
+
+				// Activate / deactivate extensions based on the new status
+				RefreshExtensions ();
+
+				await ProjectExtension.OnReevaluateProject (monitor);
+		
+			} finally {
+				IsReevaluating = false;
+			}
+
+			if (!oldCapabilities.SetEquals (projectCapabilities))
+				NotifyProjectCapabilitiesChanged ();
+
+			NotifyExecutionTargetsChanged (); // Maybe...
+		}
+
+		protected virtual async Task OnReevaluateProject (ProgressMonitor monitor)
+		{
+			await LoadAsync (monitor);
+		}
+
+		public bool IsReevaluating { get; private set; }
 
 		/// <summary>
 		/// Checks if a file is included in any project item glob, and in this case it adds the require project files.
@@ -3441,6 +3588,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet grp)
 			{
 				Project.OnWriteConfiguration (monitor, config, grp);
+			}
+
+			internal protected override Task OnReevaluateProject (ProgressMonitor monitor)
+			{
+				return Project.OnReevaluateProject (monitor);
 			}
 
 			internal protected override void OnGetDefaultImports (List<string> imports)

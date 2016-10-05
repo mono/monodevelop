@@ -26,12 +26,14 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
 	public class WorkspaceObjectExtension: ChainedExtension
 	{
 		WorkspaceObjectExtension next;
+		internal ProjectModelExtensionNode SourceExtensionNode;
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
@@ -43,7 +45,7 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual bool SupportsObject (WorkspaceObject item)
 		{
-			return true;
+			return SourceExtensionNode == null || SourceExtensionNode.CanHandleObject (item);
 		}
 
 		internal void Init (WorkspaceObject item)
