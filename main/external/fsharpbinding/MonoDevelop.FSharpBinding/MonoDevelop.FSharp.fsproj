@@ -30,9 +30,15 @@
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../../main/build">
+        <Command>
+          <type>Execute</type>
+          <command>../../../../main/build/bin/MonoDevelop.exe --no-redirect</command>
+          <workingdir>../../../../main/build</workingdir>
           <EnvironmentVariables>
-            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
+            <Variable>
+              <name>MONODEVELOP_DEV_ADDINS</name>
+              <value>${TargetDir}</value>
+            </Variable>
           </EnvironmentVariables>
         </Command>
       </CustomCommands>
@@ -149,10 +155,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
     <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
@@ -227,6 +229,14 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+    </ProjectReference>
+    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
+      <Private>False</Private>
+      <HintPath>..\..\..\build\AddIns\BackendBindings\MonoDevelop.SourceEditor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -235,7 +245,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
           </FSharpFormattingPolicy>
