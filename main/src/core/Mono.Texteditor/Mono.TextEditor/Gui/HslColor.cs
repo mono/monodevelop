@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
-	struct HslColor
+	struct HslColor : IEquatable<HslColor>
 	{
 		public double H {
 			get;
@@ -45,6 +45,26 @@ namespace Mono.TextEditor
 		public double L {
 			get;
 			set;
+		}
+
+		public bool Equals (HslColor other)
+		{
+			return this.H == other.H && this.S == other.S && this.L == other.L;
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (!(obj is HslColor))
+				return false;
+
+			return Equals ((HslColor)obj);
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return H.GetHashCode () ^ S.GetHashCode () ^ L.GetHashCode ();
+			}
 		}
 
 		void ToRgb (out double r, out double g, out double b)

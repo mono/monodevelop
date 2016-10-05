@@ -1014,13 +1014,15 @@ namespace MonoDevelop.Components.MainToolbar
 			string text = result.GetMarkupText (selected);
 			string desc = result.GetDescriptionMarkupText ();
 
-			var sb = new System.Text.StringBuilder (text.Length + resultFgColor.Length + desc.Length + descFgColor.Length + 68);
+			int descLength = desc != null ? desc.Length : 0;
+
+			var sb = new System.Text.StringBuilder (text.Length + resultFgColor.Length + descLength + descFgColor.Length + 68);
 			sb.Append ("<span foreground=\"");
 			sb.Append (resultFgColor);
 			sb.Append ("\">");
 			sb.Append (text);
 			sb.Append ("</span>");
-			if (!string.IsNullOrEmpty (desc)) {
+			if (descLength > 0) {
 				sb.Append ("<span foreground=\"");
 				sb.Append (descFgColor);
 				sb.Append ("\" size=\"small\">\n");

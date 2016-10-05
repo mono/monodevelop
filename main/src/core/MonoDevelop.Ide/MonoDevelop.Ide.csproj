@@ -162,6 +162,10 @@
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
@@ -7711,6 +7715,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskService.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ContextPadCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\WorkbenchContextCodon.cs" />
@@ -8315,7 +8320,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParserNode.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />

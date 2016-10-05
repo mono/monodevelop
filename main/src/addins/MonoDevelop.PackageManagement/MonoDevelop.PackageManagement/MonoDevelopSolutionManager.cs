@@ -50,6 +50,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			Solution = solution;
 			LoadSettings ();
+			solution.SolutionItemAdded += (sender, e) => {
+				projects = null;
+			};
+			solution.SolutionItemRemoved += (sender, e) => {
+				projects = null;
+			};
 		}
 
 		public Solution Solution { get; private set; }
@@ -152,6 +158,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			string rootDirectory = Path.Combine (Solution.BaseDirectory, ".nuget");
 			Settings = SettingsLoader.LoadDefaultSettings (rootDirectory, reportError: true);
+		}
+
+		public void ClearProjectCache ()
+		{
+			projects = null;
 		}
 	}
 }
