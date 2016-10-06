@@ -28,19 +28,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../../main/build">
-          <EnvironmentVariables>
-            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
-          </EnvironmentVariables>
-        </Command>
-      </CustomCommands>
-    </CustomCommands>
   </PropertyGroup>
-  <Target Name="Clean">
-    <RemoveDir Directories="..\bin\" />
-  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -59,6 +47,18 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <Target Name="Clean">
+    <RemoveDir Directories="..\bin\" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <NuGetPackage Include="FSharp.Core">
+        <Name>FSharp.Core</Name>
+        <Version>4.0.0.1</Version>
+      </NuGetPackage>
+    </ItemGroup>
+    <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" />
+  </Target>
   <Target Name="AfterBuild">
   </Target>
   <Target Name="AfterClean">
@@ -118,6 +118,7 @@
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="paket.references" />
     <Compile Include="Properties\AddinInfo.fs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />
@@ -184,9 +185,6 @@
       <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion)">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
@@ -227,6 +225,9 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core\lib\net40\FSharp.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -235,7 +236,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
           </FSharpFormattingPolicy>
