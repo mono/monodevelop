@@ -21,8 +21,18 @@ clean-local: sln_clean
 	cd external && $(MAKE) clean
 	cd build && $(MAKE) clean
 
+NUGET_FOUND = $$(echo $$(which nuget))
+NUGET_RESTORE = \
+	if [ "x$(NUGET_FOUND)" = "x" ]; then \
+		mono external/nuget-binary/nuget.exe restore; \
+	else \
+		nuget restore; \
+	fi;
+
+#FIXME: move the restore logic into MSBuild (Before.sln.targets),
+#       see: https://github.com/kzu/NuGet.Restore
 restore-packages:
-	nuget restore
+	@$(NUGET_RESTORE)
 
 vcrevision:
 	touch vcrevision
