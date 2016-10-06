@@ -47,15 +47,17 @@ namespace MonoDevelop.Ide.Editor
 		public void TestExactMatch ()
 		{
 			var expr = StackMatchExpression.Parse ("foo");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo")).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar"), ref tmp).Item1);
 		}
 
 		[Test]
 		public void TestDashChar ()
 		{
 			var expr = StackMatchExpression.Parse ("entity.other.attribute-name");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("entity.other.attribute-name")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("entity.other.attribute-name"), ref tmp).Item1);
 		}
 
 
@@ -63,7 +65,8 @@ namespace MonoDevelop.Ide.Editor
 		public void TestSubstringMatch ()
 		{
 			var expr = StackMatchExpression.Parse ("foo");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
 		}
 
 
@@ -71,25 +74,28 @@ namespace MonoDevelop.Ide.Editor
 		public void TestOrMatch ()
 		{
 			var expr = StackMatchExpression.Parse ("foo, bar");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo")).Item1);
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar"), ref tmp).Item1);
 		}
 
 		[Test]
 		public void TestSubtraction ()
 		{
 			var expr = StackMatchExpression.Parse ("foo - foo.bar");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo")).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
 		}
 
 		[Test]
 		public void TestMinusOr ()
 		{
 			var expr = StackMatchExpression.Parse ("foo - (foo.bar | foo.foobar)");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo")).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar")).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.foobar")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.foobar"), ref tmp).Item1);
 		}
 
 
@@ -98,8 +104,9 @@ namespace MonoDevelop.Ide.Editor
 		public void TestStackMatch ()
 		{
 			var expr = StackMatchExpression.Parse ("foo bar");
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo").Push ("bar")).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar").Push ("foo")).Item1);
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo").Push ("bar"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar").Push ("foo"), ref tmp).Item1);
 		}
 	}
 }

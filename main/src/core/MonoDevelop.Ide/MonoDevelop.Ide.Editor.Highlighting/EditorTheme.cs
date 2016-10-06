@@ -224,9 +224,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static bool IsCompatibleScope (StackMatchExpression expr, ImmutableStack<string> scope, ref string matchingKey)
 		{
 			while (!scope.IsEmpty) {
-				var result = expr.MatchesStack (scope);
+				var result = expr.MatchesStack (scope, ref matchingKey);
 				if (result.Item1) {
-					matchingKey = scope.Peek ();
 					return true;
 				}
 				scope = scope.Pop ();

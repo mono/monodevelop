@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public abstract class StackMatchExpression
 	{
-		public abstract Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack);
+		public abstract Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr);
 
 		public static StackMatchExpression Parse (string expression)
 		{
@@ -133,12 +133,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack)
+			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
 			{
-				var leftResult = left.MatchesStack (scopeStack);
+				var leftResult = left.MatchesStack (scopeStack, ref matchExpr);
 				if (leftResult.Item1)
 					return leftResult;
-				return right.MatchesStack (scopeStack);
+				return right.MatchesStack (scopeStack, ref matchExpr);
 			}
 
 			public override string ToString ()
@@ -153,12 +153,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack)
+			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
 			{
-				var leftResult = left.MatchesStack (scopeStack);
+				var leftResult = left.MatchesStack (scopeStack, ref matchExpr);
 				if (!leftResult.Item1)
 					return leftResult;
-				var rightResult = right.MatchesStack (scopeStack);
+				string tmp = "";
+				var rightResult = right.MatchesStack (scopeStack, ref tmp);
 				if (rightResult.Item1)
 					return Tuple.Create (false, rightResult.Item2);
 				return leftResult;
@@ -180,11 +181,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.right = right;
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack)
+			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
 			{
-				var secondResult = right.MatchesStack (scopeStack);
+				var secondResult = right.MatchesStack (scopeStack, ref matchExpr);
 				if (secondResult.Item1)
-					return left.MatchesStack (secondResult.Item2);
+					return left.MatchesStack (secondResult.Item2, ref matchExpr);
 				return secondResult;
 			}
 
@@ -203,11 +204,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.scope = scope;
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack)
+			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
 			{
 				if (scopeStack.IsEmpty)
 					return Tuple.Create (false, scopeStack);
 				bool found = scopeStack.Peek ().StartsWith (scope, StringComparison.Ordinal);
+				if (found)
+					matchExpr = scope;
 				return Tuple.Create (found, scopeStack.Pop ());
 			}
 
