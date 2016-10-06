@@ -190,18 +190,18 @@ namespace MonoDevelop.Components.MainToolbar
 				int runtimes = 0;
 				if (currentSolution.StartupConfiguration is MultiItemSolutionRunConfiguration) {
 					bool anyValid = false;
-					foreach (var startConf in ((MultiItemSolutionRunConfiguration)currentSolution.StartupConfiguration).Items.Select (i => i.RunConfiguration)) {
-						if (startConf == null || startConf.ParentItem == null)
+					foreach (var startConf in ((MultiItemSolutionRunConfiguration)currentSolution.StartupConfiguration).Items) {
+						if (startConf?.SolutionItem == null)
 							continue;
 
 						// Check that the current startup project is enabled for the current configuration
 						var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-						if (solConf == null || !solConf.BuildEnabledForItem (startConf.ParentItem))
+						if (solConf == null || !solConf.BuildEnabledForItem (startConf.SolutionItem))
 							continue;
 						anyValid = true;
 						var projectList = new List<RuntimeModel> ();
-						FillRuntimesForProject (projectList, startConf.ParentItem, ref runtimes);
-						var parent = new RuntimeModel (this, startConf.ParentItem.Name);
+						FillRuntimesForProject (projectList, startConf.SolutionItem, ref runtimes);
+						var parent = new RuntimeModel (this, startConf.SolutionItem.Name);
 						parent.HasChildren = true;
 						list.Add (parent);
 						foreach (var p in projectList) {
@@ -366,6 +366,7 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateBuildConfiguration ();
 
 			FillRuntimes ();
+			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		void NotifyRunConfigurationChange ()
