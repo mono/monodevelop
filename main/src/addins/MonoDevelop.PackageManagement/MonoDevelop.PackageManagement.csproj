@@ -63,10 +63,6 @@
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="NuGet.Versioning">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
     </Reference>
@@ -161,6 +157,10 @@
     </Reference>
     <Reference Include="NuGet.Credentials">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
