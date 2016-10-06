@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.MSBuild
 								}
 								list.Add (evItem);
 							}
-							result.Items[name] = list;
+							result.Items[name] = list.ToArray ();
 						}
 					}
 				} catch (Microsoft.Build.Exceptions.InvalidProjectFileException ex) {

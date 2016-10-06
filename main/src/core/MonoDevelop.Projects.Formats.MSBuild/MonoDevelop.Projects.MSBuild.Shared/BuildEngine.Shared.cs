@@ -36,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using System.Net.Configuration;
 using System.Diagnostics;
 using System.Reflection;
+using System.Linq;
 #pragma warning disable 618
 
 namespace MonoDevelop.Projects.MSBuild
