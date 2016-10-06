@@ -24,11 +24,13 @@ clean-local: sln_clean
 NUGET_FOUND = $$(echo $$(which nuget))
 NUGET_RESTORE = \
 	if [ "x$(NUGET_FOUND)" = "x" ]; then \
-		echo "nuget not found; please install it first"; \
-		exit 1; \
-	fi; \
-	nuget restore
+		mono external/nuget-binary/nuget.exe restore; \
+	else \
+		nuget restore; \
+	fi;
 
+#FIXME: move the restore logic into MSBuild (Before.sln.targets),
+#       see: https://github.com/kzu/NuGet.Restore
 restore-packages:
 	@$(NUGET_RESTORE)
 
