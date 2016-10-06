@@ -79,9 +79,11 @@ module CompilerArguments =
               else
                   if reference.Include <> "System" then
                       let assembly =
-                              reference.Package.Assemblies
-                              |> Seq.find (fun a -> a.Name = reference.Include)
-                      [assembly.Location]
+                           reference.Package.Assemblies
+                           |> Seq.tryFind (fun a -> a.Name = reference.Include || a.FullName = reference.Include)
+                      match assembly with
+                      | Some asm -> [asm.Location]
+                      | None -> []
                   else
                       reference.Package.Assemblies
                       |> Seq.choose (fun a -> match a.Name with
