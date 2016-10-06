@@ -769,7 +769,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ApplyChanges ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error saving options changes", ex);
-				MessageService.ShowError (GettextCatalog.GetString ("There was an error saving the changes"));
+				MessageService.ShowError (null, GettextCatalog.GetString ("There was an error saving the changes"), null, null, false);
 			}
 
 			StoreLastPanel ();
