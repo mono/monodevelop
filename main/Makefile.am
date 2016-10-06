@@ -21,8 +21,16 @@ clean-local: sln_clean
 	cd external && $(MAKE) clean
 	cd build && $(MAKE) clean
 
-restore-packages:
+NUGET_FOUND = $$(echo $$(which nuget))
+NUGET_RESTORE = \
+	if [ "x$(NUGET_FOUND)" = "x" ]; then \
+		echo "nuget not found; please install it first"; \
+		exit 1; \
+	fi; \
 	nuget restore
+
+restore-packages:
+	@$(NUGET_RESTORE)
 
 vcrevision:
 	touch vcrevision
