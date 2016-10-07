@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		internal static async Task UpdateFoldings (TextEditor Editor, ParsedDocument parsedDocument, DocumentLocation caretLocation, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
-			if (parsedDocument == null || !Editor.Options.ShowFoldMargin)
+			if (parsedDocument == null || !Editor.Options.ShowFoldMargin || parsedDocument.Flags.HasFlag (ParsedDocumentFlags.SkipFoldings))
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (await parsedDocument.HasErrorsAsync (token))
