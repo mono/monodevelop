@@ -23,7 +23,7 @@ clean-local: sln_clean
 
 NUGET_FOUND = $$(echo $$(which nuget))
 NUGET_RESTORE = \
-	if [ "x$(NUGET_FOUND)" = "x" ]; then \
+	if [ "x$(NUGET_FOUND)" = "x" ] || [ "x$(OSTYPE)" = "xlinux-gnu" ]; then \
 		mono external/nuget-binary/nuget.exe restore; \
 	else \
 		nuget restore; \
