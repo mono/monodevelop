@@ -285,12 +285,15 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			if (foldings == null) {
 				return Task.Run (async delegate {
+					bool locked = false;
 					try {
 						await foldingsSemaphore.WaitAsync (cancellationToken);
+						locked = true;
 						if (foldings == null)
 							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
 					} finally {
-						foldingsSemaphore.Release ();
+						if (locked)
+							foldingsSemaphore.Release ();
 					}
 					return foldings;
 				});
@@ -444,7 +447,9 @@ namespace MonoDevelop.CSharp.Parser
 			
 			if (errors == null) {
 				return Task.Run (async delegate {
+					bool locked = false;
 					await errorLock.WaitAsync (cancellationToken);
+					locked = true;
 					try {
 						if (errors == null) {
 							try {
@@ -462,7 +467,8 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						return errors;
 					} finally {
-						errorLock.Release ();					}
+						if (locked)
+							errorLock.Release ();					}
 				});
 			}
 			return Task.FromResult (errors);
