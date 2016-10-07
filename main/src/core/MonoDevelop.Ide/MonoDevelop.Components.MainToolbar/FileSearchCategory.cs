@@ -110,8 +110,7 @@ namespace MonoDevelop.Components.MainToolbar
 				//and then all will use cached version...
 				bool locked = false;
 				try {
-					await allFilesLock.WaitAsync (token);
-					locked = true;
+					locked = await allFilesLock.WaitAsync (System.Threading.Timeout.Infinite, token);
 					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
 					if (token.IsCancellationRequested)
 						return;

@@ -287,8 +287,7 @@ namespace MonoDevelop.CSharp.Parser
 				return Task.Run (async delegate {
 					bool locked = false;
 					try {
-						await foldingsSemaphore.WaitAsync (cancellationToken);
-						locked = true;
+						locked = await foldingsSemaphore.WaitAsync (Timeout.Infinite, cancellationToken);
 						if (foldings == null)
 							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
 					} finally {
@@ -447,9 +446,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			if (errors == null) {
 				return Task.Run (async delegate {
-					bool locked = false;
-					await errorLock.WaitAsync (cancellationToken);
-					locked = true;
+					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken);
 					try {
 						if (errors == null) {
 							try {
