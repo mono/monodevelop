@@ -125,13 +125,20 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				AssertMainThread ();
+
+				string newValue;
 				FilePath def = GetDefaultBaseDirectory ();
 				if (value != FilePath.Null && def != FilePath.Null && value.FullPath == def.FullPath)
-					baseDirectory = null;
+					newValue = null;
 				else if (string.IsNullOrEmpty (value))
-					baseDirectory = null;
+					newValue = null;
 				else
-					baseDirectory = value.FullPath;
+					newValue = value.FullPath;
+
+				if (newValue == baseDirectory)
+					return;
+
+				baseDirectory = newValue;
 				NotifyModified ("BaseDirectory");
 			}
 		}

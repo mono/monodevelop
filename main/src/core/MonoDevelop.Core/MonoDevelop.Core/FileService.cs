@@ -593,55 +593,44 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (destFile))
 				throw new ArgumentException ("destFile");
 
-			//FIXME: use the atomic System.IO.File.Replace on NTFS
 			if (Platform.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (destFile)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
+				WindowsRename (sourceFile, destFile);
+			} else {
+				UnixRename (sourceFile, destFile);
+			}
+		}
 
-					File.Move (destFile, wtmp);
-				}
+		static void WindowsRename (string sourceFile, string destFile)
+		{
+			//Replace fails if the target file doesn't exist, so in that case try a simple move
+			if (!File.Exists (destFile)) {
 				try {
 					File.Move (sourceFile, destFile);
-				}
-				catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, destFile);
-					}
-					catch {
-						wtmp = null;
-					}
-					throw;
-				}
-				finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						}
-						catch { }
-					}
+					return;
+				} catch {
 				}
 			}
-			else {
-				if (Syscall.rename (sourceFile, destFile) != 0) {
-					switch (Stdlib.GetLastError ()) {
-					case Errno.EACCES:
-					case Errno.EPERM:
-						throw new UnauthorizedAccessException ();
-					case Errno.EINVAL:
-						throw new InvalidOperationException ();
-					case Errno.ENOTDIR:
-						throw new DirectoryNotFoundException ();
-					case Errno.ENOENT:
-						throw new FileNotFoundException ();
-					case Errno.ENAMETOOLONG:
-						throw new PathTooLongException ();
-					default:
-						throw new IOException ();
-					}
+
+			File.Replace (sourceFile, destFile, null);
+		}
+
+		static void UnixRename (string sourceFile, string destFile)
+		{
+			if (Stdlib.rename (sourceFile, destFile) != 0) {
+				switch (Stdlib.GetLastError ()) {
+				case Errno.EACCES:
+				case Errno.EPERM:
+					throw new UnauthorizedAccessException ();
+				case Errno.EINVAL:
+					throw new InvalidOperationException ();
+				case Errno.ENOTDIR:
+					throw new DirectoryNotFoundException ();
+				case Errno.ENOENT:
+					throw new FileNotFoundException ();
+				case Errno.ENAMETOOLONG:
+					throw new PathTooLongException ();
+				default:
+					throw new IOException ();
 				}
 			}
 		}

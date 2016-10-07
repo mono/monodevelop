@@ -103,7 +103,6 @@ namespace MonoDevelop.CodeIssues
 						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 						},
-						null, 
 						false, 
 						false
 					);

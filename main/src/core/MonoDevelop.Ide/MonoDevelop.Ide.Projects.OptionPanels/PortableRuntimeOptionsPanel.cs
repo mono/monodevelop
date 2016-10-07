@@ -1,20 +1,21 @@
-// 
+//
 // PortableRuntimeOptionsPanel.cs
-//  
+//
 // Author: Jeffrey Stedfast <jeff@xamarin.com>
-// 
+//
 // Copyright (c) 2012 Xamarin Inc.
-// 
+// Copyright (c) Microsoft Inc.
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,636 +36,455 @@ using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Newtonsoft.Json.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
 	internal class PortableRuntimeOptionsPanel : ItemOptionsPanel
 	{
 		PortableRuntimeOptionsPanelWidget widget;
-		
+
 		public override Control CreatePanelWidget ()
 		{
-			return (widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations));
+			widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject, ItemConfigurations);
+
+			return widget;
 		}
-		
+
 		public override void ApplyChanges ()
 		{
 			widget.Store ();
 		}
 	}
-	
-	[System.ComponentModel.ToolboxItem(true)]
-	partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
+
+	class PortableRuntimeOptionsPanelWidget : Gtk.VBox
 	{
-		readonly TargetFramework missingFramework;
-		readonly List<TargetFramework> targetFrameworks;
-		readonly SortedDictionary<string, List<SupportedFramework>> supportedFrameworks;
-		readonly List<OptionCombo> options;
+		const string netstandardDocsUrl = "https://docs.microsoft.com/en-us/dotnet/articles/standard/library";
+		const string pcldDocsUrl = "https://developer.xamarin.com/guides/cross-platform/application_fundamentals/pcl/introduction_to_portable_class_libraries/";
 
 		DotNetProject project;
 		TargetFramework target;
-		HBox warningHBox;
-		Label warning;
-		ImageView warningImage;
-		ImageView infoImage;
-		ComboBox selectorCombo;
-		bool disableEvents;
 
-		class OptionComboItem {
-			public readonly string Name;
-			public readonly SupportedFramework Framework;
-			public readonly List<TargetFramework> Targets;
+		TargetFrameworkMoniker pcl5Tfm = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v5.0");
 
-			public OptionComboItem (string name, SupportedFramework sfx)
-			{
-				this.Name = name;
-				this.Framework = sfx;
-				this.Targets = new List<TargetFramework> ();
-			}
-		}
+		// Profile 111 is ~equivalent to netstandard 1.1
+		TargetFrameworkMoniker defaultPclTfm = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v4.5", "Profile111");
 
-		class OptionCombo {
-			public readonly string Name;
-			public IList<OptionComboItem> Items;
-			public ComboBox Combo;
-			public CheckButton Check;
+		string [] KnownNetStandardVersions = new [] {
+			"netstandard1.0",
+			"netstandard1.1",
+			"netstandard1.2",
+			"netstandard1.3",
+			"netstandard1.4",
+			"netstandard1.5",
+			//FIXME: XS' version of NuGet doesn't support 1.6
+			//"netstandard1.6",
+		};
 
-			public OptionComboItem Current {
-				get {
-					if (Combo != null)
-						return Items [Combo.Active];
-					else
-						return Items [0];
-				}
-			}
+		const string NetStandardPackageName = "NETStandard.Library";
+		const string NetStandardPackageVersion = "1.6.0";
+		const string NetStandardDefaultFramework = "netstandard1.3";
+		const string NetStandardPclCompatPackageName = "Microsoft.NETCore.Portable.Compatibility";
+		const string NetStandardPclCompatPackageVersion = "1.0.1";
 
-			public OptionCombo (string name)
-			{
-				Name = name;
-			}
-		}
-		
+		ComboBox netStandardCombo;
+		Entry targetFrameworkEntry;
+		RadioButton netstandardRadio;
+		RadioButton pclRadio;
+		Button frameworkPickerButton;
+
+		//TODO: better error handling
 		public PortableRuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
-			this.target = project.TargetFramework;
+			Build ();
+
 			this.project = project;
-			this.Build ();
 
-			// Aggregate all SupportedFrameworks from .NETPortable TargetFrameworks
-			targetFrameworks = GetPortableTargetFrameworks ().ToList ();
-			targetFrameworks.Sort (CompareFrameworks);
-			supportedFrameworks = new SortedDictionary<string, List<SupportedFramework>> ();
+			TargetFramework = project.TargetFramework;
 
-			if (!targetFrameworks.Contains (project.TargetFramework)) {
-				missingFramework = project.TargetFramework;
-				targetFrameworks.Insert (0, project.TargetFramework);
+			string netstandardVersion = null;
+			try {
+				netstandardVersion = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+				if (netstandardVersion != null && !netstandardVersion.StartsWith ("netstandard", StringComparison.Ordinal)) {
+					netstandardVersion = null;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading project.json file", ex);
 			}
 
-			foreach (var fx in targetFrameworks) {
-				foreach (var sfx in fx.SupportedFrameworks) {
-					List<SupportedFramework> list;
-					
-					if (!supportedFrameworks.TryGetValue (sfx.DisplayName, out list)) {
-						list = new List<SupportedFramework> ();
-						supportedFrameworks.Add (sfx.DisplayName, list);
+			NetStandardVersion = netstandardVersion;
+
+			if (netstandardVersion != null) {
+				netstandardRadio.Active = true;
+				// Even though netstandard really uses PCL5 in the project file, that PCL is not really useful by itself.
+				// Within this dialog, replace it with a better value for the user to get if they switch to PCL.
+				// When saving , if it's netstandard we'll write PCL5 to the project regardless.
+				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (defaultPclTfm);
+			} else {
+				pclRadio.Active = true;
+			}
+
+			UpdateSensitivity ();
+		}
+
+		void Build ()
+		{
+			Spacing = 6;
+
+			PackStart (new Label { Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Target Framework")), Xalign = 0f });
+
+			var fxAlignment = new Alignment (0f, 0f, 1f, 1f) { LeftPadding = 12 };
+			PackStart (fxAlignment);
+			var radioBox = new VBox { Spacing = 10 };
+			fxAlignment.Add (radioBox);
+
+			var netstandardPickerHbox = new HBox { Spacing = 10 };
+			radioBox.PackStart (netstandardPickerHbox);
+			netstandardRadio = new RadioButton (GettextCatalog.GetString (".NET Standard Platform:"));
+			netstandardPickerHbox.PackStart (netstandardRadio, false, false, 0);
+			netstandardPickerHbox.PackStart (netStandardCombo = ComboBox.NewText (), false, false, 0);
+
+			var netstandardDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with all frameworks that support the selected <a href='{0}'>.NET Standard</a> version.", netstandardDocsUrl), Xalign = 0f };
+			GtkWorkarounds.SetLinkHandler (netstandardDesc, HandleLink);
+			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = netstandardDesc, LeftPadding = 24 });
+
+			var pclPickerHbox = new HBox { Spacing = 10 };
+			radioBox.PackStart (pclPickerHbox);
+			pclRadio = new RadioButton (netstandardRadio, GettextCatalog.GetString (".NET Portable:"));
+			pclPickerHbox.PackStart (pclRadio, false, false, 0);
+			pclPickerHbox.PackStart (targetFrameworkEntry = new Entry { IsEditable = false, WidthChars = 20 }, false, false, 0);
+			frameworkPickerButton = new Button (GettextCatalog.GetString ("Change..."));
+			pclPickerHbox.PackStart (frameworkPickerButton, false, false, 0);
+
+			var pclDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with the frameworks supported by the selected <a href='{0}'>PCL profile</a>.", pcldDocsUrl), Xalign = 0f };
+			GtkWorkarounds.SetLinkHandler (pclDesc, HandleLink);
+			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = pclDesc, LeftPadding = 24 });
+
+			frameworkPickerButton.Clicked += PickFramework;
+
+			// both toggle when we switch between them, only need to subscribe to one event
+			netstandardRadio.Toggled += RadioToggled;
+
+			ShowAll ();
+		}
+
+		string NetStandardVersion {
+			get {
+				return netStandardCombo.ActiveText;
+			}
+			set {
+				((ListStore)netStandardCombo.Model).Clear ();
+
+				int selected = -1;
+
+				for (int i = 0; i < KnownNetStandardVersions.Length; i++) {
+					var version = KnownNetStandardVersions [i];
+					netStandardCombo.AppendText (version);
+					if (version == value) {
+						selected = i;
 					}
-					
-					list.Add (sfx);
+				}
+
+				if (value == null) {
+					selected = KnownNetStandardVersions.Length - 1;
+				} else if (selected < 0) {
+					//project uses some version we don't know about, add it
+					netStandardCombo.AppendText (value);
+					selected = KnownNetStandardVersions.Length;
+				}
+
+				netStandardCombo.Active = selected;
+			}
+		}
+
+		TargetFramework TargetFramework {
+			get {
+				return target;
+			}
+			set {
+				target = value;
+				targetFrameworkEntry.Text = PortableRuntimeSelectorDialog.GetPclShortDisplayName (target, false);
+			}
+		}
+
+		void RadioToggled (object sender, EventArgs e)
+		{
+			UpdateSensitivity ();
+		}
+
+		void UpdateSensitivity ()
+		{
+			bool pcl = pclRadio.Active;
+
+			netStandardCombo.Sensitive = !pcl;
+			targetFrameworkEntry.Sensitive = pcl;
+			frameworkPickerButton.Sensitive = pcl;
+		}
+
+		void HandleLink (string url)
+		{
+			DesktopService.ShowUrl (url);
+		}
+
+		void PickFramework (object sender, EventArgs e)
+		{
+			var dlg = new PortableRuntimeSelectorDialog (target);
+			try {
+				var result = MessageService.RunCustomDialog (dlg, (Gtk.Window)Toplevel);
+				if (result == (int)Gtk.ResponseType.Ok) {
+					TargetFramework = dlg.TargetFramework;
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+
+		//TODO error handling
+		public void Store ()
+		{
+			bool needsRestore = false;
+
+			//get the new framework and netstandard version
+			var isNetStandard = netstandardRadio.Active;
+			var nsVersion = isNetStandard ? NetStandardVersion : null;
+			var fx = TargetFramework;
+
+
+			//netstandard always uses PCL5 framework
+			if (isNetStandard) {
+				fx = Runtime.SystemAssemblyService.GetTargetFramework (pcl5Tfm);
+			}
+
+			//netstandard always uses project.json, ensure it exists
+			var projectJsonFile = project.GetProjectFile (project.BaseDirectory.Combine ("project.json"));
+			if (isNetStandard && projectJsonFile == null) {
+				projectJsonFile = MigrateToProjectJson (project);
+				needsRestore = true;
+			}
+
+			//if project.json exists, update it
+			if (projectJsonFile != null) {
+				var nugetFx = nsVersion ?? GetPclProfileFullName (fx.Id) ?? NetStandardDefaultFramework;
+				bool projectJsonChanged;
+				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx, out projectJsonChanged);
+				needsRestore = projectJsonChanged;
+			}
+
+			//if the framework has changed, update it
+			if (fx != null && fx != project.TargetFramework) {
+				project.TargetFramework = fx;
+			}
+
+			if (needsRestore) {
+				FileService.NotifyFileChanged (projectJsonFile.FilePath);
+			}
+		}
+
+		static IEnumerable<string> GetProjectJsonFrameworks (DotNetProject project)
+		{
+			var packagesJsonFile = project.GetProjectFile (project.BaseDirectory.Combine ("project.json"));
+			if (packagesJsonFile == null) {
+				return null;
+			}
+
+			var file = TextFileProvider.Instance.GetEditableTextFile (packagesJsonFile.FilePath.ToString ());
+
+			JObject json;
+
+			using (var tr = file.CreateReader ())
+			using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+				json = (JObject)JToken.Load (jr);
+			}
+
+			var frameworks = json ["frameworks"] as JObject;
+			if (frameworks == null)
+				return null;
+
+			return frameworks.Properties ().Select (p => p.Name);
+		}
+
+		static void SetProjectJsonValues (string filename, string framework, out bool changed)
+		{
+			changed = false;
+
+			bool isOpen;
+			var file = TextFileProvider.Instance.GetTextEditorData (filename, out isOpen);
+
+			JObject json;
+
+			using (var tr = file.CreateReader ())
+			using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+				json = (JObject)JToken.Load (jr);
+			}
+
+			var deps = (json ["dependencies"] as JObject);
+
+			if (framework.StartsWith ("netstandard", StringComparison.Ordinal)) {
+				if (deps == null) {
+					deps = new JObject ();
+					json ["dependencies"] = deps;
+				}
+
+				//make sure NETStandard.Library has the version we need
+				if (EnsurePackageHasVersion (deps, NetStandardPackageName, NetStandardPackageVersion)) {
+					//if we had to fix that, also add to optional Microsoft.NETCore.Portable.Compatibility
+					EnsurePackageHasVersion (deps, NetStandardPclCompatPackageName, NetStandardPclCompatPackageVersion);
+					changed = true;
+				}
+			} else {
+				//not netstandard, remove the netstandard nuget package ref
+				if (deps != null) {
+					deps.Property (NetStandardPackageName)?.Remove ();
+					deps.Property (NetStandardPclCompatPackageName)?.Remove ();
 				}
 			}
 
-			// Now create a list of config options from our supported frameworks
-			options = new List<OptionCombo> ();
-			foreach (var fx in supportedFrameworks) {
-				var combo = new OptionCombo (fx.Key);
+			string [] existingTargetFrameworks = null;
+			var frameworks = (json ["frameworks"] as JObject);
+			if (frameworks != null) {
+				existingTargetFrameworks = frameworks.Properties ().Select (p => p.Name).ToArray ();
+			}
 
-				var dict = new SortedDictionary<string, OptionComboItem> ();
-				foreach (var sfx in fx.Value) {
-					var label = GetDisplayName (sfx);
+			if (existingTargetFrameworks != null && !existingTargetFrameworks.Any(f => f == framework)) {
+				var existingFxValue = ((JProperty) json ["frameworks"].First()).Value as JObject;
+				json ["frameworks"] = new JObject (
+					new JProperty (framework, existingFxValue ?? new JObject ())
+				);
+				changed = true;
+			}
 
-					OptionComboItem item;
-					if (!dict.TryGetValue (label, out item)) {
-						item = new OptionComboItem (label, sfx);
-						dict.Add (label, item);
-					}
+			if (changed) {
+				file.ReplaceText (0, file.Length, json.ToString ());
 
-					item.Targets.Add (sfx.TargetFramework);
+				if (!isOpen) {
+					file.Save ();
 				}
-
-				combo.Items = dict.Values.ToList ();
-
-				options.Add (combo);
 			}
-
-			CreateUI ();
-
-			CurrentProfileChanged (project.TargetFramework);
 		}
 
-		static int CompareFrameworks (TargetFramework x, TargetFramework y)
+		static bool EnsurePackageHasVersion (JObject dependencies, string packageName, string version)
 		{
-			var p = CompareProfiles (x.Id.Profile, y.Id.Profile);
-			if (p != 0)
-				return p;
-			return string.Compare (x.Id.Version, y.Id.Version, StringComparison.Ordinal);
-		}
-
-		static int CompareProfiles (string x, string y)
-		{
-			int xn, yn;
-			if (TryParseProfileID (x, out xn)) {
-				if (TryParseProfileID (y, out yn))
-					return xn.CompareTo (yn);
-				return 1;
+			var existingRefVersion = dependencies.Property (packageName)?.Value?.Value<string> ();
+			string newRefVersion = EnsureMinimumVersion (version, existingRefVersion);
+			if (existingRefVersion != newRefVersion) {
+				dependencies [packageName] = newRefVersion;
+				return true;
 			}
-			if (TryParseProfileID (y, out yn))
-				return -1;
-			return string.Compare (x, y, StringComparison.Ordinal);
-		}
-
-		static bool TryParseProfileID (string profile, out int id)
-		{
-			if (profile.StartsWith ("Profile", StringComparison.Ordinal))
-				return int.TryParse (profile.Substring ("Profile".Length), out id);
-			id = -1;
 			return false;
 		}
 
-		static string GetDisplayName (SupportedFramework sfx)
+		static ProjectFile MigrateToProjectJson (DotNetProject project)
 		{
-			if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
-				return sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
-			else if (!string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
-				return sfx.DisplayName + " " + sfx.MonoSpecificVersionDisplayName;
-			else
-				return sfx.DisplayName;
-		}
+			var projectJsonName = project.BaseDirectory.Combine ("project.json");
+			var projectJsonFile = new ProjectFile (projectJsonName, BuildAction.None);
 
-		static string GetShortName (SupportedFramework sfx)
-		{
-			switch (sfx.DisplayName) {
-			case ".NET Framework":
-				return "NET" + sfx.MinimumVersionDisplayName.Replace (".", "");
-			case "Silverlight":
-				return "SL" + sfx.MinimumVersionDisplayName;
-			case "Xamarin.Android":
-				return "Android";
-			case ".NET for Windows Store apps":
-				return "WinStore";
-			case "Windows Phone":
-				return "WP" + sfx.MinimumVersionDisplayName.Replace (".", "");
-			case "Xbox 360":
-				return "XBox";
-			case "Xamarin.iOS":
-				if (string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
-					return "iOS";
-				else
-					return "iOS/" + sfx.MonoSpecificVersion;
-			default:
-				return GetDisplayName (sfx);
-			}
-		}
+			bool isOpen = false;
+			JObject json;
+			ITextDocument file;
 
-		string FormatTargetFramework (TargetFramework fx)
-		{
-			if (fx == missingFramework)
-				return GettextCatalog.GetString ("PCL {0} - {1} - not installed", fx.Id.Version, fx.Id.Profile);
-			else
-				return GettextCatalog.GetString ("PCL {0} - {1}", fx.Id.Version, fx.Id.Profile);
-		}
-
-		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
-		{
-			return Runtime.SystemAssemblyService.GetTargetFrameworks ().Where (fx =>
-				!fx.Hidden &&
-				fx.Id.Identifier == ".NETPortable" &&
-				!string.IsNullOrEmpty (fx.Id.Profile) &&
-				project.TargetRuntime.IsInstalled (fx)
-			);
-		}
-
-		void CreateUI ()
-		{
-			AddLabel (GettextCatalog.GetString ("Current Profile:"), 0);
-
-			AddTopSelectorCombo ();
-
-			AddLabel (GettextCatalog.GetString ("Target Frameworks:"), 18);
-
-			// Add multi-option combo boxes first
-			foreach (var opt in options) {
-				if (opt.Items.Count > 1)
-					AddMultiOptionCombo (opt);
-			}
-
-			// Now add the single-option check boxes
-			foreach (var opt in options) {
-				if (opt.Items.Count == 1)
-					AddSingleOptionCheckbox (opt);
-			}
-
-			AddWarningLabel ();
-		}
-
-		void AddLabel (string text, uint top)
-		{
-			var label = new Label (text);
-			label.SetAlignment (0.0f, 0.5f);
-			label.Show ();
-
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
-				TopPadding = top, BottomPadding = 4
-			};
-			alignment.Add (label);
-			alignment.Show ();
-
-			vbox1.PackStart (alignment, false, true, 0);
-		}
-
-		void AddTopSelectorCombo ()
-		{
-			var model = new ListStore (new Type[] { typeof (string), typeof (object) });
-			var renderer = new CellRendererText ();
-			var combo = selectorCombo = new ComboBox (model);
-
-			for (int i = 0; i < targetFrameworks.Count; i++) {
-				var fx = targetFrameworks [i];
-
-				model.AppendValues (FormatTargetFramework (fx), fx);
-				if (fx.Id.Equals (project.TargetFramework.Id))
-					combo.Active = i;
-			}
-
-			combo.PackStart (renderer, true);
-			combo.SetCellDataFunc (renderer, (l, c, m, i) => {
-				((CellRendererText)c).Text = (string)model.GetValue (i, 0);
-			});
-
-			combo.Show ();
-
-			combo.Changed += (sender, e) => {
-				if (combo.Active >= 0)
-					CurrentProfileChanged (targetFrameworks [combo.Active]);
-			};
-
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
-				LeftPadding = 18, RightPadding = 18
-			};
-			alignment.Add (combo);
-
-			alignment.Show ();
-
-			vbox1.PackStart (alignment, false, true, 0);
-		}
-
-		void AddMultiOptionCombo (OptionCombo option)
-		{
-			if (option.Items.Count < 2)
-				throw new InvalidOperationException ();
-
-			var model = new ListStore (new Type[] { typeof (string), typeof (object) });
-			var renderer = new CellRendererText ();
-
-			foreach (var item in option.Items) {
-				var label = item.Name;
-				var sfx = item.Framework;
-
-				bool hasOtherVersions = false;
-				foreach (var other in option.Items) {
-					if (sfx == other.Framework)
-						continue;
-					if (!string.IsNullOrEmpty (other.Framework.MonoSpecificVersionDisplayName))
-						continue;
-					hasOtherVersions = true;
-					break;
+			if (System.IO.File.Exists (projectJsonName)) {
+				file = TextFileProvider.Instance.GetTextEditorData (projectJsonFile.FilePath.ToString (), out isOpen);
+				using (var tr = file.CreateReader ())
+				using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+					json = (JObject)JToken.Load (jr);
 				}
-
-				if (hasOtherVersions && string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
-					label += " or later";
-
-				model.AppendValues (label, item.Targets);
-			}
-
-			option.Combo = new ComboBox (model);
-			option.Check = new CheckButton ();
-
-			option.Combo.PackStart (renderer, true);
-			option.Combo.AddAttribute (renderer, "text", 0);
-
-			option.Combo.Active = 0;
-
-			option.Check.Show ();
-			option.Combo.Show ();
-
-			option.Combo.Changed += (sender, e) => {
-				if (option.Check.Active)
-					TargetFrameworkChanged (option);
-			};
-			option.Check.Toggled += (sender, e) => {
-				TargetFrameworkChanged (option);
-			};
-
-			var hbox = new HBox ();
-			hbox.PackStart (option.Check, false, false, 0);
-			hbox.PackStart (option.Combo, true, true, 0);
-			hbox.Show ();
-
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
-				LeftPadding = 18, RightPadding = 18
-			};
-			alignment.Add (hbox);
-			alignment.Show ();
-
-			vbox1.PackStart (alignment, false, true, 0);
-		}
-
-		void AddSingleOptionCheckbox (OptionCombo option)
-		{
-			if (option.Items.Count != 1)
-				throw new InvalidOperationException ();
-
-			option.Check = new CheckButton (option.Items [0].Name);
-
-			option.Check.Toggled += (sender, e) => {
-				TargetFrameworkChanged (option);
-			};
-
-			option.Check.Show ();
-
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
-				LeftPadding = 18, RightPadding = 18
-			};
-			alignment.Add (option.Check);
-			alignment.Show ();
-
-			vbox1.PackStart (alignment, false, true, 0);
-		}
-
-		void AddWarningLabel ()
-		{
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
-				TopPadding = 8, LeftPadding = 18, RightPadding = 18
-			};
-
-			warning = new Label (GettextCatalog.GetString ("Test Error"));
-			warning.SetAlignment (0.0f, 0.5f);
-			warning.Show ();
-
-			infoImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "warning-16.png"));
-			warningImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "error-16.png"));
-
-			warningHBox = new HBox (false, 6);
-			warningHBox.PackStart (infoImage, false, false, 0);
-			warningHBox.PackStart (warningImage, false, false, 0);
-			warningHBox.PackStart (warning, false, true, 0);
-
-			alignment.Child = warningHBox;
-			alignment.Show ();
-
-			vbox1.PackStart (alignment, false, true, 0);
-		}
-
-		void ClearWarnings ()
-		{
-			warning.LabelProp = string.Empty;
-			warningHBox.Hide ();
-
-			infoImage.Hide ();
-			warningImage.Hide ();
-		}
-
-		void SetWarning (string message)
-		{
-			warning.LabelProp = message;
-			infoImage.Hide ();
-			warningImage.Show ();
-			warningHBox.Show ();
-		}
-
-		void SetWarning (string message, params object[] args)
-		{
-			SetWarning (string.Format (message, args));
-		}
-
-		void AddWarning (string message, params object[] args)
-		{
-			AddWarning (string.Format (message, args));
-		}
-
-		void AddWarning (string message)
-		{
-			if (!string.IsNullOrEmpty (warning.LabelProp))
-				warning.LabelProp += Environment.NewLine;
-			warning.LabelProp += message;
-			infoImage.Hide ();
-			warningImage.Show ();
-			warningHBox.Show ();
-		}
-
-		void AddInfo (string message, params object[] args)
-		{
-			AddInfo (string.Format (message, args));
-		}
-
-		void AddInfo (string message)
-		{
-			if (string.IsNullOrEmpty (warning.LabelProp)) {
-				warningImage.Hide ();
-				infoImage.Show ();
 			} else {
-				warning.LabelProp += Environment.NewLine;
-			}
-			warning.LabelProp += message;
-			warningHBox.Show ();
-		}
-
-		void TargetFrameworkChanged (OptionCombo option)
-		{
-			if (disableEvents)
-				return;
-
-			try {
-				disableEvents = true;
-				TargetFrameworkChanged_internal (option);
-			} finally {
-				disableEvents = false;
-			}
-		}
-
-		void TargetFrameworkChanged_internal (OptionCombo option)
-		{
-			ClearWarnings ();
-			selectorCombo.Active = -1;
-
-			// The currently selected combo boxes.
-			var selectedOptions = options.Where (o => o.Check.Active).ToList ();
-
-			if (selectedOptions.Count < 2) {
-				SetWarning (GettextCatalog.GetString ("Need to select at least two frameworks."));
-				return;
+				file = TextEditorFactory.CreateNewDocument ();
+				file.FileName = projectJsonName;
+				file.Encoding = Encoding.UTF8;
+				json = new JObject (
+					new JProperty ("dependencies", new JObject ()),
+					new JProperty ("frameworks", new JObject())
+				);
 			}
 
-			// SupportedFramework from each of the currently selected combo boxes.
-			var selectedFrameworks = selectedOptions.Select (s => s.Current.Framework).ToList ();
-			SelectFrameworks (selectedFrameworks);
-		}
-
-		void SelectFrameworks (List<SupportedFramework> selectedFrameworks)
-		{
-			// Which TargetFramework's match these?
-			var applicable = targetFrameworks.Where (
-				f => IsApplicable (f, true, selectedFrameworks)).ToList ();
-
-			if (applicable.Count == 0) {
-				AddWarning (GettextCatalog.GetString ("No applicable frameworks for this selection!"));
-				return;
-			}
-
-			//
-			// 'applicable' contains all TargetFrameworks that match _at least_
-			// the list of 'selectedFrameworks'.
-			//
-			// 'exactMatches' is where they do not contain any additional
-			// (non-selected) 'SupportedFramework's.
-			//
-
-			var exactMatches = applicable.Where (
-				a => IsApplicable (a, false, selectedFrameworks)).ToList ();
-			if (exactMatches.Count == 1) {
-				// Found an exact match.
-				SelectFramework (exactMatches [0]);
-				return;
-			} else if (exactMatches.Count > 1) {
-				// This should never happen.
-				AddWarning (GettextCatalog.GetString ("Multiple frameworks match the current selection:"));
-				exactMatches.ForEach (e => AddWarning ("     " + e.Id));
-				AddWarning (GettextCatalog.GetString ("You must manually pick a profile in the drop-down selector."));
-				// This is very bad UX, we should really disable "Ok" / add an "Apply"
-				// button, but it's better than nothing.
-				target = exactMatches [0];
-				return;
-			}
-
-			// Union of all the SupportedFrameworks from our applicable TargetFrameworks.
-			var all = applicable.SelectMany (
-				a => a.SupportedFrameworks).Distinct (SupportedFramework.EqualityComparer);
-
-			// Minus the ones that we already selected.
-			var extra = all.Where (a => !selectedFrameworks.Contains (a)).ToList ();
-
-			// Are there any SupportedFrameworks that all our applicable TargetFrameworks
-			// have in common?
-			var common = extra.Where (
-				e => applicable.All (a => a.SupportedFrameworks.Contains (e))).ToList ();
-
-			if (common.Count == 0) {
-				// Ok, the user must pick something.
-				AddWarning (GettextCatalog.GetString ("Found multiple applicable frameworks, you need to select additional check boxes."));
-				// Same here: randomly pick a profile to make "Ok" happy.
-				target = applicable [0];
-				return;
-			}
-
-			AddInfo (GettextCatalog.GetString ("The following frameworks have been implicitly selected:"));
-			AddInfo ("   " + string.Join (", ", common.Select (GetDisplayName)));
-
-			// Implicitly select them.
-			var implicitlySelected = new List<SupportedFramework> ();
-			implicitlySelected.AddRange (selectedFrameworks);
-			implicitlySelected.AddRange (common);
-
-			// And let's try again ...
-			SelectFrameworks (implicitlySelected);
-		}
-
-		void SelectOption (SupportedFramework sfx)
-		{
-			foreach (var option in options) {
-				for (int i = 0; i < option.Items.Count; i++) {
-					var item = option.Items [i];
-					if (!item.Framework.Equals (sfx))
-						continue;
-
-					option.Check.Active = true;
-					if (option.Combo != null)
-						option.Combo.Active = i;
-					return;
+			var packagesConfigFile = project.GetProjectFile (project.BaseDirectory.Combine ("packages.config"));
+			if (packagesConfigFile != null) {
+				//NOTE: it might also be open and unsaved, but that's an unimportant edge case, ignore it
+				var configDoc = System.Xml.Linq.XDocument.Load (packagesConfigFile.FilePath);
+				if (configDoc.Root != null) {
+					var deps = (json ["dependencies"] as JObject) ?? ((JObject)(json ["dependencies"] = new JObject ()));
+					foreach (var packagelEl in configDoc.Root.Elements ("package")) {
+						deps [(string)packagelEl.Attribute ("id")] = (string)packagelEl.Attribute ("version");
+					}
 				}
 			}
 
-			throw new InvalidOperationException ();
+			var framework = GetPclProfileFullName (project.TargetFramework.Id) ?? NetStandardDefaultFramework;
+			json ["frameworks"] = new JObject (
+				new JProperty (framework, new JObject())
+			);
+
+			file.Text = json.ToString ();
+
+			if (!isOpen) {
+				file.Save ();
+			}
+
+			project.AddFile (projectJsonFile);
+			if (packagesConfigFile != null) {
+				project.Files.Remove (packagesConfigFile);
+
+				//we have to delete the packages.config, or the NuGet addin will try to retarget its packages
+				FileService.DeleteFile (packagesConfigFile.FilePath);
+
+				//remove the package refs nuget put in the file, project.json doesn't use those
+				project.References.RemoveRange (project.References.Where (IsFromPackage).ToArray ());
+			}
+
+			return projectJsonFile;
 		}
 
-		void SelectFramework (TargetFramework framework)
+		//HACK: we don't have the info to do this properly, really the package management addin should handle this
+		static bool IsFromPackage (ProjectReference r)
 		{
-			var frameworks = targetFrameworks.Select ((t, i) => new { Framework = t, Index = i });
-			var index = frameworks.First (t => t.Framework == framework).Index;
-			selectorCombo.Active = index;
-			target = framework;
-		}
-
-		bool IsApplicable (TargetFramework fx, bool allowExtra, IEnumerable<SupportedFramework> selected)
-		{
-			return IsApplicable (fx, allowExtra, selected.ToArray ());
-		}
-
-		bool IsApplicable (TargetFramework fx, bool allowExtra, params SupportedFramework[] required)
-		{
-			if (fx == missingFramework)
+			if (r.ReferenceType != ReferenceType.Assembly) {
 				return false;
-
-			var present = new List<SupportedFramework> (fx.SupportedFrameworks);
-			var matches = required.All (r => present.Remove (r));
-			return matches && (allowExtra || present.Count == 0);
-		}
-
-		void CurrentProfileChanged (TargetFramework framework)
-		{
-			if (disableEvents)
-				return;
-
-			try {
-				disableEvents = true;
-				CurrentProfileChanged_internal (framework);
-				target = framework;
-			} finally {
-				disableEvents = false;
 			}
+			var packagesDir = r.Project.ParentSolution.BaseDirectory.Combine ("packages");
+			return r.GetReferencedFileNames(null).Any (f => ((FilePath)f).IsChildPathOf (packagesDir));
 		}
 
-		void CurrentProfileChanged_internal (TargetFramework framework)
+		static string GetPclProfileFullName (TargetFrameworkMoniker tfm)
 		{
-			ClearWarnings ();
+			if (tfm.Identifier != TargetFrameworkMoniker.ID_PORTABLE) {
+				return null;
+			}
 
-			foreach (var option in options) {
-				var sfx = framework.SupportedFrameworks.FirstOrDefault (
-					s => s.DisplayName.Equals (option.Name));
-				if (sfx == null) {
-					option.Check.Active = false;
-					continue;
+			//nuget only accepts pcls with a profile number
+			if (tfm.Profile == null || !tfm.Profile.StartsWith ("Profile", StringComparison.Ordinal))
+			{
+				return null;
+			}
+
+			return tfm.ToString ();
+		}
+
+		static string EnsureMinimumVersion (string minimum, string existing)
+		{
+			if (existing == null) {
+				return minimum;
+			}
+
+			var minimumSplit = minimum.Split (new char [] { '.', '-' });
+			var existingSplit = existing.Split (new char [] { '.', '-' });
+
+			for (int i = 0; i < minimumSplit.Length; i++) {
+				var m = int.Parse (minimumSplit [i]);
+				int e;
+				if (existingSplit.Length <= i || !int.TryParse (existingSplit [i], out e)) {
+					return minimum;
 				}
-
-				option.Check.Active = true;
-
-				if (option.Combo == null)
-					continue;
-
-				var label = GetDisplayName (sfx);
-				for (int i = 0; i < option.Items.Count; i++) {
-					if (!option.Items [i].Name.Equals (label))
-						continue;
-					option.Combo.Active = i;
-					break;
+				if (m > e) {
+					return minimum;
+				}
+				if (e > m) {
+					return existing;
 				}
 			}
-		}
-		
-		public void Store ()
-		{
-			if (target != null && target != project.TargetFramework) {
-				project.TargetFramework = target;
-				IdeApp.ProjectOperations.SaveAsync (project);
-			}
+
+			return minimum;
 		}
 	}
 }

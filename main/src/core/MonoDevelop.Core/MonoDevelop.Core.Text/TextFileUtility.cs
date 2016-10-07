@@ -267,7 +267,7 @@ namespace MonoDevelop.Core.Text
 		static void WriteTextFinal (string tmpPath, string fileName)
 		{
 			try {
-				SystemRename (tmpPath, fileName);
+				FileService.SystemRename (tmpPath, fileName);
 			} catch (Exception) {
 				try {
 					File.Delete (tmpPath);
@@ -326,41 +326,6 @@ namespace MonoDevelop.Core.Text
 				byte[] bytes = encoding.GetBytes (text);
 				stream.Write (bytes, 0, bytes.Length);
 				return stream.GetBuffer ();
-			}
-		}
-
-		// Code taken from FileService.cs
-		static void SystemRename (string sourceFile, string destFile)
-		{
-			//FIXME: use the atomic System.IO.File.Replace on NTFS
-			if (Platform.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (destFile)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
-					File.Move (destFile, wtmp);
-				}
-				try {
-					File.Move (sourceFile, destFile);
-				} catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, destFile);
-					} catch {
-						wtmp = null;
-					}
-					throw;
-				} finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						} catch {
-						}
-					}
-				}
-			} else {
-				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
 		}
 
