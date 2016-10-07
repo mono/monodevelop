@@ -203,6 +203,20 @@ namespace ICSharpCode.NRefactory6.CSharp
 				ThisLineIndent = NextLineIndent.Clone();
 
 			}
+			switch (ch) {
+			case '#':
+				if (Engine.isLineStart)
+					ChangeState<PreProcessorState> ();
+				break;
+			case '/':
+				if (Engine.previousChar == '/')
+					ChangeState<LineCommentState> ();
+				break;
+			case '*':
+				if (Engine.previousChar == '/')
+					ChangeState<MultiLineCommentState> ();
+				break;
+			}
 		}
 
 		/// <summary>
@@ -293,18 +307,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 		{
 			base.Push(ch);
 			switch (ch) {
-				case '#':
-					if (Engine.isLineStart)
-						ChangeState<PreProcessorState>();
-					break;
-				case '/':
-					if (Engine.previousChar == '/')
-						ChangeState<LineCommentState>();
-					break;
-				case '*':
-					if (Engine.previousChar == '/')
-						ChangeState<MultiLineCommentState>();
-					break;
 				case '"':
 					if (Engine.previousChar == '@')
 					{
