@@ -103,7 +103,6 @@
     </Reference>
     <Reference Include="GuiUnit">
       <HintPath>..\..\guiunit\bin\net_4_5\GuiUnit.exe</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
