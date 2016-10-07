@@ -158,10 +158,13 @@ namespace MonoDevelop.Components.MainToolbar
 					ToolbarView.RunConfigurationVisible = false;
 					return;
 				}
-
-				ToolbarView.ConfigurationModel = configurationMergers.Values.SelectMany (cm => cm.SolutionConfigurations)
-					.Distinct ()
-					.Select (conf => new ConfigurationModel (conf));
+				if (configurationMergers.Count == 1)
+					ToolbarView.ConfigurationModel = configurationMergers.First ().Value.SolutionConfigurations
+						.Distinct ()
+						.Select (conf => new ConfigurationModel (conf));
+				else
+					ToolbarView.ConfigurationModel = currentSolution?.Configurations.OfType<SolutionConfiguration> ()
+						.Select (conf => new ConfigurationModel (conf.Id)) ?? new ConfigurationModel [0];
 
 				if (currentSolution != null)
 					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc)).ToArray ();
@@ -257,7 +260,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			ExecutionTarget previous = null;
 
-			foreach (var target in configurationMergers[project].GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
+			foreach (var target in configurationMergers [project].GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, configurationMergers.Count < 2)) {
 				if (target is ExecutionTargetGroup) {
 					var devices = (ExecutionTargetGroup)target;
 
@@ -333,25 +336,21 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateBuildConfiguration ()
 		{
 			var config = ToolbarView.ActiveConfiguration;
-			if (config == null)
+			if (config == null || configurationMergers.Count == 0)
 				return;
+			if (configurationMergers.Count > 1) {
+				IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;
+				return;
+			}
 
 			ExecutionTarget newTarget;
-			string fullConfig = null;
-			string mergedConfig = null;
+			string fullConfig;
 
 			var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
-			foreach (var merger in configurationMergers.Values) {
-				merger.ResolveConfiguration (config.OriginalId, runtime?.ExecutionTarget, out fullConfig, out newTarget);
-				if (fullConfig == null || (mergedConfig != fullConfig && mergedConfig != null)) {
-					//Different projects resolve to different fullConfig, hence take what ever user picked
-					fullConfig = config.OriginalId;
-					break;
-				}
-				mergedConfig = fullConfig;
-			}
+			configurationMergers.Values.First ().ResolveConfiguration (config.OriginalId, runtime != null ? runtime.ExecutionTarget : null, out fullConfig, out newTarget);
 			settingGlobalConfig = true;
 			try {
+				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
 				IdeApp.Workspace.ActiveConfigurationId = fullConfig;
 			} finally {
 				settingGlobalConfig = false;
@@ -366,7 +365,8 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateBuildConfiguration ();
 
 			FillRuntimes ();
-			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
+			if (configurationMergers.Count > 1)
+				SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		void NotifyRunConfigurationChange ()
