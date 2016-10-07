@@ -248,12 +248,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxModeService ()
 		{
-			var textEditorAssembly = Assembly.Load ("Mono.TextEditor");
-			if (textEditorAssembly != null) {
-				LoadStylesAndModes (textEditorAssembly);
-			} else {
-				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
-			}
 		}
 	}
 }
