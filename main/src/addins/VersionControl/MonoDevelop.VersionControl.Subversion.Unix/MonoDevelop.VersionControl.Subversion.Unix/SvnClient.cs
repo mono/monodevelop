@@ -116,9 +116,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		internal static bool CheckInstalled ()
 		{
-			if (IsDependentOnXcodeCLITools.Value)
-				return true;
-
 			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
 			// to the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
@@ -213,48 +210,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return false;
 		}
 
-		const string commandLineToolsSvn = "/Library/Developer/CommandLineTools/usr/lib/libsvn_client-1.0.dylib";
-		readonly static Lazy<bool> IsDependentOnXcodeCLITools = new Lazy<bool> (
-			() => Platform.IsMac && Environment.Is64BitOperatingSystem && !File.Exists (commandLineToolsSvn)
-		);
-
-		internal protected override bool InstallDependencies ()
-		{
-			if (IsDependentOnXcodeCLITools.Value) {
-				var button = new AlertButton (GettextCatalog.GetString ("Install"));
-				if (MessageService.AskQuestion (
-					GettextCatalog.GetString ("This solution may be using Subversion. Do you want to install Xcode Command Line Tools now?"),
-					BrandingService.BrandApplicationName (
-						GettextCatalog.GetString ("Xcode Command Line Tools are not currently installed, and are required to use Subversion.\nPlease restart MonoDevelop after the installation to enable Subversion support.")),
-					AlertButton.Cancel,
-					button) == button) {
-					var p = Process.Start ("xcode-select", "--install");
-					p.WaitForExit ();
-				}
-				return false;
-			}
-			return true;
-		}
-
-
-		bool macDisabled;
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
-			if (macDisabled)
-				return string.Empty;
-			
 			if (path.IsNullOrEmpty)
 				return string.Empty;
-
-			// For Mac 64bits, we need to have Xcode Command Line Tools installed.
-			if (IsDependentOnXcodeCLITools.Value) {
-				if (!FallbackProbeDirectoryDotSvn (path))
-					return string.Empty;
-
-				InstallDependencies ();
-				macDisabled = true;
-				return string.Empty;
-			}
 			
 			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
