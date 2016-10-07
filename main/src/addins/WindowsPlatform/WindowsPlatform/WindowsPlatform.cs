@@ -43,6 +43,7 @@ using System.Diagnostics;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Core;
+using Microsoft.WindowsAPICodePack.InternetExplorer;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Windows;
@@ -165,6 +166,8 @@ namespace MonoDevelop.Platform
 			if (TaskbarManager.IsPlatformSupported) {
 				TaskbarManager.Instance.ApplicationId = BrandingService.ApplicationName;
 			}
+			// Set InternetExplorer emulation mode
+			InternetExplorer.EmulationMode = IEEmulationMode.IE11;
 		}
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
