@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=7ffa1ada9e87128a1b697fcfc8f026ed12428906
+DEP_NEEDED_VERSION[0]=5ebd83ff6b7fbb1115c233d3ea4f0fb7b2b152ee
 DEP_BRANCH_AND_REMOTE[0]="master origin/master"
 
 # heap-shot
