@@ -113,12 +113,8 @@ namespace MonoDevelop.PackageManagement
 		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
 		{
 			var nugetPaths = NuGetPathContext.Create (settings);
-			var packageFolderPaths = new List<string>();
-			packageFolderPaths.Add (nugetPaths.UserPackageFolder);
-			packageFolderPaths.AddRange (nugetPaths.FallbackPackageFolders);
-
 			var projects = new BuildIntegratedNuGetProject[] { project };
-			return BuildIntegratedRestoreUtility.IsRestoreRequired (projects, packageFolderPaths, context);
+			return DependencyGraphRestoreUtility.IsRestoreRequiredAsync (projects, false, nugetPaths, context);
 		}
 
 		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (

@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -144,11 +145,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (restoreManager != null) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
-					await restoreManager.RestoreMissingPackagesAsync (
-						solutionManager.SolutionDirectory,
-						packagesToRestore,
-						new NuGetProjectContext (),
-						cancellationToken);
+					using (var cacheContext = new SourceCacheContext ()) {
+						var downloadContext = new PackageDownloadContext (cacheContext);
+						await restoreManager.RestoreMissingPackagesAsync (
+							solutionManager.SolutionDirectory,
+							packagesToRestore,
+							new NuGetProjectContext (),
+							downloadContext,
+							cancellationToken);
+					}
 				}
 			}
 

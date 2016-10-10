@@ -143,12 +143,12 @@ namespace MonoDevelop.PackageManagement
 
 		/// <summary>
 		/// Returns the closure of all project to project references below this project.
-		/// The code is a port of src/NuGet.Clients/PackageManagement.VisualStudio/ProjectSystems/BuildIntegratedProjectSystem.cs
+		/// The code is a port of src/NuGet.Clients/PackageManagement.VisualStudio/IDE/VSProjectReferenceUtility.cs
 		/// </summary>
 		Task<IReadOnlyList<ExternalProjectReference>> GetExternalProjectReferenceClosureAsync (ExternalProjectReferenceContext context)
 		{
 			var logger = context.Logger;
-			var cache = context.Cache;
+			var cache = context.ClosureCache;
 
 			var results = new HashSet<ExternalProjectReference> ();
 
@@ -201,10 +201,11 @@ namespace MonoDevelop.PackageManagement
 
 			// Cache the results for this project and every child project which has not been cached
 			foreach (var project in results) {
-				if (!context.Cache.ContainsKey (project.UniqueName)) {
-					var closure = BuildIntegratedRestoreUtility.GetExternalClosure (project.UniqueName, results);
-
-					context.Cache.Add(project.UniqueName, closure.ToList ());
+				if (!context.ClosureCache.ContainsKey(project.MSBuildProjectPath)) {
+					var closure = DependencyGraphProjectCacheUtility.GetExternalClosure (project.UniqueName, results);
+					var direct = DependencyGraphProjectCacheUtility.GetDirectReferences (project.UniqueName, closure);
+					context.ClosureCache.Add(project.MSBuildProjectPath, closure.ToList ());
+					context.DirectReferenceCache.Add(project.MSBuildProjectPath, direct.ToList ());
 				}
 			}
 
@@ -222,7 +223,7 @@ namespace MonoDevelop.PackageManagement
 			string rootProjectPath)
 		{
 			var logger = context.Logger;
-			var cache = context.Cache;
+			var cache = context.ClosureCache;
 
 			var result = new DirectReferences ();
 
