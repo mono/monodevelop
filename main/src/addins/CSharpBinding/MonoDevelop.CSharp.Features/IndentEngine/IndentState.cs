@@ -201,21 +201,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 				while (NextLineIndent.CurIndent - ThisLineIndent.CurIndent > delta &&
 					   NextLineIndent.PopIf(IndentType.Continuation));
 				ThisLineIndent = NextLineIndent.Clone();
-
-			}
-			switch (ch) {
-			case '#':
-				if (Engine.isLineStart)
-					ChangeState<PreProcessorState> ();
-				break;
-			case '/':
-				if (Engine.previousChar == '/')
-					ChangeState<LineCommentState> ();
-				break;
-			case '*':
-				if (Engine.previousChar == '/')
-					ChangeState<MultiLineCommentState> ();
-				break;
 			}
 		}
 
@@ -307,6 +292,18 @@ namespace ICSharpCode.NRefactory6.CSharp
 		{
 			base.Push(ch);
 			switch (ch) {
+				case '#':
+				if (Engine.isLineStart)
+					ChangeState<PreProcessorState> ();
+				break;
+				case '/':
+				if (Engine.previousChar == '/')
+					ChangeState<LineCommentState> ();
+				break;
+				case '*':
+				if (Engine.previousChar == '/')
+					ChangeState<MultiLineCommentState> ();
+				break;
 				case '"':
 					if (Engine.previousChar == '@')
 					{
@@ -1865,6 +1862,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			if (ch == '/' && Engine.previousChar == '*' && IsAnyCharPushed)
 			{
 				ExitState();
+				Engine.currentChar = '\0';
 			}
 
 			IsAnyCharPushed = true;
