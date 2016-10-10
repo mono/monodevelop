@@ -859,7 +859,7 @@ namespace MonoDevelop.Projects
 					var localContext = context;
 					//Set project specific execution target to context if exists
 					if (multiProject?.GetTarget (it.SolutionItem) != null)
-						localContext = new ExecutionContext (context.ExecutionHandler, context.ExternalConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
+						localContext = new ExecutionContext (context.ExecutionHandler, context.ConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
 					if (!it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
