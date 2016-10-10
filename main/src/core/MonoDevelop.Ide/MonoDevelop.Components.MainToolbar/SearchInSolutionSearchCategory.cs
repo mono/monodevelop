@@ -89,7 +89,7 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				var options = new FilterOptions ();
 				if (PropertyService.Get ("AutoSetPatternCasing", true))
-					options.CaseSensitive = pattern.Pattern.Any (c => char.IsUpper (c));
+					options.CaseSensitive = pattern.Pattern.Any (char.IsUpper);
 				FindInFilesDialog.SearchReplace (pattern.Pattern, null, new WholeSolutionScope (), options, null, null);
 			}
 

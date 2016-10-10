@@ -342,7 +342,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static bool CanCreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (id => IsKnownFlavorGuid (id));
+			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (IsKnownFlavorGuid);
 		}
 
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
