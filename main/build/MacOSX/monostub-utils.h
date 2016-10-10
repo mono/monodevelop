@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <dlfcn.h>
 #include <string.h>
 
 #import <Cocoa/Cocoa.h>
@@ -54,6 +55,30 @@ str_append (const char *base, const char *append)
 	return buf;
 }
 
+static const char *
+xcode_get_dev_path ()
+{
+#define BUFSIZE 128
+	char buf[BUFSIZE];
+	char *cmd = "xcode-select -p";
+	char *res = "";
+	FILE *xcselect = popen(cmd, "r");
+
+	if (!xcselect) {
+		return "";
+	}
+
+	while (fgets(buf, BUFSIZE, xcselect)) {
+		res = str_append(res, buf);
+	}
+  // Remove trailing \n
+  res[strlen(res) - 1] = 0;
+
+	pclose(xcselect);
+	return res;
+#undef BUFSIZE
+}
+
 static char *
 generate_fallback_path (const char *contentsDir)
 {
@@ -61,6 +86,7 @@ generate_fallback_path (const char *contentsDir)
 	char *monodevelop_bin_dir;
 	char *value;
 	char *result;
+	char *xcode_dev_lib_path;
 
 	/* Inject our Resources/lib dir */
 	lib_dir = str_append (contentsDir, "/Resources/lib:");
@@ -75,8 +101,9 @@ generate_fallback_path (const char *contentsDir)
 	if (value == NULL)
 		abort ();
 
-	/* Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	result = str_append (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
+	xcode_dev_lib_path = str_append (xcode_get_dev_path (), "/usr/lib:");
+	/* Mono's lib dirs and Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+	result = str_append (value, str_append (xcode_dev_lib_path, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib"));
 
 	free (lib_dir);
 	free (monodevelop_bin_dir);

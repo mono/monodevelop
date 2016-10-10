@@ -285,12 +285,14 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			if (foldings == null) {
 				return Task.Run (async delegate {
+					bool locked = false;
 					try {
-						await foldingsSemaphore.WaitAsync ();
+						locked = await foldingsSemaphore.WaitAsync (Timeout.Infinite, cancellationToken);
 						if (foldings == null)
 							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
 					} finally {
-						foldingsSemaphore.Release ();
+						if (locked)
+							foldingsSemaphore.Release ();
 					}
 					return foldings;
 				});
@@ -301,7 +303,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		async Task<IEnumerable<FoldingRegion>> GenerateFoldings (CancellationToken cancellationToken)
 		{
-			return GenerateFoldingsInternal (await GetCommentsAsync (), cancellationToken);
+			return GenerateFoldingsInternal (await GetCommentsAsync (cancellationToken), cancellationToken);
 		}
 
 		IEnumerable<FoldingRegion> GenerateFoldingsInternal (IReadOnlyList<Comment> comments, CancellationToken cancellationToken)
@@ -444,7 +446,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			if (errors == null) {
 				return Task.Run (async delegate {
-					await errorLock.WaitAsync (cancellationToken);
+					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken);
 					try {
 						if (errors == null) {
 							try {
@@ -462,7 +464,8 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						return errors;
 					} finally {
-						errorLock.Release ();					}
+						if (locked)
+							errorLock.Release ();					}
 				});
 			}
 			return Task.FromResult (errors);

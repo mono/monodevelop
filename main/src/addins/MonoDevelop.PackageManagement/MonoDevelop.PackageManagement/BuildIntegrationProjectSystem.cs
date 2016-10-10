@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject
 	{
-		IDotNetProject dotNetProject;
+		DotNetProjectProxy dotNetProject;
 		PackageManagementEvents packageManagementEvents;
 		VersionFolderPathResolver packagePathResolver;
 
@@ -61,6 +61,10 @@ namespace MonoDevelop.PackageManagement
 
 			string path = SettingsUtility.GetGlobalPackagesFolder (settings);
 			packagePathResolver = new VersionFolderPathResolver (path, normalizePackageId: false);
+		}
+
+		public DotNetProjectProxy Project {
+			get { return dotNetProject; }
 		}
 
 		public override Task<bool> ExecuteInitScriptAsync (PackageIdentity identity, string packageInstallPath, INuGetProjectContext projectContext, bool throwOnFailure)

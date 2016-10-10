@@ -1003,15 +1003,33 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		static string selectedResultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultTextColor);
+		static string resultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultTextColor);
+		static string selectedResultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultDescriptionTextColor);
+		static string resultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultDescriptionTextColor);
 		string GetRowMarkup (SearchResult result, bool selected = false)
 		{
-			var resultFgColor = selected ? Styles.GlobalSearch.SelectedResultTextColor : Styles.GlobalSearch.ResultTextColor;
-			var descFgColor = selected ? Styles.GlobalSearch.SelectedResultDescriptionTextColor : Styles.GlobalSearch.ResultDescriptionTextColor;
-			string txt = "<span foreground=\"" + Styles.ColorGetHex (resultFgColor) + "\">" + result.GetMarkupText(selected) +"</span>";
+			var resultFgColor = selected ? selectedResultTextColor : resultTextColor;
+			var descFgColor = selected ? selectedResultDescriptionTextColor : resultDescriptionTextColor;
+			string text = result.GetMarkupText (selected);
 			string desc = result.GetDescriptionMarkupText ();
-			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"" + Styles.ColorGetHex (descFgColor) + "\" size=\"small\">\n" + desc + "</span>";
-			return txt;
+
+			int descLength = desc != null ? desc.Length : 0;
+
+			var sb = new System.Text.StringBuilder (text.Length + resultFgColor.Length + descLength + descFgColor.Length + 68);
+			sb.Append ("<span foreground=\"");
+			sb.Append (resultFgColor);
+			sb.Append ("\">");
+			sb.Append (text);
+			sb.Append ("</span>");
+			if (descLength > 0) {
+				sb.Append ("<span foreground=\"");
+				sb.Append (descFgColor);
+				sb.Append ("\" size=\"small\">\n");
+				sb.Append (desc);
+				sb.Append ("</span>");
+			}
+			return sb.ToString ();
 		}
 	}
 }

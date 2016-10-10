@@ -108,13 +108,15 @@ namespace MonoDevelop.Components.MainToolbar
 				//This lock is here in case user quickly types 5 letters which triggers 5 threads
 				//we don't want to use all CPU doing same thing, instead 1st one will create cache, others will wait here
 				//and then all will use cached version...
+				bool locked = false;
 				try {
-					await allFilesLock.WaitAsync ();
+					locked = await allFilesLock.WaitAsync (System.Threading.Timeout.Infinite, token);
 					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
 					if (token.IsCancellationRequested)
 						return;
 				} finally {
-					allFilesLock.Release ();
+					if (locked)
+						allFilesLock.Release ();
 				}
 
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);

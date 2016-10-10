@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Mono.Unix.Native;
 
 namespace Mono.TextEditor.Utils
 {
@@ -282,37 +283,53 @@ namespace Mono.TextEditor.Utils
 		}
 
 		// Code taken from FileService.cs
-		static void SystemRename (string sourceFile, string destFile)
+		public static void SystemRename (string sourceFile, string destFile)
 		{
-			//FIXME: use the atomic System.IO.File.Replace on NTFS
+			if (string.IsNullOrEmpty (sourceFile))
+				throw new ArgumentException ("sourceFile");
+
+			if (string.IsNullOrEmpty (destFile))
+				throw new ArgumentException ("destFile");
+
 			if (Platform.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (destFile)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
-					File.Move (destFile, wtmp);
-				}
+				WindowsRename (sourceFile, destFile);
+			} else {
+				UnixRename (sourceFile, destFile);
+			}
+		}
+
+		static void WindowsRename (string sourceFile, string destFile)
+		{
+			//Replace fails if the target file doesn't exist, so in that case try a simple move
+			if (!File.Exists (destFile)) {
 				try {
 					File.Move (sourceFile, destFile);
+					return;
 				} catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, destFile);
-					} catch {
-						wtmp = null;
-					}
-					throw;
-				} finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						} catch {
-						}
-					}
 				}
-			} else {
-				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
+			}
+
+			File.Replace (sourceFile, destFile, null);
+		}
+
+		static void UnixRename (string sourceFile, string destFile)
+		{
+			if (Stdlib.rename (sourceFile, destFile) != 0) {
+				switch (Stdlib.GetLastError ()) {
+				case Errno.EACCES:
+				case Errno.EPERM:
+					throw new UnauthorizedAccessException ();
+				case Errno.EINVAL:
+					throw new InvalidOperationException ();
+				case Errno.ENOTDIR:
+					throw new DirectoryNotFoundException ();
+				case Errno.ENOENT:
+					throw new FileNotFoundException ();
+				case Errno.ENAMETOOLONG:
+					throw new PathTooLongException ();
+				default:
+					throw new IOException ();
+				}
 			}
 		}
 

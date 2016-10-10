@@ -91,6 +91,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public abstract Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken));
 
+		public async Task<bool> HasErrorsAsync (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			return (await GetErrorsAsync (cancellationToken)).Any (e => e.ErrorType == ErrorType.Error);
+		}
+
+		[Obsolete ("Use the HasErrorsAsync method for cancellation and async support.")]
 		public bool HasErrors {
 			get {
 				return GetErrorsAsync ().Result.Any (e => e.ErrorType == ErrorType.Error);

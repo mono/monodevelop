@@ -1,10 +1,10 @@
-//
-// WorkspaceId.cs
+﻿//
+// StructEqualityComparer.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 (c) Marius Ungureanu
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,48 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.TypeSystem
+namespace MonoDevelop.Core
 {
-	struct WorkspaceId : IEquatable<WorkspaceId>
+	public class StructEqualityComparer<T> : IEqualityComparer<T> where T : struct, IEquatable<T>
 	{
-		static uint n = 0;
+		public static readonly StructEqualityComparer<T> Instance = new StructEqualityComparer<T> ();
 
-		public readonly uint     Number;
-		public readonly DateTime DateTime;
-
-		public static WorkspaceId Empty = new WorkspaceId (0, default(DateTime));
-
-		WorkspaceId (uint number, DateTime dateTime) : this()
+		public bool Equals (T x, T y)
 		{
-			this.Number = number;
-			this.DateTime = dateTime;
+			return x.Equals (y);
 		}
 
-		public static WorkspaceId Next()
+		public int GetHashCode (T obj)
 		{
-			return new WorkspaceId (n++, DateTime.UtcNow);
-		}
-
-		public override bool Equals (object obj)
-		{
-			if (!(obj is WorkspaceId))
-				return false;
-			return Equals ((WorkspaceId)obj);
-		}
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return Number.GetHashCode () ^ DateTime.GetHashCode ();
-			}
-		}
-
-		public bool Equals (WorkspaceId other)
-		{
-			return Number == other.Number && DateTime == other.DateTime;
+			return obj.GetHashCode ();
 		}
 	}
 }

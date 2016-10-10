@@ -212,7 +212,13 @@ namespace MonoDevelop.Projects.MSBuild
 		public bool IsImported { get; internal set; }
 
 		public IEnumerable<MSBuildTask> Tasks {
-			get { return ChildNodes.OfType<MSBuildTask> (); }
+			get {
+				foreach (var node in ChildNodes) {
+					var task = node as MSBuildTask;
+					if (task != null)
+						yield return task;
+				}
+			}
 		}
 
 		public void RemoveTask (MSBuildTask task)

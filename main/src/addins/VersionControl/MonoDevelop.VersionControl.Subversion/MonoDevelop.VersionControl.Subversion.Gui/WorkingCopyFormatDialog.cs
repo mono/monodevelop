@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					};
 				}
 
-				if (MessageDialog.AskQuestion (primary, secondary, Xwt.Drawing.Image.FromResource ("question-48.png").WithSize (48), commands) != DisableCommand)
+				if (MessageDialog.AskQuestion (primary, secondary, Toolkit.CurrentEngine.Defaults.MessageDialog.QuestionIcon, commands) != DisableCommand)
 					action();
 			};
 

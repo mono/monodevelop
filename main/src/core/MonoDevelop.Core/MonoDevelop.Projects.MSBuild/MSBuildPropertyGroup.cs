@@ -159,7 +159,11 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		public IEnumerable<MSBuildProperty> GetProperties ()
 		{
-			return ChildNodes.OfType<MSBuildProperty> ();
+			foreach (var node in ChildNodes) {
+				var prop = node as MSBuildProperty;
+				if (prop != null)
+					yield return prop;
+			}
 		}
 
 		public string GetValue (string name, string defaultValue = null)
