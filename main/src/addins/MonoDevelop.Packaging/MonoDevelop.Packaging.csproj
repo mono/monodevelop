@@ -188,6 +188,9 @@
     <Folder Include="MonoDevelop.Packaging.Gui\" />
     <Folder Include="MonoDevelop.Packaging.OptionPanels\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="PostBuild.proj" />
 </Project>

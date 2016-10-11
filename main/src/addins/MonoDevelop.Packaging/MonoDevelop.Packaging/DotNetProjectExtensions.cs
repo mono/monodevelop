@@ -62,7 +62,7 @@ namespace MonoDevelop.Packaging
 		public static bool HasNuGetMetadata (this DotNetProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
-			return propertyGroup.HasProperty ("NuGetId");
+			return propertyGroup.HasProperty ("PackageId");
 		}
 
 		public static void SetOutputAssemblyName (this DotNetProject project, string name)

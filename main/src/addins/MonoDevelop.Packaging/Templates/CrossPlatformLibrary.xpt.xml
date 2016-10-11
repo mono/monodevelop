@@ -27,6 +27,9 @@
 			<Options Target="Library"
 				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"
 				DefaultNamespace="${ProjectName}" />
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.83-dev" />
+			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />

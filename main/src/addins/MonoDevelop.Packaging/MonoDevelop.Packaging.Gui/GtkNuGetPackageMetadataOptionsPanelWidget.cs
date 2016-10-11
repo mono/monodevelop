@@ -101,10 +101,6 @@ namespace MonoDevelop.Packaging.Gui
 		{
 			UpdateMetadata ();
 			metadata.UpdateProject (project);
-
-			if (!metadata.IsEmpty ()) {
-				project.AddCommonPackagingImports ();
-			}
 		}
 
 		void UpdateMetadata ()

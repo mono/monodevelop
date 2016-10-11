@@ -50,7 +50,8 @@ namespace MonoDevelop.Packaging.Templating
 			var libraryProjects = GetLibraryProjects (items).ToList ();
 
 			foreach (DotNetProject project in libraryProjects) {
-				project.AddCommonPackagingImports ();
+				if (!project.IsPortableLibrary)
+					project.AddCommonPackagingImports ();
 				project.SetOutputAssemblyName (projectName);
 			}
 

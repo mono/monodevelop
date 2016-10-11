@@ -39,7 +39,7 @@ namespace MonoDevelop.Packaging
 				return;
 
 			var context = new ProjectOperationContext ();
-			context.GlobalProperties.SetValue ("BuildNuGet", true);
+			context.GlobalProperties.SetValue ("PackOnBuild", "true");
 			IdeApp.ProjectOperations.Build (project, operationContext: context);
 		}
 	}
