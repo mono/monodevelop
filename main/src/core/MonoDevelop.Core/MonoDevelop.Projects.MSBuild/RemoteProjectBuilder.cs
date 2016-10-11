@@ -289,9 +289,10 @@ namespace MonoDevelop.Projects.MSBuild
 					cr = RegisterCancellation (cancellationToken, taskId);
 
 					MSBuildResult result;
+					bool locked = false;
 					try {
 						BeginOperation ();
-						await engine.Semaphore.WaitAsync (cancellationToken);
+						locked = await engine.Semaphore.WaitAsync (Timeout.Infinite, cancellationToken);
 						// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
 						result = builder.Run (
 									configurations, null, MSBuildVerbosity.Normal,
@@ -302,7 +303,8 @@ namespace MonoDevelop.Projects.MSBuild
 						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
 						return new AssemblyReference [0];
 					} finally {
-						engine.Semaphore.Release ();
+						if (locked)
+							engine.Semaphore.Release ();
 						EndOperation ();
 					}
 
