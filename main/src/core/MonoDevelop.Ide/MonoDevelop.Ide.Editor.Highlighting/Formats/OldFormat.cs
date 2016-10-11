@@ -1036,6 +1036,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 
+			static readonly ColorScheme dark, light;
 			static ColorScheme ()
 			{
 				foreach (var property in typeof (ColorScheme).GetProperties ()) {
@@ -1048,6 +1049,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						ambientColors.Add (description.Name, new PropertyDescription (property, description));
 					}
 				}
+				using (var stream = typeof (ColorScheme).Assembly.GetManifestResourceStream ("DarkStyle.json"))
+					dark = ColorScheme.LoadFrom (stream);
+				using (var stream = typeof (ColorScheme).Assembly.GetManifestResourceStream ("FallbackStyle.json"))
+					light = ColorScheme.LoadFrom (stream);
 			}
 
 			public ColorScheme Clone ()
@@ -1342,16 +1347,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				result.TooltipPagerTriangle = new AmbientColor ();
 				result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", (HslColor)AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
 
-				//var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : TextEditorOptions.DefaultColorStyle);
+				var defaultStyle = HslColor.Brightness (result.PlainText.Background) < 0.5 ? dark : light;
 
-				//foreach (var color in textColors.Values) {
-				//	if (color.Info.GetValue (result, null) == null)
-				//		color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
-				//}
-				//foreach (var color in ambientColors.Values) {
-				//	if (color.Info.GetValue (result, null) == null)
-				//		color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
-				//}
+				foreach (var color in textColors.Values) {
+					if (color.Info.GetValue (result, null) == null)
+						color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+				}
+				foreach (var color in ambientColors.Values) {
+					if (color.Info.GetValue (result, null) == null)
+						color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+				}
 				if (result.PlainText.TransparentForeground)
 					result.PlainText.Foreground = new Cairo.Color (0, 0, 0);
 				return result;
