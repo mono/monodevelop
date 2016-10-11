@@ -30,15 +30,9 @@
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command>
-          <type>Execute</type>
-          <command>../../../../main/build/bin/MonoDevelop.exe --no-redirect</command>
-          <workingdir>../../../../main/build</workingdir>
+        <Command type="Execute" command="../../../../main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../../main/build">
           <EnvironmentVariables>
-            <Variable>
-              <name>MONODEVELOP_DEV_ADDINS</name>
-              <value>${TargetDir}</value>
-            </Variable>
+            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
           </EnvironmentVariables>
         </Command>
       </CustomCommands>
@@ -155,10 +149,9 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Projects.Formats.MSBuild" />
-    <Reference Include="Mono.TextEditor">
+    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
@@ -222,16 +215,7 @@
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
-    </ProjectReference>
-    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -240,7 +224,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
           </FSharpFormattingPolicy>
@@ -431,4 +415,3 @@
     </When>
   </Choose>
 </Project>
-
