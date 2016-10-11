@@ -7770,14 +7770,17 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\syntaxes\html.json">
       <LogicalName>html.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\fsharp\syntaxes\fsharp.json">
-      <LogicalName>fsharp.json</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\diff\syntaxes\diff.tmLanguage">
       <LogicalName>diff.tmLanguage</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\CSharpComments.tmPreferences">
       <LogicalName>CSharpComments.tmPreferences</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\F#.sublime-syntax">
+      <LogicalName>F#.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\FSharpComments.tmPreferences">
+      <LogicalName>FSharpComments.tmPreferences</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -8819,6 +8822,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\F#Comments.tmPreferences" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8870,7 +8874,6 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\css\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\css\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\diff\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\fsharp\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\html\" />

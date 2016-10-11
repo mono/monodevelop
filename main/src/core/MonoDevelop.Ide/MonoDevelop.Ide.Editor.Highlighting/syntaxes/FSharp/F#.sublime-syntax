@@ -1,0 +1,106 @@
+%YAML 1.2
+---
+
+name: "F#"
+file_extensions:
+  - fs
+scope: source.fs
+contexts:
+  main:
+    - include: comments
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: types
+    - include: fields
+    - include: preprocessor
+  comments:
+    - match: '//'
+      scope: comment.line.source.fs
+      push:
+        - include: commenttags
+        - match: $\n?
+          pop: true
+    - match: '///'
+      scope: comment.line.documentation.source.fs
+      push:
+        - match: '$\n?'
+          pop: true
+        - include: xmldoc
+    - match: '/\*'
+      scope: comment.block.source.fs
+      push:
+        - include: commenttags
+        - match: '\*/\n?'
+          pop: true
+  commenttags:
+    - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
+      scope: markup.other.source.fs
+  types:
+    
+    - match: '\b(Some|None|string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b'
+      scope: entity.name.class
+  fields:
+    - match: '(let\s+)(\w+|``[^`]*``)(?:\s+[^\s=:])'
+      scope: entity.name.field
+  keywords:
+    - match: '\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|do|use|module|and")\b'
+      scope: keyword.source.fs
+    - match: '\b(do!|use!|yield!|return!|let!)\b'
+      scope: keyword.source.fs
+    - match: '\b(true|false|null)\b'
+      scope: constant.language.source.fs
+  numbers:
+    - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
+      scope: constant.numeric.float.source.fs
+    - match: '\b(0[xX][0-9a-fA-F]+?|\d+)(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
+      scope: constant.numeric.source.fs
+  strings:
+    - match: "'"
+      scope: string.quoted.single.source.fs
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.fs
+        - match: "('|$\n?)"
+          pop: true
+    - match: '@"'
+      scope: string.quoted.other.verbatim.source.fs
+      push:
+        - match: '""'
+          scope: constant.character.verbatim.escape.source.fs
+        - match: '"'
+          pop: true
+    - match: '\$"'
+      scope: string.quoted.other.interpolated.source.fs
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.fs
+        - match: '("|$\n?)'
+          pop: true
+        - match: '({)'
+          captures:
+            1: string.quoted.other.interpolated.source.fs
+          scope: source.fs
+          push:
+            - match: '(})'
+              captures:
+                1: string.quoted.other.interpolated.source.fs
+              pop: true
+            - include: main
+    - match: '"'
+      scope: string.quoted.double.source.fs
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.fs
+        - match: '("|$\n?)'
+          pop: true
+  preprocessor:
+    - match: '^\s*#(if|else|elif|endif|load|r|reference|nowarn|time|q|quit|help|include")\b'
+      scope: meta.preprocessor.source.fs
+      push:
+        - match: '\n?'
+          pop: true
+    - match: '^\s*(#region)(.*)$\n?'
+      captures:
+        1: meta.preprocessor.source.fs
+        2: meta.preprocessor.region.name.source.fs
