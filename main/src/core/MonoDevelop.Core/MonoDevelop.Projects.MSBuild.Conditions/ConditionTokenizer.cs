@@ -41,7 +41,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		int	position = 0;
 		int	tokenPosition = 0;
 		int tokenLength = 0;
-		int nextChar = -1;
 		
 		Token	token;
 		Token	putback = null;
@@ -75,8 +74,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		
 			this.inputString = s;
 			this.position = 0;
-			if (position < inputString.Length)
-				this.nextChar = inputString [position];
 			this.token = new Token (null, TokenType.BOF, 0);
 
 			GetNextToken ();
@@ -95,19 +92,18 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		
 		int PeekChar ()
 		{
-			return nextChar;
+			if (position < inputString.Length)
+				return (int) inputString [position];
+			else
+				return -1;
 		}
 		
 		int ReadChar ()
 		{
-			try {
-				return nextChar;
-			} finally {
-				if (++position < inputString.Length)
-					nextChar = (int)inputString [position];
-				else
-					nextChar = -1;
-			}
+			if (position < inputString.Length)
+				return (int) inputString [position++];
+			else
+				return -1;
 		}
 		
 		public void Expect (TokenType type)
