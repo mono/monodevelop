@@ -406,7 +406,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			languageBundles.Add (builtInBundle);
 
 			LoadStylesAndModes (typeof (SyntaxHighlightingService).Assembly);
-			var textEditorAssembly = Assembly.Load ("MonoDevelop.SourceEditor");
+			var textEditorAssembly = AppDomain.CurrentDomain.GetAssemblies ().FirstOrDefault (a => a.GetName ().Name.StartsWith ("MonoDevelop.SourceEditor", StringComparison.Ordinal));
 			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);
 			} else {
