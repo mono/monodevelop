@@ -214,9 +214,9 @@
 	<string>@BUNDLE_VERSION@</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>NO</string>
-	<key>QuartzGLEnable</key>
-	<false/>
 	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
 	<key>ReleaseId</key>
 	<string>@RELEASE_ID@</string>
