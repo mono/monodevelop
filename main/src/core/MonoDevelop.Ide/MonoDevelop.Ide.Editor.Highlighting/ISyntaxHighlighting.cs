@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		public IReadOnlyList<ColoredSegment> Segments { get; private set; }
 
-		internal HighlightedLine (IReadOnlyList<ColoredSegment> segments)
+		public HighlightedLine (IReadOnlyList<ColoredSegment> segments)
 		{
 			Segments = segments;
 		}
