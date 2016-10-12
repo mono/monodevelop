@@ -236,10 +236,10 @@ namespace MonoDevelop.Projects.MSBuild
 				return parentContext.GetPropertyValue (name);
 
 			lock (envVars) {
-				if (envVars.TryGetValue (name, out val))
-					return val;
+				if (!envVars.TryGetValue (name, out val))
+					envVars[name] = val = Environment.GetEnvironmentVariable (name);
 
-				return envVars [name] = Environment.GetEnvironmentVariable (name);
+				return val;
 			}
 		}
 
