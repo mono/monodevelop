@@ -831,7 +831,7 @@ namespace MonoDevelop.Projects.MSBuild
 			string part = "/";
 			
 			for (int n=0; n<names.Length; n++) {
-				string[] entries;
+				IEnumerable<string> entries;
 
 				if (names [n] == ".."){
 					if (part == "/")
@@ -840,7 +840,7 @@ namespace MonoDevelop.Projects.MSBuild
 					continue;
 				}
 				
-				entries = Directory.GetFileSystemEntries (part);
+				entries = Directory.EnumerateFileSystemEntries (part);
 				
 				string fpath = null;
 				foreach (string e in entries) {

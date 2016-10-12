@@ -59,7 +59,7 @@ namespace MonoDevelop.Gettext
 			}
 			
 			if (file == null) {
-				string[] files = Directory.GetFiles (".");
+				var files = Directory.EnumerateFiles (".");
 				foreach (string f in files) {
 					if (Services.ProjectService.IsWorkspaceItemFile (f)) {
 						file = f;

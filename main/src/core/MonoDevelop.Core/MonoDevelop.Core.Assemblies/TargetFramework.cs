@@ -386,11 +386,8 @@ namespace MonoDevelop.Core.Assemblies
 							ainfo.InGac = reader.ReadContentAsBoolean ();
 					} while (reader.ReadToFollowing ("File"));
 				} else if (Directory.Exists (dir)) {
-
-					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
-					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-					var files = Directory.GetFiles (dir, "*.dll");
-					foreach (var f in files) {
+					
+					foreach (var f in Directory.EnumerateFiles (dir, "*.dll")) {
 						try {
 							var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));
 							var ainfo = new AssemblyInfo ();

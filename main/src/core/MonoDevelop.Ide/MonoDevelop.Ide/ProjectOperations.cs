@@ -2172,9 +2172,9 @@ namespace MonoDevelop.Ide
 		
 		static bool ContainsOnlyProjectFiles (string path, Project project)
 		{
-			if (Directory.GetFiles (path).Any (f => project.Files.GetFile (f) == null))
+			if (Directory.EnumerateFiles (path).Any (f => project.Files.GetFile (f) == null))
 				return false;
-			foreach (string dir in Directory.GetDirectories (path))
+			foreach (string dir in Directory.EnumerateDirectories (path))
 				if (!ContainsOnlyProjectFiles (dir, project)) return false;
 			return true;
 		}
