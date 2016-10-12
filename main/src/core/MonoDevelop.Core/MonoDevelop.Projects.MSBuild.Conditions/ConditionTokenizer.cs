@@ -265,11 +265,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			tokenPosition = position;
 			int start = position;
 			int ch;
-			while ((ch = ReadChar ()) >= 0) {
+			while ((ch = PeekChar ()) >= 0) {
 				switch (ch) {
 				case ')':
 					if (--parensCounter == 0) {
-						--position;
 						token = new Token (inputString.Substring (start, position - start), TokenType.String, tokenPosition);
 						return;
 					}
@@ -278,6 +277,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					++parensCounter;
 					break;
 				}
+				ReadChar ();
 			}
 
 			token = new Token (null, TokenType.EOF, tokenPosition);
