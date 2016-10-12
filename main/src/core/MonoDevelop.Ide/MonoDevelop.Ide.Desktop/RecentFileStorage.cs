@@ -180,13 +180,13 @@ namespace MonoDevelop.Ide.Desktop
 			}
 			
 			ModifyStore (list => RemoveMatches (list, item =>
-				item.IsFile && groups.Any (g => item.IsInGroup (g)) && !File.Exists (item.LocalPath)
+				item.IsFile && groups.Any (item.IsInGroup) && !File.Exists (item.LocalPath)
 			));
 		}
 		
 		public void ClearGroup (params string[] groups)
 		{
-			ModifyStore (list => RemoveMatches (list, item => groups.Any (group => item.IsInGroup (group))));
+			ModifyStore (list => RemoveMatches (list, item => groups.Any (item.IsInGroup)));
 		}
 		
 		public void AddWithLimit (RecentItem item, string group, int limit)

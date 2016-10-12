@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (!Directory.Exists (parentDirectory))
 				return false;
 
-			return Directory.GetFiles (parentDirectory, fileName)
+			return Directory.EnumerateFiles (parentDirectory, fileName)
 				.Any (file => Path.GetFileName (file) == fileName);
 		}
 		

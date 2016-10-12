@@ -291,52 +291,52 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
-				Application.Invoke (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> (collectors.Count);
-					foreach (var col in collectors) {
-						if (col.Task.IsCanceled) {
-							continue;
-						} else if (col.Task.IsFaulted) {
-							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
-						} else {
-							newResults.Add (Tuple.Create (col.Category, col.Results));
-						}
+				if (token.IsCancellationRequested)
+					return;
+				var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> (collectors.Count);
+				foreach (var col in collectors) {
+					if (col.Task.IsCanceled) {
+						continue;
+					} else if (col.Task.IsFaulted) {
+						LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+					} else {
+						newResults.Add (Tuple.Create (col.Category, col.Results));
 					}
-					ShowResults (newResults);
+				}
+
+				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
+				ItemIdentifier topResult = null;
+				for (int i = 0; i < newResults.Count; i++) {
+					var tuple = newResults [i];
+					try {
+						if (tuple.Item2.Count == 0)
+							continue;
+						if (topResult == null || topResult.DataSource [topResult.Item].Weight < tuple.Item2 [0].Weight)
+							topResult = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while showing result " + i, e);
+						if (failedResults == null)
+							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+						failedResults.Add (newResults [i]);
+						continue;
+					}
+				}
+
+				if (failedResults != null)
+					failedResults.ForEach (failedResult => newResults.Remove (failedResult));
+
+				Application.Invoke (delegate {
+					ShowResults (newResults, topResult);
 					isInSearch = false;
 					AnimatedResize ();
 				});
 			}, token);
 		}
 
-		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
+		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results = newResults;
-			List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
-			topItem = null;
-
-			for (int i = 0; i < results.Count; i++) {
-				var tuple = results [i];
-				try {
-					if (tuple.Item2.Count == 0)
-						continue;
-					if (topItem == null || topItem.DataSource [topItem.Item].Weight < tuple.Item2 [0].Weight)
-						topItem = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while showing result " + i, e);
-					if (failedResults == null)
-						failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
-					failedResults.Add (results [i]);
-					continue;
-				}
-			}
-			selectedItem = topItem;
-
-			if (failedResults != null)
-				failedResults.ForEach (failedResult => results.Remove (failedResult));
-
+			selectedItem = topItem = topResult;
 			ShowTooltip ();
 		}
 

@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 			string itemFile = null;
 			
 			if (file == null) {
-				string[] files = Directory.GetFiles (".");
+				var files = Directory.EnumerateFiles (".");
 				foreach (string f in files) {
 					if (Services.ProjectService.IsWorkspaceItemFile (f)) {
 						solFile = f;

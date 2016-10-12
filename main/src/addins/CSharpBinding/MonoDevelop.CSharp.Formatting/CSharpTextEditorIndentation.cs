@@ -576,8 +576,10 @@ namespace MonoDevelop.CSharp.Formatting
 						return;
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
+							var oldVersion = Editor.Version;
 							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
-							CompletionWindowManager.HideWindow ();
+							if (oldVersion.CompareAge (Editor.Version) != 0)
+								CompletionWindowManager.HideWindow ();
 						}
 					}
 				}

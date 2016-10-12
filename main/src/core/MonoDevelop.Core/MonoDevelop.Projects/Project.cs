@@ -377,7 +377,7 @@ namespace MonoDevelop.Projects
 
 		internal bool CheckAllFlavorsSupported ()
 		{
-			return FlavorGuids.All (g => ProjectExtension.SupportsFlavor (g));
+			return FlavorGuids.All (ProjectExtension.SupportsFlavor);
 		}
 
 		ProjectExtension ProjectExtension {
@@ -1814,7 +1814,7 @@ namespace MonoDevelop.Projects
 				foreach (FilePath file in filesToDelete) {
 					if (File.Exists (file)) {
 						file.Delete ();
-						if (file.ParentDirectory.CanonicalPath != config.OutputDirectory.CanonicalPath && Directory.GetFiles (file.ParentDirectory).Length == 0)
+						if (file.ParentDirectory.CanonicalPath != config.OutputDirectory.CanonicalPath && !Directory.EnumerateFiles (file.ParentDirectory).Any ())
 							file.ParentDirectory.Delete ();
 					}
 				}

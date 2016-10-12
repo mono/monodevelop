@@ -193,6 +193,12 @@ namespace MonoDevelop.Components
 			QueueResize ();
 		}
 
+		protected override void OnDestroyed ()
+		{
+			this.AbortAnimation ("Resize");
+			base.OnDestroyed ();
+		}
+
 		void MaybeReanimate ()
 		{
 			disableSizeCheck = true;

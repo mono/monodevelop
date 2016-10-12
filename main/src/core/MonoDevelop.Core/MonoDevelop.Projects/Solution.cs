@@ -760,13 +760,11 @@ namespace MonoDevelop.Projects
 		{
 			IEnumerable<SolutionRunConfiguration> res = runConfigurations;
 			foreach (var it in GetAllSolutionItems ().Where (i => i.SupportsExecute ())) {
-				var configs = it.GetRunConfigurations ().ToArray ();
-				if (!configs.Any ())
+				var configs = it.GetRunConfigurations ().Select (c => new SingleItemSolutionRunConfiguration (it, c)).ToList ();
+				if (configs.Count == 0)
 					res = res.Concat (new SingleItemSolutionRunConfiguration (it, null));
-				else if (configs.Length == 1)
-					res = res.Concat (new SingleItemSolutionRunConfiguration (it, configs[0]));
 				else
-					res = res.Concat (it.GetRunConfigurations ().Select (c => new SingleItemSolutionRunConfiguration (it, c)));
+					res = res.Concat (configs);
 			}
 			return res;
 		}
