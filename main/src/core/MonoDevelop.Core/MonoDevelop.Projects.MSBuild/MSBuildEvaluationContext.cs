@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
+		static object envVarsLock = new object ();
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
 		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
 		List<string> propertiesWithTransformsSorted = new List<string> ();
@@ -235,10 +236,12 @@ namespace MonoDevelop.Projects.MSBuild
 			if (parentContext != null)
 				return parentContext.GetPropertyValue (name);
 
-			if (envVars.TryGetValue (name, out val))
-				return val;
+			lock (envVars) {
+				if (envVars.TryGetValue (name, out val))
+					return val;
 
-			return envVars[name] = Environment.GetEnvironmentVariable (name);
+				return envVars [name] = Environment.GetEnvironmentVariable (name);
+			}
 		}
 
 		public string GetMetadataValue (string name)
