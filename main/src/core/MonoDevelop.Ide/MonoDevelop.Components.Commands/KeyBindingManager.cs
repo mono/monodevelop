@@ -100,15 +100,15 @@ namespace MonoDevelop.Components.Commands
 		
 		static bool KeyIsModifier (Gdk.Key key)
 		{
-			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
+			if (key == Gdk.Key.Control_L || key == Gdk.Key.Control_R)
 				return true;
-			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
+			else if (key == Gdk.Key.Alt_L || key == Gdk.Key.Alt_R)
 				return true;
-			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
+			else if (key == Gdk.Key.Shift_L || key == Gdk.Key.Shift_R)
 				return true;
-			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+			else if (key == Gdk.Key.Meta_L || key == Gdk.Key.Meta_R)
 				return true;
-			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_R))
+			else if (key == Gdk.Key.Super_L || key == Gdk.Key.Super_R)
 				return true;
 			
 			return false;
@@ -136,15 +136,15 @@ namespace MonoDevelop.Components.Commands
 		{
 			string label = string.Empty;
 			
-			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
+			if (key == Gdk.Key.Control_L || key == Gdk.Key.Control_R)
 				label += "Control+";
-			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
+			else if (key == Gdk.Key.Alt_L || key == Gdk.Key.Alt_R)
 				label += "Alt+";
-			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
+			else if (key == Gdk.Key.Shift_L || key == Gdk.Key.Shift_R)
 				label += "Shift+";
-			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+			else if (key == Gdk.Key.Meta_L || key == Gdk.Key.Meta_R)
 				label += "Meta+";
-			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_R))
+			else if (key == Gdk.Key.Super_L || key == Gdk.Key.Super_R)
 				label += "Super+";
 			
 			return label;
