@@ -377,7 +377,7 @@ namespace MonoDevelop.Projects
 
 		internal bool CheckAllFlavorsSupported ()
 		{
-			return FlavorGuids.All (g => ProjectExtension.SupportsFlavor (g));
+			return FlavorGuids.All (ProjectExtension.SupportsFlavor);
 		}
 
 		ProjectExtension ProjectExtension {
