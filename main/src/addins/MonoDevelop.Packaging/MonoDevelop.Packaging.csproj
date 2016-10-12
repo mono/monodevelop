@@ -124,10 +124,6 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NuGetizer3000\src\NuGet.Packaging.Tasks\NuGet.Packaging.Tasks.csproj">
-      <Project>{F46DEF57-56D2-4996-BCC5-1ED39493CB06}</Project>
-      <Name>NuGet.Packaging.Tasks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
