@@ -128,9 +128,6 @@ namespace MonoDevelop.Packaging.Tests
 				Assert.That (nugetProject.GetConfigurations (), Contains.Item (config.Id));
 			}
 
-			// Ensure NuGet imports are added to the Android project.
-			Assert.IsTrue (androidProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
-
 			// DefaultNamespace is the same for all projects.
 			Assert.AreEqual ("MyProject", ((DotNetProject)androidProject).DefaultNamespace);
 			Assert.AreEqual ("MyProject", ((DotNetProject)pclProject).DefaultNamespace);
@@ -207,9 +204,6 @@ namespace MonoDevelop.Packaging.Tests
 			metadata = new NuGetPackageMetadata ();
 			metadata.Load (pclProject);
 			Assert.IsTrue (metadata.IsEmpty ());
-
-			// Ensure NuGet imports are added to the iOS project.
-			Assert.IsTrue (iosProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
 
 			var assemblyInfoFile = iosProject.Items.OfType<ProjectFile> ().Single (file => file.FilePath.FileName == "AssemblyInfo.cs");
 			Assert.IsNotNull (assemblyInfoFile);

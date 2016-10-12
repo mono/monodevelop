@@ -31,14 +31,13 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.Packaging.Core;
 
 namespace MonoDevelop.Packaging
 {
-	class PackagingProject : DotNetProject, INuGetAwareProject
+	class PackagingProject : DotNetProject
 	{
 		PackageReferenceCollection packageReferences;
 		ReferenceAssemblyFrameworkCollection referenceAssemblyFrameworks;
@@ -48,17 +47,14 @@ namespace MonoDevelop.Packaging
 			UsePartialTypes = false;
 		}
 
-		[ItemProperty ("Id")]
+		[ItemProperty ("PackageId")]
 		string id;
 
-		[ItemProperty ("Version")]
+		[ItemProperty ("PackageVersion")]
 		string version;
 
 		[ItemProperty ("Authors")]
 		string authors;
-
-		[ItemProperty ("Description")]
-		string description;
 
 		[ItemProperty ("Owners")]
 		string owners;
@@ -69,31 +65,31 @@ namespace MonoDevelop.Packaging
 		[ItemProperty ("DevelopmentDependency")]
 		bool developmentDependency;
 
-		[ItemProperty ("Tags")]
+		[ItemProperty ("PackageTags")]
 		string tags;
 
 		[ItemProperty ("Title")]
 		string title;
 
-		[ItemProperty ("Language")]
+		[ItemProperty ("NeutralLanguage")]
 		string language;
 
-		[ItemProperty ("ReleaseNotes")]
+		[ItemProperty ("PackageReleaseNotes")]
 		string releaseNotes;
 
 		[ItemProperty ("Summary")]
 		string summary;
 
-		[ItemProperty ("ProjectUrl")]
+		[ItemProperty ("PackageProjectUrl")]
 		string projectUrl;
 
-		[ItemProperty ("IconUrl")]
+		[ItemProperty ("PackageIconUrl")]
 		string iconUrl;
 
-		[ItemProperty ("LicenseUrl")]
+		[ItemProperty ("PackageLicenseUrl")]
 		string licenseUrl;
 
-		[ItemProperty ("RequireLicenseAcceptance")]
+		[ItemProperty ("PackageRequireLicenseAcceptance")]
 		bool requireLicenseAcceptance;
 
 		protected override DotNetCompilerParameters OnCreateCompilationParameters (
@@ -149,7 +145,8 @@ namespace MonoDevelop.Packaging
 
 		protected override void OnGetDefaultImports (List<string> imports)
 		{
-			imports.Add (@"$(NuGetPackagingPath)\NuGet.Packaging.targets");
+			imports.Add (@"$(MSBuildBinPath)\Microsoft.Common.targets");
+			imports.Add (@"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets");
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -166,8 +163,8 @@ namespace MonoDevelop.Packaging
 		{
 			MSBuildObject insertBefore = msproject.GetAllObjects ().FirstOrDefault ();
 			msproject.AddNewImport (
-				@"$(NuGetPackagingPath)\NuGet.Packaging.props",
-				@"Exists('$(NuGetPackagingPath)\NuGet.Packaging.props')",
+				@"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props",
+				@"Exists('$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props')",
 				insertBefore);
 		}
 
@@ -185,7 +182,7 @@ namespace MonoDevelop.Packaging
 			id = projectCreateInfo.Parameters ["PackageId"];
 			version = projectCreateInfo.Parameters ["PackageVersion"];
 			authors = projectCreateInfo.Parameters ["PackageAuthors"];
-			description = projectCreateInfo.Parameters ["PackageDescription"];
+			Description = projectCreateInfo.Parameters ["PackageDescription"];
 		}
 
 		protected override string OnGetDefaultBuildAction (string fileName)
@@ -198,7 +195,7 @@ namespace MonoDevelop.Packaging
 			return new NuGetPackageMetadata {
 				Id = id,
 				Authors = authors,
-				Description = description,
+				Description = Description,
 				Version = version,
 
 				Copyright = copyright,
@@ -221,7 +218,7 @@ namespace MonoDevelop.Packaging
 			id = ToNullIfEmpty (metadata.Id);
 			version = ToNullIfEmpty (metadata.Version);
 			authors = ToNullIfEmpty (metadata.Authors);
-			description = ToNullIfEmpty (metadata.Description);
+			Description = ToNullIfEmpty (metadata.Description);
 			copyright = ToNullIfEmpty (metadata.Copyright);
 			developmentDependency = metadata.DevelopmentDependency;
 			iconUrl = ToNullIfEmpty (metadata.IconUrl);
@@ -244,18 +241,6 @@ namespace MonoDevelop.Packaging
 			return text;
 		}
 
-		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
-		{
-			base.OnReferenceAddedToProject (e);
-
-			DotNetProject project = GetDotNetProject (e.ProjectReference);
-			if (project != null) {
-				if (project.AddCommonPackagingImports ()) {
-					project.SaveAsync (new ProgressMonitor ());
-				}
-			}
-		}
-
 		DotNetProject GetDotNetProject (ProjectReference projectReference)
 		{
 			if (ParentSolution == null)
@@ -266,22 +251,6 @@ namespace MonoDevelop.Packaging
 				return project;
 
 			return null;
-		}
-
-		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
-		{
-			base.OnReferenceRemovedFromProject (e);
-
-			DotNetProject project = GetDotNetProject (e.ProjectReference);
-			if (project != null) {
-				project.RemoveCommonPackagingImports ();
-				project.SaveAsync (new ProgressMonitor ());
-			}
-		}
-
-		public NuGet.ProjectManagement.NuGetProject CreateNuGetProject ()
-		{
-			return new PackagingNuGetProject (this);
 		}
 
 		protected override void OnInitialize ()

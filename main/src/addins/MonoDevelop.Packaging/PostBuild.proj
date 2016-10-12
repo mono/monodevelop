@@ -2,7 +2,7 @@
   <PropertyGroup>
     <PrepareForRunDependsOn>$(PrepareForRunDependsOn);_MyPostBuildTarget</PrepareForRunDependsOn>
     <_MyCopyItemRelativePath>../../../../external/NuGetizer3000/src/NuGet.Packaging.Tasks/bin/</_MyCopyItemRelativePath>
-    <_BuildPackagingVersion>0.1.83-dev</_BuildPackagingVersion>
+    <_BuildPackagingVersion>0.1.98-dev</_BuildPackagingVersion>
   </PropertyGroup>
   <ItemGroup>
     <_MyCopyItem Include="$(MSBuildProjectDirectory)$(_MyCopyItemRelativePath)$(Configuration)/ApiIntersect.exe" />

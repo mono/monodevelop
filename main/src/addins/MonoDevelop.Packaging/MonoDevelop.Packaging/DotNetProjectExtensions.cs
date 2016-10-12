@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
@@ -33,32 +32,6 @@ namespace MonoDevelop.Packaging
 {
 	static class DotNetProjectExtensions
 	{
-		internal static readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
-		internal static readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
-
-		public static bool AddCommonPackagingImports (this DotNetProject project)
-		{
-			bool modified = false;
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
-				modified = true;
-			}
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
-				modified = true;
-			}
-
-			return modified;
-		}
-
-		public static void RemoveCommonPackagingImports (this DotNetProject project)
-		{
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
-		}
-
 		public static bool HasNuGetMetadata (this DotNetProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
