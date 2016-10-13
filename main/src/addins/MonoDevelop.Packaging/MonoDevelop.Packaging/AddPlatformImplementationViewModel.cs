@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
@@ -33,7 +35,6 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.SharedAssetsProjects;
-using System.Linq;
 
 namespace MonoDevelop.Packaging
 {
@@ -339,10 +340,18 @@ namespace MonoDevelop.Packaging
 			string packagesFolder = Path.Combine (GetAddinFolder (), "packages");
 			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.98-dev");
 
+			InstallPackages (packagesFolder, packagingProject, new [] { packageReference });
+		}
+
+		protected virtual void InstallPackages (
+			string packagesFolder,
+			PackagingProject project,
+			IEnumerable<PackageManagementPackageReference> packages)
+		{
 			PackageManagementServices.ProjectOperations.InstallPackages (
 				packagesFolder,
 				packagingProject,
-				new [] { packageReference }
+				packages
 			);
 		}
 	}

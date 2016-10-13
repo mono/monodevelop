@@ -80,7 +80,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = false;
 			viewModel.CreateIOSProject = false;
@@ -163,7 +163,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = false;
 			viewModel.CreateSharedProject = false;
 			viewModel.CreateIOSProject = true;
@@ -249,7 +249,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = true;
 			viewModel.CreateIOSProject = true;
@@ -372,7 +372,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = true;
 			viewModel.CreateIOSProject = true;

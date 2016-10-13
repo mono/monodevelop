@@ -80,9 +80,6 @@ namespace MonoDevelop.Packaging.Tests
 			int count = project.Imports.Count ();
 			import = project.Imports.Skip (count - 2).FirstOrDefault ();
 			Assert.AreEqual (import.Project, @"$(MSBuildBinPath)\Microsoft.Common.targets");
-
-			string outputType = project.PropertyGroups.FirstOrDefault ().GetProperty ("OutputType").Value;
-			Assert.AreEqual ("Package", outputType);
 		}
 
 		[Test]
