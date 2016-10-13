@@ -146,7 +146,6 @@ namespace MonoDevelop.Packaging
 		protected override void OnGetDefaultImports (List<string> imports)
 		{
 			imports.Add (@"$(MSBuildBinPath)\Microsoft.Common.targets");
-			imports.Add (@"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets");
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -156,6 +155,7 @@ namespace MonoDevelop.Packaging
 			bool newProject = FileName == null || msproject.IsNewProject;
 			if (newProject) {
 				AddPackagingPropsImport (msproject);
+				AddPackagingTargetsImport (msproject);
 			}
 		}
 
@@ -165,6 +165,16 @@ namespace MonoDevelop.Packaging
 			msproject.AddNewImport (
 				@"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props",
 				@"Exists('$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props')",
+				insertBefore);
+		}
+
+		void AddPackagingTargetsImport (MSBuildProject msproject)
+		{
+			// Create dummy new msbuild object to ensure import is added as last child.
+			var insertBefore = new MSBuildItem ();
+			msproject.AddNewImport (
+				@"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets",
+				@"Exists('$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets')",
 				insertBefore);
 		}
 
