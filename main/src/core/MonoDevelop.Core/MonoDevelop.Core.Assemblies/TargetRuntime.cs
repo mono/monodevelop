@@ -323,7 +323,12 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>
 		public abstract string GetMSBuildBinPath (string toolsVersion);
-		
+
+		/// <summary>
+		/// Returns the MSBuild bin path for this runtime.
+		/// </summary>
+		public abstract string GetMSBuildToolsPath (string toolsVersion);
+
 		/// <summary>
 		/// Returns the MSBuild extensions path.
 		/// </summary>

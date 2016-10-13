@@ -2267,7 +2267,7 @@ namespace MonoDevelop.Projects
 
 				string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
 				if (itemGuid == null)
-					throw new UserException (GettextCatalog.GetString ("Project file doesn't have a valid ProjectGuid"));
+					itemGuid = Guid.NewGuid ().ToString ("B").ToUpper ();
 
 				// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 				// of shared projects.

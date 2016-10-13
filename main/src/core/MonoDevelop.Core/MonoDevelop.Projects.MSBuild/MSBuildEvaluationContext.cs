@@ -102,10 +102,11 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, dir));
 				properties.Add ("MSBuildProjectDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
-				string toolsVersion = project.ToolsVersion;
-				if (string.IsNullOrEmpty (toolsVersion) || Version.Parse (toolsVersion) < new Version ("12.0"))
-					toolsVersion = "12.0";
-				string toolsPath = ToolLocationHelper.GetPathToBuildTools ("12.0");
+				// This MSBuild loader is v15.0
+				string toolsVersion = "15.0";
+				properties.Add ("MSBuildAssemblyVersion", "15.0");
+
+				var toolsPath = Runtime.SystemAssemblyService.DefaultRuntime.GetMSBuildToolsPath (toolsVersion);
 
 				var frameworkToolsPath = ToolLocationHelper.GetPathToDotNetFramework (TargetDotNetFrameworkVersion.VersionLatest);
 
