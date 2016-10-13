@@ -140,5 +140,6 @@
 
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.Packaging.NuGetFilePropertyProvider" />
+		<Class class="MonoDevelop.Packaging.NuGetProjectReferencePropertyProvider" />
 	</Extension>
 </ExtensionModel>

@@ -107,6 +107,8 @@
     </Compile>
     <Compile Include="MonoDevelop.Packaging\ReferenceAssemblyFrameworkCollection.cs" />
     <Compile Include="MonoDevelop.Packaging\ReferenceAssemblyFramework.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetProjectReferencePropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetProjectReferencePropertyDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
