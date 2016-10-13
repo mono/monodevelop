@@ -202,8 +202,8 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			contentHBox.PackStart (currentPageFrame, true, true);
 
 			rightSideFrame = new FrameBox () { Visible = false };
-			rightSideFrame.BorderColor = Styles.Wizard.ContentSeparatorColor;
-			rightSideFrame.BorderWidthLeft = 1;
+			//rightSideFrame.BorderColor = Styles.Wizard.ContentSeparatorColor;
+			//rightSideFrame.BorderWidthLeft = 1;
 			rightSideFrame.WidthRequest = RightSideWidgetWidth;
 			rightSideFrame.BackgroundColor = Styles.Wizard.RightSideBackgroundColor;
 			contentHBox.PackEnd (rightSideFrame, false, true);
