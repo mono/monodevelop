@@ -38,11 +38,7 @@ namespace MonoDevelop.Packaging
 
 		public bool SupportsObject (object obj)
 		{
-			var projectFile = obj as ProjectFile;
-			if (projectFile != null)
-				return projectFile.BuildAction == NuGetBuildAction.NuGetFile;
-
-			return false;
+			return obj is ProjectFile;
 		}
 	}
 }
