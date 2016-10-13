@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Gtk;
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging.Gui
@@ -43,11 +41,6 @@ namespace MonoDevelop.Packaging.Gui
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
 			this.Build ();
-
-			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
-			separator.ModifyBg (StateType.Normal, separatorColor);
-
-			seeMoreDetailsLabel.SetLinkHandler (OpenDetailsTab);
 
 			PopulateLanguages ();
 		}
@@ -126,11 +119,6 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Summary = packageSummaryTextBox.Text;
 			metadata.Tags = packageTagsTextBox.Text;
 			metadata.Title = packageTitleTextBox.Text;
-		}
-
-		void OpenDetailsTab (string url)
-		{
-			notebook.CurrentPage = 1;
 		}
 
 		void PopulateLanguages ()
