@@ -177,8 +177,6 @@ namespace MonoDevelop.Packaging
 		{
 			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
 
-			CompileTarget = CompileTarget.Package;
-
 			id = projectCreateInfo.Parameters ["PackageId"];
 			version = projectCreateInfo.Parameters ["PackageVersion"];
 			authors = projectCreateInfo.Parameters ["PackageAuthors"];
