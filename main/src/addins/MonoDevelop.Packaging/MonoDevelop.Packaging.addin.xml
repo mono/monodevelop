@@ -36,7 +36,8 @@
 	-->
 	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding
-			id="NuGet.Packaging" />
+			id="NuGet.Packaging"
+			extensions=".nuproj" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">

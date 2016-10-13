@@ -185,11 +185,6 @@ namespace MonoDevelop.Packaging
 			Description = projectCreateInfo.Parameters ["PackageDescription"];
 		}
 
-		protected override string OnGetDefaultBuildAction (string fileName)
-		{
-			return NuGetBuildAction.NuGetFile;
-		}
-
 		public NuGetPackageMetadata GetPackageMetadata ()
 		{
 			return new NuGetPackageMetadata {
