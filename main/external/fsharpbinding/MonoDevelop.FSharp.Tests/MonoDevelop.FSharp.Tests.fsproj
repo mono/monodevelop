@@ -66,10 +66,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
     <Reference Include="monodoc">
       <HintPath>..\..\..\..\main\build\bin\monodoc.dll</HintPath>
     </Reference>

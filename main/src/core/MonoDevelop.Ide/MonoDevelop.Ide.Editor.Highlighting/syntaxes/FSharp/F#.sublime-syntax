@@ -5,15 +5,37 @@ name: "F#"
 file_extensions:
   - fs
 scope: source.fs
+variables:
+  modifiers: 'static|abstract|default|override|public|extern|internal|mutable|rec|inline|private'
 contexts:
   main:
+    - include: functions2
+    - include: fsioutput
+    - include: namespaces
+    - include: braces
     - include: comments
     - include: keywords
+    - include: functions
+    - include: fields
+    - include: types
+    - include: keywords2
     - include: numbers
     - include: strings
-    - include: types
-    - include: fields
     - include: preprocessor
+    #- include: functions2
+    - include: properties
+    - include: fields2
+  fsioutput:
+    - match: '^\u00A0.*$'
+      scope: source.fs
+  namespaces:
+    - match: '(namespace|open)\b(.*)'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+  braces:
+    - match: '[(\)\[\]<>{}]|\|>'
+      scope: punctuation.section.brackets
   comments:
     - match: '//'
       scope: comment.line.source.fs
@@ -37,32 +59,154 @@ contexts:
     - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
       scope: markup.other.source.fs
   types:
-    
     - match: '\b(Some|None|string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b'
       scope: entity.name.class
-  fields:
+    - match: '\b([A-Z][\w]*)\b'
+      scope: entity.name.class
+    - match: '(module|type|and)(\s+)(\w+|``[^`]+``)'
+      captures: 
+        1: keyword.source.fs
+        2: source.fs
+        3: entity.name.class
+    - match: '(of)(\s+)(\w+)'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: entity.name.class
+    - match: '(\|\s*:\?\s*)(\w+)'
+      captures:
+        1: source.fs
+        2: entity.name.class
+    - match: '(:\s*)([''\w]+)\b'
+      captures:
+        1: source.fs
+        2: entity.name.class 
+
+
+  functions:
+    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+\w+)(?:\s[^=:])'
+      # let inline add x y = x + y
+      captures:
+        1: keyword.source.fs
+        2: keyword.source.fs
+        3: source.fs
+        4: keyword.source.fs
+        5: entity.name.function
+
+    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+``[^`]*``)(?:\s[^=:])'
+      # let inline ``some id`` x y = x + y
+      captures:
+        1: keyword.source.fs
+        2: keyword.source.fs
+        3: source.fs
+        4: keyword.source.fs
+        5: entity.name.function
+    - match: '(let\s+)({{modifiers}})(\s+\w+)(?:\s+[^=:])'
+      # let inline add x y = x + y
+      captures:
+        1: keyword.source.fs
+        2: keyword.source.fs
+        3: entity.name.function
+
+    - match: '(let\s+)({{modifiers}})(\s+``[^`]*``)(?:\s+[^=:])'
+      # let inline add x y = x + y
+      captures:
+        1: keyword.source.fs
+        2: keyword.source.fs
+        3: entity.name.function
+
+    - match: '(let)(\s+)({{modifiers}})\b'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: keyword.source.fs
+    - match: '(override)(\s+)(\w+)(\.)(\w+)(?:\s[^=:])'
+      captures:
+        1: keyword.source.fs
+        2: source.fs
+        3: entity.name.field
+        4: source.fs
+        5: entity.name.function
     - match: '(let\s+)(\w+|``[^`]*``)(?:\s+[^\s=:])'
+      captures:
+        1: keyword.source.fs
+        2: entity.name.function
+
+    - match: '(\.)(\w+|``[^`]*``)(?:\s*[\(]{1})'
+      captures:
+        1: source.fs
+        2: entity.name.function
+    - match: '(\|>\s*)([a-z]{1}\w*|``[^`]*``)'
+      captures:
+        1: source.fs
+        2: entity.name.function
+    - match: '(\.)([a-z]{1}\w*)'
+      captures:
+        1: source.fs
+        2: entity.name.function
+    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*\")'
+      captures:
+        1: entity.name.function
+
+  functions2:
+    
+    - match: '(\|>\s?)([a-z]{1}\w*|``[^`]*``)'
+      captures:
+        1: source.fs
+        2: entity.name.function
+    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*[\(]^\|)'
+      scope: entity.name.function
+
+  fields:
+
+    - match: '(let\s+)(\w+|``[^`]*``)(?:\s+[^\s=:])'
+      captures:
+        1: keyword.source.fs
+        2: entity.name.field
+        3: source.fs
+    - match: '([A-Z]{1}\w*)(\s*=)'
+      captures:
+        1: entity.name.field
+        2: source.fs
+  fields2:
+    - match: '_[a-z]{1}\w*'
+      scope: source.fs
+    - match: '[a-z]{1}\w*|``[^`]*``'
       scope: entity.name.field
+
+  properties:
+    - match: '``[^`]*``'
+      scope: entity.name.field5
+
   keywords:
-    - match: '\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|do|use|module|and")\b'
+    - match: '\byield\b'
       scope: keyword.source.fs
-    - match: '\b(do!|use!|yield!|return!|let!)\b'
+  keywords2:
+    - match: '\b(do!|use!|yield!|return!|let!)'
+      scope: keyword.source.fs
+    - match: '\b({{modifiers}}|async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|let|query|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|function|do|use|module|and|return|new|ref|not|yield")\b'
       scope: keyword.source.fs
     - match: '\b(true|false|null)\b'
       scope: constant.language.source.fs
+    - match: '\b(get|set)\b'
+      scope: source.fs
   numbers:
     - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
       scope: constant.numeric.float.source.fs
+    - match: '\b(-*[0-9]+[\w]*)\b'
+      scope: constant.numeric.source.fs
     - match: '\b(0[xX][0-9a-fA-F]+?|\d+)(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
       scope: constant.numeric.source.fs
+    - match: '-\d+'
+      scope: constant.numeric.source.fs
   strings:
-    - match: "'"
-      scope: string.quoted.single.source.fs
-      push:
-        - match: '\\.'
-          scope: constant.character.escape.source.fs
-        - match: "('|$\n?)"
-          pop: true
+#    - match: "'"
+#      scope: string.quoted.single.source.fs
+#      push:
+#        - match: '\\.'
+#          scope: constant.character.escape.source.fs
+#        - match: "('|$\n?)"
+#          pop: true
     - match: '@"'
       scope: string.quoted.other.verbatim.source.fs
       push:
@@ -70,23 +214,7 @@ contexts:
           scope: constant.character.verbatim.escape.source.fs
         - match: '"'
           pop: true
-    - match: '\$"'
-      scope: string.quoted.other.interpolated.source.fs
-      push:
-        - match: '\\.'
-          scope: constant.character.escape.source.fs
-        - match: '("|$\n?)'
-          pop: true
-        - match: '({)'
-          captures:
-            1: string.quoted.other.interpolated.source.fs
-          scope: source.fs
-          push:
-            - match: '(})'
-              captures:
-                1: string.quoted.other.interpolated.source.fs
-              pop: true
-            - include: main
+
     - match: '"'
       scope: string.quoted.double.source.fs
       push:
