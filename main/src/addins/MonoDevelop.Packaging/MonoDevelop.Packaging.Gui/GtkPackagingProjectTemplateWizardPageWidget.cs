@@ -51,7 +51,7 @@ namespace MonoDevelop.Packaging.Gui
 			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-nuget.png");
 			backgroundImageView = new ImageView (backgroundImage);
 			backgroundImageView.Xalign = 1.0f;
-			backgroundImageView.Yalign = 1.0f;
+			backgroundImageView.Yalign = 0.5f;
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
