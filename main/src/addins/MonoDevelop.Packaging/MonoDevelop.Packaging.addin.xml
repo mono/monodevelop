@@ -70,14 +70,14 @@
 					fill="true"
 					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
 			</Condition>
-			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+			<!--<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
 				<Section
 					id="ReferenceAssemblies"
 					_label="Reference Assemblies"
 					icon="md-prefs-package"
 					fill="true"
 					class="MonoDevelop.Packaging.OptionPanels.ReferenceAssembliesOptionsPanel" />
-			</Condition>
+			</Condition>-->
 		</Section>
 	</Extension>
 
