@@ -72,6 +72,7 @@ type SyntaxHighlighting() =
         //    chunk.Offset + chunk.Length
 
         //Seq.fold assertOffsets 0 chunks |> ignore
+    [<TestCase("\"_underline_\"", "string.quoted.double.source.fs")>]
     [<TestCase("let $_x$, y = 1,2", "source.fs")>]
     [<TestCase("$yield$ x", "keyword.source.fs")>]
     [<TestCase("$let$ (|Event|_|) = function", "keyword.source.fs")>]
