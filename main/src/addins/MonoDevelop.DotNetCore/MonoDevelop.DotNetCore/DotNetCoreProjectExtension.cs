@@ -24,13 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace MonoDevelop.Projects.DotNetCore
+using MonoDevelop.Projects;
+
+namespace MonoDevelop.DotNetCore
 {
 	[ExportProjectModelExtension]
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
 		public DotNetCoreProjectExtension ()
 		{
+		}
+
+		protected override bool SupportsObject (WorkspaceObject item)
+		{
+			return base.SupportsObject (item);
+		}
+
+		protected override void Initialize ()
+		{
+			RequiresMicrosoftBuild = true;
+			base.Initialize ();
 		}
 
 		protected override bool OnGetSupportsFramework (Core.Assemblies.TargetFramework framework)
