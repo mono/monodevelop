@@ -76,13 +76,7 @@
 				<Reference type="Project" refto="${ProjectName}.iOS" />
 			</References>
 			<Files>
-				<File name="project.json"><![CDATA[{
-  "dependencies": {
-  },
-  "frameworks": {
-    "NuGet,Version=v1.0": {}
-  }
-}]]></File>
+				<File name="project.json" src="template.project.json" />
 			</Files>
 		</Project>
 	</Combine>

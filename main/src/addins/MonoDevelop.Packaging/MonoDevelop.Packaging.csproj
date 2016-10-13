@@ -144,14 +144,8 @@
     <EmbeddedResource Include="MonoDevelop.Packaging.addin.xml">
       <LogicalName>MonoDevelop.Packaging.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\PackagingProject.xpt.xml">
-      <LogicalName>PackagingProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\CrossPlatformLibrary.xpt.xml">
-      <LogicalName>CrossPlatformLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\Images\preview-multiplatform-library.png">
       <LogicalName>preview-multiplatform-library.png</LogicalName>
@@ -190,6 +184,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Targets\NuGet.Packaging.Authoring.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\template.project.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CrossPlatformLibrary.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\PackagingProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

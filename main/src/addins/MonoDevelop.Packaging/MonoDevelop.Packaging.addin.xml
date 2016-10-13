@@ -2,6 +2,10 @@
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Packaging.dll" />
+
+		<Import file="Templates/CrossPlatformLibrary.xpt.xml" />
+		<Import file="Templates/PackagingProject.xpt.xml" />
+		<Import file="Templates/template.project.json" />
 	</Runtime>
 
 	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />
@@ -42,8 +46,8 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="MonoDevelop.Packaging.Project" resource="PackagingProject.xpt.xml"/>
-		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" resource="CrossPlatformLibrary.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.Project" file="Templates/PackagingProject.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" file="Templates/CrossPlatformLibrary.xpt.xml"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">

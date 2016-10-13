@@ -30,6 +30,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using System.Linq;
@@ -48,9 +49,10 @@ namespace MonoDevelop.Packaging
 
 		public DotNetProject Project { get; set; }
 
-		SharedAssetsProject sharedProject { get; set; }
-		DotNetProject androidProject { get; set; }
-		DotNetProject iosProject { get; set; }
+		SharedAssetsProject sharedProject;
+		DotNetProject androidProject;
+		DotNetProject iosProject;
+		PackagingProject packagingProject;
 
 		FilePath projectsBaseDirectory;
 
@@ -94,6 +96,8 @@ namespace MonoDevelop.Packaging
 			}
 
 			await Project.ParentSolution.SaveAsync (monitor);
+
+			AddNuGetPackageToPackagingProject ();
 		}
 
 		async Task CreateNewSharedProject (ProgressMonitor monitor)
@@ -262,7 +266,7 @@ namespace MonoDevelop.Packaging
 		async Task CreateNuGetPackagingProject (ProgressMonitor monitor)
 		{
 			FilePath projectFileName = GetNewProjectFileName ("NuGetPackaging");
-			var packagingProject = Services.ProjectService.CreateProject ("NuGetPackaging") as PackagingProject;
+			packagingProject = Services.ProjectService.CreateProject ("NuGetPackaging") as PackagingProject;
 			packagingProject.FileName = projectFileName;
 
 			var createInfo = CreateProjectCreateInformation (projectFileName);
@@ -271,17 +275,19 @@ namespace MonoDevelop.Packaging
 			var moniker = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_NET_FRAMEWORK, "4.5", null);
 			packagingProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 
-			MoveNuGetPackageMetadataToPackagingProject (packagingProject);
+			MoveNuGetPackageMetadataToPackagingProject ();
+
+			AddProjectJsonFile ();
 
 			await Project.SaveAsync (monitor);
 
 			Project.ParentFolder.AddItem (packagingProject);
-			AddNuGetPackagingProjectReferences (packagingProject);
+			AddNuGetPackagingProjectReferences ();
 
 			await SaveProject (monitor, packagingProject);
 		}
 
-		void AddNuGetPackagingProjectReferences (PackagingProject packagingProject)
+		void AddNuGetPackagingProjectReferences ()
 		{
 			AddProjectReference (packagingProject, Project);
 
@@ -297,7 +303,27 @@ namespace MonoDevelop.Packaging
 			project.References.Add (ProjectReference.CreateProjectReference (projectToBeReferenced));
 		}
 
-		void MoveNuGetPackageMetadataToPackagingProject (PackagingProject packagingProject)
+		void AddProjectJsonFile ()
+		{
+			string templatesDirectory = Path.Combine (
+				GetAddinFolder (),
+				"Templates");
+
+			string sourceFile = Path.Combine (templatesDirectory, "template.project.json");
+			string destinationFile = packagingProject.BaseDirectory.Combine ("project.json");
+
+			Directory.CreateDirectory (packagingProject.BaseDirectory);
+
+			File.Copy (sourceFile, destinationFile);
+			packagingProject.AddFile (destinationFile, "None");
+		}
+
+		string GetAddinFolder ()
+		{
+			return Path.GetDirectoryName (typeof(AddPlatformImplementationViewModel).Assembly.Location);
+		}
+
+		void MoveNuGetPackageMetadataToPackagingProject ()
 		{
 			var metadata = new NuGetPackageMetadata ();
 			metadata.Load (Project);
@@ -306,6 +332,18 @@ namespace MonoDevelop.Packaging
 			// Remove NuGet package metadata from original project.
 			metadata = new NuGetPackageMetadata ();
 			metadata.UpdateProject (Project);
+		}
+
+		void AddNuGetPackageToPackagingProject ()
+		{
+			string packagesFolder = Path.Combine (GetAddinFolder (), "packages");
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.98-dev");
+
+			PackageManagementServices.ProjectOperations.InstallPackages (
+				packagesFolder,
+				packagingProject,
+				new [] { packageReference }
+			);
 		}
 	}
 }
