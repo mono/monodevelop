@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using Xwt;
 namespace MonoDevelop.Components
@@ -33,16 +34,23 @@ namespace MonoDevelop.Components
 		string tip;
 		TaskSeverity? severity;
 		TooltipPopoverWindow tooltipWindow;
+		Xwt.Popover xwtPopover;
 		bool mouseOver, mouseOverTooltip;
 
 		public string ToolTip {
 			get { return tip; }
 			set {
 				tip = value;
-				if (!string.IsNullOrEmpty (tip))
-					tooltipWindow.Markup = value;
-				else {
-					tooltipWindow.Markup = string.Empty;
+				if (!string.IsNullOrEmpty (tip)) {
+					if (tooltipWindow != null)
+						tooltipWindow.Markup = value;
+					if (xwtPopover != null)
+						((Label)xwtPopover.Content).Markup = value;
+				} else {
+					if (tooltipWindow != null)
+						tooltipWindow.Markup = string.Empty;
+					if (xwtPopover != null) 
+						((Label)xwtPopover.Content).Markup = string.Empty;
 					HideTooltip ();
 				}
 			}
@@ -54,7 +62,29 @@ namespace MonoDevelop.Components
 			}
 			set {
 				severity = value;
-				tooltipWindow.Severity = Severity;
+				if (tooltipWindow != null)
+					tooltipWindow.Severity = Severity;
+				if (xwtPopover != null) {
+					((Label)xwtPopover.Content).Font = Xwt.Drawing.Font.SystemFont.WithScaledSize (Styles.FontScale11);
+
+					switch (severity.Value) {
+					case TaskSeverity.Information:
+						xwtPopover.BackgroundColor = Styles.PopoverWindow.InformationBackgroundColor;
+						break;
+
+					case TaskSeverity.Comment:
+						xwtPopover.BackgroundColor = Styles.PopoverWindow.InformationBackgroundColor;
+						break;
+
+					case TaskSeverity.Error:
+						xwtPopover.BackgroundColor = Styles.PopoverWindow.ErrorBackgroundColor;
+						return;
+
+					case TaskSeverity.Warning:
+						xwtPopover.BackgroundColor = Styles.PopoverWindow.WarningBackgroundColor;
+						return;
+					}
+				}
 			}
 		}
 
@@ -67,7 +97,7 @@ namespace MonoDevelop.Components
 			set {
 				if (position != value) {
 					position = value;
-					if (tooltipWindow.Visible) {
+					if (tooltipWindow?.Visible == true || xwtPopover != null) {
 						HideTooltip ();
 						ShowTooltip ();
 					}
@@ -81,8 +111,17 @@ namespace MonoDevelop.Components
 				throw new ArgumentNullException (nameof (child));
 			
 			Content = child;
-			tooltipWindow = new TooltipPopoverWindow ();
-			tooltipWindow.ShowArrow = true;
+			// FIXME: WPF blocks the main Gtk loop and makes TooltipPopoverWindow unusable.
+			//        We use the Xwt.Popover as a workaround for now.
+			if (Surface.ToolkitEngine.Type == ToolkitType.Wpf) {
+				xwtPopover = new Popover ();
+				xwtPopover.BackgroundColor = Styles.PopoverWindow.DefaultBackgroundColor;
+				xwtPopover.Content = new Label { Wrap = WrapMode.Word };
+				xwtPopover.Padding = 3;
+			} else {
+				tooltipWindow = new TooltipPopoverWindow ();
+				tooltipWindow.ShowArrow = true;
+			}
 			Position = PopupPosition.Top;
 			Severity = TaskSeverity.Information;
 		}
@@ -105,9 +144,22 @@ namespace MonoDevelop.Components
 		{
 			if (!string.IsNullOrEmpty (tip)) {
 				var rect = new Rectangle (0, 0, Content.Size.Width, Content.Size.Height);
-				tooltipWindow.ShowPopup (Content, rect, Position);
+				if (tooltipWindow != null)
+					tooltipWindow.ShowPopup (Content, rect, Position);
+				if (xwtPopover != null)
+					xwtPopover.Show (GetXwtPosition(Position), Content, rect);
 			}
 			return false;
+		}
+
+		static Popover.Position GetXwtPosition (PopupPosition position)
+		{
+			switch (position) {
+				case PopupPosition.Bottom:
+					return Popover.Position.Bottom;
+				default: 
+					return Popover.Position.Top;
+			}
 		}
 
 		public void HideTooltip ()
