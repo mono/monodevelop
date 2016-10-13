@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Packaging.Gui
 {
@@ -43,6 +45,25 @@ namespace MonoDevelop.Packaging.Gui
 
 			var vbox = new VBox ();
 			vbox.Spacing = 6;
+
+			var referenceAssembliesLabelHBox = new HBox ();
+			referenceAssembliesLabelHBox.Spacing = 6;
+
+			var referenceAssembliesLabel = new Label ();
+			referenceAssembliesLabel.Markup = GetBoldMarkup (GettextCatalog.GetString ("Choose the reference assemblies for your NuGet package."));
+			referenceAssembliesLabel.UseMarkup = true;
+			referenceAssembliesLabel.Xalign = 0;
+			referenceAssembliesLabelHBox.PackStart (referenceAssembliesLabel, false, false, 0);
+
+			var learnMoreLabel = new Label ();
+			learnMoreLabel.Xalign = 0F;
+			learnMoreLabel.LabelProp = GettextCatalog.GetString ("<a href=\"https://docs.nuget.org\">Learn more</a>");
+			learnMoreLabel.UseMarkup = true;
+			learnMoreLabel.SetLinkHandler (DesktopService.ShowUrl);
+			referenceAssembliesLabelHBox.PackStart (learnMoreLabel, false, false, 0);
+
+			vbox.PackStart (referenceAssembliesLabelHBox, false, false, 5);
+
 
 			var scrolledWindow = new ScrolledWindow ();
 			scrolledWindow.ShadowType = ShadowType.In;
