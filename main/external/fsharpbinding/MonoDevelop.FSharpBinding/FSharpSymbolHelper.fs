@@ -340,7 +340,7 @@ module PrintParameter =
     let print sb = Printf.bprintf sb "%s"
 
 [<AutoOpen>]
-module internal Highlight =
+module Highlight =
     type HighlightType =
     | Symbol | Brackets | Keyword | UserType | Number
 

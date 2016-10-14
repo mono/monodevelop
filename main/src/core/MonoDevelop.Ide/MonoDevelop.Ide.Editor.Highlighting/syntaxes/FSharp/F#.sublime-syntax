@@ -12,8 +12,8 @@ contexts:
     - include: functions2
     - include: fsioutput
     - include: namespaces
-    - include: braces
     - include: comments
+    - include: braces
     - include: keywords
     - include: functions
     - include: fields
@@ -49,11 +49,11 @@ contexts:
         - match: '$\n?'
           pop: true
         - include: xmldoc
-    - match: '/\*'
+    - match: '\(\*'
       scope: comment.block.source.fs
       push:
         - include: commenttags
-        - match: '\*/\n?'
+        - match: '\*\)\n?'
           pop: true
   commenttags:
     - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
@@ -93,7 +93,7 @@ contexts:
         4: keyword.source.fs
         5: entity.name.function
 
-    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+``[^`]*``)(?:\s[^=:])'
+    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+``[^`]*``)(\s+)([^\s=:]+)'
       # let inline ``some id`` x y = x + y
       captures:
         1: keyword.source.fs
@@ -101,20 +101,24 @@ contexts:
         3: source.fs
         4: keyword.source.fs
         5: entity.name.function
-    - match: '(let\s+)({{modifiers}})(\s+\w+)(?:\s+[^=:])'
+        6: source.fs
+        7: entity.name.field
+    - match: '(let\s+)({{modifiers}})(\s+\w+)(\s+)([^\s=:]+)'
       # let inline add x y = x + y
       captures:
         1: keyword.source.fs
         2: keyword.source.fs
         3: entity.name.function
-
-    - match: '(let\s+)({{modifiers}})(\s+``[^`]*``)(?:\s+[^=:])'
+        4: source.fs
+        5: entity.name.field
+    - match: '(let\s+)({{modifiers}})(\s+``[^`]*``)(\s+)([^\s=:]+)'
       # let inline add x y = x + y
       captures:
         1: keyword.source.fs
         2: keyword.source.fs
         3: entity.name.function
-
+        4: source.fs
+        5: entity.name.field
     - match: '(let)(\s+)({{modifiers}})\b'
       captures:
         1: keyword.source.fs
@@ -127,10 +131,12 @@ contexts:
         3: entity.name.field
         4: source.fs
         5: entity.name.function
-    - match: '(let\s+)(\w+|``[^`]*``)(?:\s+[^\s=:])'
+    - match: '(let\s+)(\w+|``[^`]*``)(\s+)([^\s=:]+)'
       captures:
         1: keyword.source.fs
         2: entity.name.function
+        3: source.fs
+        4: entity.name.field
 
     - match: '(\.)(\w+|``[^`]*``)(?:\s*[\(]{1})'
       captures:
@@ -147,23 +153,26 @@ contexts:
     - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*\")'
       captures:
         1: entity.name.function
-
+    - match: '(let\s+)([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w])'
+      captures:
+        1: keyword.source.fs
+        2: entity.name.function
+        3: source.fs
+        4: punctuation.section.brackets
+    - match: '([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w])'
+      captures:
+        1: entity.name.function
+        2: source.fs
+        3: punctuation.section.brackets
   functions2:
     
     - match: '(\|>\s?)([a-z]{1}\w*|``[^`]*``)'
       captures:
         1: source.fs
         2: entity.name.function
-    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*[\(]^\|)'
-      scope: entity.name.function
+
 
   fields:
-
-    - match: '(let\s+)(\w+|``[^`]*``)(?:\s+[^\s=:])'
-      captures:
-        1: keyword.source.fs
-        2: entity.name.field
-        3: source.fs
     - match: '([A-Z]{1}\w*)(\s*=)'
       captures:
         1: entity.name.field
@@ -176,7 +185,7 @@ contexts:
 
   properties:
     - match: '``[^`]*``'
-      scope: entity.name.field5
+      scope: entity.name.field
 
   keywords:
     - match: '\byield\b'
@@ -184,7 +193,7 @@ contexts:
   keywords2:
     - match: '\b(do!|use!|yield!|return!|let!)'
       scope: keyword.source.fs
-    - match: '\b({{modifiers}}|async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|let|query|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|function|do|use|module|and|return|new|ref|not|yield")\b'
+    - match: '\b({{modifiers}}|async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|finally|let|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|function|do|use|module|and|return|new|ref|not|yield")\b'
       scope: keyword.source.fs
     - match: '\b(true|false|null)\b'
       scope: constant.language.source.fs
@@ -200,13 +209,13 @@ contexts:
     - match: '-\d+'
       scope: constant.numeric.source.fs
   strings:
-#    - match: "'"
-#      scope: string.quoted.single.source.fs
-#      push:
-#        - match: '\\.'
-#          scope: constant.character.escape.source.fs
-#        - match: "('|$\n?)"
-#          pop: true
+    - match: "'"
+      scope: string.quoted.single.source.fs
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.fs
+        - match: "('|$\n?)"
+          pop: true
     - match: '@"'
       scope: string.quoted.other.verbatim.source.fs
       push:
@@ -214,7 +223,11 @@ contexts:
           scope: constant.character.verbatim.escape.source.fs
         - match: '"'
           pop: true
-
+    - match: '"""'
+      scope: string.quoted.double.source.fs
+      push:
+        - match: '"""'
+          pop: true
     - match: '"'
       scope: string.quoted.double.source.fs
       push:
@@ -222,6 +235,7 @@ contexts:
           scope: constant.character.escape.source.fs
         - match: '("|$\n?)'
           pop: true
+  
   preprocessor:
     - match: '^\s*#(if|else|elif|endif|load|r|reference|nowarn|time|q|quit|help|include")\b'
       scope: meta.preprocessor.source.fs

@@ -18,11 +18,12 @@ open System.IO
 //w11.Position <- 0
 //let _x, y = 1,2
 //let docs = openDocument()
+//let add param y = param + y
 type SyntaxHighlighting() =
     do
         FixtureSetup.initialiseMonoDevelop()
 
-    let mutable x = 1
+    let add param y = param + y
     let getEditor() =
         let editor = TextEditorFactory.CreateNewEditor()
         editor.MimeType <- "text/x-fsharp"
@@ -37,9 +38,7 @@ type SyntaxHighlighting() =
     let assertStyle (input:string, expectedStyle:string) =
         let offset = input.IndexOf("$")
         let length = input.LastIndexOf("$") - offset - 1
-
         let input = input.Replace("$", "")
-
         let editor = getEditor()
         editor.Text <- " " + input
         let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
@@ -47,6 +46,7 @@ type SyntaxHighlighting() =
 
         Assert.AreEqual(expectedStyle, first)
 
+    [<TestCase("let $getEditor$()", "entity.name.function")>]
     [<TestCase("$\"_underline_\"$", "string.quoted.double.source.fs")>]
     [<TestCase("let $_x$, y = 1,2", "source.fs")>]
     [<TestCase("$yield$ x", "keyword.source.fs")>]
@@ -59,7 +59,7 @@ type SyntaxHighlighting() =
     [<TestCase("let $simpleBinding$ = 1", "entity.name.field")>]
     [<TestCase("let $offset$ = 1", "entity.name.field")>]
     [<TestCase("let $add$ x y = x + y", "entity.name.function")>]
-    [<TestCase("let add $param$ y = param + y", "entity.name.field")>]
+    [<TestCase("let add $param$", "entity.name.field")>]
     [<TestCase("let $add$ param y = param + y", "entity.name.function")>]
     [<TestCase("let simpleBinding$ = $1", "source.fs")>]
     [<TestCase("$open$ MonoDevelop", "keyword.source.fs")>]
@@ -136,7 +136,6 @@ type SyntaxHighlighting() =
     [<TestCase(@"[0$..$1]", "source.fs")>]
     [<TestCase("let mutable x$   = $1", "source.fs")>]
     [<TestCase("$and$ Forest =", "keyword.source.fs")>]
-    [<TestCase("let rec go $xs$ =", "entity.name.field")>]
     [<TestCase("let x = $Some$ 1", "entity.name.class")>]
     [<TestCase("type $A$ =", "entity.name.class")>]
     [<TestCase("type $A $", "entity.name.class")>]
