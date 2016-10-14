@@ -229,7 +229,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("User Parameter(Usage)", new List<string> { EditorThemeColors.UserParameterUsage }, ConvertChunkStyle (colorScheme.UserParameterUsage)));
 			settings.Add (new ThemeSetting ("User Variable(Declaration)", new List<string> { EditorThemeColors.UserVariableDeclaration }, ConvertChunkStyle (colorScheme.UserVariableDeclaration)));
 			settings.Add (new ThemeSetting ("User Variable(Usage)", new List<string> { EditorThemeColors.UserVariableUsage }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
-			
+
+			settings.Add (new ThemeSetting ("CSS Comment", new List<string> { "comment.block.css" }, ConvertChunkStyle (colorScheme.CssComment)));
+			settings.Add (new ThemeSetting ("CSS Keyword", new List<string> { "keyword.other.css" }, ConvertChunkStyle (colorScheme.CssKeyword)));
+			settings.Add (new ThemeSetting ("CSS Selector", new List<string> { "entity.other.pseudo-class.css" }, ConvertChunkStyle (colorScheme.CssSelector)));
+			settings.Add (new ThemeSetting ("CSS Property Name", new List<string> { "support.type.property-name.css" }, ConvertChunkStyle (colorScheme.CssPropertyName)));
+			settings.Add (new ThemeSetting ("CSS Property Value", new List<string> { "support.constant.property-value.css" }, ConvertChunkStyle (colorScheme.CssPropertyValue)));
+			settings.Add (new ThemeSetting ("CSS String Value", new List<string> { "string.quoted.double.css" }, ConvertChunkStyle (colorScheme.CssStringValue)));
+
+			settings.Add (new ThemeSetting ("HTML Attribute Name", new List<string> { "entity.other.attribute-name.html" }, ConvertChunkStyle (colorScheme.HtmlAttributeName)));
+			settings.Add (new ThemeSetting ("HTML Attribute Value", new List<string> { "string.unquoted.html" }, ConvertChunkStyle (colorScheme.HtmlAttributeValue)));
+			settings.Add (new ThemeSetting ("HTML Comment", new List<string> { "comment.block.html" }, ConvertChunkStyle (colorScheme.HtmlComment)));
+			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
+			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
+
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 
