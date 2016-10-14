@@ -943,7 +943,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				//one builder per solution
-				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId;
+				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId + " # " + requiresMicrosoftBuild;
 
 				RemoteBuildEngine builder = null;
 
