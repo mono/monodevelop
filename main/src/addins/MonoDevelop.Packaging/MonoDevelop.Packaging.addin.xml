@@ -27,6 +27,7 @@
 			type="MonoDevelop.Packaging.PackagingProjectFlavor"
 			alias="NuGetPackaging">
 		</ProjectFlavor>
+		<Class class="MonoDevelop.Packaging.DotNetProjectPackagingExtension" />
 	</Extension>
 
 	<!--

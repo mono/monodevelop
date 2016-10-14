@@ -80,11 +80,16 @@ namespace MonoDevelop.Packaging
 		public static MSBuildPropertyGroup GetNuGetMetadataPropertyGroup (this MSBuildProject project)
 		{
 			foreach (MSBuildPropertyGroup propertyGroup in project.PropertyGroups) {
-				if (propertyGroup.HasProperty ("PackageId"))
+				if (propertyGroup.HasProperty (NuGetPackageMetadata.PackageIdPropertyName))
 					return propertyGroup;
 			}
 
 			return project.GetGlobalPropertyGroup ();
+		}
+
+		public static bool HasNuGetMetadata (this MSBuildProject project)
+		{
+			return project.EvaluatedProperties.HasProperty (NuGetPackageMetadata.PackageIdPropertyName);
 		}
 	}
 }

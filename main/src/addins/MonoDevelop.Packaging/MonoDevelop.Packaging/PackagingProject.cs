@@ -45,6 +45,7 @@ namespace MonoDevelop.Packaging
 		public PackagingProject ()
 		{
 			UsePartialTypes = false;
+			RequiresMicrosoftBuild = true;
 		}
 
 		[ItemProperty ("PackageId")]

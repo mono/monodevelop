@@ -1,5 +1,5 @@
 ﻿//
-// PackagingProjectFlavor.cs
+// DotNetProjectPackagingExtension.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,28 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
-	class PackagingProjectFlavor : DotNetProjectExtension
+	class DotNetProjectPackagingExtension : DotNetProjectExtension
 	{
-		protected override ProjectFeatures OnGetSupportedFeatures ()
-		{
-			return ProjectFeatures.Build | ProjectFeatures.Configurations;
-		}
-
-		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
-		{
-			reason = null;
-			return true;
-		}
-
 		protected override void Initialize ()
 		{
-			RequiresMicrosoftBuild = true;
 			base.Initialize ();
+		}
+
+		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnReadProjectHeader (monitor, msproject);
+
+			UpdateRequiresMSBuildSetting (msproject);
+		}
+
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnWriteProject (monitor, msproject);
+
+			UpdateRequiresMSBuildSetting (msproject);
+		}
+
+		void UpdateRequiresMSBuildSetting (MSBuildProject msproject)
+		{
+			RequiresMicrosoftBuild = msproject.HasNuGetMetadata ();
 		}
 	}
 }
-

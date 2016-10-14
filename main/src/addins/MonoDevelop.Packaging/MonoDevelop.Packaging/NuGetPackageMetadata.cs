@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -33,6 +32,7 @@ namespace MonoDevelop.Packaging
 	class NuGetPackageMetadata
 	{
 		public const int MaxPackageIdLength = 100;
+		public const string PackageIdPropertyName = "PackageId";
 
 		public string Id { get; set; }
 		public string Version { get; set; }
@@ -67,7 +67,7 @@ namespace MonoDevelop.Packaging
 		void Load (MSBuildProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
-			Id = GetProperty (propertyGroup, "PackageId");
+			Id = GetProperty (propertyGroup, PackageIdPropertyName);
 			Version = GetProperty (propertyGroup, "PackageVersion");
 			Authors = GetProperty (propertyGroup, "Authors");
 			DevelopmentDependency = GetProperty (propertyGroup, "DevelopmentDependency", false);
@@ -104,7 +104,7 @@ namespace MonoDevelop.Packaging
 		void Update (MSBuildProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
-			SetProperty (propertyGroup, "PackageId", Id);
+			SetProperty (propertyGroup, PackageIdPropertyName, Id);
 			SetProperty (propertyGroup, "PackageVersion", Version);
 			SetProperty (propertyGroup, "Authors", Authors);
 			SetProperty (propertyGroup, "DevelopmentDependency", DevelopmentDependency);
