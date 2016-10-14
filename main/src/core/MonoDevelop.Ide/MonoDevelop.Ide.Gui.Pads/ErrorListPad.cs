@@ -218,6 +218,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sort.SetSortFunc (VisibleColumns.Type, SeverityIterSort);
 			sort.SetSortFunc (VisibleColumns.Project, ProjectIterSort);
 			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
+			sort.SetSortFunc (VisibleColumns.Category, CategoryIterSort);
 			
 			view = new PadTreeView (sort);
 			view.ShowExpanders = true;
@@ -228,6 +229,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			view.Columns[VisibleColumns.Type].SortColumnId = VisibleColumns.Type;
 			view.Columns[VisibleColumns.Project].SortColumnId = VisibleColumns.Project;
 			view.Columns[VisibleColumns.File].SortColumnId = VisibleColumns.File;
+			view.Columns[VisibleColumns.Category].SortColumnId = VisibleColumns.Category;
 			
 			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
@@ -958,7 +960,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
-			       GetProject (aTask).CompareTo (GetProject (zTask)) :
+			       string.Compare (GetProject (aTask), GetProject (zTask), StringComparison.Ordinal) :
 			       0;
 		}
 		
@@ -969,6 +971,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			     
 			return (aTask != null && zTask != null) ?
 			       aTask.FileName.CompareTo (zTask.FileName) :
+			       0;
+		}
+
+		static int CategoryIterSort (TreeModel model, TreeIter a, TreeIter z)
+		{
+			TaskListEntry aTask = model.GetValue (a, DataColumns.Task) as TaskListEntry,
+				 zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
+
+			return (aTask?.Category != null && zTask?.Category != null) ?
+			       string.Compare (aTask.Category, zTask.Category, StringComparison.Ordinal) :
 			       0;
 		}
 
