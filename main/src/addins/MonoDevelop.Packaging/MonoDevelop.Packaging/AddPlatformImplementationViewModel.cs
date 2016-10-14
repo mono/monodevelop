@@ -338,7 +338,7 @@ namespace MonoDevelop.Packaging
 		void AddNuGetPackageToPackagingProject ()
 		{
 			string packagesFolder = Path.Combine (GetAddinFolder (), "packages");
-			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.98-dev");
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
 
 			InstallPackages (packagesFolder, packagingProject, new [] { packageReference });
 		}
