@@ -34,7 +34,7 @@ namespace MonoDevelop.Packaging.Tests
 		{
 		}
 
-		protected override void InstallPackages (string packagesFolder, PackagingProject project, System.Collections.Generic.IEnumerable<PackageManagement.PackageManagementPackageReference> packages)
+		protected override void AddNuGetPackageToPackagingProject ()
 		{
 		}
 	}

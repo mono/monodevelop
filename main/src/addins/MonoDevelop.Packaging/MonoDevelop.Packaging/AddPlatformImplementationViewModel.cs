@@ -335,24 +335,9 @@ namespace MonoDevelop.Packaging
 			metadata.UpdateProject (Project);
 		}
 
-		void AddNuGetPackageToPackagingProject ()
+		protected virtual void AddNuGetPackageToPackagingProject ()
 		{
-			string packagesFolder = Path.Combine (GetAddinFolder (), "packages");
-			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
-
-			InstallPackages (packagesFolder, packagingProject, new [] { packageReference });
-		}
-
-		protected virtual void InstallPackages (
-			string packagesFolder,
-			PackagingProject project,
-			IEnumerable<PackageManagementPackageReference> packages)
-		{
-			PackageManagementServices.ProjectOperations.InstallPackages (
-				packagesFolder,
-				packagingProject,
-				packages
-			);
+			packagingProject.InstallBuildPackagingNuGetPackage ();
 		}
 	}
 }

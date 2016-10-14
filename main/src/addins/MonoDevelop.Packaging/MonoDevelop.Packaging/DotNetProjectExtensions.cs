@@ -24,9 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
+using MonoDevelop.PackageManagement;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.Packaging
 {
@@ -43,6 +47,31 @@ namespace MonoDevelop.Packaging
 			foreach (var configuration in project.Configurations.OfType<DotNetProjectConfiguration> ()) {
 				configuration.OutputAssembly = name;
 			}
+		}
+
+		public static bool IsBuildPackagingNuGetPackageInstalled (this DotNetProject project)
+		{
+			return PackageManagementServices.ProjectOperations.GetInstalledPackages (project)
+				.Any (package => string.Equals ("NuGet.Build.Packaging", package.Id, StringComparison.OrdinalIgnoreCase));
+		}
+
+		public static void InstallBuildPackagingNuGetPackage (this Project project)
+		{
+			string packagesFolder = GetPackagesFolder ();
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
+
+			PackageManagementServices.ProjectOperations.InstallPackages (
+				packagesFolder,
+				project,
+				new [] { packageReference }
+			);
+		}
+
+		static string GetPackagesFolder ()
+		{
+			return Path.Combine (
+				Path.GetDirectoryName (typeof (DotNetProjectExtensions).Assembly.Location),
+				"packages");
 		}
 	}
 }

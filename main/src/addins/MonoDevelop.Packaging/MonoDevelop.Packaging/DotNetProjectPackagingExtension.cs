@@ -32,10 +32,7 @@ namespace MonoDevelop.Packaging
 {
 	class DotNetProjectPackagingExtension : DotNetProjectExtension
 	{
-		protected override void Initialize ()
-		{
-			base.Initialize ();
-		}
+		public bool InstallBuildPackagingNuGetAfterWrite { get; set; }
 
 		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
@@ -49,6 +46,11 @@ namespace MonoDevelop.Packaging
 			base.OnWriteProject (monitor, msproject);
 
 			UpdateRequiresMSBuildSetting (msproject);
+
+			if (InstallBuildPackagingNuGetAfterWrite) {
+				InstallBuildPackagingNuGetAfterWrite = false;
+				Project.InstallBuildPackagingNuGetPackage ();
+			}
 		}
 
 		void UpdateRequiresMSBuildSetting (MSBuildProject msproject)
