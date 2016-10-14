@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						if (match == null || possibleMatch.Index < match.Index) {
 							match = possibleMatch;
 							curMatch = m;
-							// Console.WriteLine (match.Index + " possible match : " + m+ "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							// Console.WriteLine (match.Index + " possible match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
 						} else {
 							// Console.WriteLine (match.Index + " skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
 						}
@@ -208,6 +208,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 
 				if (match != null) {
+					// Console.WriteLine (match.Index + " taken match : " + curMatch + "/" + match.Index + "-" + match.Length);
 					var matchEndOffset = match.Index + match.Length;
 					if (curSegmentOffset < match.Index) {
 						segments.Add (new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, ScopeStack));
