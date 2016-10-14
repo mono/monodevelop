@@ -11,16 +11,17 @@ contexts:
   main:
     - include: functions2
     - include: fsioutput
+    - include: tooltips
     - include: namespaces
     - include: comments
     - include: braces
     - include: keywords
     - include: functions
     - include: fields
+    - include: strings
     - include: types
     - include: keywords2
     - include: numbers
-    - include: strings
     - include: preprocessor
     #- include: functions2
     - include: properties
@@ -28,6 +29,23 @@ contexts:
   fsioutput:
     - match: '^\u00A0.*$'
       scope: source.fs
+  tooltips:
+    - match: '(\s+)(->)(\s+)(\w+)'
+      captures:
+        1: source.fs
+        2: punctuation.section.brackets
+        3: source.fs
+        4: entity.name.class
+    - match: '(\w+|``[^`]*``)(?:\s:$)'
+      captures:
+        1: entity.name.function
+        2: source.fs
+    - match: '(\s{3})(string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)(?:\s*:)'
+      captures:
+        1: source.fs
+        2: entity.name.field
+        3: source.fs
+
   namespaces:
     - match: '(namespace|open)\b(.*)'
       captures:
@@ -59,7 +77,7 @@ contexts:
     - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
       scope: markup.other.source.fs
   types:
-    - match: '\b(Some|None|string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b'
+    - match: '\b(obj|Some|None|string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b'
       scope: entity.name.class
     - match: '\b([A-Z][\w]*)\b'
       scope: entity.name.class
@@ -81,10 +99,14 @@ contexts:
       captures:
         1: source.fs
         2: entity.name.class 
+    - match: '''\w+'
+      scope: entity.name.class
+    - match: '\^\w+'
+      scope: entity.name.class
 
 
   functions:
-    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+\w+)(?:\s[^=:])'
+    - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+)([^\s=:(]+)'
       # let inline add x y = x + y
       captures:
         1: keyword.source.fs
@@ -92,7 +114,8 @@ contexts:
         3: source.fs
         4: keyword.source.fs
         5: entity.name.function
-
+        6: source.fs
+        7: entity.name.field
     - match: '(let\s+)({{modifiers}})(\s+)({{modifiers}})(\s+``[^`]*``)(\s+)([^\s=:]+)'
       # let inline ``some id`` x y = x + y
       captures:
@@ -103,7 +126,7 @@ contexts:
         5: entity.name.function
         6: source.fs
         7: entity.name.field
-    - match: '(let\s+)({{modifiers}})(\s+\w+)(\s+)([^\s=:]+)'
+    - match: '(let\s+)({{modifiers}})(\s+\w+)(\s+)([^\s=:(]+)'
       # let inline add x y = x + y
       captures:
         1: keyword.source.fs
@@ -111,7 +134,7 @@ contexts:
         3: entity.name.function
         4: source.fs
         5: entity.name.field
-    - match: '(let\s+)({{modifiers}})(\s+``[^`]*``)(\s+)([^\s=:]+)'
+    - match: '(let\s+)({{modifiers}})(\s+``[^`]*``)(\s+)([^\s=:(]+)'
       # let inline add x y = x + y
       captures:
         1: keyword.source.fs
@@ -124,14 +147,16 @@ contexts:
         1: keyword.source.fs
         2: source.fs
         3: keyword.source.fs
-    - match: '(override)(\s+)(\w+)(\.)(\w+)(?:\s[^=:])'
+    - match: '(override)(\s+)(\w+)(\.)(\w+)(\s+)([^\s=:(]+)'
       captures:
         1: keyword.source.fs
         2: source.fs
         3: entity.name.field
         4: source.fs
         5: entity.name.function
-    - match: '(let\s+)(\w+|``[^`]*``)(\s+)([^\s=:]+)'
+        6: source.fs
+        7: entity.name.field
+    - match: '(let\s+)(\w+|``[^`]*``)(\s+)([^\s=:(]+)'
       captures:
         1: keyword.source.fs
         2: entity.name.function
@@ -150,9 +175,9 @@ contexts:
       captures:
         1: source.fs
         2: entity.name.function
-    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*\")'
-      captures:
-        1: entity.name.function
+#    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*\")'
+#      captures:
+#        1: entity.name.function
     - match: '(let\s+)([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w])'
       captures:
         1: keyword.source.fs
@@ -186,7 +211,10 @@ contexts:
   properties:
     - match: '``[^`]*``'
       scope: entity.name.field
-
+    - match: '(\.)([A-Z]{1}\w*)'
+      captures:
+        1: source.fs
+        2: entity.name.property
   keywords:
     - match: '\byield\b'
       scope: keyword.source.fs

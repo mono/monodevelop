@@ -10,20 +10,11 @@ open FsUnit
 open System.Threading
 open System.IO
 
-//open System.Linq
 [<TestFixture>]
-//type A = A of int
-//type A = A of a:int
-//type B = B of int
-//w11.Position <- 0
-//let _x, y = 1,2
-//let docs = openDocument()
-//let add param y = param + y
 type SyntaxHighlighting() =
     do
         FixtureSetup.initialiseMonoDevelop()
 
-    let add param y = param + y
     let getEditor() =
         let editor = TextEditorFactory.CreateNewEditor()
         editor.MimeType <- "text/x-fsharp"
@@ -39,13 +30,16 @@ type SyntaxHighlighting() =
         let offset = input.IndexOf("$")
         let length = input.LastIndexOf("$") - offset - 1
         let input = input.Replace("$", "")
-        let editor = getEditor()
+        let editor = getEditor ()
         editor.Text <- " " + input
         let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
         let first = stack |> Seq.head
 
         Assert.AreEqual(expectedStyle, first)
 
+    [<TestCase("let assertStyle $($input", "punctuation.section.brackets")>]
+    [<TestCase("printfn $\"string\"$", "string.quoted.double.source.fs")>]
+    [<TestCase("override x.CompareTo $other$", "entity.name.field")>]
     [<TestCase("let $getEditor$()", "entity.name.function")>]
     [<TestCase("$\"_underline_\"$", "string.quoted.double.source.fs")>]
     [<TestCase("let $_x$, y = 1,2", "source.fs")>]
@@ -103,7 +97,7 @@ type SyntaxHighlighting() =
     [<TestCase("$return!$ x", "keyword.source.fs")>]
     [<TestCase("member val IndentOnTryWith = false with $get, set$", "source.fs")>]
     [<TestCase("| Some $funion$ -> ", "entity.name.field")>]
-    [<TestCase("yield $sprintf$ \"%A\"", "entity.name.function")>]
+    //[<TestCase("yield $sprintf$ \"%A\"", "entity.name.function")>]
     [<TestCase("$doc$.Editor", "entity.name.field")>]
     [<TestCase(":> $SomeType$", "entity.name.class")>]
     [<TestCase("($'c'$)", "string.quoted.single.source.fs")>]
