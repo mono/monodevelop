@@ -3097,7 +3097,7 @@ namespace Mono.TextEditor
 			// calculate virtual indentation
 			if (column > 0 && line.Length == 0 && textEditor.GetTextEditorData ().HasIndentationTracker) {
 				using (var l = textEditor.LayoutCache.RequestLayout ()) {
-					l.SetText (textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset)); 
+					l.SetText (textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.LineNumber)); 
 					l.Alignment = Pango.Alignment.Left;
 					l.FontDescription = textEditor.Options.Font;
 					l.Tabs = tabArray;

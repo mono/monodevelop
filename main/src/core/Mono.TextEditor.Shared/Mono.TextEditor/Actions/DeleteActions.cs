@@ -296,7 +296,7 @@ namespace Mono.TextEditor
 			if (prevLine != null) {
 				if (prevLineIsEmpty) {
 					if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
-						data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
+						data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Line));
 					} else {
 						data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
 					}
@@ -359,7 +359,7 @@ namespace Mono.TextEditor
 							if (next != null) {
 								if (data.HasIndentationTracker) {
 									var lineIndentation = next.GetIndentation (data.Document);
-									if (lineIndentation.StartsWith (data.IndentationTracker.GetIndentationString (next.Offset))) {
+									if (lineIndentation.StartsWith (data.IndentationTracker.GetIndentationString (next.LineNumber))) {
 										deletionLength += lineIndentation.Length;
 									}
 								}
