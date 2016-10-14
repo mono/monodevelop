@@ -40,11 +40,8 @@ type SyntaxHighlighting() =
 
         let input = input.Replace("$", "")
 
-        let data = new TextEditorData (new TextDocument (input))
-        let markup = data.GetMarkup(offset, length, false, true, false, false)
-
-
         let editor = getEditor()
+        editor.Text <- input
         let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
         let first = stack |> Seq.head
 
