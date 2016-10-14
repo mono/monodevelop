@@ -23,55 +23,33 @@ type SyntaxHighlighting() =
         FixtureSetup.initialiseMonoDevelop()
 
     let mutable x = 1
+    let getEditor() =
+        let editor = TextEditorFactory.CreateNewEditor()
+        editor.MimeType <- "text/x-fsharp"
+        let assembly = typeof<MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting>.Assembly
+        use stream = assembly.GetManifestResourceStream("F#.sublime-syntax")
+        use reader = new StreamReader(stream)
+        let highlighting = Sublime3Format.ReadHighlighting(reader)
+        highlighting.PrepareMatches()
+        editor.SyntaxHighlighting <- MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
+        editor
+
     let assertStyle (input:string, expectedStyle:string) =
-        //Assert.Fail()
-        //editor.SyntaxHighlighting.GetHighlightedLineAsync
-        //GetMarkUp
-        //SignatureMarkupCreator
-        //SyntaxHighlightingService.GetColorFromScope (editorTheme, scope, EditorThemeColors.Foreground)
-        //Syntax
         let offset = input.IndexOf("$")
         let length = input.LastIndexOf("$") - offset - 1
 
         let input = input.Replace("$", "")
+
         let data = new TextEditorData (new TextDocument (input))
         let markup = data.GetMarkup(offset, length, false, true, false, false)
-        let editor = TextEditorFactory.CreateNewEditor ()
-        use reader = File.OpenText("/Users/jason/src/monodevelop/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Highlighting/syntaxes/FSharp/F#.sublime-syntax")
-        let highlighting = Sublime3Format.ReadHighlighting(reader)
-        highlighting.PrepareMatches()
-        editor.Text <- " " + input
-        editor.SyntaxHighlighting <- MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
-        //let offset = if length = 1 then offset else offset+1
+
+
+        let editor = getEditor()
         let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
         let first = stack |> Seq.head
 
         Assert.AreEqual(expectedStyle, first)
-        //let syntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
-        //let style = SyntaxModeService.GetColorStyle ("Gruvbox")
-        //let line = data.Lines |> Seq.head
-        //let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
-        //let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
 
-        //let chunks = syntaxMode.GetChunks(style, line, 0, line.Length)
-        //let printChunks() =
-        //    chunks |> Seq.iter (fun chunk -> printfn "%A %s" chunk input.[chunk.Offset..chunk.Offset+chunk.Length-1])
-
-        
-        //match chunk with
-        //| Some (c) -> c.Style |> should equal expectedStyle
-        //| _ -> printfn "Offset - %d, Length - %d" offset length
-        //       printChunks()
-        //       Assert.Fail()
-
-        //let assertOffsets expectedOffset (chunk:Chunk) =
-        //    //printfn "%d %d" chunk.Offset expectedOffset
-        //    if chunk.Offset <> expectedOffset then
-        //        printChunks()
-        //        Assert.Fail("Overlapping chunks detected")
-        //    chunk.Offset + chunk.Length
-
-        //Seq.fold assertOffsets 0 chunks |> ignore
     [<TestCase("$\"_underline_\"$", "string.quoted.double.source.fs")>]
     [<TestCase("let $_x$, y = 1,2", "source.fs")>]
     [<TestCase("$yield$ x", "keyword.source.fs")>]
