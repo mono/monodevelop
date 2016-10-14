@@ -158,7 +158,9 @@ namespace MonoDevelop.Refactoring
 					startLinePosition.Line + 1,
 					GetSeverity (diagnostic),
 					TaskPriority.Normal,
-					parent
+					parent,
+					null,
+					diagnostic.Descriptor.Category
 				);
 			}));
 
