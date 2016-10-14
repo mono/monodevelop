@@ -80,12 +80,7 @@ using exec -a to name the process has problems because the terminal can get into
 where running an explicit exec causes it to quit after the exec runs, so we can't use the 
 bash pause on exit trick
 */ 
-
-		//use full path to fix command failure when users have another app called "Terminal"
-		//this happens with Parallels exporting a stub for the Unbuntu "Terminal"
-		const string TERMINAL_APP = "/Applications/Utilities/Terminal.app";
-
-		string windowId;
+		string tabId, windowId;
 
 		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
@@ -95,7 +90,7 @@ bash pause on exit trick
 			CancellationTokenSource.Token.Register (CloseTerminal);
 
 			// FIXME set value of ProcessId, if possible
-			string tabId;
+
 			var intTask = RunTerminal (
 				command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished,
 				out tabId, out windowId, CancellationTokenSource.Token
@@ -150,18 +145,18 @@ bash pause on exit trick
 			}
 
 			//run the command in Terminal.app and extract tab and window IDs
-			var ret = AppleScript.Run ("tell app \"{0}\" to do script \"{1}\"", TERMINAL_APP, Escape (sb.ToString ()));
+			var ret = AppleScript.Run ("tell app \"Terminal\" to do script \"{0}\"", Escape (sb.ToString ()));
 			int i = ret.IndexOf ("of", StringComparison.Ordinal);
 			tabId = ret.Substring (0, i -1);
 			windowId = ret.Substring (i + 3);
 
 			//rename tab and give it focus
 			sb.Clear ();
-			sb.AppendFormat ("tell app \"{0}\"\n", TERMINAL_APP);
+			sb.Append ("tell app \"Terminal\"\n");
 			if (!string.IsNullOrEmpty (title))
-				sb.AppendFormat ("\tset custom title of {1} of {2} to \"{3}\"\n", tabId, windowId, Escape (title));
-			sb.AppendFormat ("\tset frontmost of {1} to true\n", windowId);
-			sb.AppendFormat ("\tset selected of {1} of {2} to true\n", tabId, windowId);
+				sb.AppendFormat ("\tset custom title of {0} of {1} to \"{2}\"\n", tabId, windowId, Escape (title));
+			sb.AppendFormat ("\tset frontmost of {0} to true\n", windowId);
+			sb.AppendFormat ("\tset selected of {0} of {1} to true\n", tabId, windowId);
 			sb.Append ("\tactivate\n");
 			sb.Append ("end tell");
 
@@ -179,16 +174,16 @@ bash pause on exit trick
 			return str.Replace ("\\","\\\\").Replace ("\"", "\\\"");
 		}
 
-		static void CloseTerminalWindow (string windowId)
+		static void CloseTerminalWindow (string tabId, string windowId)
 		{
 			try {
 				AppleScript.Run (
-@"tell application ""{0}""
+@"tell application ""Terminal""
 	activate
 	set frontmost of {1} to true
 	close {1}
-	tell application ""System Events"" to tell process ""{0}"" to keystroke return
-end tell", TERMINAL_APP, windowId);
+	tell application ""System Events"" to tell process ""Terminal"" to keystroke return
+end tell", tabId, windowId);
 			} catch (AppleScriptException) {
 				//it may already have closed
 			}
@@ -196,7 +191,7 @@ end tell", TERMINAL_APP, windowId);
 
 		static bool TabExists (string tabId, string windowId)
 		{
-			return AppleScript.Run ("tell app \"{0}\" to get exists of {1} of {2}", TERMINAL_APP, tabId, windowId) == "true";
+			return AppleScript.Run ("tell app \"Terminal\" to get exists of {0} of {1}", tabId, windowId) == "true";
 		}
 
 		#endregion
@@ -206,7 +201,7 @@ end tell", TERMINAL_APP, windowId);
 		void CloseTerminal ()
 		{
 			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
-			CloseTerminalWindow (windowId);
+			CloseTerminalWindow (tabId, windowId);
 		}
 
 		#endregion
