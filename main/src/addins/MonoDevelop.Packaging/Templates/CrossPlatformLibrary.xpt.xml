@@ -47,6 +47,9 @@
 				<Reference type="Gac" refto="Xamarin.iOS" />
 				<Reference type="Project" refto="${ProjectName}.Shared" />
 			</References>
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.107-dev" local="true" />
+			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 			</Files>
@@ -61,6 +64,9 @@
 				<Reference type="Gac" refto="Mono.Android" />
 				<Reference type="Project" refto="${ProjectName}.Shared" />
 			</References>
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.107-dev" local="true" />
+			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 			</Files>
@@ -72,8 +78,8 @@
 				<Package ID="NuGet.Build.Packaging" Version="0.1.107-dev" local="true" />
 			</Packages>
 			<References>
-				<Reference type="Project" refto="${ProjectName}.Android" />
-				<Reference type="Project" refto="${ProjectName}.iOS" />
+				<Reference type="Project" refto="${ProjectName}.Android" if="CreateAndroidProject" />
+				<Reference type="Project" refto="${ProjectName}.iOS" if="CreateIOSProject" />
 			</References>
 			<Files>
 				<File name="project.json" src="template.project.json" />
