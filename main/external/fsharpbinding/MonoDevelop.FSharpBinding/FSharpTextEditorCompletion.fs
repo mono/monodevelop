@@ -184,17 +184,9 @@ module Completion =
             None
 
     let (|LetIdentifier|_|) context =
-        //if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=]+$", RegexOptions.Compiled) then
-        //     let document = new TextDocument(context.lineToCaret)
-        //     let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
-
-        //     let documentLine = document.GetLine 1
-
-        //     let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
-        //                      |> Seq.map (fun c -> c.Style)   
-        //                      |> Seq.tryHead
-        //     chunkStyle |> Option.bind (fun cs -> if cs <> "User Types" then Some LetIdentifier else None)
-        //else
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=(]+$", RegexOptions.Compiled) then
+             Some LetIdentifier
+        else
             None
 
     let symbolToIcon (symbolUse:FSharpSymbolUse) =
@@ -614,7 +606,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
-type FsiParameterHintingData (tooltip:MonoDevelop.FSharp.Shared.ParameterTooltip) =
+type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterTooltip) =
     inherit ParameterHintingData (null)
 
     override x.ParameterCount =
