@@ -38,9 +38,12 @@ namespace MonoDevelop.Packaging
 			if (project == null)
 				return;
 
+			// Setting PackOnBuild as a global property does not work since instead
+			// a dummy build target is created that calls the Pack target instead.
 			var context = new ProjectOperationContext ();
 			context.GlobalProperties.SetValue ("PackOnBuild", "true");
-			IdeApp.ProjectOperations.Build (project, operationContext: context);
+			var buildTarget = new CreateNuGetPackageBuildTarget (project);
+			IdeApp.ProjectOperations.Build (buildTarget, operationContext: context);
 		}
 	}
 }
