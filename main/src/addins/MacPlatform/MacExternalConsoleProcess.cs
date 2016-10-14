@@ -159,9 +159,9 @@ bash pause on exit trick
 			sb.Clear ();
 			sb.AppendFormat ("tell app \"{0}\"\n", TERMINAL_APP);
 			if (!string.IsNullOrEmpty (title))
-				sb.AppendFormat ("\tset custom title of {1} of {2} to \"{3}\"\n", tabId, windowId, Escape (title));
-			sb.AppendFormat ("\tset frontmost of {1} to true\n", windowId);
-			sb.AppendFormat ("\tset selected of {1} of {2} to true\n", tabId, windowId);
+				sb.AppendFormat ("\tset custom title of {0} of {1} to \"{2}\"\n", tabId, windowId, Escape (title));
+			sb.AppendFormat ("\tset frontmost of {0} to true\n", windowId);
+			sb.AppendFormat ("\tset selected of {0} of {1} to true\n", tabId, windowId);
 			sb.Append ("\tactivate\n");
 			sb.Append ("end tell");
 
