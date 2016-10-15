@@ -139,13 +139,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					   string r,
 					   RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return !string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
