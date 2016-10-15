@@ -103,21 +103,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					   float r,
 					   RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return l.CompareTo (r) == 0;
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return l.CompareTo (r) != 0;
 			case RelationOperator.Greater:
-				return comparer.Compare (l, r) > 0;
+				return l.CompareTo (r) > 0;
 			case RelationOperator.GreaterOrEqual:
-				return comparer.Compare (l, r) >= 0;
+				return l.CompareTo (r) >= 0;
 			case RelationOperator.Less:
-				return comparer.Compare (l, r) < 0;
+				return l.CompareTo (r) < 0;
 			case RelationOperator.LessOrEqual:
-				return comparer.Compare (l, r) <= 0;
+				return l.CompareTo (r) <= 0;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
@@ -131,9 +129,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return l.CompareTo (r) == 0;
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return l.CompareTo (r) != 0;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
