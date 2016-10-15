@@ -105,17 +105,17 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 			switch (op) {
 			case RelationOperator.Equal:
-				return l.CompareTo (r) == 0;
+				return l == r;
 			case RelationOperator.NotEqual:
-				return l.CompareTo (r) != 0;
+				return l != r;
 			case RelationOperator.Greater:
-				return l.CompareTo (r) > 0;
+				return l > r;
 			case RelationOperator.GreaterOrEqual:
-				return l.CompareTo (r) >= 0;
+				return l >= r;
 			case RelationOperator.Less:
-				return l.CompareTo (r) < 0;
+				return l < r;
 			case RelationOperator.LessOrEqual:
-				return l.CompareTo (r) <= 0;
+				return l <= r;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
@@ -129,9 +129,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			switch (op) {
 			case RelationOperator.Equal:
-				return l.CompareTo (r) == 0;
+				return l == r;
 			case RelationOperator.NotEqual:
-				return l.CompareTo (r) != 0;
+				return l != r;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
