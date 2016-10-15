@@ -125,8 +125,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					 bool r,
 					 RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
 				return l == r;
