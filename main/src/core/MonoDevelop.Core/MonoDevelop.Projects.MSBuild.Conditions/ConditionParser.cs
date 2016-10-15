@@ -229,7 +229,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 			int token_pos = tokenizer.Token.Position;
 			string ref_type = prefix == '$' ? "a property" : "an item list";
-			IsAtToken (TokenType.LeftParen, "Expected {0} at position {1} in condition \"{2}\". Missing opening parantheses after the '{3}'.",
+			if (!IsAtToken (TokenType.LeftParen))
+				ThrowParseException (TokenType.LeftParen, "Expected {0} at position {1} in condition \"{2}\". Missing opening parantheses after the '{3}'.",
 						ref_type, token_pos, conditionStr, prefix);
 
 
@@ -262,7 +263,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				}
 			}
 
-			IsAtToken (TokenType.RightParen, "Missing closing parenthesis in condition {0}", conditionStr);
+			if (!IsAtToken (TokenType.RightParen))
+				ThrowParseException (TokenType.RightParen, "Missing closing parenthesis in condition {0}", conditionStr);
 			tokenizer.GetNextToken ();
 
 			sb.Append (")");
@@ -272,21 +274,24 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 
 		// used to check current token type
-		void IsAtToken (TokenType type, string error_fmt, params object[] args)
+		bool IsAtToken (TokenType type)
 		{
-			if (tokenizer.Token.Type != type) {
-				if (!String.IsNullOrEmpty (error_fmt))
-					throw new ExpressionParseException (string.Format (error_fmt, args));
+			return tokenizer.Token.Type == type;
+		}
 
-				if (tokenizer.Token.Type == TokenType.EOF)
-					throw new ExpressionParseException (String.Format (
-								"Expected a \"{0}\" but the condition ended abruptly, while parsing condition \"{1}\"",
-								Token.TypeAsString (type), conditionStr));
+		void ThrowParseException(TokenType type, string error_fmt, params object[] args)
+		{
+			if (!String.IsNullOrEmpty(error_fmt))
+				throw new ExpressionParseException(string.Format(error_fmt, args));
 
-				throw new ExpressionParseException (String.Format (
-								"Expected \"{0}\" token,  but got {1}, while parsing \"{2}\"",
-								Token.TypeAsString (type), tokenizer.Token, conditionStr));
-			}
+			if (tokenizer.Token.Type == TokenType.EOF)
+				throw new ExpressionParseException(String.Format(
+							"Expected a \"{0}\" but the condition ended abruptly, while parsing condition \"{1}\"",
+							Token.TypeAsString(type), conditionStr));
+
+			throw new ExpressionParseException(String.Format(
+							"Expected \"{0}\" token,  but got {1}, while parsing \"{2}\"",
+							Token.TypeAsString(type), tokenizer.Token, conditionStr));
 		}
 	}
 }
