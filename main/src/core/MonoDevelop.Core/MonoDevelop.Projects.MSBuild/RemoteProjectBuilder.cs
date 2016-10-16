@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects.MSBuild
 					bool locked = false;
 					try {
 						BeginOperation ();
-						locked = await engine.Semaphore.WaitAsync (Timeout.Infinite, cancellationToken);
+						locked = await engine.Semaphore.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
 						// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
 						result = builder.Run (
 									configurations, null, MSBuildVerbosity.Normal,

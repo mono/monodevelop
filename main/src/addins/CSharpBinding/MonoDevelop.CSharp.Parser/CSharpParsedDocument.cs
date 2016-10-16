@@ -446,7 +446,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			if (errors == null) {
 				return Task.Run (async delegate {
-					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken);
+					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
 					try {
 						if (errors == null) {
 							try {
