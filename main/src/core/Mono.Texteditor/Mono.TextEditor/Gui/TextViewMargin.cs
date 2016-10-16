@@ -2959,7 +2959,10 @@ namespace Mono.TextEditor
 				try {
 					restart:
 					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
-					foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
+					foreach (FoldSegment folding in foldings) {
+						if (!folding.IsFolded)
+							continue;
+						
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;
