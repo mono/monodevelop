@@ -1471,6 +1471,13 @@ namespace Mono.TextEditor
 			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
 		}
 
+		internal IEnumerable<TextSegmentMarker> GetVisibleTextSegmentMarkersAt (DocumentLine line)
+		{
+			foreach (var marker in textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment))
+				if (marker.IsVisible)
+					yield return marker;
+		}
+
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (TextSegment segment)
 		{
 			return textSegmentMarkerTree.GetSegmentsOverlapping (segment);
