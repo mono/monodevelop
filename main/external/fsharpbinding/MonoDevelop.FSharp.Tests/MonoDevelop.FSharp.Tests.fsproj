@@ -170,22 +170,24 @@
     <Compile Include="CopyPaste.fs" />
     <Compile Include="SelectionTests.fs" />
     <None Include="paket.references" />
-    <None Include="Samples\Xamarin.iOS.fsproj" />
-    <None Include="Samples\android\fsandroid.fsproj">
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Samples\android\fsandroidnuget2.sln">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2.sln">
+    </Content>
+    <Content Include="Samples\android\fsandroid.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
+    </Content>
+    <Content Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
+    </Content>
+    <Content Include="Samples\android\fsandroidnuget2\MainActivity.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
+    </Content>
+    <Content Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Samples\Xamarin.iOS.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>

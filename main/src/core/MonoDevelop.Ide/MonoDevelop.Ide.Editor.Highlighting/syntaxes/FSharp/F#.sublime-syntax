@@ -237,13 +237,9 @@ contexts:
     - match: '-\d+'
       scope: constant.numeric.source.fs
   strings:
-    - match: "'"
+    - match: "'.'"
       scope: string.quoted.single.source.fs
-      push:
-        - match: '\\.'
-          scope: constant.character.escape.source.fs
-        - match: "('|$\n?)"
-          pop: true
+
     - match: '@"'
       scope: string.quoted.other.verbatim.source.fs
       push:
