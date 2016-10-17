@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects.SharedAssetsProjects;
 using NUnit.Framework;
 using UnitTests;
 
@@ -114,6 +115,44 @@ namespace MonoDevelop.Packaging.Tests
 			string packageFileName = Path.Combine (dir, "bin", "Debug", "ProjectName.1.0.0.nupkg");
 			bool packageCreated = File.Exists (packageFileName);
 			Assert.IsTrue (packageCreated, "NuGet package not created.");
+		}
+
+		[Test]
+		public async Task CreateMultiPlatformProjectFromTemplateWithAndroidOnly ()
+		{
+			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+			cinfo.Parameters["CreateAndroidProject"] = bool.TrueString;
+			cinfo.Parameters["CreateSharedProject"] = bool.TrueString;
+			cinfo.Parameters["CreateNuGetProject"] = bool.TrueString;
+
+			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
+			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			var project = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.NuGet.nuproj");
+			Assert.IsNotNull (project);
+
+			var androidProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Android.csproj");
+			Assert.IsNotNull (androidProject);
+
+			var sharedProject = solution.GetAllProjects ().OfType<SharedAssetsProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Shared.shproj");
+			Assert.IsNotNull (sharedProject);
+
+			var projectReference = project.References.FirstOrDefault (r => r.ReferenceType == ReferenceType.Project);
+			Assert.AreEqual (androidProject, projectReference.ResolveProject (solution));
+
+			projectReference = androidProject.References.FirstOrDefault (r => r.ReferenceType == ReferenceType.Project);
+			Assert.AreEqual (sharedProject, projectReference.ResolveProject (solution));
 		}
 	}
 }
