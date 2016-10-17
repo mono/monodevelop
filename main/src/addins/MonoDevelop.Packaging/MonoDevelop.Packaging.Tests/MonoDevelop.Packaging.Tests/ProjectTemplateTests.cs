@@ -28,6 +28,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Packaging.Templating;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.SharedAssetsProjects;
@@ -84,7 +86,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Ignore ("Need to add NuGet package to project before building")]
+		[Ignore ("Build does not work with project.json on Mono")]
 		public async Task BuildPackagingProjectFromTemplate ()
 		{
 			string templateId = "MonoDevelop.Packaging.Project";
@@ -104,6 +106,8 @@ namespace MonoDevelop.Packaging.Tests
 			var workspaceItem = template.CreateWorkspaceItem (cinfo);
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
 
 			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
@@ -155,6 +159,50 @@ namespace MonoDevelop.Packaging.Tests
 
 			projectReference = androidProject.References.FirstOrDefault (r => r.ReferenceType == ReferenceType.Project);
 			Assert.AreEqual (sharedProject, projectReference.ResolveProject (solution));
+		}
+
+		[Test]
+		public async Task CreateMultiPlatformProjectFromTemplateWithPCLOnly ()
+		{
+			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+			cinfo.Parameters["ProjectName"] = cinfo.ProjectName;
+			cinfo.Parameters["CreatePortableProject"] = bool.TrueString;
+			cinfo.Parameters["PackageAuthors"] = "authors";
+			cinfo.Parameters["PackageId"] = "ProjectName";
+			cinfo.Parameters["PackageDescription"] = "Description";
+			cinfo.Parameters["PackageVersion"] = "1.0.0";
+
+			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+
+			var wizard = new TestableCrossPlatformLibraryTemplateWizard ();
+			wizard.Parameters = cinfo.Parameters;
+			wizard.ItemsCreated (new [] { workspaceItem });
+
+			var project = ((Solution)workspaceItem).GetAllProjects ().First ();
+			project.MSBuildProject.GetGlobalPropertyGroup ().SetValue ("PackOnBuild", "true");
+			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
+			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
+
+			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			project = solution.GetAllProjects ().First ();
+			BuildResult cr = await solution.Build (Util.GetMonitor (), "Debug");
+			Assert.IsNotNull (cr);
+			Assert.AreEqual (0, cr.ErrorCount);
+			Assert.AreEqual (0, cr.WarningCount);
+
+			string packageFileName = Path.Combine (dir, "bin", "Debug", "ProjectName.1.0.0.nupkg");
+			bool packageCreated = File.Exists (packageFileName);
+			Assert.IsTrue (packageCreated, "NuGet package not created.");
 		}
 	}
 }
