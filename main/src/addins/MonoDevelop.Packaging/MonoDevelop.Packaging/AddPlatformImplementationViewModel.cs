@@ -98,7 +98,7 @@ namespace MonoDevelop.Packaging
 
 			await Project.ParentSolution.SaveAsync (monitor);
 
-			AddNuGetPackageToPackagingProject ();
+			AddNuGetPackages ();
 		}
 
 		async Task CreateNewSharedProject (ProgressMonitor monitor)
@@ -335,9 +335,19 @@ namespace MonoDevelop.Packaging
 			metadata.UpdateProject (Project);
 		}
 
-		protected virtual void AddNuGetPackageToPackagingProject ()
+		protected virtual void AddNuGetPackages ()
 		{
-			packagingProject.InstallBuildPackagingNuGetPackage ();
+			var projects = new List<DotNetProject> ();
+
+			if (iosProject != null)
+				projects.Add (iosProject);
+
+			if (androidProject != null)
+				projects.Add (androidProject);
+
+			projects.Add (packagingProject);
+
+			DotNetProjectExtensions.InstallBuildPackagingNuGetPackage (projects);
 		}
 	}
 }

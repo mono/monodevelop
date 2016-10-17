@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.MSBuild;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MonoDevelop.PackageManagement;
-using System.Threading.Tasks;
-using System.IO;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
@@ -57,14 +57,7 @@ namespace MonoDevelop.Packaging
 
 		public static void InstallBuildPackagingNuGetPackage (this Project project)
 		{
-			string packagesFolder = GetPackagesFolder ();
-			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
-
-			PackageManagementServices.ProjectOperations.InstallPackages (
-				packagesFolder,
-				project,
-				new [] { packageReference }
-			);
+			InstallBuildPackagingNuGetPackage (new [] { project });
 		}
 
 		static string GetPackagesFolder ()
@@ -72,6 +65,24 @@ namespace MonoDevelop.Packaging
 			return Path.Combine (
 				Path.GetDirectoryName (typeof (DotNetProjectExtensions).Assembly.Location),
 				"packages");
+		}
+
+		public static void InstallBuildPackagingNuGetPackage (IEnumerable<Project> projects)
+		{
+			string packagesFolder = GetPackagesFolder ();
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
+
+			var packageReferences = new [] { packageReference };
+
+			var projectOperations = PackageManagementServices.ProjectOperations as PackageManagementProjectOperations;
+
+			var actions = new List<INuGetPackageAction> ();
+			foreach (Project project in projects) {
+				actions.AddRange (projectOperations.CreateInstallActions (packagesFolder, project, packageReferences));
+			}
+
+			var message = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.Run (message, actions);
 		}
 	}
 }
