@@ -146,18 +146,8 @@ namespace MonoDevelop.Ide.WelcomePage
 					Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
 
-					// Notify the RecentFiles that this item does not exist anymore.
-					// Possible other solution would be to check the recent projects list on focus in
-					// and update them accordingly.
-					if (!System.IO.File.Exists (file)) {
-						var res = MessageService.AskQuestion (
-							GettextCatalog.GetString ("{0} could not be opened", file),
-							GettextCatalog.GetString ("Do you want to remove the reference to it from the Recent list?"),
-							AlertButton.No, AlertButton.Yes);
-						if (res == AlertButton.Yes)
-							FileService.NotifyFileRemoved (file);
+					if (!RemoveItem (file, withDialog: true))
 						return;
-					}
 
 					IdeApp.Workspace.OpenWorkspaceItem (file, !inWorkspace);
 				} else if (uri.StartsWith ("monodevelop://")) {
@@ -170,6 +160,26 @@ namespace MonoDevelop.Ide.WelcomePage
 				LoggingService.LogInternalError (GettextCatalog.GetString ("Could not open the url '{0}'", uri), ex);
 			}
 		}
+
+		public static bool RemoveItem (string file, bool withDialog)
+		{
+			// Notify the RecentFiles that this item does not exist anymore.
+			// Possible other solution would be to check the recent projects list on focus in
+			// and update them accordingly.
+			if (System.IO.File.Exists (file))
+				return true;
+			
+			var res = withDialog ? MessageService.AskQuestion (
+				GettextCatalog.GetString ("{0} could not be opened", file),
+				GettextCatalog.GetString ("Do you want to remove the reference to it from the Recent list?"),
+				AlertButton.No, AlertButton.Yes) : AlertButton.Yes;
+			
+			if (res == AlertButton.Yes) {
+				FileService.NotifyFileRemoved (file);
+				return true;
+			}
+			return false;
+}
 	}
 }
 

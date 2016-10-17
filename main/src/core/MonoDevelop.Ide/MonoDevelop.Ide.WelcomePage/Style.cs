@@ -45,10 +45,12 @@ namespace MonoDevelop.Ide.WelcomePage
 				public static string LargeTitleFontColor { get; internal set; }
 				public const int LargeTitleMarginBottom = 22;
 
+				public static string MediumTitleDisabledColor { get; internal set; }
 				public static string MediumTitleColor { get; internal set; }
 				public static int MediumTitleFontSize = Platform.IsLinux ? 13 : 12;
 				public const int MediumTitleMarginBottom = 7;
 
+				public static string SmallTitleDisabledColor { get; internal set; }
 				public static string SmallTitleColor { get; internal set; }
 				public static int SmallTitleFontSize = Platform.IsLinux ? 11 : 10;
 
@@ -81,6 +83,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				public static class Solutions
 				{
 					public const int LargeTitleMarginBottom = 14;
+					public const int HorizontalRepadding = -14; // Big buttons need more space from left for better horizontal padding
 
 					public static class SolutionTile
 					{
@@ -90,7 +93,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						public static string HoverBorderColor { get; internal set; }
 						public const int TitleFontSize = 12;
 						public const int PathFontSize = 10;
-						public const int TextLeftPadding = 38;
+						public const int TextLeftPadding = 38 + HorizontalRepadding;
 						public const int TitleBottomMargin = 4;
 
 						// TODO: VV: Seems to be unused
@@ -108,7 +111,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			static WelcomeScreen ()
 			{
 				LoadStyles ();
-				MonoDevelop.Ide.Gui.Styles.Changed +=  (o, e) => LoadStyles ();
+				MonoDevelop.Ide.Gui.Styles.Changed += (o, e) => LoadStyles ();
 			}
 
 			public static void LoadStyles ()
@@ -119,6 +122,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				var padColor = Gui.Styles.PadBackground.ToHexString (false);
 				var hoverColor = Gui.Styles.DockBarPrelightColor.ToHexString (false);
 
+				String errorColor;
+
 				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 					BackgroundColor = bgColor;
 					InnerShadowColor = bgColor;
@@ -128,16 +133,13 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					Pad.BackgroundColor = padColor;
 					Pad.BorderColor = padColor;
-					Pad.TextColor = fgColor;
-					Pad.ShadowColor = "#000000";
-					Pad.LargeTitleFontColor = fgColor;
-					Pad.MediumTitleColor = fgColor;
-					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#3496d9";
 
 					Pad.Solutions.SolutionTile.HoverBackgroundColor = hoverColor;
 					Pad.Solutions.SolutionTile.HoverBorderColor = hoverColor;
+
+					errorColor = "#aaaaaa";
 				} else {
 					// TODO: VV: A beeter background, for some peculiar reason only black works here
 					BackgroundColor = "#000000";
@@ -148,17 +150,23 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					Pad.BackgroundColor = "#222222"; // TODO: VV: We can't use the padColor here because of the BackgroundColor bug, so override
 					Pad.BorderColor = "#222222";
-					Pad.TextColor = fgColor;
-					Pad.ShadowColor = "#000000";
-					Pad.LargeTitleFontColor = fgColor;
-					Pad.MediumTitleColor = fgColor;
-					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#5babed";
 
 					Pad.Solutions.SolutionTile.HoverBackgroundColor = "#2b3e50";
 					Pad.Solutions.SolutionTile.HoverBorderColor = "#2b3e50";
+
+					errorColor = "#5b5b5b";
 				}
+
+				// Shared
+				Pad.TextColor = fgColor;
+				Pad.ShadowColor = "#000000";
+				Pad.LargeTitleFontColor = fgColor;
+				Pad.MediumTitleDisabledColor = errorColor;
+				Pad.MediumTitleColor = fgColor;
+				Pad.SmallTitleDisabledColor = errorColor;
+				Pad.SmallTitleColor = dimColor;
 			}
 		}
 

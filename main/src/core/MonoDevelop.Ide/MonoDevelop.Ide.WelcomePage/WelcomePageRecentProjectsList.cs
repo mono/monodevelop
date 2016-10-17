@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				var accessed = recent.TimeStamp;
 				var pixbuf = ImageService.GetIcon (GetIcon (filename), IconSize.Dnd);
-				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
+				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename, filename);
 				button.BorderPadding = 2;
 				button.AllowPinning = true;
 				button.Pinned = recent.IsFavorite;

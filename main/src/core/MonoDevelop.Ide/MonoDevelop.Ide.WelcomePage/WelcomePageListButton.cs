@@ -35,10 +35,17 @@ namespace MonoDevelop.Ide.WelcomePage
 		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 		string title, subtitle, actionUrl;
 		protected Xwt.Drawing.Image icon;
+		protected Xwt.Drawing.Image disabledIcon;
+		protected Xwt.Drawing.Image removeIcon;
 		protected bool mouseOver;
 		protected bool pinned;
+		protected readonly bool hasRemoveButton;
+		protected readonly string fileName;
+		protected bool itemAccessible;
 		protected Gdk.Rectangle starRect;
+		protected Gdk.Rectangle removeRect;
 		protected bool mouseOverStar;
+		protected bool mouseOverRemove;
 
 		protected Pango.Weight TitleFontWeight { get; set; }
 
@@ -60,6 +67,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		public string SmallTitleColor { get; set; }
 		public string MediumTitleColor { get; set; }
 
+		public string SmallTitleDisabledColor { get; set; }
+		public string MediumTitleDisabledColor { get; set; }
+
 		public string TitleFontFace { get; set; }
 		public string SmallTitleFontFace { get; set; }
 
@@ -77,13 +87,21 @@ namespace MonoDevelop.Ide.WelcomePage
 			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
 		}
 
-		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
+		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl) : this(title, subtitle, icon, actionUrl, null)
+		{
+		}
+
+		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl, string fileName)
 		{
 			VisibleWindow = false;
 			this.title = title;
 			this.subtitle = subtitle;
 			this.icon = icon;
+			this.disabledIcon = Xwt.Drawing.Image.FromResource ("missing-item-32.png");
+			this.removeIcon = Xwt.Drawing.Image.FromResource ("welcome-remove-16.png");
 			this.actionUrl = actionUrl;
+			this.fileName = fileName;
+			hasRemoveButton = fileName != null;
 
 			WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width;
 			HeightRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Height + 2;
@@ -94,6 +112,14 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Gui.Styles.Changed += UpdateStyle;
 			UpdateStyle ();
+
+			IdeApp.FocusIn += UpdateFileStatus;
+			UpdateFileStatus (this, EventArgs.Empty);
+		}
+
+		void UpdateFileStatus (object sender, EventArgs args)
+		{
+			ItemAccessible = fileName == null || System.IO.File.Exists (fileName);
 		}
 
 		void UpdateStyle (object sender = null, EventArgs e = null)
@@ -107,6 +133,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			SmallTitleColor = Styles.WelcomeScreen.Pad.SmallTitleColor;
 			MediumTitleColor = Styles.WelcomeScreen.Pad.MediumTitleColor;
 
+			SmallTitleDisabledColor = Styles.WelcomeScreen.Pad.SmallTitleDisabledColor;
+			MediumTitleDisabledColor = Styles.WelcomeScreen.Pad.MediumTitleDisabledColor;
+
 			TitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 			SmallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 
@@ -119,6 +148,14 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public bool AllowPinning { get; set; }
 
+		public bool ItemAccessible {
+			get { return itemAccessible; }
+			set {
+				itemAccessible = value;
+				QueueDraw ();
+			}
+		}
+
 		public bool Pinned {
 			get { return pinned; }
 			set {
@@ -129,8 +166,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			GdkWindow.Cursor = hand_cursor;
-			mouseOver = true;
+			if (ItemAccessible) {
+				GdkWindow.Cursor = hand_cursor;
+				mouseOver = true;
+			}
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
@@ -152,6 +191,9 @@ namespace MonoDevelop.Ide.WelcomePage
 					if (PinClicked != null)
 						PinClicked (this, EventArgs.Empty);
 					return true;
+				} else if (mouseOverRemove) {
+					WelcomePageSection.RemoveItem (fileName, withDialog: false);
+					return true;
 				} else if (mouseOver) {
 					WelcomePageSection.DispatchLink (actionUrl);
 					return true;
@@ -162,11 +204,28 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			var so = starRect.Contains (Allocation.X + (int)evnt.X, Allocation.Y + (int)evnt.Y);
+			int x = Allocation.X + (int)evnt.X;
+			int y = Allocation.Y + (int)evnt.Y;
+			bool updated = false;
+
+			var so = starRect.Contains (x, y);
 			if (so != mouseOverStar) {
 				mouseOverStar = so;
-				QueueDraw ();
+				updated = true;
 			}
+
+			so = removeRect.Contains (x, y);
+			if (so != mouseOverRemove) {
+				mouseOverRemove = so;
+				updated = true;
+			}
+
+			if (!ItemAccessible)
+				GdkWindow.Cursor = mouseOverRemove || mouseOverStar ? hand_cursor : null;
+
+			if (updated)
+				QueueDraw ();
+
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
@@ -214,7 +273,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			int x = Allocation.X + InternalPadding;
 			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
-			ctx.DrawImage (this, icon, x, y);
+
+			if (fileName != null)
+				x += Styles.WelcomeScreen.Pad.Solutions.HorizontalRepadding;
+
+			ctx.DrawImage (this, itemAccessible ? icon : disabledIcon, x, y);
+
 			if (AllowPinning && (mouseOver || pinned)) {
 				Xwt.Drawing.Image star;
 				if (pinned) {
@@ -233,6 +297,13 @@ namespace MonoDevelop.Ide.WelcomePage
 				y = y + (int)icon.Height - (int)star.Height + 3;
 				ctx.DrawImage (this, star, x, y);
 				starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
+			}
+
+			if (hasRemoveButton && (mouseOver || !ItemAccessible)) {
+				x = Allocation.Right - InternalPadding;
+				y = Allocation.Y + (int)(Allocation.Height / 2) - (int)(removeIcon.Height / 2) - 1;
+				ctx.DrawImage (this, removeIcon, x, y);
+				removeRect = new Gdk.Rectangle (x, y, (int)removeIcon.Width, (int)removeIcon.Height);
 			}
 		}
 
@@ -253,7 +324,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				{
 					titleLayout.Width = Pango.Units.FromPixels (textWidth);
 					titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, title));
+					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, ItemAccessible ? MediumTitleColor : MediumTitleDisabledColor, title));
 
 					Pango.Layout subtitleLayout = null;
 
@@ -262,7 +333,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						subtitleLayout = new Pango.Layout (PangoContext);
 						subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 						subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
+						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, ItemAccessible ? SmallTitleColor : SmallTitleDisabledColor, subtitle));
 					}
 
 					int height = 0;
@@ -279,12 +350,12 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					int tx = Allocation.X + InternalPadding + LeftTextPadding;
 					int ty = Allocation.Y + (Allocation.Height - height) / 2;
-					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, tx, ty);
+					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, ItemAccessible ? MediumTitleColor : MediumTitleDisabledColor, tx, ty);
 
 					if (subtitleLayout != null)
 					{
 						ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, ItemAccessible ? SmallTitleColor : SmallTitleDisabledColor, tx, ty);
 						subtitleLayout.Dispose ();
 					}
 				}
@@ -295,6 +366,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override void OnDestroyed ()
 		{
 			Gui.Styles.Changed -= UpdateStyle;
+			IdeApp.FocusIn -= UpdateFileStatus;
 			base.OnDestroyed ();
 		}
 	}
