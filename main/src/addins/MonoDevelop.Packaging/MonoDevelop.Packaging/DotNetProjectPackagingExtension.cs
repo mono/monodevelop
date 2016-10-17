@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
@@ -33,6 +35,12 @@ namespace MonoDevelop.Packaging
 	class DotNetProjectPackagingExtension : DotNetProjectExtension
 	{
 		public bool InstallBuildPackagingNuGetAfterWrite { get; set; }
+
+		// Used by unit tests only.
+		internal bool GetRequiresMSBuild ()
+		{
+			return RequiresMicrosoftBuild;
+		}
 
 		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
@@ -45,7 +53,7 @@ namespace MonoDevelop.Packaging
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			UpdateRequiresMSBuildSetting (msproject);
+			UpdateRequiresMSBuildSetting (msproject, true);
 
 			if (InstallBuildPackagingNuGetAfterWrite) {
 				InstallBuildPackagingNuGetAfterWrite = false;
@@ -53,9 +61,57 @@ namespace MonoDevelop.Packaging
 			}
 		}
 
-		void UpdateRequiresMSBuildSetting (MSBuildProject msproject)
+		void UpdateRequiresMSBuildSetting (MSBuildProject msproject, bool reloadProjectBuilder = false)
 		{
-			RequiresMicrosoftBuild = msproject.HasNuGetMetadata ();
+			if (!RequiresMicrosoftBuild) {
+				RequiresMicrosoftBuild = msproject.HasNuGetMetadata ();
+				if (reloadProjectBuilder && RequiresMicrosoftBuild) {
+					Project.ReloadProjectBuilder ();
+					EnsureReferencedProjectsRequireMSBuild (reloadProjectBuilder);
+				}
+			}
+		}
+
+		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceAddedToProject (e);
+
+			if (Project.Loading)
+				return;
+
+			if (RequiresMicrosoftBuild && e.ProjectReference.ReferenceType == ReferenceType.Project) {
+				EnsureReferencedProjectsRequireMSBuild (true);
+			}
+		}
+
+		protected override void OnItemReady ()
+		{
+			if (RequiresMicrosoftBuild) {
+				EnsureReferencedProjectsRequireMSBuild ();
+			}
+		}
+
+		internal void EnsureReferencedProjectsRequireMSBuild (bool reloadProjectBuilder = false)
+		{
+			if (Project.ParentSolution == null)
+				return;
+
+			try {
+				foreach (var reference in Project.References.Where (projectReference => projectReference.ReferenceType == ReferenceType.Project)) {
+					var referencedProject = reference.ResolveProject (Project.ParentSolution);
+					if (referencedProject != null) {
+						var flavor = referencedProject.GetFlavor<DotNetProjectPackagingExtension> ();
+						if (flavor?.RequiresMicrosoftBuild == false) {
+							flavor.RequiresMicrosoftBuild = true;
+							flavor.EnsureReferencedProjectsRequireMSBuild (reloadProjectBuilder);
+							if (reloadProjectBuilder)
+								referencedProject.ReloadProjectBuilder ();
+						}
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to update RequiresMicrosoftBuild.", ex);
+			}
 		}
 	}
 }

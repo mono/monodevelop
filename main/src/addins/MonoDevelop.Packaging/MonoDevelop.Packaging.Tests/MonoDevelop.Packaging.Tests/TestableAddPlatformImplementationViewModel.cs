@@ -34,7 +34,7 @@ namespace MonoDevelop.Packaging.Tests
 		{
 		}
 
-		protected override void AddNuGetPackageToPackagingProject ()
+		protected override void AddNuGetPackages ()
 		{
 		}
 	}
