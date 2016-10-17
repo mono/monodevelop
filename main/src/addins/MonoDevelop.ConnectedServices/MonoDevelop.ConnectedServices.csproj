@@ -43,10 +43,6 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
       <Private>False</Private>
@@ -85,6 +81,10 @@
     </Reference>
     <Reference Include="RefactoringEssentials">
       <HintPath>..\..\..\..\build\bin\RefactoringEssentials.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
