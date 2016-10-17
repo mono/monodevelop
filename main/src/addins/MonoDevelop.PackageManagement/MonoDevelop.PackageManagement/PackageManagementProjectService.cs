@@ -28,8 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -38,12 +38,15 @@ namespace MonoDevelop.PackageManagement
 	{
 		public PackageManagementProjectService ()
 		{
-			IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded (e.Solution);
+			if (IdeApp.IsInitialized) {
+				IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
+				IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded (e.Solution);
+			} else {
+				LoggingService.LogError ("IdeApp not initialized when creating PackageManagementProjectService.");
+			}
 		}
 
 		public event EventHandler SolutionLoaded;
-
 
 		void OnSolutionLoaded (Solution solution)
 		{
