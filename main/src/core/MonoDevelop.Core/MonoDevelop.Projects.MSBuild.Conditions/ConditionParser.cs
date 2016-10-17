@@ -209,14 +209,15 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			while (true) {
 				tokenizer.GetNextToken ();
-				if (tokenizer.Token.Type == TokenType.RightParen) {
+				var token = tokenizer.Token;
+				if (token.Type == TokenType.RightParen) {
 					tokenizer.GetNextToken ();
 					break;
 				}
-				if (tokenizer.Token.Type == TokenType.Comma)
+				if (token.Type == TokenType.Comma)
 					continue;
 					
-				tokenizer.Putback (tokenizer.Token);
+				tokenizer.Putback (token);
 				e = (ConditionFactorExpression) ParseFactorExpression ();
 				list.Add (e);
 			}
@@ -227,9 +228,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		//@prefix: @ or $
 		ConditionExpression ParseReferenceExpression (char prefix)
 		{
-			int token_pos = tokenizer.Token.Position;
+			var token = tokenizer.Token;
+			int token_pos = token.Position;
 			string ref_type = prefix == '$' ? "a property" : "an item list";
-			if (!IsAtToken (TokenType.LeftParen))
+			if (token.Type != TokenType.LeftParen)
 				ThrowParseException (TokenType.LeftParen, "Expected {0} at position {1} in condition \"{2}\". Missing opening parantheses after the '{3}'.",
 						ref_type, token_pos, conditionStr, prefix);
 
@@ -263,7 +265,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				}
 			}
 
-			if (!IsAtToken (TokenType.RightParen))
+			if (tokenizer.Token.Type != TokenType.RightParen)
 				ThrowParseException (TokenType.RightParen, "Missing closing parenthesis in condition {0}", conditionStr);
 			tokenizer.GetNextToken ();
 
@@ -271,12 +273,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 			//FIXME: HACKY!
 			return new ConditionFactorExpression (new Token (sb.ToString (), TokenType.String, token_pos));
-		}
-
-		// used to check current token type
-		bool IsAtToken (TokenType type)
-		{
-			return tokenizer.Token.Type == type;
 		}
 
 		void ThrowParseException(TokenType type, string error_fmt, params object[] args)

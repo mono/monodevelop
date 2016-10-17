@@ -31,16 +31,17 @@ using System;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 
-	internal class Token {
+	internal struct Token {
 	
 		string		tokenValue;
 		TokenType	tokenType;
+		int position;
 	
 		public Token (string tokenValue, TokenType tokenType, int position)
 		{
 			this.tokenValue = tokenValue;
 			this.tokenType = tokenType;
-			this.Position = position + 1;
+			this.position = position + 1;
 		}
 		
 		public string Value {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 		// this is 1-based
 		public int Position {
-			get; private set;
+			get { return position; }
 		}
 
 		public static string TypeAsString (TokenType tokenType)
