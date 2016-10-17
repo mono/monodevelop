@@ -84,7 +84,6 @@
     <Compile Include="MonoDevelop.Packaging\CreateNuGetPackageHandler.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectHasNuGetMetadataCondition.cs" />
     <Compile Include="MonoDevelop.Packaging\NuGetFilePropertyProvider.cs" />
-    <Compile Include="MonoDevelop.Packaging\NuGetBuildAction.cs" />
     <Compile Include="MonoDevelop.Packaging\NuGetFileDescriptor.cs" />
     <Compile Include="MonoDevelop.Packaging\PackagingNuGetProject.cs" />
     <Compile Include="MonoDevelop.Packaging\PackageReference.cs" />
