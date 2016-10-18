@@ -55,6 +55,7 @@ namespace MonoDevelop.Projects
 		{
 			Items.Clear ();
 			Items.AddRange (other.Items.Select (it => new StartupItem (it.SolutionItem, it.RunConfiguration)));
+			OnRunConfigurationsChanged ();
 		}
 
 		public StartupItemCollection Items { get; }
