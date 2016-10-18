@@ -365,8 +365,7 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateBuildConfiguration ();
 
 			FillRuntimes ();
-			if (configurationMergers.Count > 1)
-				SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
+			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		void NotifyRunConfigurationChange ()
