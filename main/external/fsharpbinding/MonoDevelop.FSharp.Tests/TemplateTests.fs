@@ -63,6 +63,8 @@ type ``Template tests``() =
     <add key="repositoryPath" value="packages" />
   </config>
 </configuration>"""
+        if not (Directory.Exists templatesDir) then
+            Directory.CreateDirectory templatesDir |> ignore
         let configFileName = templatesDir/"NuGet.Config"
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
 
@@ -72,6 +74,9 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]
     [<TestCaseSource ("Templates")>]
     member x.``Build every template`` (tt:string) =
+        if not MonoDevelop.Core.Platform.IsMac then
+            Assert.Ignore ()
+
         if tt = "FSharpPortableLibrary" then
             Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
