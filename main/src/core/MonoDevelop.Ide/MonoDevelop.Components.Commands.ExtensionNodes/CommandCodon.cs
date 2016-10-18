@@ -168,7 +168,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 
 			cmd.AccelKey = KeyBindingManager.FixChordSeparators (KeyBindingManager.CanonicalizeBinding (splittedKeys[0]));
 			if (splittedKeys.Length > 1) {
-				cmd.AlternateAccelKeys = splittedKeys.Skip (1).Select (key => KeyBindingManager.FixChordSeparators (key)).ToArray ();
+				cmd.AlternateAccelKeys = splittedKeys.Skip (1).Select (KeyBindingManager.FixChordSeparators).ToArray ();
 			}
 			
 			cmd.DisabledVisible = disabledVisible;

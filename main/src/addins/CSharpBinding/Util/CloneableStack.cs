@@ -34,8 +34,12 @@ namespace ICSharpCode.NRefactory6.CSharp
 		int count;
 		StackItem top;
 
+		public StackItemEnumerator GetEnumerator ()
+		{
+			return new StackItemEnumerator (top);
+		}
 		#region IEnumerable[T] implementation
-		public IEnumerator<T> GetEnumerator ()
+		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
 		{
 			return new StackItemEnumerator (top);
 		}
@@ -140,7 +144,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 		#endregion
 
-		class StackItem
+		internal class StackItem
 		{
 			public readonly StackItem Parent;
 			public readonly T Item;
@@ -152,24 +156,24 @@ namespace ICSharpCode.NRefactory6.CSharp
 			}
 		}
 
-		class StackItemEnumerator : IEnumerator<T>
+		public struct StackItemEnumerator : IEnumerator<T>
 		{
 			StackItem cur, first;
 
-			public StackItemEnumerator (StackItem cur)
+			internal StackItemEnumerator (StackItem cur)
 			{
 				this.cur = first = new StackItem (cur, default(T));
 			}
 
 			#region IDisposable implementation
-			void IDisposable.Dispose ()
+			public void Dispose ()
 			{
 				cur = first = null;
 			}
 			#endregion
 
 			#region IEnumerator implementation
-			bool IEnumerator.MoveNext ()
+			public bool MoveNext ()
 			{
 				if (cur == null)
 					return false;
@@ -177,7 +181,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return cur != null;
 			}
 
-			void IEnumerator.Reset ()
+			public void Reset ()
 			{
 				cur = first;
 			}
@@ -190,7 +194,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			#endregion
 
 			#region IEnumerator[T] implementation
-			T IEnumerator<T>.Current {
+			public T Current {
 				get {
 					return cur.Item;
 				}

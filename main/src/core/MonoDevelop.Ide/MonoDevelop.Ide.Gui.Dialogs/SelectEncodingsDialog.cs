@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide
 					list.Add (enc);
 				} while (storeSelected.IterNext (ref iter));
 			}
-			TextEncoding.ConversionEncodings = list.Select ((id) => TextEncoding.GetEncoding (id)).ToArray ();
+			TextEncoding.ConversionEncodings = list.Select (TextEncoding.GetEncoding).ToArray ();
 		}
 		
 		protected void OnAddClicked (object ob, EventArgs args)

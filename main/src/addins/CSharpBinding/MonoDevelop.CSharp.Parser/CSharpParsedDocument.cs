@@ -279,15 +279,20 @@ namespace MonoDevelop.CSharp.Parser
 		}
 
 		IReadOnlyList<FoldingRegion> foldings;
-		object foldingLock = new object ();
+		SemaphoreSlim foldingsSemaphore = new SemaphoreSlim (1, 1);
 
 		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (foldings == null) {
-				return Task.Run (delegate {
-					lock (foldingLock) {
+				return Task.Run (async delegate {
+					bool locked = false;
+					try {
+						locked = await foldingsSemaphore.WaitAsync (Timeout.Infinite, cancellationToken);
 						if (foldings == null)
-							foldings = GenerateFoldings (cancellationToken).ToList ();
+							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
+					} finally {
+						if (locked)
+							foldingsSemaphore.Release ();
 					}
 					return foldings;
 				});
@@ -296,9 +301,14 @@ namespace MonoDevelop.CSharp.Parser
 			return Task.FromResult (foldings);
 		}
 
-		IEnumerable<FoldingRegion> GenerateFoldings (CancellationToken cancellationToken)
+		async Task<IEnumerable<FoldingRegion>> GenerateFoldings (CancellationToken cancellationToken)
 		{
-			foreach (var fold in GetCommentsAsync().Result.ToFolds ())
+			return GenerateFoldingsInternal (await GetCommentsAsync (cancellationToken), cancellationToken);
+		}
+
+		IEnumerable<FoldingRegion> GenerateFoldingsInternal (IReadOnlyList<Comment> comments, CancellationToken cancellationToken)
+		{
+			foreach (var fold in comments.ToFolds ())
 				yield return fold;
 
 			var visitor = new FoldingVisitor (cancellationToken);
@@ -436,7 +446,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			if (errors == null) {
 				return Task.Run (async delegate {
-					await errorLock.WaitAsync (cancellationToken);
+					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
 					try {
 						if (errors == null) {
 							try {
@@ -454,7 +464,8 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						return errors;
 					} finally {
-						errorLock.Release ();					}
+						if (locked)
+							errorLock.Release ();					}
 				});
 			}
 			return Task.FromResult (errors);

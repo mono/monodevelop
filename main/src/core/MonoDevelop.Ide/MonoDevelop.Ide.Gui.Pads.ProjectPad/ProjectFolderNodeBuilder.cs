@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						return;
 					}
 					// Don't use Directory.Exists because we want to check for the exact case in case-insensitive file systems
-					var di = Directory.GetDirectories (Path.GetDirectoryName (newFoldername), Path.GetFileName (newFoldername)).FirstOrDefault ();
+					var di = Directory.EnumerateDirectories (Path.GetDirectoryName (newFoldername), Path.GetFileName (newFoldername)).FirstOrDefault ();
 					if (di != null) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 						return;

@@ -185,7 +185,7 @@ namespace NuGet.PackageManagement.UI
 		{
 			SearchResult<IPackageSearchMetadata> result;
 
-			var nonEmptyResults = results.Where(r => r.Any()).ToArray();
+			var nonEmptyResults = results.Where(Enumerable.Any).ToArray();
 			if (nonEmptyResults.Length == 0)
 			{
 				result = SearchResult.Empty<IPackageSearchMetadata>();

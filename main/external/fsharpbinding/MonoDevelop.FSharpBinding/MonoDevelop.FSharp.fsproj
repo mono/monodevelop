@@ -153,10 +153,11 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
+      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
+      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
-      <HintPath>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
-    </Reference>
+    </ProjectReference>
     <Reference Include="monodoc">
       <HintPath>..\..\..\build\bin\monodoc.dll</HintPath>
     </Reference>
@@ -195,38 +196,26 @@
       <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
       <Name>MonoDevelop.FSharp.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
-    </ProjectReference>
-    <Reference Include="MonoDevelop.Debugger" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
-    </Reference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
-    </ProjectReference>
-    <Reference Include="MonoDevelop.Core" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
-    </ProjectReference>
-    <Reference Include="MonoDevelop.Ide" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
-    </Reference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj" Condition=" '$(Configuration)' != 'Debug' And '$(Configuration)' != 'Release' ">
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
-    </ProjectReference>
-    <Reference Include="MonoDevelop.Refactoring" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
-    </Reference>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

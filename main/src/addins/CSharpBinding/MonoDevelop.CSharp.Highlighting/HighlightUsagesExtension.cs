@@ -65,10 +65,17 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		static HighlightUsagesExtension ()
 		{
-			highlighters = typeof (HighlightUsagesExtension).Assembly
-				.GetTypes ()
-				.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
-				.Select (t => (IHighlighter)Activator.CreateInstance (t)).ToArray ();
+			try {
+				highlighters = typeof (HighlightUsagesExtension).Assembly
+					.GetTypes ()
+					.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
+					.Select (Activator.CreateInstance)
+					.Cast<IHighlighter> ()
+					.ToArray ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading highlighters.", e);
+
+			}
 		}
 		protected override void Initialize ()
 		{

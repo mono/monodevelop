@@ -102,12 +102,16 @@ namespace Mono.MHex.Rendering
 			Margin.LayoutWrapper result = new LayoutWrapper (layout);
 			if (Data.IsSomethingSelected) {
 				ISegment selection = Data.MainSelection.Segment;
-				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
-					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset) * 3, (int)(end - start) * 3 - 1);
-					result.Layout.SetBackground (Style.SelectionBg, (int)(start - startOffset) * 3, (int)(end - start) * 3 - 1);
-				});
+				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, this, new LayoutOffsetPair(startOffset, result.Layout), null, OnSelected);
 			}
 			return result;
+		}
+
+		static void OnSelected (long start, long end, Margin margin, LayoutOffsetPair arg)
+		{
+			var style = ((HexEditorMargin)margin).Style;
+			arg.Layout.SetForeground (style.Selection, (int)(start - arg.StartOffset) * 3, (int)(end - start) * 3 - 1);
+			arg.Layout.SetBackground (style.SelectionBg, (int)(start - arg.StartOffset) * 3, (int)(end - start) * 3 - 1);
 		}
 
 		uint TranslateColumn (long column)

@@ -181,7 +181,6 @@ namespace MonoDevelop.Projects.MSBuild
 			finally {
 				foreach (var p in oldRefProjects)
 					UnloadProject (p);
-				DisposeImportedProjects (pi);
 				pi.ImportedProjects.Clear ();
 			}
 		}
@@ -197,10 +196,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			EvaluateObjects (pi, context, objects, false);
 			EvaluateObjects (pi, context, objects, true);
-
-			// Remove from the result all items that have an empty include. MSBuild never returns those.
-
-			pi.EvaluatedItems.RemoveAll (it => it.Include.Length == 0);
 
 			// Once items have been evaluated, we need to re-evaluate properties that contain item transformations
 			// (or that contain references to properties that have transformations).
@@ -283,6 +278,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
 		{
+			// Don't add the result from any item that has an empty include. MSBuild never returns those.
+			if (include == string.Empty)
+				return;
+			
 			if (include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')') {
 				// This is a transform
 				List<MSBuildItemEvaluated> evalItems;

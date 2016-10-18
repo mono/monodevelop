@@ -373,7 +373,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				accelComplete = false;
 				chord = null;
 				
-				if (key.Equals (Gdk.Key.BackSpace))
+				if (key == Gdk.Key.BackSpace)
 					return;
 			}
 			

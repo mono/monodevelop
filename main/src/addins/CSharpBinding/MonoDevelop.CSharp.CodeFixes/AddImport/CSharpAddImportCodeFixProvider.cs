@@ -437,7 +437,7 @@ namespace MonoDevelop.CSharp.CodeFixes
 					var newSemanticModel = await newDocument.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 					newRoot = await newDocument.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 					var newUsing = newRoot
-						.DescendantNodes().OfType<UsingDirectiveSyntax>().Where(uds => uds.IsEquivalentTo(fullyQualifiedUsingDirective, topLevel: true)).Single();
+						.DescendantNodes ().OfType<UsingDirectiveSyntax> ().Single (uds => uds.IsEquivalentTo (fullyQualifiedUsingDirective, topLevel: true));
 					var speculationAnalyzer = new SpeculationAnalyzer(newUsing.Name, simpleUsingDirective.Name, newSemanticModel, cancellationToken);
 					if (speculationAnalyzer.ReplacementChangesSemantics())
 					{
@@ -546,7 +546,7 @@ namespace MonoDevelop.CSharp.CodeFixes
 		private static bool ShouldAddExternAlias(ImmutableArray<string> aliases, CompilationUnitSyntax root)
 		{
 			var identifiers = root.DescendantNodes().OfType<ExternAliasDirectiveSyntax>().Select(e => e.Identifier.ToString());
-			var externAliases = aliases.Where(a => identifiers.Contains(a));
+			var externAliases = aliases.Where(identifiers.Contains);
 			return !externAliases.Any();
 		}
 

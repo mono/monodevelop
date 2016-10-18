@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using System.IO;
 using MonoDevelop.Core;
 using System.Threading;
+using System.Reflection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -160,6 +161,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			readonly static DateTime NonExistentFile = new DateTime (1601, 1, 1);
 
+			static Type docProviderType;
+
 			void CreateNewReference ()
 			{
 				timeStamp = File.GetLastWriteTimeUtc (path);
@@ -167,7 +170,18 @@ namespace MonoDevelop.Ide.TypeSystem
 					Reference = null;
 				} else {
 					try {
-						Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);
+						DocumentationProvider provider = null;
+						try {
+							string xmlName = Path.ChangeExtension (path, ".xml");
+							if (File.Exists (xmlName)) {
+								if (docProviderType == null)
+									docProviderType = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop").GetType ("Microsoft.CodeAnalysis.FileBasedXmlDocumentationProvider");
+								provider = (DocumentationProvider)Activator.CreateInstance (docProviderType, xmlName);
+							}
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while creating xml documentation provider for: " + path, e);
+						}
+						Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly, provider);
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while loading reference " + path + ": " + e.Message, e); 
 					}

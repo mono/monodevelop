@@ -100,14 +100,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			if (string.IsNullOrEmpty (file))
 				return false;
 
-			string directory  = null;
-			
-			if (context.FullFileName != String.Empty)
-				directory = Path.GetDirectoryName (context.FullFileName);
+			string directory = context.FullDirectoryName;
 
 			file = MSBuildProjectService.FromMSBuildPath (directory, file);
-
-			return File.Exists (file) || Directory.Exists (file);
+			bool res;
+			if (context.ExistsEvaluationCache.TryGetValue (file, out res))
+				return res;
+			
+			res = File.Exists (file) || Directory.Exists (file);
+			context.ExistsEvaluationCache [file] = res;
+			return res;
 		}
 
 		static bool HasTrailingSlash (string file, IExpressionContext context)

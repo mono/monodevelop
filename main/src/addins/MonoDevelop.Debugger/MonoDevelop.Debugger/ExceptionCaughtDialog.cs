@@ -142,7 +142,8 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnSizeAllocated (allocation);
 			ExceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
-			InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
+			if (vboxAroundInnerExceptionMessage != null)
+				InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
 		}
 
 		Widget CreateExceptionValueTreeView ()
@@ -680,6 +681,15 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					}
 				}
 			}
+		}
+
+		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Escape) {
+				this.Destroy ();
+				return true;
+			}
+			return base.OnKeyReleaseEvent (evnt);
 		}
 	}
 

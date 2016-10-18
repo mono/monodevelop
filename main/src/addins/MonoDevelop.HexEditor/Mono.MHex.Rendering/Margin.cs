@@ -192,6 +192,46 @@ namespace Mono.MHex.Rendering
 					handleNotSelected (startOffset, endOffset);
 			}
 		}
+
+		protected delegate void HandleSelectionArgsDelegate<T> (long start, long end, Margin margin, T arg);
+		protected struct LayoutOffsetPair
+		{
+			public readonly long StartOffset;
+			public readonly TextLayout Layout;
+
+			public LayoutOffsetPair (long startOffset, TextLayout layout)
+			{
+				StartOffset = startOffset;
+				Layout = layout;
+			}
+		}
+		protected static void HandleSelection<T> (long selectionStart, long selectionEnd, long startOffset, long endOffset, Margin margin, T args, HandleSelectionArgsDelegate<T> handleNotSelected, HandleSelectionArgsDelegate<T> handleSelected)
+		{
+			if (startOffset >= selectionStart && endOffset <= selectionEnd) {
+				if (handleSelected != null)
+					handleSelected (startOffset, endOffset, margin, args);
+			} else if (startOffset >= selectionStart && startOffset < selectionEnd && endOffset > selectionEnd) {
+				if (handleSelected != null)
+					handleSelected (startOffset, selectionEnd, margin, args);
+				if (handleNotSelected != null)
+					handleNotSelected (selectionEnd, endOffset, margin, args);
+			} else if (startOffset < selectionStart && endOffset > selectionStart && endOffset <= selectionEnd) {
+				if (handleNotSelected != null)
+					handleNotSelected (startOffset, selectionStart, margin, args);
+				if (handleSelected != null)
+					handleSelected (selectionStart, endOffset, margin, args);
+			} else if (startOffset < selectionStart && endOffset > selectionEnd) {
+				if (handleNotSelected != null)
+					handleNotSelected (startOffset, selectionStart, margin, args);
+				if (handleSelected != null)
+					handleSelected (selectionStart, selectionEnd, margin, args);
+				if (handleNotSelected != null)
+					handleNotSelected (selectionEnd, endOffset, margin, args);
+			} else {
+				if (handleNotSelected != null)
+					handleNotSelected (startOffset, endOffset, margin, args);
+			}
+		}
 		
 		protected static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{

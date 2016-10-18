@@ -158,7 +158,6 @@ style "button" = "default" {
         contrast = 1.0
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
-        border_colors = { @bg_color, @bg_color }
         textstyle = 0
         highlight_shade = 1.0
         lightborder_shade = 1.0
@@ -244,9 +243,7 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    base[SELECTED] = @selected_bg_color
-    base[ACTIVE] = @selected_bg_color
-    text[SELECTED] = @selected_fg_color
+    base[ACTIVE] = "#a0a0a0"
     text[ACTIVE] = @selected_fg_color
 
     engine "xamarin" {
@@ -311,27 +308,27 @@ style "notebook" = "default"
     }
 }
 
-style "quartz-radio-or-check-box" = "default"
+style "quartz-radio-or-check-box" = "button"
 {
-    ythickness = 6
+    GtkCheckButton::indicator-size = 17
+    base[ACTIVE] = "#99999e"
+    base[SELECTED] = "#fff"
+    base[PRELIGHT] = @base_color
+    text[ACTIVE] = @selected_fg_color
+    text[SELECTED] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
+    text[NORMAL] = @selected_fg_color
 
-    engine "quartz" {
+    engine "xamarin" {
+        focusstyle = 0
+        border_shades = { 1.0, 1.0 }
     }
 }
 
-style "propertygrid-radio-or-check-box" = "default"
+style "propertygrid-radio-or-check-box" = "quartz-radio-or-check-box"
 {
     GtkCheckButton::indicator-spacing = 0
-
-    base[NORMAL] = "#fff"
-    base[ACTIVE] = "#fff"
-    base[SELECTED] = "#fff"
-    base[PRELIGHT] = "#fff"
-    text[SELECTED] = @base_color
-
-    engine "xamarin" {
-        border_shades = { 1.33, 1.33 }
-    }
+    GtkCheckButton::indicator-size = 15
 }
 
 style "entry" = "default"

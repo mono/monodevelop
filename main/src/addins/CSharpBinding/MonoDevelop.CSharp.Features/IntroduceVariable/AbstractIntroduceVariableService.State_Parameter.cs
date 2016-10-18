@@ -22,9 +22,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
                 // The default value for a parameter is a constant.  So we always allow it unless it
                 // happens to capture one of the method's type parameters.
                 var bindingMap = this.GetSemanticMap(cancellationToken);
-                if (bindingMap.AllReferencedSymbols.OfType<ITypeParameterSymbol>()
-                                                    .Where(tp => tp.TypeParameterKind == TypeParameterKind.Method)
-                                                    .Any())
+                if (bindingMap.AllReferencedSymbols.OfType<ITypeParameterSymbol> ()
+                                                   .Any (tp => tp.TypeParameterKind == TypeParameterKind.Method))
                 {
                     return false;
                 }

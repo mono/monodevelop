@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (LinksShown) {
 				var lineNumber = Editor.PointToLocation (x, y).Line;
 				var line = Editor.GetLine (lineNumber);
-				if (visibleLines.Any (l => l.Equals (line))) {
+				if (visibleLines.Any (line.Equals)) {
 					return;
 				}
 				visibleLines.Add (line);

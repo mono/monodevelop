@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return solution
 				.GetAllDotNetProjects ()
-				.Where (project => project.HasPackages ());
+				.Where (DotNetProjectExtensions.HasPackages);
 		}
 
 		public static bool HasAnyProjectWithPackages (this Solution solution)

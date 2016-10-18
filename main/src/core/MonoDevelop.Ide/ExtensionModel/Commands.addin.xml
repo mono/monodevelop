@@ -924,7 +924,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks"
 			icon = "md-bookmark-clear-all"
 			_description = "Clear bookmarks"
-			_label = "_Clear Bookmarks" />
+			_label = "_Remove All Bookmarks" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
 			_label = "_Line..."
 			_displayName = "Go to Line..."
