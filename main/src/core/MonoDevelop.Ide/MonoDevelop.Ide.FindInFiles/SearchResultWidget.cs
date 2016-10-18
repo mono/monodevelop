@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (isSelected) {
 					markup = Ambience.EscapeText (doc.GetTextAt (line.Offset + indent, line.Length - indent));
 				} else {
-					markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
+					markup = doc.GetMarkup (line.Offset + indent, line.Length - indent, new MarkupOptions (MarkupFormat.Pango));
 					markup = AdjustColors (markup);
 				}
 
@@ -689,7 +689,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 
 				doc = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content.ReadToEnd ()), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
-
+				doc.FileName = result.FileName;
 				documents [result.FileName] = doc;	
 			}
 			return doc;

@@ -462,12 +462,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
-			if (fileName == null)
-				return null;
-			var ext = fileName.Extension.TrimStart ('.');
+			var ext = !string.IsNullOrEmpty (fileName) ? fileName.Extension.TrimStart ('.') : null;
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
-					if (h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
+					if (ext != null && h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
 						return h;
 					foreach (var fe in h.FileExtensions) {
 						var mime = DesktopService.GetMimeTypeForUri ("a." + fe);

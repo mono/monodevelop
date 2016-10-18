@@ -240,6 +240,7 @@ namespace MonoDevelop.SourceEditor
 			if (document != null) {
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
+				Document_MimeTypeChanged (this, EventArgs.Empty);
 			}
 			FileRegistry.Add (this);
 		}
@@ -253,7 +254,7 @@ namespace MonoDevelop.SourceEditor
 					var syntaxMode = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (Document.FileName, mt);
 					if (syntaxMode != null) {
 						Document.SyntaxMode = new SyntaxHighlighting (syntaxMode, Document);
-
+					
 						break;
 					} else {
 						Document.SyntaxMode = DefaultSyntaxHighlighting.Instance;
