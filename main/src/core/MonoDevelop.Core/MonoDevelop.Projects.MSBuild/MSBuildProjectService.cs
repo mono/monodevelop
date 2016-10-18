@@ -871,9 +871,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static bool runLocal = false;
 
-		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, out string binDir)
+		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
-			var supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
+			string [] supportedToolsVersions;
+			if (requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild)
+				supportedToolsVersions = new [] { "15.0"};
+			else
+				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
 
 			foreach (var toolsVersion in supportedToolsVersions) {
 				binDir = runtime.GetMSBuildBinPath (toolsVersion);
@@ -883,15 +887,19 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
-		
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool lockBuilder = false)
+
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
+			Version mtv = Version.Parse (minToolsVersion);
+			if (mtv >= new Version (15,0))
+				requiresMicrosoftBuild = true;
+
 			using (await buildersLock.EnterAsync ())
 			{
 				string binDir;
-				var toolsVersion = GetNewestInstalledToolsVersion (runtime, out binDir);
+				var toolsVersion = GetNewestInstalledToolsVersion (runtime, requiresMicrosoftBuild, out binDir);
 
-				Version tv, mtv;
+				Version tv;
 				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
 					throw new InvalidOperationException (string.Format (
 						"Project requires MSBuild ToolsVersion '{0}' which is not supported by runtime '{1}'",
@@ -900,7 +908,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				//one builder per solution
-				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId;
+				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId + " # " + requiresMicrosoftBuild;
 
 				RemoteBuildEngine builder = null;
 
@@ -923,7 +931,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return await Task.Run (async () => {
 					//always start the remote process explicitly, even if it's using the current runtime and fx
 					//else it won't pick up the assembly redirects from the builder exe
-					var exe = GetExeLocation (runtime, toolsVersion);
+					var exe = GetExeLocation (runtime, toolsVersion, requiresMicrosoftBuild);
 
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 					var pinfo = new ProcessStartInfo (exe) {
@@ -1028,12 +1036,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return dictionary;;
 		}
 		
-		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
+		static string GetExeLocation (TargetRuntime runtime, string toolsVersion, bool requiresMicrosoftBuild)
 		{
 			var builderDir = new FilePath (typeof(MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
 
 			var version = Version.Parse (toolsVersion);
-			bool useMicrosoftBuild =
+			bool useMicrosoftBuild = 
+				requiresMicrosoftBuild ||
 				((version >= new Version (15, 0)) && Runtime.Preferences.BuildWithMSBuild) ||
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 

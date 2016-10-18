@@ -28,8 +28,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Packaging.Templating;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects.SharedAssetsProjects;
 using NUnit.Framework;
 using UnitTests;
 
@@ -71,17 +74,19 @@ namespace MonoDevelop.Packaging.Tests
 
 			// First element is NuGet.Packaging.props
 			var import = project.GetAllObjects ().FirstOrDefault () as MSBuildImport;
-			Assert.That (import.Project, Contains.Substring ("NuGet.Packaging.props"));
+			Assert.AreEqual (import.Project, @"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props");
 
 			// NuGet.Packaging.targets exists.
 			import = project.Imports.LastOrDefault () as MSBuildImport;
-			Assert.That (import.Project, Contains.Substring ("NuGet.Packaging.targets"));
+			Assert.AreEqual (import.Project, @"$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets");
 
-			string outputType = project.PropertyGroups.FirstOrDefault ().GetProperty ("OutputType").Value;
-			Assert.AreEqual ("Package", outputType);
+			int count = project.Imports.Count ();
+			import = project.Imports.Skip (count - 2).FirstOrDefault ();
+			Assert.AreEqual (import.Project, @"$(MSBuildBinPath)\Microsoft.Common.targets");
 		}
 
 		[Test]
+		[Ignore ("Build does not work with project.json on Mono")]
 		public async Task BuildPackagingProjectFromTemplate ()
 		{
 			string templateId = "MonoDevelop.Packaging.Project";
@@ -102,8 +107,94 @@ namespace MonoDevelop.Packaging.Tests
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
 
+			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
+
 			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
+			BuildResult cr = await solution.Build (Util.GetMonitor (), "Debug");
+			Assert.IsNotNull (cr);
+			Assert.AreEqual (0, cr.ErrorCount);
+			Assert.AreEqual (0, cr.WarningCount);
+
+			string packageFileName = Path.Combine (dir, "bin", "Debug", "ProjectName.1.0.0.nupkg");
+			bool packageCreated = File.Exists (packageFileName);
+			Assert.IsTrue (packageCreated, "NuGet package not created.");
+		}
+
+		[Test]
+		public async Task CreateMultiPlatformProjectFromTemplateWithAndroidOnly ()
+		{
+			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+			cinfo.Parameters["CreateAndroidProject"] = bool.TrueString;
+			cinfo.Parameters["CreateSharedProject"] = bool.TrueString;
+			cinfo.Parameters["CreateNuGetProject"] = bool.TrueString;
+
+			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
+			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			var project = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.NuGet.nuproj");
+			Assert.IsNotNull (project);
+			Assert.IsTrue (project.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
+
+			var androidProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Android.csproj");
+			Assert.IsNotNull (androidProject);
+			Assert.IsTrue (androidProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
+
+			var sharedProject = solution.GetAllProjects ().OfType<SharedAssetsProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.Shared.shproj");
+			Assert.IsNotNull (sharedProject);
+
+			var projectReference = project.References.FirstOrDefault (r => r.ReferenceType == ReferenceType.Project);
+			Assert.AreEqual (androidProject, projectReference.ResolveProject (solution));
+
+			projectReference = androidProject.References.FirstOrDefault (r => r.ReferenceType == ReferenceType.Project);
+			Assert.AreEqual (sharedProject, projectReference.ResolveProject (solution));
+		}
+
+		[Test]
+		public async Task CreateMultiPlatformProjectFromTemplateWithPCLOnly ()
+		{
+			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+			cinfo.Parameters["ProjectName"] = cinfo.ProjectName;
+			cinfo.Parameters["CreatePortableProject"] = bool.TrueString;
+			cinfo.Parameters["PackageAuthors"] = "authors";
+			cinfo.Parameters["PackageId"] = "ProjectName";
+			cinfo.Parameters["PackageDescription"] = "Description";
+			cinfo.Parameters["PackageVersion"] = "1.0.0";
+
+			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+
+			var wizard = new TestableCrossPlatformLibraryTemplateWizard ();
+			wizard.Parameters = cinfo.Parameters;
+			wizard.ItemsCreated (new [] { workspaceItem });
+
+			var project = ((Solution)workspaceItem).GetAllProjects ().First ();
+			project.MSBuildProject.GetGlobalPropertyGroup ().SetValue ("PackOnBuild", "true");
+			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
+			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
+
+			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			project = solution.GetAllProjects ().First ();
 			BuildResult cr = await solution.Build (Util.GetMonitor (), "Debug");
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);

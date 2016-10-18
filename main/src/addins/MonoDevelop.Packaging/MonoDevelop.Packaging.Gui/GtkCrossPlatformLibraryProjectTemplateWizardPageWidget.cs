@@ -84,13 +84,17 @@ namespace MonoDevelop.Packaging.Gui
 			descriptionTextBox.TruncateMultiline = true;
 
 			androidCheckButton.Active = wizardPage.IsAndroidChecked;
+			androidCheckButton.Sensitive = wizardPage.IsAndroidEnabled;
 			androidCheckButton.Toggled += AndroidCheckButtonToggled;
 
 			iOSCheckButton.Active = wizardPage.IsIOSChecked;
+			iOSCheckButton.Sensitive = wizardPage.IsIOSEnabled;
 			iOSCheckButton.Toggled += IOSCheckButtonToggled;
 
 			portableClassLibraryRadioButton.Active = wizardPage.IsPortableClassLibrarySelected;
 			portableClassLibraryRadioButton.Toggled += PortableClassLibraryRadioButtonToggled;
+
+			targetPlatformsVBox.Sensitive = !wizardPage.IsPortableClassLibrarySelected;
 
 			sharedProjectRadioButton.Active = wizardPage.IsSharedProjectSelected;
 			sharedProjectRadioButton.Toggled += SharedProjectRadioButtonToggled;
@@ -143,6 +147,7 @@ namespace MonoDevelop.Packaging.Gui
 		void PortableClassLibraryRadioButtonToggled (object sender, EventArgs e)
 		{
 			wizardPage.IsPortableClassLibrarySelected = portableClassLibraryRadioButton.Active;
+			targetPlatformsVBox.Sensitive = !wizardPage.IsPortableClassLibrarySelected;
 		}
 
 		void SharedProjectRadioButtonToggled (object sender, EventArgs e)

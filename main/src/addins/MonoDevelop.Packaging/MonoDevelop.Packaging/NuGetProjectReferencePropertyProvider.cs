@@ -1,5 +1,5 @@
 ﻿//
-// NuGetFilePropertyProvider.cs
+// NuGetProjectReferencePropertyProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -29,17 +29,16 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
-	class NuGetFilePropertyProvider : IPropertyProvider
+	public class NuGetProjectReferencePropertyProvider : IPropertyProvider
 	{
 		public object CreateProvider (object obj)
 		{
-			return new NuGetFileDescriptor ((ProjectFile)obj);
+			return new NuGetProjectReferencePropertyDescriptor ((ProjectReference)obj);
 		}
 
 		public bool SupportsObject (object obj)
 		{
-			return obj is ProjectFile;
+			return obj is ProjectReference;
 		}
 	}
 }
-

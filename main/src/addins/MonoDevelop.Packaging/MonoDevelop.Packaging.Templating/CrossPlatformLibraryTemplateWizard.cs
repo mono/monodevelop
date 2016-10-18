@@ -50,7 +50,6 @@ namespace MonoDevelop.Packaging.Templating
 			var libraryProjects = GetLibraryProjects (items).ToList ();
 
 			foreach (DotNetProject project in libraryProjects) {
-				project.AddCommonPackagingImports ();
 				project.SetOutputAssemblyName (projectName);
 			}
 
@@ -58,7 +57,7 @@ namespace MonoDevelop.Packaging.Templating
 				AddNuGetPackageMetadataToPclProject (libraryProjects);
 			}
 
-			IdeApp.ProjectOperations.SaveAsync (libraryProjects);
+			SaveAsync (libraryProjects);
 		}
 
 		IEnumerable<DotNetProject> GetLibraryProjects (IEnumerable<IWorkspaceFileObject> items)
@@ -83,6 +82,11 @@ namespace MonoDevelop.Packaging.Templating
 
 				metadata.UpdateProject (pclProject);
 			}
+		}
+
+		protected virtual void SaveAsync (IEnumerable<SolutionItem> projects)
+		{
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 	}
 }

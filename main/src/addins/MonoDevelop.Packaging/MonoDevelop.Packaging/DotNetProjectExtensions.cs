@@ -24,45 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
-using System.Linq;
 
 namespace MonoDevelop.Packaging
 {
 	static class DotNetProjectExtensions
 	{
-		internal static readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
-		internal static readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
-
-		public static bool AddCommonPackagingImports (this DotNetProject project)
-		{
-			bool modified = false;
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
-				modified = true;
-			}
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
-				modified = true;
-			}
-
-			return modified;
-		}
-
-		public static void RemoveCommonPackagingImports (this DotNetProject project)
-		{
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
-		}
-
 		public static bool HasNuGetMetadata (this DotNetProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
-			return propertyGroup.HasProperty ("NuGetId");
+			return propertyGroup.HasProperty ("PackageId");
 		}
 
 		public static void SetOutputAssemblyName (this DotNetProject project, string name)
@@ -70,6 +47,42 @@ namespace MonoDevelop.Packaging
 			foreach (var configuration in project.Configurations.OfType<DotNetProjectConfiguration> ()) {
 				configuration.OutputAssembly = name;
 			}
+		}
+
+		public static bool IsBuildPackagingNuGetPackageInstalled (this DotNetProject project)
+		{
+			return PackageManagementServices.ProjectOperations.GetInstalledPackages (project)
+				.Any (package => string.Equals ("NuGet.Build.Packaging", package.Id, StringComparison.OrdinalIgnoreCase));
+		}
+
+		public static void InstallBuildPackagingNuGetPackage (this Project project)
+		{
+			InstallBuildPackagingNuGetPackage (new [] { project });
+		}
+
+		static string GetPackagesFolder ()
+		{
+			return Path.Combine (
+				Path.GetDirectoryName (typeof (DotNetProjectExtensions).Assembly.Location),
+				"packages");
+		}
+
+		public static void InstallBuildPackagingNuGetPackage (IEnumerable<Project> projects)
+		{
+			string packagesFolder = GetPackagesFolder ();
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.107-dev");
+
+			var packageReferences = new [] { packageReference };
+
+			var projectOperations = PackageManagementServices.ProjectOperations as PackageManagementProjectOperations;
+
+			var actions = new List<INuGetPackageAction> ();
+			foreach (Project project in projects) {
+				actions.AddRange (projectOperations.CreateInstallActions (packagesFolder, project, packageReferences));
+			}
+
+			var message = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.Run (message, actions);
 		}
 	}
 }

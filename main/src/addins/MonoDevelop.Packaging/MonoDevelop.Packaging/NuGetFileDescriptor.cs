@@ -24,52 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
 	class NuGetFileDescriptor : CustomDescriptor
 	{
-		string target;
+		ProjectFile projectFile;
 
 		public NuGetFileDescriptor (ProjectFile file)
 		{
-			target = GetTargetDirectory (file);
+			projectFile = file;
 		}
 
-		static string GetTargetDirectory (ProjectFile file)
-		{
-			string logicalName = file.ResourceId;
-			if (!string.IsNullOrEmpty (logicalName))
-				return GetDirectoryName (logicalName);
-
-			string link = file.Metadata.GetValue ("Link");
-			if (!string.IsNullOrEmpty (link))
-				return GetDirectoryName (link);
-
-			return GetDirectoryName (file.Include);
-		}
-
-		static string GetDirectoryName (string path)
-		{
-			try {
-				path = MSBuildProjectService.FromMSBuildPath (null, path);
-				return Path.GetDirectoryName (path);
-			} catch (Exception) {
-				return string.Empty;
+		[LocalizedCategory ("NuGet")]
+		[LocalizedDescription ("Specifies whether the file will be included in the package. Supported for None items only.")]
+		[LocalizedDisplayName ("Include in Package")]
+		public bool IncludeInPackage {
+			get {
+				return projectFile.Metadata.GetValue<bool> (nameof (IncludeInPackage), false);
 			}
-		}
-
-		[LocalizedCategory ("NuGet Package")]
-		[LocalizedDisplayName ("Target")]
-		[LocalizedDescription ("This is the directory where the file will be stored in the NuGet package. The file's directory relative to the project is used by default.")]
-		public string Target {
-			get { return target; }
+			set {
+				if (value) {
+					projectFile.Metadata.SetValue (nameof (IncludeInPackage), value, false);
+				} else {
+					// HACK: Removing the property does not seem to work. Nor does setting the
+					// value back to its default value of false work which also removes the
+					// property. The saved project file still has the property. For now
+					// working around this by setting it to false but changing the default value to
+					// true so the property is not removed.
+					projectFile.Metadata.SetValue (nameof (IncludeInPackage), value, true);
+				}
+			}
 		}
 	}
 }

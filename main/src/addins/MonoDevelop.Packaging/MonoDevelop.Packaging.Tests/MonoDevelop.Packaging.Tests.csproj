@@ -40,6 +40,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Packaging.Tests\ProjectTemplateTests.cs" />
     <Compile Include="MonoDevelop.Packaging.Tests\AddPlatformImplementationTests.cs" />
+    <Compile Include="MonoDevelop.Packaging.Tests\TestableAddPlatformImplementationViewModel.cs" />
+    <Compile Include="MonoDevelop.Packaging.Tests\TestableCrossPlatformLibraryTemplateWizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -70,6 +72,10 @@
       <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
       <Name>MonoDevelop.PackageManagement</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
+      <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
+      <Name>MonoDevelop.PackageManagement.Tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

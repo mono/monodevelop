@@ -43,9 +43,10 @@ namespace MonoDevelop.Packaging
 		{
 			if (properties == null) {
 				string addinDirectory = Path.GetDirectoryName (GetType ().Assembly.Location);
+				string targetsDirectory = Path.Combine (addinDirectory, "Targets");
 
 				properties = new Dictionary<string, string> ();
-				properties.Add ("NuGetPackagingPath", addinDirectory);
+				properties.Add ("NuGetAuthoringPath", targetsDirectory);
 			}
 			return properties;
 		}

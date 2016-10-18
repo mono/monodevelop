@@ -2,6 +2,10 @@
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Packaging.dll" />
+
+		<Import file="Templates/CrossPlatformLibrary.xpt.xml" />
+		<Import file="Templates/PackagingProject.xpt.xml" />
+		<Import file="Templates/template.project.json" />
 	</Runtime>
 
 	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />
@@ -23,6 +27,7 @@
 			type="MonoDevelop.Packaging.PackagingProjectFlavor"
 			alias="NuGetPackaging">
 		</ProjectFlavor>
+		<Class class="MonoDevelop.Packaging.DotNetProjectPackagingExtension" />
 	</Extension>
 
 	<!--
@@ -32,7 +37,8 @@
 	-->
 	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding
-			id="NuGet.Packaging" />
+			id="NuGet.Packaging"
+			extensions=".nuproj" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
@@ -42,13 +48,17 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="MonoDevelop.Packaging.Project" resource="PackagingProject.xpt.xml"/>
-		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" resource="CrossPlatformLibrary.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.Project" file="Templates/PackagingProject.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" file="Templates/CrossPlatformLibrary.xpt.xml"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="MonoDevelop.Packaging.ProjectTemplateWizard" class="MonoDevelop.Packaging.Templating.PackagingProjectTemplateWizard" />
 		<Class id="MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard" class="MonoDevelop.Packaging.Templating.CrossPlatformLibraryTemplateWizard" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
+		<PackageRepository path="packages" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
@@ -61,14 +71,14 @@
 					fill="true"
 					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
 			</Condition>
-			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+			<!--<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
 				<Section
 					id="ReferenceAssemblies"
 					_label="Reference Assemblies"
 					icon="md-prefs-package"
 					fill="true"
 					class="MonoDevelop.Packaging.OptionPanels.ReferenceAssembliesOptionsPanel" />
-			</Condition>
+			</Condition>-->
 		</Section>
 	</Extension>
 
@@ -132,5 +142,6 @@
 
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.Packaging.NuGetFilePropertyProvider" />
+		<Class class="MonoDevelop.Packaging.NuGetProjectReferencePropertyProvider" />
 	</Extension>
 </ExtensionModel>

@@ -53,6 +53,9 @@ namespace MonoDevelop.Packaging.Templating
 			wizard.Parameters["PackageAuthors"] = AuthorInformation.Default.Name;
 			wizard.Parameters["PackageVersion"] = "1.0.0";
 
+			IsAndroidEnabled = Services.ProjectService.CanCreateProject ("C#", "MonoDroid");
+			IsIOSEnabled = Services.ProjectService.CanCreateProject ("C#", "XamarinIOS");
+
 			IsAndroidChecked = true;
 			IsIOSChecked = true;
 			IsSharedProjectSelected = true;
@@ -139,22 +142,36 @@ namespace MonoDevelop.Packaging.Templating
 			}
 		}
 
+		public bool IsIOSEnabled { get; private set; }
+
 		public bool IsIOSChecked {
 			get { return isIOSChecked; }
 			set {
-				isIOSChecked = value;
-				wizard.Parameters ["CreateIOSProject"] = (value && !isPortableClassLibrarySelected).ToString ();
+				isIOSChecked = value && IsIOSEnabled;
+				UpdateCreateIOSProjectParameter ();
 				UpdateCanMoveNext ();
 			}
 		}
 
+		void UpdateCreateIOSProjectParameter ()
+		{
+			wizard.Parameters ["CreateIOSProject"] = (isIOSChecked && !isPortableClassLibrarySelected).ToString ();
+		}
+
+		public bool IsAndroidEnabled { get; private set; }
+
 		public bool IsAndroidChecked {
 			get { return isAndroidChecked; }
 			set {
-				isAndroidChecked = value;
-				wizard.Parameters ["CreateAndroidProject"] = (value && !isPortableClassLibrarySelected).ToString ();
+				isAndroidChecked = value && IsAndroidEnabled;
+				UpdateCreateAndroidProjectParameter ();
 				UpdateCanMoveNext ();
 			}
+		}
+
+		void UpdateCreateAndroidProjectParameter ()
+		{
+			wizard.Parameters ["CreateAndroidProject"] = (isAndroidChecked && !isPortableClassLibrarySelected).ToString ();
 		}
 
 		public bool IsPortableClassLibrarySelected {
@@ -183,8 +200,8 @@ namespace MonoDevelop.Packaging.Templating
 			wizard.Parameters ["CreateSharedProject"] = isSharedProjectSelected.ToString ();
 			wizard.Parameters ["CreatePortableProject"] = isPortableClassLibrarySelected.ToString ();
 
-			IsAndroidChecked = isAndroidChecked && !isPortableClassLibrarySelected;
-			IsIOSChecked = isIOSChecked && !isPortableClassLibrarySelected;
+			UpdateCreateAndroidProjectParameter ();
+			UpdateCreateIOSProjectParameter ();
 		}
 
 		bool CreateNuGetProject {

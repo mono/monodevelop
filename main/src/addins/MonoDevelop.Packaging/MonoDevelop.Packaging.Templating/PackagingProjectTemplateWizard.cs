@@ -23,7 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging.Templating
 {
@@ -36,6 +41,25 @@ namespace MonoDevelop.Packaging.Templating
 		public override WizardPage GetPage (int pageNumber)
 		{
 			return new PackagingProjectTemplateWizardPage (this);
+		}
+
+		public override void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
+		{
+			var project = GetPackagingProject (items);
+			var readmeFile = project.Files.FirstOrDefault (f => f.FilePath.FileName == "readme.txt");
+			readmeFile.Metadata.SetValue ("IncludeInPackage", true, false);
+
+			IdeApp.ProjectOperations.SaveAsync (project);
+		}
+
+		PackagingProject GetPackagingProject (IEnumerable<IWorkspaceFileObject> items)
+		{
+			Solution solution = items.OfType<Solution> ().FirstOrDefault ();
+			if (solution != null) {
+				return GetPackagingProject (solution.GetAllProjects ());
+			}
+
+			return items.OfType<PackagingProject> ().FirstOrDefault ();
 		}
 	}
 }

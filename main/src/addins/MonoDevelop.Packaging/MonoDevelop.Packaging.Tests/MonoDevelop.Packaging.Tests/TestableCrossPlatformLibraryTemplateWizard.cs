@@ -1,5 +1,5 @@
 ﻿//
-// INuGetAwareProject.cs
+// TestableCrossPlatformLibraryTemplateWizard.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,13 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NuGet.ProjectManagement;
+using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Packaging.Templating;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.Packaging.Tests
 {
-	public interface INuGetAwareProject
+	class TestableCrossPlatformLibraryTemplateWizard : CrossPlatformLibraryTemplateWizard
 	{
-		NuGetProject CreateNuGetProject ();
+		protected override void SaveAsync (IEnumerable<SolutionItem> projects)
+		{
+			foreach (var project in projects) {
+				project.SaveAsync (new ProgressMonitor ());
+			}
+		}
 	}
 }
-

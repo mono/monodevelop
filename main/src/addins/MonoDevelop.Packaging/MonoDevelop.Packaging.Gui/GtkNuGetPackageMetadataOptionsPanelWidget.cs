@@ -25,6 +25,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace MonoDevelop.Packaging.Gui
 	public partial class GtkNuGetPackageMetadataOptionsPanelWidget : Gtk.Bin
 	{
 		NuGetPackageMetadata metadata;
+		bool projectOriginallyHadMetadata;
 
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
@@ -56,6 +58,8 @@ namespace MonoDevelop.Packaging.Gui
 			metadata = new NuGetPackageMetadata ();
 			metadata.Load (project);
 			LoadMetadata ();
+
+			projectOriginallyHadMetadata = ProjectHasMetadata ();
 		}
 
 		void LoadMetadata ()
@@ -95,8 +99,18 @@ namespace MonoDevelop.Packaging.Gui
 			UpdateMetadata ();
 			metadata.UpdateProject (project);
 
-			if (!metadata.IsEmpty ()) {
-				project.AddCommonPackagingImports ();
+			if (!projectOriginallyHadMetadata && ProjectHasMetadata ()) {
+				project.ReloadProjectBuilder ();
+
+				EnsureBuildPackagingNuGetPackageIsInstalled (project);
+			}
+		}
+
+		void EnsureBuildPackagingNuGetPackageIsInstalled (DotNetProject project)
+		{
+			if (!project.IsBuildPackagingNuGetPackageInstalled ()) {
+				var extension = project.GetFlavor<DotNetProjectPackagingExtension> ();
+				extension.InstallBuildPackagingNuGetAfterWrite = true;
 			}
 		}
 
@@ -135,6 +149,11 @@ namespace MonoDevelop.Packaging.Gui
 			foreach (string language in languages) {
 				languagesListStore.AppendValues (language);
 			}
+		}
+
+		bool ProjectHasMetadata ()
+		{
+			return !string.IsNullOrEmpty (metadata.Id);
 		}
 	}
 }

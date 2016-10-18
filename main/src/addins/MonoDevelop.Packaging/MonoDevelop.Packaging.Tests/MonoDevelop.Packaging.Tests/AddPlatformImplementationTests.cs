@@ -80,7 +80,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = false;
 			viewModel.CreateIOSProject = false;
@@ -128,15 +128,13 @@ namespace MonoDevelop.Packaging.Tests
 				Assert.That (nugetProject.GetConfigurations (), Contains.Item (config.Id));
 			}
 
-			// Ensure NuGet imports are added to the Android project.
-			Assert.IsTrue (androidProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
-
 			// DefaultNamespace is the same for all projects.
 			Assert.AreEqual ("MyProject", ((DotNetProject)androidProject).DefaultNamespace);
 			Assert.AreEqual ("MyProject", ((DotNetProject)pclProject).DefaultNamespace);
 		}
 
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task AddIOSProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -166,7 +164,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = false;
 			viewModel.CreateSharedProject = false;
 			viewModel.CreateIOSProject = true;
@@ -208,9 +206,6 @@ namespace MonoDevelop.Packaging.Tests
 			metadata.Load (pclProject);
 			Assert.IsTrue (metadata.IsEmpty ());
 
-			// Ensure NuGet imports are added to the iOS project.
-			Assert.IsTrue (iosProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
-
 			var assemblyInfoFile = iosProject.Items.OfType<ProjectFile> ().Single (file => file.FilePath.FileName == "AssemblyInfo.cs");
 			Assert.IsNotNull (assemblyInfoFile);
 
@@ -220,6 +215,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task AddSharedProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -255,7 +251,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = true;
 			viewModel.CreateIOSProject = true;
@@ -349,6 +345,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task PCLProjectInSameDirectoryAsSolution ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -378,7 +375,7 @@ namespace MonoDevelop.Packaging.Tests
 			await pclProject.SaveAsync (Util.GetMonitor ());
 
 			// Add platform implementation.
-			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			var viewModel = new TestableAddPlatformImplementationViewModel (pclProject);
 			viewModel.CreateAndroidProject = true;
 			viewModel.CreateSharedProject = true;
 			viewModel.CreateIOSProject = true;
@@ -398,6 +395,10 @@ namespace MonoDevelop.Packaging.Tests
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.iOS", "MyProject.iOS.csproj"), iosProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.NuGet", "MyProject.NuGet.nuproj"), nugetProject.FileName);
 			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Shared", "MyProject.Shared.shproj"), sharedProject.FileName);
+
+			Assert.IsTrue (androidProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
+			Assert.IsTrue (nugetProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
+			Assert.IsTrue (iosProject.GetFlavor<DotNetProjectPackagingExtension> ().GetRequiresMSBuild ());
 		}
 	}
 }

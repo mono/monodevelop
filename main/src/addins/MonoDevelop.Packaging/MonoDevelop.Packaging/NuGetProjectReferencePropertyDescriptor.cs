@@ -1,5 +1,5 @@
 ﻿//
-// NuGetFilePropertyProvider.cs
+// NuGetProjectReferencePropertyDescriptor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,22 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
-	class NuGetFilePropertyProvider : IPropertyProvider
+	public class NuGetProjectReferencePropertyDescriptor : CustomDescriptor
 	{
-		public object CreateProvider (object obj)
+		ProjectReference projectReference;
+
+		public NuGetProjectReferencePropertyDescriptor (ProjectReference projectReference)
 		{
-			return new NuGetFileDescriptor ((ProjectFile)obj);
+			this.projectReference = projectReference;
 		}
 
-		public bool SupportsObject (object obj)
-		{
-			return obj is ProjectFile;
+		[LocalizedCategory ("NuGet")]
+		[LocalizedDescription ("Specifies whether the referenced project will be included in the package.")]
+		[LocalizedDisplayName ("Include in Package")]
+		public bool IncludeInPackage {
+			get {
+				return projectReference.Metadata.GetValue<bool> (nameof (IncludeInPackage), true);
+			}
+			set {
+				if (value) {
+					projectReference.Metadata.SetValue (nameof (IncludeInPackage), value, false);
+				} else {
+					// HACK: Removing the property does not seem to work. Nor does setting the
+					// value back to its default value of false work which also removes the
+					// property. The saved project file still has the property. For now
+					// working around this by setting it to false but changing the default value to
+					// true so the property is not removed.
+					projectReference.Metadata.SetValue (nameof (IncludeInPackage), value, true);
+				}
+			}
 		}
 	}
 }
-

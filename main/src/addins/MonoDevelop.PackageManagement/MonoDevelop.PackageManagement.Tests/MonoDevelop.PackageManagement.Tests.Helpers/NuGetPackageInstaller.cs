@@ -1,5 +1,5 @@
 ﻿//
-// NuGetFilePropertyProvider.cs
+// NuGetPackageInstaller.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,22 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.DesignerSupport;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using System.Linq;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Packaging
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class NuGetFilePropertyProvider : IPropertyProvider
+	public static class NuGetPackageInstaller
 	{
-		public object CreateProvider (object obj)
+		public static async Task InstallPackages (Solution solution, IList<PackageReferencesForCreatedProject> packages)
 		{
-			return new NuGetFileDescriptor ((ProjectFile)obj);
-		}
+			var actions = await Runtime.RunInMainThread (() => {
+				var installer = new ProjectTemplateNuGetPackageInstaller ();
+				return installer.CreateInstallPackageActions (solution, packages);
+			});
 
-		public bool SupportsObject (object obj)
-		{
-			return obj is ProjectFile;
+			if (!actions.Any ())
+				return;
+
+			await Task.Run (() => {
+				foreach (var action in actions) {
+					var installAction = action as InstallNuGetPackageAction;
+					if (installAction != null)
+						installAction.LicensesMustBeAccepted = false;
+
+					action.Execute ();
+				}
+			});
 		}
 	}
 }
-

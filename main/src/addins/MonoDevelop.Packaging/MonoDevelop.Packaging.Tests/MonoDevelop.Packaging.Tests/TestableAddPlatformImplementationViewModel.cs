@@ -1,5 +1,5 @@
 ﻿//
-// NuGetBuildAction.cs
+// TestableAddPlatformImplementationViewModel.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,12 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Packaging
+namespace MonoDevelop.Packaging.Tests
 {
-	static class NuGetBuildAction
+	class TestableAddPlatformImplementationViewModel : AddPlatformImplementationViewModel
 	{
-		public static readonly string NuGetFile = "NuGetFile";
+		public TestableAddPlatformImplementationViewModel (DotNetProject project)
+			: base (project)
+		{
+		}
+
+		protected override void AddNuGetPackages ()
+		{
+		}
 	}
 }
-

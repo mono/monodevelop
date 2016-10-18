@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -33,6 +32,7 @@ namespace MonoDevelop.Packaging
 	class NuGetPackageMetadata
 	{
 		public const int MaxPackageIdLength = 100;
+		public const string PackageIdPropertyName = "PackageId";
 
 		public string Id { get; set; }
 		public string Version { get; set; }
@@ -54,32 +54,33 @@ namespace MonoDevelop.Packaging
 
 		public void Load (DotNetProject project)
 		{
+			Description = project.Description;
 			Load (project.MSBuildProject);
 		}
 
 		public void UpdateProject (DotNetProject project)
 		{
+			project.Description = Description;
 			Update (project.MSBuildProject);
 		}
 
 		void Load (MSBuildProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
-			Id = GetProperty (propertyGroup, "NuGetId");
-			Version = GetProperty (propertyGroup, "NuGetVersion");
-			Authors = GetProperty (propertyGroup, "NuGetAuthors");
-			Description = GetProperty (propertyGroup, "NuGetDescription");
-			DevelopmentDependency = GetProperty (propertyGroup, "NuGetDevelopmentDependency", false);
-			IconUrl = GetProperty (propertyGroup, "NuGetIconUrl");
-			Language = GetProperty (propertyGroup, "NuGetLanguage");
-			LicenseUrl = GetProperty (propertyGroup, "NuGetLicenseUrl");
-			Owners = GetProperty (propertyGroup, "NuGetOwners");
-			ProjectUrl = GetProperty (propertyGroup, "NuGetProjectUrl");
-			ReleaseNotes = GetProperty (propertyGroup, "NuGetReleaseNotes");
-			RequireLicenseAcceptance = GetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", false);
-			Summary = GetProperty (propertyGroup, "NuGetSummary");
-			Tags = GetProperty (propertyGroup, "NuGetTags");
-			Title = GetProperty (propertyGroup, "NuGetTitle");
+			Id = GetProperty (propertyGroup, PackageIdPropertyName);
+			Version = GetProperty (propertyGroup, "PackageVersion");
+			Authors = GetProperty (propertyGroup, "Authors");
+			DevelopmentDependency = GetProperty (propertyGroup, "DevelopmentDependency", false);
+			IconUrl = GetProperty (propertyGroup, "PackageIconUrl");
+			Language = GetProperty (propertyGroup, "NeutralLanguage");
+			LicenseUrl = GetProperty (propertyGroup, "PackageLicenseUrl");
+			Owners = GetProperty (propertyGroup, "Owners");
+			ProjectUrl = GetProperty (propertyGroup, "PackageProjectUrl");
+			ReleaseNotes = GetProperty (propertyGroup, "PackageReleaseNotes");
+			RequireLicenseAcceptance = GetProperty (propertyGroup, "PackageRequireLicenseAcceptance", false);
+			Summary = GetProperty (propertyGroup, "Summary");
+			Tags = GetProperty (propertyGroup, "PackageTags");
+			Title = GetProperty (propertyGroup, "Title");
 		}
 
 		string GetProperty (MSBuildPropertyGroup propertyGroup, string name)
@@ -103,21 +104,20 @@ namespace MonoDevelop.Packaging
 		void Update (MSBuildProject project)
 		{
 			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
-			SetProperty (propertyGroup, "NuGetId", Id);
-			SetProperty (propertyGroup, "NuGetVersion", Version);
-			SetProperty (propertyGroup, "NuGetAuthors", Authors);
-			SetProperty (propertyGroup, "NuGetDescription", Description);
-			SetProperty (propertyGroup, "NuGetDevelopmentDependency", DevelopmentDependency);
-			SetProperty (propertyGroup, "NuGetIconUrl", IconUrl);
-			SetProperty (propertyGroup, "NuGetLanguage", Language);
-			SetProperty (propertyGroup, "NuGetLicenseUrl", LicenseUrl);
-			SetProperty (propertyGroup, "NuGetOwners", Owners);
-			SetProperty (propertyGroup, "NuGetProjectUrl", ProjectUrl);
-			SetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", RequireLicenseAcceptance);
-			SetProperty (propertyGroup, "NuGetReleaseNotes", ReleaseNotes);
-			SetProperty (propertyGroup, "NuGetSummary", Summary);
-			SetProperty (propertyGroup, "NuGetTags", Tags);
-			SetProperty (propertyGroup, "NuGetTitle", Title);
+			SetProperty (propertyGroup, PackageIdPropertyName, Id);
+			SetProperty (propertyGroup, "PackageVersion", Version);
+			SetProperty (propertyGroup, "Authors", Authors);
+			SetProperty (propertyGroup, "DevelopmentDependency", DevelopmentDependency);
+			SetProperty (propertyGroup, "PackageIconUrl", IconUrl);
+			SetProperty (propertyGroup, "NeutralLanguage", Language);
+			SetProperty (propertyGroup, "PackageLicenseUrl", LicenseUrl);
+			SetProperty (propertyGroup, "PackageRequireLicenseAcceptance", RequireLicenseAcceptance);
+			SetProperty (propertyGroup, "Owners", Owners);
+			SetProperty (propertyGroup, "PackageProjectUrl", ProjectUrl);
+			SetProperty (propertyGroup, "PackageReleaseNotes", ReleaseNotes);
+			SetProperty (propertyGroup, "Summary", Summary);
+			SetProperty (propertyGroup, "PackageTags", Tags);
+			SetProperty (propertyGroup, "Title", Title);
 		}
 
 		void SetProperty (MSBuildPropertyGroup propertyGroup, string name, string value)

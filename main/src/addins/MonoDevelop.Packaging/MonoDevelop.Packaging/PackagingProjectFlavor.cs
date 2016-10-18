@@ -40,6 +40,12 @@ namespace MonoDevelop.Packaging
 			reason = null;
 			return true;
 		}
+
+		protected override void Initialize ()
+		{
+			RequiresMicrosoftBuild = true;
+			base.Initialize ();
+		}
 	}
 }
 

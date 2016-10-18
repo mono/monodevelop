@@ -1,0 +1,9 @@
+﻿{
+  "dependencies": {
+  },
+  "frameworks": {
+    "NuGet,Version=v1.0": {
+      "imports": "netstandard1.6"
+    }
+  }
+}
