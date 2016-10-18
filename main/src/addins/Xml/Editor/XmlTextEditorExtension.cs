@@ -74,7 +74,7 @@ namespace MonoDevelop.Xml.Editor
 			SetDefaultSchema ();
 			
 			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (string.IsNullOrEmpty (Editor.MimeType)) {
+			if (string.IsNullOrEmpty (Editor.MimeType) || Editor.MimeType == "text/plain") {
 				Editor.MimeType = ApplicationXmlMimeType;
 				DocumentContext.ReparseDocument ();
 			}
