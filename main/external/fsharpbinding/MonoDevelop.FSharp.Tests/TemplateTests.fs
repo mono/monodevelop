@@ -17,7 +17,7 @@ open MonoDevelop.PackageManagement.Tests.Helpers
 open MonoDevelop.Projects
 open NUnit.Framework
 
-[<TestFixture>]
+//[<TestFixture>]
 type ``Template tests``() =
     let toTask computation : Task = Async.StartAsTask computation :> _
 
@@ -71,8 +71,8 @@ type ``Template tests``() =
     member x.Templates =
         solutionTemplates |> Seq.map (fun t -> t.Id)
 
-    [<Test;AsyncStateMachine(typeof<Task>)>]
-    [<TestCaseSource ("Templates")>]
+    //[<Test;AsyncStateMachine(typeof<Task>)>]
+    //[<TestCaseSource ("Templates")>]
     member x.``Build every template`` (tt:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
