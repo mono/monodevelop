@@ -39,23 +39,16 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageManagementWorkspace ()
 		{
-<<<<<<< HEAD
-			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
-			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
-			IdeApp.Workspace.ItemAddedToSolution += SolutionItemAddedOrRemoved;
-			IdeApp.Workspace.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
-		}
-
-=======
 			if (IdeApp.IsInitialized) {
 				IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 				IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
+				IdeApp.Workspace.ItemAddedToSolution += SolutionItemAddedOrRemoved;
+				IdeApp.Workspace.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
 			} else {
 				LoggingService.LogError ("IdeApp not initialized when creating PackageManagementWorkspace.");
 			}
 		}
 
->>>>>>> 8e08775... [NuGet] Provide a way to install NuGet packages in unit tests
 		void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
 			try {
