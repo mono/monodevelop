@@ -162,6 +162,10 @@
     <Reference Include="NuGet.Credentials">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

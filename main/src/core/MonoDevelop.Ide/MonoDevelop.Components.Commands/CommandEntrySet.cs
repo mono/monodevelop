@@ -97,8 +97,13 @@ namespace MonoDevelop.Components.Commands
 			cmds.Add (cmdset);
 			return cmdset;
 		}
+
+		public List<CommandEntry>.Enumerator GetEnumerator ()
+		{
+			return cmds.GetEnumerator ();
+		}
 		
-		public System.Collections.IEnumerator GetEnumerator ()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		{
 			return cmds.GetEnumerator ();
 		}
