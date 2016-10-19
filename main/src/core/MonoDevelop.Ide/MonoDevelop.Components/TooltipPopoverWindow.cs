@@ -76,13 +76,12 @@ namespace MonoDevelop.Components
 			set {
 				severity = value;
 
+				AddLabel ();
 				UpdateLabel ();
 
 				if (severity.HasValue) {
 					Theme.Padding = 3;
 					Theme.CornerRadius = 3;
-
-					alignment.SetPadding (4, 5, 4, 4);
 
 					label.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 
@@ -158,6 +157,9 @@ namespace MonoDevelop.Components
 
 		void AdjustSize ()
 		{
+			// always reset fixed width and wrapping for size calculations
+			label.WidthRequest = -1;
+			label.Wrap = false;
 			if (label.SizeRequest ().Width > 330) {
 				label.Wrap = true;
 				label.WidthRequest = 330;
@@ -165,7 +167,8 @@ namespace MonoDevelop.Components
 				label.Wrap = false;
 				label.WidthRequest = -1;
 			}
-			RepositionWindow ();
+			if (Visible)
+				RepositionWindow ();
 		}
 	}
 }

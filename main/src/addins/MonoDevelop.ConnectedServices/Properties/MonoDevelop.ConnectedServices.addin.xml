@@ -1,0 +1,74 @@
+﻿<ExtensionModel>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ServiceProviders" name = "Connected Service Provider">
+		<Description>A class implementing IConnectedServiceProvider.</Description>
+		<ExtensionNode name="ConnectedServiceProvider"/>
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.ConnectedServices.ConnectedServiceProjectExtension"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGallery"
+				defaultHandler = "MonoDevelop.ConnectedServices.CommandHandlers.OpenServicesGalleryCommandHandler"
+				_label = "Service Capabilities" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<SeparatorItem id = "ConnectedServicesGallerySeparator" insertafter = "MonoDevelop.PackageManagement.Commands.RestorePackages" />
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGallery" />
+	</Extension>
+
+	<!-- Solution Pad -->
+
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeBuilderExtension"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeHiderExtension"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServiceNodeBuilder"/>
+	</Extension>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGalleryFromServicesNode"
+				 _label = "Open Service Gallery" />
+		
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails"
+				 _label = "Open Service Details" />
+
+		<Command id = "MonoDevelop.ConnectedServices.Commands.RemoveService"
+				 _label = "Remove Service…" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGalleryFromServicesNode" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" _label = "Remove Service…" />
+	</Extension>
+	
+	<!-- end Solution Pad -->
+	
+	<!-- TestDebugServiceProvider -->
+	
+	<Extension path = "/MonoDevelop/ConnectedServices/ServiceProviders">
+		<ConnectedServiceProvider type="MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProvider"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProjectExtension"/>
+	</Extension>
+
+	<!-- end TestDebugServiceProvider -->
+
+</ExtensionModel>
