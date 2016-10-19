@@ -25,11 +25,38 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Projects;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
+using NuGet.Frameworks;
+using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
 	[ExportProjectItemType ("PackageReference")]
 	class ProjectPackageReference : ProjectItem
 	{
+		public PackageReference CreatePackageReference ()
+		{
+			var version = GetVersion ();
+			var identity = new PackageIdentity (Include, version);
+			var framework = GetFramework ();
+			return new PackageReference (identity, framework);
+		}
+
+		NuGetVersion GetVersion ()
+		{
+			string version = Metadata.GetValue ("Version");
+			return new NuGetVersion (version);
+		}
+
+		NuGetFramework GetFramework ()
+		{
+			string framework = Project.GetDotNetCoreTargetFrameworks ().FirstOrDefault ();
+			if (framework != null)
+				return NuGetFramework.Parse (framework);
+
+			return NuGetFramework.UnsupportedFramework;
+		}
 	}
 }

@@ -401,6 +401,7 @@
     <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReference.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetCoreNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
