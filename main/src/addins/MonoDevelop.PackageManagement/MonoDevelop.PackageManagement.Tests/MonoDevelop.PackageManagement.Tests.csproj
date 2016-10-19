@@ -215,6 +215,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableReinstallNuGetPackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageReferenceFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSettingsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetCoreNuGetProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\DummyDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableDotNetCoreNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

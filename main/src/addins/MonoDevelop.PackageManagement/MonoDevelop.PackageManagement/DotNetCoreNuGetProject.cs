@@ -71,7 +71,7 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		public Task SaveProject ()
+		public virtual Task SaveProject ()
 		{
 			return project.SaveAsync (new ProgressMonitor ());
 		}
@@ -110,7 +110,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
 			if (packageReference != null) {
-				context.Log (MessageLevel.Warning, NuGet.ProjectManagement.Strings.PackageAlreadyExistsInProject, packageIdentity, project.Name);
+				context.Log (MessageLevel.Warning, GettextCatalog.GetString ("Package '{0}' already exists in project '{1}'", packageIdentity, project.Name));
 				return false;
 			}
 
@@ -140,7 +140,7 @@ namespace MonoDevelop.PackageManagement
 			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
 
 			if (packageReference == null) {
-				context.Log (MessageLevel.Warning, NuGet.ProjectManagement.Strings.PackageDoesNotExistInProject, packageIdentity, project.Name);
+				context.Log (MessageLevel.Warning, GettextCatalog.GetString ("Package '{0}' does not exist in project '{1}'", packageIdentity, project.Name));
 				return false;
 			}
 
