@@ -79,5 +79,14 @@ namespace MonoDevelop.Projects.MSBuild.Conditions
 				i++;
 			}
 		}
+
+		[Test]
+		public void And ()
+		{
+			var str1 = System.IO.Path.GetRandomFileName ();
+			var str2 = System.IO.Path.GetRandomFileName ();
+
+			Assert.AreEqual (str1 + " and " + str2, ConditionParser.And (str1, str2));
+		}
 	}
 }
