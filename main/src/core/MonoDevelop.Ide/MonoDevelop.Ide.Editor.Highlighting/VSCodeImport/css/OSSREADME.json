@@ -1,9 +1,9 @@
 // ATTENTION - THIS DIRECTORY CONTAINS THIRD PARTY OPEN SOURCE MATERIALS:
 [{
 	"name": "textmate/css.tmbundle",
-	"version": "0.0.0",
 	"license": "TextMate Bundle License",
 	"repositoryURL": "https://github.com/textmate/css.tmbundle",
+	"repositoryRevision": "d79e9c0",
 	"licenseDetail": [
 		"Copyright (c) textmate-css.tmbundle project authors",
 		"",

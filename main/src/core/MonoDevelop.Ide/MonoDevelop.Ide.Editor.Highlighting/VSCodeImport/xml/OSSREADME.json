@@ -1,10 +1,9 @@
 // ATTENTION - THIS DIRECTORY CONTAINS THIRD PARTY OPEN SOURCE MATERIALS:
-
 [{
 	"name": "textmate/xml.tmbundle",
-	"version": "0.0.0",
 	"license": "TextMate Bundle License",
 	"repositoryURL": "https://github.com/textmate/xml.tmbundle",
+	"repositoryRevision": "ff0d3e5",
 	"licenseDetail": [
 		"Copyright (c) textmate-xml.tmbundle project authors",
 		"",
