@@ -71,7 +71,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this DotNetProject project)
 		{
-			return HasPackages (project.BaseDirectory, project.Name);
+			return HasPackages (project.BaseDirectory, project.Name) || project.HasPackageReferences ();
 		}
 
 		public static string GetPackagesConfigFilePath (this DotNetProject project)
@@ -172,6 +172,11 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return Enumerable.Empty<string> ();
+		}
+
+		public static bool HasPackageReferences (this DotNetProject project)
+		{
+			return project.Items.OfType<ProjectPackageReference> ().Any ();
 		}
 	}
 }
