@@ -142,17 +142,19 @@ namespace MonoDevelop.PackageManagement
 
 		public void SaveProject (NuGetProject nuGetProject)
 		{
+			IHasDotNetProject hasProject = null;
+
 			var msbuildProject = nuGetProject as MSBuildNuGetProject;
 			if (msbuildProject != null) {
-				var projectSystem = msbuildProject.MSBuildNuGetProjectSystem as MonoDevelopMSBuildNuGetProjectSystem;
-				projectSystem.SaveProject ().Wait ();
-
-				return;
+				hasProject = msbuildProject.MSBuildNuGetProjectSystem as IHasDotNetProject;
 			}
 
-			var buildIntegratedProject = nuGetProject as BuildIntegratedProjectSystem;
-			if (buildIntegratedProject != null) {
-				buildIntegratedProject.SaveProject ().Wait ();
+			if (hasProject == null) {
+				hasProject = nuGetProject as IHasDotNetProject;
+			}
+
+			if (hasProject != null) {
+				hasProject.SaveProject ().Wait ();
 				return;
 			}
 

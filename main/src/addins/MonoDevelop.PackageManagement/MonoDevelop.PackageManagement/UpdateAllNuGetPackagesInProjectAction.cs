@@ -119,6 +119,8 @@ namespace MonoDevelop.PackageManagement
 				return;
 			}
 
+			actions = await project.PreviewUpdatePackageAsync (actions);
+
 			await CheckLicenses (cancellationToken);
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {

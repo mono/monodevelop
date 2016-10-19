@@ -37,7 +37,7 @@ using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem
+	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem, IHasDotNetProject
 	{
 		IDotNetProject project;
 		NuGetFramework targetFramework;

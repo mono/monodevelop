@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using MonoDevelop.Projects;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using NuGet.Frameworks;
-using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -38,10 +39,15 @@ namespace MonoDevelop.PackageManagement
 	{
 		public PackageReference CreatePackageReference ()
 		{
-			var version = GetVersion ();
-			var identity = new PackageIdentity (Include, version);
+			var identity = GetPackageIdentity ();
 			var framework = GetFramework ();
 			return new PackageReference (identity, framework);
+		}
+
+		PackageIdentity GetPackageIdentity ()
+		{
+			var version = GetVersion ();
+			return new PackageIdentity (Include, version);
 		}
 
 		NuGetVersion GetVersion ()
@@ -57,6 +63,31 @@ namespace MonoDevelop.PackageManagement
 				return NuGetFramework.Parse (framework);
 
 			return NuGetFramework.UnsupportedFramework;
+		}
+
+		public bool Equals (PackageIdentity packageIdentity, bool matchVersion = true)
+		{
+			var currentPackageIdentity = GetPackageIdentity ();
+			if (matchVersion)
+				return packageIdentity.Equals (currentPackageIdentity);
+
+			return StringComparer.OrdinalIgnoreCase.Equals (packageIdentity.Id, currentPackageIdentity.Id);
+		}
+
+		public static ProjectPackageReference Create (PackageIdentity packageIdentity)
+		{
+			var packageReference = new ProjectPackageReference {
+				Include = packageIdentity.Id
+			};
+
+			packageReference.Metadata.SetValue ("Version", packageIdentity.Version.ToNormalizedString ());
+
+			return packageReference;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[PackageReference: {0} {1}]", Include, Metadata.GetValue ("Version"));
 		}
 	}
 }

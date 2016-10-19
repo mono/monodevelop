@@ -78,6 +78,26 @@ namespace MonoDevelop.PackageManagement
 				buildIntegratedProject.OnBeforeUninstall (actions);
 			}
 		}
+
+		public static Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var dotNetCoreProject = project as DotNetCoreNuGetProject;
+			if (dotNetCoreProject != null) {
+				return dotNetCoreProject.PreviewInstallPackageAsync (actions);
+			}
+
+			return Task.FromResult (actions);
+		}
+
+		public static Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var dotNetCoreProject = project as DotNetCoreNuGetProject;
+			if (dotNetCoreProject != null) {
+				return dotNetCoreProject.PreviewUpdatePackageAsync (actions);
+			}
+
+			return Task.FromResult (actions);
+		}
 	}
 }
 

@@ -402,6 +402,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetCoreNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IHasDotNetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.Common;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -148,17 +149,6 @@ namespace MonoDevelop.PackageManagement
 			return nugetProject.GetPackagesFolderPath (solutionManager);
 		}
 
-		public static bool HasDotNetCoreTargetFrameworkProperty (this Project project)
-		{
-			foreach (MSBuildPropertyGroup propertyGroup in project.MSBuildProject.PropertyGroups) {
-				if (propertyGroup.HasProperty ("TargetFramework") ||
-				    propertyGroup.HasProperty ("TargetFrameworks"))
-					return true;
-			}
-
-			return false;
-		}
-
 		public static IEnumerable<string> GetDotNetCoreTargetFrameworks (this Project project)
 		{
 			foreach (MSBuildPropertyGroup propertyGroup in project.MSBuildProject.PropertyGroups) {
@@ -177,6 +167,15 @@ namespace MonoDevelop.PackageManagement
 		public static bool HasPackageReferences (this DotNetProject project)
 		{
 			return project.Items.OfType<ProjectPackageReference> ().Any ();
+		}
+
+		public static ProjectPackageReference GetPackageReference (
+			this DotNetProject project,
+			PackageIdentity packageIdentity,
+			bool matchVersion = true)
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity));
 		}
 	}
 }

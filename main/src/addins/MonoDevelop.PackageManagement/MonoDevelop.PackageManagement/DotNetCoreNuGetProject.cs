@@ -24,36 +24,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
+using NuGet.PackageManagement;
+using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreNuGetProject : NuGetProject, INuGetIntegratedProject
+	class DotNetCoreNuGetProject : NuGetProject, INuGetIntegratedProject, IHasDotNetProject
 	{
 		DotNetProject project;
 
-		public DotNetCoreNuGetProject (DotNetProject project)
+		public DotNetCoreNuGetProject (
+			DotNetProject project,
+			IEnumerable<string> targetFrameworks)
 		{
 			this.project = project;
+
+			var targetFramework = NuGetFramework.UnsupportedFramework;
+
+			if (targetFrameworks.Count () == 1) {
+				targetFramework = NuGetFramework.Parse (targetFrameworks.First ());
+			}
+
+			InternalMetadata.Add (NuGetProjectMetadataKeys.TargetFramework, targetFramework);
+			InternalMetadata.Add (NuGetProjectMetadataKeys.Name, project.Name);
+			InternalMetadata.Add (NuGetProjectMetadataKeys.FullPath, project.BaseDirectory);
 		}
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			if (project.HasDotNetCoreTargetFrameworkProperty ())
-				return new DotNetCoreNuGetProject (project);
+			var targetFrameworks = project.GetDotNetCoreTargetFrameworks ();
+			if (targetFrameworks.Any ())
+				return new DotNetCoreNuGetProject (project, targetFrameworks);
 
 			return null;
+		}
+
+		public Task SaveProject ()
+		{
+			return project.SaveAsync (new ProgressMonitor ());
 		}
 
 		public override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
@@ -70,14 +90,117 @@ namespace MonoDevelop.PackageManagement
 				.ToList ();
 		}
 
-		public override Task<bool> InstallPackageAsync (PackageIdentity packageIdentity, DownloadResourceResult downloadResourceResult, INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		public override async Task<bool> InstallPackageAsync (
+			PackageIdentity packageIdentity,
+			DownloadResourceResult downloadResourceResult,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
 		{
-			throw new NotImplementedException ();
+			bool added = await Runtime.RunInMainThread (() => {
+				return AddPackageReference (packageIdentity, nuGetProjectContext);
+			});
+
+			if (added)
+				await SaveProject ();
+
+			return added;
 		}
 
-		public override Task<bool> UninstallPackageAsync (PackageIdentity packageIdentity, INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		bool AddPackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
 		{
-			throw new NotImplementedException ();
+			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
+			if (packageReference != null) {
+				context.Log (MessageLevel.Warning, NuGet.ProjectManagement.Strings.PackageAlreadyExistsInProject, packageIdentity, project.Name);
+				return false;
+			}
+
+			packageReference = ProjectPackageReference.Create (packageIdentity);
+			project.Items.Add (packageReference);
+
+			return true;
+		}
+
+		public override async Task<bool> UninstallPackageAsync (
+			PackageIdentity packageIdentity,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			bool removed = await Runtime.RunInMainThread (() => {
+				return RemovePackageReference (packageIdentity, nuGetProjectContext);
+			});
+
+			if (removed)
+				await SaveProject ();
+
+			return removed;
+		}
+
+		bool RemovePackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
+		{
+			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
+
+			if (packageReference == null) {
+				context.Log (MessageLevel.Warning, NuGet.ProjectManagement.Strings.PackageDoesNotExistInProject, packageIdentity, project.Name);
+				return false;
+			}
+
+			project.Items.Remove (packageReference);
+
+			return true;
+		}
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (IEnumerable<NuGetProjectAction> actions)
+		{
+			return AddUninstallActionsForExistingPackages (actions);
+		}
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (IEnumerable<NuGetProjectAction> actions)
+		{
+			return AddUninstallActionsForExistingPackages (actions);
+		}
+
+		// Need to add uninstall actions for existing NuGet packages installed in the project
+		// here otherwise the rollback will not add back the originally installed NuGet packages.
+		async Task<IEnumerable<NuGetProjectAction>> AddUninstallActionsForExistingPackages (IEnumerable<NuGetProjectAction> actions)
+		{
+			var packagesBeingInstalled = actions
+				.Where (action => action.NuGetProjectActionType == NuGetProjectActionType.Install)
+				.Select (action => action.PackageIdentity)
+				.ToList ();
+
+			if (!packagesBeingInstalled.Any ())
+				return actions;
+
+			var packagesBeingUninstalled = actions
+				.Where (action => action.NuGetProjectActionType == NuGetProjectActionType.Uninstall)
+				.Select (action => action.PackageIdentity)
+				.ToList ();
+
+			var packageReferences = await GetInstalledPackagesAsync (CancellationToken.None);
+			var packagesToUninstall = packageReferences
+				.Select (packageReference => packageReference.PackageIdentity)
+				.Where (package => IsDifferentVersionBeingInstalled (packagesBeingInstalled, package))
+				.ToList ();
+
+			packagesToUninstall = packagesToUninstall
+				.Where (package => !packagesBeingUninstalled.Contains (package))
+				.ToList ();
+
+			if (!packagesToUninstall.Any ())
+				return actions;
+
+			var modifiedActions = actions.ToList ();
+			modifiedActions.AddRange (packagesToUninstall.Select (package => NuGetProjectAction.CreateUninstallProjectAction (package, this)));
+
+			return modifiedActions;
+		}
+
+		static bool IsDifferentVersionBeingInstalled (IEnumerable<PackageIdentity> packages, PackageIdentity otherPackage)
+		{
+			return packages.Any (package => {
+				return StringComparer.OrdinalIgnoreCase.Equals (package.Id, otherPackage.Id) &&
+					!package.Equals (otherPackage);
+			});
 		}
 	}
 }
