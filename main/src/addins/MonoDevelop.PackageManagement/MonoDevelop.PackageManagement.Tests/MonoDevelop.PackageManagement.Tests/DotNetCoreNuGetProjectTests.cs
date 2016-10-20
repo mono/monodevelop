@@ -273,6 +273,19 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task PreviewUpdatePackagesAsync_SamePackageInstalled_NoActionsReturned ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			CreatePackageManager ();
+			packageManager.LatestVersion = new NuGetVersion ("2.6.1");
+
+			var actions = (await PreviewUpdatePackagesAsync ("NUnit")).ToList ();
+
+			Assert.AreEqual (0, actions.Count);
+		}
+
+		[Test]
 		public async Task PreviewUpdatePackagesAsync_NoLatestVersionFound_ExceptionThrown ()
 		{
 			CreateNuGetProject ();

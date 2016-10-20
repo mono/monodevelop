@@ -273,7 +273,12 @@ namespace MonoDevelop.PackageManagement
 				throw new InvalidOperationException (GettextCatalog.GetString ("Unknown package '{0}'", packageId));
 			}
 
+			var installPackages = await GetInstalledPackagesAsync (token);
 			var packageIdentity = new PackageIdentity (packageId, latestVersion);
+
+			if (!IsDifferentVersionBeingInstalled (installPackages.Select (p => p.PackageIdentity), packageIdentity))
+				return new NuGetProjectAction[0];
+
 			SourceRepository sourceRepository = primarySources.First ();
 
 			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, sourceRepository, this);
