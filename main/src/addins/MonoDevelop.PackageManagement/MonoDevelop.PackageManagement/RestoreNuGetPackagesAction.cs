@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
+		MonoDevelopDotNetCorePackageRestorer dotNetCorePackageRestorer;
 		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
@@ -67,8 +68,9 @@ namespace MonoDevelop.PackageManagement
 					solutionManager.CreateSourceRepositoryProvider (),
 					solutionManager.Settings);
 			}
-		}
 
+			CreateDotNetCorePackageRestorer ();
+		}
 
 		bool AnyProjectsUsingPackagesConfig ()
 		{
@@ -78,6 +80,14 @@ namespace MonoDevelop.PackageManagement
 		bool AnyProjectsUsingProjectJson ()
 		{
 			return GetBuildIntegratedNuGetProjects ().Any ();
+		}
+
+		void CreateDotNetCorePackageRestorer ()
+		{
+			var dotNetCoreProjects = nugetProjects.OfType<DotNetCoreNuGetProject> ().ToList ();
+			if (dotNetCoreProjects.Any ()) {
+				dotNetCorePackageRestorer = new MonoDevelopDotNetCorePackageRestorer (dotNetCoreProjects);
+			}
 		}
 
 		IEnumerable<BuildIntegratedNuGetProject> GetBuildIntegratedNuGetProjects ()
@@ -118,6 +128,10 @@ namespace MonoDevelop.PackageManagement
 				await buildIntegratedRestorer.RestorePackages (
 					GetBuildIntegratedNuGetProjects (),
 					cancellationToken);
+			}
+
+			if (dotNetCorePackageRestorer != null) {
+				await dotNetCorePackageRestorer.RestorePackages (cancellationToken);
 			}
 
 			await Runtime.RunInMainThread (() => RefreshProjectReferences ());

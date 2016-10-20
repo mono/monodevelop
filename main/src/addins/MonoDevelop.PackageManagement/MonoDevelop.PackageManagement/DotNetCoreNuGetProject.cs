@@ -63,6 +63,10 @@ namespace MonoDevelop.PackageManagement
 			InternalMetadata.Add (NuGetProjectMetadataKeys.FullPath, project.BaseDirectory);
 		}
 
+		internal DotNetProject DotNetProject {
+			get { return project; }
+		}
+
 		public static NuGetProject Create (DotNetProject project)
 		{
 			var targetFrameworks = project.GetDotNetCoreTargetFrameworks ();
