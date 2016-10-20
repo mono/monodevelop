@@ -174,6 +174,14 @@ namespace MonoDevelop.Components
 			base.Content = canvas;
 		}
 
+		public new CursorType Cursor {
+			get { return base.Cursor; }
+			set {
+				base.Cursor = value;
+				canvas.Cursor = value;
+			}
+		}
+
 		public WidgetSpacing Padding {
 			get { return padding; }
 			set {
