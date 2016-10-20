@@ -68,7 +68,7 @@ namespace MonoDevelop.PackageManagement
 			return actions;
 		}
 
-		List<IPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		internal List<IPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			var repositoryProvider = new ProjectTemplateSourceRepositoryProvider ();
 

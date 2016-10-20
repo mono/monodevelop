@@ -274,7 +274,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					result.AddData (factory.CreateConstructorProvider (c));
 				}
 			} else {
-				result.AddRange (info.CandidateSymbols.OfType<IMethodSymbol> ().Select (m => factory.CreateConstructorProvider (m)));
+				result.AddRange (info.CandidateSymbols.OfType<IMethodSymbol> ().Select (factory.CreateConstructorProvider));
 			}
 			return result;
 		}
@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var resolvedMethod = info.Symbol as IMethodSymbol;
 			if (resolvedMethod != null)
 				result.AddData(factory.CreateConstructorProvider(resolvedMethod));
-			result.AddRange(info.CandidateSymbols.OfType<IMethodSymbol>().Select (m => factory.CreateConstructorProvider(m)));
+			result.AddRange(info.CandidateSymbols.OfType<IMethodSymbol>().Select (factory.CreateConstructorProvider));
 			return result;
 		}
 		

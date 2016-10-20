@@ -205,6 +205,11 @@ namespace MonoDevelop.Ide.Gui
 			set { Window.ViewContent.IsDirty = value; }
 		}
 
+		public object GetDocumentObject ()
+		{
+			return Window?.ViewContent?.GetDocumentObject ();
+		}
+
 		FilePath adHocFile;
 		Project adhocProject;
 		Solution adhocSolution;
@@ -669,7 +674,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Editor != null) {
 				InitializeEditor ();
-				RunWhenLoaded (delegate { ListenToProjectLoad (Project); });
+				RunWhenRealized (delegate { ListenToProjectLoad (Project); });
 			}
 			
 			window.Document = this;
@@ -689,6 +694,16 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			e.RunWhenLoaded (action);
+		}
+
+		public void RunWhenRealized (System.Action action)
+		{
+			var e = Editor;
+			if (e == null) {
+				action ();
+				return;
+			}
+			e.RunWhenRealized (action);
 		}
 
 		public override void AttachToProject (Project project)
@@ -911,18 +926,21 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void StartReparseThread ()
 		{
-			string currentParseFile = GetCurrentParseFileName ();
-			if (string.IsNullOrEmpty (currentParseFile))
-				return;
-			lock (reparseTimeoutLock) {
-				CancelParseTimeout ();
+			RunWhenRealized (() => {
+				string currentParseFile = GetCurrentParseFileName ();
+				if (string.IsNullOrEmpty (currentParseFile))
+					return;
 
-				parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-					StartReparseThreadDelayed (currentParseFile);
-					parseTimeout = 0;
-					return false;
-				});
-			}
+				lock (reparseTimeoutLock) {
+					CancelParseTimeout ();
+
+					parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
+						StartReparseThreadDelayed (currentParseFile);
+						parseTimeout = 0;
+						return false;
+					});
+				}
+			});
 		}
 
 		string GetCurrentParseFileName ()

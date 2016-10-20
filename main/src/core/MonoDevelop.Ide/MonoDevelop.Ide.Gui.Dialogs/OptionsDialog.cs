@@ -763,9 +763,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Validate changes before saving
 			if (!ValidateChanges ())
 				return;
-			
+
 			// Now save
-			ApplyChanges ();
+			try {
+				ApplyChanges ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error saving options changes", ex);
+				MessageService.ShowError (null, GettextCatalog.GetString ("There was an error saving the changes"), null, null, false);
+			}
 
 			StoreLastPanel ();
 

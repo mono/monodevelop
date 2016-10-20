@@ -79,8 +79,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			// For portable libraries, add node that represents all framework assemblies
 			var project = (DotNetProject) ctx.GetParentDataItem (typeof(DotNetProject), false);
-			if (project != null && project.IsPortableLibrary)
-				ctx.AddChild (new PortableFrameworkSubset (project));
+			if (project != null) {
+				var tfm = project.TargetFramework.Id;
+				if (tfm.Identifier == MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.ID_PORTABLE && tfm.Version != "5.0") {
+					ctx.AddChild (new PortableFrameworkSubset (project));
+				}
+			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -94,6 +98,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
+			if (otherNode.DataItem is GettingStartedNode)
+				return 1;
 			return -1;
 		}
 

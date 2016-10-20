@@ -41,9 +41,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		int	position = 0;
 		int	tokenPosition = 0;
 		int tokenLength = 0;
+		int nextChar = -1;
 		
 		Token	token;
-		Token	putback = null;
+		bool	hasPutback;
+		Token	putback;
 		
 //		bool	ignoreWhiteSpace = true;
 		
@@ -74,6 +76,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		
 			this.inputString = s;
 			this.position = 0;
+			if (position < inputString.Length)
+				this.nextChar = inputString [position];
 			this.token = new Token (null, TokenType.BOF, 0);
 
 			GetNextToken ();
@@ -92,18 +96,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		
 		int PeekChar ()
 		{
-			if (position < inputString.Length)
-				return (int) inputString [position];
-			else
-				return -1;
+			return nextChar;
 		}
 		
 		int ReadChar ()
 		{
-			if (position < inputString.Length)
-				return (int) inputString [position++];
-			else
-				return -1;
+			try {
+				return nextChar;
+			} finally {
+				if (++position < inputString.Length)
+					nextChar = (int)inputString [position];
+				else
+					nextChar = -1;
+			}
 		}
 		
 		public void Expect (TokenType type)
@@ -138,14 +143,15 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		// FIXME test this
 		public void Putback (Token token)
 		{
+			hasPutback = true;
 			putback = token;
 		}
 
 		public void GetNextToken ()
 		{
-			if (putback != null) {
+			if (hasPutback) {
 				token = putback;
-				putback = null;
+				hasPutback = false;
 				return;
 			}
 		
@@ -261,11 +267,10 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			tokenPosition = position;
 			int start = position;
 			int ch;
-			while ((ch = ReadChar ()) >= 0) {
+			while ((ch = PeekChar ()) >= 0) {
 				switch (ch) {
 				case ')':
 					if (--parensCounter == 0) {
-						--position;
 						token = new Token (inputString.Substring (start, position - start), TokenType.String, tokenPosition);
 						return;
 					}
@@ -274,6 +279,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					++parensCounter;
 					break;
 				}
+				ReadChar ();
 			}
 
 			token = new Token (null, TokenType.EOF, tokenPosition);

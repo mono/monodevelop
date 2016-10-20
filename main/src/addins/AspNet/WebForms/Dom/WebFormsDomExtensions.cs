@@ -64,8 +64,8 @@ namespace MonoDevelop.AspNet.WebForms.Dom
 		{
 			return doc.AllDescendentNodes
 				.WithName<XElement> (new XName ("asp", "ContentPlaceHolder"), true)
-				.Where (x => x.IsRunatServer ())
-				.Select (x => x.GetId ())
+				.Where (IsRunatServer)
+				.Select (GetId)
 				.Where (id => !string.IsNullOrEmpty (id));
 		}
 	}

@@ -224,13 +224,13 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			var packageNames = new HashSet<string> ();
 			foreach (string pcdir in PkgConfigDirs) {
-				string[] files;
+				IEnumerable<string> files;
 
 				if (!Directory.Exists (pcdir))
 					continue;
 
 				try {
-					files = Directory.GetFiles (pcdir, "*.pc");
+					files = Directory.EnumerateFiles (pcdir, "*.pc");
 				} catch (Exception ex) {
 					LoggingService.LogError (string.Format (
 						"Runtime '{0}' error in pc file scan of directory '{1}'", DisplayName, pcdir), ex);

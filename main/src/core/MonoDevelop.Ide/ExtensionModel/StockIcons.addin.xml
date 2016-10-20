@@ -264,6 +264,17 @@
 	<StockIcon stockid="md-pad-download" resource="pad-download-16.png" size="Menu" />
 	<StockIcon stockid="md-pad-upload" resource="pad-upload-16.png" size="Menu" />
 	<StockIcon stockid="md-pad-device-deployment" resource="pad-device-deployment-16.png" size="Menu" />
+	<StockIcon stockid="md-service" resource="service-16.png" size="Menu" />
+	<StockIcon stockid="md-service" resource="service-24.png" size="Button" />
+	<StockIcon stockid="md-service" resource="service-24.png" size="LargeToolbar" />
+	<StockIcon stockid="md-checkmark" resource="checkmark-16.png" size="Menu" />
+	<StockIcon stockid="md-code" resource="code-16.png" size="Menu" />
+	<StockIcon stockid="md-dependency" resource="dependency-16.png" size="Menu" />
+	<StockIcon stockid="md-expander-arrow-closed" resource="expander-arrow-closed-8.png" />
+	<StockIcon stockid="md-expander-arrow-expanded" resource="expander-arrow-expanded-8.png" />
+	<StockIcon stockid="md-folder-code" resource="folder-code-16.png" />
+	<StockIcon stockid="md-folder-services" resource="folder-services-16.png" />
+	<StockIcon stockid="md-getting-started" resource="getting-started-16.png" size="Menu" />
 
 	<!-- Project icons -->
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />

@@ -99,18 +99,26 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		static List<Tuple<string, string, ProjectFile>> allFilesCache;
-		static object allFilesLock = new object ();
+		static SemaphoreSlim allFilesLock = new SemaphoreSlim (1, 1);
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Run (delegate {
+			return Task.Run (async delegate {
 				List<Tuple<string, string, ProjectFile>> files;
 				//This lock is here in case user quickly types 5 letters which triggers 5 threads
 				//we don't want to use all CPU doing same thing, instead 1st one will create cache, others will wait here
 				//and then all will use cached version...
-				lock (allFilesLock) {
+				bool locked = false;
+				try {
+					locked = await allFilesLock.WaitAsync (System.Threading.Timeout.Infinite, token).ConfigureAwait (false);
 					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
+					if (token.IsCancellationRequested)
+						return;
+				} finally {
+					if (locked)
+						allFilesLock.Release ();
 				}
+
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
 				var savedMatches = new Dictionary<string, MatchResult> (files.Count * 2);
 				foreach (var file in files) {

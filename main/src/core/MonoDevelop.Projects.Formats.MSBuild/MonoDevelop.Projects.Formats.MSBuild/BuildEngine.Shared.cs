@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static List<int> cancelledTasks = new List<int> ();
 		static int currentTaskId;
+		static int fatalErrorRetries = 4;
 
 		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
 
@@ -60,6 +61,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void Ping ()
 		{
+			if (fatalErrorRetries <= 0)
+				throw new Exception ("Too many fatal exceptions");
 		}
 
 		public override object InitializeLifetimeService ()
@@ -146,8 +149,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 				ResetCurrentTask ();
 			}
-			if (workError != null)
+			if (workError != null) {
+				if (workError is OutOfMemoryException)
+					fatalErrorRetries = 0;
+				else
+					fatalErrorRetries--;
 				throw new Exception ("MSBuild operation failed", workError);
+			}
 		}
 
 		static readonly object threadLock = new object ();

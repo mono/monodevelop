@@ -127,6 +127,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
+			CompletionWindowManager.WindowClosed += CompletionWindowManager_WindowClosed;
 		}
 
 		bool indentationDisabled;
@@ -188,6 +189,8 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.TextChanged -= HandleTextReplaced;
 			}
 			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
+			CompletionWindowManager.WindowClosed -= CompletionWindowManager_WindowClosed;
+			
 			stateTracker = null;
 			base.Dispose ();
 		}
@@ -463,7 +466,15 @@ namespace MonoDevelop.CSharp.Formatting
 				// esp. the documentation insertion undo steps.
 				retval = base.KeyPress (descriptor);
 
-				
+
+				if (descriptor.KeyChar == '/' && stateTracker.IsInsideMultiLineComment) {
+					if (Editor.CaretOffset - 3 >= 0 && Editor.GetCharAt (Editor.CaretOffset - 3) == '*' && Editor.GetCharAt (Editor.CaretOffset - 2) == ' ') {
+						using (var undo = Editor.OpenUndoGroup ()) {
+							Editor.RemoveText (Editor.CaretOffset - 2, 1);
+						}
+					}
+				}
+
 				//handle inserted characters
 				if (Editor.CaretOffset <= 0 || Editor.IsSomethingSelected)
 					return retval;
@@ -549,7 +560,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (descriptor.KeyChar == '{')
 				return;
 			SafeUpdateIndentEngine (Editor.CaretOffset);
-			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString || stateTracker.IsInsidePreprocessorDirective;
+			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.GetAst<SemanticModel> () == null)
 					return;
@@ -565,7 +576,10 @@ namespace MonoDevelop.CSharp.Formatting
 						return;
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
+							var oldVersion = Editor.Version;
 							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+							if (oldVersion.CompareAge (Editor.Version) != 0)
+								CompletionWindowManager.HideWindow ();
 						}
 					}
 				}
@@ -579,24 +593,43 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		async void FormatOnReturn (CancellationToken cancellationToken = default(CancellationToken))
+		async void CompletionWindowManager_WindowClosed (object sender, EventArgs e)
 		{
 			var document = DocumentContext.AnalysisDocument;
 			if (document == null)
 				return;
 			var caretPosition = Editor.CaretOffset;
-			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync(document, caretPosition, cancellationToken).ConfigureAwait(false);
+			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default (CancellationToken)).ConfigureAwait (false);
+			if (token.IsMissing || !token.Parent.IsKind (SyntaxKind.ElseDirectiveTrivia))
+				return;
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
+				return;
+			
+			var value = tokenRange.Value;
+			using (var undo = Editor.OpenUndoGroup ()) {
+				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End, optionSet: optionSet);
+			}
+		}
+
+		async void FormatOnReturn (CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var document = DocumentContext.AnalysisDocument;
+			if (document == null)
+				return;
+			var caretPosition = Editor.CaretOffset;
+			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, cancellationToken).ConfigureAwait (false);
 			if (token.IsMissing)
 				return;
 
 			string text = null;
-			if (service.IsInvalidToken(token, ref text))
+			if (service.IsInvalidToken (token, ref text))
 				return;
 			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
-			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn(token))
+			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn (token))
 				return;
-			var tokenRange = FormattingRangeHelper.FindAppropriateRange(token);
-			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals(tokenRange.Value.Item2))
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
 			var value = tokenRange.Value;
 			using (var undo = Editor.OpenUndoGroup ()) {
@@ -823,7 +856,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal void DoReSmartIndent (int cursor)
 		{
 			SafeUpdateIndentEngine (cursor);
-			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)
+			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment || stateTracker.IsInsidePreprocessorDirective)
 				return;
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
 				Editor.FixVirtualIndentation ();

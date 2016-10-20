@@ -156,6 +156,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (statusIcon != null)
 					return;
 				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+				if (statusIcon != null)
+					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});
 		}
 

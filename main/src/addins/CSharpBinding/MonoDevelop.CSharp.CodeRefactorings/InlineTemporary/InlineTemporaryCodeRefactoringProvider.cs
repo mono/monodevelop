@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary
 			nonConflictingIdentifierNodes = await FindReferenceAnnotatedNodesAsync(updatedDocument, cancellationToken).ConfigureAwait(false);
 
 			var topmostParentingExpressions = nonConflictingIdentifierNodes
-				.Select(ident => GetTopMostParentingExpression(ident))
+				.Select(GetTopMostParentingExpression)
 				.Distinct();
 
 			var originalInitializerSymbolInfo = semanticModel.GetSymbolInfo(variableDeclarator.Initializer.Value, cancellationToken);

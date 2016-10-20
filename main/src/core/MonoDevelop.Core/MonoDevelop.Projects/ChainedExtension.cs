@@ -55,18 +55,14 @@ namespace MonoDevelop.Projects
 			if (!type.IsInstanceOfType (next))
 				return FindNextImplementation (type, next.nextInChain);
 
-			foreach (var m in type.GetMembers (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				MethodInfo method = m as MethodInfo;
-				if (method == null) {
-					var prop = m as PropertyInfo;
-					if (prop != null) {
-						method = prop.GetGetMethod ();
-						if (method == null)
-							method = prop.GetSetMethod ();
-					}
-				}
+			foreach (var method in type.GetMethods (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (method != null && method.IsVirtual && method.Name != "InitializeChain") {
-					var tm = next.GetType ().GetMethod (method.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, method.GetParameters ().Select (p=>p.ParameterType).ToArray (), null);
+					var paramArray = method.GetParameters ();
+					var paramTypeArray = new Type [paramArray.Length];
+					for (int i = 0; i < paramArray.Length; ++i)
+						paramTypeArray [i] = paramArray [i].ParameterType;
+
+					var tm = next.GetType ().GetMethod (method.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, paramTypeArray, null);
 					if (tm == null)
 						continue;
 					if (tm.DeclaringType != type)

@@ -165,7 +165,7 @@ namespace MonoDevelop.PackageManagement
 				solutionManager.SolutionDirectory,
 				cancellationToken);
 
-			var missingPackages = packages.Select (package => IsMissingForCurrentProject (package)).ToList ();
+			var missingPackages = packages.Select (IsMissingForCurrentProject).ToList ();
 			if (missingPackages.Any ()) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager, packageManagementEvents)) {
 					await restoreManager.RestoreMissingPackagesAsync (

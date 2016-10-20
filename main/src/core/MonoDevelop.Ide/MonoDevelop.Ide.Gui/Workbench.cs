@@ -1221,7 +1221,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		List<FileData> fileStatus;
-		object fileStatusLock = new object ();
+		SemaphoreSlim fileStatusLock = new SemaphoreSlim (1, 1);
 		// http://msdn.microsoft.com/en-us/library/system.io.file.getlastwritetimeutc(v=vs.110).aspx
 		static DateTime NonExistentFile = new DateTime(1601, 1, 1);
 		internal void SaveFileStatus ()
@@ -1231,9 +1231,10 @@ namespace MonoDevelop.Ide.Gui
 			fileStatus = new List<FileData> (files.Count);
 //			Console.WriteLine ("SaveFileStatus(0) " + (DateTime.Now - t).TotalMilliseconds + "ms " + files.Count);
 			
-			ThreadPool.QueueUserWorkItem (delegate {
+			Task.Run (async delegate {
 //				t = DateTime.Now;
-				lock (fileStatusLock) {
+				try {
+					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
 					if (fileStatus == null)
 						return;
 					foreach (FilePath file in files) {
@@ -1242,9 +1243,10 @@ namespace MonoDevelop.Ide.Gui
 							FileData fd = new FileData (file, ft != NonExistentFile ? ft : DateTime.MinValue);
 							fileStatus.Add (fd);
 						} catch {
-							// Ignore
-						}
+							// Ignore						}
 					}
+				} finally {
+					fileStatusLock.Release ();
 				}
 //				Console.WriteLine ("SaveFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
 			});
@@ -1255,10 +1257,11 @@ namespace MonoDevelop.Ide.Gui
 			if (fileStatus == null)
 				return;
 			
-			ThreadPool.QueueUserWorkItem (delegate {
-				lock (fileStatusLock) {
+			Task.Run (async delegate {
+				try {
 //					DateTime t = DateTime.Now;
 
+					await fileStatusLock.WaitAsync ();
 					if (fileStatus == null)
 						return;
 					List<FilePath> modified = new List<FilePath> (fileStatus.Count);
@@ -1277,9 +1280,11 @@ namespace MonoDevelop.Ide.Gui
 					}
 					if (modified.Count > 0)
 						FileService.NotifyFilesChanged (modified);
-					
+
 //					Console.WriteLine ("CheckFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
 					fileStatus = null;
+				} finally {
+					fileStatusLock.Release ();
 				}
 			});
 		}

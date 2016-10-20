@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.ExternalTools
 				accelComplete = false;
 				chord = null;
 
-				if (key.Equals (Gdk.Key.BackSpace))
+				if (key == Gdk.Key.BackSpace)
 					return;
 			}
 

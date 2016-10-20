@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.Commands
 		List<ICommandBar> toolbars = new List<ICommandBar> ();
 		CommandTargetChain globalHandlerChain;
 		ArrayList commandUpdateErrors = new ArrayList ();
-		ArrayList visitors = new ArrayList ();
+		List<ICommandTargetVisitor> visitors = new List<ICommandTargetVisitor> ();
 		LinkedList<Gtk.Window> topLevelWindows = new LinkedList<Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
 

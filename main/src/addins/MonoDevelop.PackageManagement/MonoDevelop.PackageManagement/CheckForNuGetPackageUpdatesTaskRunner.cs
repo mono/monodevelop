@@ -59,7 +59,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			cancellationTokenSource = new CancellationTokenSource ();
 
-			var providers = projects.Select (project => CreateProvider (project)).ToList ();
+			var providers = projects.Select (CreateProvider).ToList ();
 			currentProviders = providers;
 
 			return Task.Run (
