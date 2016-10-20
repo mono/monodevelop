@@ -159,14 +159,27 @@ namespace MonoDevelop.PackageManagement
 			return true;
 		}
 
-		public Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (IEnumerable<NuGetProjectAction> actions)
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (PackageIdentity packageIdentity, IEnumerable<NuGetProjectAction> actions)
 		{
-			return AddUninstallActionsForExistingPackages (actions);
+			await CheckPackageNotAlreadyInstalled (packageIdentity);
+
+			return await AddUninstallActionsForExistingPackages (actions);
 		}
 
 		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (IEnumerable<NuGetProjectAction> actions)
 		{
 			return AddUninstallActionsForExistingPackages (actions);
+		}
+
+		async Task CheckPackageNotAlreadyInstalled (PackageIdentity packageIdentity)
+		{
+			var installedPackages = await GetInstalledPackagesAsync (CancellationToken.None);
+			if (installedPackages.Select (package => package.PackageIdentity).Contains (packageIdentity)) {
+				string alreadyInstalledMessage = GettextCatalog.GetString ("Package '{0}' already exists in project '{1}'", packageIdentity, project.Name);
+				throw new InvalidOperationException (
+					alreadyInstalledMessage,
+					new PackageAlreadyInstalledException (alreadyInstalledMessage));
+			}
 		}
 
 		// Need to add uninstall actions for existing NuGet packages installed in the project

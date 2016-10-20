@@ -142,8 +142,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
 			var actions = new List<NuGetProjectAction> ();
 			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
+			var packageIdentity = actions[0].PackageIdentity;
 
-			var updatedActions = (await project.PreviewInstallPackageAsync (actions)).ToList ();
+			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
 
 			var lastAction = updatedActions.LastOrDefault ();
 			Assert.AreEqual (actions[0], updatedActions[0]);
@@ -159,8 +160,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateNuGetProject ();
 			var actions = new List<NuGetProjectAction> ();
 			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
+			var packageIdentity = actions[0].PackageIdentity;
 
-			var updatedActions = (await project.PreviewInstallPackageAsync (actions)).ToList ();
+			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
 
 			Assert.AreEqual (actions, updatedActions);
 		}
@@ -173,8 +175,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			var actions = new List<NuGetProjectAction> ();
 			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
 			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Uninstall));
+			var packageIdentity = actions[0].PackageIdentity;
 
-			var updatedActions = (await project.PreviewInstallPackageAsync (actions)).ToList ();
+			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
 
 			Assert.AreEqual (actions, updatedActions);
 		}
@@ -186,10 +189,33 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
 			var actions = new List<NuGetProjectAction> ();
 			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Uninstall));
+			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
+			var packageIdentity = actions[1].PackageIdentity;
 
-			var updatedActions = (await project.PreviewInstallPackageAsync (actions)).ToList ();
+			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
 
 			Assert.AreEqual (actions, updatedActions);
+		}
+
+		[Test]
+		public async Task PreviewInstallPackageAsync_OldPackageInstalledMatchesNewPackageBeingInstalled_PackageAlreadyExistsExceptionThrown ()
+		{
+			CreateNuGetProject ("MyProject");
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			var actions = new List<NuGetProjectAction> ();
+			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Install));
+			var packageIdentity = actions[0].PackageIdentity;
+
+			InvalidOperationException exception = null;
+			try {
+				(await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
+				Assert.Fail ("Expected exception");
+			} catch (InvalidOperationException ex) {
+				exception = ex;
+			}
+
+			var innerEx = exception.InnerException as PackageAlreadyInstalledException;
+			Assert.AreEqual ("Package 'NUnit.2.6.1' already exists in project 'MyProject'", innerEx.Message);
 		}
 
 		[Test]
