@@ -64,6 +64,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 				serviceWidget.ButtonReleased += HandleServiceWidgetButtonReleased;
 				service.StatusChanged += HandleServiceStatusChanged;
+				serviceWidget.Cursor = CursorType.Hand;
 			}
 		}
 
