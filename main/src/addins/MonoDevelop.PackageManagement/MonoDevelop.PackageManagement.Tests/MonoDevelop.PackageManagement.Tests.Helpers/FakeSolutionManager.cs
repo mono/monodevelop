@@ -91,6 +91,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectAdded;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRemoved;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRenamed;
+		public event EventHandler<NuGetProjectEventArgs> AfterNuGetProjectRenamed;
 		public event EventHandler SolutionClosed;
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;
@@ -138,6 +139,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void ReloadSettings ()
 		{
 			throw new NotImplementedException ();
+		}
+
+		public void SaveProject (NuGetProject nugetProject)
+		{
 		}
 	}
 }

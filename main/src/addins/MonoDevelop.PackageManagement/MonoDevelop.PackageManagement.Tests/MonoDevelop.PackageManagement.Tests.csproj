@@ -71,16 +71,12 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="NuGet.Logging">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Packaging">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Configuration">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="System.Globalization" />
     <Reference Include="System.Security" />
     <Reference Include="NuGet.PackageManagement">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.PackageManagement.dll</HintPath>
@@ -220,6 +216,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageReferenceFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\NuGetPackageInstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetCoreNuGetProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\DummyDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableDotNetCoreNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

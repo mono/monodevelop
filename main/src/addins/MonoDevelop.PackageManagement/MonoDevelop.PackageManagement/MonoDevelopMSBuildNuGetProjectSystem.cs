@@ -37,11 +37,12 @@ using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem
+	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem, IHasDotNetProject
 	{
 		IDotNetProject project;
 		NuGetFramework targetFramework;
 		string projectFullPath;
+		string projectFileFullPath;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageManagementFileService fileService;
 		Action<Action> guiSyncDispatcher;
@@ -85,6 +86,15 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public string ProjectFileFullPath {
+			get {
+				if (projectFileFullPath == null) {
+					projectFileFullPath = GuiSyncDispatch (() => project.FileName);
+				}
+				return projectFileFullPath;
+			}
+		}
+
 		public string ProjectName {
 			get {
 				return GuiSyncDispatch (() => project.Name);
@@ -108,6 +118,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			var projectTargetFramework = new ProjectTargetFramework (project);
 			return NuGetFramework.Parse (projectTargetFramework.TargetFrameworkName.FullName);
+		}
+
+		public Task SaveProject ()
+		{
+			return project.SaveAsync ();
 		}
 
 		public void AddBindingRedirects ()
@@ -182,7 +197,7 @@ namespace MonoDevelop.PackageManagement
 			DebugLogFormat("Added file '{0}' to project '{1}'.", fileName, projectName);
 		}
 
-		public void AddFrameworkReference (string name)
+		public void AddFrameworkReference (string name, string packageId)
 		{
 			GuiSyncDispatch (async () => {
 				ProjectReference assemblyReference = CreateGacReference (name);
@@ -288,7 +303,7 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public Task ExecuteScriptAsync (PackageIdentity identity, string packageInstallPath, string scriptRelativePath, NuGetProject nuGetProject, bool throwOnFailure)
+		public Task ExecuteScriptAsync (PackageIdentity identity, string packageInstallPath, string scriptRelativePath, bool throwOnFailure)
 		{
 			string message = GettextCatalog.GetString (
 				"WARNING: {0} Package contains PowerShell script '{1}' which will not be run.",

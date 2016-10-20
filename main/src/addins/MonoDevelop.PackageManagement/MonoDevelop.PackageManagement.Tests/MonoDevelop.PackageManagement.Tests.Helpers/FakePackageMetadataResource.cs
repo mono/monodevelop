@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
@@ -42,6 +42,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			var packages = packageMetadataList.Where (p => IsMatch (p, packageId, includePrerelease));
 			return Task.FromResult (packages);
+		}
+
+		public override Task<IPackageSearchMetadata> GetMetadataAsync (PackageIdentity package, ILogger log, CancellationToken token)
+		{
+			var metadata = packageMetadataList.Where (p => IsMatch (p, package.Id, true)).FirstOrDefault ();
+			return Task.FromResult (metadata);
 		}
 
 		static bool IsMatch (IPackageSearchMetadata package, string packageId, bool includePrerelease)

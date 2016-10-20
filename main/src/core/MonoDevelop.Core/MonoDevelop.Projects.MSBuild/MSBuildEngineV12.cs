@@ -184,6 +184,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			throw new NotImplementedException ();
 		}
+
+		public override IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (object projectInstance, string filePath)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 
 	#if !WINDOWS

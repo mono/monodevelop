@@ -220,6 +220,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			return conditionedProperties;
 		}
+
+		public IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (string include)
+		{
+			return engine?.FindGlobItemsIncludingFile (projectInstance, include);
+		}
 	}
 
 	class MSBuildProjectInstanceInfo

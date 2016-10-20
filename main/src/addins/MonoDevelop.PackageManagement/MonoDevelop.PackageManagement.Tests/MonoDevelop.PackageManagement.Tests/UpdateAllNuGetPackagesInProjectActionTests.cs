@@ -50,9 +50,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeFileRemover fileRemover;
 		FakePackageRestoreManager restoreManager;
 
-		void CreateAction ()
+		void CreateAction (string projectName = "MyProject")
 		{
 			project = new FakeDotNetProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = projectName;
 			solutionManager = new FakeSolutionManager ();
 			nugetProject = new FakeNuGetProject (project);
 			solutionManager.NuGetProjects[project] = nugetProject;
@@ -203,25 +204,28 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_OnePackageNotRestored_PackageIsRestored ()
 		{
-			CreateAction ();
+			CreateAction ("MyProject");
 			solutionManager.SolutionDirectory = @"d:\projects\MyProject".ToNativePath ();
-			project.Name = "MyProject";
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			nugetProject.AddPackageReference ("Test", "1.2");
 			AddUnrestoredPackageForProject ("MyProject");
 
 			action.Execute ();
 
+			var packageRestoreData = restoreManager.PackagesToBeRestored.Single ();
 			Assert.AreEqual (solutionManager.SolutionDirectory, restoreManager.RestoreMissingPackagesSolutionDirectory);
 			Assert.AreEqual (action.ProjectContext, restoreManager.RestoreMissingPackagesProjectContext);
-			Assert.AreEqual (nugetProject, restoreManager.RestoreMissingPackagesProject);
+			Assert.AreEqual ("MyProject", packageRestoreData.ProjectNames.Single ());
+			Assert.IsTrue (packageRestoreData.IsMissing);
+			Assert.AreEqual ("Test", packageRestoreData.PackageReference.PackageIdentity.Id);
+			Assert.AreEqual ("1.2", packageRestoreData.PackageReference.PackageIdentity.Version.ToString ());
 		}
 
 		[Test]
 		public void Execute_OnePackageNotRestored_ProjectReferencesRefreshed ()
 		{
-			CreateAction ();
+			CreateAction ("MyProject");
 			solutionManager.SolutionDirectory = @"d:\projects\MyProject".ToNativePath ();
-			project.Name = "MyProject";
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			AddUnrestoredPackageForProject ("MyProject");
 
@@ -233,9 +237,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_OnePackageNotRestored_PackagesRestoredEventIsFired ()
 		{
-			CreateAction ();
+			CreateAction ("MyProject");
 			solutionManager.SolutionDirectory = @"d:\projects\MyProject".ToNativePath ();
-			project.Name = "MyProject";
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			AddUnrestoredPackageForProject ("MyProject");
 			bool packagesRestored = false;
@@ -249,9 +252,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_OnePackageNotRestoredAndPackageRestoreFails_ExceptionThrownAndRestoreFailureMessageLogged ()
 		{
-			CreateAction ();
+			CreateAction ("MyProject");
 			solutionManager.SolutionDirectory = @"d:\projects\MyProject".ToNativePath ();
-			project.Name = "MyProject";
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			AddUnrestoredPackageForProject ("MyProject");
 			string messageLogged = null;

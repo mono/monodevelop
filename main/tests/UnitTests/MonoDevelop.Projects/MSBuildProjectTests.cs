@@ -465,6 +465,21 @@ namespace MonoDevelop.Projects
 			// get_Chars
 			Assert.AreEqual ("t;t;.", p.EvaluatedProperties.GetValue ("get_Chars"));
 		}
+
+		[Test]
+		public void Remove ()
+		{
+			var p = LoadAndEvaluate ("msbuild-project-test", "test-remove.csproj");
+
+			var items = p.EvaluatedItems.Where (it => it.Name == "Test1").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file1.txt", "support\\file1.txt" }, items);
+
+			items = p.EvaluatedItems.Where (it => it.Name == "Test2").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file2.txt", "support\\file1.txt" }, items);
+
+			items = p.EvaluatedItems.Where (it => it.Name == "Test3").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file2.txt" }, items);
+		}
 	}
 }
 

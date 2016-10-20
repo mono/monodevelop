@@ -818,7 +818,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "System.Xml");
 
@@ -832,7 +832,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			bool saved = project.IsSaved;
 
@@ -846,7 +846,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			project.Name = "MyTestProject";	
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName () {
 				Reference = "System.Xml",
@@ -1248,7 +1248,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var package = new PackageIdentity ("Test", new NuGetVersion ("1.2"));
 			string expectedLogMessage = "WARNING: Test Package contains PowerShell script 'init.ps1' which will not be run.";
 
-			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, null, false);
+			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, false);
 
 			Assert.AreEqual (MessageLevel.Info, projectSystem.FakeNuGetProjectContext.LastLogLevel);
 			Assert.AreEqual (expectedLogMessage, projectSystem.FakeNuGetProjectContext.LastMessageLogged);

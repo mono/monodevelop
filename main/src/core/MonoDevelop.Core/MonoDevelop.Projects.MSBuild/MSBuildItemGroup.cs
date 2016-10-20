@@ -53,10 +53,15 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
+			return AddNewItem (name, include, null);
+		}
+
+		public MSBuildItem AddNewItem (string name, string include, MSBuildItem beforeItem)
+		{
 			AssertCanModify ();
 			var it = new MSBuildItem (name);
 			it.Include = include;
-			AddItem (it);
+			AddItem (it, beforeItem);
 			return it;
 		}
 
@@ -65,6 +70,22 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			item.ParentNode = this;
 			ChildNodes = ChildNodes.Add (item);
+			item.ResetIndent (false);
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
+		}
+
+		public void AddItem (MSBuildItem item, MSBuildItem beforeItem)
+		{
+			AssertCanModify ();
+			item.ParentNode = this;
+
+			int i;
+			if (beforeItem != null && (i = ChildNodes.IndexOf (beforeItem)) != -1)
+				ChildNodes = ChildNodes.Insert (i, item);
+			else
+				ChildNodes = ChildNodes.Add (item);
+			
 			item.ResetIndent (false);
 			if (ParentProject != null)
 				ParentProject.NotifyChanged ();

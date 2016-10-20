@@ -48,17 +48,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			var credentialService = new CredentialService (
 				GetCredentialProviders (),
-				OnError,
 				nonInteractive: false);
 
 			NuGet.HttpClient.DefaultCredentialProvider = new CredentialServiceAdapter (credentialService);
 
 			HttpHandlerResourceV3Extensions.InitializeHttpHandlerResourceV3 (credentialService);
-		}
-
-		void OnError (string message)
-		{
-			PackageManagementServices.PackageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
 		}
 
 		IEnumerable<ICredentialProvider> GetCredentialProviders ()

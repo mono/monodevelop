@@ -30,11 +30,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using MonoDevelop.Projects;
-using NuGet;
-using NuGet.Common;
 using MonoDevelop.Core;
-using NuGet.PackageManagement;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
+using NuGet.Common;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this DotNetProject project)
 		{
-			return HasPackages (project.BaseDirectory, project.Name);
+			return HasPackages (project.BaseDirectory, project.Name) || project.HasPackageReferences ();
 		}
 
 		public static string GetPackagesConfigFilePath (this DotNetProject project)
@@ -147,6 +147,35 @@ namespace MonoDevelop.PackageManagement
 				return FilePath.Null;
 
 			return nugetProject.GetPackagesFolderPath (solutionManager);
+		}
+
+		public static IEnumerable<string> GetDotNetCoreTargetFrameworks (this Project project)
+		{
+			foreach (MSBuildPropertyGroup propertyGroup in project.MSBuildProject.PropertyGroups) {
+				string framework = propertyGroup.GetValue ("TargetFramework", null);
+				if (framework != null)
+					return new [] { framework };
+
+				string frameworks = propertyGroup.GetValue ("TargetFrameworks", null);
+				if (frameworks != null)
+					return frameworks.Split (';');
+			}
+
+			return Enumerable.Empty<string> ();
+		}
+
+		public static bool HasPackageReferences (this DotNetProject project)
+		{
+			return project.Items.OfType<ProjectPackageReference> ().Any ();
+		}
+
+		public static ProjectPackageReference GetPackageReference (
+			this DotNetProject project,
+			PackageIdentity packageIdentity,
+			bool matchVersion = true)
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity));
 		}
 	}
 }

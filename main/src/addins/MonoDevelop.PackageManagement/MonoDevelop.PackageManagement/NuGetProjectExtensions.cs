@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -39,9 +40,7 @@ namespace MonoDevelop.PackageManagement
 		public static FilePath GetPackagesFolderPath (this NuGetProject project, IMonoDevelopSolutionManager solutionManager)
 		{
 			if (project is BuildIntegratedProjectSystem) {
-				string globalPackagesPath = BuildIntegratedProjectUtility.GetEffectiveGlobalPackagesFolder (
-					solutionManager.SolutionDirectory,
-					solutionManager.Settings);
+				string globalPackagesPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
 
 				return new FilePath (globalPackagesPath).FullPath;
 			}
@@ -78,6 +77,26 @@ namespace MonoDevelop.PackageManagement
 			if (buildIntegratedProject != null) {
 				buildIntegratedProject.OnBeforeUninstall (actions);
 			}
+		}
+
+		public static Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var dotNetCoreProject = project as DotNetCoreNuGetProject;
+			if (dotNetCoreProject != null) {
+				return dotNetCoreProject.PreviewInstallPackageAsync (actions);
+			}
+
+			return Task.FromResult (actions);
+		}
+
+		public static Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var dotNetCoreProject = project as DotNetCoreNuGetProject;
+			if (dotNetCoreProject != null) {
+				return dotNetCoreProject.PreviewUpdatePackageAsync (actions);
+			}
+
+			return Task.FromResult (actions);
 		}
 	}
 }

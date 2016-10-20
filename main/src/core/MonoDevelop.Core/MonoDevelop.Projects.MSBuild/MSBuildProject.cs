@@ -635,6 +635,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance.TargetsIgnoringCondition; }
 		}
 
+		public IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (string include)
+		{
+			return mainProjectInstance.FindGlobItemsIncludingFile (include);
+		}
+
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
 		{
 			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);
@@ -773,6 +778,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public MSBuildItem AddNewItem (string name, string include)
 		{
+			return AddNewItem (name, include, null);
+		}
+
+		public MSBuildItem AddNewItem (string name, string include, MSBuildItem beforeItem)
+		{
+			if (beforeItem != null) {
+				var group = beforeItem.ParentNode as MSBuildItemGroup;
+				if (group != null)
+					return group.AddNewItem (name, include, beforeItem);
+			}
 			MSBuildItemGroup grp = FindBestGroupForItem (name);
 			return grp.AddNewItem (name, include);
 		}
@@ -786,8 +801,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void AddItem (MSBuildItem it)
 		{
+			AddItem (it, null);
+		}
+
+		public void AddItem (MSBuildItem it, MSBuildItem beforeItem)
+		{
 			if (string.IsNullOrEmpty (it.Name))
 				throw new InvalidOperationException ("Item doesn't have a name");
+
+			if (beforeItem != null) {
+				var group = beforeItem.ParentNode as MSBuildItemGroup;
+				if (group != null) {
+					group.AddItem (it, beforeItem);
+					return;
+				}
+			}
 			MSBuildItemGroup grp = FindBestGroupForItem (it.Name);
 			grp.AddItem (it);
 		}

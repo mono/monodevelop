@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Immutable;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -70,6 +71,18 @@ namespace MonoDevelop.Projects
 			AssertCanWrite ();
 			list = list.AddRange (items);
 			OnItemsAdded (items);
+		}
+
+		public void SetItems (IEnumerable<T> items)
+		{
+			AssertCanWrite ();
+			var newItems = items.Except (list);
+			var removedItems = list.Except (items);
+			list = ImmutableList<T>.Empty.AddRange (items);
+			if (newItems.Any ())
+				OnItemsAdded (newItems);
+			if (removedItems.Any ())
+				OnItemsRemoved (removedItems);
 		}
 
 		public void Insert (int index, T item)
