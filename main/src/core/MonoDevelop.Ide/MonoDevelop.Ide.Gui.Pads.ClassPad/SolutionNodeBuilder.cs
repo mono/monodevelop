@@ -117,6 +117,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			solution.NameChanged += OnCombineRenamed;
 			solution.StartupItemChanged += OnStartupChanged;
 			solution.RunConfigurationsChanged += OnStartupChanged;
+			solution.StartupConfigurationChanged += OnStartupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -125,6 +126,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			solution.NameChanged -= OnCombineRenamed;
 			solution.StartupItemChanged -= OnStartupChanged;
 			solution.RunConfigurationsChanged -= OnStartupChanged;
+			solution.StartupConfigurationChanged -= OnStartupChanged;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)
