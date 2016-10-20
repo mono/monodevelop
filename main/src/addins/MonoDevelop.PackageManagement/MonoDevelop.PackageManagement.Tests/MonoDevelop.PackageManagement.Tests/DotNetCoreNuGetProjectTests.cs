@@ -24,16 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Configuration;
 using NUnit.Framework;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -44,6 +47,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		DotNetProject dotNetProject;
 		TestableDotNetCoreNuGetProject project;
 		FakeNuGetProjectContext context;
+		List<SourceRepository> primaryRepositories;
+		FakeNuGetPackageManager packageManager;
+		FakeNuGetProjectContext projectContext;
+		ResolutionContext resolutionContext;
 
 		void CreateNuGetProject (string projectName = "MyProject")
 		{
@@ -71,6 +78,48 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
 			return project.InstallPackageAsync (packageIdentity, null, context, CancellationToken.None);
+		}
+
+		void CreatePackageManager ()
+		{
+			packageManager = new FakeNuGetPackageManager ();
+			projectContext = new FakeNuGetProjectContext ();
+			resolutionContext = new ResolutionContext ();
+
+			var metadataResourceProvider = new FakePackageMetadataResourceProvider ();
+
+			var source = new PackageSource ("http://test.com");
+			var providers = new INuGetResourceProvider[] {
+				metadataResourceProvider
+			};
+
+			var sourceRepository = new SourceRepository (source, providers);
+			primaryRepositories = new [] {
+				sourceRepository
+			}.ToList ();
+		}
+
+		Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (string packageId)
+		{
+			return project.PreviewUpdatePackagesAsync (
+				packageId,
+				packageManager,
+				resolutionContext,
+				projectContext,
+				primaryRepositories,
+				null,
+				CancellationToken.None);
+		}
+
+		Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync ()
+		{
+			return project.PreviewUpdatePackagesAsync (
+				packageManager,
+				resolutionContext,
+				projectContext,
+				primaryRepositories,
+				null,
+				CancellationToken.None);
 		}
 
 		[Test]
@@ -205,6 +254,70 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (project.IsSaved);
 			Assert.AreEqual ("Package 'NUnit.2.6.1' already exists in project 'MyProject'", context.LastMessageLogged);
 			Assert.AreEqual (MessageLevel.Warning, context.LastLogLevel);
+		}
+
+		[Test]
+		public async Task PreviewUpdatePackagesAsync_PackageIdSet_InstallActionCreatedForLatestPackageVersion ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			CreatePackageManager ();
+			packageManager.LatestVersion = new NuGetVersion ("3.5.0");
+
+			var actions = (await PreviewUpdatePackagesAsync ("NUnit")).ToList ();
+
+			var action = actions.Single ();
+			Assert.AreEqual ("NUnit", action.PackageIdentity.Id);
+			Assert.AreEqual ("3.5.0", action.PackageIdentity.Version.ToNormalizedString ());
+			Assert.AreEqual (NuGetProjectActionType.Install, action.NuGetProjectActionType);
+		}
+
+		[Test]
+		public async Task PreviewUpdatePackagesAsync_NoLatestVersionFound_ExceptionThrown ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			CreatePackageManager ();
+			packageManager.LatestVersion = null;
+
+			try {
+				await PreviewUpdatePackagesAsync ("NUnit");
+				Assert.Fail ("Exception expected");
+			} catch (InvalidOperationException) {
+			}
+		}
+
+		[Test]
+		public async Task PreviewUpdatePackagesAllPackagesAsync_OldPackageInstalled_InstallActionCreatedForLatestPackageVersion ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			CreatePackageManager ();
+			packageManager.LatestVersion = new NuGetVersion ("3.5.0");
+
+			var actions = (await PreviewUpdatePackagesAsync ()).ToList ();
+
+			var firstAction = actions.First ();
+			var secondAction = actions.Last ();
+			Assert.AreEqual ("NUnit", firstAction.PackageIdentity.Id);
+			Assert.AreEqual ("2.6.1", firstAction.PackageIdentity.Version.ToNormalizedString ());
+			Assert.AreEqual (NuGetProjectActionType.Uninstall, firstAction.NuGetProjectActionType);
+			Assert.AreEqual ("NUnit", secondAction.PackageIdentity.Id);
+			Assert.AreEqual ("3.5.0", secondAction.PackageIdentity.Version.ToNormalizedString ());
+			Assert.AreEqual (NuGetProjectActionType.Install, secondAction.NuGetProjectActionType);
+		}
+
+		[Test]
+		public async Task PreviewUpdatePackagesAllPackagesAsync_SamePackageInstalled_NoActionsReturned ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+			CreatePackageManager ();
+			packageManager.LatestVersion = new NuGetVersion ("2.6.1");
+
+			var actions = (await PreviewUpdatePackagesAsync ()).ToList ();
+
+			Assert.AreEqual (0, actions.Count);
 		}
 	}
 }

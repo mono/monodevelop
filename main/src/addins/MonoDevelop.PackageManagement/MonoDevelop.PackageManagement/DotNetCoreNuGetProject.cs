@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,13 +32,13 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
-using NuGet.PackageManagement;
-using System;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -201,6 +202,73 @@ namespace MonoDevelop.PackageManagement
 				return StringComparer.OrdinalIgnoreCase.Equals (package.Id, otherPackage.Id) &&
 					!package.Equals (otherPackage);
 			});
+		}
+
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			INuGetPackageManager packageManager,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			var installPackages = await GetInstalledPackagesAsync (token);
+
+			var log = new LoggerAdapter (nuGetProjectContext);
+			var actions = new List<NuGetProjectAction>();
+
+			foreach (PackageReference installedPackage in installPackages) {
+				NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync(
+					installedPackage.PackageIdentity.Id,
+					this,
+					resolutionContext,
+					primarySources,
+					log,
+					token);
+
+				if (latestVersion != null && latestVersion > installedPackage.PackageIdentity.Version) {
+					actions.Add(NuGetProjectAction.CreateUninstallProjectAction (
+						installedPackage.PackageIdentity,
+						this));
+
+					actions.Add (NuGetProjectAction.CreateInstallProjectAction (
+						new PackageIdentity (installedPackage.PackageIdentity.Id, latestVersion),
+						primarySources.FirstOrDefault (),
+						this));
+				}
+			}
+
+			return actions;
+		}
+
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			string packageId,
+			INuGetPackageManager packageManager,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			var log = new LoggerAdapter (nuGetProjectContext);
+
+			NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync (
+				packageId,
+				this,
+				resolutionContext,
+				primarySources,
+				log,
+				token);
+
+			if (latestVersion == null) {
+				throw new InvalidOperationException (GettextCatalog.GetString ("Unknown package '{0}'", packageId));
+			}
+
+			var packageIdentity = new PackageIdentity (packageId, latestVersion);
+			SourceRepository sourceRepository = primarySources.First ();
+
+			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, sourceRepository, this);
+			return new [] { action };
 		}
 	}
 }
