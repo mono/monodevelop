@@ -72,6 +72,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var sb = new StringBuilder ();
 			foreach (var r in result) {
 				var escapedMessage = Ambience.EscapeText (r.Message);
+				if (sb.Length > 0)
+					sb.AppendLine ();
 				if (result.Count > 0) {
 					string severity;
 					HslColor color;
@@ -94,9 +96,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 						break;
 					}
 
-					sb.AppendLine (string.Format ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ()));
+					sb.Append (string.Format ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ()));
 				} else {
-					sb.AppendLine (escapedMessage);
+					sb.Append (escapedMessage);
 				}
 			}
 			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, sb.ToString (), null);
