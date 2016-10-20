@@ -45,6 +45,7 @@ namespace MonoDevelop.PackageManagement
 	class DotNetCoreNuGetProject : NuGetProject, INuGetIntegratedProject, IHasDotNetProject
 	{
 		DotNetProject project;
+		bool modified;
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
@@ -105,8 +106,10 @@ namespace MonoDevelop.PackageManagement
 				return AddPackageReference (packageIdentity, nuGetProjectContext);
 			});
 
-			if (added)
+			if (added) {
 				await SaveProject ();
+				modified = true;
+			}
 
 			return added;
 		}
@@ -134,8 +137,10 @@ namespace MonoDevelop.PackageManagement
 				return RemovePackageReference (packageIdentity, nuGetProjectContext);
 			});
 
-			if (removed)
+			if (removed) {
 				await SaveProject ();
+				modified = true;
+			}
 
 			return removed;
 		}
@@ -273,6 +278,25 @@ namespace MonoDevelop.PackageManagement
 
 			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, sourceRepository, this);
 			return new [] { action };
+		}
+
+		public override Task PreProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			modified = false;
+			return base.PreProcessAsync (nuGetProjectContext, token);
+		}
+
+		/// <summary>
+		/// Restore after executing the project actions to ensure the NuGet packages are
+		/// supported by the project.
+		/// </summary>
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			if (!modified)
+				return Task.FromResult (0);
+
+			var packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
+			return packageRestorer.RestorePackages (token);
 		}
 	}
 }
