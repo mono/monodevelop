@@ -55,13 +55,12 @@ namespace MonoDevelop.PackageManagement
 		public async Task RestorePackages (CancellationToken cancellationToken)
 		{
 			foreach (DotNetProject project in projects) {
-				using (var console = new DotNetCoreOperationConsole ()) {
-					ProcessAsyncOperation operation = StartRestoreProcess (project.FileName, console);
-					using (var registration = cancellationToken.Register (() => operation.Cancel ())) {
-						await operation.Task;
+				var console = new DotNetCoreOperationConsole ();
+				ProcessAsyncOperation operation = StartRestoreProcess (project.FileName, console);
+				using (var registration = cancellationToken.Register (() => operation.Cancel ())) {
+					await operation.Task;
 
-						CheckForRestoreFailure (operation);
-					}
+					CheckForRestoreFailure (operation);
 				}
 			}
 		}
