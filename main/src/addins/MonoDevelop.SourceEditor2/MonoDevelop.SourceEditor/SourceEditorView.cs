@@ -667,6 +667,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			if (encoding != null) {
 				this.encoding = encoding;
+				this.hadBom = true; 
 				UpdateTextDocumentEncoding ();
 			}
 			if (ContentName != fileName) {
