@@ -302,7 +302,17 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var marker = lineSegment != null ? (MarginMarker)lineSegment.Markers.FirstOrDefault (m => m is MarginMarker && ((MarginMarker)m).CanDraw (this)) : null;
+			MarginMarker marker = null;
+			if (lineSegment != null) {
+				foreach (var m in lineSegment.Markers) {
+					var mm = m as MarginMarker;
+					if (mm != null && mm.CanDraw (this)) {
+						marker = mm;
+						break;
+					}
+				}
+			}
+
 			if (marker != null) {
 				bool hasDrawn = marker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 				if (!hasDrawn)

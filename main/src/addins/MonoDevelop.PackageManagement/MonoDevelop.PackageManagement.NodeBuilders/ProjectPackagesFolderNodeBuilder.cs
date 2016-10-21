@@ -61,9 +61,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is ProjectReferenceCollection) {
+			if (otherNode.DataItem is ProjectReferenceCollection)
 				return 1;
-			}
+			if (otherNode.DataItem is Ide.Gui.Pads.ProjectPad.GettingStartedNode)
+				return 1;
 			return -1;
 		}
 

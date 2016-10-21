@@ -262,6 +262,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override void OnDestroyed ()
 		{
+			this.AbortAnimation ("FadeOut");
 			if (backgroundSurface != null)
 				backgroundSurface.Dispose ();
 			if (titleSurface != null)

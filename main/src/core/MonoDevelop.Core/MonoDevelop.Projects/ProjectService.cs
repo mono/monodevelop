@@ -252,7 +252,7 @@ namespace MonoDevelop.Projects
 						
 							// Exclude empty directories
 							FilePath dir = file.ParentDirectory;
-							if (Directory.GetFiles (dir).Length == 0 && Directory.GetDirectories (dir).Length == 0) {
+							if (!Directory.EnumerateFileSystemEntries (dir).Any ()) {
 								try {
 									Directory.Delete (dir);
 								} catch (Exception ex) {

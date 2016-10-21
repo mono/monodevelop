@@ -185,7 +185,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				StyledTreeSegment treeseg = null;
 
 				try {
-					var tree = semanticMode.lineSegments.FirstOrDefault (t => t.Item1 == line);
+					Tuple<DocumentLine, HighlightingSegmentTree> tree = null;
+					foreach (var t in semanticMode.lineSegments) {
+						if (t.Item1 == line) {
+							tree = t;
+							break;
+						}
+					}
 					if (tree == null) {
 						tree = Tuple.Create (line, new HighlightingSegmentTree ());
 						tree.Item2.InstallListener (semanticMode.Document); 
@@ -201,7 +207,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 						}
 						semanticMode.lineSegments.Enqueue (tree);
 					}
-					treeseg = tree.Item2.GetSegmentsOverlapping (chunk).FirstOrDefault (s => s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset);
+					foreach (var s in tree.Item2.GetSegmentsOverlapping (chunk)) {
+						if (s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset) {
+							treeseg = s;
+							break;
+						}
+					}
 				} catch (Exception e) {
 					Console.WriteLine ("Error in semantic highlighting: " + e);
 				}

@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			radioBox.PackStart (pclPickerHbox);
 			pclRadio = new RadioButton (netstandardRadio, GettextCatalog.GetString (".NET Portable:"));
 			pclPickerHbox.PackStart (pclRadio, false, false, 0);
-			pclPickerHbox.PackStart (targetFrameworkEntry = new Entry { IsEditable = false, WidthChars = 20 }, false, false, 0);
+			pclPickerHbox.PackStart (targetFrameworkEntry = new Entry { IsEditable = false, WidthChars = 20, Name = "targetFrameworkEntry" }, false, false, 0);
 			frameworkPickerButton = new Button (GettextCatalog.GetString ("Change..."));
 			pclPickerHbox.PackStart (frameworkPickerButton, false, false, 0);
 
@@ -165,6 +165,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			// both toggle when we switch between them, only need to subscribe to one event
 			netstandardRadio.Toggled += RadioToggled;
+			
+			netStandardCombo.Name = "netStandardCombo";
 
 			ShowAll ();
 		}

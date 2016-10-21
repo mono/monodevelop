@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static List<int> cancelledTasks = new List<int> ();
 		static int currentTaskId;
+		static int fatalErrorRetries = 4;
 		static int projectIdCounter;
 		static string msbuildBinDir;
 		Dictionary<int, ProjectBuilder> projects = new Dictionary<int, ProjectBuilder> ();
@@ -181,6 +182,8 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		public BinaryMessage Ping (PingRequest msg)
 		{
+			if (fatalErrorRetries <= 0)
+				throw new Exception ("Too many fatal exceptions");
 			return msg.CreateResponse ();
 		}
 
@@ -321,8 +324,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 				ResetCurrentTask ();
 			}
-			if (workError != null)
+			if (workError != null) {
+				if (workError is OutOfMemoryException)
+					fatalErrorRetries = 0;
+				else
+					fatalErrorRetries--;
 				throw new Exception ("MSBuild operation failed", workError);
+			}
 		}
 
 		static readonly object threadLock = new object ();

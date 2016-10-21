@@ -105,12 +105,16 @@ namespace Mono.MHex.Rendering
 			Margin.LayoutWrapper result = new LayoutWrapper (layout);
 			if (Data.IsSomethingSelected) {
 				ISegment selection = Data.MainSelection.Segment;
-				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
-					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset)/2, (int)(end - start)/2);
-					result.Layout.SetBackground (Style.SelectionBg, (int)(start - startOffset)/2, (int)(end - start)/2);
-				});
+				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, this, new LayoutOffsetPair (startOffset, result.Layout), null, OnSelected);
 			}
 			return result;
+		}
+
+		static void OnSelected (long start, long end, Margin margin, LayoutOffsetPair arg)
+		{
+			var style = ((TextEditorMargin)margin).Style;
+			arg.Layout.SetForeground (style.Selection, (int)(start - arg.StartOffset) / 2, (int)(end - start) / 2);
+			arg.Layout.SetBackground (style.SelectionBg, (int)(start - arg.StartOffset) / 2, (int)(end - start) / 2);
 		}
 
 		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)

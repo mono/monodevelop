@@ -1,3 +1,4 @@
+
 // 
 // ResultTooltipProvider.cs
 //  
@@ -34,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -42,20 +44,65 @@ namespace MonoDevelop.AnalysisCore.Gui
 		#region ITooltipProvider implementation 
 		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
+			var results = new List<Result> ();
+			int markerOffset = -1, markerEndOffset = -1;
 			foreach (var marker in editor.GetTextSegmentMarkersAt (offset)) {
 				var result = marker.Tag as Result;
-				if (result != null) 
-					return Task.FromResult(new TooltipItem (result, marker.Offset, marker.Length));
+				if (result != null) {
+					if (markerOffset < 0) {
+						markerOffset = marker.Offset;
+						markerEndOffset = marker.EndOffset;
+					} else {
+						markerOffset = Math.Max (markerOffset, marker.Offset);
+						markerEndOffset = Math.Min (markerEndOffset, marker.EndOffset);
+					}
+					results.Add (result);
+				}
 			}
+			if (results != null)
+				return Task.FromResult (new TooltipItem (results, markerOffset, markerEndOffset - markerOffset));
+
 			return Task.FromResult<TooltipItem> (null);
 
 		}
 
 		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
-			var result = item.Item as Result;
+			var result = item.Item as List<Result>;
 
-			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, Ambience.EscapeText (result.Message), null);
+			var sb = new StringBuilder ();
+			foreach (var r in result) {
+				var escapedMessage = Ambience.EscapeText (r.Message);
+				if (sb.Length > 0)
+					sb.AppendLine ();
+				if (result.Count > 1) {
+					string severity;
+					HslColor color;
+					switch (r.Level) {
+					case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
+						severity = GettextCatalog.GetString ("Info");
+						color = editor.Options.GetColorStyle ().UnderlineHint.Color;
+						break;
+					case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
+						severity = GettextCatalog.GetString ("Warning");
+						color = editor.Options.GetColorStyle ().UnderlineWarning.Color;
+						break;
+					case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
+						severity = GettextCatalog.GetString ("Error");
+						color = editor.Options.GetColorStyle ().UnderlineError.Color;
+						break;
+					default:
+						severity = "?";
+						color = editor.Options.GetColorStyle ().UnderlineSuggestion.Color;
+						break;
+					}
+
+					sb.Append (string.Format ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ()));
+				} else {
+					sb.Append (escapedMessage);
+				}
+			}
+			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, sb.ToString (), null);
 			if (window.IsEmpty)
 				return null;
 			return window;
@@ -68,7 +115,5 @@ namespace MonoDevelop.AnalysisCore.Gui
 			xalign = 0.5;
 		}
 		#endregion
-
-
 	}
 }

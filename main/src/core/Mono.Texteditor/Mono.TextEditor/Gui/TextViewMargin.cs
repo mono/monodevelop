@@ -823,7 +823,7 @@ namespace Mono.TextEditor
 			}
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
-			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
+			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in markers) {
 				var chunkMarker = marker as IChunkMarker;
 				if (chunkMarker == null)
@@ -1575,7 +1575,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
+			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in textSegmentMarkers) {
 				if (layout.Layout != null)
 					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
@@ -1761,7 +1761,10 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
+			foreach (TextLineMarker marker in line.Markers) {
+				if (!marker.IsVisible)
+					continue;
+				
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, metrics);
 			}
@@ -1912,7 +1915,10 @@ namespace Mono.TextEditor
 						}
 					}
 					var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+						if (!marker.IsVisible)
+							continue;
+						
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -2048,7 +2054,10 @@ namespace Mono.TextEditor
 					}
 				}
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+					if (!marker.IsVisible)
+						continue;
+					
 					if (marker is IActionTextLineMarker) {
 						isHandled |= ((IActionTextLineMarker)marker).MouseReleased (textEditor, args);
 						if (isHandled)
@@ -2249,7 +2258,8 @@ namespace Mono.TextEditor
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
 			var hoverResult = new TextLineMarkerHoverResult ();
-			oldMarkers.ForEach (m => m.MouseHover (textEditor, args, hoverResult));
+			foreach (var marker in oldMarkers)
+				marker.MouseHover (textEditor, args, hoverResult);
 
 			if (line != null) {
 				newMarkers.Clear ();
@@ -2257,7 +2267,10 @@ namespace Mono.TextEditor
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
-				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
+				foreach (var marker in newMarkers) {
+					if (oldMarkers.Contains (marker))
+						continue;
+					
 					marker.MouseHover (textEditor, args, hoverResult);
 				}
 				oldMarkers.Clear ();
@@ -2265,7 +2278,10 @@ namespace Mono.TextEditor
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+					if (!marker.IsVisible)
+						continue;
+					
 					if (marker is IActionTextLineMarker) {
 						((IActionTextLineMarker)marker).MouseHover (textEditor, args, hoverResult);
 					}
@@ -2959,7 +2975,10 @@ namespace Mono.TextEditor
 				try {
 					restart:
 					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
-					foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
+					foreach (FoldSegment folding in foldings) {
+						if (!folding.IsFolded)
+							continue;
+						
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;

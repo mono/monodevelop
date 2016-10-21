@@ -343,7 +343,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static bool CanCreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (id => IsKnownFlavorGuid (id));
+			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (IsKnownFlavorGuid);
 		}
 
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -832,7 +832,7 @@ namespace MonoDevelop.Projects.MSBuild
 			string part = "/";
 			
 			for (int n=0; n<names.Length; n++) {
-				string[] entries;
+				IEnumerable<string> entries;
 
 				if (names [n] == ".."){
 					if (part == "/")
@@ -841,7 +841,7 @@ namespace MonoDevelop.Projects.MSBuild
 					continue;
 				}
 				
-				entries = Directory.GetFileSystemEntries (part);
+				entries = Directory.EnumerateFileSystemEntries (part);
 				
 				string fpath = null;
 				foreach (string e in entries) {

@@ -235,10 +235,12 @@ namespace MonoDevelop.Projects.MSBuild
 			if (parentContext != null)
 				return parentContext.GetPropertyValue (name);
 
-			if (envVars.TryGetValue (name, out val))
-				return val;
+			lock (envVars) {
+				if (!envVars.TryGetValue (name, out val))
+					envVars[name] = val = Environment.GetEnvironmentVariable (name);
 
-			return envVars[name] = Environment.GetEnvironmentVariable (name);
+				return val;
+			}
 		}
 
 		public string GetMetadataValue (string name)

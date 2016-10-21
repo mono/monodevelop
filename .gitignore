@@ -28,6 +28,7 @@ obj/
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
+/main/src/addins/MonoDevelop.Debugger.Win32/Mono.Debugging.Win32/bin/
 /main/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests.NonUserCodeTestLib/bin
 /main/src/addins/PerformanceDiagnostics/UIThreadMonitorDaemon/bin
 /main/src/core/MonoDevelop.Core/BuildVariables.cs
@@ -243,3 +244,4 @@ Thumbs.db
 
 #Visual Studio 2015
 main/.vs/
+main/build/util

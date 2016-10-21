@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		IEnumerable<IMetadataProperty> IPropertySet.GetProperties ()
 		{
-			return GetProperties ().Cast<IMetadataProperty> ();
+			return GetProperties ();
 		}
 
 		IMSBuildPropertyEvaluated IMSBuildPropertyGroupEvaluated.GetProperty (string name)

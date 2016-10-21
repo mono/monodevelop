@@ -1234,7 +1234,7 @@ namespace MonoDevelop.Ide.Gui
 			Task.Run (async delegate {
 //				t = DateTime.Now;
 				try {
-					await fileStatusLock.WaitAsync ();
+					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
 					if (fileStatus == null)
 						return;
 					foreach (FilePath file in files) {

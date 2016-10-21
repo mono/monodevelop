@@ -73,13 +73,6 @@ void test_str_append(void)
 	check_string_equal("asdfasdf", conc);
 }
 
-void test_generate_fallback_path (void)
-{
-	char *actual = generate_fallback_path(".");
-
-	check_string_equal("./Resources/lib:./Resources/lib/monodevelop/bin:/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib", actual);
-}
-
 void test_env2bool(void)
 {
 	typedef struct {
@@ -180,7 +173,6 @@ void test_update_environment(void)
 	};
 	const char *dyld_components[] = {
 		"/usr/local/lib",
-		"/Library/Developer/CommandLineTools/usr/lib",
 		"/usr/lib",
 		"/lib",
 		"/Library/Frameworks/Mono.framework/Libraries",
@@ -218,7 +210,6 @@ void (*tests[])(void) = {
 	test_mono_lib_path,
 	test_check_mono_version,
 	test_str_append,
-	test_generate_fallback_path,
 	test_env2bool,
 	test_push_env,
 	test_update_environment,

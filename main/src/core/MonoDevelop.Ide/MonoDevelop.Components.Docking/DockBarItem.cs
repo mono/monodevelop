@@ -80,6 +80,12 @@ namespace MonoDevelop.Components.Docking
 			              toSecondary ? 1.0f : 0.0f);
 		}
 
+		protected override void OnDestroyed ()
+		{
+			this.AbortAnimation ("CrossfadeIconSwap");
+			base.OnDestroyed ();
+		}
+
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
@@ -180,6 +186,7 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override void OnDestroyed ()
 		{
+			this.AbortAnimation ("Hover");
 			base.OnDestroyed ();
 			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
 			Ide.Gui.Styles.Changed -= UpdateStyle;

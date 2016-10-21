@@ -614,7 +614,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				return false;
 
 			var present = new List<SupportedFramework> (fx.SupportedFrameworks);
-			var matches = required.All (r => present.Remove (r));
+			var matches = required.All (present.Remove);
 			return matches && (allowExtra || present.Count == 0);
 		}
 
