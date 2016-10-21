@@ -23,8 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -37,7 +39,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item);
+			return base.SupportsObject (item) && IsDotNetCoreProject ((DotNetProject)item);
 		}
 
 		protected override void Initialize ()
@@ -51,6 +53,23 @@ namespace MonoDevelop.DotNetCore
 			if (framework.Id.Identifier == ".NETCoreApp")
 				return true;
 			return base.OnGetSupportsFramework (framework);
+		}
+
+		bool IsDotNetCoreProject (DotNetProject project)
+		{
+			var properties = project.MSBuildProject.EvaluatedProperties;
+			return properties.HasProperty ("TargetFramework") ||
+				properties.HasProperty ("TargetFrameworks");
+		}
+
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnWriteProject (monitor, msproject);
+
+			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
+			globalPropertyGroup.RemoveProperty ("ProjectGuid");
+
+			msproject.DefaultTargets = null;
 		}
 	}
 }
