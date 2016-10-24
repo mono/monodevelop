@@ -131,7 +131,7 @@ namespace MonoDevelop.Platform
 
 		public override void ShowUrl (string url)
 		{
-			Gnome.Url.Show (url);
+			Runtime.ProcessService.StartProcess ("xdg-open", url, null, null);
 		}
 		
 		public override string DefaultMonospaceFont {
