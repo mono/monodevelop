@@ -254,11 +254,7 @@ namespace MonoDevelop.Ide.Editor
 
 		DefaultSourceEditorOptions (TextStylePolicy currentPolicy)
 		{
-			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
-			if (Platform.IsWindows) {
-				defaultWordNavigation = WordNavigationStyle.Windows;
-			}
-			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", defaultWordNavigation);
+			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", WordNavigationStyle.Windows);
 			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
@@ -464,7 +460,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		bool tabsToSpaces = false;
+		bool tabsToSpaces = true;
 		public bool TabsToSpaces {
 			get {
 				return tabsToSpaces;
@@ -534,7 +530,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", false);
+		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", true);
 		public bool ShowFoldMargin {
 			get {
 				return showFoldMargin;
@@ -559,7 +555,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", false);
+		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", true);
 		public bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
@@ -592,7 +588,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		int  rulerColumn = 80;
+		int  rulerColumn = 120;
 
 		public int RulerColumn {
 			get {
@@ -651,7 +647,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", false);
+		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", true);
 		public bool EnableQuickDiff {
 			get {
 				return enableQuickDiff;
@@ -695,7 +691,7 @@ namespace MonoDevelop.Ide.Editor
 			OnChanged (EventArgs.Empty);
 		}
 		
-		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", false);
+		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", true);
 		public bool GenerateFormattingUndoStep {
 			get {
 				return generateFormattingUndoStep;
