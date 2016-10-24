@@ -40,18 +40,10 @@ namespace MonoDevelop.Platform
 {
 	public class GnomePlatform : PlatformService
 	{
-		static bool useGio;
-
 		Gnome.ThumbnailFactory thumbnailFactory = new Gnome.ThumbnailFactory (Gnome.ThumbnailSize.Normal);
 
 		static GnomePlatform ()
 		{
-			try {
-				Gio.GetDefaultForType ("text/plain");
-				useGio = true;
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-			}
 			//apparently Gnome.Icon needs GnomeVFS initialized even when we're using GIO.
 			Gnome.Vfs.Vfs.Initialize ();
 		}
@@ -88,10 +80,7 @@ namespace MonoDevelop.Platform
 
 		IEnumerable<DesktopApplication> GetApplicationsForMimeType (string mimeType)
 		{
-			if (useGio)
-				return Gio.GetAllForType (mimeType);
-			else
-				return GetGnomeVfsApplications (mimeType);
+			return Gio.GetAllForType (mimeType);
 		}
 		
 		struct GnomeVfsApp {
@@ -100,10 +89,7 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeDescription (string mt)
 		{
-			if (useGio)
-				return Gio.GetMimeTypeDescription (mt);
-			else
-				return Gnome.Vfs.Mime.GetDescription (mt);
+			return Gio.GetMimeTypeDescription (mt);
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
@@ -111,12 +97,7 @@ namespace MonoDevelop.Platform
 			if (uri == null)
 				return null;
 			
-			if (useGio) {
-				string mt = Gio.GetMimeTypeForUri (uri);
-				if (mt != null)
-					return mt;
-			}
-			return Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri));
+			return Gio.GetMimeTypeForUri (uri);
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
