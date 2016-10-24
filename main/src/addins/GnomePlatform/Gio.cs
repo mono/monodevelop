@@ -59,6 +59,10 @@ namespace MonoDevelop.Platform {
 		static extern IntPtr g_file_new_for_uri (IntPtr uri);
 		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_query_info (IntPtr handle, IntPtr attrs, int flags, IntPtr cancellable, out IntPtr error);
+		[DllImport(gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_settings_get_string(IntPtr gsettings, IntPtr key);
+		[DllImport(gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_settings_new(IntPtr schema);
 		[DllImport (glib, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_list_free (IntPtr raw);
 		[DllImport (gobject, CallingConvention = CallingConvention.Cdecl)]
@@ -122,6 +126,20 @@ namespace MonoDevelop.Platform {
 			}
 			g_list_free (ret);
 			return apps;
+		}
+
+		public static string GetGSettingsString(string schema, string key)
+		{
+			IntPtr schema_native = GLib.Marshaller.StringToPtrGStrdup (schema);
+			IntPtr gsettings = g_settings_new (schema_native);
+			GLib.Marshaller.Free (schema_native);
+
+			IntPtr key_native = GLib.Marshaller.StringToPtrGStrdup (key);
+			IntPtr ret = g_settings_get_string (gsettings, key_native);
+			GLib.Marshaller.Free (key_native);
+
+			g_object_unref (gsettings);
+			return GLib.Marshaller.PtrToStringGFree (ret);
 		}
 
 		public static string GetMimeTypeDescription (string mime_type)
