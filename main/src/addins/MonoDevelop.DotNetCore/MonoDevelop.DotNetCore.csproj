@@ -35,6 +35,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

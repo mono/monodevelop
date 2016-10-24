@@ -24,7 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -33,6 +37,8 @@ namespace MonoDevelop.DotNetCore
 	[ExportProjectModelExtension]
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
+		List<string> targetFrameworks;
+
 		public DotNetCoreProjectExtension ()
 		{
 		}
@@ -62,6 +68,31 @@ namespace MonoDevelop.DotNetCore
 				properties.HasProperty ("TargetFrameworks");
 		}
 
+		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnReadProject (monitor, msproject);
+
+			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
+		}
+
+		static IEnumerable<string> GetTargetFrameworks (MSBuildProject msproject)
+		{
+			var properties = msproject.EvaluatedProperties;
+			if (properties != null) {
+				string targetFramework = properties.GetValue ("TargetFramework");
+				if (targetFramework != null) {
+					return new [] { targetFramework };
+				}
+
+				string targetFrameworks = properties.GetValue ("TargetFrameworks");
+				if (targetFrameworks != null) {
+					return targetFrameworks.Split (';');
+				}
+			}
+
+			return new string[0];
+		}
+
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnWriteProject (monitor, msproject);
@@ -70,6 +101,31 @@ namespace MonoDevelop.DotNetCore
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
 
 			msproject.DefaultTargets = null;
+		}
+
+		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		{
+			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+		}
+
+		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		{
+			FilePath outputDirectory = GetOutputDirectory (configuration);
+			FilePath outputFileName = outputDirectory.Combine (Project.Name + ".dll");
+			return new DotNetCoreExecutionCommand (
+				Project.BaseDirectory,
+				outputFileName
+			);
+		}
+
+		FilePath GetOutputDirectory (DotNetProjectConfiguration configuration)
+		{
+			string targetFramework = targetFrameworks.FirstOrDefault ();
+			FilePath outputDirectory = configuration.OutputDirectory;
+			if (outputDirectory == "./")
+				outputDirectory = Path.Combine ("bin", configuration.Name);
+
+			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
 		}
 	}
 }
