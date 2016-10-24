@@ -30,8 +30,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
-using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -79,11 +79,11 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public static Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		public static Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (this NuGetProject project, PackageIdentity packageIdentity, IEnumerable<NuGetProjectAction> actions)
 		{
 			var dotNetCoreProject = project as DotNetCoreNuGetProject;
 			if (dotNetCoreProject != null) {
-				return dotNetCoreProject.PreviewInstallPackageAsync (actions);
+				return dotNetCoreProject.PreviewInstallPackageAsync (packageIdentity, actions);
 			}
 
 			return Task.FromResult (actions);

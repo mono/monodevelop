@@ -35,6 +35,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreOperationConsole.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreBuildOutputParser.cs" />
+    <Compile Include="..\..\core\MonoDevelop.Core\MonoDevelop.Projects\MSBuildErrorParser.cs">
+      <Link>MonoDevelop.DotNetCore\MSBuildErrorParser.cs</Link>
+    </Compile>
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreBuildOutputTextWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

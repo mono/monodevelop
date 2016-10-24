@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,19 +32,20 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
-using NuGet.PackageManagement;
-using System;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
 	class DotNetCoreNuGetProject : NuGetProject, INuGetIntegratedProject, IHasDotNetProject
 	{
 		DotNetProject project;
+		bool modified;
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
@@ -60,6 +62,10 @@ namespace MonoDevelop.PackageManagement
 			InternalMetadata.Add (NuGetProjectMetadataKeys.TargetFramework, targetFramework);
 			InternalMetadata.Add (NuGetProjectMetadataKeys.Name, project.Name);
 			InternalMetadata.Add (NuGetProjectMetadataKeys.FullPath, project.BaseDirectory);
+		}
+
+		internal DotNetProject DotNetProject {
+			get { return project; }
 		}
 
 		public static NuGetProject Create (DotNetProject project)
@@ -100,8 +106,10 @@ namespace MonoDevelop.PackageManagement
 				return AddPackageReference (packageIdentity, nuGetProjectContext);
 			});
 
-			if (added)
+			if (added) {
 				await SaveProject ();
+				modified = true;
+			}
 
 			return added;
 		}
@@ -129,8 +137,10 @@ namespace MonoDevelop.PackageManagement
 				return RemovePackageReference (packageIdentity, nuGetProjectContext);
 			});
 
-			if (removed)
+			if (removed) {
 				await SaveProject ();
+				modified = true;
+			}
 
 			return removed;
 		}
@@ -149,14 +159,27 @@ namespace MonoDevelop.PackageManagement
 			return true;
 		}
 
-		public Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (IEnumerable<NuGetProjectAction> actions)
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (PackageIdentity packageIdentity, IEnumerable<NuGetProjectAction> actions)
 		{
-			return AddUninstallActionsForExistingPackages (actions);
+			await CheckPackageNotAlreadyInstalled (packageIdentity);
+
+			return await AddUninstallActionsForExistingPackages (actions);
 		}
 
 		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (IEnumerable<NuGetProjectAction> actions)
 		{
 			return AddUninstallActionsForExistingPackages (actions);
+		}
+
+		async Task CheckPackageNotAlreadyInstalled (PackageIdentity packageIdentity)
+		{
+			var installedPackages = await GetInstalledPackagesAsync (CancellationToken.None);
+			if (installedPackages.Select (package => package.PackageIdentity).Contains (packageIdentity)) {
+				string alreadyInstalledMessage = GettextCatalog.GetString ("Package '{0}' already exists in project '{1}'", packageIdentity, project.Name);
+				throw new InvalidOperationException (
+					alreadyInstalledMessage,
+					new PackageAlreadyInstalledException (alreadyInstalledMessage));
+			}
 		}
 
 		// Need to add uninstall actions for existing NuGet packages installed in the project
@@ -201,6 +224,97 @@ namespace MonoDevelop.PackageManagement
 				return StringComparer.OrdinalIgnoreCase.Equals (package.Id, otherPackage.Id) &&
 					!package.Equals (otherPackage);
 			});
+		}
+
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			INuGetPackageManager packageManager,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			var installPackages = await GetInstalledPackagesAsync (token);
+
+			var log = new LoggerAdapter (nuGetProjectContext);
+			var actions = new List<NuGetProjectAction>();
+
+			foreach (PackageReference installedPackage in installPackages) {
+				NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync(
+					installedPackage.PackageIdentity.Id,
+					this,
+					resolutionContext,
+					primarySources,
+					log,
+					token);
+
+				if (latestVersion != null && latestVersion > installedPackage.PackageIdentity.Version) {
+					actions.Add(NuGetProjectAction.CreateUninstallProjectAction (
+						installedPackage.PackageIdentity,
+						this));
+
+					actions.Add (NuGetProjectAction.CreateInstallProjectAction (
+						new PackageIdentity (installedPackage.PackageIdentity.Id, latestVersion),
+						primarySources.FirstOrDefault (),
+						this));
+				}
+			}
+
+			return actions;
+		}
+
+		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			string packageId,
+			INuGetPackageManager packageManager,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			var log = new LoggerAdapter (nuGetProjectContext);
+
+			NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync (
+				packageId,
+				this,
+				resolutionContext,
+				primarySources,
+				log,
+				token);
+
+			if (latestVersion == null) {
+				throw new InvalidOperationException (GettextCatalog.GetString ("Unknown package '{0}'", packageId));
+			}
+
+			var installPackages = await GetInstalledPackagesAsync (token);
+			var packageIdentity = new PackageIdentity (packageId, latestVersion);
+
+			if (!IsDifferentVersionBeingInstalled (installPackages.Select (p => p.PackageIdentity), packageIdentity))
+				return new NuGetProjectAction[0];
+
+			SourceRepository sourceRepository = primarySources.First ();
+
+			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, sourceRepository, this);
+			return new [] { action };
+		}
+
+		public override Task PreProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			modified = false;
+			return base.PreProcessAsync (nuGetProjectContext, token);
+		}
+
+		/// <summary>
+		/// Restore after executing the project actions to ensure the NuGet packages are
+		/// supported by the project.
+		/// </summary>
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			if (!modified)
+				return Task.FromResult (0);
+
+			var packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
+			return packageRestorer.RestorePackages (token);
 		}
 	}
 }

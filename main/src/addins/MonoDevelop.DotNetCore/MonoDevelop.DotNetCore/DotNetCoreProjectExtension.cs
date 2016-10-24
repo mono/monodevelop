@@ -23,21 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
 {
 	[ExportProjectModelExtension]
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
+		List<string> targetFrameworks;
+
 		public DotNetCoreProjectExtension ()
 		{
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item);
+			return base.SupportsObject (item) && IsDotNetCoreProject ((DotNetProject)item);
 		}
 
 		protected override void Initialize ()
@@ -51,6 +60,96 @@ namespace MonoDevelop.DotNetCore
 			if (framework.Id.Identifier == ".NETCoreApp")
 				return true;
 			return base.OnGetSupportsFramework (framework);
+		}
+
+		bool IsDotNetCoreProject (DotNetProject project)
+		{
+			var properties = project.MSBuildProject.EvaluatedProperties;
+			return properties.HasProperty ("TargetFramework") ||
+				properties.HasProperty ("TargetFrameworks");
+		}
+
+		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnReadProject (monitor, msproject);
+
+			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
+		}
+
+		static IEnumerable<string> GetTargetFrameworks (MSBuildProject msproject)
+		{
+			var properties = msproject.EvaluatedProperties;
+			if (properties != null) {
+				string targetFramework = properties.GetValue ("TargetFramework");
+				if (targetFramework != null) {
+					return new [] { targetFramework };
+				}
+
+				string targetFrameworks = properties.GetValue ("TargetFrameworks");
+				if (targetFrameworks != null) {
+					return targetFrameworks.Split (';');
+				}
+			}
+
+			return new string[0];
+		}
+
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			base.OnWriteProject (monitor, msproject);
+
+			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
+			globalPropertyGroup.RemoveProperty ("ProjectGuid");
+
+			msproject.DefaultTargets = null;
+		}
+
+		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		{
+			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+		}
+
+		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		{
+			FilePath outputDirectory = GetOutputDirectory (configuration);
+			FilePath outputFileName = outputDirectory.Combine (Project.Name + ".dll");
+			return new DotNetCoreExecutionCommand (
+				Project.BaseDirectory,
+				outputFileName
+			);
+		}
+
+		FilePath GetOutputDirectory (DotNetProjectConfiguration configuration)
+		{
+			string targetFramework = targetFrameworks.FirstOrDefault ();
+			FilePath outputDirectory = configuration.OutputDirectory;
+			if (outputDirectory == "./")
+				outputDirectory = Path.Combine ("bin", configuration.Name);
+
+			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
+		}
+
+		protected async override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			string dotnetBuildCommand = GetDotNetBuildCommand (target);
+			if (dotnetBuildCommand != null) {
+				var config = Project.GetConfiguration (configuration) as DotNetProjectConfiguration;
+				using (var builder = new DotNetCoreProjectBuilder (Project, monitor)) {
+					BuildResult result = await builder.BuildAsnc (config, dotnetBuildCommand);
+					return new TargetEvaluationResult (result);
+				}
+			}
+			return await base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		static string GetDotNetBuildCommand (string target)
+		{
+			if (target == ProjectService.BuildTarget)
+				return "build3 --no-dependencies";
+			else if (target == ProjectService.CleanTarget)
+				return "clean3";
+
+			return null;
 		}
 	}
 }

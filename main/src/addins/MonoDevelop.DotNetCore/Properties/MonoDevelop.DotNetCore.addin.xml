@@ -1,4 +1,7 @@
 <ExtensionModel>
 
+	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="DotNetCore" class="MonoDevelop.DotNetCore.DotNetCoreExecutionHandler" />
+	</Extension>
 
 </ExtensionModel>
