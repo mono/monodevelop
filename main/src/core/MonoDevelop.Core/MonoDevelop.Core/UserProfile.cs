@@ -117,7 +117,10 @@ namespace MonoDevelop.Core
 
 		static string GetAppId (string version)
 		{
-			return BrandingService.ProfileDirectoryName + "-" + version;;
+			if (Version.Parse (version).Major < 7) {
+				return BrandingService.ProfileDirectoryName + "-" + version; ;
+			}
+			return System.IO.Path.Combine (BrandingService.ProfileDirectoryName, version);
 		}
 		
 		/// <summary>
