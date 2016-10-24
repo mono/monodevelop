@@ -168,6 +168,9 @@ namespace MonoDevelop.Ide.Gui.Components
 							mult *= 10;
 						} else if (ch == ' ' || char.IsLetter (ch)) {
 							state = 2;
+						} else if (ch == ':') {
+							state = 3;
+							fileNameStart = fileNameEnd = i;
 						} else
 							return false;
 						break;

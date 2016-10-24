@@ -59,8 +59,22 @@ namespace MonoDevelop.Ide.Gui
 			int line;
 			Assert.IsTrue (LogView.LogTextView.TryExtractFileAndLine (text, out file, out line));
 			Assert.AreEqual (file, "c:\\Users\\user\\Documents\\GitHub\\monodevelop\\main\\src\\core\\MonoDevelop.Ide\\MonoDevelop.Ide\\Ide.cs");
-			Assert.AreEqual (line, 385); 
+			Assert.AreEqual (line, 385);
 		}
+
+
+		[Test]
+		public void TestStackTraceExtraction ()
+		{
+			string text = "at Mono.TextEditor.TextArea+CenterToWrapper.Run (System.Object sender, System.EventArgs e) [0x00216] in /monodevelop/main/src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:1234 ";
+			string file;
+			int line;
+			Assert.IsTrue (LogView.LogTextView.TryExtractFileAndLine (text, out file, out line));
+			Assert.AreEqual (file, "/monodevelop/main/src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs");
+			Assert.AreEqual (line, 1234);
+		}
+
+
 
 		[Test]
 		public async Task RunAnimation ()
