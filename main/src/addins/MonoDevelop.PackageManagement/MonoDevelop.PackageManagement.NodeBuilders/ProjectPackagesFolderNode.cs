@@ -53,7 +53,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		CancellationTokenSource cancellationTokenSource;
 
-		public static readonly string NodeName = "Packages";
+		public static readonly string NodeName = "Dependencies";
 
 		public ProjectPackagesFolderNode (DotNetProject project)
 			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInWorkspace)
@@ -114,7 +114,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetLabel ()
 		{
-			return GettextCatalog.GetString ("Packages");
+			return GettextCatalog.GetString ("Dependencies");
 		}
 
 		public string GetSecondaryLabel ()
