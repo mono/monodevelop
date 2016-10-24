@@ -874,7 +874,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
 			string [] supportedToolsVersions;
-			if (requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild)
+			if ((requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild) && !Platform.IsWindows)
 				supportedToolsVersions = new [] { "15.0"};
 			else
 				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
