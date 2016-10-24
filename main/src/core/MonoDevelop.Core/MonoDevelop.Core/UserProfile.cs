@@ -100,7 +100,9 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile GetProfile (string profileVersion)
 		{
-			FilePath testProfileRoot = Environment.GetEnvironmentVariable (PROFILE_ENV_VAR);
+			var brandedEnvVar = BrandingService.BrandEnvironmentVariable (PROFILE_ENV_VAR);
+
+			FilePath testProfileRoot = Environment.GetEnvironmentVariable (brandedEnvVar);
 			if (!testProfileRoot.IsNullOrEmpty)
 				return UserProfile.ForTest (profileVersion, testProfileRoot);
 			
