@@ -58,10 +58,12 @@ namespace MonoDevelop.Components
 		{
 			AXButton,
 			AXGroup,
+			AXImage,
 			AXRadioButton,
 			AXRuler,
 			AXSplitGroup,
 			AXSplitter,
+			AXStaticText,
 			AXTabGroup,
 			AXTextArea
 		};
@@ -72,11 +74,17 @@ namespace MonoDevelop.Components
 		};
 
 #if MAC
+		const string XamarinPrivateAtkCocoaNSAccessibilityKey = "xamarin-private-atkcocoa-nsaccessibility";
 		internal static NSAccessibilityElement GetNSAccessibilityElement (Atk.Object o)
 		{
-			IntPtr handle = GtkWorkarounds.GetData (o, "xamarin-private-atkcocoa-nsaccessibility");
+			IntPtr handle = GtkWorkarounds.GetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey);
 
 			return Runtime.GetNSObject<NSAccessibilityElement> (handle, false);
+		}
+
+		internal static void SetNSAccessibilityElement (Atk.Object o, INativeObject native)
+		{
+			GtkWorkarounds.SetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey, native.Handle);
 		}
 #endif
 
@@ -872,6 +880,18 @@ namespace MonoDevelop.Components
 			protected abstract Range GetRangeForIndex (int index);
 			protected abstract Range GetStyleRangeForIndex (int index);
 			protected abstract Range GetRangeForPosition (Gdk.Point position);
+		}
+
+		public abstract class AtkCellRendererProxy : Atk.Object
+		{
+			public AccessibilityElementProxy Accessible { get; private set; }
+			protected AtkCellRendererProxy ()
+			{
+				Accessible = new AccessibilityElementProxy ();
+
+				// Set the element as secret data on the Atk.Object so AtkCocoa can do something with it
+				AtkCocoaHelper.SetNSAccessibilityElement (this, Accessible);
+			}
 		}
 	}
 }
