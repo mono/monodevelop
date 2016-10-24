@@ -63,8 +63,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Visible = showDetails;
 				statusWidget.Visible = service?.Status == Status.Added && !showDetails;
 				description.HorizontalPlacement = value ? WidgetPlacement.Start : WidgetPlacement.Fill;
-				Cursor = value ? CursorType.Arrow : CursorType.Hand;
 				UpdateDescription ();
+			}
+		}
+
+		public new CursorType Cursor {
+			get { return base.Cursor; }
+			set {
+				base.Cursor = value;
+				description.Cursor = value;
 			}
 		}
 

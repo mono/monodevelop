@@ -1007,7 +1007,7 @@ namespace MonoDevelop.Projects
 		protected override void OnDispose ()
 		{
 			foreach (ProjectConfiguration c in Configurations)
-				c.ProjectInstance.Dispose ();
+				c.ProjectInstance?.Dispose ();
 			
 			foreach (var item in items) {
 				IDisposable disp = item as IDisposable;

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using System.Xml;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
@@ -774,6 +775,15 @@ namespace MonoDevelop.Projects
 
 			res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
 			Assert.AreEqual (0, res.ErrorCount);
+		}
+
+		[Test]
+		public async Task ProjectReferencingOutputTrackedReference ()
+		{
+			string solFile = Util.GetSampleProject ("csharp-app-fsharp-lib", "csappfslib.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
+			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
 		}
 
 		[Test()]
