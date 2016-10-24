@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -126,6 +127,29 @@ namespace MonoDevelop.DotNetCore
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
+		}
+
+		protected async override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			string dotnetBuildCommand = GetDotNetBuildCommand (target);
+			if (dotnetBuildCommand != null) {
+				var config = Project.GetConfiguration (configuration) as DotNetProjectConfiguration;
+				using (var builder = new DotNetCoreProjectBuilder (Project, monitor)) {
+					BuildResult result = await builder.BuildAsnc (config, dotnetBuildCommand);
+					return new TargetEvaluationResult (result);
+				}
+			}
+			return await base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		static string GetDotNetBuildCommand (string target)
+		{
+			if (target == ProjectService.BuildTarget)
+				return "build3 --no-dependencies";
+			else if (target == ProjectService.CleanTarget)
+				return "clean3";
+
+			return null;
 		}
 	}
 }
