@@ -42,6 +42,12 @@
     <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>
 
+  <Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
+      <ProjectFlavor guid="{786c830f-07a1-408b-bd7f-6ee04809d6db}" type="MonoDevelop.FSharp.PortableFSharpProjectFlavor" language="F#" alias="F#PortableLibrary"/>
+    </Condition>
+  </Extension>
+
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" icon="md-prefs-source" />
   </Extension>

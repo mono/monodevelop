@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 
 		internal string FlavorGuid { get; set; }
 		internal string TypeAlias { get; set; }
+		internal string LanguageName { get; set; }
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
@@ -52,11 +53,23 @@ namespace MonoDevelop.Projects
 
 		internal protected override bool SupportsObject (WorkspaceObject item)
 		{
-			var p = item as SolutionItem;
+			var s = item as SolutionItem;
+			if (s == null)
+				return false;
+
+			var res = FlavorGuid == null || s.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase));
+
+			if (!res)
+				return false;
+
+			var p = item as DotNetProject;
 			if (p == null)
 				return false;
 
-			return FlavorGuid == null || p.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase));
+			if (LanguageName == null)
+				return true;
+
+			return LanguageName == p.LanguageName;
 		}
 
 		public SolutionItem Item {

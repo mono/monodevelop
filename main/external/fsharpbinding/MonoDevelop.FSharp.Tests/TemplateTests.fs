@@ -4,6 +4,7 @@ open System.IO
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open FsUnit
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.Addins
 open MonoDevelop.Core
@@ -17,7 +18,7 @@ open MonoDevelop.PackageManagement.Tests.Helpers
 open MonoDevelop.Projects
 open NUnit.Framework
 
-//[<TestFixture>]
+[<TestFixture>]
 type ``Template tests``() =
     let toTask computation : Task = Async.StartAsTask computation :> _
 
@@ -71,6 +72,16 @@ type ``Template tests``() =
     member x.Templates =
         solutionTemplates |> Seq.map (fun t -> t.Id)
 
+    [<Test>]
+    member x.``FSharp portable project``() =
+        let name = "FSharpPortableLibrary"
+        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
+        let dir = FilePath (templatesDir/"fsportable")
+        let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
+        let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
+        let proj = sln.Items.[0] :?> FSharpProject
+        proj.IsPortableLibrary |> should equal true
+
     //[<Test;AsyncStateMachine(typeof<Task>)>]
     //[<TestCaseSource ("Templates")>]
     member x.``Build every template`` (tt:string) =
@@ -80,7 +91,7 @@ type ``Template tests``() =
         if tt = "FSharpPortableLibrary" then
             Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
-            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id == tt)
+            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
             let dir = FilePath (templatesDir/projectTemplate.Id)
             dir.Delete()
             Directory.CreateDirectory (dir |> string) |> ignore
