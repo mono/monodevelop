@@ -137,7 +137,7 @@ namespace MonoDevelop.Platform
 		public override string DefaultMonospaceFont {
 			get {
 				try {
-					return (string) (new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name"));
+					return (string) (Gio.GetGSettingsString ("org.gnome.desktop.interface","monospace-font-name"));
 				} catch (Exception) {
 					return "Monospace 11";
 				}
