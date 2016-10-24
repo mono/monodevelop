@@ -74,7 +74,16 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (line, 1234);
 		}
 
-
+		[Test]
+		public void TestNewLineAtEnd ()
+		{
+			string text = "at X in /a:1\t\n";
+			string file;
+			int line;
+			Assert.IsTrue (LogView.LogTextView.TryExtractFileAndLine (text, out file, out line));
+			Assert.AreEqual (file, "/a");
+			Assert.AreEqual (line, 1);
+		}
 
 		[Test]
 		public async Task RunAnimation ()
