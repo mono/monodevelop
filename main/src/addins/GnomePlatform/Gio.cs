@@ -194,8 +194,10 @@ namespace MonoDevelop.Platform {
 			IntPtr native_attrs = GLib.Marshaller.StringToPtrGStrdup ("standard::content-type");
 			IntPtr error;
 			IntPtr info = g_file_query_info (gfile, native_attrs, 0, IntPtr.Zero, out error);
-			if (error != IntPtr.Zero)
+			if (error != IntPtr.Zero) {
+				g_error_free (error);
 				return null;
+			}
 			IntPtr content_type = g_file_info_get_content_type (info);
 			string mime_type = GLib.Marshaller.Utf8PtrToString (g_content_type_get_mime_type (content_type));
 			GLib.Marshaller.Free (content_type);
