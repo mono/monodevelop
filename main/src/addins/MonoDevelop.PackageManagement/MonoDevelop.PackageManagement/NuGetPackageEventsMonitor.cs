@@ -61,19 +61,19 @@ namespace MonoDevelop.PackageManagement
 			packageEvents = provider.GetPackageEvents ();
 			this.packageManagementEvents = (PackageManagementEvents)packageManagementEvents;
 
-			packageEvents.PackageInstalled += PackageInstalled;
+			packageEvents.PackageReferenceAdded += PackageReferenceAdded;
 			packageEvents.PackageUninstalling += PackageUninstalling;
 			packageEvents.PackageUninstalled += PackageUninstalled;
 		}
 
 		public void Dispose ()
 		{
-			packageEvents.PackageInstalled -= PackageInstalled;
+			packageEvents.PackageReferenceAdded -= PackageReferenceAdded;
 			packageEvents.PackageUninstalling -= PackageUninstalling;
 			packageEvents.PackageUninstalled -= PackageUninstalled;
 		}
 
-		void PackageInstalled (object sender, PackageEventArgs e)
+		void PackageReferenceAdded (object sender, PackageEventArgs e)
 		{
 			packageManagementEvents.OnPackageInstalled (project, e);
 		}

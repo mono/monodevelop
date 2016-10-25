@@ -1259,12 +1259,12 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.Length).Cast<FoldSegment> ();
+			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.Length);
 		}
 
 		public IEnumerable<FoldSegment> GetFoldingContaining (int offset, int length)
 		{
-			return foldSegmentTree.GetSegmentsOverlapping (offset, length).Cast<FoldSegment> ();
+			return foldSegmentTree.GetSegmentsOverlapping (offset, length);
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
@@ -1275,8 +1275,10 @@ namespace Mono.TextEditor
 		public IEnumerable<FoldSegment> GetStartFoldings (DocumentLine line)
 		{
 			if (line == null)
-				return new FoldSegment[0];
-			return GetFoldingContaining (line).Where (fold => fold.StartLine == line);
+				yield break;
+			foreach (var fold in GetFoldingContaining (line))
+				if (fold.StartLine == line)
+					yield return fold;
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int offset, int length)
@@ -1486,6 +1488,13 @@ namespace Mono.TextEditor
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
 			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
+		}
+
+		internal IEnumerable<TextSegmentMarker> GetVisibleTextSegmentMarkersAt (DocumentLine line)
+		{
+			foreach (var marker in textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment))
+				if (marker.IsVisible)
+					yield return marker;
 		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)

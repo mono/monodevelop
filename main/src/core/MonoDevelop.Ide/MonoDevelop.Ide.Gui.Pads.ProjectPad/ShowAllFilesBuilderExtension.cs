@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			if (builder.Options ["ShowAllFiles"]) {
 				string path = GetFolderPath (dataObject);
-				return Directory.Exists (path) && (Directory.GetFiles (path).Length > 0 || Directory.GetDirectories (path).Length > 0);
+				return Directory.Exists (path) && (Directory.EnumerateFileSystemEntries (path).Any ());
 			}
 			else
 				return false;

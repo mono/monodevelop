@@ -121,7 +121,7 @@ namespace MonoDevelop.Core
 		{
 			if (!File.Exists (path) || IsFolderCaseSensitive (path.ParentDirectory))
 				return path.FileName;
-			var file = Directory.GetFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
+			var file = Directory.EnumerateFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
 			return file ?? path.FileName;
 		}
 		
@@ -647,7 +647,7 @@ namespace MonoDevelop.Core
 		{
 			if (Directory.Exists (destDir) && string.Equals (Path.GetFullPath (sourceDir), Path.GetFullPath (destDir), StringComparison.CurrentCultureIgnoreCase)) {
 				// If the destination directory exists but we can't find it with the provided name casing, then it means we are just changing the case
-				var existingDir = Directory.GetDirectories (Path.GetDirectoryName (destDir), Path.GetFileName (destDir)).FirstOrDefault ();
+				var existingDir = Directory.EnumerateDirectories (Path.GetDirectoryName (destDir), Path.GetFileName (destDir)).FirstOrDefault ();
 				if (existingDir == null || (Path.GetFileName (existingDir) == Path.GetFileName (sourceDir))) {
 					var temp = destDir + ".renaming";
 					int n = 0;
@@ -670,9 +670,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static void RemoveDirectoryIfEmpty (string directory)
 		{
-			// HACK: we should use EnumerateFiles but it's broken in some Mono releases
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-			if (Directory.Exists (directory) && !Directory.GetFiles (directory).Any ())
+			if (Directory.Exists (directory) && !Directory.EnumerateFiles (directory).Any ())
 				Directory.Delete (directory);
 		}
 

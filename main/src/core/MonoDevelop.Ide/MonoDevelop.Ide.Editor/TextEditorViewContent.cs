@@ -272,18 +272,22 @@ namespace MonoDevelop.Ide.Editor
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			var res = base.OnGetContents (type);
-
-			if (type.IsAssignableFrom (typeof (TextEditor)))
-				return res.Concat (textEditor);
+			foreach (var r in base.OnGetContents (type))
+				yield return r;
+			if (type.IsAssignableFrom (typeof (TextEditor))) {
+				yield return textEditor;
+				yield break;
+			}
 
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
-				res = res.Concat (ext.OnGetContents (type));
+				foreach (var r in ext.OnGetContents (type))
+					yield return r;
 				ext = ext.Next;
 			}
-			res = res.Concat (textEditorImpl.ViewContent.GetContents (type));
-			return res;
+
+			foreach (var r in textEditorImpl.ViewContent.GetContents (type))
+				yield return r;
 		}
 
 		protected override void OnWorkbenchWindowChanged ()

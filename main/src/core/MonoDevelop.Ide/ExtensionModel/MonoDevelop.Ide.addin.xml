@@ -19,6 +19,11 @@
 		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Ide.WebBrowser.IWebBrowserLoader</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/GettingStartedProviders" name = "Getting Started Provider">
+		<Description>A class implementing IGettingStartedProvider.</Description>
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
 	
 	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
 		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
@@ -360,6 +365,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.Ide.GettingStarted.GettingStartedProjectExtension"/>
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">

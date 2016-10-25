@@ -191,6 +191,91 @@ namespace MonoDevelop.Components
 				width = height = 16;
 		}
 
+		public static Gdk.Rectangle ToGdkRectangle (this Xwt.Rectangle rect)
+		{
+			return new Gdk.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		public static Xwt.Rectangle ToXwtRectangle (this Gdk.Rectangle rect)
+		{
+			return new Xwt.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static Gdk.Point ToGdkPoint (this Xwt.Point point)
+		{
+			return new Gdk.Point ((int)point.X, (int)point.Y);
+		}
+
+		public static Xwt.Point ToXwtPoint (this Gdk.Point point)
+		{
+			return new Xwt.Point (point.X, point.Y);
+		}
+
+		#if MAC
+		static Gdk.Point ConvertToGdkCoordinates (this AppKit.NSScreen screen, Gdk.Point screenPoint)
+		{
+			if (screen == null)
+				return Gdk.Point.Zero;
+			var monitor = AppKit.NSScreen.Screens.IndexOf (screen);
+			var macgeometry = screen.Frame;
+			Gdk.Rectangle geometry = Gdk.Screen.Default.GetMonitorGeometry (monitor);
+
+			// HACK: Cocoa screen frames are always relative to the main monitor 0, but we need absolute
+			// coordinates in the Gdk system (origin is top-left corner of the left screen).
+
+			// x position is relative to main monitor 0,
+			// calculate X pos relative to current monitor first
+			screenPoint.X = (int)Math.Abs (macgeometry.X - screenPoint.X);
+			screenPoint.X += geometry.X;
+			return screenPoint;
+		}
+		#endif
+
+		public static Gdk.Rectangle GetSceenBounds (this Xwt.Widget widget)
+		{
+			var wbounds = widget.ScreenBounds.ToGdkRectangle ();
+			#if MAC
+			// Xwt.Widget.ScreenBounds is toolkit specific and Cocoa uses a different screen coordinate system.
+			var view = widget.Surface.NativeWidget as AppKit.NSView;
+			if (view != null) {
+				var point = ConvertToGdkCoordinates (view.Window?.Screen, wbounds.Location);
+				wbounds.X = point.X;
+				wbounds.Y = point.Y;
+
+				//var monitor = AppKit.NSScreen.Screens.IndexOf (view.Window.Screen);
+				//var macgeometry = view.Window.Screen.Frame;
+				//Gdk.Rectangle geometry = Gdk.Screen.Default.GetMonitorGeometry (monitor);
+
+				//// HACK: Cocoa screen frames are always relative to the main monitor 0, but we need absolute
+				//// coordinates in the Gdk system (origin is top-left corner of the left screen).
+
+				//// x position is relative to main monitor 0,
+				//// calculate X pos relative to current monitor first
+				//wbounds.X = (int) Math.Abs (macgeometry.X - wbounds.X);
+				//wbounds.X += geometry.X;
+			}
+			#endif
+			return wbounds;
+		}
+
+		public static Gdk.Point ToScreenCoordinates (this Xwt.Widget widget, Xwt.Point point)
+		{
+			var spoint = widget.ConvertToScreenCoordinates (point).ToGdkPoint ();
+			#if MAC
+			// Xwt.Widget.ScreenBounds is toolkit specific and Cocoa uses a different screen coordinate system.
+			var view = widget.Surface.NativeWidget as AppKit.NSView;
+			if (view != null) {
+				spoint = ConvertToGdkCoordinates (view.Window?.Screen, spoint);
+			}
+			#endif
+			return spoint;
+		}
+
+		public static Gdk.Rectangle ToScreenCoordinates (Xwt.Widget widget, Xwt.Rectangle rect)
+		{
+			return new Gdk.Rectangle (ToScreenCoordinates (widget, rect.Location), new Gdk.Size ((int)rect.Width, (int)rect.Height));
+		}
+
 		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)
 		{
 			if (w.ParentWindow == null)

@@ -130,6 +130,13 @@ namespace MonoDevelop.Components.Docking
 
 		internal bool OverlayWidgetVisible { get; set; }
 
+		protected override void OnDestroyed ()
+		{
+			this.AbortAnimation ("ShowOverlayWidget");
+			this.AbortAnimation ("HideOverlayWidget");
+			base.OnDestroyed ();
+		}
+
 		public void AddOverlayWidget (Widget widget, bool animate = false)
 		{
 			RemoveOverlayWidget (false);

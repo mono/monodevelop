@@ -108,7 +108,7 @@ namespace MonoDevelop.Core.Assemblies
 				foreach (string gacDir in runtime.GetGacDirectories ()) {
 					string asmDir = Path.Combine (gacDir, name);
 					if (Directory.Exists (asmDir)) {
-						foreach (string dir in Directory.GetDirectories (asmDir, pattern)) {
+						foreach (string dir in Directory.EnumerateDirectories (asmDir, pattern)) {
 							string file = Path.Combine (dir, name + ".dll");
 							if (File.Exists (file))
 								return file;

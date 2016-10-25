@@ -51,6 +51,12 @@ namespace MonoDevelop.Debugger
 			entry.KeyPressEvent += OnEditKeyPress;
 			entry.FocusOutEvent += OnEditFocusOut;
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
+			buttonOk.Clicked += ButtonClose_Clicked;
+		}
+
+		void ButtonClose_Clicked (object sender, EventArgs e)
+		{
+			this.Destroy ();
 		}
 
 		protected override void OnDestroyed ()
