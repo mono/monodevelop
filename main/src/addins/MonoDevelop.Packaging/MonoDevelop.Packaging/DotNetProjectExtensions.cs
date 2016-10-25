@@ -70,7 +70,7 @@ namespace MonoDevelop.Packaging
 		public static void InstallBuildPackagingNuGetPackage (IEnumerable<Project> projects)
 		{
 			string packagesFolder = GetPackagesFolder ();
-			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.141-dev");
+			var packageReference = new PackageManagementPackageReference ("NuGet.Build.Packaging", "0.1.144-dev");
 
 			var packageReferences = new [] { packageReference };
 

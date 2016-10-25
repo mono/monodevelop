@@ -28,7 +28,7 @@
 				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"
 				DefaultNamespace="${ProjectName}" />
 			<Packages>
-				<Package ID="NuGet.Build.Packaging" Version="0.1.141-dev" local="true" />
+				<Package ID="NuGet.Build.Packaging" Version="0.1.144-dev" local="true" />
 			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
@@ -48,7 +48,7 @@
 				<Reference type="Project" refto="${ProjectName}.Shared" />
 			</References>
 			<Packages>
-				<Package ID="NuGet.Build.Packaging" Version="0.1.141-dev" local="true" />
+				<Package ID="NuGet.Build.Packaging" Version="0.1.144-dev" local="true" />
 			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
@@ -65,7 +65,7 @@
 				<Reference type="Project" refto="${ProjectName}.Shared" />
 			</References>
 			<Packages>
-				<Package ID="NuGet.Build.Packaging" Version="0.1.141-dev" local="true" />
+				<Package ID="NuGet.Build.Packaging" Version="0.1.144-dev" local="true" />
 			</Packages>
 			<Files>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
@@ -75,7 +75,7 @@
 		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging" if="CreateNuGetProject">
 			<Options TargetFrameworkVersion="4.5" DefaultNamespace="${ProjectName}" />
 			<Packages>
-				<Package ID="NuGet.Build.Packaging" Version="0.1.141-dev" local="true" />
+				<Package ID="NuGet.Build.Packaging" Version="0.1.144-dev" local="true" />
 			</Packages>
 			<References>
 				<Reference type="Project" refto="${ProjectName}.Android" if="CreateAndroidProject" />
