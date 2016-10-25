@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -54,10 +55,26 @@ namespace MonoDevelop.Packaging
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
 			if (project is PackagingProject) {
-				return (await project.Build (monitor, configuration, buildReferencedTargets, new TargetEvaluationContext (operationContext)));
+				return await project.Build (monitor, configuration, buildReferencedTargets, new TargetEvaluationContext (operationContext));
 			} else {
-				return (await project.RunTarget (monitor, "Pack", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
+				return await Pack (monitor, configuration, buildReferencedTargets, operationContext);
 			}
+		}
+
+		async Task<BuildResult> Pack (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets, OperationContext operationContext)
+		{
+			var result = new BuildResult ();
+
+			// Build the project and any dependencies first.
+			if (buildReferencedTargets && project.GetReferencedItems (configuration).Any ()) {
+				result = await project.Build (monitor, configuration, buildReferencedTargets, operationContext);
+				if (result.Failed)
+					return result;
+			}
+
+			// Generate the NuGet package by calling the Pack target.
+			var packResult = (await project.RunTarget (monitor, "Pack", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
+			return result.Append (packResult);
 		}
 
 		public bool CanBuild (ConfigurationSelector configuration)
