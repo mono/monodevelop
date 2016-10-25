@@ -29,7 +29,6 @@
 using MonoDevelop.Ide.Desktop;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Execution;
@@ -41,30 +40,6 @@ namespace MonoDevelop.Platform
 	{
 		static GnomePlatform ()
 		{
-		}
-		
-		DesktopApplication GetGnomeVfsDefaultApplication (string mimeType)
-		{
-			var app = Gnome.Vfs.Mime.GetDefaultApplication (mimeType);
-			if (app != null)
-				return (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
-			else
-				return null;
-		}
-		
-		IEnumerable<DesktopApplication> GetGnomeVfsApplications (string mimeType)
-		{
-			var def = GetGnomeVfsDefaultApplication (mimeType);
-			var list = new List<DesktopApplication> ();
-			var apps = Gnome.Vfs.Mime.GetAllApplications (mimeType);
-			foreach (var app in apps) {
-				var dap = (GnomeVfsApp) Marshal.PtrToStructure (app.Handle, typeof(GnomeVfsApp));
-				if (!string.IsNullOrEmpty (dap.Command) && !string.IsNullOrEmpty (dap.DisplayName) && !dap.Command.Contains ("monodevelop ")) {
-					var isDefault = def != null && def.Id == dap.Command;
-					list.Add (new GnomeDesktopApplication (dap.Command, dap.DisplayName, isDefault));
-				}
-			}
-			return list;
 		}
 		
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)

@@ -141,10 +141,6 @@ AC_SUBST(GLADE_SHARP_LIBS)
 PKG_CHECK_MODULES(MONODOC, monodoc >= $MONODOC_REQUIRED_VERSION)
 AC_SUBST(MONODOC_LIBS)
 
-dnl soft dependencies
-PKG_CHECK_MODULES(GNOME_VFS_SHARP, gnome-vfs-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gnome_vfs_sharp=yes], [gnome_vfs_sharp=no])
-AC_SUBST(GNOME_VFS_SHARP_LIBS)
-
 gtksharp_prefix="`$PKG_CONFIG --variable=prefix gtk-sharp-2.0`"
 AC_SUBST(gtksharp_prefix)
 
@@ -201,9 +197,6 @@ AC_ARG_ENABLE(gnomeplatform,
 		enable_gnomeplatform=${enableval}, enable_gnomeplatform=$default_gnomeplatform)
 
 if test x$enable_gnomeplatform = xyes; then
-	if test x$gnome_vfs_sharp = xno; then
-		AC_MSG_ERROR([Cannot enable GNOME platform without gnome-vfs-sharp-2.0])
-	fi
 	platform_bindings="${platform_bindings}GNOME "
 fi
 
