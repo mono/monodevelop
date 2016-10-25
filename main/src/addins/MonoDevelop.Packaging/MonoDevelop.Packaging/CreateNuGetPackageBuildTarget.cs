@@ -45,9 +45,19 @@ namespace MonoDevelop.Packaging
 			get { return project.Name; }
 		}
 
+		/// <summary>
+		/// If the project is a NuGet packaging project then just use the normal build target.
+		/// This ensures that the dependent projects are built.
+		/// 
+		/// Otherwise the Pack target is called.
+		/// </summary>
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
-			return (await project.RunTarget (monitor, "Pack", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
+			if (project is PackagingProject) {
+				return (await project.Build (monitor, configuration, buildReferencedTargets, new TargetEvaluationContext (operationContext)));
+			} else {
+				return (await project.RunTarget (monitor, "Pack", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
+			}
 		}
 
 		public bool CanBuild (ConfigurationSelector configuration)
