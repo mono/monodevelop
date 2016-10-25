@@ -231,11 +231,24 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
-				rootMenu.AddItem (new MDSubMenuItem (commandManager, appCes));
+				var submenuitem = new MDSubMenuItem (commandManager, appCes);
+				int index = 0;
+				NSMenuItem lastSeparator = null;
+
+				// Need to update the menus when they're created rather than just when they're opened
+				// so that they'll have correct values for accessibility purposes
+				submenuitem.Update (null, ref lastSeparator, ref index);
+				rootMenu.AddItem (submenuitem);
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet) ce));
+					index++;
+					lastSeparator = null;
+
+					submenuitem = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
+					submenuitem.Update (null, ref lastSeparator, ref index);
+
+					rootMenu.AddItem (submenuitem);
 				}
 			} catch (Exception ex) {
 				try {
@@ -249,6 +262,7 @@ namespace MonoDevelop.MacIntegration
 				setupFail = true;
 				return false;
 			}
+
 			return true;
 		}
 

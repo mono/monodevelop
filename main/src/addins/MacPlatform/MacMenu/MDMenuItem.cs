@@ -162,6 +162,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		class MDExpandedArrayItem : NSMenuItem
 		{
 			public CommandInfo Info;
+
+			[Export ("accessibilityTitle")]
+			string AccessibilityTitle { get { return Title; } }
 		}
 
 		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
@@ -225,6 +228,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				item.State = NSCellStateValue.Off;
 			}
 		}
+
+		[Export ("accessibilityTitle")]
+		string AccessibilityTitle { get { return Title; } }
 
 		static void SetAccel (NSMenuItem item, string accelKey)
 		{

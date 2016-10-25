@@ -27,6 +27,7 @@
 using AppKit;
 using MonoDevelop.Components.Commands;
 using System.Linq;
+using Foundation;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
@@ -53,5 +54,8 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				MDMenu.ShowLastSeparator (ref lastSeparator);
 			}
 		}
+
+		[Export ("accessibilityTitle")]
+		string AccessibilityTitle { get { return Title; } }
 	}
 }

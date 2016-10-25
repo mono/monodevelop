@@ -95,6 +95,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			}
 		}
 
+		[Export ("accessibilityTitle")]
+		string AccessibilityTitle { get { return Title; } }
+
 		// http://lists.apple.com/archives/cocoa-dev/2008/Apr/msg01696.html
 		void FlashMenu ()
 		{
