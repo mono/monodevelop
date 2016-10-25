@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -173,16 +173,19 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorView (IReadonlyTextDocument document = null)
 		{
 			Counters.LoadedEditors++;
-
-			widget = new SourceEditorWidget (this);
+			TextDocument doc;
 			if (document != null) {
 				var textDocument = document as TextDocument;
 				if (textDocument != null) {
-					widget.TextEditor.Document = textDocument;
+					doc = textDocument;
 				} else {
-					widget.TextEditor.Document.Text = document.Text;
+					doc = new TextDocument (document.Text);
 				}
+			} else {
+				doc = new TextDocument ();
 			}
+
+			widget = new SourceEditorWidget (this, doc);
 
 			widget.TextEditor.Document.TextChanged += HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged += HandleLineChanged;

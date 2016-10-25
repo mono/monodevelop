@@ -1,4 +1,4 @@
-// SourceEditorWidget.cs
+﻿// SourceEditorWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -386,11 +386,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public SourceEditorWidget (SourceEditorView view)
+		public SourceEditorWidget (SourceEditorView view, TextDocument doc)
 		{
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
-			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
+			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance), doc);
 			this.textEditor.TextArea.FocusInEvent += (o, s) => {
 				lastActiveEditor = (ExtensibleTextEditor)((TextArea)o).GetTextEditorData ().Parent;
 				view.FireCompletionContextChanged ();
