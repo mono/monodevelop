@@ -670,7 +670,6 @@ namespace MonoDevelop.SourceEditor
 				return;
 			if (encoding != null) {
 				this.encoding = encoding;
-				this.hadBom = true; 
 				UpdateTextDocumentEncoding ();
 			}
 			if (ContentName != fileName) {
@@ -936,7 +935,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool warnOverwrite = false;
 		Encoding encoding;
-		bool hadBom = false;
+		bool hadBom = true;
 
 		internal void ReplaceContent (string fileName, string content, Encoding enc)
 		{
