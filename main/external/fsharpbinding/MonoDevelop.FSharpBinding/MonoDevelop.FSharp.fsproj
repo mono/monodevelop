@@ -89,6 +89,7 @@
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpProject.fs" />
+    <Compile Include="PortableFSharpProjectFlavor.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpOutlineTextEditorExtension.fs" />

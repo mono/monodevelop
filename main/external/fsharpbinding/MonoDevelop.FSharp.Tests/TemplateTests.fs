@@ -77,6 +77,7 @@ type ``Template tests``() =
         let name = "FSharpPortableLibrary"
         let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
         let dir = FilePath (templatesDir/"fsportable")
+        dir.Delete()
         let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
         let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
         let proj = sln.Items.[0] :?> FSharpProject
