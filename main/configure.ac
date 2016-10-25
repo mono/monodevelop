@@ -142,8 +142,6 @@ PKG_CHECK_MODULES(MONODOC, monodoc >= $MONODOC_REQUIRED_VERSION)
 AC_SUBST(MONODOC_LIBS)
 
 dnl soft dependencies
-PKG_CHECK_MODULES(GNOME_SHARP, gnome-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gnome_sharp=yes], [gnome_sharp=no])
-AC_SUBST(GNOME_SHARP_LIBS)
 PKG_CHECK_MODULES(GNOME_VFS_SHARP, gnome-vfs-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION, [gnome_vfs_sharp=yes], [gnome_vfs_sharp=no])
 AC_SUBST(GNOME_VFS_SHARP_LIBS)
 
@@ -203,9 +201,6 @@ AC_ARG_ENABLE(gnomeplatform,
 		enable_gnomeplatform=${enableval}, enable_gnomeplatform=$default_gnomeplatform)
 
 if test x$enable_gnomeplatform = xyes; then
-	if test x$gnome_sharp = xno; then
-		AC_MSG_ERROR([Cannot enable GNOME platform without gnome-sharp-2.0])
-	fi
 	if test x$gnome_vfs_sharp = xno; then
 		AC_MSG_ERROR([Cannot enable GNOME platform without gnome-vfs-sharp-2.0])
 	fi

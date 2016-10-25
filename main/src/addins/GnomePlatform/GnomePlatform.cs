@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Gnome;
 using MonoDevelop.Ide.Desktop;
 using System;
 using System.Collections.Generic;
@@ -40,12 +39,8 @@ namespace MonoDevelop.Platform
 {
 	public class GnomePlatform : PlatformService
 	{
-		Gnome.ThumbnailFactory thumbnailFactory = new Gnome.ThumbnailFactory (Gnome.ThumbnailSize.Normal);
-
 		static GnomePlatform ()
 		{
-			//apparently Gnome.Icon needs GnomeVFS initialized even when we're using GIO.
-			Gnome.Vfs.Vfs.Initialize ();
 		}
 		
 		DesktopApplication GetGnomeVfsDefaultApplication (string mimeType)
@@ -142,10 +137,8 @@ namespace MonoDevelop.Platform
 					return "gnome-fs-regular";
 				
 				string icon = null;
-				Gnome.IconLookupResultFlags result;
 				try {
-					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, 
-					                              Gnome.IconLookupFlags.None, out result);
+					icon = Gio.GetIconIdForFile (filename);
 				} catch {}
 				if (icon != null && icon.Length > 0)
 					return icon;
