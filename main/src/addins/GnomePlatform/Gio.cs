@@ -160,8 +160,10 @@ namespace MonoDevelop.Platform {
 			IntPtr native_attrs = GLib.Marshaller.StringToPtrGStrdup ("standard::icon");
 			IntPtr error;
 			IntPtr info = g_file_query_info (gfile, native_attrs, 0, IntPtr.Zero, out error);
+			GLib.Marshaller.Free (native_attrs);
 			if (error != IntPtr.Zero) {
 				g_error_free (error);
+				g_object_unref (gfile);
 				return null;
 			}
 			IntPtr iconnative = g_icon_to_string (g_file_info_get_icon (info));
@@ -194,13 +196,16 @@ namespace MonoDevelop.Platform {
 			IntPtr native_attrs = GLib.Marshaller.StringToPtrGStrdup ("standard::content-type");
 			IntPtr error;
 			IntPtr info = g_file_query_info (gfile, native_attrs, 0, IntPtr.Zero, out error);
+			GLib.Marshaller.Free (native_attrs);
 			if (error != IntPtr.Zero) {
 				g_error_free (error);
+				g_object_unref (gfile);
 				return null;
 			}
 			IntPtr content_type = g_file_info_get_content_type (info);
 			string mime_type = GLib.Marshaller.Utf8PtrToString (g_content_type_get_mime_type (content_type));
 			GLib.Marshaller.Free (content_type);
+			g_object_unref (info);
 			g_object_unref (gfile);
 			return mime_type;
 		}
