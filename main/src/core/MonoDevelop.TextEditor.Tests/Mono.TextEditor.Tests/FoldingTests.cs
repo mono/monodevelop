@@ -1,4 +1,4 @@
-//
+﻿//
 // FoldingTests.cs
 //
 // Author:
@@ -31,11 +31,12 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Mono.TextEditor.Tests.Actions;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class FoldingTests
+	class FoldingTests
 	{
 		public static TextEditorData Create (string content)
 		{
@@ -74,12 +75,12 @@ namespace Mono.TextEditor.Tests
 			List<FoldSegment> result = new List<FoldSegment> ();
 			Stack<FoldSegment> foldSegments = new Stack<FoldSegment> ();
 			
-			for (int i = 0; i < doc.TextLength - 1; ++i) {
+			for (int i = 0; i < doc.Length - 1; ++i) {
 				char ch = doc.GetCharAt (i);
 				
 				if ((ch == '+' || ch == '-') && doc.GetCharAt(i + 1) == '[') {
-					FoldSegment segment = new FoldSegment (doc, "...", i, 0, FoldingType.None);
-					segment.IsFolded = ch == '+';
+					FoldSegment segment = new FoldSegment ("...", i, 0, FoldingType.Unknown);
+					segment.IsCollapsed = ch == '+';
 					foldSegments.Push (segment);
 				} else if (ch == ']' && foldSegments.Count > 0) {
 					FoldSegment segment = foldSegments.Pop ();
@@ -293,9 +294,9 @@ namespace Mono.TextEditor.Tests
 10");
 			var segments = GetFoldSegments (data.Document);
 			data.Document.UpdateFoldSegments (segments);
-			Assert.AreEqual (true, data.Document.FoldSegments.FirstOrDefault ().IsFolded);
+			Assert.AreEqual (true, data.Document.FoldSegments.FirstOrDefault ().IsCollapsed);
 			segments = GetFoldSegments (data.Document);
-			segments[0].IsFolded = false;
+			segments[0].IsCollapsed = false;
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (5, data.LogicalToVisualLine (8));
 		}
@@ -464,8 +465,8 @@ $1234567890");
 			var segments = GetFoldSegments (data.Document);
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (15, data.LogicalToVisualLine (15));
-			data.Document.GetStartFoldings (6).First ().IsFolded = true;
-			data.Document.GetStartFoldings (4).First ().IsFolded = true;
+			data.Document.GetStartFoldings (6).First ().IsCollapsed = true;
+			data.Document.GetStartFoldings (4).First ().IsCollapsed = true;
 			Assert.AreEqual (11, data.LogicalToVisualLine (15));
 		}
 		
@@ -492,8 +493,8 @@ $1234567890");
 			var segments = GetFoldSegments (data.Document);
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (11, data.LogicalToVisualLine (15));
-			data.Document.GetStartFoldings (6).First ().IsFolded = false;
-			data.Document.GetStartFoldings (4).First ().IsFolded = false;
+			data.Document.GetStartFoldings (6).First ().IsCollapsed = false;
+			data.Document.GetStartFoldings (4).First ().IsCollapsed = false;
 			Assert.AreEqual (15, data.LogicalToVisualLine (15));
 		}
 		
@@ -515,7 +516,7 @@ AAAAAAAA
 			Assert.AreEqual (new DocumentLocation (2, 9), data.Caret.Location);
 			CaretMoveActions.Down (data);
 			CaretMoveActions.Down (data);
-			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsCollapsed);
 			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
 		}
 		
@@ -536,7 +537,7 @@ AAAAAAAA$
 			
 			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
 			CaretMoveActions.Up (data);
-			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsCollapsed);
 			Assert.AreEqual (new DocumentLocation (3, 9), data.Caret.Location);
 		}
 		
@@ -557,7 +558,7 @@ AAAAAAAA$
 			
 			Assert.AreEqual (new DocumentLocation (8, 9), data.Caret.Location);
 			CaretMoveActions.Up (data);
-			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsFolded);
+			Assert.AreEqual (true, data.Document.FoldSegments.First ().IsCollapsed);
 			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
 		}
 		

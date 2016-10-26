@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNet.Razor
 		MonoDevelop.Ide.Editor.TextEditor defaultEditor;
 		DocumentContext defaultDocumentContext;
 
-		RazorSyntaxMode syntaxMode;
+		// RazorSyntaxMode syntaxMode;
 
 		UnderlyingDocument HiddenDoc {
 			get { return hiddenInfo.UnderlyingDocument; }
@@ -111,27 +111,27 @@ namespace MonoDevelop.AspNet.Razor
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
 			defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
-			syntaxMode = new RazorSyntaxMode (DocumentContext);
-			var textEditorData = DocumentContext.GetContent<TextEditorData> ();
-			if (textEditorData != null)
-				textEditorData.Document.SyntaxMode = syntaxMode;
+			//syntaxMode = new RazorSyntaxMode (Editor, DocumentContext);
+			//var textEditorData = DocumentContext.GetContent<TextEditorData> ();
+			//if (textEditorData != null)
+			//	textEditorData.Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
-			if (syntaxMode != null) {
-				var textEditorData = DocumentContext.GetContent<TextEditorData> ();
-				if (textEditorData != null)
-					textEditorData.Document.SyntaxMode = null;
-				syntaxMode.Dispose ();
-				syntaxMode = null;
-			}
+			//if (syntaxMode != null) {
+			//	var textEditorData = DocumentContext.GetContent<TextEditorData> ();
+			//	if (textEditorData != null)
+			//		textEditorData.Document.SyntaxMode = null;
+			//	syntaxMode.Dispose ();
+			//	syntaxMode = null;
+			//}
 			defaultEditor.TextChanging -= UnderlyingDocument_TextReplacing;
 			base.Dispose ();
 		}
 
 		// Handles text modifications in hidden document
-		void UnderlyingDocument_TextReplacing (object sender, TextChangeEventArgs e)
+		void UnderlyingDocument_TextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			if (razorDocument == null)
 				return;

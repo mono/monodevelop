@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -38,28 +39,28 @@ namespace MonoDevelop.SourceEditor
 
 		ITextDocument ITextEditorFactory.CreateNewDocument ()
 		{
-			return new TextDocumentWrapper (new TextDocument ());
+			return new TextDocument ();
 		}
 
 		ITextDocument ITextEditorFactory.CreateNewDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
+				UseBOM = textSource.UseBOM,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		IReadonlyTextDocument ITextEditorFactory.CreateNewReadonlyDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
-				ReadOnly = true,
+				UseBOM = textSource.UseBOM,
+				IsReadOnly = true,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor ()
@@ -74,13 +75,14 @@ namespace MonoDevelop.SourceEditor
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
 		{
-			var mode = SyntaxModeService.GetSyntaxMode (null, mimeType);
+			var mode = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (null, mimeType);
 			if (mode == null)
 				return null;
-			System.Collections.Generic.List<string> value;
-			if (!mode.Properties.TryGetValue (name, out value))
+			// TODO: EditorTheme - remove the syntax properties or translate them to new language properties/services
+//			System.Collections.Generic.List<string> value;
+//			if (!mode.Properties.TryGetValue (name, out value))
 				return null;
-			return value.ToArray ();
+//			return value.ToArray ();
 		}
 		#endregion
 	}

@@ -1,12 +1,14 @@
 ﻿using Mono.TextEditor;
 using System;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
 	class SearchInSelectionMarker : TextSegmentMarker
 	{
 
-		public SearchInSelectionMarker (TextSegment textSegment) : base (textSegment)
+		public SearchInSelectionMarker (ISegment textSegment) : base (textSegment)
 		{
 		}
 
@@ -45,8 +47,9 @@ namespace MonoDevelop.SourceEditor
 			if (@from <= to) {
 				if (metrics.TextEndOffset < markerEnd)
 					to = metrics.WholeLineWidth + metrics.TextRenderStartPosition;
-				var c1 = editor.Options.GetColorStyle ().PlainText.Background;
-				var c2 = editor.Options.GetColorStyle ().SelectedText.Background;
+				
+				var c1 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
+				var c2 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Selection);
 				cr.SetSourceRGB ((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2);
 				cr.Rectangle (@from, y, to - @from, metrics.LineHeight);
 				cr.Fill ();

@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Highlighting
 //				textEditorData.MainSelection = new Selection (
 //					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + start.Length : startCol + 1 + start.Length),
 //					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 1 + start.Length : endCol + start.Length),
-//					Mono.TextEditor.SelectionMode.Block);
+//					MonoDevelop.Ide.Editor.SelectionMode.Block);
 			} else {
 				var selectionRange = editor.SelectionRange;
 				int anchorOffset = selectionRange.Offset;

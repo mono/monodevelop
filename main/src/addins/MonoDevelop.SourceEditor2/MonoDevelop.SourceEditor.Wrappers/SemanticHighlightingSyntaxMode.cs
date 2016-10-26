@@ -31,25 +31,20 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
 using Gtk;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
+using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	sealed class SemanticHighlightingSyntaxMode : SyntaxMode, IDisposable
+	sealed class SemanticHighlightingSyntaxMode : ISyntaxHighlighting, IDisposable
 	{
 		readonly ExtensibleTextEditor editor;
-		readonly SyntaxMode syntaxMode;
+		readonly ISyntaxHighlighting syntaxMode;
 		SemanticHighlighting semanticHighlighting;
 
-		public override TextDocument Document {
-			get {
-				return syntaxMode.Document;
-			}
-			set {
-				syntaxMode.Document = value;
-			}
-		}
-
-		public Mono.TextEditor.Highlighting.SyntaxMode UnderlyingSyntaxMode {
+		public ISyntaxHighlighting UnderlyingSyntaxMode {
 			get {
 				return this.syntaxMode;
 			}
@@ -66,21 +61,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			{
 				Style = style;
 			}
+
+			public override string ToString ()
+			{
+				return string.Format ($"[StyledTreeSegment: Offset={Offset}, Length={Length}, Style={Style}]");
+			}
 		}
 
 		class HighlightingSegmentTree : Mono.TextEditor.SegmentTree<StyledTreeSegment>
 		{
-			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
-			{
-				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.EndOffset > chunk.Offset);
-				if (segment == null) {
-					style = null;
-					return false;
-				}
-				endOffset = segment.EndOffset;
-				style = segment.Style;
-				return true;
-			}
 
 			public void AddStyle (MonoDevelop.Core.Text.ISegment segment, string style)
 			{
@@ -91,9 +80,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		}
 
 		bool isDisposed;
-		Queue<Tuple<DocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<DocumentLine, HighlightingSegmentTree>> ();
+		Queue<Tuple<IDocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<IDocumentLine, HighlightingSegmentTree>> ();
 
-		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxMode syntaxMode, SemanticHighlighting semanticHighlighting)
+		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxHighlighting syntaxMode, SemanticHighlighting semanticHighlighting)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
@@ -103,7 +92,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				throw new ArgumentNullException ("semanticHighlighting");
 			this.editor = editor;
 			this.semanticHighlighting = semanticHighlighting;
-			this.syntaxMode = syntaxMode as SyntaxMode;
+			this.syntaxMode = syntaxMode;
 			semanticHighlighting.SemanticHighlightingUpdated += SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
@@ -156,92 +145,53 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
-		public override SpanParser CreateSpanParser (Mono.TextEditor.DocumentLine line, CloneableStack<Span> spanStack)
+		const int MaximumCachedLineSegments = 200;
+
+		async Task<HighlightedLine> ISyntaxHighlighting.GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			return syntaxMode.CreateSpanParser (line, spanStack);
+			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
+				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
+			}
+			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
+			var segments = new List<ColoredSegment> (syntaxLine.Segments);
+			try {
+				var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
+				if (tree == null) {
+					tree = Tuple.Create (line, new HighlightingSegmentTree ());
+					tree.Item2.InstallListener (editor.Document);
+					int lineOffset = line.Offset;
+					foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
+						tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
+					}
+					while (lineSegments.Count > MaximumCachedLineSegments) {
+						var removed = lineSegments.Dequeue ();
+						try {
+							removed.Item2.RemoveListener ();
+						} catch (Exception) { }
+					}
+					lineSegments.Enqueue (tree);
+				}
+
+				foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
+					SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (treeseg.Offset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+				}
+			} catch (Exception e) {
+				Console.WriteLine ("Error in semantic highlighting: " + e);
+			}
+
+
+			return new HighlightedLine (segments);
 		}
 
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line)
+		async Task<ImmutableStack<string>> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return new CSharpChunkParser (this, spanParser, style, line);
-		}
+			var line = editor.GetLineByOffset (offset);
 
-		class CSharpChunkParser : ChunkParser
-		{
-			const int MaximumCachedLineSegments = 200;
-			SemanticHighlightingSyntaxMode semanticMode;
-
-			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line) : base (semanticMode, spanParser, style, line)
-			{
-				this.semanticMode = semanticMode;
+			foreach (var seg in (await ((ISyntaxHighlighting)this).GetHighlightedLineAsync (line, cancellationToken)).Segments) {
+				if (seg.Contains (offset))
+					return seg.ScopeStack;
 			}
-
-			protected override void AddRealChunk (Chunk chunk)
-			{
-				if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
-					base.AddRealChunk (chunk);
-					return;
-				}
-				StyledTreeSegment treeseg = null;
-
-				try {
-					Tuple<DocumentLine, HighlightingSegmentTree> tree = null;
-					foreach (var t in semanticMode.lineSegments) {
-						if (t.Item1 == line) {
-							tree = t;
-							break;
-						}
-					}
-					if (tree == null) {
-						tree = Tuple.Create (line, new HighlightingSegmentTree ());
-						tree.Item2.InstallListener (semanticMode.Document); 
-						int lineOffset = line.Offset;
-						foreach (var seg in semanticMode.semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
-							tree.Item2.AddStyle (seg, seg.ColorStyleKey);
-						}
-						while (semanticMode.lineSegments.Count > MaximumCachedLineSegments) {
-							var removed = semanticMode.lineSegments.Dequeue ();
-							try {
-								removed.Item2.RemoveListener ();
-							} catch (Exception) { }
-						}
-						semanticMode.lineSegments.Enqueue (tree);
-					}
-					foreach (var s in tree.Item2.GetSegmentsOverlapping (chunk)) {
-						if (s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset) {
-							treeseg = s;
-							break;
-						}
-					}
-				} catch (Exception e) {
-					Console.WriteLine ("Error in semantic highlighting: " + e);
-				}
-
-				if (treeseg != null) {
-					if (treeseg.Offset - chunk.Offset > 0)
-						AddRealChunk (new Chunk (chunk.Offset, treeseg.Offset - chunk.Offset, chunk.Style));
-
-					var startOffset = Math.Max (chunk.Offset, treeseg.Offset);
-					var endOffset = Math.Min (treeseg.EndOffset, chunk.EndOffset);
-
-					base.AddRealChunk (new Chunk (startOffset, endOffset - startOffset, treeseg.Style));
-
-					if (endOffset < chunk.EndOffset)
-						AddRealChunk (new Chunk (treeseg.EndOffset, chunk.EndOffset - endOffset, chunk.Style));
-					return;
-				}
-
-				base.AddRealChunk (chunk);
-			}
-
-			protected override string GetStyle (Chunk chunk)
-			{
-				/*if (spanParser.CurRule.Name == "Comment") {
-					if (tags.Contains (doc.GetTextAt (chunk))) 
-						return "Comment Tag";
-				}*/
-				return base.GetStyle (chunk);
-			}
+			return await syntaxMode.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 }

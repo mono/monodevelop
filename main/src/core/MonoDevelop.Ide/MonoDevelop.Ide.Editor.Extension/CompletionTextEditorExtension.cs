@@ -96,6 +96,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			if (!IsActiveExtension ())
+				return base.KeyPress (descriptor);
 			bool res;
 			if (CurrentCompletionContext != null) {
 				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
@@ -169,7 +171,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 							var result = t.Result;
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
-
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
@@ -327,13 +328,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler(TextEditorCommands.ShowCompletionWindow)]
 		internal void OnUpdateCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunCompletionCommand () && !CompletionWindowManager.IsVisible;
+			info.Bypass = !IsActiveExtension () || (!CanRunCompletionCommand () && !CompletionWindowManager.IsVisible);
 		}
 
 		[CommandUpdateHandler(TextEditorCommands.ShowParameterCompletionWindow)]
 		internal void OnUpdateParameterCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunParameterCompletionCommand ();
+			info.Bypass = !IsActiveExtension () || !CanRunParameterCompletionCommand ();
 		}
 
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
@@ -386,7 +387,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
 			info.Enabled = !Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -409,7 +410,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateSelectionSurroundWith (CommandInfo info)
 		{
 			info.Enabled = Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -510,7 +511,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
 				ctx = templateWidget.GetCodeTemplateContext ();
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (Editor).WaitAndGetResult (CancellationToken.None)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith) {
 					if (ctx == template.CodeTemplateContext)
 						list.Add (new CodeTemplateCompletionData (this, template));
@@ -525,7 +526,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			list.AutoSelect = true;
 			list.AutoCompleteEmptyMatch = true;
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith) {
 					list.Add (new CodeTemplateCompletionData (this, template));
 				}
@@ -618,7 +619,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
+			CompletionWidget = CompletionWidget ?? DocumentContext.GetContent <ICompletionWidget> ();
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 			Editor.FocusLost += HandleFocusOutEvent;

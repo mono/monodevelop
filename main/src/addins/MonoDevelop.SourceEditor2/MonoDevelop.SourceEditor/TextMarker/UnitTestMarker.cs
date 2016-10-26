@@ -11,7 +11,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		IDocumentLine ITextLineMarker.Line {
 			get {
-				return new DocumentLineWrapper (LineSegment);
+				return LineSegment;
 			}
 		}
 

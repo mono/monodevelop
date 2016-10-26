@@ -66,10 +66,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
     <Reference Include="monodoc">
       <HintPath>..\..\..\..\main\build\bin\monodoc.dll</HintPath>
     </Reference>
@@ -121,6 +117,16 @@
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
+      <Private>False</Private>
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharpBinding">
+      <HintPath>..\..\..\build\AddIns\BackendBindings\FSharpBinding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
       <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
       <Name>MonoDevelop.PackageManagement.Tests</Name>
@@ -158,10 +164,6 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
-      <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
-      <Name>MonoDevelop.FSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj">
       <Project>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</Project>
       <Name>MonoDevelop.FSharpInteractive.Service</Name>
@@ -177,22 +179,24 @@
     <Compile Include="CopyPaste.fs" />
     <Compile Include="SelectionTests.fs" />
     <None Include="paket.references" />
-    <None Include="Samples\Xamarin.iOS.fsproj" />
-    <None Include="Samples\android\fsandroid.fsproj">
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Samples\android\fsandroidnuget2.sln">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2.sln">
+    </Content>
+    <Content Include="Samples\android\fsandroid.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
+    </Content>
+    <Content Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
+    </Content>
+    <Content Include="Samples\android\fsandroidnuget2\MainActivity.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
+    </Content>
+    <Content Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Samples\Xamarin.iOS.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>

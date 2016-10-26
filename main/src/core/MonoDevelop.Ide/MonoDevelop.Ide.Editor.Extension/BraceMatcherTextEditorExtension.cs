@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 using Mono.Addins;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
@@ -39,6 +40,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();
 		static List<AbstractBraceMatcher> braceMatcher = new List<AbstractBraceMatcher> ();
+
+		BraceMatchingResult? currentResult;
+
 		bool isSubscribed;
 		static BraceMatcherTextEditorExtension()
 		{
@@ -103,9 +107,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Editor_CaretPositionChanged (sender, e);
 		}
 
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		internal void OnGotoMatchingBrace ()
+		{
+			if (currentResult != null && currentResult.HasValue) {
+				Editor.CaretOffset = currentResult.Value.IsCaretInLeft ? currentResult.Value.RightSegment.Offset : currentResult.Value.LeftSegment.Offset;
+			}
+		}
+
 		void Editor_CaretPositionChanged (object sender, EventArgs e)
 		{
 			Editor.UpdateBraceMatchingResult (null);
+			currentResult = null;
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
@@ -147,6 +161,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					if (token.IsCancellationRequested)
 						return;
 					Editor.UpdateBraceMatchingResult (result);
+					currentResult = result;
 				});
 			});
 		}

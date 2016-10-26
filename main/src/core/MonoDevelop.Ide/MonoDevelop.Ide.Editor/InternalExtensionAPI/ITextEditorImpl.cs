@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextEditorImpl.cs
 //
 // Author:
@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Components;
 using Xwt;
 using System.Collections.Immutable;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -56,13 +58,15 @@ namespace MonoDevelop.Ide.Editor
 
 		IReadonlyTextDocument Document { get; }
 
-		DocumentLocation CaretLocation { get; set; }
-
 		SemanticHighlighting SemanticHighlighting { get; set; }
 
+		ISyntaxHighlighting SyntaxHighlighting { get; set; }
+	
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }
+
+		IEnumerable<Selection> Selections { get; }
 
 		SelectionMode SelectionMode { get; }
 
@@ -168,6 +172,8 @@ namespace MonoDevelop.Ide.Editor
 
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
+		string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false);
+
 		string GetMarkup (int offset, int length, MarkupOptions options);
 
 		void SetIndentationTracker (IndentationTracker indentationTracker);
@@ -216,11 +222,14 @@ namespace MonoDevelop.Ide.Editor
 		void UpdateBraceMatchingResult (BraceMatchingResult? result);
 
 		IEnumerable<IDocumentLine> VisibleLines { get; }
+		IReadOnlyList<Caret> Carets { get; }
 
 		void GrabFocus ();
 
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;
 
+		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
+		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 }
 }

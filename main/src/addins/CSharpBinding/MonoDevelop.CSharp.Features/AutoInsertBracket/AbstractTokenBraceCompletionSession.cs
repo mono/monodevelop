@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {

@@ -39,6 +39,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -143,7 +144,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public ColoredSegment GetColoredSegment ()
 		{
-			return new ColoredSegment (Offset, Length, style);
+			return new ColoredSegment (Offset, Length, ImmutableStack<string>.Empty.Push (style));
 		}
 	}
 
@@ -164,54 +165,53 @@ namespace MonoDevelop.CSharp.Highlighting
 			this.region = new TextSpan (textSpan.Offset, textSpan.Length);
 			Setup ();
 		}
-		
+
 		void Setup ()
 		{
-			
-			defaultTextColor = ColorScheme.PlainTextKey;
-			referenceTypeColor = ColorScheme.UserTypesKey;
-			valueTypeColor = ColorScheme.UserTypesValueTypesKey;
-			interfaceTypeColor = ColorScheme.UserTypesInterfacesKey;
-			enumerationTypeColor = ColorScheme.UserTypesEnumsKey;
-			typeParameterTypeColor = ColorScheme.UserTypesTypeParametersKey;
-			delegateTypeColor = ColorScheme.UserTypesDelegatesKey;
+			defaultTextColor = EditorThemeColors.Foreground;
+			referenceTypeColor = EditorThemeColors.UserTypes;
+			valueTypeColor = EditorThemeColors.UserTypesValueTypes;
+			interfaceTypeColor = EditorThemeColors.UserTypesInterfaces;
+			enumerationTypeColor = EditorThemeColors.UserTypesEnums;
+			typeParameterTypeColor = EditorThemeColors.UserTypesTypeParameters;
+			delegateTypeColor = EditorThemeColors.UserTypesDelegates;
 
-			methodCallColor = ColorScheme.UserMethodUsageKey;
-			methodDeclarationColor = ColorScheme.UserMethodDeclarationKey;
+			methodCallColor = EditorThemeColors.UserMethodUsage;
+			methodDeclarationColor = EditorThemeColors.UserMethodDeclaration;
 
-			eventDeclarationColor = ColorScheme.UserEventDeclarationKey;
-			eventAccessColor = ColorScheme.UserEventUsageKey;
+			eventDeclarationColor = EditorThemeColors.UserEventDeclaration;
+			eventAccessColor = EditorThemeColors.UserEventUsage;
 
-			fieldDeclarationColor = ColorScheme.UserFieldDeclarationKey;
-			fieldAccessColor = ColorScheme.UserFieldUsageKey;
+			fieldDeclarationColor = EditorThemeColors.UserFieldDeclaration;
+			fieldAccessColor = EditorThemeColors.UserFieldUsage;
 
-			propertyDeclarationColor = ColorScheme.UserPropertyDeclarationKey;
-			propertyAccessColor = ColorScheme.UserPropertyUsageKey;
+			propertyDeclarationColor = EditorThemeColors.UserPropertyDeclaration;
+			propertyAccessColor = EditorThemeColors.UserPropertyUsage;
 
-			variableDeclarationColor = ColorScheme.UserVariableDeclarationKey;
-			variableAccessColor = ColorScheme.UserVariableUsageKey;
+			variableDeclarationColor = EditorThemeColors.UserVariableDeclaration;
+			variableAccessColor = EditorThemeColors.UserVariableUsage;
 
-			parameterDeclarationColor = ColorScheme.UserParameterDeclarationKey;
-			parameterAccessColor = ColorScheme.UserParameterUsageKey;
+			parameterDeclarationColor = EditorThemeColors.UserParameterDeclaration;
+			parameterAccessColor = EditorThemeColors.UserParameterUsage;
 
-			valueKeywordColor = ColorScheme.KeywordContextKey;
-			externAliasKeywordColor = ColorScheme.KeywordNamespaceKey;
-			varKeywordTypeColor = ColorScheme.KeywordTypesKey;
+			valueKeywordColor = "keyword.other.source.cs";
+			externAliasKeywordColor = "keyword.other.source.cs";
+			varKeywordTypeColor = "keyword.other.source.cs";
 
-			parameterModifierColor = ColorScheme.KeywordParameterKey;
-			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
+			parameterModifierColor = "keyword.other.source.cs";
+			inactiveCodeColor = "punctuation.definition.comment.source.cs";
 
-			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
-			nameofKeywordColor = ColorScheme.KeywordOtherKey;
-			whenKeywordColor = ColorScheme.KeywordOtherKey; 
+			stringFormatItemColor = "constant.character.escape.source.cs";
+			nameofKeywordColor = "keyword.other.source.cs";
+			whenKeywordColor = "keyword.other.source.cs";
 
-			stringRegexCharacterClass = ColorScheme.RegexCharacterClassKey;
-			stringRegexGroupingConstructs = ColorScheme.RegexGroupingConstructsKey;
-			stringRegexSetConstructs = ColorScheme.RegexSetConstructsKey;
-			stringRegexErrors = ColorScheme.SyntaxErrorKey;
-			stringRegexComments = ColorScheme.CommentsSingleLineKey;
-			stringRegexEscapeCharacter = ColorScheme.RegexEscapeCharacterKey;
-			stringRegexAltEscapeCharacter = ColorScheme.RegexAltEscapeCharacterKey;
+			stringRegexCharacterClass = "constant.character.regex.characterclass.source.cs";
+			stringRegexGroupingConstructs = "constant.character.regex.grouping.source.cs";
+			stringRegexSetConstructs = "constant.character.regex.set.source.cs";
+			stringRegexErrors = "constant.character.regex.errors.source.cs";
+			stringRegexComments = "constant.character.regex.comments.source.cs";
+			stringRegexEscapeCharacter = "constant.character.regex.escape.source.cs";
+			stringRegexAltEscapeCharacter = "constant.character.regex.altescape.source.cs";
 		}
 
 		protected override void Colorize (TextSpan span, string color)

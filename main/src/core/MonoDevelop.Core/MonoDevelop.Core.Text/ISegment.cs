@@ -196,7 +196,10 @@ namespace MonoDevelop.Core.Text
 		/// </returns>
 		public override bool Equals (object obj)
 		{
-			return obj is ISegment && Equals (this, (ISegment)obj);
+			var otherSegment = obj as ISegment;
+			if (otherSegment == null)
+				return false;
+			return Offset == otherSegment.Offset && length == otherSegment.Length;
 		}
 
 		/// <summary>
@@ -416,6 +419,13 @@ namespace MonoDevelop.Core.Text
 			foreach (var segment in segments) {
 				yield return segment.AdjustSegment (args);
 			}
+		}
+
+		public static bool IsInvalid (this ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return segment.Offset < 0;
 		}
 	}
 }

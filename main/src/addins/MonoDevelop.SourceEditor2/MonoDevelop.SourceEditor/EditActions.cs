@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public static class EditActions
+	static class EditActions
 	{
 		
 		public static void AdvancedBackspace (TextEditorData data)
@@ -60,28 +61,22 @@ namespace MonoDevelop.SourceEditor
 		static int GetNextNonWsCharOffset (TextEditorData data, int offset)
 		{
 			int result = offset;
-			if (result >= data.Document.TextLength)
+			if (result >= data.Document.Length)
 				return -1;
 			while (Char.IsWhiteSpace (data.Document.GetCharAt (result))) {
 				result++;
-				if (result >= data.Document.TextLength)
+				if (result >= data.Document.Length)
 					return -1;
 			}
 			return result;
 		}
 		
-		static void RemoveCharBeforCaret (TextEditorData data)
+		static async void RemoveCharBeforCaret (TextEditorData data)
 		{
 			if (!data.IsSomethingSelected && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				if (data.Caret.Offset > 0) {
-					var line = data.GetLine (data.Caret.Line);
-					var stack = line.StartSpan.Clone();
-					if (stack.Any (s => s.Color == "string.other")) {
-						DeleteActions.Backspace (data);
-						return;
-					}
-					stack = line.StartSpan.Clone();
-					if (stack.Any (s => s.Color == "string.other")) {
+					var stack = await data.Document.SyntaxMode.GetScopeStackAsync (data.Caret.Offset, CancellationToken.None);
+					if (stack.Any (s => s.Contains ("string"))) {
 						DeleteActions.Backspace (data);
 						return;
 					}

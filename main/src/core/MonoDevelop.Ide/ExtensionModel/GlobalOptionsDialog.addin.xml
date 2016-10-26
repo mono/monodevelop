@@ -29,6 +29,7 @@
 	<Section id = "TextEditor" _label = "Text Editor">
 		<Section id = "Formatting" _label = "Formatting" icon="md-prefs-code-formatting" />
 		<Section id = "CodeTemplates" _label = "Code Snippets" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
+		<Section id = "LanguageBundles" _label = "Language Bundles" fill="true" class = "MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanel" />
 	</Section>
 
 	<Section id="SourceCode" _label="Source Code">
@@ -46,6 +47,5 @@
 		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" icon="md-prefs-maintenance" />
 	</Section>
 </Extension>
-
 </ExtensionModel>
 

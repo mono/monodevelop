@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Ide.Editor;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class CaretMoveActionTests : TextEditorTestBase
+	class CaretMoveActionTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestCaretLeft ()

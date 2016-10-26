@@ -836,7 +836,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		const int spacing = 2;
-		ColorScheme ColorScheme => SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+		EditorTheme EditorTheme => SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 
 		delegate void CategoryAction (Category category, int yPos);
 		delegate bool ItemAction (Category curCategory, int item, int itemIndex, int yPos);

@@ -41,16 +41,17 @@ namespace MonoDevelop.SourceEditor
 			initialized = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/SyntaxModes", OnSyntaxModeExtensionChanged);
 		}
-
+		// TODO: EditorTheme
 		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add) {
+/*			if (args.Change == ExtensionChange.Add) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.AddSyntaxMode (new StreamProviderWrapper(codon));
-			}
+			}*/
 		}
 
-		class StreamProviderWrapper : Mono.TextEditor.Highlighting.IStreamProvider
+		/*
+		class StreamProviderWrapper : IStreamProvider
 		{
 			readonly TemplateCodon codon;
 
@@ -63,6 +64,6 @@ namespace MonoDevelop.SourceEditor
 			{
 				return codon.Open ();
 			}
-		}
+		}*/
 	}
 }

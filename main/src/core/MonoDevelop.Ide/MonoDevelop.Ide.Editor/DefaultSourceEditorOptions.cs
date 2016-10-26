@@ -200,9 +200,9 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
-			string ITextEditorOptions.ColorScheme {
+			string ITextEditorOptions.EditorTheme {
 				get {
-					return DefaultSourceEditorOptions.Instance.ColorScheme;
+					return DefaultSourceEditorOptions.Instance.EditorTheme;
 				}
 			}
 
@@ -677,7 +677,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		
 		ConfigurationProperty<string> colorScheme = IdeApp.Preferences.ColorScheme;
-		public string ColorScheme {
+		public string EditorTheme {
 			get {
 				return colorScheme;
 			}

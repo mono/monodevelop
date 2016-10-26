@@ -110,11 +110,6 @@
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
@@ -296,6 +291,14 @@
     <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DiffTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\RegexTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest_TextMate.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMateDocumentIndentEngineTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMateFoldingTextEditorExtensionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestCSharpHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestYamlHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\StackMatchExpressionTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />

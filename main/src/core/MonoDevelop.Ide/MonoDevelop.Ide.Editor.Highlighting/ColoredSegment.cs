@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -35,25 +36,36 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// </summary>
 	public sealed class ColoredSegment : AbstractSegment
 	{
-		readonly string colorStyleKey;
+		readonly ImmutableStack<string> scopeStack;
 
 		/// <summary>
 		/// Gets the color style. The style is looked up in the current color scheme.
 		/// </summary>
 		public string ColorStyleKey {
 			get {
-				return colorStyleKey;
+				return scopeStack.IsEmpty ? "" : scopeStack.Peek ();
 			}
 		}
 
-		public ColoredSegment (int offset, int length, string colorStyleKey) : base (offset, length)
-		{
-			this.colorStyleKey = colorStyleKey;
+		internal ImmutableStack<string> ScopeStack {
+			get {
+				return scopeStack;
+			}
 		}
 
-		public ColoredSegment (ISegment segment, string colorStyleKey) : base (segment)
+		public ColoredSegment (int offset, int length, ImmutableStack<string> scopeStack) : base (offset, length)
 		{
-			this.colorStyleKey = colorStyleKey;
+			this.scopeStack = scopeStack;
+		}
+
+		public ColoredSegment (ISegment segment, ImmutableStack<string> scopeStack) : base (segment)
+		{
+			this.scopeStack = scopeStack;
+		}
+
+		public ColoredSegment WithOffsetAndLength (int offset, int length)
+		{
+			return new ColoredSegment (offset, length, scopeStack);
 		}
 
 		public override string ToString ()

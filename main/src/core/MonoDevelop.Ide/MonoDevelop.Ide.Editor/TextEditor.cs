@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextEditor.cs
 //
 // Author:
@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Editor.Projection;
 using Xwt;
 using System.Collections.Immutable;
 using MonoDevelop.Components.Commands;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -50,6 +51,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
+
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
 
 		public ITextSourceVersion Version {
@@ -158,16 +160,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public DocumentLocation CaretLocation {
-			get {
-				return textEditorImpl.CaretLocation;
-			}
-			set {
-				Runtime.AssertMainThread ();
-				textEditorImpl.CaretLocation = value;
-			}
-		}
-
 		public SemanticHighlighting SemanticHighlighting {
 			get {
 				return textEditorImpl.SemanticHighlighting;
@@ -177,34 +169,58 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public int CaretLine {
+		public IReadOnlyList<Caret> Carets {
 			get {
-				return CaretLocation.Line;
+				return textEditorImpl.Carets;
+			}
+		}
+
+		public DocumentLocation CaretLocation {
+			get {
+				return Carets [0].Location;
 			}
 			set {
-				CaretLocation = new DocumentLocation (value, CaretColumn);
+				Runtime.AssertMainThread ();
+				Carets [0].Location = value;
+			}
+		}
+
+		public ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return textEditorImpl.SyntaxHighlighting;
+			}
+			set {
+				textEditorImpl.SyntaxHighlighting = value;
+			}
+		}
+
+		public int CaretLine {
+			get {
+				return Carets [0].Line;
+			}
+			set {
+				Carets [0].Line = value;
 			}
 		}
 
 		public int CaretColumn {
 			get {
-				return CaretLocation.Column;
+				return Carets [0].Column;
 			}
 			set {
-				CaretLocation = new DocumentLocation (CaretLine, value);
+				Carets [0].Column = value;
 			}
 		}
 
 		public int CaretOffset {
 			get {
-				return textEditorImpl.CaretOffset;
+				return Carets [0].Offset;
 			}
 			set {
 				Runtime.AssertMainThread ();
-				textEditorImpl.CaretOffset = value;
+				Carets [0].Offset = value;
 			}
 		}
-
 		public bool IsReadOnly {
 			get {
 				return ReadOnlyTextDocument.IsReadOnly;
@@ -224,6 +240,12 @@ namespace MonoDevelop.Ide.Editor
 		public SelectionMode SelectionMode {
 			get {
 				return textEditorImpl.SelectionMode;
+			}
+		}
+
+		public IEnumerable<Selection> Selections {
+			get {
+				return textEditorImpl.Selections;
 			}
 		}
 
@@ -436,11 +458,11 @@ namespace MonoDevelop.Ide.Editor
 		public void SetCaretLocation (DocumentLocation location, bool usePulseAnimation = false, bool centerCaret = true)
 		{
 			Runtime.AssertMainThread ();
-			CaretLocation = location;
+			Carets [0].Location = location;
 			if (centerCaret) {
-				CenterTo (CaretLocation);
+				CenterTo (Carets [0].Location);
 			} else {
-				ScrollTo (CaretLocation);
+				ScrollTo (Carets [0].Location);
 			}
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
@@ -449,11 +471,11 @@ namespace MonoDevelop.Ide.Editor
 		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false, bool centerCaret = true)
 		{
 			Runtime.AssertMainThread ();
-			CaretLocation = new DocumentLocation (line, col);
+			Carets [0].Location = new DocumentLocation (line, col);
 			if (centerCaret) {
-				CenterTo (CaretLocation);
+				CenterTo (Carets [0].Location);
 			} else {
-				ScrollTo (CaretLocation);
+				ScrollTo (Carets [0].Location);
 			}
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
@@ -532,7 +554,9 @@ namespace MonoDevelop.Ide.Editor
 		public void InsertAtCaret (string text)
 		{
 			Runtime.AssertMainThread ();
-			InsertText (CaretOffset, text);
+			foreach (var offset in Carets.Select (c => c.Offset).OrderBy (i => -i)) {
+				InsertText (offset, text);	
+			}
 		}
 
 		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
@@ -1404,16 +1428,28 @@ namespace MonoDevelop.Ide.Editor
 				return;
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Completion) != DisabledProjectionFeatures.Completion) {
-				TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
-				while (lastExtension != null && lastExtension.Next != null) {
-					var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
+				TextEditorExtension curExtension = textEditorImpl.EditorExtension;
+				TextEditorExtension lastExtension = null;
+				while (curExtension != null) {
+					var completionTextEditorExtension = curExtension as CompletionTextEditorExtension;
 					if (completionTextEditorExtension != null) {
 						var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+						var completionWidget = completionTextEditorExtension.CompletionWidget;
 						completionTextEditorExtension.Deinitialize ();
-						lastExtension.Next = projectedFilterExtension;
+						projectedFilterExtension.Next = curExtension.Next;
+
+						if (lastExtension != null) {
+							lastExtension.Next = projectedFilterExtension;
+						} else {
+							textEditorImpl.EditorExtension = projectedFilterExtension;
+							curExtension = projectedFilterExtension;
+						}
 						projectedFilterExtension.Initialize (this, DocumentContext);
+						projectedFilterExtension.CompletionWidget = completionWidget;
+						break;
 					}
-					lastExtension = lastExtension.Next;
+					lastExtension = curExtension;
+					curExtension = curExtension.Next;
 				}
 
 
@@ -1454,6 +1490,16 @@ namespace MonoDevelop.Ide.Editor
 		public new void GrabFocus ()
 		{
 			this.textEditorImpl.GrabFocus ();
+		}
+
+		public void ShowTooltipWindow (Control window, TooltipWindowOptions options = null)
+		{
+			textEditorImpl.ShowTooltipWindow (window, options);
+		}
+
+		public Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		{
+			return textEditorImpl.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 }
