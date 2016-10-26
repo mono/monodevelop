@@ -44,7 +44,6 @@ namespace MonoDevelop.Projects
 		internal string FlavorGuid { get; set; }
 		internal string ProjectCapability { get; set; }
 		internal string TypeAlias { get; set; }
-		internal string LanguageName { get; set; }
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
