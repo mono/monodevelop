@@ -606,11 +606,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			var netProj = p as MonoDevelop.Projects.DotNetProject;
 			if (netProj == null)
 				yield break;
+
+			//GetReferencedAssemblyProjects returns filtered projects, like:
+			//MSBuild Condtion='something'
+			//pref.ReferenceOutputAssembly
+			//and for iOS/Android extensions
+			var referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
 			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
-				if (!pr.ReferenceOutputAssembly)
-					continue;
+				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
+				//reference Aliases, hence we have to loop over references
 				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
 				if (referencedProject == null)
+					continue;
+				if (!referencedProjects.Contains (referencedProject))
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
