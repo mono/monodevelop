@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DeleteActions.cs
 // 
 // Author:
@@ -107,7 +107,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) 
-				loc = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
+				loc = data.Document.OffsetToLocation (segment.EndOffset); 
 			line = data.GetLine (loc.Line);
 			return includeDelimiter ? line.EndOffsetIncludingDelimiter : line.EndOffset;
 		}
@@ -128,7 +128,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) 
-				loc = data.Document.OffsetToLocation (segment.StartLine.Offset); 
+				loc = data.Document.OffsetToLocation (segment.GetStartLine (data.Document).Offset); 
 			line = data.GetLine (loc.Line);
 			return line.Offset;
 		}

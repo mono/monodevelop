@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CaretMoveActions.cs
 // 
 // Author:
@@ -103,7 +103,7 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
 				FoldSegment segment = null;
 				foreach (FoldSegment folding in foldings) {
-					if (folding.IsCollapsed && folding.Column == data.Caret.Column) {
+					if (folding.IsCollapsed && folding.Offset == data.Caret.Offset) {
 						segment = folding;
 						break;
 					}
@@ -266,7 +266,7 @@ namespace Mono.TextEditor
 					}
 				}
 				if (segment != null)
-					newLocation = data.Document.OffsetToLocation (segment.StartLine.Offset); 
+					newLocation = data.Document.OffsetToLocation (segment.GetStartLine (data.Document).Offset); 
 
 				if (newLocation != data.Caret.Location)
 					data.Caret.Location = newLocation;
@@ -306,7 +306,7 @@ namespace Mono.TextEditor
 					}
 				}
 				if (segment != null)
-					newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
+					newLocation = data.Document.OffsetToLocation (segment.EndOffset); 
 				if (newLocation != data.Caret.Location)
 					data.Caret.Location = newLocation;
 			

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TextEditorTestBase.cs
 //  
 // Author:
@@ -86,7 +86,7 @@ namespace Mono.TextEditor.Tests
 							break;
 						}
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.Unknown);
+							var segment = new FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
 							segment.IsCollapsed = false;
 							foldStack.Push (segment);
 							i++;
@@ -98,7 +98,7 @@ namespace Mono.TextEditor.Tests
 					if (i + 1 < content.Length) {
 						var next = content [i + 1];
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.Unknown);
+							var segment = new FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
 							segment.IsCollapsed = true;
 							foldStack.Push (segment);
 							i++;

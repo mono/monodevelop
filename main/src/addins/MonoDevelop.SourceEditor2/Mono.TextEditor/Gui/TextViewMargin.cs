@@ -1,4 +1,4 @@
-//
+﻿//
 // TextViewMargin.cs
 //
 // Author:
@@ -1966,8 +1966,9 @@ namespace Mono.TextEditor
 					int lineNr = args.LineNumber;
 					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
 						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-							shownFolding.Item2.IsCollapsed = false;
-							return;
+                            shownFolding.Item2.IsCollapsed = false;
+                            textEditor.Document.InformFoldChanged(new FoldSegmentEventArgs(shownFolding.Item2));
+                            return;
 						}
 					}
 					return;
@@ -2513,7 +2514,7 @@ namespace Mono.TextEditor
 				calcFoldingLayout.FontDescription = markerLayoutFont;
 				calcFoldingLayout.Tabs = this.tabArray;
 				foreach (var folding in foldings) {
-					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
+					int foldOffset = folding.Offset;
 					if (foldOffset < offset)
 						continue;
 
@@ -2522,7 +2523,7 @@ namespace Mono.TextEditor
 						calcTextLayout.SetText (txt);
 						calcTextLayout.GetSize (out width, out height);
 						xPos += width / Pango.Scale.PangoScale;
-						offset = folding.EndLine.Offset + folding.EndColumn;
+						offset = folding.EndOffset;
 
 						calcFoldingLayout.SetText (folding.CollapsedText);
 
@@ -2533,8 +2534,8 @@ namespace Mono.TextEditor
 						var foldingRectangle = new Rectangle ((int)xPos, y, (int)pixelWidth, (int)LineHeight - 1);
 						yield return Tuple.Create (foldingRectangle, folding);
 						xPos += pixelWidth;
-						if (folding.EndLine != line) {
-							line = folding.EndLine;
+						if (folding.GetEndLine (textEditor.Document) != line) {
+							line = folding.GetEndLine (textEditor.Document);
 							foldings = Document.GetStartFoldings (line);
 							goto restart;
 						}
@@ -2703,14 +2704,14 @@ namespace Mono.TextEditor
 				DrawCaretLineMarker (cr, x, y, TextStartPosition, _lineHeight);
 
 			foreach (FoldSegment folding in foldings) {
-				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
+				int foldOffset = folding.Offset;
 				if (foldOffset < offset)
 					continue;
 
 				if (folding.IsCollapsed) {
 					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
 
-					offset = folding.EndLine.Offset + folding.EndColumn - 1;
+					offset = folding.EndOffset;
 					markerLayout.SetText (folding.CollapsedText);
 					int width, height;
 					markerLayout.GetPixelSize (out width, out height);
@@ -2763,14 +2764,14 @@ namespace Mono.TextEditor
 						SetVisibleCaretPosition (cx, y, cx, y);
 					}
 
-					if (folding.EndLine != line) {
-						line = folding.EndLine;
+					if (folding.GetEndLine (textEditor.Document) != line) {
+						line = folding.GetEndLine (textEditor.Document);
 						lineNr = line.LineNumber;
 						foldings = Document.GetStartFoldings (line);
-						isEolFolded = line.Length <= folding.EndColumn;
+						isEolFolded = line.EndOffset <= folding.EndOffset;
 						goto restart;
 					}
-					isEolFolded = line.Length <= folding.EndColumn;
+					isEolFolded = line.EndOffset <= folding.EndOffset;
 				}
 			}
 			
@@ -2998,7 +2999,7 @@ namespace Mono.TextEditor
 					foreach (FoldSegment folding in foldings) {
 						if (folding.IsCollapsed)
 							continue;
-						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
+						int foldOffset = folding.Offset;
 						if (foldOffset < offset)
 							continue;
 						var layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
@@ -3029,7 +3030,7 @@ namespace Mono.TextEditor
 							break;
 						}
 
-						offset = folding.EndLine.Offset + folding.EndColumn - 1;
+						offset = folding.EndOffset;
 						DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
 						lineNumber = foldingEndLocation.Line;
 						column = foldingEndLocation.Column;
@@ -3039,8 +3040,8 @@ namespace Mono.TextEditor
 							break;
 						}
 
-						if (folding.EndLine != line) {
-							line = folding.EndLine;
+						if (folding.GetEndLine (margin.Document)!= line) {
+							line = folding.GetEndLine (margin.Document);
 							foldings = margin.Document.GetStartFoldings (line);
 							goto restart;
 						}

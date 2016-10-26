@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TextDocument.cs
 //  
 // Author:
@@ -1164,15 +1164,13 @@ namespace Mono.TextEditor
 					RemoveFolding (oldSegments [oldIndex]);
 					oldIndex++;
 				}
-				
+
 				if (oldIndex < oldSegments.Count && offset == oldSegments [oldIndex].Offset) {
 					FoldSegment curSegment = oldSegments [oldIndex];
 					if (curSegment.IsCollapsed && newFoldSegment.Length != curSegment.Length)
 						curSegment.IsCollapsed = newFoldSegment.IsCollapsed = false;
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.CollapsedText = newFoldSegment.CollapsedText;
-					curSegment.EndColumn = curSegment.EndOffset - curSegment.EndLine.Offset + 1;
-					curSegment.Column = offset - curSegment.StartLine.Offset + 1;
 
 					if (newFoldSegment.IsCollapsed) {
 						foldedSegmentAdded |= !curSegment.IsCollapsed;
@@ -1182,12 +1180,6 @@ namespace Mono.TextEditor
 						newFoldedSegments.Add (curSegment);
 					oldIndex++;
 				} else {
-					DocumentLine startLine = splitter.GetLineByOffset (offset);
-					DocumentLine endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
-					if (endLine != null)
-						newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
-					if (startLine != null)
-						newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					foldedSegmentAdded |= newFoldSegment.IsCollapsed;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {
@@ -1277,13 +1269,13 @@ namespace Mono.TextEditor
 			if (line == null)
 				yield break;
 			foreach (var fold in GetFoldingContaining (line))
-				if (fold.StartLine == line)
+				if (fold.GetStartLine (this) == line)
 					yield return fold;
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int offset, int length)
 		{
-			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.StartLine.Offset && fold.StartLine.Offset < offset + length);
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.GetStartLine (this).Offset && fold.GetStartLine (this).Offset < offset + length);
 		}
 
 		public IEnumerable<FoldSegment> GetEndFoldings (int lineNumber)
@@ -1294,19 +1286,19 @@ namespace Mono.TextEditor
 		public IEnumerable<FoldSegment> GetEndFoldings (DocumentLine line)
 		{
 			foreach (FoldSegment segment in GetFoldingContaining (line)) {
-				if (segment.EndLine.Offset == line.Offset)
+				if (segment.GetEndLine (this).Offset == line.Offset)
 					yield return segment;
 			}
 		}
 
 		public IEnumerable<FoldSegment> GetEndFoldings (int offset, int length)
 		{
-			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.EndLine.Offset && fold.EndLine.Offset < offset + length);
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.GetEndLine (this).Offset && fold.GetEndLine (this).Offset < offset + length);
 		}
 
 		public int GetLineCount (FoldSegment segment)
 		{
-			return segment.EndLine.LineNumber - segment.StartLine.LineNumber;
+			return segment.GetEndLine (this).LineNumber - segment.GetStartLine (this).LineNumber;
 		}
 		
 		public void EnsureOffsetIsUnfolded (int offset)
@@ -1315,8 +1307,9 @@ namespace Mono.TextEditor
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset && offset < f.EndOffset)) {
 				needUpdate = true;
 				fold.IsCollapsed = false;
-			}
-		}
+                InformFoldChanged(new FoldSegmentEventArgs(fold));
+            }
+        }
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
@@ -1324,8 +1317,9 @@ namespace Mono.TextEditor
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsCollapsed)) {
 				needUpdate = true;
 				fold.IsCollapsed = false;
-			}
-		}
+                InformFoldChanged(new FoldSegmentEventArgs(fold));
+            }
+        }
 
 		internal void InformFoldTreeUpdated ()
 		{

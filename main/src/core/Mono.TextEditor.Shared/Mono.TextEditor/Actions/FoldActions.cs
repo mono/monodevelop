@@ -101,7 +101,8 @@ namespace Mono.TextEditor
 			
 			if (null != currentFold) {
 				currentFold.IsCollapsed = false;
-				Commit (data);
+                data.Document.InformFoldChanged(new FoldSegmentEventArgs(currentFold));
+                Commit(data);
 			}
 		}
 		
@@ -114,7 +115,8 @@ namespace Mono.TextEditor
 			
 			if (null != currentFold) {
 				currentFold.IsCollapsed = true;
-				Commit (data);
+                data.Document.InformFoldChanged(new FoldSegmentEventArgs(currentFold));
+                Commit(data);
 			}
 		}
 		
@@ -145,8 +147,9 @@ namespace Mono.TextEditor
 					if (fold.Offset >= currentFold.Offset && 
 					    fold.Offset <= currentFold.EndOffset) {
 						fold.IsCollapsed = false;
-					}
-				}
+                        data.Document.InformFoldChanged(new FoldSegmentEventArgs(currentFold));
+                    }
+                }
 				Commit (data);
 			}
 		}
@@ -161,8 +164,9 @@ namespace Mono.TextEditor
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
 					fold.IsCollapsed = true;
-				}
-				Commit (data);
+                    data.Document.InformFoldChanged(new FoldSegmentEventArgs(fold));
+                }
+                Commit (data);
 			}
 		}
 		
@@ -203,8 +207,9 @@ namespace Mono.TextEditor
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
 					fold.IsCollapsed = false;
-				}
-				Commit (data);
+                    data.Document.InformFoldChanged(new FoldSegmentEventArgs(fold));
+                }
+                Commit (data);
 			}
 		}
 		
@@ -217,7 +222,8 @@ namespace Mono.TextEditor
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
 					fold.IsCollapsed = true;
-				}
+                    data.Document.InformFoldChanged(new FoldSegmentEventArgs(fold));
+                }
 				Commit (data);
 			}
 		}

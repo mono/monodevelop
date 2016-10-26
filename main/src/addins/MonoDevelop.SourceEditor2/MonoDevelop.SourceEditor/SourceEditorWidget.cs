@@ -500,7 +500,7 @@ namespace MonoDevelop.SourceEditor
 			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
 			
-			var result = new Mono.TextEditor.FoldSegment (document, text, startOffset, endOffset - startOffset, type);
+			var result = new Mono.TextEditor.FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;

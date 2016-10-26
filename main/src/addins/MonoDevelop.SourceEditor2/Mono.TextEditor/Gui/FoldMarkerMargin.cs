@@ -1,4 +1,4 @@
-// FoldMarkerMargin.cs
+﻿// FoldMarkerMargin.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -132,9 +132,10 @@ namespace Mono.TextEditor
 				return;
 
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
-				segment.IsCollapsed = !segment.IsCollapsed; 
-			}
-			editor.SetAdjustments ();
+				segment.IsCollapsed = !segment.IsCollapsed;
+                editor.Document.InformFoldChanged (new FoldSegmentEventArgs (segment));
+            }
+            editor.SetAdjustments ();
 			editor.Caret.MoveCaretBeforeFoldings ();
 		}
 		
@@ -155,7 +156,7 @@ namespace Mono.TextEditor
 			lineHover = lineSegment;
 			bool found = false;
 			foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-				if (segment.StartLine.Offset == lineSegment.Offset) {
+				if (segment.GetStartLine (editor.Document).Offset == lineSegment.Offset) {
 					found = true;
 					break;
 				}
@@ -296,7 +297,7 @@ namespace Mono.TextEditor
 		
 		bool IsMouseHover (IEnumerable<FoldSegment> foldings)
 		{
-			return foldings.Any (s => this.lineHover == s.StartLine);
+			return foldings.Any (s => this.lineHover == s.GetStartLine  (editor.Document));
 		}
 		
 		List<FoldSegment> startFoldings      = new List<FoldSegment> ();
@@ -341,9 +342,9 @@ namespace Mono.TextEditor
 				containingFoldings.Clear ();
 				endFoldings.Clear ();
 				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-					if (segment.StartLine.Offset == lineSegment.Offset) {
+					if (segment.GetStartLine (editor.Document).Offset == lineSegment.Offset) {
 						startFoldings.Add (segment);
-					} else if (segment.EndLine.Offset == lineSegment.Offset) {
+					} else if (segment.GetEndLine (editor.Document).Offset == lineSegment.Offset) {
 						endFoldings.Add (segment);
 					} else {
 						containingFoldings.Add (segment);
@@ -417,12 +418,12 @@ namespace Mono.TextEditor
 						if (foldSegment.IsCollapsed) {
 							isVisible = false;
 						} else {
-							moreLinedOpenFold = foldSegment.EndLine.Offset > foldSegment.StartLine.Offset;
+							moreLinedOpenFold = foldSegment.GetEndLine (editor.Document).Offset > foldSegment.GetStartLine (editor.Document).Offset;
 						}
 					}
 					bool isFoldEndFromUpperFold = false;
 					foreach (FoldSegment foldSegment in endFoldings) {
-						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsCollapsed) 
+						if (foldSegment.GetEndLine (editor.Document).Offset > foldSegment.GetStartLine (editor.Document).Offset && !foldSegment.IsCollapsed) 
 							isFoldEndFromUpperFold = true;
 					}
 					DrawFoldSegment (cr, x, y, isVisible, isStartSelected);

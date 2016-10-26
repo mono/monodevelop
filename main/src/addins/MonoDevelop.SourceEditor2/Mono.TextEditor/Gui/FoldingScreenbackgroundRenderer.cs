@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FoldingScreenbackgroundRenderer.cs
 //  
 // Author:
@@ -103,8 +103,8 @@ namespace Mono.TextEditor
 				var segment = foldSegments [i];
 				if (segment.IsInvalid)
 					continue;
-				var segmentStartLine = segment.StartLine;
-				var segmentEndLine = segment.EndLine;
+				var segmentStartLine = segment.GetStartLine (editor.Document);
+				var segmentEndLine = segment.GetEndLine (editor.Document);
 
 				int curWidth = 0;
 				var endLine = segmentEndLine.NextLine;
@@ -147,8 +147,8 @@ namespace Mono.TextEditor
 					rectangleWidth = System.Math.Max ((rectangles [i + 1].X + rectangles[i + 1].Width + rightMarginPadding) - xPos, rectangleWidth);
 				}
 
-				y = editor.LineToY (segment.StartLine.LineNumber);
-				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1) + (segment.EndLine.LineNumber == editor.LineCount ? editor.LineHeight : 0);
+				y = editor.LineToY (segment.GetStartLine  (editor.Document).LineNumber);
+				var yEnd = editor.LineToY (segment.GetEndLine  (editor.Document).LineNumber + 1) + (segment.GetEndLine (editor.Document).LineNumber == editor.LineCount ? editor.LineHeight : 0);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
 				rectangleHeight = yEnd - y;

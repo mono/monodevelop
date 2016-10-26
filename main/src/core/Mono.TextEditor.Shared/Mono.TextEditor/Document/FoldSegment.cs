@@ -1,4 +1,4 @@
-// FoldSegment.cs
+﻿// FoldSegment.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -39,11 +39,7 @@ namespace Mono.TextEditor
 				return isFolded;
 			}
 			set {
-				if (isFolded != value) {
-					isFolded = value;
-					if (isAttached)
-						doc.InformFoldChanged (new FoldSegmentEventArgs (this));
-				}
+				isFolded = value;
 			}
 		}
 
@@ -51,37 +47,14 @@ namespace Mono.TextEditor
 		
 		public string CollapsedText { get; set; }
 		
-		public int Column { get; set; }
-		public int EndColumn { get; set; }
-
-	/*	public override int Offset {
-			get {
-				return StartLine != null ? StartLine.Offset + Column : base.Offset;
-			}
-			set {
-				base.Offset = value;
-			}
+		public DocumentLine GetStartLine (TextDocument doc)
+        { 
+			return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, Offset)));
 		}
 		
-		public override int Length {
-			get {
-				return EndLine != null ? EndLine.Offset + EndColumn - Offset : base.Length;
-			}
-			set {
-				base.Length = value;
-			}
-		}*/
-		
-		public DocumentLine StartLine { 
-			get {
-				return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, Offset)));
-			} 
-		}
-		
-		public DocumentLine EndLine {
-			get {
-				return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, EndOffset)));
-			}
+		public DocumentLine GetEndLine (TextDocument doc)
+        {
+			return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, EndOffset)));
 		}
 
 		public bool IsInvalid {
@@ -91,11 +64,9 @@ namespace Mono.TextEditor
 		}
 		
 		public FoldingType FoldingType { get; set; }
-		TextDocument doc;
 		
-		public FoldSegment (TextDocument doc, string description, int offset, int length, FoldingType foldingType) : base (offset, length)
+		public FoldSegment (string description, int offset, int length, FoldingType foldingType) : base (offset, length)
 		{
-			this.doc = doc;
 			this.isFolded = false;
 			this.CollapsedText = description;
 			this.FoldingType = foldingType;
@@ -103,7 +74,6 @@ namespace Mono.TextEditor
 		
 		public FoldSegment (FoldSegment foldSegment) : base (foldSegment.Offset, foldSegment.Length)
 		{
-			this.doc = foldSegment.doc;
 			this.isFolded = foldSegment.IsCollapsed;
 			this.CollapsedText = foldSegment.CollapsedText;
 			this.FoldingType = foldSegment.FoldingType;
@@ -111,7 +81,7 @@ namespace Mono.TextEditor
 		
 		public override string ToString()
 		{
-			return string.Format("[FoldSegment: IsFolded={0}, Description={1}, Column={2}, Offset={3}, Length={4}, StartLine={5}, EndLine={6}, EndColumn={7}, FoldingType={8}]", IsCollapsed, CollapsedText, Column, Offset, Length, StartLine, EndLine, EndColumn, FoldingType);
+			return string.Format("[FoldSegment: IsFolded={0}, Description={1}, Offset={2}, Length={3}, FoldingType={4}]", IsCollapsed, CollapsedText, Offset, Length, FoldingType);
 		}
 		
 		public int CompareTo (object obj)

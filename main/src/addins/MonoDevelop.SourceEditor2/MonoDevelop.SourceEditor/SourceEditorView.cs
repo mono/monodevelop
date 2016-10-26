@@ -2053,8 +2053,9 @@ namespace MonoDevelop.SourceEditor
 					segment.IsCollapsed = false;
 				}
 				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
-					segment.IsCollapsed = toggle;
-			}
+                    segment.IsCollapsed = toggle;
+                widget.TextEditor.Document.InformFoldChanged(new FoldSegmentEventArgs(segment));
+            }
 
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
@@ -2773,7 +2774,7 @@ namespace MonoDevelop.SourceEditor
 
 		IFoldSegment ITextEditorImpl.CreateFoldSegment (int offset, int length, bool isFolded)
 		{
-			return new FoldSegment (TextEditor.Document, "...", offset, length, FoldingType.Unknown) { IsCollapsed = isFolded };
+			return new FoldSegment ("...", offset, length, FoldingType.Unknown) { IsCollapsed = isFolded };
 		}
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
@@ -2781,9 +2782,7 @@ namespace MonoDevelop.SourceEditor
 			if (this.isDisposed || !TextEditor.Options.ShowFoldMargin)
 				return;
 			var convertedList = foldings.Select (f => {
-				if (f is FoldSegment)
-					return (FoldSegment)f;
-				return new FoldSegment (TextEditor.Document, f.CollapsedText, f.Offset, f.Length, f.FoldingType);
+				return new FoldSegment (f.CollapsedText, f.Offset, f.Length, f.FoldingType);
 			}).ToList ();
 
 			TextEditor.Document.UpdateFoldSegments (convertedList, true);

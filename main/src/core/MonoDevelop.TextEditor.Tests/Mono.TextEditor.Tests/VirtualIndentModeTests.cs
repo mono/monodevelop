@@ -124,7 +124,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("12345\n\n12345\n");
 			var segs = new List<FoldSegment> ();
-			segs.Add (new FoldSegment (data.Document, "", 5, 5, FoldingType.Region));
+			segs.Add (new FoldSegment ("", 5, 5, FoldingType.Region));
 			data.Document.UpdateFoldSegments (segs);
 			CaretMoveActions.Down (data);
 			CaretMoveActions.Right (data);

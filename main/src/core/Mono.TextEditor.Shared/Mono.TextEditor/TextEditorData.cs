@@ -1,4 +1,4 @@
-// TextEditorData.cs
+﻿// TextEditorData.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -1600,8 +1600,8 @@ namespace Mono.TextEditor
 
 		void HandleTextEditorDataDocumentFolded (object sender, FoldSegmentEventArgs e)
 		{
-			int start = e.FoldSegment.StartLine.LineNumber;
-			int end = e.FoldSegment.EndLine.LineNumber;
+			int start = e.FoldSegment.GetStartLine (Document).LineNumber;
+			int end = e.FoldSegment.GetEndLine (Document).LineNumber;
 			
 			if (e.FoldSegment.IsCollapsed) {
 				if (e.FoldSegment.Marker != null)

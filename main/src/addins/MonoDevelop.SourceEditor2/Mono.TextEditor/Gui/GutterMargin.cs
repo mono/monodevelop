@@ -1,4 +1,4 @@
-// GutterMargin.cs
+﻿// GutterMargin.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -151,8 +151,9 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			if (segment != null) 
-				result = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
+			if (segment != null) {
+				result = data.Document.OffsetToLocation(segment.EndOffset);
+			}
 			return result;
 		}
 		

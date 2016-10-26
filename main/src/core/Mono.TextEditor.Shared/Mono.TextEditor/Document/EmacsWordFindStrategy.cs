@@ -1,4 +1,4 @@
-//
+﻿//
 // EmacsWordFindStrategy.cs
 //
 // Author:
@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
 				if (segment.IsCollapsed)
-					result = System.Math.Max (result, segment.EndLine.Offset + segment.EndColumn);
+					result = System.Math.Max (result, segment.EndOffset);
 			}
 			return result;
 		}
@@ -126,7 +126,7 @@ namespace Mono.TextEditor
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
 				if (segment.IsCollapsed)
-					result = System.Math.Min (result, segment.StartLine.Offset + segment.Column);
+					result = System.Math.Min (result, segment.Offset);
 			}
 			return result;
 		}
