@@ -28,7 +28,7 @@
 
 	<Section id = "TextEditor" _label = "Text Editor">
 		<Section id = "Formatting" _label = "Formatting" icon="md-prefs-code-formatting" />
-		<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
+		<Section id = "CodeTemplates" _label = "Code Snippets" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
 	</Section>
 
 	<Section id="SourceCode" _label="Source Code">

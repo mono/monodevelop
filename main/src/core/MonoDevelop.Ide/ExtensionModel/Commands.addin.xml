@@ -946,18 +946,18 @@
 	<Category _name = "Text Editor" id = "TextEditor">
 
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-			_label = "Show Code Completion"
+			_label = "Complete Word"
 			macShortcut="Control|space"
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
 			_label = "Toggle Completion Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
-			_description="Inserts a template"
-			_label = "_Template..."
-			_displayName = "Insert Template..."/>
+			_description="Inserts a snippet"
+			_label = "_Snippet..."
+			_displayName = "Insert Snippet..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
-			_description="Surrounds selection with a template when something is selected"
+			_description="Surrounds selection with a snippet when something is selected"
 			_label = "_Surround With..."
 			_displayName = "Surround Selection With..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
