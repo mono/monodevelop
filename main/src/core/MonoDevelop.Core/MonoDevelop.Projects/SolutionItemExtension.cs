@@ -63,10 +63,7 @@ namespace MonoDevelop.Projects
 				return false;
 
 			var p = item as DotNetProject;
-			if (p == null)
-				return false;
-
-			if (LanguageName == null)
+			if (p == null || LanguageName == null)
 				return true;
 
 			return LanguageName == p.LanguageName;
