@@ -226,6 +226,11 @@ namespace MonoDevelop.Core
 			return s.Replace ("MonoDevelop", ApplicationName);
 		}
 
+		public static string BrandApplicationLongName (string s)
+		{
+			return s.Replace ("MonoDevelop", ApplicationLongName);
+		}
+
 		public static string BrandEnvironmentVariable (string envVar)
 		{
 			return envVar.Replace ("MONODEVELOP", ProfileDirectoryName.ToUpper ());

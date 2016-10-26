@@ -119,7 +119,7 @@ namespace MonoDevelop.Projects.Extensions
 				return BrandingService.BrandApplicationName (Addin.Localizer.GetString (instructions));
 			}
 
-			return BrandingService.BrandApplicationName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop."));
+			return BrandingService.BrandApplicationLongName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop."));
 		}
 	}
 }
