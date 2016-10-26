@@ -219,7 +219,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
-		       description = "Graphical add-in setup utility"
+		       description = "Graphical extension setup utility"
 		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
 	</Extension>
 	

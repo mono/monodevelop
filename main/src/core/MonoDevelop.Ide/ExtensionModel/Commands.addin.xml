@@ -696,8 +696,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 			icon = "gtk-plugin"
-			_description = "Manage add-ins"
-			_label = "_Add-ins..." />
+			_description = "Manage extensions"
+			_label = "_Extensions..." />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 			type="array"

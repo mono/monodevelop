@@ -2807,7 +2807,7 @@ Diagnostic</property>
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">The following add-ins could not be started:</property>
+                    <property name="LabelProp" translatable="yes">The following extensions could not be started:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
