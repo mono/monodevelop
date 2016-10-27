@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
@@ -68,7 +69,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 //			this.ignoreWhiteSpace = true;
 		}
-		
+
+		[Pure]
 		public void Tokenize (string s)
 		{
 			if (s == null)
