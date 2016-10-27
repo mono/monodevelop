@@ -1,3 +1,4 @@
+
 // 
 // ResultTooltipProvider.cs
 //  
@@ -58,7 +59,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					results.Add (result);
 				}
 			}
-			if (results != null)
+			if (results.Count > 0)
 				return Task.FromResult (new TooltipItem (results, markerOffset, markerEndOffset - markerOffset));
 
 			return Task.FromResult<TooltipItem> (null);
@@ -74,7 +75,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var escapedMessage = Ambience.EscapeText (r.Message);
 				if (sb.Length > 0)
 					sb.AppendLine ();
-				if (result.Count > 0) {
+				if (result.Count > 1) {
 					string severity;
 					HslColor color;
 					switch (r.Level) {
@@ -114,7 +115,5 @@ namespace MonoDevelop.AnalysisCore.Gui
 			xalign = 0.5;
 		}
 		#endregion
-
-
 	}
 }

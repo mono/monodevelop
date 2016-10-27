@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		public bool Run (WindowFrame parent)
 		{
 			var cmd = Dialog.Run (parent);
-			return cmd != Command.Cancel;
+			return cmd == Command.Ok;
 		}
 
 		bool disposed = false;

@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						else if (ch >= '0' && ch <= '9') {
 							state = 1;
 							goto case 1;
-						} else if (ch != ' ')
+						} else if (!char.IsWhiteSpace (ch))
 							return false;
 						break;
 					case 1: // read line number
@@ -168,6 +168,9 @@ namespace MonoDevelop.Ide.Gui.Components
 							mult *= 10;
 						} else if (ch == ' ' || char.IsLetter (ch)) {
 							state = 2;
+						} else if (ch == ':') {
+							state = 3;
+							fileNameStart = fileNameEnd = i;
 						} else
 							return false;
 						break;
