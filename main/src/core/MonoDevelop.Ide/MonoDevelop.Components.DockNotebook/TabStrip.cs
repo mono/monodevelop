@@ -319,18 +319,6 @@ namespace MonoDevelop.Components.DockNotebook
 				});
 		}
 
-		protected override void ForAll (bool include_internals, Callback callback)
-		{
-			base.ForAll (include_internals, callback);
-			for (int i = 0; i < children.Count; ++i)
-				callback (children [i]);
-		}
-
-		protected override void OnRemoved (Widget widget)
-		{
-			children.Remove (widget);
-		}
-
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			if (NavigationButtonsVisible) {

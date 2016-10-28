@@ -157,6 +157,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return iconSize;
 			}
 
+			int IndexFromIdentifier (string identifier)
+			{
+				int i = 0;
+				foreach (var cell in Cells) {
+					if (cell.Identifier == identifier) {
+						return i;
+					}
+					i++;
+				}
+
+				throw new Exception ($"No cell with {identifier} found");
+			}
+
 			public override CGSize SizeThatFits (CGSize size)
 			{
 				int n = 0;
@@ -167,7 +180,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				totalWidth += AddCellSize (LastSelectedCell, totalWidth, size.Width, allIconsWidth);
 
 				for (;n < VisibleCells.Length; n++) {
-					int cellId = VisibleCellIds [n];
+					var cellId = VisibleCellIds [n];
 					if (cellId == LastSelectedCell)
 						continue;
 					
@@ -482,7 +495,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else
 					throw new NotSupportedException ();
 				
-				LastSelectedCell = cellIdx;
+				LastSelectedCell = IndexFromIdentifier (item.Identifier);
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 

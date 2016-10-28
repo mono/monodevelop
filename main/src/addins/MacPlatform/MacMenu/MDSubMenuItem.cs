@@ -55,7 +55,6 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			}
 		}
 
-		[Export ("accessibilityTitle")]
-		string AccessibilityTitle { get { return Title; } }
+		public override string AccessibilityTitle { get { return Title; } }
 	}
 }
