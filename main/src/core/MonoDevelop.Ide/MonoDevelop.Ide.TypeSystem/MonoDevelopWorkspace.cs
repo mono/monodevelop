@@ -572,9 +572,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					} else {
 						fileName = file.FilePath.FullPath;
 					}
-					if (hashSet.Contains (fileName))
+					if (!hashSet.Add (fileName))
 						continue;
-					hashSet.Add (fileName);
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference == null)
 						continue;
@@ -593,6 +592,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (configurationSelector);
+					if (!hashSet.Add (fileName))
+						continue;
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference != null)
 						result.Add (metadataReference);
@@ -612,6 +613,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			//pref.ReferenceOutputAssembly
 			//and for iOS/Android extensions
 			var referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
 			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
 				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
 				//reference Aliases, hence we have to loop over references
@@ -619,6 +621,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (referencedProject == null)
 					continue;
 				if (!referencedProjects.Contains (referencedProject))
+					continue;
+				if (!addedProjects.Add (referencedProject))
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
