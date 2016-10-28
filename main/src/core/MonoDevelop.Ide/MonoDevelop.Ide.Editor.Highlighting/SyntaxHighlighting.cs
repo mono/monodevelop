@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			int j = i;
-			while (j + 1 < list.Count && newSegment.EndOffset > list [j + 1].EndOffset) {
+			while (j + 1 < list.Count && newSegment.EndOffset > list [j + 1].Offset) {
 				j++;
 			}
 			var startItem = list [i];

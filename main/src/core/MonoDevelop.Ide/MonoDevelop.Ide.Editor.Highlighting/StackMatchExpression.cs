@@ -198,6 +198,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		class StringMatchExpression : StackMatchExpression
 		{
 			readonly string scope;
+			static readonly Tuple<bool, ImmutableStack<string>> mismatch = Tuple.Create (false, (ImmutableStack<string>)null);
 
 			public StringMatchExpression (string scope)
 			{
@@ -207,11 +208,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
 			{
 				if (scopeStack.IsEmpty)
-					return Tuple.Create (false, scopeStack);
+					return mismatch;
 				bool found = scopeStack.Peek ().StartsWith (scope, StringComparison.Ordinal);
-				if (found)
+				if (found) {
 					matchExpr = scope;
-				return Tuple.Create (found, scopeStack.Pop ());
+					return Tuple.Create (found, scopeStack.Pop ());
+				}
+				return mismatch;
 			}
 
 			public override string ToString ()

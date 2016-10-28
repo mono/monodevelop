@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			string found = null;
 			foreach (var setting in settings) {
 				string compatibleScope = null;
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scopeStack, ref compatibleScope))) {
+				if (IsValidScope (setting, scopeStack, ref compatibleScope)) {
 					if (found != null && found.Length >= compatibleScope.Length)
 						continue;
 					HslColor tryC;
@@ -165,13 +165,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
+		bool IsValidScope (ThemeSetting setting, ImmutableStack<string> scopeStack, ref string compatibleScope)
+		{
+			if (setting.Scopes.Count == 0)
+				return true;
+			foreach (var s in setting.Scopes) {
+				if (IsCompatibleScope (s, scopeStack, ref compatibleScope))
+					return true;
+			}
+			return false;
+		}
+
 		string GetSetting (string key, ImmutableStack<string> scopeStack)
 		{
 			string result = null;
 			string found = null;
 			foreach (var setting in settings) {
 				string compatibleScope = null;
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scopeStack, ref compatibleScope))) {
+				if (IsValidScope (setting, scopeStack, ref compatibleScope)) {
 					if (found != null && found.Length > compatibleScope.Length)
 						continue;
 
@@ -195,7 +206,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var stack = ImmutableStack<string>.Empty.Push (scope);
 			foreach (var setting in settings) {
 				string compatibleScope = null;
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, stack, ref compatibleScope))) {
+				if (IsValidScope (setting, stack, ref compatibleScope)) {
 					if (found != null && found.Length > compatibleScope.Length)
 						continue;
 				
