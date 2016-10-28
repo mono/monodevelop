@@ -81,7 +81,6 @@ namespace MonoDevelop.Refactoring
 					delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 						LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 					},
-					null,
 					true,
 					false
 				);
@@ -159,7 +158,9 @@ namespace MonoDevelop.Refactoring
 					startLinePosition.Line + 1,
 					GetSeverity (diagnostic),
 					TaskPriority.Normal,
-					parent
+					parent,
+					null,
+					diagnostic.Descriptor.Category
 				);
 			}));
 

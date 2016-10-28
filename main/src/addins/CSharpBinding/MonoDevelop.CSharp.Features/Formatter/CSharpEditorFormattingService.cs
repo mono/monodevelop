@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public CSharpEditorFormattingService()
 		{
-			_autoFormattingTriggerChars = ImmutableHashSet.CreateRange<char>(";}#n");
+			_autoFormattingTriggerChars = ImmutableHashSet.CreateRange<char>(";}#ntef");
 
 			// add all auto formatting trigger to supported char
 			_supportedChars = _autoFormattingTriggerChars.Union("{}#nte:)");
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				{
 					new KeyValuePair<char, ImmutableHashSet<SyntaxKind>> ('n', ImmutableHashSet.Create(SyntaxKind.RegionKeyword, SyntaxKind.EndRegionKeyword)),
 					new KeyValuePair<char, ImmutableHashSet<SyntaxKind>> ('t', ImmutableHashSet.Create(SyntaxKind.SelectKeyword)),
-					new KeyValuePair<char, ImmutableHashSet<SyntaxKind>> ('e', ImmutableHashSet.Create(SyntaxKind.WhereKeyword)),
+					new KeyValuePair<char, ImmutableHashSet<SyntaxKind>> ('e', ImmutableHashSet.Create(SyntaxKind.WhereKeyword, SyntaxKind.ElseKeyword)),
 				});
 		}
 

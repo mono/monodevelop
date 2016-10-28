@@ -541,6 +541,62 @@ namespace FormatSelectionTest
 }", newText);
 			});
 		}
+
+		// Bug 44747 - Automatic indentation of preprocessor directives is not consistent
+		[Test]
+		public async Task TestBug17902 ()
+		{
+			await Simulate (@"class Test17902
+{
+    public void Foo()
+    {
+		{
+		if (true)
+		{
+			if (true)
+			{
+			}
+			else
+			{
+				System.Console.WriteLine(1);
+			}
+		}
+		else
+		{
+			System.Console.WriteLine(2);
+		}
+		}$
+    }
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Test17902
+{
+    public void Foo()
+    {
+		{
+			if (true)
+			{
+				if (true)
+				{
+				}
+				else
+				{
+					System.Console.WriteLine(1);
+				}
+			}
+			else
+			{
+				System.Console.WriteLine(2);
+			}
+		}
+    }
+}", newText);
+		});
+		}
 	}
 }
-

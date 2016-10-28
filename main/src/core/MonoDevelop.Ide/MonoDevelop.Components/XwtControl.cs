@@ -26,18 +26,34 @@
 using System;
 namespace MonoDevelop.Components
 {
-	public class XwtControl: Control
+	public class XwtControl: AbstractXwtControl
 	{
-		Xwt.Widget widget;
+		readonly Xwt.Widget widget;
+
+		public override Xwt.Widget Widget {
+			get { return widget; }
+		}
 
 		public XwtControl (Xwt.Widget widget)
 		{
 			this.widget = widget;
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+		}
+	}
+
+	public abstract class AbstractXwtControl : Control
+	{
 		protected override object CreateNativeWidget<T> ()
 		{
-			return widget.Surface.NativeWidget;
+			return Widget.Surface.NativeWidget;
+		}
+
+		public abstract Xwt.Widget Widget {
+			get;
 		}
 
 		protected override void Dispose (bool disposing)

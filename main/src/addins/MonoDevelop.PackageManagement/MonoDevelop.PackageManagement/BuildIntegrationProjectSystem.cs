@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject
 	{
-		IDotNetProject dotNetProject;
+		DotNetProjectProxy dotNetProject;
 		PackageManagementEvents packageManagementEvents;
 		VersionFolderPathResolver packagePathResolver;
 
@@ -68,6 +68,10 @@ namespace MonoDevelop.PackageManagement
 			return dotNetProject.SaveAsync ();
 		}
 
+		public DotNetProjectProxy Project {
+			get { return dotNetProject; }
+		}
+
 		public override Task<bool> ExecuteInitScriptAsync (PackageIdentity identity, string packageInstallPath, INuGetProjectContext projectContext, bool throwOnFailure)
 		{
 			// Not supported. This gets called for every NuGet package
@@ -77,6 +81,10 @@ namespace MonoDevelop.PackageManagement
 
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
 		{
+			Runtime.RunInMainThread (() => {
+				dotNetProject.DotNetProject.NotifyModified ("References");
+			});
+
 			packageManagementEvents.OnFileChanged (JsonConfigPath);
 
 			return base.PostProcessAsync (nuGetProjectContext, token);

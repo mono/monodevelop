@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Editor.Util
 	/// <summary>
 	/// A DiffHunk represents a single change in a diff between two files.
 	/// </summary>
-	public struct DiffHunk
+	public struct DiffHunk : IEquatable<DiffHunk>
 	{
 		public static readonly DiffHunk Empty = new DiffHunk (0, 0, 0, 0);
 
@@ -174,6 +174,11 @@ namespace MonoDevelop.Ide.Editor.Util
 			if (!(obj is DiffHunk))
 				return false;
 			return ((DiffHunk)obj) == this;
+		}
+
+		public bool Equals (DiffHunk other)
+		{
+			return this == other;
 		}
 		
 		public override int GetHashCode ()

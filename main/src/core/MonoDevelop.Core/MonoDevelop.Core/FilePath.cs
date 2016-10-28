@@ -359,7 +359,7 @@ namespace MonoDevelop.Core
 
 		#region IEquatable<FilePath> Members
 
-		bool IEquatable<FilePath>.Equals (FilePath other)
+		public bool Equals (FilePath other)
 		{
 			return this == other;
 		}

@@ -267,7 +267,7 @@ namespace MonoDevelop.Core.Text
 		static void WriteTextFinal (string tmpPath, string fileName)
 		{
 			try {
-				SystemRename (tmpPath, fileName);
+				FileService.SystemRename (tmpPath, fileName);
 			} catch (Exception) {
 				try {
 					File.Delete (tmpPath);
@@ -297,7 +297,7 @@ namespace MonoDevelop.Core.Text
 		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
 		{
 			var tmpPath = WriteTextInit (fileName, text, encoding);
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write, bufferSize: DefaultBufferSize, useAsync: true)) {
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write, bufferSize: DefaultBufferSize, options: FileOptions.Asynchronous)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
@@ -326,41 +326,6 @@ namespace MonoDevelop.Core.Text
 				byte[] bytes = encoding.GetBytes (text);
 				stream.Write (bytes, 0, bytes.Length);
 				return stream.GetBuffer ();
-			}
-		}
-
-		// Code taken from FileService.cs
-		static void SystemRename (string sourceFile, string destFile)
-		{
-			//FIXME: use the atomic System.IO.File.Replace on NTFS
-			if (Platform.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (destFile)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
-					File.Move (destFile, wtmp);
-				}
-				try {
-					File.Move (sourceFile, destFile);
-				} catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, destFile);
-					} catch {
-						wtmp = null;
-					}
-					throw;
-				} finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						} catch {
-						}
-					}
-				}
-			} else {
-				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
 		}
 
@@ -431,11 +396,12 @@ namespace MonoDevelop.Core.Text
 
 		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
-			using (var f = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: DefaultBufferSize, useAsync: true)) {
-				var res = new byte [f.Length];
+			using (var f = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: DefaultBufferSize, options: FileOptions.Asynchronous | FileOptions.SequentialScan))
+			using (var bs = new BufferedStream (f)) {
+				var res = new byte [bs.Length];
 				int nr = 0;
 				int c = 0;
-				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
+				while (nr < res.Length && (c = await bs.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
 					nr += c;
 				return res;
 			}
@@ -470,7 +436,7 @@ namespace MonoDevelop.Core.Text
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: DefaultBufferSize, options: FileOptions.SequentialScan)) {
 				return IsBinary (stream);
 			}
 		}

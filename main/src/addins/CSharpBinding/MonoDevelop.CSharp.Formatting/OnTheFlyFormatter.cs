@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 					int delta = 0;
 					foreach (var change in newTree.GetChanges (syntaxTree)) {
-						if (!exact && change.Span.Start + delta >= caretOffset)
+						if (!exact && change.Span.Start >= caretOffset)
 							continue;
 						if (exact && !span.Contains (change.Span.Start))
 							continue;

@@ -123,4 +123,18 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <Target Name="MakeLargeAddressAware" AfterTargets="Build" Condition=" '$(OS)' != 'Unix' ">
+    <PropertyGroup>
+      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS150COMNTOOLS)</VsComnTools>
+      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS140COMNTOOLS)</VsComnTools>
+      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS130COMNTOOLS)</VsComnTools>
+      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS120COMNTOOLS)</VsComnTools>
+      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS110COMNTOOLS)</VsComnTools>
+      <VsComnTools Condition=" '$(VsComnTools)' != '' And !HasTrailingSlash('$(VsComnTools)') ">$(VsComnTools)\</VsComnTools>
+      <EditBin Condition=" '$(VsComnTools)' != '' ">$(VsComnTools)..\..\VC\bin\editbin.exe</EditBin>
+    </PropertyGroup>
+
+    <Exec Command='"$(EditBin)" /largeaddressaware "$(TargetPath)"' Condition="Exists('$(EditBin)')" />
+  </Target>
 </Project>

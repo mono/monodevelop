@@ -46,6 +46,7 @@ namespace Mono.TextEditor
 		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
+		Pango.FontDescription markerLayoutFont;
 		Pango.Layout[] eolMarkerLayout;
 		Pango.Rectangle[] eolMarkerLayoutRect;
 
@@ -386,11 +387,11 @@ namespace Mono.TextEditor
 			selectionColor = null;
 			currentLineColor = null;
 		
-			var markerFont = textEditor.Options.Font.Copy ();
-			markerFont.Size = markerFont.Size * 8 / 10;
-			markerLayout.FontDescription = markerFont;
-			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
-			markerLayout.FontDescription.Style = Pango.Style.Normal;
+			markerLayoutFont = textEditor.Options.Font.Copy ();
+			markerLayoutFont.Size = markerLayoutFont.Size * 8 / 10;
+			markerLayoutFont.Style = Pango.Style.Normal;
+			markerLayoutFont.Weight = Pango.Weight.Normal;
+			markerLayout.FontDescription = markerLayoutFont;
 
 			defaultLayout.FontDescription = textEditor.Options.Font;
 			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
@@ -475,6 +476,7 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
+			markerLayoutFont = null;
 
 			if (defaultLayout!= null) 
 				defaultLayout.Dispose ();
@@ -821,7 +823,7 @@ namespace Mono.TextEditor
 			}
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
-			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
+			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in markers) {
 				var chunkMarker = marker as IChunkMarker;
 				if (chunkMarker == null)
@@ -1573,7 +1575,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
+			var textSegmentMarkers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in textSegmentMarkers) {
 				if (layout.Layout != null)
 					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
@@ -1759,7 +1761,10 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
+			foreach (TextLineMarker marker in line.Markers) {
+				if (!marker.IsVisible)
+					continue;
+				
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, metrics);
 			}
@@ -1910,7 +1915,10 @@ namespace Mono.TextEditor
 						}
 					}
 					var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+						if (!marker.IsVisible)
+							continue;
+						
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -2046,7 +2054,10 @@ namespace Mono.TextEditor
 					}
 				}
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+					if (!marker.IsVisible)
+						continue;
+					
 					if (marker is IActionTextLineMarker) {
 						isHandled |= ((IActionTextLineMarker)marker).MouseReleased (textEditor, args);
 						if (isHandled)
@@ -2247,7 +2258,8 @@ namespace Mono.TextEditor
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
 			var hoverResult = new TextLineMarkerHoverResult ();
-			oldMarkers.ForEach (m => m.MouseHover (textEditor, args, hoverResult));
+			foreach (var marker in oldMarkers)
+				marker.MouseHover (textEditor, args, hoverResult);
 
 			if (line != null) {
 				newMarkers.Clear ();
@@ -2255,7 +2267,10 @@ namespace Mono.TextEditor
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
-				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
+				foreach (var marker in newMarkers) {
+					if (oldMarkers.Contains (marker))
+						continue;
+					
 					marker.MouseHover (textEditor, args, hoverResult);
 				}
 				oldMarkers.Clear ();
@@ -2263,7 +2278,10 @@ namespace Mono.TextEditor
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped))) {
+					if (!marker.IsVisible)
+						continue;
+					
 					if (marker is IActionTextLineMarker) {
 						((IActionTextLineMarker)marker).MouseHover (textEditor, args, hoverResult);
 					}
@@ -2479,7 +2497,7 @@ namespace Mono.TextEditor
 				calcTextLayout.FontDescription = textEditor.Options.Font;
 				calcTextLayout.Tabs = this.tabArray;
 
-				calcFoldingLayout.FontDescription = markerLayout.FontDescription;
+				calcFoldingLayout.FontDescription = markerLayoutFont;
 				calcFoldingLayout.Tabs = this.tabArray;
 				foreach (var folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
@@ -2957,7 +2975,10 @@ namespace Mono.TextEditor
 				try {
 					restart:
 					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
-					foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
+					foreach (FoldSegment folding in foldings) {
+						if (!folding.IsFolded)
+							continue;
+						
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;

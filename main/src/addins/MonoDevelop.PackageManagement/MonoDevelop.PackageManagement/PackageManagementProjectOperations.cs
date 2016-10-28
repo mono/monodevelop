@@ -86,6 +86,38 @@ namespace MonoDevelop.PackageManagement
 			InstallPackages (repositories, project, packages, licensesAccepted: false);
 		}
 
+		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		public Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repositories = repositoryProvider.GetRepositories ().ToList ();
+
+			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted: false).ToList ();
+
+			ProgressMonitorStatusMessage progressMessage = GetInstallingStatusMessages (actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
+		}
+
+		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		public Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repositories = repositoryProvider.GetRepositories ().ToList ();
+
+			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted).ToList ();
+
+			ProgressMonitorStatusMessage progressMessage = GetInstallingStatusMessages (actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
+		}
+
 		void InstallPackages (
 			IEnumerable<SourceRepository> repositories,
 			Project project,
@@ -93,7 +125,7 @@ namespace MonoDevelop.PackageManagement
 			bool licensesAccepted)
 		{
 			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted).ToList ();
-			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
+			ProgressMonitorStatusMessage progressMessage = GetInstallingStatusMessages (actions);
 			backgroundActionRunner.Run (progressMessage, actions);
 		}
 
@@ -137,11 +169,11 @@ namespace MonoDevelop.PackageManagement
 
 			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted: false).ToList ();
 
-			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
+			ProgressMonitorStatusMessage progressMessage = GetInstallingStatusMessages (actions);
 			return backgroundActionRunner.RunAsync (progressMessage, actions);
 		}
 
-		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<INuGetPackageAction> packageActions)
+		ProgressMonitorStatusMessage GetInstallingStatusMessages (List<INuGetPackageAction> packageActions)
 		{
 			if (packageActions.Count == 1) {
 				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
@@ -261,6 +293,60 @@ namespace MonoDevelop.PackageManagement
 				e.Project.DotNetProject,
 				e.Package.Id,
 				e.Package.Version.ToString ());
+		}
+
+		public void UninstallPackages (
+			Project project,
+			IEnumerable<string> packages,
+			bool removeDependencies = false)
+		{
+			var actions = CreateUninstallActions (project, packages, removeDependencies).ToList ();
+			ProgressMonitorStatusMessage progressMessage = GetUninstallingStatusMessages (actions);
+			backgroundActionRunner.Run (progressMessage, actions);
+		}
+
+		IEnumerable<INuGetPackageAction> CreateUninstallActions (
+			Project project,
+			IEnumerable<string> packages,
+			bool removeDependencies)
+		{
+			List<INuGetPackageAction> actions = null;
+
+			Runtime.RunInMainThread (() => {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				var dotNetProject = new DotNetProjectProxy ((DotNetProject)project);
+
+				actions = packages.Select (packageId => {
+					var action = new UninstallNuGetPackageAction (
+						solutionManager,
+						dotNetProject);
+					action.PackageId = packageId;
+					action.RemoveDependencies = removeDependencies;
+					action.IsErrorWhenPackageNotInstalled = false;
+					return (INuGetPackageAction)action;
+				}).ToList ();
+			}).Wait ();
+
+			return actions;
+		}
+
+		ProgressMonitorStatusMessage GetUninstallingStatusMessages (List<INuGetPackageAction> packageActions)
+		{
+			if (packageActions.Count == 1) {
+				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
+				return ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageId);
+			}
+			return ProgressMonitorStatusMessageFactory.CreateRemovingMultiplePackagesMessage (packageActions.Count);
+		}
+
+		public Task UninstallPackagesAsync (
+			Project project,
+			IEnumerable<string> packages,
+			bool removeDependencies = false)
+		{
+			var actions = CreateUninstallActions (project, packages, removeDependencies).ToList ();
+			ProgressMonitorStatusMessage progressMessage = GetUninstallingStatusMessages (actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
 		}
 	}
 }

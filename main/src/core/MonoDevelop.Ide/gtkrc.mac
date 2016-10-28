@@ -241,9 +241,7 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    base[SELECTED] = @selected_bg_color
-    base[ACTIVE] = @selected_bg_color
-    text[SELECTED] = @selected_fg_color
+    base[ACTIVE] = "#a0a0a0"
     text[ACTIVE] = @selected_fg_color
 
     engine "xamarin" {
@@ -334,24 +332,27 @@ style "notebook" = "default"
     }
 }
 
-style "radio-or-check-box" = "default"
+style "radio-or-check-box" = "button"
 {
-    ythickness = 6
+    GtkCheckButton::indicator-size = 17
+    base[ACTIVE] = "#419bf9"
+    base[SELECTED] = "#419bf9"
+    base[PRELIGHT] = @base_color
+    text[ACTIVE] = @base_color
+    text[SELECTED] = @base_color
+    text[PRELIGHT] = @base_color
+    text[NORMAL] = @base_color
 
-    engine "quartz" {
+    engine "xamarin" {
+        focusstyle = 0
+        border_shades = { 1.0, 1.0 }
     }
 }
 
 style "propertygrid-radio-or-check-box" = "radio-or-check-box"
 {
-    base[ACTIVE] = @base_color
-    base[SELECTED] = @base_color
-    base[PRELIGHT] = @base_color
-    text[SELECTED] = @fg_color
     GtkCheckButton::indicator-spacing = 0
-
-    engine "xamarin" {
-    }
+    GtkCheckButton::indicator-size = 15
 }
 
 style "entry" = "default"

@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			if (tabPage == null)
+			if (tabPage == null && subViewNotebook == null)
 				box.PackStart (TabPage);
 		}
 

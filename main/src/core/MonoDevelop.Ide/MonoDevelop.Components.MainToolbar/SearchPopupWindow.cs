@@ -291,52 +291,52 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			Task.WhenAll (collectors.Select (c => c.Task)).ContinueWith (t => {
-				Application.Invoke (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> (collectors.Count);
-					foreach (var col in collectors) {
-						if (col.Task.IsCanceled) {
-							continue;
-						} else if (col.Task.IsFaulted) {
-							LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
-						} else {
-							newResults.Add (Tuple.Create (col.Category, col.Results));
-						}
+				if (token.IsCancellationRequested)
+					return;
+				var newResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> (collectors.Count);
+				foreach (var col in collectors) {
+					if (col.Task.IsCanceled) {
+						continue;
+					} else if (col.Task.IsFaulted) {
+						LoggingService.LogError ($"Error getting search results for {col.Category}", col.Task.Exception);
+					} else {
+						newResults.Add (Tuple.Create (col.Category, col.Results));
 					}
-					ShowResults (newResults);
+				}
+
+				List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
+				ItemIdentifier topResult = null;
+				for (int i = 0; i < newResults.Count; i++) {
+					var tuple = newResults [i];
+					try {
+						if (tuple.Item2.Count == 0)
+							continue;
+						if (topResult == null || topResult.DataSource [topResult.Item].Weight < tuple.Item2 [0].Weight)
+							topResult = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while showing result " + i, e);
+						if (failedResults == null)
+							failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
+						failedResults.Add (newResults [i]);
+						continue;
+					}
+				}
+
+				if (failedResults != null)
+					failedResults.ForEach (failedResult => newResults.Remove (failedResult));
+
+				Application.Invoke (delegate {
+					ShowResults (newResults, topResult);
 					isInSearch = false;
 					AnimatedResize ();
 				});
 			}, token);
 		}
 
-		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults)
+		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results = newResults;
-			List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> failedResults = null;
-			topItem = null;
-
-			for (int i = 0; i < results.Count; i++) {
-				var tuple = results [i];
-				try {
-					if (tuple.Item2.Count == 0)
-						continue;
-					if (topItem == null || topItem.DataSource [topItem.Item].Weight < tuple.Item2 [0].Weight)
-						topItem = new ItemIdentifier (tuple.Item1, tuple.Item2, 0);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while showing result " + i, e);
-					if (failedResults == null)
-						failedResults = new List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> ();
-					failedResults.Add (results [i]);
-					continue;
-				}
-			}
-			selectedItem = topItem;
-
-			if (failedResults != null)
-				failedResults.ForEach (failedResult => results.Remove (failedResult));
-
+			selectedItem = topItem = topResult;
 			ShowTooltip ();
 		}
 
@@ -1003,15 +1003,33 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		static string selectedResultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultTextColor);
+		static string resultTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultTextColor);
+		static string selectedResultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.SelectedResultDescriptionTextColor);
+		static string resultDescriptionTextColor = Styles.ColorGetHex (Styles.GlobalSearch.ResultDescriptionTextColor);
 		string GetRowMarkup (SearchResult result, bool selected = false)
 		{
-			var resultFgColor = selected ? Styles.GlobalSearch.SelectedResultTextColor : Styles.GlobalSearch.ResultTextColor;
-			var descFgColor = selected ? Styles.GlobalSearch.SelectedResultDescriptionTextColor : Styles.GlobalSearch.ResultDescriptionTextColor;
-			string txt = "<span foreground=\"" + Styles.ColorGetHex (resultFgColor) + "\">" + result.GetMarkupText(selected) +"</span>";
+			var resultFgColor = selected ? selectedResultTextColor : resultTextColor;
+			var descFgColor = selected ? selectedResultDescriptionTextColor : resultDescriptionTextColor;
+			string text = result.GetMarkupText (selected);
 			string desc = result.GetDescriptionMarkupText ();
-			if (!string.IsNullOrEmpty (desc))
-				txt += "<span foreground=\"" + Styles.ColorGetHex (descFgColor) + "\" size=\"small\">\n" + desc + "</span>";
-			return txt;
+
+			int descLength = desc != null ? desc.Length : 0;
+
+			var sb = new System.Text.StringBuilder (text.Length + resultFgColor.Length + descLength + descFgColor.Length + 68);
+			sb.Append ("<span foreground=\"");
+			sb.Append (resultFgColor);
+			sb.Append ("\">");
+			sb.Append (text);
+			sb.Append ("</span>");
+			if (descLength > 0) {
+				sb.Append ("<span foreground=\"");
+				sb.Append (descFgColor);
+				sb.Append ("\" size=\"small\">\n");
+				sb.Append (desc);
+				sb.Append ("</span>");
+			}
+			return sb.ToString ();
 		}
 	}
 }

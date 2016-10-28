@@ -68,6 +68,7 @@ namespace MonoDevelop.Core.Execution
 				ManualResetEvent ev = new ManualResetEvent (false);
 				ThreadPool.QueueUserWorkItem (delegate {
 					res = ((IMessageSink)nextSink).SyncProcessMessage (msg);
+					ev.Set ();
 				});
 				if (!ev.WaitOne (timeout, false)) {
 					timedOut = true;

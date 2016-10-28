@@ -191,6 +191,30 @@ namespace MonoDevelop.Core.Assemblies
 					return true;
 			}
 
+			// HACK: allow referencing NetStandard projects
+			//
+			//.NETPortable,Version=v5.0 is a dummy framework. In this case, the TFM is not available
+			//to MSBuild, its is only available to NuGet from the project.json.
+			//
+			//Additionally, there is no equivalent of SupportedFrameworks for these TFMs, the
+			//relationships are hardcoded into NuGet.
+			//
+			//Until this is fixed, we will be very lax about what we consider compatible.
+			//
+			if (fx.Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE && fx.Id.Version == "5.0") {
+				//.NetFramework < 4.5 isn't compatible with any netstandard version
+				if (Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK) {
+					return new Version (Id.Version).CompareTo (new Version (4, 5)) >= 0;
+				}
+
+				//PCL < 4.5 isn't compatible with any netstandard version
+				if (Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE) {
+					return new Version (Id.Version).CompareTo (new Version (4, 5)) >= 0;
+				}
+
+				return true;
+			}
+
 			return fx.Id.Identifier == id.Identifier && new Version (fx.Id.Version).CompareTo (new Version (id.Version)) <= 0;
 		}
 		
@@ -362,11 +386,8 @@ namespace MonoDevelop.Core.Assemblies
 							ainfo.InGac = reader.ReadContentAsBoolean ();
 					} while (reader.ReadToFollowing ("File"));
 				} else if (Directory.Exists (dir)) {
-
-					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
-					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-					var files = Directory.GetFiles (dir, "*.dll");
-					foreach (var f in files) {
+					
+					foreach (var f in Directory.EnumerateFiles (dir, "*.dll")) {
 						try {
 							var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));
 							var ainfo = new AssemblyInfo ();

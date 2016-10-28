@@ -266,6 +266,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			var w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Destroy ();
 			outlineTreeView = null;
+			RemoveRefillOutlineStoreTimeout ();
 			settings = null;
 			foreach (var tw in toolbarWidgets)
 				tw.Destroy ();

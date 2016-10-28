@@ -254,18 +254,20 @@ namespace MonoDevelop.CSharp
 			if (DocumentContext == null) {
 				return;//This can happen if this object is disposed
 			}
-			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
-			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
-				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
-				var dnp = DocumentContext.Project as DotNetProject;
-				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
-					// If the project for the document is not a DotNetProject but there is a project containing this file
-					// in the current solution, then use that project
-					var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
-					if (pp != null)
-						DocumentContext.AttachToProject (pp);
+			Editor.RunWhenRealized (() => {
+				var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
+				if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
+					SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
+					var dnp = DocumentContext.Project as DotNetProject;
+					if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
+						// If the project for the document is not a DotNetProject but there is a project containing this file
+						// in the current solution, then use that project
+						var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
+						if (pp != null)
+							DocumentContext.AttachToProject (pp);
+					}
 				}
-			}
+			});
 		}
 
 		void UpdateOwnerProjects ()

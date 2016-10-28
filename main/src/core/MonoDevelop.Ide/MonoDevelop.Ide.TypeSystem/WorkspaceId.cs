@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	struct WorkspaceId
+	struct WorkspaceId : IEquatable<WorkspaceId>
 	{
 		static uint n = 0;
 
@@ -50,14 +50,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			if (!(obj is WorkspaceId))
 				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
-			if (obj.GetType () != typeof(WorkspaceId))
-				return false;
-			WorkspaceId other = (WorkspaceId)obj;
-			return Number == other.Number && DateTime == other.DateTime;
+			return Equals ((WorkspaceId)obj);
 		}
 
 		public override int GetHashCode ()
@@ -65,6 +60,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			unchecked {
 				return Number.GetHashCode () ^ DateTime.GetHashCode ();
 			}
+		}
+
+		public bool Equals (WorkspaceId other)
+		{
+			return Number == other.Number && DateTime == other.DateTime;
 		}
 	}
 }
