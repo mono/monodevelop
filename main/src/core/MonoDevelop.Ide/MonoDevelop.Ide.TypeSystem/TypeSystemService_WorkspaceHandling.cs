@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void IntitializeTrackedProjectHandling ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
+				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).LanguageName;
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					outputTrackedProjects.Add (projectType);
@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			return project.GetTypeTags ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase));
+			return outputTrackedProjects.Contains (project.LanguageName, StringComparer.OrdinalIgnoreCase);
 		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)

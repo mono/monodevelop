@@ -326,6 +326,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceDiagnosticsAddIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIThreadMonitorDaemon", "src\addins\PerformanceDiagnostics\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj", "{3FDB97B5-916E-4817-8098-41659687A8FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.ConnectedServices", "src\addins\MonoDevelop.ConnectedServices\MonoDevelop.ConnectedServices.csproj", "{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
 EndProject
 Global
@@ -2160,6 +2162,26 @@ Global
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{3FDB97B5-916E-4817-8098-41659687A8FF}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}.Release|x86.Build.0 = Release|Any CPU
 		{74704C00-5861-4F86-920C-865148A175C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74704C00-5861-4F86-920C-865148A175C5}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{74704C00-5861-4F86-920C-865148A175C5}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2318,6 +2340,7 @@ Global
 		{19C4CC37-7050-4944-B11F-60F52121B24C} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{DD14AD77-6FBB-4F0D-8083-CEC28A9D0BBD} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{3FDB97B5-916E-4817-8098-41659687A8FF} = {19C4CC37-7050-4944-B11F-60F52121B24C}
+		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{74704C00-5861-4F86-920C-865148A175C5} = {8F47F5EC-2F57-4030-B658-7B1002DA90C2}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
@@ -2330,7 +2353,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/config+xml
+		$2.scope = application/json
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2366,8 +2389,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = Mono
-		$13.scope = application/xml
+		$13.inheritsSet = null
+		$13.scope = application/config+xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False

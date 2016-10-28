@@ -11,8 +11,8 @@ namespace MonoDevelop.Core.Execution
 	[System.ComponentModel.DesignerCategory ("Code")]
 	public class ProcessWrapper : Process
 	{
-		private Thread captureOutputThread;
-		private Thread captureErrorThread;
+		private Task captureOutputTask;
+		private Task captureErrorTask;
 		ManualResetEvent endEventOut = new ManualResetEvent (false);
 		ManualResetEvent endEventErr = new ManualResetEvent (false);
 		bool done;
@@ -39,20 +39,14 @@ namespace MonoDevelop.Core.Execution
 			CheckDisposed ();
 			base.Start ();
 
-			captureOutputThread = new Thread (new ThreadStart(CaptureOutput));
-			captureOutputThread.Name = "Process output reader";
-			captureOutputThread.IsBackground = true;
-			captureOutputThread.Start ();
-
 			var cs = new CancellationTokenSource ();
 			operation = new ProcessAsyncOperation (Task, cs);
 			cs.Token.Register (Cancel);
 
+			captureOutputTask = Task.Run (CaptureOutput);
+
 			if (ErrorStreamChanged != null) {
-				captureErrorThread = new Thread (new ThreadStart(CaptureError));
-				captureErrorThread.Name = "Process error reader";
-				captureErrorThread.IsBackground = true;
-				captureErrorThread.Start ();
+				captureErrorTask = Task.Run (CaptureError);
 			} else {
 				endEventErr.Set ();
 			}
@@ -76,15 +70,14 @@ namespace MonoDevelop.Core.Execution
 			WaitForOutput (-1);
 		}
 		
-		private void CaptureOutput ()
+		private async Task CaptureOutput ()
 		{
 			try {
 				if (OutputStreamChanged != null) {
 					char[] buffer = new char [1024];
 					int nr;
-					while ((nr = StandardOutput.Read (buffer, 0, buffer.Length)) > 0) {
-						if (OutputStreamChanged != null)
-							OutputStreamChanged (this, new string (buffer, 0, nr));
+					while ((nr = await StandardOutput.ReadAsync (buffer, 0, buffer.Length)) > 0) {
+						OutputStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 					}
 				}
 			} catch (ThreadAbortException) {
@@ -118,14 +111,13 @@ namespace MonoDevelop.Core.Execution
             }
 		}
 		
-		private void CaptureError ()
+		private async Task CaptureError ()
 		{
 			try {
 				char[] buffer = new char [1024];
 				int nr;
-				while ((nr = StandardError.Read (buffer, 0, buffer.Length)) > 0) {
-					if (ErrorStreamChanged != null)
-						ErrorStreamChanged (this, new string (buffer, 0, nr));
+				while ((nr = await StandardError.ReadAsync (buffer, 0, buffer.Length)) > 0) {
+					ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 				}					
 			} finally {
 				lock (lockObj) {
@@ -143,8 +135,8 @@ namespace MonoDevelop.Core.Execution
 				
 				if (!done)
 					Cancel ();
-				
-				captureOutputThread = captureErrorThread = null;
+
+				captureOutputTask = captureErrorTask = null;
 				endEventOut.Close ();
 				endEventErr.Close ();
 				endEventOut = endEventErr = null;

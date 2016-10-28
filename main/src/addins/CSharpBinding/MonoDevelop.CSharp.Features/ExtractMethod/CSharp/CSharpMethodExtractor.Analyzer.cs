@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
             protected override bool ContainsReturnStatementInSelectedCode(IEnumerable<SyntaxNode> jumpOutOfRegionStatements)
             {
-                return jumpOutOfRegionStatements.Where(n => n is ReturnStatementSyntax).Any();
+                return jumpOutOfRegionStatements.Any (n => n is ReturnStatementSyntax);
             }
 
             protected override bool ReadOnlyFieldAllowed()

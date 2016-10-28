@@ -34,3 +34,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Addin.Tests")]
 [assembly: InternalsVisibleTo("MonoDevelop.Packaging")]
 [assembly: InternalsVisibleTo("MonoDevelop.Packaging.Tests")]
+[assembly: InternalsVisibleTo ("MonoDevelop.FSharp.Tests")]

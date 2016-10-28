@@ -84,7 +84,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.tabControl = tabControl;
 			this.tab = tabLabel;
-			this.tabPage = content.Control;
 			SetTitleEvent(null, null);
 			SetDockNotebookTabTitle ();
 		}
@@ -95,7 +94,6 @@ namespace MonoDevelop.Ide.Gui
 			this.tabControl = tabControl;
 			this.content = content;
 			this.tab = tabLabel;
-			this.tabPage = content.Control;
 
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			extensionContext = AddinManager.CreateExtensionContext ();
@@ -110,8 +108,6 @@ namespace MonoDevelop.Ide.Gui
 
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
-			if (subViewNotebook == null)
-				box.PackStart (content.Control);
 			content.ContentNameChanged += SetTitleEvent;
 			content.DirtyChanged       += HandleDirtyChanged;
 			box.Show ();
@@ -132,6 +128,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Widget TabPage {
 			get {
+				if (tabPage == null)
+					tabPage = content.Control;
 				return tabPage;
 			}
 			set {
@@ -142,7 +140,14 @@ namespace MonoDevelop.Ide.Gui
 		internal DockNotebookTab TabLabel {
 			get { return tab; }
 		}
-		
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			if (tabPage == null && subViewNotebook == null)
+				box.PackStart (TabPage);
+		}
+
 		Document document;
 		public Document Document {
 			get {
@@ -351,7 +356,7 @@ namespace MonoDevelop.Ide.Gui
 			if (widget.CanFocus)
 				yield return widget;
 			if (c != null) {
-				foreach (var f in c.FocusChain.SelectMany (x => GetFocussableWidgets (x)).Where (y => y != null))
+				foreach (var f in c.FocusChain.SelectMany (GetFocussableWidgets).Where (y => y != null))
 					yield return f;
 			}
 		}

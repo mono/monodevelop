@@ -350,7 +350,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					continue;
 	
 				string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
-				if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
+				if (!Directory.Exists (dir) || !Directory.EnumerateFiles (dir).Any ())
 					continue;
 				var semanticModel = doc.GetSemanticModelAsync ().Result;
 				if (semanticModel == null)

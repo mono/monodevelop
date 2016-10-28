@@ -112,7 +112,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					store.GetValue (i, completeOnSpace),
 					store.GetValue (i, completeOnChars)
 				);
-				Console.WriteLine (chars[i]);
 			}
 			CompletionCharacters.SetCompletionCharacters (chars);
 		}

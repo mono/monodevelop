@@ -100,6 +100,14 @@ namespace MonoDevelop.Projects.MSBuild
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			LoadExtensionData ();
+
+			specialCharactersEscaped = new Dictionary<char, string> (specialCharacters.Length);
+			specialCharactersUnescaped = new Dictionary<string, char> (specialCharacters.Length);
+			for (int i = 0; i < specialCharacters.Length; ++i) {
+				var escaped = ((int)specialCharacters [i]).ToString ("X");
+				specialCharactersEscaped [specialCharacters [i]] = '%' + escaped;
+				specialCharactersUnescaped [escaped] = specialCharacters [i];
+			}
 		}
 
 		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
@@ -334,7 +342,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static bool CanCreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (id => IsKnownFlavorGuid (id));
+			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (IsKnownFlavorGuid);
 		}
 
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -671,13 +679,26 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 		
 		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?' };
+		static Dictionary<char, string> specialCharactersEscaped;
+		static Dictionary<string, char> specialCharactersUnescaped;
 		
 		public static string EscapeString (string str)
 		{
 			int i = str.IndexOfAny (specialCharacters);
-			while (i != -1) {
-				str = str.Substring (0, i) + '%' + ((int) str [i]).ToString ("X") + str.Substring (i + 1);
-				i = str.IndexOfAny (specialCharacters, i + 3);
+			if (i != -1) {
+				var sb = new System.Text.StringBuilder ();
+				int start = 0;
+				while (i != -1) {
+					sb.Append (str, start, i - start);
+					sb.Append (specialCharactersEscaped [str [i]]);
+					if (i >= str.Length)
+						break;
+					start = i + 1;
+					i = str.IndexOfAny (specialCharacters, start);
+				}
+				if (start < str.Length)
+					sb.Append (str, start, str.Length - start);
+				return sb.ToString ();
 			}
 			return str;
 		}
@@ -696,11 +717,25 @@ namespace MonoDevelop.Projects.MSBuild
 		public static string UnscapeString (string str)
 		{
 			int i = str.IndexOf ('%');
-			while (i != -1 && i < str.Length - 2) {
-				int c;
-				if (int.TryParse (str.Substring (i+1, 2), NumberStyles.HexNumber, null, out c))
-					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
-				i = str.IndexOf ('%', i + 1);
+			if (i != -1) {
+				var sb = new System.Text.StringBuilder ();
+				int start = 0;
+				while (i != -1) {
+					int c;
+					char ch;
+					var sub = str.Substring (i + 1, 2);
+					if (specialCharactersUnescaped.TryGetValue (sub, out ch)) {
+						sb.Append (str, start, i - start);
+						sb.Append (ch);
+					} else if (int.TryParse (sub, NumberStyles.HexNumber, null, out c)) {
+						sb.Append (str, start, i - start);
+						sb.Append ((char)c);
+					}
+					start = i + 3;
+					i = str.IndexOf ('%', start);
+				}
+				sb.Append (str, start, str.Length - start);
+				return sb.ToString ();
 			}
 			return str;
 		}
@@ -796,7 +831,7 @@ namespace MonoDevelop.Projects.MSBuild
 			string part = "/";
 			
 			for (int n=0; n<names.Length; n++) {
-				string[] entries;
+				IEnumerable<string> entries;
 
 				if (names [n] == ".."){
 					if (part == "/")
@@ -805,7 +840,7 @@ namespace MonoDevelop.Projects.MSBuild
 					continue;
 				}
 				
-				entries = Directory.GetFileSystemEntries (part);
+				entries = Directory.EnumerateFileSystemEntries (part);
 				
 				string fpath = null;
 				foreach (string e in entries) {
@@ -817,8 +852,8 @@ namespace MonoDevelop.Projects.MSBuild
 				if (fpath == null) {
 					// Part of the path does not exist. Can't do any more checking.
 					part = Path.GetFullPath (part);
-					for (; n < names.Length; n++)
-						part += "/" + names[n];
+					if (n < names.Length)
+						part += "/" + string.Join ("/", names, n, names.Length - n);
 					resultPath = part;
 					return true;
 				}

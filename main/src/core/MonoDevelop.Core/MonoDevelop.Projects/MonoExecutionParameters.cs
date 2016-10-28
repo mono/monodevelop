@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 {
 	public sealed class MonoExecutionParameters
 	{
-		class EnvVarAttribute : Attribute
+		sealed class EnvVarAttribute : Attribute
 		{
 			public string Name;
 			public string TrueValue = string.Empty;
@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		class MonoArgAttribute : Attribute
+		sealed class MonoArgAttribute : Attribute
 		{
 			public string Name;
 

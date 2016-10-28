@@ -53,9 +53,9 @@ namespace ICSharpCode.NRefactory6.CSharp
 			generateTypeSyntaxMethod = typeInfo.GetMethod("GenerateTypeSyntax", new[] { typeof(ITypeSymbol) });
 
 			typeInfo = Type.GetType("Microsoft.CodeAnalysis.FindSymbols.DependentTypeFinder" + ReflectionNamespaces.WorkspacesAsmName, true);
-			findImplementingTypesAsync = typeInfo.GetMethod("FindImplementingTypesAsync", new[] { typeof(INamedTypeSymbol), typeof(Solution), typeof(IImmutableSet<Project>), typeof(CancellationToken) });
+			findImplementingTypesAsync = typeInfo.GetMethod("FindTransitivelyImplementingTypesAsync", new[] { typeof(INamedTypeSymbol), typeof(Solution), typeof(IImmutableSet<Project>), typeof(CancellationToken) });
 			if (findImplementingTypesAsync == null)
-				throw new Exception ("Can't find FindImplementingTypesAsync");
+				throw new Exception ("Can't find FindTransitivelyImplementingTypesAsync");
 		}
 
 		public static TypeSyntax GenerateTypeSyntax(this ITypeSymbol typeSymbol, SyntaxAnnotation simplifierAnnotation = null)

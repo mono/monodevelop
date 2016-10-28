@@ -31,6 +31,7 @@ using MonoDevelop.Core.Text;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -45,18 +46,21 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#region implemented abstract members of TextLoader
 
-		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+		public override Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
 			if (IdeApp.Workbench?.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0) == true) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			} else {
-				if (!File.Exists (fileName))
-					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ());
-				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken).ConfigureAwait(false));
+				try {
+					text = SourceText.From (TextFileUtility.GetText (fileName));
+				} catch (Exception e) {
+					LoggingService.LogError ($"Failed to get file text for {fileName}", e);
+					text = SourceText.From ("");
+				}
 			}
-			return TextAndVersion.Create (text, VersionStamp.Create ());
+			return Task.FromResult (TextAndVersion.Create (text, VersionStamp.Create ()));
 		}
 
 		#endregion

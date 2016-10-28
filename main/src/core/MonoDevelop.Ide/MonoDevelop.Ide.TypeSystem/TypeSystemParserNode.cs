@@ -76,7 +76,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ())) : new HashSet<string> ();
 			if (!mimeTypes.Contains (mimeType, StringComparer.Ordinal))
 				return false;
-			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
+
+			foreach (var action in buildActions) {
+				if (string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
 		}
 
 		public static bool IsCompileableFile(ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)

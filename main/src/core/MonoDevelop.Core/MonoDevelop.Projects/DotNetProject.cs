@@ -822,9 +822,10 @@ namespace MonoDevelop.Projects
 			if (ParentSolution == null)
 				return items;
 
+			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
 			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project && (string.IsNullOrEmpty (pref.Condition) ||
-				    ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
+				if (pref.ReferenceType == ReferenceType.Project &&
+				    (string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
 					Project rp = pref.ResolveProject (ParentSolution);
 					if (rp != null)
 						items.Add (rp);
@@ -972,11 +973,10 @@ namespace MonoDevelop.Projects
 			if (ParentSolution == null) {
 				yield break;
 			}
+			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
 			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project &&
-							(string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
-					if (!pref.ReferenceOutputAssembly)
-						continue;
+				if (pref.ReferenceType == ReferenceType.Project && pref.ReferenceOutputAssembly &&
+					(string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
 					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
 					if (rp != null)
 						yield return rp;

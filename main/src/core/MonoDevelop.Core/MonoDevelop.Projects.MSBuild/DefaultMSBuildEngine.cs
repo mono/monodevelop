@@ -181,7 +181,6 @@ namespace MonoDevelop.Projects.MSBuild
 			finally {
 				foreach (var p in oldRefProjects)
 					UnloadProject (p);
-				DisposeImportedProjects (pi);
 				pi.ImportedProjects.Clear ();
 			}
 		}

@@ -274,7 +274,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (!Directory.Exists (facades))
 					continue;
 
-				return Directory.GetFiles (facades, "*.dll");
+				return Directory.EnumerateFiles (facades, "*.dll");
 			}
 
 			//MonoDroid is special case because it's keeping Fascades in v1.0 folder
@@ -283,7 +283,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (frameworkFolder != null) {
 					var facades = Path.Combine (Path.Combine (Path.GetDirectoryName (frameworkFolder), "v1.0"), "Facades");
 					if (Directory.Exists (facades))
-						return Directory.GetFiles (facades, "*.dll");
+						return Directory.EnumerateFiles (facades, "*.dll");
 				}
 			}
 
@@ -589,9 +589,9 @@ namespace MonoDevelop.Core.Assemblies
 
 		protected static IEnumerable<TargetFramework> FindTargetFrameworks (FilePath frameworksDirectory, bool rescanKnownFrameworks)
 		{
-			foreach (FilePath idDir in Directory.GetDirectories (frameworksDirectory)) {
+			foreach (FilePath idDir in Directory.EnumerateDirectories(frameworksDirectory)) {
 				var id = idDir.FileName;
-				foreach (FilePath versionDir in Directory.GetDirectories (idDir)) {
+				foreach (FilePath versionDir in Directory.EnumerateDirectories (idDir)) {
 					var version = versionDir.FileName;
 					var moniker = new TargetFrameworkMoniker (id, version);
 					if (rescanKnownFrameworks || !Runtime.SystemAssemblyService.IsKnownFramework (moniker)) {
@@ -602,7 +602,7 @@ namespace MonoDevelop.Core.Assemblies
 					var profileListDir = versionDir.Combine ("Profile");
 					if (!Directory.Exists (profileListDir))
 						continue;
-					foreach (FilePath profileDir in Directory.GetDirectories (profileListDir)) {
+					foreach (FilePath profileDir in Directory.EnumerateDirectories (profileListDir)) {
 						var profile = profileDir.FileName;
 						moniker = new TargetFrameworkMoniker (id, version, profile);
 						if (rescanKnownFrameworks || !Runtime.SystemAssemblyService.IsKnownFramework (moniker)) {

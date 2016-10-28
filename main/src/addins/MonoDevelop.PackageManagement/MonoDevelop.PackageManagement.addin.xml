@@ -52,8 +52,7 @@
 			id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject"
 			_description="Retargets all packages"
 			_label="Re_target"
-			_displayName="Retarget All Packages"
-			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
+			_displayName="Retarget All Packages" />
 		</Category>
 		<Category id="Hidden" _name="Hidden">
 			<Command

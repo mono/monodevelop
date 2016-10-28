@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp
 
 			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
 			if (ownerProjects.Count > 1) {
-				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (p => TypeSystemService.GetCodeAnalysisProject (p)).ToList ();
+				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (TypeSystemService.GetCodeAnalysisProject).ToList ();
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;
 				Task.Run (async delegate {
@@ -254,18 +254,20 @@ namespace MonoDevelop.CSharp
 			if (DocumentContext == null) {
 				return;//This can happen if this object is disposed
 			}
-			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
-			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
-				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
-				var dnp = DocumentContext.Project as DotNetProject;
-				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
-					// If the project for the document is not a DotNetProject but there is a project containing this file
-					// in the current solution, then use that project
-					var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
-					if (pp != null)
-						DocumentContext.AttachToProject (pp);
+			Editor.RunWhenRealized (() => {
+				var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
+				if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
+					SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
+					var dnp = DocumentContext.Project as DotNetProject;
+					if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
+						// If the project for the document is not a DotNetProject but there is a project containing this file
+						// in the current solution, then use that project
+						var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
+						if (pp != null)
+							DocumentContext.AttachToProject (pp);
+					}
 				}
-			}
+			});
 		}
 
 		void UpdateOwnerProjects ()

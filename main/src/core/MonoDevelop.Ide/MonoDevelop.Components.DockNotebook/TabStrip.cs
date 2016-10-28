@@ -213,6 +213,14 @@ namespace MonoDevelop.Components.DockNotebook
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
 
+		protected override void OnDestroyed ()
+		{
+			this.AbortAnimation ("TabWidth");
+			this.AbortAnimation ("EndDrag");
+			this.AbortAnimation ("ScrollTabs");
+			base.OnDestroyed ();
+		}
+
 		void IAnimatable.BatchBegin ()
 		{
 		}

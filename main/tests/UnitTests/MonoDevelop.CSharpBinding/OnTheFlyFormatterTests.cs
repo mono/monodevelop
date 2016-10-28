@@ -452,7 +452,7 @@ namespace FormatSelectionTest
 					IndentStyle = IndentStyle.Virtual
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
-			
+
 				var newText = content.Text;
 				Assert.AreEqual (@"class Foo
 {
@@ -464,6 +464,139 @@ namespace FormatSelectionTest
 }", newText);
 			});
 		}
+
+		// Bug 44747 - Automatic indentation of preprocessor directives is not consistent
+		[Test]
+		public async Task TestBug44747 ()
+		{
+			await Simulate (@"class Foo
+{
+	void Test()
+	{
+		#$
+	}
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'#', '#', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+	void Test()
+	{
+#
+	}
+}", newText);
+			});
+		}
+
+		[Test]
+		public async Task TestBug44747_regions ()
+		{
+			await Simulate (@"class Foo
+{
+	void Test()
+	{
+#region$
+	}
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'n', 'n', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+	void Test()
+	{
+		#region
+	}
+}", newText);
+			});
+
+			await Simulate (@"class Foo
+{
+	void Test()
+	{
+		#region foo
+#endregion$
+	}
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'n', 'n', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+	void Test()
+	{
+		#region foo
+		#endregion
+	}
+}", newText);
+			});
+		}
+
+		// Bug 44747 - Automatic indentation of preprocessor directives is not consistent
+		[Test]
+		public async Task TestBug17902 ()
+		{
+			await Simulate (@"class Test17902
+{
+    public void Foo()
+    {
+		{
+		if (true)
+		{
+			if (true)
+			{
+			}
+			else
+			{
+				System.Console.WriteLine(1);
+			}
+		}
+		else
+		{
+			System.Console.WriteLine(2);
+		}
+		}$
+    }
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Test17902
+{
+    public void Foo()
+    {
+		{
+			if (true)
+			{
+				if (true)
+				{
+				}
+				else
+				{
+					System.Console.WriteLine(1);
+				}
+			}
+			else
+			{
+				System.Console.WriteLine(2);
+			}
+		}
+    }
+}", newText);
+		});
+		}
 	}
 }
-

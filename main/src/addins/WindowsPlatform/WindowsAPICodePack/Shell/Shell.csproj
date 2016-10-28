@@ -321,6 +321,7 @@
     <Compile Include="Taskbar\ThumbnailToolbarManager.cs" />
     <Compile Include="Taskbar\ThumbnailToolbarProxyWindow.cs" />
     <Compile Include="Taskbar\UserRemovedJumpListItemsEventArg.cs" />
+    <Compile Include="InternetExplorer\InternetExplorer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Design\ShellThumbnailClassDiagram.cd" />

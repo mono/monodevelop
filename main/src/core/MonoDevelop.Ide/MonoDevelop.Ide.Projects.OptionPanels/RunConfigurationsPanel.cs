@@ -320,9 +320,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			Buttons.Add (new DialogButton (Command.Cancel));
 			Buttons.Add (okButton = new DialogButton (action));
-
+			this.DefaultCommand = okButton.Command;
+			entry.Activated += Entry_Activated;
 			entry.Changed += (s, o) => UpdateControls ();
 			UpdateControls ();
+		}
+
+		void Entry_Activated (object sender, EventArgs e)
+		{
+			OnCommandActivated (okButton.Command);
 		}
 
 		void UpdateControls ()

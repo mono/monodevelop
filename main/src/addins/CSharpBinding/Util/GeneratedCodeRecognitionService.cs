@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			// First return visible source locations if we have them.  Else, go to the non-visible 
 			// source locations.  
-			var visibleSourceLocations = locations.Where(loc => loc.IsVisibleSourceLocation());
+			var visibleSourceLocations = locations.Where(CommonLocationExtensions.IsVisibleSourceLocation);
 			return visibleSourceLocations.Any()
 				? visibleSourceLocations
 					: locations.Where(loc => loc.IsInSource);
