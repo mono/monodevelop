@@ -61,6 +61,8 @@ namespace MonoDevelop.PackageManagement
 					await operation.Task;
 
 					CheckForRestoreFailure (operation);
+
+					RefreshProjectReferences (project);
 				}
 			}
 		}
@@ -82,6 +84,13 @@ namespace MonoDevelop.PackageManagement
 			if (operation.Task.IsFaulted || operation.ExitCode != 0) {
 				throw new ApplicationException (GettextCatalog.GetString ("Unable to restore packages."));
 			}
+		}
+
+		void RefreshProjectReferences (DotNetProject project)
+		{
+			Runtime.RunInMainThread (() => {
+				project.NotifyModified ("References");
+			});
 		}
 	}
 }
