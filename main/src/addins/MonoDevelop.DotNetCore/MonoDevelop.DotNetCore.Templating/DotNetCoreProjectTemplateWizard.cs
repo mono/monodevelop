@@ -59,6 +59,8 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			createDotNetCoreProject = !Parameters.GetBoolValue ("CreateSolution");
 			Parameters["CreateDotNetCoreProject"] = createDotNetCoreProject.ToString ();
+			Parameters["Microsoft.NET.Sdk.Version"] = "1.0.0-alpha-20161026-2";
+			Parameters["Microsoft.NET.Sdk.Web.Version"] = "1.0.0-alpha-20161019-1";
 		}
 
 		public override async void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
@@ -134,6 +136,8 @@ namespace MonoDevelop.DotNetCore.Templating
 			var msbuildProject = new MSBuildProject ();
 			msbuildProject.Load (templateFileName);
 
+			UpdatePackageReferenceVersions (msbuildProject);
+
 			string projectDirectory = Path.GetDirectoryName (projectFileName);
 			Directory.CreateDirectory (projectDirectory);
 			msbuildProject.Save (projectFileName);
@@ -151,6 +155,17 @@ namespace MonoDevelop.DotNetCore.Templating
 				return solution.BaseDirectory.Combine ("src", subDirectory);
 
 			return solution.BaseDirectory.Combine (subDirectory);
+		}
+
+		void UpdatePackageReferenceVersions (MSBuildProject project)
+		{
+			foreach (MSBuildItem packageReference in project.GetAllItems ().Where (item => item.Name == "PackageReference")) {
+				string version = packageReference.Metadata.GetValue ("Version");
+				if (version != null) {
+					version = StringParserService.Parse (version, Parameters);
+					packageReference.Metadata.SetValue ("Version", version);
+				}
+			}
 		}
 
 		void CreateFilesFromTemplate (string projectDirectory, string projectName, Solution solution)
