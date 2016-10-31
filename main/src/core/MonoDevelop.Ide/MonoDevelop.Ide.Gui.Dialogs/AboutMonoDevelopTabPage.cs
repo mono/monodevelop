@@ -76,28 +76,37 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				MarginLeft = 12
 			};
 			cbox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("License is available at ")
+				Text = GettextCatalog.GetString ("Visit ")
 			});
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("http://xamarin.com/xamarin-studio-license"),
-				Uri = new Uri ("http://xamarin.com/xamarin-studio-license")
-			});
+			var linkLabel = new Xwt.Label {
+				Markup = "<span underline='true'>aka.ms/visual-studio-license</span>",
+				Cursor = Xwt.CursorType.Hand,
+			};
+			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://aka.ms/visual-studio-license");
+			cbox.PackStart (linkLabel);
 			infoBox.PackStart (cbox);
+
+			linkLabel = new Xwt.Label {
+				Markup = string.Format ("<span underline='true'>{0}</span>", GettextCatalog.GetString ("Privacy Policy")),
+				Cursor = Xwt.CursorType.Hand,
+				MarginLeft = 12
+			};
+			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://privacy.microsoft.com/");
+			infoBox.PackStart (linkLabel);
 
 			infoBox.PackStart (new Xwt.Label () {
 				Text = GettextCatalog.GetString ("Copyright"),
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
-			cbox = new Xwt.HBox () {
-				Spacing = 0,
+
+			infoBox.PackStart (new Xwt.Label () {
+				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016-" + DateTime.Now.Year) + " Microsoft Inc.",
 				MarginLeft = 12
-			};
-			cbox.PackStart (new Xwt.Label ("© 2011-" + DateTime.Now.Year + " "));
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("Xamarin Inc."),
-				Uri = new Uri ("http://www.xamarin.com")
 			});
-			infoBox.PackStart (cbox);
+			infoBox.PackStart (new Xwt.Label () {
+				Text = "© 2004-" + DateTime.Now.Year + " Xamarin Inc.",
+				MarginLeft = 12
+			});
 			infoBox.PackStart (new Xwt.Label () {
 				Text = "© 2004-" + DateTime.Now.Year + " MonoDevelop contributors",
 				MarginLeft = 12
