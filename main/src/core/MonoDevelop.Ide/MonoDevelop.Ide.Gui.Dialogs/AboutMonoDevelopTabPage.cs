@@ -59,8 +59,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PackStart (mbox.ToGtkWidget (), false, false, 0);
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Version"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Version")),
+				MarginTop = 6,
 			});
 			infoBox.PackStart (new Xwt.Label () {
 				Text = IdeVersionInfo.MonoDevelopVersion,
@@ -68,8 +68,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			});
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("License"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("License")),
+				MarginTop = 6,
 			});
 			var cbox = new Xwt.HBox () {
 				Spacing = 0,
@@ -95,8 +95,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			infoBox.PackStart (linkLabel);
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Copyright"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Copyright")),
+				MarginTop = 6,
 			});
 
 			infoBox.PackStart (new Xwt.Label () {
