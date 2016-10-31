@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			copyButton.NoShowAll = true;
 
 			var backButton = new Button () { Label = GettextCatalog.GetString ("Show Details") };
-			backButton.CanDefault = backButton.HasDefault = true;
 			ActionArea.PackEnd (backButton, false, false, 0);
 			backButton.Clicked += (sender, e) => {
 				if (notebook.Page == 0) {
@@ -92,6 +91,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					notebook.Page = 0;
 				}
 			};
+			backButton.HasDefault = backButton.CanDefault = true;
 
 			ShowAll ();
 		}
