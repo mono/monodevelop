@@ -100,15 +100,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			});
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016-" + DateTime.Now.Year) + " Microsoft Inc.",
+				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016–" + DateTime.Now.Year) + " Microsoft Inc.",
 				MarginLeft = 12
 			});
 			infoBox.PackStart (new Xwt.Label () {
-				Text = "© 2004-" + DateTime.Now.Year + " Xamarin Inc.",
+				Text = "© 2004–" + DateTime.Now.Year + " Xamarin Inc.",
 				MarginLeft = 12
 			});
 			infoBox.PackStart (new Xwt.Label () {
-				Text = "© 2004-" + DateTime.Now.Year + " MonoDevelop contributors",
+				Text = "© 2004–" + DateTime.Now.Year + " MonoDevelop contributors",
 				MarginLeft = 12
 			});
 
