@@ -82,6 +82,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Markup = "<span underline='true'>aka.ms/visual-studio-license</span>",
 				Cursor = Xwt.CursorType.Hand,
 			};
+			if (IdeTheme.UserInterfaceTheme == Theme.Light)
+				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
+			
 			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://aka.ms/visual-studio-license");
 			cbox.PackStart (linkLabel);
 			infoBox.PackStart (cbox);
@@ -91,6 +94,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Cursor = Xwt.CursorType.Hand,
 				MarginLeft = 12
 			};
+			if (IdeTheme.UserInterfaceTheme == Theme.Light)
+				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
 			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://privacy.microsoft.com/");
 			infoBox.PackStart (linkLabel);
 
