@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -54,10 +55,18 @@
       <Link>MonoDevelop.DotNetCore\MSBuildErrorParser.cs</Link>
     </Compile>
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreBuildOutputTextWriter.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\SolutionExtensions.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\EmptyDirectoryRemover.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\FileTemplateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
     <Folder Include="MonoDevelop.DotnetCore.Debugger\" />
+    <Folder Include="Templates\" />
+    <Folder Include="Templates\Projects\" />
+    <Folder Include="Templates\Projects\Console\" />
+    <Folder Include="MonoDevelop.DotNetCore.Templating\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -98,6 +107,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Templates\Projects\Console\ConsoleProject.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Console\ConsoleProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Console\ConsoleProject.Program.cs.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\Console\ConsoleProject.Program.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

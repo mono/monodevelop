@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	created="06/09/2015"
+	lastModified="31/10/2016">
+
+	<TemplateConfiguration>
+		<_Name>Console Application (.NET Core)</_Name>
+		<Category>other/netcore/general</Category>
+		<Icon>md-console-project</Icon>
+		<Image id="md-console-project" />
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a new .NET Core console project.</_Description>
+		<DefaultFilename>ConsoleProject</DefaultFilename>
+		<Wizard>MonoDevelop.DotNetCore.ProjectTemplateWizard</Wizard>
+		<DefaultParameters>Template=ConsoleProject;OpenFile=Program.cs;Files=Program.cs</DefaultParameters>
+	</TemplateConfiguration>
+
+	<Combine name="${ProjectName}" directory=".">
+		<Project name="${ProjectName}" type="C#" directory="./" if="CreateDotNetCoreProject">
+		</Project>
+	</Combine>
+</Template>
