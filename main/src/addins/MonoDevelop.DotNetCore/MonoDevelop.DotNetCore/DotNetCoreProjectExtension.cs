@@ -76,6 +76,8 @@ namespace MonoDevelop.DotNetCore
 			base.OnReadProject (monitor, msproject);
 
 			outputTypeDefined = IsOutputTypeDefined (msproject);
+			if (!outputTypeDefined)
+				Project.CompileTarget = CompileTarget.Library;
 
 			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
 		}
