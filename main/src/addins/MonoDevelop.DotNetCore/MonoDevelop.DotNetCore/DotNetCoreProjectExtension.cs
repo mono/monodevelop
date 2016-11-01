@@ -59,7 +59,8 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (Core.Assemblies.TargetFramework framework)
 		{
-			if (framework.Id.Identifier == ".NETCoreApp")
+			if (framework.Id.Identifier == ".NETCoreApp" ||
+			    framework.Id.Identifier == ".NETStandard")
 				return true;
 			return base.OnGetSupportsFramework (framework);
 		}
