@@ -99,7 +99,7 @@ using System.Text.RegularExpressions;
 
 namespace Mono.TextEditor.Utils
 {
-	public struct Hunk
+	public struct Hunk : IEquatable<Hunk>
 	{
 		public static readonly Hunk Empty = new Hunk (0, 0, 0, 0);
 
@@ -153,6 +153,11 @@ namespace Mono.TextEditor.Utils
 			if (!(obj is Hunk))
 				return false;
 			return ((Hunk)obj) == this;
+		}
+
+		public bool Equals (Hunk other)
+		{
+			return other == this;
 		}
 		
 		public override int GetHashCode ()

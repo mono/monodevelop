@@ -135,10 +135,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			Task task = RestorePackagesAsync (cancellationToken);
 			using (var restoreTask = new PackageRestoreTask (task)) {
-				task.Wait ();
+				task.Wait (cancellationToken);
 			}
 
-			if (CheckForUpdatesAfterRestore) {
+			if (CheckForUpdatesAfterRestore && !cancellationToken.IsCancellationRequested) {
 				CheckForUpdates ();
 			}
 		}

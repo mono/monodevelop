@@ -44,8 +44,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		Gtk.Widget currentEditor;
 		TableRow currentEditorRow;
 		bool draggingDivider;
-		Xwt.Drawing.Image discloseDown;
-		Xwt.Drawing.Image discloseUp;
+		static Xwt.Drawing.Image discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-16.png");
+		static Xwt.Drawing.Image discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-16.png");
 		bool heightMeasured;
 
 		const int CategoryTopBottomPadding = 6;
@@ -138,8 +138,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-16.png");
-			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-16.png");
 		}
 
 		protected override void OnDestroyed ()

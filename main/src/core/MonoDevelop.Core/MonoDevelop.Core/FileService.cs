@@ -121,7 +121,7 @@ namespace MonoDevelop.Core
 		{
 			if (!File.Exists (path) || IsFolderCaseSensitive (path.ParentDirectory))
 				return path.FileName;
-			var file = Directory.GetFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
+			var file = Directory.EnumerateFiles (path.ParentDirectory).FirstOrDefault (f => string.Equals (path.FileName, Path.GetFileName (f), StringComparison.CurrentCultureIgnoreCase));
 			return file ?? path.FileName;
 		}
 		
@@ -593,55 +593,44 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (destFile))
 				throw new ArgumentException ("destFile");
 
-			//FIXME: use the atomic System.IO.File.Replace on NTFS
 			if (Platform.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (destFile)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
+				WindowsRename (sourceFile, destFile);
+			} else {
+				UnixRename (sourceFile, destFile);
+			}
+		}
 
-					File.Move (destFile, wtmp);
-				}
+		static void WindowsRename (string sourceFile, string destFile)
+		{
+			//Replace fails if the target file doesn't exist, so in that case try a simple move
+			if (!File.Exists (destFile)) {
 				try {
 					File.Move (sourceFile, destFile);
-				}
-				catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, destFile);
-					}
-					catch {
-						wtmp = null;
-					}
-					throw;
-				}
-				finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						}
-						catch { }
-					}
+					return;
+				} catch {
 				}
 			}
-			else {
-				if (Syscall.rename (sourceFile, destFile) != 0) {
-					switch (Stdlib.GetLastError ()) {
-					case Errno.EACCES:
-					case Errno.EPERM:
-						throw new UnauthorizedAccessException ();
-					case Errno.EINVAL:
-						throw new InvalidOperationException ();
-					case Errno.ENOTDIR:
-						throw new DirectoryNotFoundException ();
-					case Errno.ENOENT:
-						throw new FileNotFoundException ();
-					case Errno.ENAMETOOLONG:
-						throw new PathTooLongException ();
-					default:
-						throw new IOException ();
-					}
+
+			File.Replace (sourceFile, destFile, null);
+		}
+
+		static void UnixRename (string sourceFile, string destFile)
+		{
+			if (Stdlib.rename (sourceFile, destFile) != 0) {
+				switch (Stdlib.GetLastError ()) {
+				case Errno.EACCES:
+				case Errno.EPERM:
+					throw new UnauthorizedAccessException ();
+				case Errno.EINVAL:
+					throw new InvalidOperationException ();
+				case Errno.ENOTDIR:
+					throw new DirectoryNotFoundException ();
+				case Errno.ENOENT:
+					throw new FileNotFoundException ();
+				case Errno.ENAMETOOLONG:
+					throw new PathTooLongException ();
+				default:
+					throw new IOException ();
 				}
 			}
 		}
@@ -658,7 +647,7 @@ namespace MonoDevelop.Core
 		{
 			if (Directory.Exists (destDir) && string.Equals (Path.GetFullPath (sourceDir), Path.GetFullPath (destDir), StringComparison.CurrentCultureIgnoreCase)) {
 				// If the destination directory exists but we can't find it with the provided name casing, then it means we are just changing the case
-				var existingDir = Directory.GetDirectories (Path.GetDirectoryName (destDir), Path.GetFileName (destDir)).FirstOrDefault ();
+				var existingDir = Directory.EnumerateDirectories (Path.GetDirectoryName (destDir), Path.GetFileName (destDir)).FirstOrDefault ();
 				if (existingDir == null || (Path.GetFileName (existingDir) == Path.GetFileName (sourceDir))) {
 					var temp = destDir + ".renaming";
 					int n = 0;
@@ -681,9 +670,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static void RemoveDirectoryIfEmpty (string directory)
 		{
-			// HACK: we should use EnumerateFiles but it's broken in some Mono releases
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-			if (Directory.Exists (directory) && !Directory.GetFiles (directory).Any ())
+			if (Directory.Exists (directory) && !Directory.EnumerateFiles (directory).Any ())
 				Directory.Delete (directory);
 		}
 

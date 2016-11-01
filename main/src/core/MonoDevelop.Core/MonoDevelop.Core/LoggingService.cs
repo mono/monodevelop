@@ -253,10 +253,8 @@ namespace MonoDevelop.Core
 			// Delete all logs older than a week
 			if (!Directory.Exists (UserProfile.Current.LogDir))
 				return;
-
-			// HACK: we were using EnumerateFiles but it's broken in some Mono releases
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-			var files = Directory.GetFiles (UserProfile.Current.LogDir)
+			
+			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir)
 				.Select (f => new FileInfo (f))
 				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (7)));
 

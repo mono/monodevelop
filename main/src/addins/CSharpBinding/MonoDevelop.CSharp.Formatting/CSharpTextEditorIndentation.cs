@@ -466,7 +466,15 @@ namespace MonoDevelop.CSharp.Formatting
 				// esp. the documentation insertion undo steps.
 				retval = base.KeyPress (descriptor);
 
-				
+
+				if (descriptor.KeyChar == '/' && stateTracker.IsInsideMultiLineComment) {
+					if (Editor.CaretOffset - 3 >= 0 && Editor.GetCharAt (Editor.CaretOffset - 3) == '*' && Editor.GetCharAt (Editor.CaretOffset - 2) == ' ') {
+						using (var undo = Editor.OpenUndoGroup ()) {
+							Editor.RemoveText (Editor.CaretOffset - 2, 1);
+						}
+					}
+				}
+
 				//handle inserted characters
 				if (Editor.CaretOffset <= 0 || Editor.IsSomethingSelected)
 					return retval;
@@ -568,8 +576,10 @@ namespace MonoDevelop.CSharp.Formatting
 						return;
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
+							var oldVersion = Editor.Version;
 							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
-							CompletionWindowManager.HideWindow ();
+							if (oldVersion.CompareAge (Editor.Version) != 0)
+								CompletionWindowManager.HideWindow ();
 						}
 					}
 				}

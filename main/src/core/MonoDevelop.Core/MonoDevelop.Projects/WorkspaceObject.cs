@@ -411,7 +411,7 @@ namespace MonoDevelop.Projects
 		internal static IEnumerable<ProjectModelExtensionNode> GetModelExtensions (ExtensionContext ctx)
 		{
 			if (ctx != null) {
-				return Runtime.RunInMainThread (() => ctx.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes).ToArray ()).Result;
+				return Runtime.RunInMainThread (() => ctx.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath)).Result.Cast<ProjectModelExtensionNode> ().Concat (customNodes).ToArray ();
 			}
 			else {
 				if (modelExtensions == null)

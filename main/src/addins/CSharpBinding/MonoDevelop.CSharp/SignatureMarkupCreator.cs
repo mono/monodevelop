@@ -98,13 +98,6 @@ namespace MonoDevelop.CSharp
 			if (type == null)
 				throw new ArgumentNullException (nameof (type));
 			if (type.TypeKind == TypeKind.Error) {
-				SemanticModel model = SemanticModel;
-				if (model == null) {
-					var parsedDocument = ctx.ParsedDocument;
-					if (parsedDocument != null) {
-						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
-					}
-				}
 				var typeSyntax = type.GenerateTypeSyntax ();
 				string generatedTypeSyntaxString;
 				try {
@@ -174,47 +167,52 @@ namespace MonoDevelop.CSharp
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
 			string result;
-			switch (entity.Kind) {
+			try {
+				switch (entity.Kind) {
 				case Microsoft.CodeAnalysis.SymbolKind.ArrayType:
 				case Microsoft.CodeAnalysis.SymbolKind.PointerType:
 				case Microsoft.CodeAnalysis.SymbolKind.NamedType:
-				result = GetTypeMarkup ((ITypeSymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Field:
-				result = GetFieldMarkup ((IFieldSymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Property:
-				result = GetPropertyMarkup ((IPropertySymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Event:
-				result = GetEventMarkup ((IEventSymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Method:
-				var method = (IMethodSymbol)entity;
-				switch (method.MethodKind) {
-				case MethodKind.Constructor:
-					result = GetConstructorMarkup (method);
+					result = GetTypeMarkup ((ITypeSymbol)entity);
 					break;
-				case MethodKind.Destructor:
-					result = GetDestructorMarkup (method);
+				case Microsoft.CodeAnalysis.SymbolKind.Field:
+					result = GetFieldMarkup ((IFieldSymbol)entity);
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Property:
+					result = GetPropertyMarkup ((IPropertySymbol)entity);
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Event:
+					result = GetEventMarkup ((IEventSymbol)entity);
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Method:
+					var method = (IMethodSymbol)entity;
+					switch (method.MethodKind) {
+					case MethodKind.Constructor:
+						result = GetConstructorMarkup (method);
+						break;
+					case MethodKind.Destructor:
+						result = GetDestructorMarkup (method);
+						break;
+					default:
+						result = GetMethodMarkup (method);
+						break;
+					}
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Namespace:
+					result = GetNamespaceMarkup ((INamespaceSymbol)entity);
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Local:
+					result = GetLocalVariableMarkup ((ILocalSymbol)entity);
+					break;
+				case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+					result = GetParameterVariableMarkup ((IParameterSymbol)entity);
 					break;
 				default:
-					result = GetMethodMarkup (method);
-					break;
+					Console.WriteLine (entity.Kind);
+					return null;
 				}
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Namespace:
-				result = GetNamespaceMarkup ((INamespaceSymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Local:
-				result = GetLocalVariableMarkup ((ILocalSymbol)entity);
-				break;
-			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
-				result = GetParameterVariableMarkup ((IParameterSymbol)entity);
-				break;
-			default:
-				Console.WriteLine (entity.Kind);
-				return null;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting markup for " + entity, e);
+				return entity.Name;
 			}
 			// TODO
 			//			if (entity.IsObsolete (out reason)) {

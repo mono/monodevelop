@@ -389,8 +389,16 @@ namespace MonoDevelop.Debugger
 			    IdeApp.Workbench.ActiveDocument.Editor != null &&
 			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 			    !breakpoints.IsReadOnly) {
-				lock (breakpoints)
-					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.CaretLine).Count > 0;
+				lock (breakpoints) {
+					var bpInLine = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.CaretLine);
+					info.Enabled = bpInLine.Count > 0;
+					info.Text = GettextCatalog.GetString ("Disable Breakpoint");
+					foreach (var bp in bpInLine) {
+						if (!bp.Enabled)
+							info.Text = GettextCatalog.GetString ("Enable Breakpoint");
+						break;
+					}
+				}
 			} else {
 				info.Enabled = false;
 			}
@@ -422,8 +430,20 @@ namespace MonoDevelop.Debugger
 		{
 			var breakpoints = DebuggingService.Breakpoints;
 
-			lock (breakpoints)
+			lock (breakpoints) {
 				info.Enabled = !breakpoints.IsReadOnly && breakpoints.Count > 0;
+				bool enable = false;
+				foreach (BreakEvent bp in breakpoints) {
+					if (!bp.Enabled) {
+						enable = true;
+						break;
+					}
+				}
+				if (enable)
+					info.Text = GettextCatalog.GetString ("Enable All Breakpoints");
+				else
+					info.Text = GettextCatalog.GetString ("Disable All Breakpoints");
+			}
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}

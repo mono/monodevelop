@@ -59,6 +59,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("alias", Description = "Friendly id of the extension")]
 		public string TypeAlias { get; set; }
 
+		[NodeAttribute ("language", Description = "Language of the extension")]
+		public string LanguageName { get; set; }
+
 		public SolutionItemExtensionNode ()
 		{
 			MSBuildSupport = MSBuildSupport.Supported;
@@ -109,6 +112,7 @@ namespace MonoDevelop.Projects.Extensions
 			var ext = (SolutionItemExtension) CreateInstance (typeof(SolutionItemExtension));
 			ext.FlavorGuid = Guid;
 			ext.TypeAlias = TypeAlias;
+			ext.LanguageName = LanguageName;
 			return ext;
 		}
 	}

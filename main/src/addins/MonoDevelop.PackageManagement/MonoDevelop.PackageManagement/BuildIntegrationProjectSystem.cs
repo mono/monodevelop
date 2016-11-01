@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject
 	{
-		IDotNetProject dotNetProject;
+		DotNetProjectProxy dotNetProject;
 		PackageManagementEvents packageManagementEvents;
 		VersionFolderPathResolver packagePathResolver;
 
@@ -66,6 +66,10 @@ namespace MonoDevelop.PackageManagement
 		public Task SaveProject ()
 		{
 			return dotNetProject.SaveAsync ();
+		}
+
+		public DotNetProjectProxy Project {
+			get { return dotNetProject; }
 		}
 
 		public override Task<bool> ExecuteInitScriptAsync (PackageIdentity identity, string packageInstallPath, INuGetProjectContext projectContext, bool throwOnFailure)

@@ -44,6 +44,7 @@ namespace MonoDevelop.Core
 		
 		static string applicationName;
 		static string applicationLongName;
+		static string privacyStatement;
 
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;
@@ -77,6 +78,16 @@ namespace MonoDevelop.Core
 					applicationLongName = value;
 					OnApplicationNameChanged ();
 				}
+			}
+		}
+
+		public static string PrivacyStatement {
+			get {
+				return privacyStatement;
+			}
+
+			set {
+				privacyStatement = value;
 			}
 		}
 

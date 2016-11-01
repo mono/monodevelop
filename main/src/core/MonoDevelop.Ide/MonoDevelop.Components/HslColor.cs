@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components
 {
-	public struct HslColor
+	public struct HslColor : IEquatable<HslColor>
 	{
 		public double H {
 			get;
@@ -50,6 +50,26 @@ namespace MonoDevelop.Components
 		public double Alpha {
 			get;
 			set;
+		}
+
+		public bool Equals (HslColor other)
+		{
+			return this.H == other.H && this.S == other.S && this.L == other.L && this.Alpha == other.Alpha;
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (!(obj is HslColor))
+				return false;
+
+			return Equals ((HslColor)obj);
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return H.GetHashCode () ^ S.GetHashCode () ^ L.GetHashCode () ^ Alpha.GetHashCode ();
+			}
 		}
 
 		void ToRgb (out double r, out double g, out double b)

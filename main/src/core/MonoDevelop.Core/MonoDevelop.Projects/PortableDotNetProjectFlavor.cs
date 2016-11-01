@@ -79,8 +79,10 @@ namespace MonoDevelop.Projects
 		internal protected override async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			var res = await base.OnGetReferencedAssemblies (configuration);
-			var asms = Project.TargetRuntime.AssemblyContext.GetAssemblies (Project.TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => new AssemblyReference (a.Location));
-			res.AddRange (asms);
+			if (Project.TargetFramework.Id.Version != "5.0") {
+				var asms = Project.TargetRuntime.AssemblyContext.GetAssemblies (Project.TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => new AssemblyReference (a.Location));
+				res.AddRange (asms);
+			}
 			return res;
 		}
 	}

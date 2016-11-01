@@ -35,13 +35,7 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			try {
-				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-				IPackageAction action = CreateRestorePackagesAction (GetSelectedDotNetProject ());
-				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
-			} catch (Exception ex) {
-				ShowStatusBarError (ex);
-			}
+			Run (GetSelectedDotNetProject ());
 		}
 
 		protected override void Update (CommandInfo info)
@@ -49,7 +43,18 @@ namespace MonoDevelop.PackageManagement.Commands
 			info.Enabled = SelectedDotNetProjectHasPackages ();
 		}
 
-		IPackageAction CreateRestorePackagesAction (DotNetProject project)
+		public static void Run (DotNetProject project)
+		{
+			try {
+				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+				IPackageAction action = CreateRestorePackagesAction (project);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
+			}
+		}
+
+		static IPackageAction CreateRestorePackagesAction (DotNetProject project)
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 			var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
@@ -67,7 +72,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			return new RestoreNuGetPackagesInProjectAction (project, nugetProject, solutionManager);
 		}
 
-		void ShowStatusBarError (Exception ex)
+		static void ShowStatusBarError (Exception ex)
 		{
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
 			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
