@@ -155,7 +155,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.UseShellExecute = false;
-			startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
+			if (!MonoDevelop.Core.Platform.IsWindows)
+				startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
 			debugAgentProcess = Process.Start (startInfo);
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
@@ -300,11 +301,6 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			public ObjectValue [] GetLocalVariables (int frameIndex, EvaluationOptions options)
 			{
-				throw new NotImplementedException ();
-			}
-
-			public ObjectValue [] GetParameters (int frameIndex, EvaluationOptions options)
-			{
 				List<ObjectValue> results = new List<ObjectValue> ();
 				var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames [frameIndex].Id));
 				foreach (var variablesGroup in scopeBody.Scopes) {
@@ -314,6 +310,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					}
 				}
 				return results.ToArray ();
+			}
+
+			public ObjectValue [] GetParameters (int frameIndex, EvaluationOptions options)
+			{
+				return new ObjectValue [0];//TODO: Find out how to seperate Params from other Locals
 			}
 
 			public Mono.Debugging.Client.StackFrame [] GetStackFrames (int firstIndex, int lastIndex)

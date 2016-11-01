@@ -101,13 +101,14 @@ namespace MonoDevelop.DotnetCore.Debugger
 		void InstallDotNetCoreDebugger ()
 		{
 			using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (".Net Core Debugger install", Ide.Gui.Stock.MessageLog, true, false)) {
+				var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
 				using (progressMonitor.BeginTask ("Installing .NetCore debugger", 10)) {
 					if (!Directory.Exists (DebugAdapterDir))
 						Directory.CreateDirectory (DebugAdapterDir);
 					WriteProjectJson ();
 					progressMonitor.BeginStep ("dotnet restore");
 					var proc = Runtime.ProcessService.StartProcess (
-						"dotnet",
+						dotnetPath,
 						"--verbose restore --configfile NuGet.config",
 						DebugAdapterDir,
 						progressMonitor.Log,
@@ -116,7 +117,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 					proc.WaitForExit ();
 					progressMonitor.BeginStep ("dotnet publish");
 					proc = Runtime.ProcessService.StartProcess (
-						"dotnet",
+						dotnetPath,
 						$"--verbose publish -r {GetRuntimeId ()} -o {DebugAdapterDir}",
 						DebugAdapterDir,
 						progressMonitor.Log,

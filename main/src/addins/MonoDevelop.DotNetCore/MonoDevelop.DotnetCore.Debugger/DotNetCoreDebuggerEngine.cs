@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Debugger;
+using MonoDevelop.DotNetCore;
 
 namespace MonoDevelop.DotnetCore.Debugger
 {
@@ -37,12 +38,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 	{
 		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			var dotnetCmd = cmd as DotNetExecutionCommand;
-			if (dotnetCmd == null || !File.Exists (dotnetCmd.Command))
-				return false;
-			var fxId = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (null, dotnetCmd.Command);
-
-			return fxId.Identifier == ".NETCoreApp";
+			return cmd is DotNetCoreExecutionCommand;
 		}
 
 		public override bool IsDefaultDebugger (ExecutionCommand cmd)
@@ -57,9 +53,9 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
-			var cmd = (DotNetExecutionCommand)c;
+			var cmd = (DotNetCoreExecutionCommand)c;
 			var dsi = new DebuggerStartInfo {
-				Command = cmd.Command,
+				Command = cmd.OutputPath,
 				Arguments = cmd.Arguments,
 				WorkingDirectory = cmd.WorkingDirectory
 			};
