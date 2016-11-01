@@ -25,9 +25,9 @@
 		<ProjectTemplate
 			id="DotNetCoreLibraryProject"
 			file="Templates/Projects/Library/LibraryProject.xpt.xml" />
-		<!--<ProjectTemplate
+		<ProjectTemplate
 			id="DotNetCoreEmptyWebProject"
-			file="Templates/Projects/EmptyWeb/EmptyWebProject.xpt.xml" />-->
+			file="Templates/Projects/EmptyWeb/EmptyWebProject.xpt.xml" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
