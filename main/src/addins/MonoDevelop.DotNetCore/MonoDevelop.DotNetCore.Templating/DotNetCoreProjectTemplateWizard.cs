@@ -34,6 +34,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -229,7 +230,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 			OpenProjectFile (project);
 
-			// TODO: Restore packages.
+			RestorePackages (project);
 		}
 
 		void RemoveProjectDirectoryCreatedByNewProjectDialog (FilePath parentDirectory, string projectName)
@@ -242,6 +243,16 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			FilePath fileName = project.BaseDirectory.Combine (Parameters["OpenFile"]);
 			IdeApp.Workbench.OpenDocument (fileName, project, true);
+		}
+
+		void RestorePackages (DotNetProject project)
+		{
+			if (!PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled)
+				return;
+
+			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+			var action = new RestoreNuGetPackagesInDotNetCoreProject (project);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 		}
 	}
 }
