@@ -92,6 +92,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityLabel = label;
 #endif
 		}
@@ -100,6 +104,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityElement = !ignore;
 #endif
 		}
@@ -108,6 +116,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityTitle = title;
 #endif
 		}
@@ -116,6 +128,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityValue = new NSString (stringValue);
 #endif
 		}
@@ -124,6 +140,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityUrl = new NSUrl (url);
 #endif
 		}
@@ -132,6 +152,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityRole = role;
 
 			if (!string.IsNullOrEmpty (description)) {
@@ -149,6 +173,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilitySubrole = subrole;
 #endif
 		}
@@ -159,6 +187,10 @@ namespace MonoDevelop.Components
 			var nsa = GetNSAccessibilityElement (o);
 			var titleNsa = GetNSAccessibilityElement (title);
 
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityTitleUIElement = titleNsa;
 #endif
 		}
@@ -167,6 +199,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityAlternateUIVisible = visible;
 #endif
 		}
@@ -175,6 +211,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityOrientation = orientation == Gtk.Orientation.Vertical ? NSAccessibilityOrientation.Vertical : NSAccessibilityOrientation.Horizontal;
 #endif
 
@@ -184,11 +224,19 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			NSObject [] titleElements = new NSObject [objects.Length];
 			int idx = 0;
 
 			foreach (var obj in objects) {
 				var nsao = GetNSAccessibilityElement (obj);
+				if (nsao == null) {
+					return;
+				}
+
 				titleElements [idx] = nsao;
 				idx++;
 			}
@@ -202,6 +250,10 @@ namespace MonoDevelop.Components
 #if MAC
 			var titleNsa = GetNSAccessibilityElement (title);
 			var nsa = GetNSAccessibilityElement (o);
+
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
 
 			NSObject [] oldElements = titleNsa.AccessibilityServesAsTitleForUIElements;
 			int length = oldElements != null ? oldElements.Length : 0;
@@ -224,6 +276,10 @@ namespace MonoDevelop.Components
 			var titleNsa = GetNSAccessibilityElement (title);
 			var nsa = GetNSAccessibilityElement (o);
 
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
 			if (titleNsa.AccessibilityServesAsTitleForUIElements == null) {
 				return;
 			}
@@ -243,6 +299,10 @@ namespace MonoDevelop.Components
 			internal Atk.Object Owner {
 				set {
 					owner = value;
+
+					if (owner.GetType () == typeof (Atk.NoOpObject)) {
+						return;
+					}
 
 					var signal = GLib.Signal.Lookup (owner, "request-actions", typeof (GLib.SignalArgs));
 					signal.AddDelegate (new EventHandler<GLib.SignalArgs> (RequestActionsHandler));
@@ -370,6 +430,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			nsa.AccessibilityAddChildElement (child);
 #endif
 		}
@@ -378,6 +442,10 @@ namespace MonoDevelop.Components
 		{
 #if MAC
 			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
 			var children = nsa.AccessibilityChildren;
 
 			if (children == null || children.Length == 0) {
