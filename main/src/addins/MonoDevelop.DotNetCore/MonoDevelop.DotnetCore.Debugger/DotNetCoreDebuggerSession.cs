@@ -31,10 +31,9 @@ using MonoDevelop.Debugger.VsCodeDebugProtocol;
 using Newtonsoft.Json.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
-using Newtonsoft.Json;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
-using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.DotnetCore.Debugger
 {
@@ -100,9 +99,9 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		void InstallDotNetCoreDebugger ()
 		{
-			using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (".Net Core Debugger install", Ide.Gui.Stock.MessageLog, true, false)) {
+			using (var progressMonitor = CreateProgressMonitor ()) {
 				var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
-				using (progressMonitor.BeginTask ("Installing .NetCore debugger", 10)) {
+				using (progressMonitor.BeginTask ("Installing .NET Core debugger", 4)) {
 					if (!Directory.Exists (DebugAdapterDir))
 						Directory.CreateDirectory (DebugAdapterDir);
 					WriteProjectJson ();
@@ -126,7 +125,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 					proc.WaitForExit ();
 					progressMonitor.BeginStep ("verifying publish");
 					if (!File.Exists (Path.Combine (DebugAdapterDir, "coreclr.ad7Engine.json")))
-						progressMonitor.ReportError ("The .NET CLI did not correctly restore debugger files.");
+						progressMonitor.ReportError (GettextCatalog.GetString ("The .NET CLI did not correctly restore debugger files."));
 					progressMonitor.BeginStep ("renaming files");
 					var src = Path.Combine (DebugAdapterDir, "dummy");
 					var dest = Path.Combine (DebugAdapterDir, "OpenDebugAD7");
@@ -140,6 +139,29 @@ namespace MonoDevelop.DotnetCore.Debugger
 					File.Move (src, dest);
 				}
 			}
+		}
+
+		ProgressMonitor CreateProgressMonitor ()
+		{
+			var outputProgressMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString (".NET Core Debugger Install"),
+				Stock.MessageLog,
+				true,
+				false);
+
+			var pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (outputProgressMonitor);
+
+			var monitor = new AggregatedProgressMonitor (outputProgressMonitor);
+			monitor.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Installing .NET Core debugger..."),
+				Stock.StatusSolutionOperation,
+				true,
+				false,
+				false,
+				pad,
+				false));
+
+			return monitor;
 		}
 
 		string projectFilePath = Path.Combine (DebugAdapterDir, "project.json");
