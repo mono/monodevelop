@@ -40,6 +40,7 @@ namespace MonoDevelop.DotNetCore
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
 		List<string> targetFrameworks;
+		bool outputTypeDefined;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -74,7 +75,18 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnReadProject (monitor, msproject);
 
+			outputTypeDefined = IsOutputTypeDefined (msproject);
+
 			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
+		}
+
+		static bool IsOutputTypeDefined (MSBuildProject msproject)
+		{
+			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
+			if (globalPropertyGroup != null)
+				return globalPropertyGroup.HasProperty ("OutputType");
+
+			return false;
 		}
 
 		static IEnumerable<string> GetTargetFrameworks (MSBuildProject msproject)
@@ -101,6 +113,10 @@ namespace MonoDevelop.DotNetCore
 
 			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
+
+			if (!outputTypeDefined) {
+				globalPropertyGroup.RemoveProperty ("OutputType");
+			}
 
 			msproject.DefaultTargets = null;
 		}
