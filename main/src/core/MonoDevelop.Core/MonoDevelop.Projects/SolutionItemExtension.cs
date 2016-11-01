@@ -70,7 +70,12 @@ namespace MonoDevelop.Projects
 				if (!p.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase)))
 					return false;
 			}
-			return true;
+
+			var dnp = item as DotNetProject;
+			if (dnp == null || LanguageName == null)
+				return true;
+
+			return LanguageName == dnp.LanguageName;
 		}
 
 		public SolutionItem Item {
