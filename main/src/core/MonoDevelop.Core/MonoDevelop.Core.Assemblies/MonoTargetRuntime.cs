@@ -178,7 +178,8 @@ namespace MonoDevelop.Core.Assemblies
 
 			if (monoUseMSBuild) {
 				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
-				if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
+				if (File.Exists (Path.Combine (path, "MSBuild.exe")) ||
+				    File.Exists (Path.Combine (path, "msbuild.dll"))) {
 					return path;
 				}
 

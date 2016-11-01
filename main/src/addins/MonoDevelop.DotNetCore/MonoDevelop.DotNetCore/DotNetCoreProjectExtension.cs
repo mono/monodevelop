@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -39,6 +40,7 @@ namespace MonoDevelop.DotNetCore
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
 		List<string> targetFrameworks;
+		bool outputTypeDefined;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -57,7 +59,8 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsFramework (Core.Assemblies.TargetFramework framework)
 		{
-			if (framework.Id.Identifier == ".NETCoreApp")
+			if (framework.Id.Identifier == ".NETCoreApp" ||
+			    framework.Id.Identifier == ".NETStandard")
 				return true;
 			return base.OnGetSupportsFramework (framework);
 		}
@@ -73,7 +76,22 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnReadProject (monitor, msproject);
 
+			outputTypeDefined = IsOutputTypeDefined (msproject);
+			if (!outputTypeDefined)
+				Project.CompileTarget = CompileTarget.Library;
+
 			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
+
+			Project.UseAdvancedGlobSupport = true;
+		}
+
+		static bool IsOutputTypeDefined (MSBuildProject msproject)
+		{
+			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
+			if (globalPropertyGroup != null)
+				return globalPropertyGroup.HasProperty ("OutputType");
+
+			return false;
 		}
 
 		static IEnumerable<string> GetTargetFrameworks (MSBuildProject msproject)
@@ -101,6 +119,10 @@ namespace MonoDevelop.DotNetCore
 			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
 
+			if (!outputTypeDefined) {
+				globalPropertyGroup.RemoveProperty ("OutputType");
+			}
+
 			msproject.DefaultTargets = null;
 		}
 
@@ -123,7 +145,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			string targetFramework = targetFrameworks.FirstOrDefault ();
 			FilePath outputDirectory = configuration.OutputDirectory;
-			if (outputDirectory == "./")
+
+			if (outputDirectory.IsAbsolute)
+				return outputDirectory;
+			else if (outputDirectory == "./")
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);

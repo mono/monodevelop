@@ -1,7 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
-
 	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="DotNetCore" class="MonoDevelop.DotNetCore.DotNetCoreExecutionHandler" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine insertbefore="Mono.Debugger.Soft"
+						id="NetCoreDebugger"
+						name=".Net Core Debugger"
+						features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly, Attaching"
+						type="MonoDevelop.DotnetCore.Debugger.DotNetCoreDebuggerEngine" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/other">
+		<Category id="netcore" name=".NET Core" insertafter="net" insertbefore="aspnet">
+			<Category id="general" name="General" />
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate
+			id="DotNetCoreConsoleProject"
+			file="Templates/Projects/Console/ConsoleProject.xpt.xml" />
+		<ProjectTemplate
+			id="DotNetCoreLibraryProject"
+			file="Templates/Projects/Library/LibraryProject.xpt.xml" />
+		<ProjectTemplate
+			id="DotNetCoreEmptyWebProject"
+			file="Templates/Projects/EmptyWeb/EmptyWebProject.xpt.xml" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="MonoDevelop.DotNetCore.ProjectTemplateWizard" class="MonoDevelop.DotNetCore.Templating.DotNetCoreProjectTemplateWizard" />
+	</Extension>
 </ExtensionModel>
