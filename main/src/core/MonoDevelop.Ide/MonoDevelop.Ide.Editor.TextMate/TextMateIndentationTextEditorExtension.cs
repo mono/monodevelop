@@ -28,31 +28,32 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
-	class TextMateIndentationTextEditorExtension : TextEditorExtension
+	public class TextMateIndentationTextEditorExtension : TextEditorExtension
 	{
-		bool isActive;
-		protected override void Initialize ()
+        protected override void Initialize ()
 		{
-			Editor.MimeTypeChanged += Editor_MimeTypeChanged;
+            Editor.MimeTypeChanged += Editor_MimeTypeChanged;
 			Editor_MimeTypeChanged (this, EventArgs.Empty);
 		}
 
 		void Editor_MimeTypeChanged (object sender, EventArgs e)
 		{
 			var engine = new TextMateIndentationTracker (Editor);
-			isActive = engine.DocumentIndentEngine.IsValid;
-			if (isActive)
-				Editor.SetIndentationTracker (engine);
-		}
+            if (engine.DocumentIndentEngine.IsValid) {
+                Editor.IndentationTracker = engine;
+            }
+        }
 
-		public override void Dispose ()
+        public override void Dispose ()
 		{
 			Editor.MimeTypeChanged -= Editor_MimeTypeChanged;
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (isActive && descriptor.SpecialKey == SpecialKey.Return) {
+            bool isActive = (Editor.IndentationTracker.SupportedFeatures & IndentatitonTrackerFeatures.CustomIndentationEnigne) != IndentatitonTrackerFeatures.CustomIndentationEnigne;
+
+            if (isActive && descriptor.SpecialKey == SpecialKey.Return) {
 				if (Editor.Options.IndentStyle == IndentStyle.Virtual) {
 					if (Editor.GetLine (Editor.CaretLine).Length == 0)
 						Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);

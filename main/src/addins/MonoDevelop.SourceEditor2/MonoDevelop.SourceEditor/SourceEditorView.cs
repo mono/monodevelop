@@ -2918,10 +2918,14 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ().GetIndentationString (lineNumber, 1);
 		}
 
-		void ITextEditorImpl.SetIndentationTracker (IndentationTracker indentationTracker)
-		{
-			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker;
-		}
+		IndentationTracker ITextEditorImpl.IndentationTracker {
+            get {
+                return TextEditor.GetTextEditorData().IndentationTracker;
+            }
+            set {
+                TextEditor.GetTextEditorData().IndentationTracker = value;
+            }
+        }
 
 		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
