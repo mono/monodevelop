@@ -893,13 +893,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public void SetIndentationTracker (IndentationTracker indentationTracker)
-		{
-			Runtime.AssertMainThread ();
-			textEditorImpl.SetIndentationTracker (indentationTracker);
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			Runtime.AssertMainThread ();
@@ -1485,7 +1478,22 @@ namespace MonoDevelop.Ide.Editor
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 
-		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public IndentationTracker IndentationTracker
+        {
+            get
+            {
+                Runtime.AssertMainThread();
+                return textEditorImpl.IndentationTracker;
+            }
+            set
+            {
+                Runtime.AssertMainThread();
+                textEditorImpl.IndentationTracker = value;
+            }
+        }
+
+        public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
 
 		public new void GrabFocus ()
 		{

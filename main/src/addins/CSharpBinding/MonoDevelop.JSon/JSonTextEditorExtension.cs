@@ -37,14 +37,13 @@ namespace MonoDevelop.JSon
 	{
 		CacheIndentEngine stateTracker;
 
-
 		protected override void Initialize ()
 		{
 			base.Initialize ();
 			IStateMachineIndentEngine indentEngine;
 			indentEngine = new JSonIndentEngine (Editor, DocumentContext);
 			stateTracker = new CacheIndentEngine (indentEngine);
-			Editor.SetIndentationTracker (new JSonIndentationTracker (Editor, stateTracker));
+			Editor.IndentationTracker  = new JSonIndentationTracker (Editor, stateTracker);
 		}
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{

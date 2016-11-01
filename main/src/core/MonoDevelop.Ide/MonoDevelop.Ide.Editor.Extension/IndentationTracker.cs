@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	public enum IndentatitonTrackerFeatures {
 		None = 0,
 		SmartBackspace = 1,
+        CustomIndentationEnigne = 2,
 		All = SmartBackspace
 	}
 

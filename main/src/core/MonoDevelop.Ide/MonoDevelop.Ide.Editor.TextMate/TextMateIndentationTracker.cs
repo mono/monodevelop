@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			this.editor = editor;
 			DocumentIndentEngine = new TextMateDocumentIndentEngine (editor);
 			engine = new CacheIndentEngine (DocumentIndentEngine);
-		}
+        }
 
 		public override string GetIndentationString (int lineNumber)
 		{
