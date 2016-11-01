@@ -593,6 +593,18 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.Buttons = buttons;
 		}
 
+		public void RebuildToolbar (IEnumerable<ButtonBarGroup> groups)
+		{
+			if (!groups.Any ()) {
+				buttonBarBox.Hide ();
+				return;
+			}
+
+			buttonBarBox.Show ();
+			buttonBar.ShowAll ();
+			buttonBar.Groups = groups;
+		}
+
 		public bool ButtonBarSensitivity {
 			set { buttonBar.Sensitive = value; }
 		}

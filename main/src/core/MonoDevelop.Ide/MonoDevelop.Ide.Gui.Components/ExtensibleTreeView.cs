@@ -44,6 +44,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 [assembly:InternalsVisibleTo("MonoDevelop.UnitTesting")]
 
@@ -2644,6 +2645,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		Xwt.Drawing.Image overlayBottomRight;
 		Xwt.Drawing.Image overlayTopLeft;
 		Xwt.Drawing.Image overlayTopRight;
+
+		public ZoomableCellRendererPixbuf () : base ()
+		{
+		}
 
 		public double Zoom {
 			get { return zoom; }

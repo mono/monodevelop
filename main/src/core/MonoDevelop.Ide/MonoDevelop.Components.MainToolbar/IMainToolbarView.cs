@@ -242,7 +242,9 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Rebuilds the toolbar.
 		/// </summary>
 		/// <param name="buttons">A list of buttons.</param>
+		[Obsolete ("Use RebuildToolbar(IEnumerable<ButtonBarGroup> groups) instead")]
 		void RebuildToolbar (IEnumerable<IButtonBarButton> buttons);
+		void RebuildToolbar (IEnumerable<ButtonBarGroup> groups);
 
 		/// <summary>
 		/// Sets a value indicating whether the button bar is interactible.

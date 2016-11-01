@@ -73,6 +73,7 @@ namespace MonoDevelop.Components
 		
 		public Tabstrip ()
 		{
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		

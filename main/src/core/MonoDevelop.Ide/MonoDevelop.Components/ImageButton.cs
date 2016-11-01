@@ -39,9 +39,17 @@ namespace MonoDevelop.Components
 
 		public ImageButton ()
 		{
+			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.PerformPress += HandlePress;
+
+			Accessible.SetActionDelegate (actionHandler);
+			Accessible.Role = Atk.Role.PushButton;
+
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
 			VisibleWindow = false;
 			imageWidget = new ImageView ();
+			imageWidget.Accessible.SetAccessibilityShouldIgnore (true);
 			imageWidget.Show ();
 			Add (imageWidget);
 		}
@@ -121,6 +129,11 @@ namespace MonoDevelop.Components
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object o, EventArgs args)
+		{
+			Clicked?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler Clicked;

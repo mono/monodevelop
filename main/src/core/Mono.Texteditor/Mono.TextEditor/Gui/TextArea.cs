@@ -39,6 +39,8 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor.Theatrics;
 
+using MonoDevelop.Components;
+
 using Gdk;
 using Gtk;
 using GLib;
@@ -341,10 +343,30 @@ namespace Mono.TextEditor
 			textEditorData.Parent = editor;
 
 			iconMargin = new IconMargin (editor);
+			iconMargin.Accessible.SetAccessibilityLabel ("Icon margin");
+			iconMargin.Accessible.SetAccessibilityIdentifier ("TextArea.IconMargin");
+			iconMargin.Accessible.SetRealParent (this);
+			Accessible.AddAccessibleElement (iconMargin.Accessible);
+
 			gutterMargin = new GutterMargin (editor);
+			gutterMargin.Accessible.SetAccessibilityIdentifier ("TextArea.GutterMargin");
+			gutterMargin.Accessible.SetRealParent (this);
+			Accessible.AddAccessibleElement (gutterMargin.Accessible);
+
 			actionMargin = new ActionMargin (editor);
+			actionMargin.Accessible.SetAccessibilityIdentifier ("TextArea.ActionMargin");
+			actionMargin.Accessible.SetRealParent (this);
+			Accessible.AddAccessibleElement (actionMargin.Accessible);
+
 			foldMarkerMargin = new FoldMarkerMargin (editor);
+			foldMarkerMargin.Accessible.SetAccessibilityIdentifier ("TextArea.FoldMarkerMargin");
+			foldMarkerMargin.Accessible.SetRealParent (this);
+			Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
+
 			textViewMargin = new TextViewMargin (editor);
+			textViewMargin.Accessible.SetAccessibilityIdentifier ("TextArea.TextViewMargin");
+			textViewMargin.Accessible.SetRealParent (this);
+			Accessible.AddAccessibleElement (textViewMargin.Accessible);
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
@@ -1706,6 +1728,37 @@ namespace Mono.TextEditor
 			if (Options.WrapLines)
 				textViewMargin.PurgeLayoutCache ();
 			SetChildrenPositions (allocation);
+
+			UpdateMarginRects (allocation);
+		}
+
+		void UpdateMarginRects (Gdk.Rectangle allocation)
+		{
+			double curX = 0;
+
+			if (margins == null) {
+				return;
+			}
+
+			foreach (var margin in margins) {
+				Gdk.Rectangle marginRect;
+
+				if (!margin.IsVisible)
+					continue;
+
+				marginRect.X = (int)curX;
+				marginRect.Y = 0;
+				if ((int)margin.Width == -1) {
+					marginRect.Width = (int)(allocation.Width - curX);
+				} else {
+					marginRect.Width = (int)margin.Width;
+				}
+				marginRect.Height = allocation.Height;
+
+				curX += margin.Width;
+
+				margin.RectInParent = marginRect;
+			}
 		}
 
 		uint lastScrollTime;

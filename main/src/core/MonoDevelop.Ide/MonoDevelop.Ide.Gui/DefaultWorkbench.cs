@@ -845,7 +845,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void CreateComponents ()
 		{
+			Accessible.Name = "MainWindow";
+
 			fullViewVBox = new VBox (false, 0);
+			fullViewVBox.Accessible.Name = "MainWindow.Root";
+			fullViewVBox.Accessible.SetAccessibilityLabel ("Label");
+			fullViewVBox.Accessible.SetAccessibilityShouldIgnore (true);
+
 			rootWidget = fullViewVBox;
 			
 			InstallMenuBar ();
@@ -854,6 +860,8 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.SetMainWindowDecorations (this);
 			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
+			toolbarFrame.Accessible.Name = "MainWindow.Root.ToolbarFrame";
+			toolbarFrame.Accessible.SetAccessibilityShouldIgnore (true);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
 

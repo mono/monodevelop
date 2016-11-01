@@ -694,16 +694,22 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var bars = AddinManager.GetExtensionNodes<ItemSetCodon> (ToolbarExtensionPath)
 				.Where (n => visibleBars.Contains (n.Id))
-				.Select (b => b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id));
+                .Select (b => new { Label = b.Label, Buttons = b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id) });
 
+			var buttonGroups = new List<ButtonBarGroup> ();
 			buttonBarButtons.Clear ();
 			foreach (var bar in bars) {
-				foreach (string commandId in bar)
-					buttonBarButtons.Add (new ButtonBarButton (this, commandId));
-				buttonBarButtons.Add (new ButtonBarButton (this));
+				var group = new ButtonBarGroup (bar.Label);
+
+				buttonGroups.Add (group);
+				foreach (string commandId in bar.Buttons) {
+					var button = new ButtonBarButton (this, commandId);
+					group.Buttons.Add (button);
+					buttonBarButtons.Add (button);
+				}
 			}
 
-			ToolbarView.RebuildToolbar (buttonBarButtons);
+			ToolbarView.RebuildToolbar (buttonGroups);
 		}
 
 		static void HandleStartButtonClicked (object sender, EventArgs e)
@@ -790,6 +796,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public bool Enabled { get; set; }
 			public bool Visible { get; set; }
 			public string Tooltip { get; set; }
+			public string Title { get; set; }
 			public bool IsSeparator {
 				get { return CommandId == null; }
 			}
@@ -828,12 +835,17 @@ namespace MonoDevelop.Components.MainToolbar
 					if (VisibleChanged != null)
 						VisibleChanged (this, null);
 				}
+				if (ci.Text != Title) {
+					Title = ci.Text;
+					TitleChanged?.Invoke (this, null);
+				}
 			}
 
 			public event EventHandler EnabledChanged;
 			public event EventHandler ImageChanged;
 			public event EventHandler VisibleChanged;
 			public event EventHandler TooltipChanged;
+			public event EventHandler TitleChanged;
 		}
 
 		class RuntimeModel : IRuntimeModel

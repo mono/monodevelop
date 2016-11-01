@@ -544,6 +544,11 @@ namespace MonoDevelop.Components.Docking
 
 		internal void ShowDockPopupMenu (Gtk.Widget parent, Gdk.EventButton evt)
 		{
+			ShowDockPopupMenu (parent, evt.X, evt.Y);
+		}
+
+		internal void ShowDockPopupMenu (Gtk.Widget parent, double x, double y)
+		{
 			var menu = new ContextMenu ();
 			ContextMenuItem citem;
 
@@ -580,7 +585,7 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			ShowingContextMenu = true;
-			menu.Show (parent, evt, () => { ShowingContextMenu = true; });
+			menu.Show (parent, (int)x,  (int)y, () => { ShowingContextMenu = true; });
 		}
 	}
 

@@ -1,21 +1,21 @@
-// 
+//
 // WelcomePageLinkButton.cs
-//  
+//
 // Author:
 //       Michael Hutchinson <mhutch@xamarin.com>
-// 
+//
 // Copyright (c) 2011 Xamarin Inc.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,6 +32,8 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Components;
 using System.Text;
 
+using System.Runtime.InteropServices;
+
 namespace MonoDevelop.Ide.WelcomePage
 {
 	class WelcomePageFeedItem : Gtk.EventBox
@@ -46,7 +48,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Label summaryLabel;
 
 		ImageView image;
-		string text, desc, icon, subtitle;
+		string text, desc, icon, subtitle, linkUrl;
 		Gtk.IconSize iconSize = IconSize.Menu;
 		VBox box;
 
@@ -107,8 +109,6 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				this.desc = desc;
 			}
-
-
 			
 			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
@@ -147,28 +147,41 @@ namespace MonoDevelop.Ide.WelcomePage
 			SetDate (date);
 			UpdateLabel (false);
 		}
-		
+
 		public WelcomePageFeedItem ()
 		{
+			var actionDelegate = new AtkCocoaHelper.ActionDelegate ();
+			actionDelegate.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			actionDelegate.PerformPress += PerformPress;
+
+			Accessible.SetActionDelegate (actionDelegate);
+			Accessible.Description = "A news item that opens the full story in a browser when clicked";
+			Accessible.Role = Atk.Role.Link;
+
 			VisibleWindow = false;
 
 			box = new VBox ();
+			box.Accessible.SetAccessibilityShouldIgnore (true);
 
 			titleLabel = new Label () { Xalign = 0 };
+			titleLabel.Accessible.SetAccessibilityShouldIgnore (true);
 			titleLabel.Wrap = false;
 			titleLabel.Ellipsize = Pango.EllipsizeMode.End;
 			titleLabel.LineWrapMode = Pango.WrapMode.Word;
 			box.PackStart (titleLabel, false, false, 0);
 
 			subtitleLabel = new Label () { Xalign = 0 };
+			subtitleLabel.Accessible.SetAccessibilityShouldIgnore (true);
 			var align = new Gtk.Alignment (0, 0, 1f, 1f) { 
 				TopPadding = Styles.WelcomeScreen.Pad.MediumTitleMarginBottom,
 				BottomPadding = Styles.WelcomeScreen.Pad.SummaryParagraphMarginTop
 			};
 			align.Add (subtitleLabel);
+			align.Accessible.SetAccessibilityShouldIgnore (true);
 			box.PackStart (align, false, false, 0);
 
 			summaryLabel = new Label () { Xalign = 0 };
+			summaryLabel.Accessible.SetAccessibilityShouldIgnore (true);
 			summaryLabel.Wrap = true;
 			box.PackStart (summaryLabel, true, true, 0);
 
@@ -233,7 +246,15 @@ namespace MonoDevelop.Ide.WelcomePage
 			base.OnSizeAllocated (allocation);
 		}
 		
-		public string LinkUrl { get; private set; }
+		public string LinkUrl {
+			get {
+				return linkUrl;
+			}
+			private set {
+				linkUrl = value;
+				Accessible.SetAccessibilityURL (value);
+			}
+		}
 		
 		public new string Title {
 			get {
@@ -280,6 +301,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			titleLabel.Markup = string.Format (underlined? linkUnderlinedFormat : linkFormat, GLib.Markup.EscapeText (text));
 			subtitleLabel.Markup = string.Format (subtitleFormat, GLib.Markup.EscapeText (subtitle ?? ""));
 			summaryLabel.Markup = string.Format (descFormat, SummaryHtmlToPango(desc ?? ""));
+
+			Accessible.SetAccessibilityTitle (text);
+			Accessible.SetAccessibilityValue (subtitle + " " + desc);
 		}
 
 		public static string SummaryHtmlToPango(string summaryHtml)
@@ -358,6 +382,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void PerformPress (object sender, EventArgs e)
+		{
+			WelcomePageSection.DispatchLink (LinkUrl);
 		}
 
 		string GetLinkTooltip (string link)
