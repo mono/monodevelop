@@ -82,7 +82,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			Accessible.Role = Atk.Role.Link;
 
 			Accessible.SetAccessibilityTitle (title);
-			Accessible.SetAccessibilityURL (href);
+			if (!string.IsNullOrEmpty (href)) {
+				Accessible.SetAccessibilityURL (href);
+			}
 			Accessible.Description = "Opens the link in a web browser";
 
 			UpdateStyle ();
