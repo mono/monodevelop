@@ -39,8 +39,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 {
 	public class DotNetCoreDebuggerSession : VSCodeDebuggerSession
 	{
-
-		static string DebugAdapterPath = Path.Combine (Path.GetDirectoryName (typeof (DotNetCoreDebuggerEngine).Assembly.Location), "CoreClrAdaptor", "OpenDebugAD7");
+		static string DebugAdapterPath = Path.Combine (UserProfile.Current.LocalInstallDir, "CoreClrAdaptor", "OpenDebugAD7");
 		static string DebugAdapterDir = Path.GetDirectoryName (DebugAdapterPath);
 
 		protected override string GetDebugAdapterPath ()
@@ -117,7 +116,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 					progressMonitor.BeginStep ("dotnet publish");
 					proc = Runtime.ProcessService.StartProcess (
 						dotnetPath,
-						$"--verbose publish -r {GetRuntimeId ()} -o {DebugAdapterDir}",
+						$"--verbose publish -r {GetRuntimeId ()} -o \"{DebugAdapterDir}\"",
 						DebugAdapterDir,
 						progressMonitor.Log,
 						progressMonitor.ErrorLog,
