@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
@@ -66,10 +67,22 @@ namespace MonoDevelop.DotNetCore.Templating
 		public override async void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
 		{
 			try {
-				await CreateDotNetCoreProject (items).ConfigureAwait (false);
+				using (var progressMonitor = CreateProgressMonitor ()) {
+					await CreateDotNetCoreProject (items).ConfigureAwait (false);
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Failed to create project.", ex);
 			}
+		}
+
+		ProgressMonitor CreateProgressMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Creating project..."),
+				Stock.StatusSolutionOperation,
+				false,
+				false,
+				false);
 		}
 
 		Task CreateDotNetCoreProject (IEnumerable<IWorkspaceFileObject> items)
