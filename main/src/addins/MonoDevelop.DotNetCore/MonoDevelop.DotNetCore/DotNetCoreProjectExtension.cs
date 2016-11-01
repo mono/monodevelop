@@ -143,7 +143,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			string targetFramework = targetFrameworks.FirstOrDefault ();
 			FilePath outputDirectory = configuration.OutputDirectory;
-			if (outputDirectory == "./")
+
+			if (outputDirectory.IsAbsolute)
+				return outputDirectory;
+			else if (outputDirectory == "./")
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
