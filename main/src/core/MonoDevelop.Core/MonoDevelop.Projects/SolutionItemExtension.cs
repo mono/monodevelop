@@ -71,11 +71,7 @@ namespace MonoDevelop.Projects
 					return false;
 			}
 
-			var dnp = item as DotNetProject;
-			if (dnp == null || LanguageName == null)
-				return true;
-
-			return LanguageName == dnp.LanguageName;
+			return true;
 		}
 
 		public SolutionItem Item {
