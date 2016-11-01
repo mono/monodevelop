@@ -81,6 +81,8 @@ namespace MonoDevelop.DotNetCore
 				Project.CompileTarget = CompileTarget.Library;
 
 			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
+
+			Project.UseAdvancedGlobSupport = true;
 		}
 
 		static bool IsOutputTypeDefined (MSBuildProject msproject)
