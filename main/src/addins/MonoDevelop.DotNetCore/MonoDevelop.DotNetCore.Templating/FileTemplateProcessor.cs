@@ -28,6 +28,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
@@ -101,19 +102,44 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 	}
 
-	class DummyProject : Project
+	class DummyProject : Project, IDotNetFileContainer
 	{
 		string name;
+		string defaultNamespace;
 
 		public DummyProject (string name)
 		{
 			this.name = name;
+			defaultNamespace = SanitisePotentialNamespace (name);
+
 			Initialize (this);
 		}
 
 		protected override string OnGetName ()
 		{
 			return name;
+		}
+
+		static string SanitisePotentialNamespace (string potential)
+		{
+			var sb = new StringBuilder ();
+			foreach (char c in potential) {
+				if (char.IsLetter (c) || c == '_' || (sb.Length > 0 && (char.IsLetterOrDigit (sb[sb.Length - 1]) || sb[sb.Length - 1] == '_') && (c == '.' || char.IsNumber (c)))) {
+					sb.Append (c);
+				}
+			}
+			if (sb.Length > 0) {
+				if (sb[sb.Length - 1] == '.')
+					sb.Remove (sb.Length - 1, 1);
+
+				return sb.ToString ();
+			} else
+				return null;
+		}
+
+		public string GetDefaultNamespace (string fileName, bool useVisualStudioNamingPolicy = false)
+		{
+			return defaultNamespace;
 		}
 	}
 }
