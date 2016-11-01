@@ -22,10 +22,10 @@
 		<ProjectTemplate
 			id="DotNetCoreConsoleProject"
 			file="Templates/Projects/Console/ConsoleProject.xpt.xml" />
-		<!--<ProjectTemplate
+		<ProjectTemplate
 			id="DotNetCoreLibraryProject"
 			file="Templates/Projects/Library/LibraryProject.xpt.xml" />
-		<ProjectTemplate
+		<!--<ProjectTemplate
 			id="DotNetCoreEmptyWebProject"
 			file="Templates/Projects/EmptyWeb/EmptyWebProject.xpt.xml" />-->
 	</Extension>
