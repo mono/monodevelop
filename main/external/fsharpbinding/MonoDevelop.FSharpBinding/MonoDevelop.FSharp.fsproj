@@ -50,6 +50,15 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <NuGetPackage Include="FSharp.Core">
+        <Name>FSharp.Core</Name>
+        <Version>4.0.0.1</Version>
+      </NuGetPackage>
+    </ItemGroup>
+    <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" />
+  </Target>
   <Target Name="AfterBuild">
   </Target>
   <Target Name="AfterClean">

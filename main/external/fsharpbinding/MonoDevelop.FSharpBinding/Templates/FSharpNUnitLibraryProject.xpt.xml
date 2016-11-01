@@ -29,11 +29,14 @@
 			
 			<References>
 				<Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-        <Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 			</References>
 
+      <Packages>
+        <Package Id="FSharp.Core" Version="4.0.0.1" local="true" /> 
+      </Packages>
+      
 			<Packages>
 				<Package id="NUnit" version="2.6.4" />
 			</Packages>
