@@ -13,6 +13,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	
 	public class SyntaxHighlighting : ISyntaxHighlighting
 	{
 		readonly SyntaxHighlightingDefinition definition;
@@ -46,10 +47,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var high = new Highlighter (this, lastState);
 			await high.GetColoredSegments (line.Offset, line.LengthIncludingDelimiter);
-
-			if (!stateCache [ln].Equals (high.State)) {
-				stateCache.RemoveRange (ln - 1, stateCache.Count - ln + 1);
-			}
+			OnHighlightingStateChanged (new LineEventArgs (line));
+			stateCache.RemoveRange (ln - 1, stateCache.Count - ln + 1);
 		}
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
@@ -81,7 +80,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		HighlightState GetState (IDocumentLine line)
 		{
- 			var pl = line.PreviousLine;
+			var pl = line.PreviousLine;
 			if (pl == null)
 				return HighlightState.CreateNewState (this);
 			if (stateCache.Count == 0)
@@ -90,7 +89,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (ln <= stateCache.Count) {
 				return stateCache [ln - 1].Clone ();
 			}
-
 			var lastState = stateCache [stateCache.Count - 1];
 			var cur = Document.GetLine (stateCache.Count);
 			if (cur != null && cur.Offset < line.Offset) {
@@ -383,5 +381,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				list.Insert (i, new ColoredSegment (startItem.Offset, lengthBefore, startItem.ScopeStack));
 		}
 
+		void OnHighlightingStateChanged (LineEventArgs e)
+		{
+			HighlightingStateChanged?.Invoke (this, e);
+		}
+
+		public event EventHandler<LineEventArgs> HighlightingStateChanged;
 	}
 }

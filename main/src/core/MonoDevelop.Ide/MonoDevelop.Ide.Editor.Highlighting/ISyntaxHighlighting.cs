@@ -57,6 +57,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// </param>
 		Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken);
 		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
+
+		event EventHandler<LineEventArgs> HighlightingStateChanged;
 	}
 
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
@@ -76,5 +78,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			return Task.FromResult (ImmutableStack<string>.Empty);
 		}
+
+		public event EventHandler<LineEventArgs> HighlightingStateChanged;
 	}
 }

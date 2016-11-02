@@ -193,5 +193,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 			return await syntaxMode.GetScopeStackAsync (offset, cancellationToken);
 		}
+
+		public event EventHandler<Ide.Editor.LineEventArgs> HighlightingStateChanged {
+			add {
+				syntaxMode.HighlightingStateChanged += value;
+			}
+			remove {
+				syntaxMode.HighlightingStateChanged -= value;
+			}
+		}
 	}
 }
