@@ -140,9 +140,20 @@ namespace Mono.TextEditor
 			}
 			set {
 				var old = syntaxMode;
+				if (old != null)
+					old.HighlightingStateChanged -= SyntaxMode_HighlightingStateChanged;
+
 				syntaxMode = value;
+				if (syntaxMode != null)
+					syntaxMode.HighlightingStateChanged += SyntaxMode_HighlightingStateChanged;
+
 				OnSyntaxModeChanged (new SyntaxModeChangeEventArgs (old, syntaxMode));
 			}
+		}
+
+		void SyntaxMode_HighlightingStateChanged (object sender, MonoDevelop.Ide.Editor.LineEventArgs e)
+		{
+			CommitDocumentUpdate ();
 		}
 
 		void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
