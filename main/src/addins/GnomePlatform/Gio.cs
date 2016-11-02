@@ -56,9 +56,21 @@ namespace MonoDevelop.Platform {
 		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_info_get_content_type (IntPtr handle);
 		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_file_info_get_icon (IntPtr fileinfo);
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_file_new_for_path (IntPtr path);
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_new_for_uri (IntPtr uri);
 		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_query_info (IntPtr handle, IntPtr attrs, int flags, IntPtr cancellable, out IntPtr error);
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_icon_to_string (IntPtr icon);
+		[DllImport(gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_settings_get_string(IntPtr gsettings, IntPtr key);
+		[DllImport(gio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_settings_new(IntPtr schema);
+		[DllImport (glib, CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_error_free (IntPtr raw);
 		[DllImport (glib, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_list_free (IntPtr raw);
 		[DllImport (gobject, CallingConvention = CallingConvention.Cdecl)]
@@ -124,6 +136,48 @@ namespace MonoDevelop.Platform {
 			return apps;
 		}
 
+		public static string GetGSettingsString(string schema, string key)
+		{
+			IntPtr schema_native = GLib.Marshaller.StringToPtrGStrdup (schema);
+			IntPtr gsettings = g_settings_new (schema_native);
+			GLib.Marshaller.Free (schema_native);
+
+			IntPtr key_native = GLib.Marshaller.StringToPtrGStrdup (key);
+			IntPtr ret = g_settings_get_string (gsettings, key_native);
+			GLib.Marshaller.Free (key_native);
+
+			g_object_unref (gsettings);
+			return GLib.Marshaller.PtrToStringGFree (ret);
+		}
+
+		public static string GetIconIdForFile (string filename)
+		{
+			if (String.IsNullOrEmpty (filename))
+				return null;
+			IntPtr native = GLib.Marshaller.StringToPtrGStrdup (filename);
+			IntPtr gfile = g_file_new_for_path (native);
+			GLib.Marshaller.Free (native);
+			IntPtr native_attrs = GLib.Marshaller.StringToPtrGStrdup ("standard::icon");
+			IntPtr error;
+			IntPtr info = g_file_query_info (gfile, native_attrs, 0, IntPtr.Zero, out error);
+			GLib.Marshaller.Free (native_attrs);
+			if (error != IntPtr.Zero) {
+				g_error_free (error);
+				g_object_unref (gfile);
+				return null;
+			}
+			IntPtr iconnative = g_icon_to_string (g_file_info_get_icon (info));
+			string[] iconid = GLib.Marshaller.Utf8PtrToString (iconnative).Split (' ');
+			GLib.Marshaller.Free (iconnative);
+			g_object_unref (info);
+			g_object_unref (gfile);
+			// g_icon_to_string should give us 4 fields, 2nd is GThemedIcon
+			// if this isn't the case, we're into crazyland, and fall back
+			if (iconid.Length == 4 && iconid [1].Trim () == "GThemedIcon")
+				return iconid [2].Trim ();
+			return null;
+		}
+
 		public static string GetMimeTypeDescription (string mime_type)
 		{
 			IntPtr content_type = ContentTypeFromMimeType (mime_type);
@@ -142,11 +196,16 @@ namespace MonoDevelop.Platform {
 			IntPtr native_attrs = GLib.Marshaller.StringToPtrGStrdup ("standard::content-type");
 			IntPtr error;
 			IntPtr info = g_file_query_info (gfile, native_attrs, 0, IntPtr.Zero, out error);
-			if (error != IntPtr.Zero)
+			GLib.Marshaller.Free (native_attrs);
+			if (error != IntPtr.Zero) {
+				g_error_free (error);
+				g_object_unref (gfile);
 				return null;
+			}
 			IntPtr content_type = g_file_info_get_content_type (info);
 			string mime_type = GLib.Marshaller.Utf8PtrToString (g_content_type_get_mime_type (content_type));
 			GLib.Marshaller.Free (content_type);
+			g_object_unref (info);
 			g_object_unref (gfile);
 			return mime_type;
 		}

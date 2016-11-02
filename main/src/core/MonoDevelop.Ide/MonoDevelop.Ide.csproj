@@ -145,7 +145,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable">
@@ -5379,6 +5379,18 @@
     <EmbeddedResource Include="icons\copy-16~dark%402x.png">
       <LogicalName>copy-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-done-16.png">
+      <LogicalName>copy-done-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-done-16%402x.png">
+      <LogicalName>copy-done-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-done-16~dark.png">
+      <LogicalName>copy-done-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-done-16~dark%402x.png">
+      <LogicalName>copy-done-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\find-16.png">
       <LogicalName>find-16.png</LogicalName>
     </EmbeddedResource>
@@ -7239,6 +7251,30 @@
     <EmbeddedResource Include="icons\fullscreen-16~dark~sel%402x.png">
       <LogicalName>fullscreen-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16.png">
+      <LogicalName>getting-started-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16%402x.png">
+      <LogicalName>getting-started-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark.png">
+      <LogicalName>getting-started-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark%402x.png">
+      <LogicalName>getting-started-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~sel.png">
+      <LogicalName>getting-started-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~sel%402x.png">
+      <LogicalName>getting-started-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark~sel.png">
+      <LogicalName>getting-started-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\getting-started-16~dark~sel%402x.png">
+      <LogicalName>getting-started-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\help-16.png">
       <LogicalName>help-16.png</LogicalName>
     </EmbeddedResource>
@@ -7323,6 +7359,231 @@
     <EmbeddedResource Include="icons\redo-16~dark~disabled%402x.png">
       <LogicalName>redo-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\folder-services-16.png">
+      <LogicalName>folder-services-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16%402x.png">
+      <LogicalName>folder-services-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~dark.png">
+      <LogicalName>folder-services-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~dark%402x.png">
+      <LogicalName>folder-services-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~dark~sel.png">
+      <LogicalName>folder-services-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~dark~sel%402x.png">
+      <LogicalName>folder-services-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~sel.png">
+      <LogicalName>folder-services-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-services-16~sel%402x.png">
+      <LogicalName>folder-services-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\folder-code-16.png">
+      <LogicalName>folder-code-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16%402x.png">
+      <LogicalName>folder-code-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~dark.png">
+      <LogicalName>folder-code-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~dark%402x.png">
+      <LogicalName>folder-code-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~dark~sel.png">
+      <LogicalName>folder-code-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~dark~sel%402x.png">
+      <LogicalName>folder-code-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~sel.png">
+      <LogicalName>folder-code-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-code-16~sel%402x.png">
+      <LogicalName>folder-code-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\service-16.png">
+      <LogicalName>service-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16%402x.png">
+      <LogicalName>service-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~dark.png">
+      <LogicalName>service-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~dark%402x.png">
+      <LogicalName>service-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~sel.png">
+      <LogicalName>service-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~sel%402x.png">
+      <LogicalName>service-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~dark~sel.png">
+      <LogicalName>service-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-16~dark~sel%402x.png">
+      <LogicalName>service-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24.png">
+      <LogicalName>service-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24%402x.png">
+      <LogicalName>service-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~dark.png">
+      <LogicalName>service-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~dark%402x.png">
+      <LogicalName>service-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~sel.png">
+      <LogicalName>service-24~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~sel%402x.png">
+      <LogicalName>service-24~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~dark~sel.png">
+      <LogicalName>service-24~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\service-24~dark~sel%402x.png">
+      <LogicalName>service-24~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\expander-arrow-closed-8.png">
+      <LogicalName>expander-arrow-closed-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8%402x.png">
+      <LogicalName>expander-arrow-closed-8@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark.png">
+      <LogicalName>expander-arrow-closed-8~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark%402x.png">
+      <LogicalName>expander-arrow-closed-8~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~sel.png">
+      <LogicalName>expander-arrow-closed-8~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~sel%402x.png">
+      <LogicalName>expander-arrow-closed-8~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel.png">
+      <LogicalName>expander-arrow-closed-8~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel%402x.png">
+      <LogicalName>expander-arrow-closed-8~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8.png">
+      <LogicalName>expander-arrow-expanded-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8%402x.png">
+      <LogicalName>expander-arrow-expanded-8@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark.png">
+      <LogicalName>expander-arrow-expanded-8~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark%402x.png">
+      <LogicalName>expander-arrow-expanded-8~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel.png">
+      <LogicalName>expander-arrow-expanded-8~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel%402x.png">
+      <LogicalName>expander-arrow-expanded-8~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel.png">
+      <LogicalName>expander-arrow-expanded-8~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel%402x.png">
+      <LogicalName>expander-arrow-expanded-8~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\code-16.png">
+      <LogicalName>code-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16%402x.png">
+      <LogicalName>code-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~dark.png">
+      <LogicalName>code-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~dark%402x.png">
+      <LogicalName>code-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~sel.png">
+      <LogicalName>code-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~sel%402x.png">
+      <LogicalName>code-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~dark~sel.png">
+      <LogicalName>code-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-16~dark~sel%402x.png">
+      <LogicalName>code-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\checkmark-16.png">
+      <LogicalName>checkmark-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16%402x.png">
+      <LogicalName>checkmark-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~dark.png">
+      <LogicalName>checkmark-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~dark%402x.png">
+      <LogicalName>checkmark-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~sel.png">
+      <LogicalName>checkmark-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~sel%402x.png">
+      <LogicalName>checkmark-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~dark~sel.png">
+      <LogicalName>checkmark-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\checkmark-16~dark~sel%402x.png">
+      <LogicalName>checkmark-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
+    <EmbeddedResource Include="icons\dependency-16.png">
+      <LogicalName>dependency-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16%402x.png">
+      <LogicalName>dependency-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~dark.png">
+      <LogicalName>dependency-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~dark%402x.png">
+      <LogicalName>dependency-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~sel.png">
+      <LogicalName>dependency-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~sel%402x.png">
+      <LogicalName>dependency-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~dark~sel.png">
+      <LogicalName>dependency-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dependency-16~dark~sel%402x.png">
+      <LogicalName>dependency-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+
     <EmbeddedResource Include="templates\images\workspace-template.png">
       <LogicalName>workspace-template.png</LogicalName>
     </EmbeddedResource>
@@ -8316,6 +8577,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StylesStringTagModel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
@@ -8676,6 +8938,24 @@
     <Compile Include="MonoDevelop.Ide.Editor\MarkupOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStarted.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNode.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProviderBase.cs" />
+    <Compile Include="MonoDevelop.Components\ExtendedHeaderBox.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialogController.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Wizard\IWizardDialogController.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Wizard\IWizardDialogPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialogPageBase.cs" />
+    <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
+    <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
+    <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8725,6 +9005,8 @@
     <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="MonoDevelop.Components\Windows\" />
+    <Folder Include="MonoDevelop.Ide.GettingStarted\" />
+    <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

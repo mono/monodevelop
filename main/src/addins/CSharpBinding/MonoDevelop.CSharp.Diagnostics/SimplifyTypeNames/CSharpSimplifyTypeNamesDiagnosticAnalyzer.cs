@@ -35,10 +35,11 @@ namespace MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames
 		{
 			if (context.IsFromGeneratedCode ())
 				return;
-			if (context.Node.Ancestors(ascendOutOfTrivia: false).Any(n => s_kindsOfInterest.Contains(n.Kind())))
-			{
-				// Already simplified an ancestor of this node.
-				return;
+			foreach (var n in context.Node.Ancestors (ascendOutOfTrivia: false)) {
+				if (s_kindsOfInterest.Contains (n.Kind ())) {
+					// Already simplified an ancestor of this node.
+					return;
+				}
 			}
 
 			Diagnostic diagnostic;

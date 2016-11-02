@@ -44,7 +44,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		int nextChar = -1;
 		
 		Token	token;
-		Token	putback = null;
+		bool	hasPutback;
+		Token	putback;
 		
 //		bool	ignoreWhiteSpace = true;
 		
@@ -142,14 +143,15 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		// FIXME test this
 		public void Putback (Token token)
 		{
+			hasPutback = true;
 			putback = token;
 		}
 
 		public void GetNextToken ()
 		{
-			if (putback != null) {
+			if (hasPutback) {
 				token = putback;
-				putback = null;
+				hasPutback = false;
 				return;
 			}
 		

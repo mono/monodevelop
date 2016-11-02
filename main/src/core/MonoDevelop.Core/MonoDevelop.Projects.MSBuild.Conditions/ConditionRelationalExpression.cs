@@ -103,21 +103,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					   float r,
 					   RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return l == r;
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return l != r;
 			case RelationOperator.Greater:
-				return comparer.Compare (l, r) > 0;
+				return l > r;
 			case RelationOperator.GreaterOrEqual:
-				return comparer.Compare (l, r) >= 0;
+				return l >= r;
 			case RelationOperator.Less:
-				return comparer.Compare (l, r) < 0;
+				return l < r;
 			case RelationOperator.LessOrEqual:
-				return comparer.Compare (l, r) <= 0;
+				return l <= r;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
@@ -127,13 +125,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					 bool r,
 					 RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return l == r;
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return l != r;
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}
@@ -143,13 +139,11 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					   string r,
 					   RelationOperator op)
 		{
-			IComparer comparer = CaseInsensitiveComparer.DefaultInvariant;
-			
 			switch (op) {
 			case RelationOperator.Equal:
-				return comparer.Compare (l, r) == 0;
+				return string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
 			case RelationOperator.NotEqual:
-				return comparer.Compare (l, r) != 0;
+				return !string.Equals (l, r, StringComparison.OrdinalIgnoreCase);
 			default:
 				throw new NotSupportedException (String.Format ("Relational operator {0} is not supported.", op));
 			}

@@ -142,19 +142,61 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 
-			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
-
 			internal static bool TryExtractFileAndLine (string lineText, out string file, out int line)
 			{
-				var match = lineRegex.Match (lineText);
-				if (match.Success) {
-					file = match.Groups["file"].Value;
-					string lineNumberText = match.Groups["line"].Value;
-					if (int.TryParse (lineNumberText, out line))
-						return true;
-				}
 				file = null;
 				line = 0;
+
+				int i = lineText.Length - 1, mult = 1;
+				int fileNameEnd = 0, fileNameStart = 0;
+				int state = 0;
+				while (i > 0) {
+					char ch = lineText [i];
+					switch (state) {
+					case 0: // search line number start
+						if (ch == '.')
+							state = 1;
+						else if (ch >= '0' && ch <= '9') {
+							state = 1;
+							goto case 1;
+						} else if (!char.IsWhiteSpace (ch))
+							return false;
+						break;
+					case 1: // read line number
+						if (ch >= '0' && ch <= '9') {
+							line += (ch - '0') * mult;
+							mult *= 10;
+						} else if (ch == ' ' || char.IsLetter (ch)) {
+							state = 2;
+						} else if (ch == ':') {
+							state = 3;
+							fileNameStart = fileNameEnd = i;
+						} else
+							return false;
+						break;
+					case 2: // search file name end
+						if (ch == ':') {
+							state = 3;
+							fileNameStart = fileNameEnd = i;
+						} else if (ch != ' ' && !char.IsLetter (ch))
+							return false;
+						break;
+					case 3: // search file name start
+						if (ch == ' ') {
+							if (lineText [i + 1] == '/' ||  // unix style start
+							    (char.IsLetter (lineText [i + 1]) && lineText [i + 2] == ':' && lineText [i + 3] == '\\') // windows style start
+							   )
+								fileNameStart = i + 1;
+						}
+						break;
+					}
+
+					i--;
+				}
+				if (state == 3 && fileNameEnd - fileNameStart > 0) {
+					file = lineText.Substring (fileNameStart, fileNameEnd - fileNameStart);
+					return true;
+				}
 				return false;
 			}
 
