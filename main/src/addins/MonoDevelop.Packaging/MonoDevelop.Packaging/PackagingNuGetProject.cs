@@ -71,7 +71,7 @@ namespace MonoDevelop.Packaging
 			INuGetProjectContext nuGetProjectContext,
 			CancellationToken token)
 		{
-			return await Runtime.RunInMainThread (() => {
+			return await Runtime.RunInMainThread (async () => {
 
 				// Check if this NuGet package is already installed and should be removed.
 				PackageReference existingPackageReference = project.FindPackageReference (packageIdentity);
@@ -88,6 +88,8 @@ namespace MonoDevelop.Packaging
 
 				bool developmentDependency = false;
 				if (IsNuGetBuildPackagingPackage (packageIdentity)) {
+					await GlobalPackagesExtractor.Extract (project.ParentSolution, packageIdentity, downloadResourceResult, token);
+
 					developmentDependency = true;
 					GenerateNuGetBuildPackagingTargets (packageIdentity);
 				}
@@ -96,7 +98,7 @@ namespace MonoDevelop.Packaging
 				if (developmentDependency)
 					packageReference.PrivateAssets = "All";
 				project.PackageReferences.Add (packageReference);
-				project.SaveAsync (new ProgressMonitor ());
+				await project.SaveAsync (new ProgressMonitor ());
 				return true;
 			});
 		}

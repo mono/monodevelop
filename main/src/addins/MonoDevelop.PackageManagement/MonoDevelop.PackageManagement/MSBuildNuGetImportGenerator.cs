@@ -50,7 +50,12 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetPackagesRootDirectory (DotNetProject project)
 		{
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			return GetPackagesRootDirectory (project.ParentSolution);
+		}
+
+		public static string GetPackagesRootDirectory (Solution solution)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
 			string globalPackagesPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
 
 			return new FilePath (globalPackagesPath).FullPath;
