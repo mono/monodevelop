@@ -170,9 +170,9 @@ namespace MonoDevelop.DotNetCore
 		static string GetDotNetBuildCommand (string target)
 		{
 			if (target == ProjectService.BuildTarget)
-				return "build3 --no-dependencies";
+				return "build --no-dependencies";
 			else if (target == ProjectService.CleanTarget)
-				return "clean3";
+				return "clean";
 
 			return null;
 		}
