@@ -44,7 +44,6 @@ namespace MonoDevelop.Components
 		internal static string DefaultTheme;
 		internal static string DefaultGtkDataFolder;
 		internal static string DefaultGtk2RcFiles;
-		internal static string DefaultGtkPath;
 
 		public static Theme UserInterfaceTheme { get; private set; }
 
@@ -52,7 +51,6 @@ namespace MonoDevelop.Components
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
 			DefaultGtk2RcFiles = Environment.GetEnvironmentVariable ("GTK2_RC_FILES");
-			DefaultGtkPath = Environment.GetEnvironmentVariable ("GTK_PATH");
 			// FIXME: Immediate theme switching disabled, until:
 			//        MAC: NSAppearance issues are fixed
 			//        WIN: spradic Gtk crashes on theme realoding are fixed
@@ -71,11 +69,11 @@ namespace MonoDevelop.Components
 
 			if (Platform.IsMac) {
 				// Load a private version of AtkCocoa stored in the XS app directory
-				var gtkPath = $"{AppDomain.CurrentDomain.BaseDirectory}/libs/gtk-2.0:{DefaultGtkPath}";
+				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
+				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
 
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
-				Environment.SetEnvironmentVariable ("GTK_PATH", gtkPath);
-				Environment.SetEnvironmentVariable ("GTK_MODULES", "atkcocoa");
+				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
 			}
 
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
@@ -83,7 +81,6 @@ namespace MonoDevelop.Components
 			// Reset our environment after initialization on Mac
 			if (Platform.IsMac) {
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
-				Environment.SetEnvironmentVariable ("GTK_PATH", DefaultGtkPath);
 			}
 		}
 
