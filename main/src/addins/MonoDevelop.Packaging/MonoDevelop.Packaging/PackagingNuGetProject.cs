@@ -24,12 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet.Frameworks;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -82,7 +86,15 @@ namespace MonoDevelop.Packaging
 					}
 				}
 
+				bool developmentDependency = false;
+				if (IsNuGetBuildPackagingPackage (packageIdentity)) {
+					developmentDependency = true;
+					GenerateNuGetBuildPackagingTargets (packageIdentity);
+				}
+
 				var packageReference = new PackageReference (packageIdentity);
+				if (developmentDependency)
+					packageReference.PrivateAssets = "All";
 				project.PackageReferences.Add (packageReference);
 				project.SaveAsync (new ProgressMonitor ());
 				return true;
@@ -112,6 +124,22 @@ namespace MonoDevelop.Packaging
 		{
 			var existingPackageReference = packageReference.ToNuGetPackageReference ();
 			return !VersionComparer.Default.Equals (existingPackageReference.PackageIdentity.Version, packageIdentity.Version);
+		}
+
+		bool IsNuGetBuildPackagingPackage (PackageIdentity packageIdentity)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals (packageIdentity.Id, "NuGet.Build.Packaging");
+		}
+
+		void GenerateNuGetBuildPackagingTargets (PackageIdentity packageIdentity)
+		{
+			var packagePathResolver = new VersionFolderPathResolver (string.Empty, normalizePackageId: false);
+			string packageDirectory = packagePathResolver.GetPackageDirectory (packageIdentity.Id, packageIdentity.Version);
+			string buildDirectory = Path.Combine (packageDirectory, "build");
+			string prop = Path.Combine (buildDirectory, "NuGet.Build.Packaging.props");
+			string target = Path.Combine (buildDirectory, "NuGet.Build.Packaging.targets");
+
+			MSBuildNuGetImportGenerator.CreateImports (project, prop, target);
 		}
 	}
 }

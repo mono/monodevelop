@@ -10,9 +10,14 @@ Copyright (c) .NET Foundation. All rights reserved.
 ***********************************************************************************************
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).nuget.props"
+		Condition="Exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).nuget.props') AND '$(IncludeNuGetImports)' != 'false'" />
+
 	<PropertyGroup>
 		<NuGetPackaginAuthoringPropsImported>true</NuGetPackaginAuthoringPropsImported>
 		<IsPackagingProject>true</IsPackagingProject>
 		<PackOnBuild>true</PackOnBuild>
-	</PropertyGroup>	
+	</PropertyGroup>
+
 </Project>

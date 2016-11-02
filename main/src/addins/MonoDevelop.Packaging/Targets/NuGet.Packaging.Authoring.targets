@@ -18,4 +18,6 @@ Copyright (c) .NET Foundation. All rights reserved.
 	<Target Name="CreateManifestResourceNames" />
 	<Target Name="CoreCompile" />
 
+	<Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).nuget.targets"
+		Condition="Exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).nuget.targets') AND '$(IncludeNuGetImports)' != 'false'" />
 </Project>

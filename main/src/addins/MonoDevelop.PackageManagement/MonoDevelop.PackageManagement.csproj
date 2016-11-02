@@ -409,6 +409,7 @@
     <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetAwareProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MSBuildNuGetImportGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

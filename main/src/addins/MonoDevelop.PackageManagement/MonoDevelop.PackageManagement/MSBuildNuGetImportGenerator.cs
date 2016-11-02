@@ -1,5 +1,5 @@
 ﻿//
-// PackageReference.cs
+// MSBuildNuGetImportGenerator.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,38 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet.Frameworks;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
+using NuGet.Commands;
+using NuGet.Configuration;
+using NuGet.Logging;
 
-namespace MonoDevelop.Packaging
+namespace MonoDevelop.PackageManagement
 {
-	[ExportProjectItemType ("PackageReference")]
-	class PackageReference : ProjectItem
+	internal static class MSBuildNuGetImportGenerator
 	{
-		internal PackageReference (PackageIdentity packageIdentity)
+		public static void CreateImports (DotNetProject project, string prop, string target)
 		{
-			Include = packageIdentity.Id;
-			Version = packageIdentity.Version.ToString ();
+			string repositoryRoot = GetPackagesRootDirectory (project);
+
+			var restoreResult = new MSBuildRestoreResult (
+				project.Name,
+				project.BaseDirectory,
+				repositoryRoot,
+				new [] { prop },
+				new [] { target });
+
+			restoreResult.Commit (NullLogger.Instance);
 		}
 
-		public PackageReference ()
+		static string GetPackagesRootDirectory (DotNetProject project)
 		{
-		}
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			string globalPackagesPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
 
-		[ItemProperty ("Version")]
-		public string Version { get; set; }
-
-		[ItemProperty ("PrivateAssets")]
-		public string PrivateAssets { get; set; }
-
-		internal NuGet.Packaging.PackageReference ToNuGetPackageReference ()
-		{
-			var identity = new PackageIdentity (Include, new NuGetVersion (Version));
-			return new NuGet.Packaging.PackageReference (identity, NuGetFramework.Parse ("any"));
+			return new FilePath (globalPackagesPath).FullPath;
 		}
 	}
 }
-
