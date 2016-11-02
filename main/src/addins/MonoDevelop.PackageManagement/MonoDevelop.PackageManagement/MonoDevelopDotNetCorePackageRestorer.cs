@@ -71,7 +71,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return Runtime.ProcessService.StartConsoleProcess (
 				dotNetCorePath.FileName,
-				string.Format ("restore3 \"{0}\"", projectFileName),
+				string.Format ("restore \"{0}\"", projectFileName),
 				Path.GetDirectoryName (projectFileName),
 				console,
 				null,
