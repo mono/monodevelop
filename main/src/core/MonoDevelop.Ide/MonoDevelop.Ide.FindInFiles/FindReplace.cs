@@ -151,6 +151,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						c++;
 					}
 					t++;
+					idx++;
 				}
 
 				var results = new List<SearchResult>();
