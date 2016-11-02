@@ -41,6 +41,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		List<string> targetFrameworks;
 		bool outputTypeDefined;
+		string toolsVersion;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -75,6 +76,8 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
+
+			toolsVersion = msproject.ToolsVersion;
 
 			outputTypeDefined = IsOutputTypeDefined (msproject);
 			if (!outputTypeDefined)
@@ -124,6 +127,9 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			msproject.DefaultTargets = null;
+
+			if (!string.IsNullOrEmpty (toolsVersion))
+				msproject.ToolsVersion = toolsVersion;
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
