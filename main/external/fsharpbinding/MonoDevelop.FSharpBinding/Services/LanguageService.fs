@@ -375,11 +375,10 @@ type LanguageService(dirtyNotify) as x =
                 let project =
                     IdeApp.Workspace.GetAllProjects()
                     |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projFilename)
-                    |> Option.tryCast<DotNetProject>
 
                 match project with
                 | Some proj ->
-                    let opts = x.GetProjectOptionsFromProjectFile proj
+                    let opts = x.GetProjectOptionsFromProjectFile (proj :?> DotNetProject)
                     projectInfoCache := cache.Add (key, opts)
                     // Print contents of check option for debugging purposes
                     LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
