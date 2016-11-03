@@ -2997,7 +2997,7 @@ namespace Mono.TextEditor
 					restart:
 					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
 					foreach (FoldSegment folding in foldings) {
-						if (folding.IsCollapsed)
+						if (!folding.IsCollapsed)
 							continue;
 						int foldOffset = folding.Offset;
 						if (foldOffset < offset)
