@@ -24,11 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NuGet.Configuration;
-using NuGet.Protocol.Core.Types;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using MonoDevelop.Projects;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -49,6 +47,16 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken token)
 		{
 			return project.RestorePackagesAsync (solutionManager, context, token);
+		}
+
+		public async Task RestoreMissingPackagesAsync (
+			IEnumerable<INuGetAwareProject> projects,
+			NuGetProjectContext context,
+			CancellationToken token)
+		{
+			foreach (INuGetAwareProject project in projects) {
+				await RestoreMissingPackagesAsync (project, context, token);
+			}
 		}
 	}
 }
