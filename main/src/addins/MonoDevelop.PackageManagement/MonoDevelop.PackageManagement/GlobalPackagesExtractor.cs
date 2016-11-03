@@ -88,12 +88,7 @@ namespace MonoDevelop.PackageManagement
 			INuGetProjectContext context,
 			CancellationToken token)
 		{
-			string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
-			var defaultPackagePathResolver = new VersionFolderPathResolver (globalPackagesFolder);
-
-			string hashPath = defaultPackagePathResolver.GetHashPath (packageIdentity.Id, packageIdentity.Version);
-
-			if (File.Exists (hashPath))
+			if (!IsMissing (solutionManager, packageIdentity))
 				return;
 
 			await PackageDownloader.GetDownloadResourceResultAsync (
@@ -102,6 +97,18 @@ namespace MonoDevelop.PackageManagement
 				solutionManager.Settings,
 				new LoggerAdapter (context),
 				token);
+		}
+
+		public static bool IsMissing (
+			IMonoDevelopSolutionManager solutionManager,
+			PackageIdentity packageIdentity)
+		{
+			string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
+			var defaultPackagePathResolver = new VersionFolderPathResolver (globalPackagesFolder);
+
+			string hashPath = defaultPackagePathResolver.GetHashPath (packageIdentity.Id, packageIdentity.Version);
+
+			return !File.Exists (hashPath);
 		}
 	}
 }

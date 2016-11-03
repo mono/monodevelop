@@ -58,5 +58,18 @@ namespace MonoDevelop.PackageManagement
 				await RestoreMissingPackagesAsync (project, context, token);
 			}
 		}
+
+		public async Task<IEnumerable<INuGetAwareProject>> GetProjectsRequiringRestore (
+			IEnumerable<INuGetAwareProject> projects)
+		{
+			var projectsToBeRestored = new List<INuGetAwareProject> ();
+
+			foreach (INuGetAwareProject project in projects) {
+				if (await project.HasMissingPackages (solutionManager))
+					projectsToBeRestored.Add (project);
+			}
+
+			return projectsToBeRestored;
+		}
 	}
 }

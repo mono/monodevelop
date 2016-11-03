@@ -34,6 +34,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		NuGetProject CreateNuGetProject ();
 		bool HasPackages ();
+		Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager);
+
 		Task RestorePackagesAsync (
 			IMonoDevelopSolutionManager solutionManager,
 			INuGetProjectContext context,
