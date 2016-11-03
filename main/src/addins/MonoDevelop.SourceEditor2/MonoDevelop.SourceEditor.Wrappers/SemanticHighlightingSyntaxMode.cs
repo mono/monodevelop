@@ -35,6 +35,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -153,7 +154,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
 			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
+			if (syntaxLine.Segments.Count == 0)
+				return syntaxLine;
 			var segments = new List<ColoredSegment> (syntaxLine.Segments);
+			int endOffset = segments [segments.Count - 1].EndOffset;
+
 			try {
 				var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
 				if (tree == null) {
@@ -173,13 +178,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				}
 
 				foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
-					SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (treeseg.Offset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+					var toffset = treeseg.Offset;
+					if (toffset + treeseg.Length > endOffset)
+						continue;
+					SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (toffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
 				}
 			} catch (Exception e) {
-				Console.WriteLine ("Error in semantic highlighting: " + e);
+				LoggingService.LogError ("Error in semantic highlighting: " + e);
+				return syntaxLine;
 			}
-
-
 			return new HighlightedLine (segments);
 		}
 
