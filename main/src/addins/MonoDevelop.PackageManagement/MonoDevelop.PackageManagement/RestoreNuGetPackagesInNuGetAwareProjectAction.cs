@@ -1,5 +1,5 @@
 ﻿//
-// INuGetAwareProject.cs
+// RestoreNuGetPackagesInNuGetAwareProjectAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,18 +26,55 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.ProjectManagement;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal interface INuGetAwareProject
+	internal class RestoreNuGetPackagesInNuGetAwareProjectAction : IPackageAction
 	{
-		NuGetProject CreateNuGetProject ();
-		bool HasPackages ();
-		Task RestorePackagesAsync (
-			IMonoDevelopSolutionManager solutionManager,
-			INuGetProjectContext context,
-			CancellationToken token);
+		IPackageManagementEvents packageManagementEvents;
+		NuGetAwareProjectPackageRestoreManager restoreManager;
+		INuGetAwareProject nugetAwareProject;
+
+		public RestoreNuGetPackagesInNuGetAwareProjectAction (
+			DotNetProject project,
+			IMonoDevelopSolutionManager solutionManager)
+		{
+			nugetAwareProject = (INuGetAwareProject)project;
+
+			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+
+			restoreManager = new NuGetAwareProjectPackageRestoreManager (
+				solutionManager
+			);
+		}
+
+		public void Execute ()
+		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			Task task = ExecuteAsync (cancellationToken);
+			using (var restoreTask = new PackageRestoreTask (task)) {
+				task.Wait ();
+			}
+		}
+
+		public bool HasPackageScriptsToRun ()
+		{
+			return false;
+		}
+
+		async Task ExecuteAsync (CancellationToken cancellationToken)
+		{
+			await restoreManager.RestoreMissingPackagesAsync (
+				nugetAwareProject,
+				new NuGetProjectContext (),
+				cancellationToken);
+
+			packageManagementEvents.OnPackagesRestored ();
+		}
 	}
 }
-

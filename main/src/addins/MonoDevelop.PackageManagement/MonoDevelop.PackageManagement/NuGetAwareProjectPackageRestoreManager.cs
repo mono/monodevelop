@@ -1,5 +1,5 @@
 ﻿//
-// INuGetAwareProject.cs
+// NuGetAwareProjectPackageRestoreManager.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,20 +24,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
+using NuGet.Configuration;
+using NuGet.Protocol.Core.Types;
 using System.Threading.Tasks;
+using System.Threading;
+using MonoDevelop.Projects;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal interface INuGetAwareProject
+	class NuGetAwareProjectPackageRestoreManager
 	{
-		NuGetProject CreateNuGetProject ();
-		bool HasPackages ();
-		Task RestorePackagesAsync (
-			IMonoDevelopSolutionManager solutionManager,
+		IMonoDevelopSolutionManager solutionManager;
+
+		public NuGetAwareProjectPackageRestoreManager (
+			IMonoDevelopSolutionManager solutionManager)
+		{
+			this.solutionManager = solutionManager;
+		}
+
+		public Task RestoreMissingPackagesAsync (
+			INuGetAwareProject project,
 			INuGetProjectContext context,
-			CancellationToken token);
+			CancellationToken token)
+		{
+			return project.RestorePackagesAsync (solutionManager, context, token);
+		}
 	}
 }
-

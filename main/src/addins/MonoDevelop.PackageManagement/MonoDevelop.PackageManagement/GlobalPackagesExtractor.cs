@@ -27,13 +27,16 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Configuration;
 using NuGet.Logging;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Packaging.PackageExtraction;
+using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -77,6 +80,28 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (() => {
 				return MSBuildNuGetImportGenerator.GetPackagesRootDirectory (solution);
 			});
+		}
+
+		public static async Task Download (
+			IMonoDevelopSolutionManager solutionManager,
+			PackageIdentity packageIdentity,
+			INuGetProjectContext context,
+			CancellationToken token)
+		{
+			string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
+			var defaultPackagePathResolver = new VersionFolderPathResolver (globalPackagesFolder);
+
+			string hashPath = defaultPackagePathResolver.GetHashPath (packageIdentity.Id, packageIdentity.Version);
+
+			if (File.Exists (hashPath))
+				return;
+
+			await PackageDownloader.GetDownloadResourceResultAsync (
+				solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
+				packageIdentity,
+				solutionManager.Settings,
+				new LoggerAdapter (context),
+				token);
 		}
 	}
 }

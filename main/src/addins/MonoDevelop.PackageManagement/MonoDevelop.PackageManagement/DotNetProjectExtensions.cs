@@ -72,6 +72,10 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this DotNetProject project)
 		{
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.HasPackages ();
+
 			return HasPackages (project.BaseDirectory, project.Name);
 		}
 
