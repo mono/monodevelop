@@ -56,10 +56,6 @@
 		<Class id="MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard" class="MonoDevelop.Packaging.Templating.CrossPlatformLibraryTemplateWizard" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
-		<PackageRepository path="packages" />
-	</Extension>
-
 	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="NuGetPackage" _label="NuGet Package">
 			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject|DotNetProject">
