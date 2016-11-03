@@ -278,8 +278,6 @@ namespace MonoDevelop.Packaging
 
 			MoveNuGetPackageMetadataToPackagingProject ();
 
-			AddProjectJsonFile ();
-
 			await Project.SaveAsync (monitor);
 
 			Project.ParentFolder.AddItem (packagingProject);
@@ -302,21 +300,6 @@ namespace MonoDevelop.Packaging
 		void AddProjectReference (DotNetProject project, Project projectToBeReferenced)
 		{
 			project.References.Add (ProjectReference.CreateProjectReference (projectToBeReferenced));
-		}
-
-		void AddProjectJsonFile ()
-		{
-			string templatesDirectory = Path.Combine (
-				GetAddinFolder (),
-				"Templates");
-
-			string sourceFile = Path.Combine (templatesDirectory, "template.project.json");
-			string destinationFile = packagingProject.BaseDirectory.Combine ("project.json");
-
-			Directory.CreateDirectory (packagingProject.BaseDirectory);
-
-			File.Copy (sourceFile, destinationFile);
-			packagingProject.AddFile (destinationFile, "None");
 		}
 
 		string GetAddinFolder ()

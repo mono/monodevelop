@@ -5,7 +5,6 @@
 
 		<Import file="Templates/CrossPlatformLibrary.xpt.xml" />
 		<Import file="Templates/PackagingProject.xpt.xml" />
-		<Import file="Templates/template.project.json" />
 	</Runtime>
 
 	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />

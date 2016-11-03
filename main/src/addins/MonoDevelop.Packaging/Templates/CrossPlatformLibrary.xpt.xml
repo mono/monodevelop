@@ -81,9 +81,6 @@
 				<Reference type="Project" refto="${ProjectName}.Android" if="CreateAndroidProject" />
 				<Reference type="Project" refto="${ProjectName}.iOS" if="CreateIOSProject" />
 			</References>
-			<Files>
-				<File name="project.json" src="template.project.json" />
-			</Files>
 		</Project>
 	</Combine>
 </Template>
