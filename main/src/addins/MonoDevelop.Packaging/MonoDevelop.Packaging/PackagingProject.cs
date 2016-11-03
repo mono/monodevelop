@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
@@ -35,6 +37,7 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.Packaging
 {
@@ -124,7 +127,7 @@ namespace MonoDevelop.Packaging
 			return false;
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
 		}
@@ -295,9 +298,48 @@ namespace MonoDevelop.Packaging
 			referenceAssemblyFrameworks.AddRange (frameworks.Select (fx => new ReferenceAssemblyFramework (fx)));
 		}
 
+		PackageReference GetNuGetBuildPackagingPackageReference ()
+		{
+			return PackageReferences.FirstOrDefault (packageReference => IsNuGetBuildPackagingReference (packageReference));
+		}
+
+		bool IsNuGetBuildPackagingReference (PackageReference packageReference)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, "NuGet.Build.Packaging");
+		}
+
 		public NuGet.ProjectManagement.NuGetProject CreateNuGetProject ()
 		{
 			return new PackagingNuGetProject (this);
+		}
+
+		public bool HasPackages ()
+		{
+			return PackageReferences.Any ();
+		}
+
+		public async Task RestorePackagesAsync (
+			IMonoDevelopSolutionManager solutionManager,
+			INuGetProjectContext context,
+			CancellationToken token)
+		{
+			PackageIdentity packageIdentity = await Runtime.RunInMainThread (() => {
+				var packageReference = GetNuGetBuildPackagingPackageReference ();
+				if (packageReference != null) {
+					return packageReference.ToNuGetPackageReference ().PackageIdentity;
+				}
+				return null;
+			});
+
+			if (packageIdentity == null)
+				return;
+
+			await GlobalPackagesExtractor.Download (solutionManager, packageIdentity, context, token);
+
+			await Runtime.RunInMainThread (() => {
+				PackagingNuGetProject.GenerateNuGetBuildPackagingTargets (packageIdentity, this);
+				ReloadProjectBuilder ();
+			});
 		}
 	}
 }

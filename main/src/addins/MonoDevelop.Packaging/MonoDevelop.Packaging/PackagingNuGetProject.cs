@@ -135,6 +135,11 @@ namespace MonoDevelop.Packaging
 
 		void GenerateNuGetBuildPackagingTargets (PackageIdentity packageIdentity)
 		{
+			GenerateNuGetBuildPackagingTargets (packageIdentity, project);
+		}
+
+		public static void GenerateNuGetBuildPackagingTargets (PackageIdentity packageIdentity, PackagingProject project)
+		{
 			var packagePathResolver = new VersionFolderPathResolver (string.Empty, normalizePackageId: false);
 			string packageDirectory = packagePathResolver.GetPackageDirectory (packageIdentity.Id, packageIdentity.Version);
 			string buildDirectory = Path.Combine (packageDirectory, "build");
