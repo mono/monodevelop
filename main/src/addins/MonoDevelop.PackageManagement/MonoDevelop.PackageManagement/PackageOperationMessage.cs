@@ -50,7 +50,9 @@ namespace MonoDevelop.PackageManagement
 		
 		public override string ToString()
 		{
-			return String.Format(message, args);
+			if (args.Length > 0)
+				return String.Format(message, args);
+			return message;
 		}
 	}
 }

@@ -24,15 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using System;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -55,34 +54,15 @@ namespace MonoDevelop.PackageManagement
 		public async Task RestorePackages (CancellationToken cancellationToken)
 		{
 			foreach (DotNetProject project in projects) {
-				var console = new DotNetCoreOperationConsole ();
-				ProcessAsyncOperation operation = StartRestoreProcess (project.FileName, console);
-				using (var registration = cancellationToken.Register (() => operation.Cancel ())) {
-					await operation.Task;
+				using (var monitor = new LoggingProgressMonitor ().WithCancellationToken (cancellationToken)) {
 
-					CheckForRestoreFailure (operation);
+					TargetEvaluationResult result = await project.RunTarget (monitor, "restore", IdeApp.Workspace.ActiveConfiguration, null);
+					if (result.BuildResult.Failed) {
+						throw new ApplicationException (result.BuildResult.Errors.First ().ErrorText);
+					}
 
 					RefreshProjectReferences (project);
 				}
-			}
-		}
-
-		ProcessAsyncOperation StartRestoreProcess (string projectFileName, OperationConsole console)
-		{
-			return Runtime.ProcessService.StartConsoleProcess (
-				dotNetCorePath.FileName,
-				string.Format ("restore \"{0}\"", projectFileName),
-				Path.GetDirectoryName (projectFileName),
-				console,
-				null,
-				(sender, e) => { }
-			);
-		}
-
-		void CheckForRestoreFailure (ProcessAsyncOperation operation)
-		{
-			if (operation.Task.IsFaulted || operation.ExitCode != 0) {
-				throw new ApplicationException (GettextCatalog.GetString ("Unable to restore packages."));
 			}
 		}
 

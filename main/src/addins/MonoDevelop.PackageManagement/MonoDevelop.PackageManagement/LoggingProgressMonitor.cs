@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreOperationConsole.cs
+// LoggingProgressMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,68 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
-using NuGet;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreOperationConsole : OperationConsole
+	class LoggingProgressMonitor : ProgressMonitor
 	{
 		IPackageManagementEvents packageEvents;
-		StringReader reader = new StringReader ("");
-		LogTextWriter logWriter = new LogTextWriter ();
-		LogTextWriter outWriter = new LogTextWriter ();
-		LogTextWriter errorWriter = new LogTextWriter ();
 
-		public DotNetCoreOperationConsole ()
+		public LoggingProgressMonitor ()
 		{
 			packageEvents = PackageManagementServices.PackageManagementEvents;
-
-			outWriter.TextWritten += TextWritten;
-			logWriter.TextWritten += TextWritten;
-			errorWriter.TextWritten += TextWritten;
 		}
 
-		public override TextWriter Error {
-			get { return errorWriter; }
-		}
-
-		public override TextReader In {
-			get { return reader; }
-		}
-
-		public override TextWriter Log {
-			get { return logWriter; }
-		}
-
-		public override TextWriter Out {
-			get { return outWriter; }
-		}
-
-		public override void Dispose ()
+		protected override void OnWriteLog (string message)
 		{
-			base.Dispose ();
-
-			if (outWriter != null) {
-				outWriter.TextWritten -= TextWritten;
-				logWriter.TextWritten -= TextWritten;
-				errorWriter.TextWritten -= TextWritten;
-
-				outWriter.Dispose ();
-				logWriter.Dispose ();
-				errorWriter.Dispose ();
-
-				outWriter = null;
-				logWriter = null;
-				errorWriter = null;
-			}
+			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, message);
 		}
 
-		void TextWritten (string writtenText)
+		protected override void OnWriteErrorLog (string message)
 		{
-			packageEvents.OnPackageOperationMessageLogged (MessageLevel.Info, writtenText);
+			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
 		}
 	}
 }
