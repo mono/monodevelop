@@ -318,18 +318,22 @@ namespace MonoDevelop.Packaging
 			return PackageReferences.Any ();
 		}
 
+		public async Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager)
+		{
+			PackageIdentity packageIdentity = await GetNuGetBuildPackagingPackage ();
+
+			if (packageIdentity == null)
+				return false;
+
+			return GlobalPackagesExtractor.IsMissing (solutionManager, packageIdentity);
+		}
+
 		public async Task RestorePackagesAsync (
 			IMonoDevelopSolutionManager solutionManager,
 			INuGetProjectContext context,
 			CancellationToken token)
 		{
-			PackageIdentity packageIdentity = await Runtime.RunInMainThread (() => {
-				var packageReference = GetNuGetBuildPackagingPackageReference ();
-				if (packageReference != null) {
-					return packageReference.ToNuGetPackageReference ().PackageIdentity;
-				}
-				return null;
-			});
+			PackageIdentity packageIdentity = await GetNuGetBuildPackagingPackage ();
 
 			if (packageIdentity == null)
 				return;
@@ -339,6 +343,17 @@ namespace MonoDevelop.Packaging
 			await Runtime.RunInMainThread (() => {
 				PackagingNuGetProject.GenerateNuGetBuildPackagingTargets (packageIdentity, this);
 				ReloadProjectBuilder ();
+			});
+		}
+
+		Task<PackageIdentity> GetNuGetBuildPackagingPackage ()
+		{
+			return Runtime.RunInMainThread (() => {
+				var packageReference = GetNuGetBuildPackagingPackageReference ();
+				if (packageReference != null) {
+					return packageReference.ToNuGetPackageReference ().PackageIdentity;
+				}
+				return null;
 			});
 		}
 	}
