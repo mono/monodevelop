@@ -83,8 +83,8 @@ type ``Template tests``() =
         let proj = sln.Items.[0] :?> FSharpProject
         proj.IsPortableLibrary |> should equal true
 
-    //[<Test;AsyncStateMachine(typeof<Task>)>]
-    //[<TestCaseSource ("Templates")>]
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    [<TestCaseSource ("Templates")>]
     member x.``Build every template`` (tt:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
