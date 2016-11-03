@@ -70,5 +70,13 @@
 	</Extension>
 
 	end TestDebugServiceProvider -->
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.ConnectedServices.Commands.AddServiceTelemetry"
+			defaultHandler = "MonoDevelop.ConnectedServices.AddServiceTelemetryCommandHandler"
+			_description = "Adds the Service Capability"
+			_label = "Add"
+			_displayName = "Add Service" />
+	</Extension>
 
 </ExtensionModel>

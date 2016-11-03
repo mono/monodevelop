@@ -554,6 +554,9 @@ namespace MonoDevelop.Core
 
 		public static string NormalizeRelativePath (string path)
 		{
+			if (path.Length == 0)
+				return string.Empty;
+			
 			int i;
 			for (i = 0; i < path.Length; ++i) {
 				if (path [i] != Path.DirectorySeparatorChar && path [i] != ' ')

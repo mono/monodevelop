@@ -155,10 +155,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void filterTextChanged (object sender, EventArgs e)
 		{
+			refilter ();
+		}
+
+		void refilter ()
+		{
 			foreach (Category cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
 				foreach (Item child in cat.Items) {
-					child.IsVisible = ((ItemToolboxNode) child.Tag).Filter (filterEntry.Entry.Text);
+					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.Entry.Text);
 					hasVisibleChild |= child.IsVisible;
 				}
 				cat.IsVisible = hasVisibleChild;
@@ -257,6 +262,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (targetTable != null)
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
+			refilter ();
 		}
 		
 		void ConfigureToolbar ()
