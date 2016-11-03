@@ -159,28 +159,5 @@ namespace MonoDevelop.DotNetCore
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
 		}
-
-		protected async override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
-		{
-			string dotnetBuildCommand = GetDotNetBuildCommand (target);
-			if (dotnetBuildCommand != null) {
-				var config = Project.GetConfiguration (configuration) as DotNetProjectConfiguration;
-				using (var builder = new DotNetCoreProjectBuilder (Project, monitor)) {
-					BuildResult result = await builder.BuildAsnc (config, dotnetBuildCommand);
-					return new TargetEvaluationResult (result);
-				}
-			}
-			return await base.OnRunTarget (monitor, target, configuration, context);
-		}
-
-		static string GetDotNetBuildCommand (string target)
-		{
-			if (target == ProjectService.BuildTarget)
-				return "build --no-dependencies";
-			else if (target == ProjectService.CleanTarget)
-				return "clean";
-
-			return null;
-		}
 	}
 }
