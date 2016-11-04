@@ -60,6 +60,7 @@ namespace MonoDevelop.Debugger
 		bool dragging;
 		FilePath currentFile;
 		ITextLineMarker asmMarker;
+		DebuggerSession session;
 		
 		List<AssemblyLine> cachedLines = new List<AssemblyLine> ();
 		string cachedLinesAddrSpace;
@@ -206,9 +207,9 @@ namespace MonoDevelop.Debugger
 			cachedLines.Clear ();
 			
 			StackFrame sf = DebuggingService.CurrentFrame;
-			
+			session = sf.DebuggerSession;
 			if (currentFile != sf.SourceLocation.FileName) {
-				AssemblyLine[] asmLines = DebuggingService.DebuggerSession.DisassembleFile (sf.SourceLocation.FileName);
+				AssemblyLine[] asmLines = sf.DebuggerSession.DisassembleFile (sf.SourceLocation.FileName);
 				if (asmLines == null) {
 					// Mixed disassemble not supported
 					Fill ();
@@ -217,24 +218,25 @@ namespace MonoDevelop.Debugger
 				currentFile = sf.SourceLocation.FileName;
 				addressLines.Clear ();
 				editor.Text = string.Empty;
-				StreamReader sr = new StreamReader (sf.SourceLocation.FileName);
-				string line;
-				int sourceLine = 1;
-				int na = 0;
-				int editorLine = 1;
-				StringBuilder sb = new StringBuilder ();
-				List<int> asmLineNums = new List<int> ();
-				while ((line = sr.ReadLine ()) != null) {
-					InsertSourceLine (sb, editorLine++, line);
-					while (na < asmLines.Length && asmLines [na].SourceLine == sourceLine) {
-						asmLineNums.Add (editorLine);
-						InsertAssemblerLine (sb, editorLine++, asmLines [na++]);
+				using (var sr = new StreamReader (sf.SourceLocation.FileName)) {
+					string line;
+					int sourceLine = 1;
+					int na = 0;
+					int editorLine = 1;
+					var sb = new StringBuilder ();
+					var asmLineNums = new List<int> ();
+					while ((line = sr.ReadLine ()) != null) {
+						InsertSourceLine (sb, editorLine++, line);
+						while (na < asmLines.Length && asmLines [na].SourceLine == sourceLine) {
+							asmLineNums.Add (editorLine);
+							InsertAssemblerLine (sb, editorLine++, asmLines [na++]);
+						}
+						sourceLine++;
 					}
-					sourceLine++;
+					editor.Text = sb.ToString ();
+					foreach (int li in asmLineNums)
+						editor.AddMarker (li, asmMarker);
 				}
-				editor.Text = sb.ToString ();
-				foreach (int li in asmLineNums)
-					editor.AddMarker (li, asmMarker);
 			}
 			int aline;
 			if (!addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out aline))
@@ -397,9 +399,11 @@ namespace MonoDevelop.Debugger
 				this.cachedLines.AddRange (lines);
 			return lineCount;
 		}
-		
+
 		void OnStop (object s, EventArgs args)
 		{
+			if (session != s)
+				return;
 			addressLines.Clear ();
 			currentFile = null;
 			if (messageOverlayContent != null) {
@@ -410,6 +414,7 @@ namespace MonoDevelop.Debugger
 			autoRefill = false;
 			editor.Text = string.Empty;
 			cachedLines.Clear ();
+			session = null;
 		}
 		
 		public override bool IsReadOnly {
@@ -421,6 +426,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.Dispose ();
 			DebuggingService.StoppedEvent -= OnStop;
+			session = null;
 		}
 		
 		[CommandHandler (DebugCommands.StepOver)]

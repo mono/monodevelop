@@ -66,9 +66,9 @@ namespace MonoDevelop.Ide
 	public class ProjectOperations
 	{
 		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
-		AsyncOperation currentRunOperation = AsyncOperation.CompleteOperation;
+		MultipleAsyncOperation currentRunOperation = MultipleAsyncOperation.CompleteMultipleOperation;
 		IBuildTarget currentBuildOperationOwner;
-		IBuildTarget currentRunOperationOwner;
+		List<IBuildTarget> currentRunOperationOwners = new List<IBuildTarget> ();
 		
 		SelectReferenceDialog selDialog = null;
 		
@@ -160,9 +160,21 @@ namespace MonoDevelop.Ide
 		
 		public AsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
-			set {
-				currentRunOperation = value ?? AsyncOperation.CompleteOperation;
+			set { AddRunOperation (value); }
+		}
+
+		public void AddRunOperation (AsyncOperation runOperation)
+		{
+			if (runOperation == null)
+				return;
+			if (runOperation.IsCompleted)//null or complete doesn't change anything, just ignore
+				return;
+			if (currentRunOperation.IsCompleted) {//if MultipleAsyncOperations is complete, we can't just restart Task.. start new one
+				currentRunOperation = new MultipleAsyncOperation ();
+				currentRunOperation.AddOperation (runOperation);
 				OnCurrentRunOperationChanged (EventArgs.Empty);
+			} else {//Some process is already running... attach this one to it...
+				currentRunOperation.AddOperation (runOperation);
 			}
 		}
 
@@ -171,11 +183,15 @@ namespace MonoDevelop.Ide
 			var owner = currentBuildOperationOwner as WorkspaceObject;
 			return owner != null && !currentBuildOperation.IsCompleted && ContainsTarget (ob, owner);
 		}
-		
+
 		public bool IsRunning (WorkspaceObject target)
 		{
-			var owner = currentRunOperationOwner as WorkspaceObject;
-			return owner != null && !currentRunOperation.IsCompleted && ContainsTarget (target, owner);
+			foreach (var currentRunOperationOwner in currentRunOperationOwners) {
+				var owner = currentRunOperationOwner as WorkspaceObject;
+				if (owner != null && !currentRunOperation.IsCompleted && ContainsTarget (target, owner))
+					return true;
+			}
+			return false;
 		}
 		
 		internal static bool ContainsTarget (WorkspaceObject owner, WorkspaceObject target)
@@ -1023,8 +1039,6 @@ namespace MonoDevelop.Ide
 
 		public AsyncOperation Execute (IBuildTarget entry, ExecutionContext context, bool buildBeforeExecuting = true)
 		{
-			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
-
 			var cs = new CancellationTokenSource ();
 			return new AsyncOperation (ExecuteAsync (entry, context, cs, IdeApp.Workspace.ActiveConfiguration, null, buildBeforeExecuting), cs);
 		}
@@ -1061,15 +1075,15 @@ namespace MonoDevelop.Ide
 			var t = ExecuteSolutionItemAsync (monitor, entry, context, configuration, runConfiguration);
 
 			var op = new AsyncOperation (t, cs);
-			CurrentRunOperation = op;
-			currentRunOperationOwner = entry;
+			AddRunOperation (op);
+			currentRunOperationOwners.Add (entry);
 
 			await t;
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null)
 				IdeApp.Workbench.StatusBar.ShowError (error.DisplayMessage);
-			currentRunOperationOwner = null;
+			currentRunOperationOwners.Remove (entry);
 		}
 		
 		async Task ExecuteSolutionItemAsync (ProgressMonitor monitor, IBuildTarget entry, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
@@ -2233,7 +2247,7 @@ namespace MonoDevelop.Ide
 			if (IsRunning (args.Item)) {
 				if (MessageService.Confirm (GettextCatalog.GetString (
 						"The project '{0}' is currently running and will have to be stopped. Do you want to continue closing it?",
-						currentRunOperationOwner.Name),
+						args.Item.Name),
 						new AlertButton (GettextCatalog.GetString ("Close Project")))) {
 					CurrentRunOperation.Cancel ();
 				} else
@@ -2302,6 +2316,45 @@ namespace MonoDevelop.Ide
 	public interface ITextFileProvider
 	{
 		ITextDocument GetEditableTextFile (FilePath filePath);
+	}
+
+	class MultipleAsyncOperation : AsyncOperation
+	{
+		public static MultipleAsyncOperation CompleteMultipleOperation = new MultipleAsyncOperation (true);
+
+		List<AsyncOperation> Operations = new List<AsyncOperation> ();
+		TaskCompletionSource<int> TaskCompletionSource = new TaskCompletionSource<int> ();
+
+		public MultipleAsyncOperation ()
+		{
+			Task = TaskCompletionSource.Task;
+			CancellationTokenSource.Token.Register (MultiCancel);
+		}
+
+		MultipleAsyncOperation (bool completed)
+		{
+			if (completed)
+				TaskCompletionSource.SetResult (0);
+		}
+
+		public void AddOperation (AsyncOperation op)
+		{
+			Operations.Add (op);
+			op.Task.ContinueWith (CheckForCompletion);
+		}
+
+		void CheckForCompletion (Task obj)
+		{
+			if (Operations.All (op => op.IsCompleted))
+				TaskCompletionSource.SetResult (0);
+		}
+
+		void MultiCancel ()
+		{
+			foreach (var op in Operations) {
+				op.Cancel ();
+			}
+		}
 	}
 
 	public class TextFileProvider : ITextFileProvider

@@ -171,7 +171,7 @@ namespace MonoDevelop.AspNet.Projects
 
 			var cfg = GetConfiguration (configuration);
 			var cmd = CreateExecutionCommand (configuration, cfg);
-			var browserExcTarget = (BrowserExecutionTarget) context.ExecutionTarget;
+			var browserExcTarget = context.ExecutionTarget as BrowserExecutionTarget;
 
 			OperationConsole console = null;
 

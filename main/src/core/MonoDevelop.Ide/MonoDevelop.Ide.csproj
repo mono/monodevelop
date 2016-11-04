@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8509,7 +8509,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\BaseDirectoryPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\BaseDirectoryPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeFormattingPanel.cs" />
@@ -8526,7 +8525,6 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionItemConfigurationsPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\StartupOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.DeleteConfigDialog.cs" />
@@ -9072,6 +9070,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\LanguageBundle.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\StackMatchExpression.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationsPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStarted.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNode.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilder.cs" />
