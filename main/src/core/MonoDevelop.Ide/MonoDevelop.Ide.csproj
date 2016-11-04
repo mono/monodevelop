@@ -8037,6 +8037,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\IL.sublime-syntax">
       <LogicalName>IL.sublime-syntax</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\ChangeLog.sublime-syntax">
+      <LogicalName>ChangeLog.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9135,6 +9138,7 @@
     <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
