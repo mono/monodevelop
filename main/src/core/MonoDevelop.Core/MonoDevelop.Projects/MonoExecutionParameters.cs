@@ -218,16 +218,16 @@ namespace MonoDevelop.Projects
 		
 		object GetValue (object val)
 		{
-			if (val.GetType ().IsEnum) {
+			Type etype = val.GetType ();
+			if (etype.IsEnum) {
 				long ival = Convert.ToInt64 (val);
-				Type etype = val.GetType ();
-				bool isFlags = val.GetType ().IsDefined (typeof(FlagsAttribute), false);
+				bool isFlags = etype.IsDefined (typeof(FlagsAttribute), false);
 				string flags = "";
 				IList names = Enum.GetNames (etype);
-				foreach (FieldInfo f in val.GetType ().GetFields ()) {
+				foreach (FieldInfo f in etype.GetFields ()) {
 					if (!names.Contains (f.Name))
 						continue;
-					long v = Convert.ToInt64 (Enum.Parse (val.GetType(), f.Name));
+					long v = Convert.ToInt64 (Enum.Parse (etype, f.Name));
 					MonoArgAttribute attr = (MonoArgAttribute) Attribute.GetCustomAttribute (f, typeof(MonoArgAttribute));
 					string sval = attr != null ? attr.Name : f.Name;
 					if (ival == v) {
