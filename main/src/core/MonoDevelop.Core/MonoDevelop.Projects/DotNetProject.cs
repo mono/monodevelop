@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects
 			get { return (flags & DotNetProjectFlags.IsLibrary) != 0; }
 		}
 
-		public bool IsPortableLibrary {
+		public virtual bool IsPortableLibrary {
 			get { return GetService<PortableDotNetProjectFlavor> () != null; }
 		}
 
