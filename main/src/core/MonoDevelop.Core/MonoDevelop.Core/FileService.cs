@@ -718,19 +718,19 @@ namespace MonoDevelop.Core
 					Counters.FilesCreated++;
 			}
 
-			eventQueue.RaiseEvent (() => FileCreated, args);
+			eventQueue.RaiseEvent (FileCreated, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileCopied;
 		static void OnFileCopied (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (() => FileCopied, args);
+			eventQueue.RaiseEvent (FileCopied, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileMoved;
 		static void OnFileMoved (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (() => FileMoved, args);
+			eventQueue.RaiseEvent (FileMoved, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
@@ -743,7 +743,7 @@ namespace MonoDevelop.Core
 					Counters.FilesRenamed++;
 			}
 
-			eventQueue.RaiseEvent (() => FileRenamed, args);
+			eventQueue.RaiseEvent (FileRenamed, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileRemoved;
@@ -756,14 +756,14 @@ namespace MonoDevelop.Core
 					Counters.FilesRemoved++;
 			}
 
-			eventQueue.RaiseEvent (() => FileRemoved, args);
+			eventQueue.RaiseEvent (FileRemoved, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
 			Counters.FileChangeNotifications++;
-			eventQueue.RaiseEvent (() => FileChanged, null, args);
+			eventQueue.RaiseEvent (FileChanged, null, args);
 		}
 
 		public static Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
@@ -838,11 +838,41 @@ namespace MonoDevelop.Core
 
 	class EventQueue
 	{
-		class EventData
+		class EventData<TArgs> : EventData where TArgs:EventArgs
 		{
-			public Func<Delegate> Delegate;
+			public EventHandler<TArgs> Delegate;
+			public TArgs Args;
 			public object ThisObject;
-			public EventArgs Args;
+
+			public override void Invoke ()
+			{
+				Delegate?.Invoke (ThisObject, Args);
+			}
+
+			public override bool ShouldMerge (EventData other)
+			{
+				var next = (EventData<TArgs>)other;
+				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate && next.ThisObject == ThisObject;
+			}
+
+			public override bool IsChainArgs ()
+			{
+				return Args is IEventArgsChain;
+			}
+
+			public override void MergeArgs (EventData other)
+			{
+				var next = (EventData<TArgs>)other;
+				((IEventArgsChain)next.Args).MergeWith ((IEventArgsChain)Args);
+			}
+		}
+
+		abstract class EventData
+		{
+			public abstract void Invoke ();
+			public abstract bool ShouldMerge (EventData other);
+			public abstract void MergeArgs (EventData other);
+			public abstract bool IsChainArgs ();
 		}
 
 		List<EventData> events = new List<EventData> ();
@@ -878,32 +908,29 @@ namespace MonoDevelop.Core
 			if (pendingEvents != null) {
 				for (int n=0; n<pendingEvents.Count; n++) {
 					EventData ev = pendingEvents [n];
-					Delegate del = ev.Delegate ();
-					if (ev.Args is IEventArgsChain) {
+					if (ev.IsChainArgs ()) {
 						EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
-						if (next != null && (next.Args.GetType() == ev.Args.GetType ()) && next.Delegate() == del && next.ThisObject == ev.ThisObject) {
-							((IEventArgsChain)next.Args).MergeWith ((IEventArgsChain)ev.Args);
+						if (next != null && ev.ShouldMerge (next)) {
+							next.MergeArgs (ev);
 							continue;
 						}
 					}
-					if (del != null)
-						del.DynamicInvoke (ev.ThisObject, ev.Args);
+					ev.Invoke ();
 				}
 			}
 		}
 
-		public void RaiseEvent (Func<Delegate> d, EventArgs args)
+		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
 		{
-			RaiseEvent (d, defaultSourceObject, args);
+			RaiseEvent (del, defaultSourceObject, args);
 		}
 
-		public void RaiseEvent (Func<Delegate> d, object thisObj, EventArgs args)
+		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, object thisObj, TArgs args) where TArgs:EventArgs
 		{
-			Delegate del = d ();
 			lock (events) {
 				if (frozen > 0) {
-					EventData ed = new EventData ();
-					ed.Delegate = d;
+					var ed = new EventData<TArgs> ();
+					ed.Delegate = del;
 					ed.ThisObject = thisObj;
 					ed.Args = args;
 					events.Add (ed);
@@ -912,10 +939,10 @@ namespace MonoDevelop.Core
 			}
 			if (del != null) {
 				if (Runtime.IsMainThread) {
-					del.DynamicInvoke (thisObj, args);
+					del.Invoke (thisObj, args);
 				} else {
 					Runtime.MainSynchronizationContext.Post (delegate {
-						del.DynamicInvoke (thisObj, args);
+						del.Invoke (thisObj, args);
 					}, null);
 				}
 			}
