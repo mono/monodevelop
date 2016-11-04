@@ -346,7 +346,26 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplate (string templateId)
 		{
-			SelectTemplate (template => template.Id == templateId);
+			SolutionTemplate matchedInGroup = null;
+			SelectTemplate (template => {
+				if (template.HasGroupId) {
+					var inGroup = template.GetTemplate ((t) => t.Id == templateId);
+					// check if the requested template is part of the current group
+					// becasue it may be not referenced by a category directly.
+					// in this case we match/select the group and change the selected
+					// language if required.
+					if (inGroup?.Id == templateId) {
+						matchedInGroup = inGroup;
+						return true;
+					}
+				}
+				return template.Id == templateId;
+			});
+
+			// make sure that the requested language has been selected
+			// if the requested template is part of a group
+			if (matchedInGroup != null)
+				SelectedLanguage = matchedInGroup.Language;
 		}
 
 		void SelectFirstAvailableTemplate ()
