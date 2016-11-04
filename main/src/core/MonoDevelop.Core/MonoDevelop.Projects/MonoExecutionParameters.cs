@@ -131,14 +131,39 @@ namespace MonoDevelop.Projects
 			SGen
 		}
 
+		static Dictionary<PropertyInfo, ItemPropertyAttribute> itemPropertyAttributes = new Dictionary<PropertyInfo, ItemPropertyAttribute> ();
+		static Dictionary<PropertyInfo, MonoArgAttribute> monoArgAttributes = new Dictionary<PropertyInfo, MonoArgAttribute> ();
+		static Dictionary<PropertyInfo, EnvVarAttribute> envVarAttributes = new Dictionary<PropertyInfo, EnvVarAttribute> ();
+		static Dictionary<PropertyInfo, LocalizedDisplayNameAttribute> localizedDisplayNameAttributes = new Dictionary<PropertyInfo, LocalizedDisplayNameAttribute> ();
+
+		static MonoExecutionParameters ()
+		{
+			foreach (PropertyInfo prop in typeof(MonoExecutionParameters).GetProperties ()) {
+				var ipa = (ItemPropertyAttribute)Attribute.GetCustomAttribute (prop, typeof (ItemPropertyAttribute));
+				if (ipa != null)
+					itemPropertyAttributes.Add (prop, ipa);
+
+				var maa = (MonoArgAttribute)Attribute.GetCustomAttribute (prop, typeof (MonoArgAttribute));
+				if (maa != null)
+					monoArgAttributes.Add (prop, maa);
+
+				var eva = (EnvVarAttribute)Attribute.GetCustomAttribute (prop, typeof (EnvVarAttribute));
+				if (eva != null)
+					envVarAttributes.Add (prop, eva);
+
+				var ldna = (LocalizedDisplayNameAttribute)Attribute.GetCustomAttribute (prop, typeof (LocalizedDisplayNameAttribute));
+				if (ldna != null)
+					localizedDisplayNameAttributes.Add (prop, ldna);
+			}
+		}
+
 		public MonoExecutionParameters ()
 		{
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				ItemPropertyAttribute propAttr = (ItemPropertyAttribute) Attribute.GetCustomAttribute (prop, typeof(ItemPropertyAttribute));
-				if (propAttr != null) {
-					if (propAttr.DefaultValue != null)
-						prop.SetValue (this, propAttr.DefaultValue, null);
-				}
+			foreach (var kvp in itemPropertyAttributes) {
+				var prop = kvp.Key;
+				var propAttr = kvp.Value;
+				if (propAttr.DefaultValue != null)
+					prop.SetValue (this, propAttr.DefaultValue, null);
 			}
 		}
 		
@@ -168,24 +193,25 @@ namespace MonoDevelop.Projects
 				ops.Append (' ');
 			}
 			
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				MonoArgAttribute argAttr = (MonoArgAttribute) Attribute.GetCustomAttribute (prop, typeof(MonoArgAttribute));
-				if (argAttr != null) {
-					object val = GetValue (prop.GetValue (this, null));
-					if ((val is bool) && (bool)val)
-						ops.Append (argAttr.Name).Append (' ');
-					else if ((val is string) && !string.IsNullOrEmpty ((string)val))
-						ops.AppendFormat (argAttr.Name, val).Append (' ');
-				} else {
-					EnvVarAttribute envVar = (EnvVarAttribute) Attribute.GetCustomAttribute (prop, typeof(EnvVarAttribute));
-					if (envVar != null) {
-						object val = GetValue (prop.GetValue (this, null));
-						if ((val is bool) && (bool)val)
-							envVars [envVar.Name] = envVar.TrueValue;
-						else if ((val is string) && !string.IsNullOrEmpty ((string)val))
-							envVars [envVar.Name] = val.ToString ();
-					}
-				}
+			foreach (var kvp in monoArgAttributes) {
+				var prop = kvp.Key;
+				var argAttr = kvp.Value;
+				object val = GetValue (prop.GetValue (this, null));
+				if ((val is bool) && (bool)val)
+					ops.Append (argAttr.Name).Append (' ');
+				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
+					ops.AppendFormat (argAttr.Name, val).Append (' ');
+			}
+
+			foreach (var kvp in envVarAttributes) {
+				var prop = kvp.Key;
+				var envVar = kvp.Value;
+
+				object val = GetValue (prop.GetValue (this, null));
+				if ((val is bool) && (bool)val)
+					envVars [envVar.Name] = envVar.TrueValue;
+				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
+					envVars [envVar.Name] = val.ToString ();
 			}
 			options = ops.ToString ().Trim ();
 		}
@@ -223,14 +249,16 @@ namespace MonoDevelop.Projects
 		{
 			StringBuilder ops = new StringBuilder ();
 
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				ItemPropertyAttribute propAttr = (ItemPropertyAttribute)Attribute.GetCustomAttribute (prop, typeof (ItemPropertyAttribute));
+			foreach (var kvp in itemPropertyAttributes) {
+				var prop = kvp.Key;
+				var propAttr = kvp.Value;
+
 				var pval = prop.GetValue (this, null);
 				if (object.Equals (pval, propAttr.DefaultValue))
 					continue;
 				if (ops.Length > 0)
 					ops.Append (", ");
-				var nameAttr = (LocalizedDisplayNameAttribute)Attribute.GetCustomAttribute (prop, typeof (LocalizedDisplayNameAttribute));
+				var nameAttr = localizedDisplayNameAttributes [prop];
 				ops.Append (nameAttr.DisplayName);
 				if (!(pval is bool))
 					ops.Append (": " + GetValue (pval));
