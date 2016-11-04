@@ -66,6 +66,8 @@ type FSharpProject() as self =
     [<ProjectPathItemProperty ("TargetFSharpCoreVersion", DefaultValue = "")>]
     member val TargetFSharpCoreVersion = String.Empty with get, set
 
+    override x.IsPortableLibrary = initialisedAsPortable
+
     override x.OnInitialize() =
         base.OnInitialize()
 
