@@ -175,39 +175,39 @@ namespace MonoDevelop.Projects
 
 			it = items [6];
 			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [0]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
 
 			it = items [7];
 			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [0]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
 
 			it = items [8];
 			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [1]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
 
 			it = items [9];
 			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [1]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
 		}
 
 		[Test]
