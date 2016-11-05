@@ -131,14 +131,39 @@ namespace MonoDevelop.Projects
 			SGen
 		}
 
+		static Dictionary<PropertyInfo, ItemPropertyAttribute> itemPropertyAttributes = new Dictionary<PropertyInfo, ItemPropertyAttribute> ();
+		static Dictionary<PropertyInfo, MonoArgAttribute> monoArgAttributes = new Dictionary<PropertyInfo, MonoArgAttribute> ();
+		static Dictionary<PropertyInfo, EnvVarAttribute> envVarAttributes = new Dictionary<PropertyInfo, EnvVarAttribute> ();
+		static Dictionary<PropertyInfo, LocalizedDisplayNameAttribute> localizedDisplayNameAttributes = new Dictionary<PropertyInfo, LocalizedDisplayNameAttribute> ();
+
+		static MonoExecutionParameters ()
+		{
+			foreach (PropertyInfo prop in typeof(MonoExecutionParameters).GetProperties ()) {
+				var ipa = (ItemPropertyAttribute)Attribute.GetCustomAttribute (prop, typeof (ItemPropertyAttribute));
+				if (ipa != null)
+					itemPropertyAttributes.Add (prop, ipa);
+
+				var maa = (MonoArgAttribute)Attribute.GetCustomAttribute (prop, typeof (MonoArgAttribute));
+				if (maa != null)
+					monoArgAttributes.Add (prop, maa);
+
+				var eva = (EnvVarAttribute)Attribute.GetCustomAttribute (prop, typeof (EnvVarAttribute));
+				if (eva != null)
+					envVarAttributes.Add (prop, eva);
+
+				var ldna = (LocalizedDisplayNameAttribute)Attribute.GetCustomAttribute (prop, typeof (LocalizedDisplayNameAttribute));
+				if (ldna != null)
+					localizedDisplayNameAttributes.Add (prop, ldna);
+			}
+		}
+
 		public MonoExecutionParameters ()
 		{
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				ItemPropertyAttribute propAttr = (ItemPropertyAttribute) Attribute.GetCustomAttribute (prop, typeof(ItemPropertyAttribute));
-				if (propAttr != null) {
-					if (propAttr.DefaultValue != null)
-						prop.SetValue (this, propAttr.DefaultValue, null);
-				}
+			foreach (var kvp in itemPropertyAttributes) {
+				var prop = kvp.Key;
+				var propAttr = kvp.Value;
+				if (propAttr.DefaultValue != null)
+					prop.SetValue (this, propAttr.DefaultValue, null);
 			}
 		}
 		
@@ -168,40 +193,41 @@ namespace MonoDevelop.Projects
 				ops.Append (' ');
 			}
 			
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				MonoArgAttribute argAttr = (MonoArgAttribute) Attribute.GetCustomAttribute (prop, typeof(MonoArgAttribute));
-				if (argAttr != null) {
-					object val = GetValue (prop.GetValue (this, null));
-					if ((val is bool) && (bool)val)
-						ops.Append (argAttr.Name).Append (' ');
-					else if ((val is string) && !string.IsNullOrEmpty ((string)val))
-						ops.AppendFormat (argAttr.Name, val).Append (' ');
-				} else {
-					EnvVarAttribute envVar = (EnvVarAttribute) Attribute.GetCustomAttribute (prop, typeof(EnvVarAttribute));
-					if (envVar != null) {
-						object val = GetValue (prop.GetValue (this, null));
-						if ((val is bool) && (bool)val)
-							envVars [envVar.Name] = envVar.TrueValue;
-						else if ((val is string) && !string.IsNullOrEmpty ((string)val))
-							envVars [envVar.Name] = val.ToString ();
-					}
-				}
+			foreach (var kvp in monoArgAttributes) {
+				var prop = kvp.Key;
+				var argAttr = kvp.Value;
+				object val = GetValue (prop.GetValue (this, null));
+				if ((val is bool) && (bool)val)
+					ops.Append (argAttr.Name).Append (' ');
+				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
+					ops.AppendFormat (argAttr.Name, val).Append (' ');
+			}
+
+			foreach (var kvp in envVarAttributes) {
+				var prop = kvp.Key;
+				var envVar = kvp.Value;
+
+				object val = GetValue (prop.GetValue (this, null));
+				if ((val is bool) && (bool)val)
+					envVars [envVar.Name] = envVar.TrueValue;
+				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
+					envVars [envVar.Name] = val.ToString ();
 			}
 			options = ops.ToString ().Trim ();
 		}
 		
 		object GetValue (object val)
 		{
-			if (val.GetType ().IsEnum) {
+			Type etype = val.GetType ();
+			if (etype.IsEnum) {
 				long ival = Convert.ToInt64 (val);
-				Type etype = val.GetType ();
-				bool isFlags = val.GetType ().IsDefined (typeof(FlagsAttribute), false);
+				bool isFlags = etype.IsDefined (typeof(FlagsAttribute), false);
 				string flags = "";
 				IList names = Enum.GetNames (etype);
-				foreach (FieldInfo f in val.GetType ().GetFields ()) {
+				foreach (FieldInfo f in etype.GetFields ()) {
 					if (!names.Contains (f.Name))
 						continue;
-					long v = Convert.ToInt64 (Enum.Parse (val.GetType(), f.Name));
+					long v = Convert.ToInt64 (Enum.Parse (etype, f.Name));
 					MonoArgAttribute attr = (MonoArgAttribute) Attribute.GetCustomAttribute (f, typeof(MonoArgAttribute));
 					string sval = attr != null ? attr.Name : f.Name;
 					if (ival == v) {
@@ -223,14 +249,16 @@ namespace MonoDevelop.Projects
 		{
 			StringBuilder ops = new StringBuilder ();
 
-			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
-				ItemPropertyAttribute propAttr = (ItemPropertyAttribute)Attribute.GetCustomAttribute (prop, typeof (ItemPropertyAttribute));
+			foreach (var kvp in itemPropertyAttributes) {
+				var prop = kvp.Key;
+				var propAttr = kvp.Value;
+
 				var pval = prop.GetValue (this, null);
 				if (object.Equals (pval, propAttr.DefaultValue))
 					continue;
 				if (ops.Length > 0)
 					ops.Append (", ");
-				var nameAttr = (LocalizedDisplayNameAttribute)Attribute.GetCustomAttribute (prop, typeof (LocalizedDisplayNameAttribute));
+				var nameAttr = localizedDisplayNameAttributes [prop];
 				ops.Append (nameAttr.DisplayName);
 				if (!(pval is bool))
 					ops.Append (": " + GetValue (pval));
