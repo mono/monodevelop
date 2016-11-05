@@ -60,7 +60,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnExit ()
 		{
-			protocolClient.SendRequestSync (new DisconnectRequest ());
+			protocolClient?.SendRequestSync (new DisconnectRequest ());
 		}
 
 		protected override void OnFinish ()
@@ -179,6 +179,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		protected abstract string GetDebugAdapterPath ();
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
+		{
+			Launch (startInfo);
+		}
+
+		protected void Launch (DebuggerStartInfo startInfo)
 		{
 			StartDebugAgent ();
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
