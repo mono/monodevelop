@@ -23,22 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Mono.Debugging.Client;
-using MonoDevelop.Debugger.VsCodeDebugProtocol;
-using Newtonsoft.Json.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Debugger.VsCodeDebugProtocol;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
-using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.DotnetCore.Debugger
 {
 	public class DotNetCoreDebuggerSession : VSCodeDebuggerSession
 	{
+		CancellationTokenSource cancelEngineDownload;
+
 		static string DebugAdapterPath = Path.Combine (UserProfile.Current.LocalInstallDir, "CoreClrAdaptor", "OpenDebugAD7");
 		static string DebugAdapterDir = Path.GetDirectoryName (DebugAdapterPath);
 
@@ -85,59 +90,130 @@ namespace MonoDevelop.DotnetCore.Debugger
 		}
 
 		static bool updateChecked = false;
-		protected override void OnRun (DebuggerStartInfo startInfo)
+
+		protected override async void OnRun (DebuggerStartInfo startInfo)
 		{
 			if (!updateChecked && File.Exists (projectFilePath) && File.ReadAllText (projectFilePath) != GetProjectJsonContent ())
 				Directory.Delete (DebugAdapterDir, true);
+
 			updateChecked = true;
-			if (!File.Exists (DebugAdapterPath)) {
-				InstallDotNetCoreDebugger ();
+
+			if (File.Exists (DebugAdapterPath)) {
+				Launch (startInfo);
+				return;
 			}
-			base.OnRun (startInfo);
+
+			cancelEngineDownload = new CancellationTokenSource ();
+			var installSuccess = await InstallDotNetCoreDebugger (cancelEngineDownload.Token);
+			cancelEngineDownload = null;
+
+			if (installSuccess && !cancelEngineDownload.IsCancellationRequested) {
+				Launch (startInfo);
+			} else {
+				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
+			}
 		}
 
-		void InstallDotNetCoreDebugger ()
+		protected override void OnExit ()
+		{
+			cancelEngineDownload?.Cancel ();
+			base.OnExit ();
+		}
+
+		async Task<bool> InstallDotNetCoreDebugger (CancellationToken token)
 		{
 			using (var progressMonitor = CreateProgressMonitor ()) {
-				var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
-				using (progressMonitor.BeginTask ("Installing .NET Core debugger", 4)) {
-					if (!Directory.Exists (DebugAdapterDir))
-						Directory.CreateDirectory (DebugAdapterDir);
-					WriteProjectJson ();
-					progressMonitor.BeginStep ("dotnet restore");
-					var proc = Runtime.ProcessService.StartProcess (
-						dotnetPath,
-						"--verbose restore --configfile NuGet.config",
-						DebugAdapterDir,
-						progressMonitor.Log,
-						progressMonitor.ErrorLog,
-						null);
-					proc.WaitForExit ();
-					progressMonitor.BeginStep ("dotnet publish");
-					proc = Runtime.ProcessService.StartProcess (
-						dotnetPath,
-						$"--verbose publish -r {GetRuntimeId ()} -o \"{DebugAdapterDir}\"",
-						DebugAdapterDir,
-						progressMonitor.Log,
-						progressMonitor.ErrorLog,
-						null);
-					proc.WaitForExit ();
-					progressMonitor.BeginStep ("verifying publish");
-					if (!File.Exists (Path.Combine (DebugAdapterDir, "coreclr.ad7Engine.json")))
-						progressMonitor.ReportError (GettextCatalog.GetString ("The .NET CLI did not correctly restore debugger files."));
-					progressMonitor.BeginStep ("renaming files");
-					var src = Path.Combine (DebugAdapterDir, "dummy");
-					var dest = Path.Combine (DebugAdapterDir, "OpenDebugAD7");
-
-					if (!File.Exists (src)) {
-						if (File.Exists (src + ".exe")) {
-							src += ".exe";
-							dest += ".exe";
+				using (progressMonitor.BeginTask (GettextCatalog.GetString ("Installing .NET Core debugger"), 4)) {
+					try {
+						if (await InstallDebuggerFilesInternal (progressMonitor, token)) {
+							return true;
 						}
+						if (token.IsCancellationRequested) {
+							progressMonitor.Log.WriteLine ("Cancelled");
+							return false;
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
 					}
-					File.Move (src, dest);
+					progressMonitor.ReportError (GettextCatalog.GetString ("Could not restore .NET Core debugger files."));
 				}
 			}
+			return false;
+		}
+
+		async Task<bool> InstallDebuggerFilesInternal (ProgressMonitor progressMonitor, CancellationToken token)
+		{
+			var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
+
+			Directory.CreateDirectory (DebugAdapterDir);
+			WriteProjectJson ();
+
+			progressMonitor.BeginStep ("dotnet restore");
+			var proc = Runtime.ProcessService.StartProcess (
+				dotnetPath,
+				"--verbose restore --configfile NuGet.config",
+				DebugAdapterDir,
+				progressMonitor.Log,
+				progressMonitor.ErrorLog,
+				null);
+
+			RegisterKillProcess (token, proc);
+			await proc.Task;
+
+			if (proc.ExitCode > 0) {
+				progressMonitor.ErrorLog.WriteLine ($"Exited with code {proc.ExitCode}");
+				return false;
+			}
+
+			progressMonitor.BeginStep ("dotnet publish");
+			proc = Runtime.ProcessService.StartProcess (
+				dotnetPath,
+				$"--verbose publish -r {GetRuntimeId ()} -o \"{DebugAdapterDir}\"",
+				DebugAdapterDir,
+				progressMonitor.Log,
+				progressMonitor.ErrorLog,
+				null);
+
+			RegisterKillProcess (token, proc);
+			await proc.Task;
+
+			if (proc.ExitCode > 0) {
+				progressMonitor.ErrorLog.WriteLine ($"Exited with code {proc.ExitCode}");
+				return false;
+			}
+
+			progressMonitor.BeginStep ("verifying publish");
+			if (!File.Exists (Path.Combine (DebugAdapterDir, "coreclr.ad7Engine.json"))) {
+				return false;
+			}
+
+			progressMonitor.BeginStep ("renaming files");
+			var src = Path.Combine (DebugAdapterDir, "dummy");
+			var dest = Path.Combine (DebugAdapterDir, "OpenDebugAD7");
+
+			if (token.IsCancellationRequested)
+				return false;
+
+			if (!File.Exists (src)) {
+				if (File.Exists (src + ".exe")) {
+					src += ".exe";
+					dest += ".exe";
+				}
+			}
+
+			File.Move (src, dest);
+			return true;
+		}
+
+		static void RegisterKillProcess (CancellationToken token, Core.Execution.ProcessWrapper proc)
+		{
+			token.Register (() => {
+				if (!proc.HasExited) {
+					try {
+						proc.Kill ();
+					} catch { }
+				}
+			});
 		}
 
 		ProgressMonitor CreateProgressMonitor ()
@@ -146,7 +222,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 				GettextCatalog.GetString (".NET Core Debugger Install"),
 				Stock.MessageLog,
 				true,
-				false);
+				true);
 
 			var pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (outputProgressMonitor);
 
@@ -226,6 +302,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		string GetRuntimeId ()
 		{
+			//FIXME: determine these properly
 			if (Platform.IsMac)
 				return "osx.10.11-x64";
 			else if (Platform.IsWindows)
