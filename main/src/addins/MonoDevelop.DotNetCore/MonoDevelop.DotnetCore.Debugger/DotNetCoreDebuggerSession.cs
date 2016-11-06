@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -166,8 +167,11 @@ namespace MonoDevelop.DotnetCore.Debugger
 			//TODO: unpack
 			progressMonitor.BeginStep ("Extracting...");
 			Directory.CreateDirectory (DebugAdapterDir);
-			System.IO.Compression.ZipFile.ExtractToDirectory (tempZipPath, DebugAdapterDir);
-
+			using (var archive = ZipFile.Open (tempZipPath, ZipArchiveMode.Read)) {
+				foreach (var entry in archive.Entries) {
+					entry.ExtractToFile (Path.Combine (DebugAdapterDir, entry.FullName), true);
+				}
+			}
 
 			if (File.Exists (DebugAdapterPath)) {
 				foreach (var file in Directory.GetFiles (DebugAdapterDir, "*", SearchOption.AllDirectories)) {
