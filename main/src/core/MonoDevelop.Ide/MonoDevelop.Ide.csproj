@@ -8043,6 +8043,18 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\FSharpComments.tmPreferences">
       <LogicalName>FSharpComments.tmPreferences</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\ILComments.tmPreferences">
+      <LogicalName>ILComments.tmPreferences</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\IL.sublime-syntax">
+      <LogicalName>IL.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\ChangeLog.sublime-syntax">
+      <LogicalName>ChangeLog.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\Yaml.sublime-syntax">
+      <LogicalName>Yaml.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9103,6 +9115,7 @@
     </None>
     <None Include="packages.config" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\F#Comments.tmPreferences" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\AppleStrings.sublime-syntax" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -9138,6 +9151,11 @@
     <Folder Include="MonoDevelop.Components\Windows\" />
     <Folder Include="MonoDevelop.Ide.GettingStarted\" />
     <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Razor\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

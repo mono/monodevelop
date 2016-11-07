@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal SyntaxContext GetContext (string name)
 		{
-			if (name.StartsWith ("#")) {
+			if (name.StartsWith ("#", StringComparison.Ordinal)) {
 				var splittedNames = name.Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
 				if (splittedNames.Length == 0)
 					return null;
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override string ToString ()
 		{
-			return string.Format ("[SyntaxContext: Name={0}, MetaScope={1}, MetaContentScope={2}, MetaIncludePrototype={3}]", Name, MetaScope, MetaContentScope, MetaIncludePrototype);
+			return string.Format ("[SyntaxContext: Name={0}, MetaScope={1}, MetaContentScope={2}, MetaIncludePrototype={3}]", Name, MetaScope.Count == 0 ? "empty" : string.Join (", ", MetaScope), MetaContentScope.Count == 0 ? "empty" : string.Join (", ", MetaContentScope), MetaIncludePrototype);
 		}
 	}
 

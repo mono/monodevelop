@@ -44,6 +44,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis.Host.Mef;
 using System.Text;
 using System.Collections.Immutable;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -68,8 +69,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string[] mefHostServices = new [] {
 			"Microsoft.CodeAnalysis.Workspaces",
 			"Microsoft.CodeAnalysis.CSharp.Workspaces",
-//			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
+			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
 		};
+
+		internal static HostServices HostServices {
+			get {
+				return services;
+			}
+		}
 
 		static MonoDevelopWorkspace ()
 		{
@@ -86,6 +93,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
+		}
+
+		/// <summary>
+		/// This bypasses the type system service. Use with care.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal void OpenSolutionInfo (SolutionInfo sInfo)
+		{
+			OnSolutionAdded (sInfo);
 		}
 
 		internal MonoDevelopWorkspace () : base (services, ServiceLayer.Desktop)
@@ -737,7 +753,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var filePath = document.FilePath;
-
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
 				var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
@@ -747,9 +762,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			}
-
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
@@ -761,7 +774,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 			}
 			changedFiles [filePath] = text;
-
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
 				oldFile = await document.GetTextAsync ();
