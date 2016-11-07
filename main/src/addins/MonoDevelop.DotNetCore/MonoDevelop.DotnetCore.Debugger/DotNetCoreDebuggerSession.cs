@@ -135,6 +135,10 @@ namespace MonoDevelop.DotnetCore.Debugger
 							return false;
 						}
 					} catch (Exception ex) {
+						ex = ex.FlattenAggregate ();
+						if (ex is OperationCanceledException) {
+							return false;
+						}
 						LoggingService.LogInternalError (ex);
 					}
 					progressMonitor.ReportError (GettextCatalog.GetString ("Could not restore .NET Core debugger files."));
