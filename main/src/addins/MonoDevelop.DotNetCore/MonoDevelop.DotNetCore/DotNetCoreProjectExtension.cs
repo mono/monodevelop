@@ -41,6 +41,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		List<string> targetFrameworks;
 		bool outputTypeDefined;
+		string toolsVersion;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -75,6 +76,8 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
+
+			toolsVersion = msproject.ToolsVersion;
 
 			outputTypeDefined = IsOutputTypeDefined (msproject);
 			if (!outputTypeDefined)
@@ -124,6 +127,9 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			msproject.DefaultTargets = null;
+
+			if (!string.IsNullOrEmpty (toolsVersion))
+				msproject.ToolsVersion = toolsVersion;
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -152,29 +158,6 @@ namespace MonoDevelop.DotNetCore
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
-		}
-
-		protected async override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
-		{
-			string dotnetBuildCommand = GetDotNetBuildCommand (target);
-			if (dotnetBuildCommand != null) {
-				var config = Project.GetConfiguration (configuration) as DotNetProjectConfiguration;
-				using (var builder = new DotNetCoreProjectBuilder (Project, monitor)) {
-					BuildResult result = await builder.BuildAsnc (config, dotnetBuildCommand);
-					return new TargetEvaluationResult (result);
-				}
-			}
-			return await base.OnRunTarget (monitor, target, configuration, context);
-		}
-
-		static string GetDotNetBuildCommand (string target)
-		{
-			if (target == ProjectService.BuildTarget)
-				return "build --no-dependencies";
-			else if (target == ProjectService.CleanTarget)
-				return "clean";
-
-			return null;
 		}
 	}
 }

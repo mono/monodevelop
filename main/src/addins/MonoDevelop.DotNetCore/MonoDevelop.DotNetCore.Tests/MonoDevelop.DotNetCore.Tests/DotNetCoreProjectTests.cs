@@ -60,6 +60,7 @@ namespace MonoDevelop.DotNetCore
 
 			Assert.IsFalse (globalPropertyGroup.HasProperty ("ProjectGuid"));
 			Assert.IsNull (project.MSBuildProject.DefaultTargets);
+			Assert.AreEqual ("15.0", project.MSBuildProject.ToolsVersion);
 		}
 	}
 }

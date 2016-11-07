@@ -405,7 +405,7 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInDotNetCoreProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopDotNetCorePackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetCorePath.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\DotNetCoreOperationConsole.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\LoggingProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

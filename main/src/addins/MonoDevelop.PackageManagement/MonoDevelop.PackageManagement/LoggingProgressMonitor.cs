@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreOperationConsole.cs
+// LoggingProgressMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,53 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreOperationConsole : OperationConsole
+	class LoggingProgressMonitor : ProgressMonitor
 	{
-		ProgressMonitor monitor;
-		StringReader reader = new StringReader ("");
-		DotNetCoreBuildOutputTextWriter buildOutputWriter;
+		IPackageManagementEvents packageEvents;
 
-		public DotNetCoreOperationConsole (ProgressMonitor monitor)
-			: base (monitor.CancellationToken)
+		public LoggingProgressMonitor ()
 		{
-			this.monitor = monitor;
-			buildOutputWriter = new DotNetCoreBuildOutputTextWriter (monitor.Log);
+			packageEvents = PackageManagementServices.PackageManagementEvents;
 		}
 
-		public override TextReader In {
-			get { return reader; }
-		}
-
-		public override TextWriter Out {
-			get { return buildOutputWriter; }
-		}
-
-		public override TextWriter Error {
-			get { return monitor.Log; }
-		}
-
-		public override TextWriter Log {
-			get { return monitor.Log; }
-		}
-
-		public override void Dispose ()
+		protected override void OnWriteLog (string message)
 		{
-			buildOutputWriter.Dispose ();
+			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, message);
 		}
 
-		public BuildResult GetBuildResult (DotNetProject project)
+		protected override void OnWriteErrorLog (string message)
 		{
-			var result = new BuildResult ();
-			result.Append (buildOutputWriter.GetBuildResults (project));
-			result.SourceTarget = project;
-			return result;
+			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
 		}
 	}
 }
