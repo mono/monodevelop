@@ -47,6 +47,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 	{
 		CancellationTokenSource cancelEngineDownload;
 
+		//TODO: version the download
 		static string DebugAdapterPath = Path.Combine (UserProfile.Current.LocalInstallDir, "CoreClrAdaptor", "OpenDebugAD7");
 		static string DebugAdapterDir = Path.GetDirectoryName (DebugAdapterPath);
 
@@ -110,7 +111,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 				}
 			} catch (OperationCanceledException) {
 			} catch (Exception e) {
-				LoggingService.LogError ("Downloading .Net Core debugger adaptor", e);
+				LoggingService.LogError ("Error downloading .Net Core debugger adaptor", e);
 			} finally {
 				cancelEngineDownload = null;
 			}
@@ -125,24 +126,24 @@ namespace MonoDevelop.DotnetCore.Debugger
 		async Task<bool> InstallDotNetCoreDebugger (CancellationToken token)
 		{
 			using (var progressMonitor = CreateProgressMonitor ()) {
-				using (progressMonitor.BeginTask (GettextCatalog.GetString ("Installing .NET Core debugger"), 4)) {
-					try {
-						if (await InstallDebuggerFilesInternal (progressMonitor, token)) {
-							return true;
-						}
-						if (token.IsCancellationRequested) {
-							progressMonitor.ReportError ("Cancelled");
-							return false;
-						}
-					} catch (Exception ex) {
-						ex = ex.FlattenAggregate ();
-						if (ex is OperationCanceledException) {
-							return false;
-						}
-						LoggingService.LogInternalError (ex);
+				progressMonitor.CancellationToken.Register (() => {
+					cancelEngineDownload?.Cancel ();
+				});
+				try {
+					if (await InstallDebuggerFilesInternal (progressMonitor, token)) {
+						return true;
 					}
-					progressMonitor.ReportError (GettextCatalog.GetString ("Could not restore .NET Core debugger files."));
+					if (token.IsCancellationRequested) {
+						return false;
+					}
+				} catch (Exception ex) {
+					ex = ex.FlattenAggregate ();
+					if (ex is OperationCanceledException) {
+						return false;
+					}
+					LoggingService.LogInternalError (ex);
 				}
+				progressMonitor.ReportError (GettextCatalog.GetString ("Could not install .NET Core debugger adaptor"));
 			}
 			return false;
 		}
@@ -151,42 +152,95 @@ namespace MonoDevelop.DotnetCore.Debugger
 		{
 			var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
 
+			//TODO: check whether the file was downloaded already, check hash?
+			//TODO: resume partial downloads?
 			var url = GetDebuggerZipUrl ();
 			var tempZipPath = UserProfile.Current.CacheDir.Combine ("coreclr-debug-osx.10.11-x64.zip");
 
-			//TODO: check whether the file was downloaded already
-			//TODO: resume partial downloads?
-			progressMonitor.BeginStep ("Downloading...");
-			var response = await WebRequestHelper.GetResponseAsync (
-				() => WebRequest.CreateHttp (url),
-				null,
-				token
-			);
-
-			//TODO: report progress
-			using (var fs = File.OpenWrite (tempZipPath)) {
-				await response.GetResponseStream ().CopyToAsync (fs, 4096, token);
+			using (var progressTask = progressMonitor.BeginTask (GettextCatalog.GetString ("Downloading .NET Core debugger..."), 1000)) {
+				int reported = 0;
+				await DownloadWithProgress (
+					url,
+					tempZipPath,
+					(p) => {
+						int progress = (int) (1000f * p);
+						if (reported < progress) {
+							progressMonitor.Step (progress - reported);
+							reported = progress;
+						}
+					},
+					token
+				);
 			}
 
-			//TODO: unpack
-			progressMonitor.BeginStep ("Extracting...");
-			Directory.CreateDirectory (DebugAdapterDir);
-			using (var archive = ZipFile.Open (tempZipPath, ZipArchiveMode.Read)) {
-				foreach (var entry in archive.Entries) {
-					entry.ExtractToFile (Path.Combine (DebugAdapterDir, entry.FullName), true);
+			using (progressMonitor.BeginTask (GettextCatalog.GetString ("Installing .NET Core debugger..."), 1)) {
+				//clean up any old debugger files
+				if (Directory.Exists (DebugAdapterDir)) {
+					Directory.Delete (DebugAdapterDir, true);
 				}
-			}
 
-			if (File.Exists (DebugAdapterPath)) {
-				foreach (var file in Directory.GetFiles (DebugAdapterDir, "*", SearchOption.AllDirectories)) {
-					Syscall.chmod (file, FilePermissions.S_IRWXU | FilePermissions.S_IRGRP | FilePermissions.S_IXGRP | FilePermissions.S_IROTH | FilePermissions.S_IXOTH);
+				Directory.CreateDirectory (DebugAdapterDir);
+				using (var archive = ZipFile.Open (tempZipPath, ZipArchiveMode.Read)) {
+					foreach (var entry in archive.Entries) {
+						var name = Path.Combine (DebugAdapterDir, entry.FullName);
+						if (name[name.Length-1] == Path.DirectorySeparatorChar) {
+							Directory.CreateDirectory (name);
+						} else {
+							var dir = Path.GetDirectoryName (name);
+							Directory.CreateDirectory (dir);
+							entry.ExtractToFile (name, true);
+						}
+					}
 				}
-			} else {
-				progressMonitor.ReportError ("Failed to extract files");
-				return false;
+
+				if (File.Exists (DebugAdapterPath)) {
+					foreach (var file in Directory.GetFiles (DebugAdapterDir, "*", SearchOption.AllDirectories)) {
+						Syscall.chmod (file, FilePermissions.S_IRWXU | FilePermissions.S_IRGRP | FilePermissions.S_IXGRP | FilePermissions.S_IROTH | FilePermissions.S_IXOTH);
+					}
+				} else {
+					progressMonitor.ReportError (GettextCatalog.GetString("Failed to extract files"));
+					return false;
+				}
 			}
 
 			return true;
+		}
+
+		static async Task DownloadWithProgress (string fromUrl, string toFile, Action<float> reportProgress, CancellationToken token)
+		{
+			try {
+				Directory.CreateDirectory (Path.GetDirectoryName (toFile));
+
+				var response = await WebRequestHelper.GetResponseAsync (
+					() => WebRequest.CreateHttp (fromUrl),
+					null,
+					token
+				);
+
+				using (var fs = File.Open (toFile, FileMode.Create, FileAccess.ReadWrite)) {
+					var stream = response.GetResponseStream ();
+
+					long total = stream.Length;
+					long copied = 0;
+					float progressTotal = 0;
+					byte [] buffer = new byte [4096];
+
+					int read;
+					while ((read = await stream.ReadAsync (buffer, 0, buffer.Length, token).ConfigureAwait (false)) != 0) {
+						await fs.WriteAsync (buffer, 0, read, token).ConfigureAwait (false);
+						copied += read;
+						float progressIncrement = copied / (float)total - progressTotal;
+						if (progressIncrement > 0.001f) {
+							progressTotal += progressIncrement;
+							reportProgress (progressTotal);
+						}
+					}
+				}
+			} catch (WebException wex) {
+				if (wex.Status == WebExceptionStatus.RequestCanceled) {
+					token.ThrowIfCancellationRequested ();
+				}
+			}
 		}
 
 		ProgressMonitor CreateProgressMonitor ()
@@ -196,10 +250,10 @@ namespace MonoDevelop.DotnetCore.Debugger
 				GettextCatalog.GetString ("Installing .NET Core debugger..."),
 				Stock.StatusSolutionOperation,
 				true,
-				false,
+				true,
 				false,
 				null,
-				false);
+				true);
 		}
 
 		string GetDebuggerZipUrl ()
