@@ -49,6 +49,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
 
+		internal static IEnumerable<LanguageBundle> AllBundles {
+			get {
+				return languageBundles;
+			}
+		}
+
 		internal static IEnumerable<LanguageBundle> LanguageBundles {
 			get {
 				return languageBundles.Skip (1);

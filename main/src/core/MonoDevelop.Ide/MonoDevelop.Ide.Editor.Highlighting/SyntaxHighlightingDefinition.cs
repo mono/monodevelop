@@ -160,13 +160,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var splittedNames = name.Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
 				if (splittedNames.Length == 0)
 					return null;
-				foreach (var bundle in SyntaxHighlightingService.LanguageBundles) {
+				foreach (var bundle in SyntaxHighlightingService.AllBundles) {
 					foreach (var highlighting in bundle.Highlightings) {
 						if (highlighting.Scope == splittedNames [0]) {
 							var searchName = splittedNames.Length == 1 ? "main" : splittedNames [1];
 							foreach (var ctx in highlighting.Contexts) {
-								if (ctx.Name == searchName)
+								if (ctx.Name == searchName) {
 									return ctx;
+								}
 							}
 						}
 					}

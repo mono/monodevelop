@@ -8064,6 +8064,15 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\syntaxes\Batch File.tmLanguage">
       <LogicalName>Batch File.tmLanguage</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\syntaxes\Objective-C.tmLanguage">
+      <LogicalName>Objective-C.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\syntaxes\c++.json">
+      <LogicalName>c++.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\syntaxes\c.json">
+      <LogicalName>c.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9143,6 +9152,13 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\OSSREADME.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\syntaxes\Platform.tmLanguage" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
