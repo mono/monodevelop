@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 								ReplaceSegment (segments, new ColoredSegment (curSegmentOffset, grp.Index - curSegmentOffset, ScopeStack));
 							}
 							ReplaceSegment (segments, new ColoredSegment (grp.Index, grp.Length, ScopeStack.Push (capture.Item2)));
-							curSegmentOffset = grp.Index + grp.Length;
+							curSegmentOffset = Math.Max (curSegmentOffset, grp.Index + grp.Length);
 						}
 					}
 

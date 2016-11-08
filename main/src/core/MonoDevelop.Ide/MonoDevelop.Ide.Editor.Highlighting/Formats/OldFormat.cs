@@ -174,6 +174,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Built-in constant", new List<string> { "constant.language" }, ConvertChunkStyle (colorScheme.KeywordConstants)));
 			settings.Add (new ThemeSetting ("User-defined constant", new List<string> { "constant.character", "constant.other" }, ConvertChunkStyle (colorScheme.Number)));
 			settings.Add (new ThemeSetting ("Variable", new List<string> { "variable" }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
+			settings.Add (new ThemeSetting ("variable.other", new List<string> { "variable.other" }, ConvertChunkStyle (colorScheme.ScriptKeyword)));
 			settings.Add (new ThemeSetting ("Keyword", new List<string> { "keyword - (source.c keyword.operator | source.c++ keyword.operator | source.objc keyword.operator | source.objc++ keyword.operator), keyword.operator.word" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage", new List<string> { "storage" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
