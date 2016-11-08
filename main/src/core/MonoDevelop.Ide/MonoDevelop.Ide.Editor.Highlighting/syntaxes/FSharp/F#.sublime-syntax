@@ -12,13 +12,13 @@ contexts:
     - include: functions2
     - include: fsioutput
     - include: tooltips
+    - include: strings
     - include: namespaces
     - include: comments
     - include: braces
     - include: keywords
     - include: functions
     - include: fields
-    - include: strings
     - include: types
     - include: keywords2
     - include: numbers
@@ -178,13 +178,13 @@ contexts:
 #    - match: '([a-z]{1}\w*|``[^`]*``)(?:\s*\")'
 #      captures:
 #        1: entity.name.function
-    - match: '(let\s+)([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w])'
+    - match: '(let\s+)([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w|"])'
       captures:
         1: keyword.source.fs
         2: entity.name.function
         3: source.fs
         4: punctuation.section.brackets
-    - match: '([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w])'
+    - match: '([a-z]{1}\w*|``[^`]*``)(\s*)(\([^|\w|"])'
       captures:
         1: entity.name.function
         2: source.fs
