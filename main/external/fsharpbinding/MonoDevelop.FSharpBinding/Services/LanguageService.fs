@@ -394,8 +394,8 @@ type LanguageService(dirtyNotify) as x =
         // Try to get recent results from the F# service
         let res =
             match stale with
-            | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options)
-            | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options, source=src)
+            | AllowStaleResults.MatchingFileName -> checker.TryGetRecentCheckResultsForFile(fixFileName fileName, options)
+            | AllowStaleResults.MatchingSource -> checker.TryGetRecentCheckResultsForFile(fixFileName fileName, options, source=src)
 
         match res with
         | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo -> Some (ParseAndCheckResults(Some typed, Some untyped))
