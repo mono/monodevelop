@@ -151,7 +151,7 @@ module CompilerArguments =
              | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
              | None -> Seq.empty
 
-      let getPortableReferences (project: DotNetProject) configSelector =
+      let getPortableReferences (project: DotNetProject) =
           project.References
           |> Seq.collect getAssemblyLocations
           |> Seq.append (portableReferences project)
@@ -178,7 +178,7 @@ module CompilerArguments =
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
    if Project.isPortable project then
-       [for ref in Project.getPortableReferences project configSelector do
+       [for ref in Project.getPortableReferences project do
             yield "-r:" + ref]
    else
        let isAssemblyPortable path =
