@@ -56,7 +56,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 			var cmd = (DotNetCoreExecutionCommand)c;
 			var dsi = new DebuggerStartInfo {
 				Command = cmd.OutputPath,
-				Arguments = cmd.Arguments,
+				Arguments = cmd.DotNetArguments,
 				WorkingDirectory = cmd.WorkingDirectory
 			};
 

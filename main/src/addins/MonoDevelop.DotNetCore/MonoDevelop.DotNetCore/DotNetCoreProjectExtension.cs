@@ -142,9 +142,12 @@ namespace MonoDevelop.DotNetCore
 			FilePath outputDirectory = GetOutputDirectory (configuration);
 			FilePath outputFileName = outputDirectory.Combine (Project.Name + ".dll");
 			return new DotNetCoreExecutionCommand (
-				Project.BaseDirectory,
-				outputFileName
-			);
+				(runConfiguration as AssemblyRunConfiguration)?.StartWorkingDirectory ?? Project.BaseDirectory,
+				outputFileName,
+				(runConfiguration as AssemblyRunConfiguration)?.StartArguments
+			) {
+				EnvironmentVariables = (runConfiguration as AssemblyRunConfiguration)?.EnvironmentVariables
+			};
 		}
 
 		FilePath GetOutputDirectory (DotNetProjectConfiguration configuration)
