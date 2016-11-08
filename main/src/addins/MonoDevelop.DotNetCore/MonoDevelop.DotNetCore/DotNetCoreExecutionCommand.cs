@@ -30,15 +30,17 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreExecutionCommand : ProcessExecutionCommand
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath)
+		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
 		{
 			WorkingDirectory = directory;
 			OutputPath = outputPath;
+			DotNetArguments = arguments;
 
 			Command = new DotNetCorePath ().FileName;
-			Arguments = string.Format ("\"{0}\"", outputPath);
+			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
 
 		public string OutputPath { get; private set; }
+		public string DotNetArguments { get; private set; }
 	}
 }
