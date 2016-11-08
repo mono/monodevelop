@@ -259,7 +259,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 		string GetDebuggerZipUrl ()
 		{
 			if (Platform.IsMac)
-				return "https://dotnetcoredebugadaptor.blob.core.windows.net/download/CoreClrAdaptor.zip";
+				return "https://vsdebugger.azureedge.net/coreclr-debug-1-5-0/coreclr-debug-osx.10.11-x64.zip";
 			//TODO: other platforms
 			throw new NotImplementedException ();
 		}
