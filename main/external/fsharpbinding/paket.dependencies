@@ -1,7 +1,7 @@
 source https://nuget.org/api/v2/
 
 nuget ExtCore framework: >= net40
-nuget FSharp.Compiler.Service = 3.0.0
+nuget FSharp.Compiler.Service = 8.0.0
 nuget FSharp.Core = 4.0.0.1
 nuget Fantomas framework: >= net45
 nuget FSharp.Compiler.CodeDom 0.9.2 framework: >= net40

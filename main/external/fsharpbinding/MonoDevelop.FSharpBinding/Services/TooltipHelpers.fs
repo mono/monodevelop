@@ -296,6 +296,11 @@ module TooltipFormatting =
         if msg <> null then signatureB.Append(msg) |> ignore
     | FSharpToolTipElement.CompositionError(err) ->
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
+    | FSharpToolTipElement.SingleParameter(it, comment, _idText) -> 
+        signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
+        let html = buildFormatComment comment
+        if not (String.IsNullOrWhiteSpace html) then
+            commentB.Append(html) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
 
   /// Format tool-tip that we get from the language service as string
@@ -328,6 +333,7 @@ module TooltipFormatting =
       | FSharpToolTipElement.Single (_it, comment) -> extractParamTipFromComment paramName comment
       | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
       | FSharpToolTipElement.CompositionError _err -> None
+      | FSharpToolTipElement.SingleParameter(_text, comment, _idText) -> extractParamTipFromComment paramName comment
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (FSharpToolTipText elements) =

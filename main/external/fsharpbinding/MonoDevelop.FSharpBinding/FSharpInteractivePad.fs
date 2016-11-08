@@ -183,6 +183,7 @@ type FSharpInteractivePad() =
         if editor.CaretColumn <> 1 then
             editor.InsertAtCaret ("\n")
         editor.InsertAtCaret (nonBreakingSpace + t)
+        editor.CaretOffset <- editor.Text.Length
         editor.ScrollTo editor.CaretLocation
 
     let input = new ResizeArray<_>()
@@ -207,12 +208,13 @@ type FSharpInteractivePad() =
                 killIntent <- NoIntent)
 
             ses.StartReceiving()
+            editor.GrabFocus()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
             Some(ses)
         with _exn -> None
 
-    let mutable session = setupSession()
+    let mutable session = None
 
     let getCaretLine() =
         let line = 
@@ -227,12 +229,10 @@ type FSharpInteractivePad() =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
 
-    
-    
     let resetFsi intent =
         if promptReceived then
             killIntent <- intent
-            session |> Option.iter (fun ses -> ses.Kill())
+            session |> Option.iter (fun (ses: InteractiveSession) -> ses.Kill())
             if intent = Restart then session <- setupSession()
 
     member x.Text =
@@ -401,6 +401,7 @@ type FSharpInteractivePad() =
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
         toolbar.ShowAll()
+        editor.RunWhenRealized(fun () -> session <- setupSession())
 
     member x.RestartFsi() = resetFsi Restart
 
