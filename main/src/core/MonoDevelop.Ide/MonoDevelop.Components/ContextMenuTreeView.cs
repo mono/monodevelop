@@ -32,8 +32,14 @@ namespace MonoDevelop.Components
 	/// </summary>
 	public class ContextMenuTreeView : Gtk.TreeView
 	{
+		internal AtkCocoaHelper.ActionDelegate ActionHandler { get; private set; }
 		public ContextMenuTreeView ()
 		{
+			ActionHandler = new AtkCocoaHelper.ActionDelegate ();
+			ActionHandler.PerformShowMenu += PerformShowMenu;
+			ActionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXShowMenu };
+
+			Accessible.SetActionDelegate (ActionHandler);
 		}
 
 		public ContextMenuTreeView (Gtk.TreeModel model) : base (model)
@@ -145,6 +151,11 @@ namespace MonoDevelop.Components
 			}
 			
 			return res;
+		}
+
+		void PerformShowMenu (object sender, EventArgs args)
+		{
+			OnPopupMenu ();
 		}
 
 		protected override bool OnPopupMenu ()

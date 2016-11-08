@@ -242,6 +242,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.TestExpandRow += OnTestExpandRow;
 			tree.RowActivated += OnNodeActivated;
 			tree.DoPopupMenu += ShowPopup;
+
+			// Add an extra action handler to the tree to handle Press actions
+			var actionHandler = tree.ActionHandler;
+			var actions = new AtkCocoaHelper.Actions [actionHandler.Actions.Length + 1];
+			Array.Copy (actionHandler.Actions, actions, actionHandler.Actions.Length);
+			actions [actionHandler.Actions.Length] = AtkCocoaHelper.Actions.AXPress;
+			actionHandler.Actions = actions;
+
+			actionHandler.PerformPress += OnPerformPress;
+
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
@@ -2079,6 +2089,11 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
+		{
+			ActivateCurrentItem ();
+		}
+
+		void OnPerformPress (object sender, EventArgs args)
 		{
 			ActivateCurrentItem ();
 		}
