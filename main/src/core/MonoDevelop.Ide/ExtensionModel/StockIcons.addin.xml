@@ -24,6 +24,7 @@
 	<StockIcon stockid="gtk-clear" resource="clear-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-copy" resource="copy-16.png" size="Menu" />
+	<StockIcon stockid="gtk-copy-done" resource="copy-done-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cut" resource="cut-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-16.png" size="Menu" />

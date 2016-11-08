@@ -465,6 +465,19 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, action.GetNuGetProjectActions ().Count ());
 		}
+
+		[Test]
+		public void Execute_PackageVersionIsPrereleaseButIncludePrereleaseIsFalse_ResolutionContextIncludesPrerelease ()
+		{
+			CreateAction ("Test", "1.2-beta1");
+			action.LicensesMustBeAccepted = false;
+			action.PreserveLocalCopyReferences = false;
+			action.IncludePrerelease = false;
+
+			action.Execute ();
+
+			Assert.IsTrue (packageManager.PreviewInstallResolutionContext.IncludePrerelease);
+		}
 	}
 }
 

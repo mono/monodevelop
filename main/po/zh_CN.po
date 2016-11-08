@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-01 23:36:12+0300\n"
+"POT-Creation-Date: 2016-10-25 18:03:40+0300\n"
 "PO-Revision-Date: 2016-02-18 18:02+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
@@ -39,11 +39,11 @@ msgstr "应用程序被 {0} 信号终止"
 msgid "The application exited with code: {0}"
 msgstr "应用程序退出，退出代码为 {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:41
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:15
 msgid "Can't remove file {0}"
 msgstr "无法删除文件 {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:42
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:16
 msgid "Can't remove directory {0}"
 msgstr "无法删除目录 {0}"
 
@@ -206,14 +206,14 @@ msgstr "项目文件没有有效的 ProjectGuid"
 
 #  FIXME: make this a resource in the resource file
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:196
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:99
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:101
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:45
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] "{0} 个错误"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:196
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:99
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:101
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:45
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -260,7 +260,7 @@ msgstr "生成前"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/DefaultPolicyPanels.addin.xml:2
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:3
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:8
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:3
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:97
@@ -611,24 +611,24 @@ msgstr "找不到 GUID 为“{0}”的项目。"
 msgid "Item with guid '{0}' is not a folder."
 msgstr "GUID 为“{0}”的项不是文件夹。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:43
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:44
 msgid "Could not load {0} project '{1}'. {2}"
 msgstr "无法加载 {0} 项目“{1}”。{2}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:43
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:44
 msgid "Unknown project type: {0}"
 msgstr "未知项目类型: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:43
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:44
 msgid "Could not load project '{0}' with unknown item type '{1}'"
 msgstr "无法加载具有未知项类型“{1}”的项目“{0}”"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:43
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:44
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:58
 msgid "Unknown project type"
 msgstr "未知项目类型"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:43
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:44
 msgid "Could not load project '{0}' with unknown item type"
 msgstr "无法加载具有未知项类型的项目“{0}”"
 
@@ -750,27 +750,27 @@ msgstr "越南语"
 msgid "Thai"
 msgstr "泰语"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "ApplicationName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "ApplicationLongName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "SuiteName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "ProfileDirectoryName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "StatusAreaSteadyIcon"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:8
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:10
 msgid "HelpAboutIcon"
 msgstr ""
 
@@ -1463,7 +1463,7 @@ msgstr "空类"
 #: ../src/addins/VBNetBinding/templates/EmptyVBFile.xft.xml:0
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:0
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:15
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:113
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:112
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:3
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:0
 msgid "General"
@@ -1999,7 +1999,7 @@ msgstr "快捷属性(_Q)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:14
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:18
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:12
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:56
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:55
 msgid "Hidden"
 msgstr "隐藏"
 
@@ -2571,7 +2571,7 @@ msgstr "对项目运行代码分析"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:16
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:29
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:5
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:4
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:5
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:13
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:16
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:61
@@ -3125,8 +3125,9 @@ msgid "Show tip of the day"
 msgstr "显示每日提示"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:29
-msgid "Reveal _Logs"
-msgstr "展现日志(_L)"
+#, fuzzy
+msgid "Open Log Directory"
+msgstr "根目录"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:29
 msgid "Opens the directory where the diagnostic logs are stored"
@@ -3315,7 +3316,8 @@ msgid "Clear bookmarks"
 msgstr "清除书签"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:37
-msgid "_Clear Bookmarks"
+#, fuzzy
+msgid "_Remove All Bookmarks"
 msgstr "清除书签(_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:37
@@ -3348,7 +3350,7 @@ msgstr "使用当前选定内容作为替换字符串"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:40
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Text Editor"
 msgstr "文本编辑器"
 
@@ -3817,7 +3819,7 @@ msgstr "项目文件的位置"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/ProjectSearchCategory.cs:2
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:25
 msgid "Solution"
@@ -4111,84 +4113,84 @@ msgstr "仅显示公共和受保护成员"
 msgid "Other Pads"
 msgstr "其他板"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Visual Studio"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Visual Studio (Windows)"
 msgstr "Visual Studio (Windows)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Xcode"
 msgstr "Xcode"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Visual Studio Code"
 msgstr "Visual Studio Code"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "ReSharper / Rider"
 msgstr "ReSharper/Rider"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Comments"
 msgstr "注释"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "User Tasks"
 msgstr "用户任务"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:25
 msgid "Assemblies"
 msgstr "程序集"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "XML Files"
 msgstr "XML 文件"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid ".NET Resource Files"
 msgstr ".NET 资源文件"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:20
 msgid "Solution Files"
 msgstr "解决方案文件"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:26
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:27
 msgid "Project Files"
 msgstr "项目文件"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "MD Workbench"
 msgstr "MD 工作台"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:2
 msgid "Arguments"
 msgstr "参数"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "General Pad Text"
 msgstr "常规板文本"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:17
 msgid "Output Pad Contents"
 msgstr "输出板内容"
 
@@ -4394,6 +4396,59 @@ msgstr "激活窗口“{0}”"
 msgid "Pads"
 msgstr "板"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:12
+#, fuzzy
+msgid "Change Targets"
+msgstr "更改"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:34
+#, fuzzy
+msgid "PCL {0} - not installed"
+msgstr "PCL {0} - {1} - 未安装"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:34
+#, fuzzy
+msgid "PCL {0}"
+msgstr "PCL {0} - {1}"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:36
+msgid "Current Profile:"
+msgstr "当前配置文件:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:38
+msgid "Target Frameworks:"
+msgstr "目标框架:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:75
+msgid "Test Error"
+msgstr "测试错误"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:92
+msgid "Need to select at least two frameworks."
+msgstr "需选择至少两个框架。"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:95
+msgid "No applicable frameworks for this selection!"
+msgstr "没有适用于此选定内容的框架!"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:97
+msgid "Multiple frameworks match the current selection:"
+msgstr "多个框架匹配当前选定内容:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:97
+msgid "You must manually pick a profile in the drop-down selector."
+msgstr "必须在下拉选择器中手动选择配置文件。"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:101
+msgid ""
+"Found multiple applicable frameworks, you need to select additional check "
+"boxes."
+msgstr "找到多个适用的框架，你需要选中更多复选框。"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:102
+msgid "The following frameworks have been implicitly selected:"
+msgstr "已隐式选择以下框架:"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:3
 msgid "Warning/Error"
 msgstr "警告/错误"
@@ -4531,7 +4586,7 @@ msgid "Copy Information"
 msgstr "副本信息"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:6
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:137
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:139
 msgid "Show Details"
 msgstr "显示详细信息"
 
@@ -4579,7 +4634,7 @@ msgstr "布局名称有效"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:9
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:50
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:60
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:59
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:5
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:2
 msgid "Version"
@@ -4732,13 +4787,13 @@ msgid "Save operation failed."
 msgstr "保存操作失败。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:35
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:116
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:118
 msgid "Moving files..."
 msgstr "正在移动文件..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:35
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:18
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:116
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:118
 msgid "Copying files..."
 msgstr "正在复制文件..."
 
@@ -4836,6 +4891,7 @@ msgstr "你确定要从该项目中删除所选文件?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:7
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:24
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:6
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeCommandHandler.cs:3
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:1
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageSourcesWidget.cs:60
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Commands/PackageReferenceNodeCommandHandler.cs:73
@@ -4937,7 +4993,7 @@ msgstr "无法创建 {0} 类型的项目"
 msgid "Default Runtime"
 msgstr "默认运行时"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:45
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:46
 msgid "The file could not be saved."
 msgstr "无法保存该文件。"
 
@@ -4974,15 +5030,16 @@ msgstr "无法保存该文件。"
 #  break;
 #  }
 #  }
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:56
 msgid "Save as..."
 msgstr "另存为..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:56
 msgid "File name {0} is invalid"
 msgstr "文件名 {0} 无效"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:56
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:578
 msgid "File {0} already exists. Overwrite?"
 msgstr "文件 {0} 已存在。是否覆盖?"
 
@@ -5033,16 +5090,16 @@ msgstr "无法打开文件“{0}”"
 msgid "Loading workspace documents"
 msgstr "正在加载工作区文档"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:118
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:127
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:128
 msgid "The file '{0}' could not be opened."
 msgstr "无法打开文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:128
 msgid "The file '{0}' could not opened. {1}"
 msgstr "无法打开文件“{0}”。{1}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:128
 msgid "The file '{0}' could not opened. File too large."
 msgstr "无法打开文件“{0}”。文件太大。"
 
@@ -5055,7 +5112,7 @@ msgid "Cleaning..."
 msgstr "正在清理"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:5
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:70
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:71
 msgid "Rebuilding..."
 msgstr "正在重新生成..."
 
@@ -5345,9 +5402,9 @@ msgid "_View Conflicts"
 msgstr "查看冲突(_V)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:25
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:65
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:56
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:59
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:3
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Delete"
@@ -5357,9 +5414,10 @@ msgstr "删除"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:1
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:5
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:55
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:59
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:1
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageSourcesWidget.cs:70
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:33
 msgid "Add"
 msgstr "添加"
 
@@ -5372,15 +5430,15 @@ msgstr "此组合键已与同一上下文中的命令“{0}”绑定"
 msgid "This key combination is already bound to command '{0}'"
 msgstr "此组合键已绑定到命令“{0}”"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:64
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:63
 msgid "Conflicts:"
 msgstr "冲突:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:64
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:63
 msgid "Duplicates:"
 msgstr "重复:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:64
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:63
 msgid ""
 "This shortcut is assigned to another command that is available\n"
 "in the same context. Please set a different shortcut."
@@ -5930,7 +5988,7 @@ msgstr "label1"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:7
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:93
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:94
 msgid "Searching..."
 msgstr "正在搜索..."
 
@@ -6084,7 +6142,7 @@ msgstr "全字匹配(_W)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:9
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:36
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:50
 msgid "Looking in '{0}'"
 msgstr "正在“{0}”中查找"
 
@@ -6237,6 +6295,7 @@ msgstr "MonoDevelop 应在其中查找程序集和包的自定义文件夹:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:5
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:111
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:7
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:2
 msgid "Error"
@@ -6279,25 +6338,25 @@ msgstr "显示消息气泡:"
 msgid "Jump to first error or warning:"
 msgstr "跳转到第一个错误或警告:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:31
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:32
 msgid "Search:"
 msgstr "搜索:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:32
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:33
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:7
 msgid "Find next {0}"
 msgstr "查找下一个 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:33
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:34
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:7
 msgid "Find previous {0}"
 msgstr "查找上一个 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:97
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:98
 msgid "Console input not supported"
 msgstr "控制台输入不受支持"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:97
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:98
 msgid ""
 "Console input is not supported when using the {0} output console. If your "
 "application needs to read data from the standard input, please set the 'Run "
@@ -6385,21 +6444,21 @@ msgstr "浏览(_B)..."
 msgid "Clear"
 msgstr "清除"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:61
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:74
 msgid "Cut"
 msgstr "剪切"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:62
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:75
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:57
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Copy"
 msgstr "复制"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:63
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:76
 msgid "Paste"
 msgstr "粘贴"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:67
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:80
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:63
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.OverridesImplementsDialog.cs:2
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs:2
@@ -6430,7 +6489,6 @@ msgstr "所有文件"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:2
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:3
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/InconsistentNaming/NameConventionEditRuleDialog.cs:2
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:4
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:29
 msgid "Properties"
 msgstr "属性"
@@ -6478,6 +6536,11 @@ msgstr "停靠"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:38
 msgid "Undock"
 msgstr "取消停靠"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:38
+#, fuzzy
+msgid "There was an error saving the changes"
+msgstr "重命名文件时出错。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProgressDialog.cs:6
 msgid "Operation completed with errors."
@@ -6748,7 +6811,7 @@ msgstr "请输入有效的配置名称。"
 msgid "A configuration with the name '{0}' already exists."
 msgstr "已存在名为“{0}”的配置。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewFileDialog.cs:69
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewFileDialog.cs:67
 msgid "Error creating file"
 msgstr "创建文件时出错"
 
@@ -6924,223 +6987,224 @@ msgid "The workspace already contains '{0}'."
 msgstr "该工作区已经包含“{0}”。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:21
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:28
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:29
 msgid "The file '{0}' could not be loaded."
 msgstr "无法加载文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:27
 msgid "The file '{0}' is not a known project file format."
 msgstr "文件“{0}”不是已知的项目文件格式。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:27
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:28
 msgid "The project '{0}' has already been added."
 msgstr "已添加项目“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:40
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:41
 msgid "Do you really want to remove project '{0}' from '{1}'?"
 msgstr "确实要从“{1}”中删除项目“{0}”?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:40
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:41
 msgid ""
 "The Remove option remove the project from the solution, but it will not "
 "physically delete any file from disk."
 msgstr "“删除”选项会将项目从解决方案中删除，但不会从磁盘中实际删除任何文件。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:40
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:41
 msgid "Delete from Disk"
 msgstr "从磁盘中删除"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:42
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:43
 msgid "Deleting Files..."
 msgstr "正在删除文件..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:42
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:43
 msgid "The file or directory '{0}' could not be deleted."
 msgstr "无法删除文件或目录“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:42
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:43
 msgid ""
 "An application is already running and will have to be stopped. Do you want "
 "to continue?"
 msgstr "某个应用程序已在运行，但将不得不停止。是否要继续?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:54
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:55
 msgid "Execution failed."
 msgstr "执行失败。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:59
 msgid "No runnable executable found."
 msgstr "找不到可运行的可执行文件。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:63
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:64
 msgid "Clean failed."
 msgstr "清理失败。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:63
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:98
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:64
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:4
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:5
 msgid "---------------------- Done ----------------------"
 msgstr "---------------------- 完成 ----------------------"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:63
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:64
 msgid "Clean successful."
 msgstr "清理成功。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:70
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:71
 msgid "Rebuilding... (Clean)"
 msgstr "正在重新生成...(清理)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:71
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:72
 msgid "Rebuilding... (Build)"
 msgstr "正在重新生成...(生成)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:80
 msgid "Outdated Build"
 msgstr "过时的生成"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:80
 msgid ""
 "The project you are executing has changes done after the last time it was "
 "compiled. Do you want to continue?"
 msgstr "你要执行的项目自上次编译后进行了更改。是否要继续?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:94
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:96
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "Build failed."
 msgstr "生成失败。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:96
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:98
 msgid "Save changed documents before building?"
 msgstr "是否在生成前保存已更改的文档?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:96
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:98
 msgid "Some of the open documents have unsaved changes."
 msgstr "某些已打开的文档具有未保存的更改。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "Build canceled."
 msgstr "已取消生成。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "Build successful."
 msgstr "生成成功。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "Build: "
 msgstr "生成:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "Keep file path"
 msgstr "保留文件路径"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:102
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "文件 {0} 位于文件夹目录之外。想如何处理?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:106
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:28
 msgid "Skip"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:106
 msgid "Adding files..."
 msgstr "正在添加文件..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:106
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "该项目中已有名为“{0}”的文件或链接"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:107
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
 msgstr "试图移动/复制该文件时出错。请检查你的权限。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:110
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "该项目中已有名为“{0}”的文件或链接"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:110
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr "该项目中的链接“{0}”已包含文件“{1}”"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:110
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "文件“{0}”已存在。是否要替换它?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:114
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:116
 msgid "Could not get any file from '{0}'."
 msgstr "无法从“{0}”中获取任何文件。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:114
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:116
 msgid "Could not create directory '{0}'."
 msgstr "无法创建目录“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:115
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:117
 msgid "Directory '{0}' could not be moved."
 msgstr "无法移动目录“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:117
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
 msgid "File '{0}' could not be moved."
 msgstr "无法移动文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:117
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
 msgid "File '{0}' could not be copied."
 msgstr "无法复制文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "copy"
 msgstr "副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "another copy"
 msgstr "另一个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "3rd copy"
 msgstr "第三个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "4th copy"
 msgstr "第四个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "5th copy"
 msgstr "第五个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "6th copy"
 msgstr "第六个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "7th copy"
 msgstr "第七个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "8th copy"
 msgstr "第八个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "9th copy"
 msgstr "第九个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:121
 msgid "copy {0}"
 msgstr "副本 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:122
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:124
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
 "want to continue closing it?"
 msgstr "项目“{0}”当前正在运行，但将不得不停止。是否要继续关闭它?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:122
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:124
 msgid "Close Project"
 msgstr "关闭项目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:123
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:125
 msgid "Code completion database generation"
 msgstr "代码完成数据库生成"
 
@@ -8252,59 +8316,45 @@ msgstr "值:"
 msgid "See also:"
 msgstr "另请参阅:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:27
-msgid "PCL {0} - {1} - not installed"
-msgstr "PCL {0} - {1} - 未安装"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:23
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:64
+msgid "Target Framework"
+msgstr "目标框架"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:27
-msgid "PCL {0} - {1}"
-msgstr "PCL {0} - {1}"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:25
+#, fuzzy
+msgid ".NET Standard Platform:"
+msgstr "目标平台:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:29
-msgid "Current Profile:"
-msgstr "当前配置文件:"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:31
-msgid "Target Frameworks:"
-msgstr "目标框架:"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:68
-msgid "Test Error"
-msgstr "测试错误"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:85
-msgid "Need to select at least two frameworks."
-msgstr "需选择至少两个框架。"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:88
-msgid "No applicable frameworks for this selection!"
-msgstr "没有适用于此选定内容的框架!"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:90
-msgid "Multiple frameworks match the current selection:"
-msgstr "多个框架匹配当前选定内容:"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:90
-msgid "You must manually pick a profile in the drop-down selector."
-msgstr "必须在下拉选择器中手动选择配置文件。"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:26
 msgid ""
-"Found multiple applicable frameworks, you need to select additional check "
-"boxes."
-msgstr "找到多个适用的框架，你需要选中更多复选框。"
+"Your library will be compatible with all frameworks that support the "
+"selected <a href='{0}'>.NET Standard</a> version."
+msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:95
-msgid "The following frameworks have been implicitly selected:"
-msgstr "已隐式选择以下框架:"
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:27
+#, fuzzy
+msgid ".NET Portable:"
+msgstr ".NET 可移植子集"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:27
+#, fuzzy
+msgid "Change..."
+msgstr "更改"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:28
+msgid ""
+"Your library will be compatible with the frameworks supported by the "
+"selected <a href='{0}'>PCL profile</a>."
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:33
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:93
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:94
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "No matches"
 msgstr "无匹配项"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:79
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:80
 msgid "Top Result"
 msgstr "最匹配的结果"
 
@@ -8321,12 +8371,12 @@ msgid "Do you want to remove the reference to it from the Recent list?"
 msgstr "是否要从“最近”列表中删除对其的引用?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:206
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:46
 msgid "Today"
 msgstr "今天"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:209
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:51
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:46
 msgid "Yesterday"
 msgstr "昨天"
 
@@ -8340,11 +8390,11 @@ msgid "{0} week ago"
 msgid_plural "{0} weeks ago"
 msgstr[0] "{0} 周前"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:22
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:23
 msgid "file \"{0}\" in project \"{1}\""
 msgstr "项目“{1}”中的文件“{0}”"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:22
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:23
 msgid "file \"{0}\""
 msgstr "文件“{0}”"
 
@@ -8464,7 +8514,7 @@ msgstr "关闭"
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:54
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:60
 msgid "FirstRunDescription"
 msgstr "FirstRunDescription"
 
@@ -8504,19 +8554,24 @@ msgstr "使用 MSBuild 生成引擎(建议用于此项目类型)"
 msgid "Use MSBuild build engine (unsupported for this project type)"
 msgstr "使用 MSBuild 生成引擎(不支持用于此项目类型)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:869
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:159
+#, fuzzy
+msgid "Gathering class information"
+msgstr "正在收集类信息..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:871
 msgid "Insert Field"
 msgstr "插入字段"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:872
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:874
 msgid "Insert Method"
 msgstr "插入方法"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:875
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:877
 msgid "Insert Property"
 msgstr "插入属性"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:878
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:880
 msgid "Insert Code"
 msgstr "插入代码"
 
@@ -8554,18 +8609,21 @@ msgstr "创建"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:483
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.UI.cs:259
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:21
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:45
 msgid "Next"
 msgstr "下一步"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:636
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:645
 msgid "A Project with that name is already in your Project Space"
 msgstr "项目空间中已存在具有该名称的项目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:650
 msgid "A solution with that filename is already in your workspace"
 msgstr "工作区中已存在具有该文件名的解决方案"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:647
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:656
 msgid ""
 "Illegal project name.\n"
 "Name cannot contain a language keyword."
@@ -8573,7 +8631,7 @@ msgstr ""
 "项目名称非法。\n"
 "名称不能包含语言关键字。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:655
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:664
 msgid ""
 "Directory {0} already exists.\n"
 "Do you want to continue creating the project?"
@@ -8581,15 +8639,15 @@ msgstr ""
 "已经存在目录 {0}。\n"
 "是否要继续创建该项目?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:672
 msgid "Could not create directory {0}. File already exists."
 msgstr "无法创建目录 {0}。文件已存在。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:666
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:675
 msgid "You do not have permission to create to {0}"
 msgstr "你无权创建到 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:680
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:689
 msgid "The project could not be created"
 msgstr "无法创建该项目"
 
@@ -8952,15 +9010,38 @@ msgstr "瑞典语"
 msgid "Custom Parameters"
 msgstr "自定义参数..."
 
-#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:4
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:1
+msgid "Getting Started"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:45
+#, fuzzy
+msgid "Finish"
+msgstr "已完成"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:21
+#: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:4
+#: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:16
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:28
+msgid "Cancel"
+msgstr "取消"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:21
+#, fuzzy
+msgid "Back"
+msgstr "后退(_B)"
+
+#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:46
 msgid "Use [%UP%] [%DOWN%] to move to another location."
 msgstr "使用 [%UP%] 和 [%DOWN%] 移至其他位置。"
 
-#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
+#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:46
 msgid "Press [ENTER] to select the location."
 msgstr "按 [ENTER] 以选择该位置。"
 
-#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
+#: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:46
 msgid "Press [ESC] to cancel this operation."
 msgstr "按 [ESC] 以取消此操作。"
 
@@ -9065,6 +9146,7 @@ msgid "C_heckout..."
 msgstr "签出(_H)..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:17
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/AsyncLockAnalyzer.cs:1
 msgid "Lock"
 msgstr "锁定"
 
@@ -9171,7 +9253,7 @@ msgstr "显示远程状态"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:28
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:5
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:4
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:5
 msgid "Status"
 msgstr "状态"
 
@@ -9243,28 +9325,28 @@ msgid "You may have forgotten to unselect items."
 msgstr "你可能忘记了取消选择项。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:140
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:4
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:6
 msgid "_Open All"
 msgstr "全部打开(_O)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:140
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:4
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:6
 msgid "Do you want to open all {0} files?"
 msgstr "是否要打开所有 {0} 文件?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:8
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:10
 msgid "No differences found"
 msgstr "找不到任何差异"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:7
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:36
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:9
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:32
 msgid "Loading data..."
 msgstr "正在加载数据..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:157
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:10
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:12
 msgid "Could not get diff information. "
 msgstr "无法获取差异信息。"
 
@@ -9834,53 +9916,53 @@ msgstr "修订版"
 msgid "Operation"
 msgstr "操作"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:30
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:26
 msgid "(Revert to revision {0})"
 msgstr "(还原为修订版 {0})"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:30
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:26
 msgid "(Revert revision {0})"
 msgstr "(还原修订版 {0})"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:36
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:39
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:32
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:35
 msgid "Error while getting revision text."
 msgstr "获取修订版文本时出错。"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:32
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:36
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:40
 msgid "The file may not be part of the working copy."
 msgstr "该文件可能不是工作副本的一部分。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:36
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:32
 msgid "Error while getting previous revision."
 msgstr "获取以前的修订版时出错。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:36
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:32
 msgid " Binary files differ"
 msgstr " 二进制文件差异"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:43
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:39
 msgid "Revision {0}"
 msgstr "修订版 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:49
 msgid "(No message)"
 msgstr "(没有消息)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:59
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
 msgid "Modify"
 msgstr "修改"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:59
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:7
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:27
 msgid "Replace"
 msgstr "替换"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:59
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:108
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:54
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:102
 msgid "Revision: {0}"
 msgstr "修订版: {0}"
 
@@ -10642,184 +10724,164 @@ msgstr "GIT"
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:26
-#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:2
-#: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.InstallDialog.cs:2
-msgid "Install"
-msgstr "安装"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:26
-msgid ""
-"This solution may be using Subversion. Do you want to install Xcode Command "
-"Line Tools now?"
-msgstr ""
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:26
-msgid ""
-"Xcode Command Line Tools are not currently installed, and are required to "
-"use Subversion.\n"
-"Please restart MonoDevelop after the installation to enable Subversion "
-"support."
-msgstr ""
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:55
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:49
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:7
 msgid "Operation cancelled."
 msgstr "操作已取消。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:143
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:137
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:482
 msgid "(unavailable)"
 msgstr "(不可用)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:147
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:141
 msgid "The operation was interrupted"
 msgstr "已中断该操作"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:144
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:694
 msgid "{0} KBytes"
 msgstr "{0} KB"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:144
 msgid "{0:0.0} MBytes"
 msgstr "{0:0.0} MB"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:144
 msgid "{0} MBytes"
 msgstr "{0} MB"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:730
 msgid "Transferred {0} in {1} seconds."
 msgstr "{0} 的传输时间为 {1} 秒。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:746
 msgid "Skipped missing target: '{0}'"
 msgstr "已跳过缺少的目标:“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:748
 msgid "Skipped '{0}'"
 msgstr "已跳过“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:752
 msgid "Deleted   '{0}'"
 msgstr "已删除“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:757
 msgid "Conflict {0}"
 msgstr "冲突 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:759
 msgid "Added   {0}"
 msgstr "已添加 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:763
 msgid "Restored '{0}'"
 msgstr "已还原“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:766
 msgid "Reverted '{0}'"
 msgstr "已还原“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:769
 msgid "Failed to revert '{0}' -- try updating instead."
 msgstr "未能还原“{0}”- 尝试改为更新。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:772
 msgid "Resolved conflict state of '{0}'"
 msgstr "已解决“{0}”的冲突状态"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:776
 msgid "Add (bin) '{0}'"
 msgstr "添加(二进制)“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:778
 msgid "Add       '{0}'"
 msgstr "添加“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:782
 msgid "Delete    '{0}'"
 msgstr "删除“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:786
 msgid "Update '{0}'"
 msgstr "更新“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:790
 msgid "Fetching external item into '{0}'"
 msgstr "正在将外部项提取到“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:793
 msgid "Finished"
 msgstr "已完成"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:796
 msgid "Performing status on external item at '{0}'"
 msgstr "“{0}”中外部项的“正在执行”状态"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:799
 msgid "Status against revision: '{0}'"
 msgstr "相对修订版“{0}”的状态"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:803
 msgid "Deleting       {0}"
 msgstr "正在删除 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:806
 msgid "Sending        {0}"
 msgstr "正在发送 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:811
 msgid "Adding  (bin)  '{0}'"
 msgstr "正在添加(bin)“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:813
 msgid "Adding         '{0}'"
 msgstr "正在添加“{0}”"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:817
 msgid "Replacing      {0}"
 msgstr "正在替换 {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:823
 msgid "Transmitting file data"
 msgstr "正在传输文件数据"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:831
 msgid "'{0}' locked by user '{1}'."
 msgstr "“{0}”被用户“{1}”锁定。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:834
 msgid "'{0}' unlocked."
 msgstr "“{0}”已解锁。"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 msgid "Get annotations {0}"
 msgstr "获取注释 {0}"
 
@@ -11191,8 +11253,8 @@ msgstr "按下要分配给快捷键的组合键..."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionGroupEditor.cs:4
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:9
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:80
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:86
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:92
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:98
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:2
 msgid "No selection"
 msgstr "无选定内容"
@@ -11889,6 +11951,11 @@ msgstr "插入 ChangeLog 条目"
 #: ../src/addins/ChangeLogAddIn/ChangeLogAddIn.addin.xml:31
 msgid "ChangeLog Integration"
 msgstr "ChangeLog 集成"
+
+#: ../src/addins/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml:2
+#: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.InstallDialog.cs:2
+msgid "Install"
+msgstr "安装"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:45
 msgid "The text that will be inserted into the document."
@@ -13630,7 +13697,7 @@ msgstr "类别(_C):"
 msgid "NewLines"
 msgstr "NewLines"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:67
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/PathedDocumentTextEditorExtension.cs:79
 msgid "No region"
 msgstr "无区域"
 
@@ -15879,77 +15946,67 @@ msgstr "正则表达式工具包"
 msgid "Elements"
 msgstr "元素"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:1
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
-msgid "Start Regular E_xpression"
-msgstr "启动正则表达式(_X)"
-
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:1
-msgid "Stop e_xecution"
-msgstr "停止执行(_X)"
-
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "Match '{0}'"
 msgstr "与“{0}”匹配"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "Group '{0}':'{1}'"
 msgstr "组“{0}”:“{1}”"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "Capture '{0}'"
 msgstr "捕获“{0}”"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "Group '{0}' not found"
 msgstr "找不到组“{0}”"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:7
 msgid "Invalid expression"
 msgstr "无效表达式"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Ignore Whitespace"
 msgstr "忽略空格"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Ignore case"
 msgstr "忽略大小写"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Single line"
 msgstr "单行"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Multi line"
 msgstr "多行"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Explicit Capture"
 msgstr "显式捕获"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:3
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:9
 msgid "Right to left"
 msgstr "从右到左"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 msgid "Regular Expression"
 msgstr "正则表达式"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 msgid "Expand matches"
 msgstr "展开匹配项"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 msgid "Options:"
 msgstr "选项:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 msgid "Input:"
 msgstr "输入:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:30
 msgid "Matches"
 msgstr "匹配项"
 
@@ -16849,15 +16906,15 @@ msgstr "无法保存文件 - 拒绝访问"
 msgid "Insert Breakpoint"
 msgstr "新建断点"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:191
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:192
 msgid "Print operation failed."
 msgstr "打印操作失败。"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:192
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:193
 msgid "Press F2 to focus"
 msgstr "按 F2 以聚焦"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:192
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:193
 msgid "Clipboard ring"
 msgstr "剪贴板循环"
 
@@ -16956,7 +17013,7 @@ msgstr "保持行尾原样不变"
 msgid "Always convert line endings"
 msgstr "始终转换行尾"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:14
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:13
 msgid ""
 "No valid colors found inside the settings. (Maybe only theme is defined - "
 "check <FontsAndColors> node?)"
@@ -16964,30 +17021,30 @@ msgstr ""
 "在设置内找不到有效的颜色。(可能仅定义了一个主题 - 是否检查 <FontsAndColors> "
 "节点?)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:14
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:13
 msgid "Loading error"
 msgstr "加载错误"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:14
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:13
 #, fuzzy
 msgid "Loading error: {0}"
 msgstr "加载错误"
 
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:14
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:15
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:16
 msgid "Highlighting Scheme"
 msgstr "突出显示方案"
 
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:14
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:15
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:16
 msgid "Color schemes"
 msgstr "配色方案"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:16
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:15
 msgid "Visual Studio .NET settings"
 msgstr "Visual Studio .NET 设置"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:18
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:17
 msgid "Highlighting with the same name already exists. Remove {0} first."
 msgstr "已存在相同名称时突出显示。先删除 {0}。"
 
@@ -17803,6 +17860,7 @@ msgstr "在新打包项目中保存"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:2
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:117
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:2
 msgid "Packages"
 msgstr "包"
 
@@ -19352,11 +19410,6 @@ msgstr "打开方式:"
 msgid "OK"
 msgstr "确定"
 
-#: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:4
-#: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:16
-msgid "Cancel"
-msgstr "取消"
-
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPopUpButton.cs:3
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:204
 msgid "Add or Remove..."
@@ -19421,6 +19474,16 @@ msgstr "全部显示"
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
 msgid "Show all applications' windows"
 msgstr "显示所有应用程序的窗口"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:7
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
+msgid "Info"
+msgstr "信息"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:7
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
+msgid "Warning"
+msgstr "警告"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/AnalysisOptionsPanel.cs:3
 msgid "Enable source analysis of open files"
@@ -19561,14 +19624,6 @@ msgstr "“{0}”选项(_O)"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
 msgid "Do not show"
 msgstr "不显示"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
-msgid "Warning"
-msgstr "警告"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
-msgid "Info"
-msgstr "信息"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeWholeSolutionHandler.cs:10
 msgid "Analyzing solution"
@@ -19928,6 +19983,7 @@ msgid "Error launching web browser"
 msgstr "启动 Web 浏览器时出错"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:4
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:14
 msgid "Enabled"
 msgstr "已启用"
 
@@ -20879,6 +20935,12 @@ msgstr "打开文件时出错。"
 msgid "Go to File"
 msgstr "转到文件"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:4
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
+#, fuzzy
+msgid "Edit Breakpoint…"
+msgstr "编辑断点"
+
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:6
 msgid "Condition"
 msgstr "条件"
@@ -20890,6 +20952,39 @@ msgstr "命中次数"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:6
 msgid "Last Trace"
 msgstr "上次跟踪"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:37
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:32
+#, fuzzy
+msgid "Enable All Breakpoints"
+msgstr "清除所有断点"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:37
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:32
+#, fuzzy
+msgid "Disable All Breakpoints"
+msgstr "启用或禁用所有断点"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:32
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
+#, fuzzy
+msgid "Remove Breakpoint"
+msgid_plural "Remove Breakpoints"
+msgstr[0] "删除断点"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:37
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:29
+#, fuzzy
+msgid "Enable Breakpoint"
+msgid_plural "Enable Breakpoints"
+msgstr[0] "启用/禁用断点"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:37
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:29
+#, fuzzy
+msgid "Disable Breakpoint"
+msgid_plural "Disable Breakpoints"
+msgstr[0] "启用/禁用断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:10
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:43
@@ -21066,7 +21161,7 @@ msgstr "已捕获异常"
 msgid "_Only show my code."
 msgstr "仅显示我的代码(_O)。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:142
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:144
 msgid "<b>{0}</b> has been thrown"
 msgstr "<b>{0}</b> 被引发"
 
@@ -21312,6 +21407,7 @@ msgid "Pause Execution"
 msgstr "暂停执行"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:28
 msgid "Continue"
 msgstr "继续"
 
@@ -21332,7 +21428,8 @@ msgid "Step Out"
 msgstr "跳出"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-msgid "New Breakpoint"
+#, fuzzy
+msgid "New Breakpoint…"
 msgstr "新建断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
@@ -21348,11 +21445,8 @@ msgid "View Breakpoints"
 msgstr "查看断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-msgid "Remove Breakpoint"
-msgstr "删除断点"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-msgid "Breakpoint Properties"
+#, fuzzy
+msgid "Edit Breakpoint Properties"
 msgstr "断点属性"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
@@ -21364,12 +21458,18 @@ msgid "Enable/Disable Breakpoint"
 msgstr "启用/禁用断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
+#, fuzzy
+msgid "Enable or Disable Breakpoint"
+msgstr "启用或禁用所有断点"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
 msgid "Enable or Disable All Breakpoints"
 msgstr "启用或禁用所有断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-msgid "Clear All Breakpoints"
-msgstr "清除所有断点"
+#, fuzzy
+msgid "Remove All Breakpoints"
+msgstr "删除断点"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
 msgid "Show Disassembly"
@@ -21423,43 +21523,44 @@ msgstr "全否"
 msgid "File Conflict"
 msgstr "文件冲突"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:81
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:277
-msgid "View License"
-msgstr "查看许可证"
-
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:33
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:50
 msgid "License Acceptance"
 msgstr "许可证接受"
 
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:52
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:62
+#, fuzzy
 msgid ""
-"The following package requires that you accept the license terms before "
-"installing."
-msgstr "以下包需要你在安装前接受许可证条款。"
-
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:71
-msgid ""
-"The following packages require that you accept their license terms before "
-"installing."
-msgstr "以下包需要你在安装前接受许可证条款。"
-
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:106
-msgid ""
-"By clicking Accept you agree to the license terms for the packages listed "
-"above.\n"
-"If you do not agree to the license terms click Decline."
+"By clicking <b>Accept</b> you agree to the license terms for the packages "
+"listed above.\n"
+"If you do not agree to the license terms click <b>Decline</b>."
 msgstr ""
 "单击“接受”即表示你同意上述包的许可证条款。\n"
 "如果你不同意许可证条款，请单击“拒绝”。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:133
-msgid "_Decline"
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:82
+#, fuzzy
+msgid "Decline"
 msgstr "拒绝(_D)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:144
-msgid "_Accept"
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
+#, fuzzy
+msgid "Accept"
 msgstr "接受(_A)"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:131
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:277
+msgid "View License"
+msgstr "查看许可证"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:56
+#, fuzzy
+msgid ""
+"The following package requires that you accept its license terms before "
+"installing:"
+msgid_plural ""
+"The following packages require that you accept their license terms before "
+"installing:"
+msgstr[0] "以下包需要你在安装前接受许可证条款。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/PackageSourcesOptionsPanel.cs:85
 msgid "Unable to encrypt Package Source passwords."
@@ -21598,10 +21699,6 @@ msgstr "包需要重定目标"
 msgid "Development Dependency"
 msgstr "开发依赖关系"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:64
-msgid "Target Framework"
-msgstr "目标框架"
-
 #  nb.AppendPage(aatp, new Label("Authors"));
 #  nb.AppendPage(changelog, new Label("ChangeLog"));
 #  nb.AppendPage(aatp, new Label("Authors"));
@@ -21684,166 +21781,186 @@ msgid "{0} packages added with warnings."
 msgstr "已添加 {0} 个包，但出现警告。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:66
+#, fuzzy
+msgid "Removing {0} packages..."
+msgstr "正在添加 {0} 个包..."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
+#, fuzzy
+msgid "{0} packages successfully removed."
+msgstr "已成功添加 {0} 个包。"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
+#, fuzzy
+msgid "Could not remove packages."
+msgstr "无法还原包。"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
+#, fuzzy
+msgid "{0} packages removed with warnings."
+msgstr "已添加 {0} 个包，但出现警告。"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:76
 msgid "Updating packages in solution..."
 msgstr "正在更新解决方案中的包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:87
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:77
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:97
 msgid "Packages successfully updated."
 msgstr "已成功更新包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:88
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:78
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:98
 msgid "Could not update packages."
 msgstr "无法更新包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:89
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
 msgid "Packages updated with warnings."
 msgstr "已更新包，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:78
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:98
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:88
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:108
 msgid "Packages are up to date."
 msgstr "包是最新版本。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:89
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:109
 msgid "No updates found but warnings were reported."
 msgstr "找不到更新，但报告警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:86
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:96
 msgid "Updating packages in project..."
 msgstr "正在更新项目中的包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:106
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:116
 msgid "Updating {0}..."
 msgstr "正在更新 {0}..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:107
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:117
 msgid "{0} successfully updated."
 msgstr "已成功更新 {0}。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:108
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:118
 msgid "Could not update {0}."
 msgstr "无法更新 {0}。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:109
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:119
 msgid "{0} updated with warnings."
 msgstr "已更新 {0}，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:118
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:128
 msgid "{0} is up to date."
 msgstr "{0} 是最新版本。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:119
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:129
 msgid "No update found but warnings were reported."
 msgstr "找不到更新，但报告警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:126
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:136
 msgid "Removing {0}..."
 msgstr "正在删除 {0}..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:127
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:137
 msgid "{0} successfully removed."
 msgstr "已成功删除 {0}。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:128
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:138
 msgid "Could not remove {0}."
 msgstr "无法删除 {0}。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:129
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:139
 msgid "{0} removed with warnings."
 msgstr "已删除 {0}，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:136
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:146
 msgid "Restoring packages for solution..."
 msgstr "正在还原解决方案的包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:137
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:157
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:167
 msgid "Packages successfully restored."
 msgstr "已成功还原包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:138
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:158
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:168
 msgid "Could not restore packages."
 msgstr "无法还原包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:139
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:159
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:169
 msgid "Packages restored with warnings."
 msgstr "已还原包，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:146
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:156
 msgid "Restoring packages before update..."
 msgstr "在更新前还原包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:156
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:166
 msgid "Restoring packages for project..."
 msgstr "正在还原项目的包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:166
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:176
 msgid "Checking package compatibility with new target framework..."
 msgstr "正在检查包与新目标框架的兼容性..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:167
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:177
 msgid "Packages are compatible."
 msgstr "包是兼容的。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:168
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:178
 msgid "Could not check package compatibility."
 msgstr "无法检查包的兼容性。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:169
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:179
 msgid "Package retargeting required."
 msgstr "需要重定包目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:176
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:186
 msgid "Retargeting {0}..."
 msgstr "正在重定 {0} 目标..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:177
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:187
 msgid "{0} successfully retargeted."
 msgstr "已成功重定 {0} 目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:178
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:188
 msgid "Could not retarget {0}."
 msgstr "无法重定 {0} 目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:179
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:189
 msgid "{0} retargeted with warnings."
 msgstr "已重定 {0} 目标，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:186
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:196
 msgid "Retargeting {0} packages..."
 msgstr "正在重定 {0} 个包的目标..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:187
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:197
 msgid "{0} packages successfully retargeted."
 msgstr "已成功重定 {0} 个包的目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:188
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:198
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:208
 msgid "Could not retarget packages."
 msgstr "无法重定包目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:189
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:199
 msgid "{0} packages retargeted with warnings."
 msgstr "已重定 {0} 个包的目标，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:196
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:206
 msgid "Retargeting packages..."
 msgstr "正在重定包目标..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:197
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:207
 msgid "Packages successfully retargeted."
 msgstr "已成功重定包目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:199
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:209
 msgid "Packages retarget with warnings."
 msgstr "已重定包目标，但出现警告。"
 
@@ -21954,17 +22071,21 @@ msgid ""
 "WARNING: {0} Package contains PowerShell script '{1}' which will not be run."
 msgstr "警告: {0} 包包含 PowerShell 脚本“{1}”，该脚本将不会运行。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/BuildIntegrationProjectSystem.cs:310
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/BuildIntegrationProjectSystem.cs:314
 msgid ""
 "Failed to resolve all project references for '{0}'. The package restore "
 "result for '{1}' may be incomplete."
 msgstr "未能解析“{0}”的所有项目引用。“{1}”的包还原结果可能不完整。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:107
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/UninstallNuGetPackageAction.cs:132
+msgid "Package '{0}' has already been uninstalled from project '{1}'"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:110
 msgid "Restore failed for '{0}'."
 msgstr "“{0}”的还原操作失败。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:110
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:113
 msgid "Restore failed."
 msgstr "还原失败。"
 
@@ -22029,7 +22150,7 @@ msgstr ""
 "{0}"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:9
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:112
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:111
 msgid "NuGet"
 msgstr "NuGet"
 
@@ -22110,15 +22231,15 @@ msgstr "重定所有包的目标"
 msgid "Retarget All Packages"
 msgstr "重定所有包的目标"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:59
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:58
 msgid "Current package version"
 msgstr "当前包版本"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:85
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:84
 msgid "Add _Packages..."
 msgstr "添加包(_P)..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:113
 msgid "Sources"
 msgstr "源"
 
@@ -22404,6 +22525,137 @@ msgstr ""
 msgid "Performance Diagnostics"
 msgstr "诊断"
 
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:18
+#, fuzzy
+msgid "Remove {0}"
+msgstr "删除“{0}”"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:18
+msgid ""
+"{0}References in your code need to be removed manually. Are you sure you "
+"want to remove the service from project {1}?"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:21
+#, fuzzy
+msgid "The following packages and their dependencies will be removed:"
+msgstr "无法解析以下依赖关系:"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConnectedServicesWidget.cs:2
+msgid "Back to Service Gallery"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:3
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:34
+#, fuzzy
+msgid "Added"
+msgstr "已添加 {0}"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:3
+#, fuzzy
+msgid "Available"
+msgstr "可用"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:2
+#, fuzzy
+msgid "Dependencies"
+msgstr "<b>依赖关系</b>"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/GettingStartedConfigurationSection.cs:4
+#, fuzzy
+msgid "Snippet {0}"
+msgstr "已跳过“{0}”"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:3
+msgid "Code"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:19
+#, fuzzy
+msgid "Add to the project"
+msgstr "添加到项目(_A):"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:26
+#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:3
+#: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:2
+msgid "Installed"
+msgstr "已安装"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:26
+#, fuzzy
+msgid "Configured"
+msgstr "配置"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:30
+#, fuzzy
+msgid "Installing…"
+msgstr "正在安装"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:30
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:23
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:35
+#, fuzzy
+msgid "Adding…"
+msgstr "正在加载..."
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:5
+msgid "This service has no dependencies"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:20
+#, fuzzy
+msgid "Add Dependency"
+msgstr "开发依赖关系"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:26
+#, fuzzy
+msgid "Adding failed"
+msgstr "正在添加文件..."
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:26
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:39
+msgid "Retry"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:19
+#, fuzzy
+msgid "Platforms:"
+msgstr "平台:"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:26
+#, fuzzy
+msgid "Add {0} to {1}"
+msgstr "{0}/{1}"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:26
+#, fuzzy
+msgid "Also add '{0}' to other projects in the solution?"
+msgstr "向所选解决方案添加新项目"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:35
+#, fuzzy
+msgid "Removing…"
+msgstr "正在删除..."
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:3
+msgid "Service Capabilities"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:9
+msgid "Open Service Gallery"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:9
+#, fuzzy
+msgid "Open Service Details"
+msgstr "隐藏详细信息"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:10
+#: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:11
+#, fuzzy
+msgid "Remove Service…"
+msgstr "删除大括号"
+
 #: ../external/ikvm/reflect/Projection.cs:19
 #, fuzzy
 msgid ""
@@ -22476,11 +22728,6 @@ msgstr "所需的外接程序“{0}”被禁用。"
 #: ../external/mono-addins/Mono.Addins/Mono.Addins/AddinEngine.cs:16
 msgid "The required addin '{0}' is not installed."
 msgstr "所需的外接程序“{0}”未安装。"
-
-#: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:3
-#: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:2
-msgid "Installed"
-msgstr "已安装"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:3
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:2
@@ -27244,6 +27491,28 @@ msgstr "转为“NameOf({0})”"
 msgid "Warns about static fields in generic types"
 msgstr "就通用类型中的静态字段发出警告"
 
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/AllocationAnalyzer.cs:1
+#, fuzzy
+msgid "Object allocation"
+msgstr "要锁定的对象"
+
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/AllocationAnalyzer.cs:1
+msgid "Object allocation via {0} on {1}"
+msgstr ""
+
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/StringBuilderAnalyzer.cs:1
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/SubstringCompareAnalyzer.cs:1
+msgid "Substring allocates an extra string"
+msgstr ""
+
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/ForeachEnumeratorAllocationAnalyzer.cs:1
+msgid "Enumerator is guaranteed to be boxed when it's accessed on an interface"
+msgstr ""
+
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/Marius/AsyncLockAnalyzer.cs:1
+msgid "Consider using SemaphoreSlim"
+msgstr ""
+
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "C_onnect"
 msgstr "连接(_O)"
@@ -27287,6 +27556,20 @@ msgstr "时间视图"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:2
 msgid "List View"
 msgstr "列表视图"
+
+#~ msgid "Reveal _Logs"
+#~ msgstr "展现日志(_L)"
+
+#~ msgid "Start Regular E_xpression"
+#~ msgstr "启动正则表达式(_X)"
+
+#~ msgid "Stop e_xecution"
+#~ msgstr "停止执行(_X)"
+
+#~ msgid ""
+#~ "The following packages require that you accept their license terms before "
+#~ "installing."
+#~ msgstr "以下包需要你在安装前接受许可证条款。"
 
 #~ msgid "Incompatible target framework ({0})"
 #~ msgstr "目标框架不兼容({0})"

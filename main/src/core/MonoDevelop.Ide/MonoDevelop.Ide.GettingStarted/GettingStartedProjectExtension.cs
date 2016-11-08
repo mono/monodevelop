@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.GettingStarted
 		public GettingStartedNode ProjectPadNode {
 			get {
 				if (treeDataObject == null) {
-					treeDataObject = new GettingStartedNode (Project);
+					treeDataObject = new GettingStartedNode (this);
 				}
 				return treeDataObject;
 			}
@@ -32,10 +32,13 @@ namespace MonoDevelop.Ide.GettingStarted
 				showGettingStartedOnce = true;
 		}
 
-		protected override void OnEndLoad ()
+		internal void NotifyNodeAdded ()
 		{
-			base.OnEndLoad ();
+			ShowGettingStartedOnce ();
+		}
 
+		void ShowGettingStartedOnce ()
+		{
 			var provider = ProjectPadNode.Provider;
 			if (provider == null)
 				return;

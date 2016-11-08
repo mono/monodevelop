@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 using Microsoft.Build.BuildEngine;
 
@@ -70,6 +71,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			}
 		}
 
+		[Pure]
 		public static ConditionExpression ParseCondition (string condition)
 		{
 			ConditionParser parser = new ConditionParser (condition);
@@ -91,6 +93,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return ParseBooleanAnd ();
 		}
 
+		[Pure]
 		public static string And (string a, string b)
 		{
 			return a + " and " + b;

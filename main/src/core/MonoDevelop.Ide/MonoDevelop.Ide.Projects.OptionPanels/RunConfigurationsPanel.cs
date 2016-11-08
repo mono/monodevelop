@@ -306,8 +306,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public RunConfigurationNameDialog (Xwt.WindowFrame parent, string name, Command action, IEnumerable<string> invalidNames)
 		{
 			TransientFor = parent;
-			this.Resizable = false;
 			Resizable = false;
+			Width = 300;
 			this.invalidNames = invalidNames;
 			mainBox = new VBox ();
 			var box = new HBox ();
@@ -321,21 +321,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Buttons.Add (new DialogButton (Command.Cancel));
 			Buttons.Add (okButton = new DialogButton (action));
 			this.DefaultCommand = okButton.Command;
-			entry.KeyReleased+= Entry_KeyReleased;
+			entry.Activated += Entry_Activated;
 			entry.Changed += (s, o) => UpdateControls ();
-			UpdateControls ();
 		}
 
-		void Entry_KeyReleased (object sender, KeyEventArgs e)
+		void Entry_Activated (object sender, EventArgs e)
 		{
-			if (e.Key == Key.Return && e.Modifiers == ModifierKeys.None) {
-				OnCommandActivated (okButton.Command);
-			}
+			OnCommandActivated (okButton.Command);
 		}
 
 		void UpdateControls ()
 		{
 			okButton.Sensitive = entry.Text.Length > 0;
+		}
+
+		protected override void OnShown ()
+		{
+			UpdateControls ();
+			base.OnShown ();
 		}
 
 		public string NewName {
