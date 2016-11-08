@@ -7365,7 +7365,6 @@
     <EmbeddedResource Include="icons\redo-16~dark~disabled%402x.png">
       <LogicalName>redo-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\folder-services-16.png">
       <LogicalName>folder-services-16.png</LogicalName>
     </EmbeddedResource>
@@ -7390,7 +7389,6 @@
     <EmbeddedResource Include="icons\folder-services-16~sel%402x.png">
       <LogicalName>folder-services-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\folder-code-16.png">
       <LogicalName>folder-code-16.png</LogicalName>
     </EmbeddedResource>
@@ -7415,7 +7413,6 @@
     <EmbeddedResource Include="icons\folder-code-16~sel%402x.png">
       <LogicalName>folder-code-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\service-16.png">
       <LogicalName>service-16.png</LogicalName>
     </EmbeddedResource>
@@ -7464,7 +7461,6 @@
     <EmbeddedResource Include="icons\service-24~dark~sel%402x.png">
       <LogicalName>service-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\expander-arrow-closed-8.png">
       <LogicalName>expander-arrow-closed-8.png</LogicalName>
     </EmbeddedResource>
@@ -7489,7 +7485,6 @@
     <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel%402x.png">
       <LogicalName>expander-arrow-closed-8~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\expander-arrow-expanded-8.png">
       <LogicalName>expander-arrow-expanded-8.png</LogicalName>
     </EmbeddedResource>
@@ -7514,7 +7509,6 @@
     <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel%402x.png">
       <LogicalName>expander-arrow-expanded-8~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\code-16.png">
       <LogicalName>code-16.png</LogicalName>
     </EmbeddedResource>
@@ -7539,7 +7533,6 @@
     <EmbeddedResource Include="icons\code-16~dark~sel%402x.png">
       <LogicalName>code-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\checkmark-16.png">
       <LogicalName>checkmark-16.png</LogicalName>
     </EmbeddedResource>
@@ -7564,7 +7557,6 @@
     <EmbeddedResource Include="icons\checkmark-16~dark~sel%402x.png">
       <LogicalName>checkmark-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="icons\dependency-16.png">
       <LogicalName>dependency-16.png</LogicalName>
     </EmbeddedResource>
@@ -7589,7 +7581,6 @@
     <EmbeddedResource Include="icons\dependency-16~dark~sel%402x.png">
       <LogicalName>dependency-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-
     <EmbeddedResource Include="templates\images\workspace-template.png">
       <LogicalName>workspace-template.png</LogicalName>
     </EmbeddedResource>
@@ -8054,6 +8045,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\Yaml.sublime-syntax">
       <LogicalName>Yaml.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\make\syntaxes\Makefile.json">
+      <LogicalName>Makefile.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\java\syntaxes\java.json">
+      <LogicalName>java.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\powershell\syntaxes\PowershellSyntax.tmLanguage">
+      <LogicalName>PowershellSyntax.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\shellscript\syntaxes\Shell-Unix-Bash.tmLanguage.json">
+      <LogicalName>Shell-Unix-Bash.tmLanguage.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\syntaxes\swift.json">
+      <LogicalName>swift.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\syntaxes\Batch File.tmLanguage">
+      <LogicalName>Batch File.tmLanguage</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -9116,6 +9125,24 @@
     <None Include="packages.config" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\F#Comments.tmPreferences" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\AppleStrings.sublime-syntax" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\make\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\make\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\make\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\shellscript\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\shellscript\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\shellscript\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\powershell\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\powershell\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\powershell\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\java\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\LICENSE.md" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\package.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\snippets\swift.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\language-configuration.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\package.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

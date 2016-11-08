@@ -39,8 +39,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		public string Name { get; internal set; }
 
-		readonly List<string> extensions;
-		public IReadOnlyList<string> FileExtensions { get { return extensions; } }
+		readonly List<string> fileTypes;
+		public IReadOnlyList<string> FileTypes { get { return fileTypes; } }
 
 		public string Scope { get; internal set; }
 
@@ -57,9 +57,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal SyntaxHighlightingDefinition (string name, string scope, string firstLineMatch, bool hidden, List<string> extensions, List<SyntaxContext> contexts)
+		internal SyntaxHighlightingDefinition (string name, string scope, string firstLineMatch, bool hidden, List<string> fileTypes, List<SyntaxContext> contexts)
 		{
-			this.extensions = extensions;
+			this.fileTypes = fileTypes;
 			this.contexts = contexts;
 			Name = name;
 			Scope = scope;
@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var include = o as string;
 				var ctx = GetContext (include);
 				if (ctx == null) {
-					LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
+					// LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
 					continue;
 				}
 				if (alreadyIncluded.Contains (include))
@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var include = o as string;
 				var ctx = GetContext (include);
 				if (ctx == null) {
-					LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
+					// LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
 					continue;
 				}
 				preparedMatches.AddRange (ctx.GetMatches ());

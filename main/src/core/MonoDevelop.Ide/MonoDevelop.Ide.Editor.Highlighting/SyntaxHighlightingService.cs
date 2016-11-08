@@ -462,19 +462,27 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
-			var ext = !string.IsNullOrEmpty (fileName) ? fileName.Extension.TrimStart ('.') : null;
+			string name = fileName;
+
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
-					if (ext != null && h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
+					if (name != null && h.FileTypes.Any (e => name.EndsWith (e, FilePath.PathComparison))) {
 						return h;
-					foreach (var fe in h.FileExtensions) {
-						var mime = DesktopService.GetMimeTypeForUri ("a." + fe);
-						if (mimeType == mime)
-							return h;
 					}
 				}
-
 			}
+
+			foreach (var bundle in languageBundles) {
+				foreach (var h in bundle.Highlightings) {
+					foreach (var fe in h.FileTypes) {
+						var mime = DesktopService.GetMimeTypeForUri (fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : fe);
+						if (mimeType == mime) {
+							return h;
+						}
+					}
+				}
+			}
+
 			return null;
 		}
 
@@ -484,7 +492,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (fileName != null) {
 				foreach (var bundle in languageBundles) {
 					foreach (var highlight in bundle.Highlightings) {
-						if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
+						if (highlight.FileTypes.Any (ext => fileName.EndsWith (ext, FilePath.PathComparison))) {
 							scope = highlight.Scope;
 							break;
 						}

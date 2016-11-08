@@ -356,7 +356,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (incl != null) {
 					if (incl == "$base") {
 						includesAndMatches.Add ("main");
-					} else if (incl.StartsWith ("#")){
+					} else if (incl == "$self") {
+						includesAndMatches.Add ("main");
+					} else if (incl.StartsWith ("#", StringComparison.Ordinal)) {
 						includesAndMatches.Add (incl.TrimStart ('#'));
 					} else {
 						includesAndMatches.Add ("#" + incl);

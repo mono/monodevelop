@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				case "file_extensions":
 					foreach (var nn in entry.Value.AllNodes.OfType<YamlScalarNode> ()) {
-						extensions.Add (nn.Value);
+						extensions.Add ("." + nn.Value);
 					}
 					break;
 				case "scope":
