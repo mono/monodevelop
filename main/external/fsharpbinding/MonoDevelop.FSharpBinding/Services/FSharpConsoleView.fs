@@ -131,8 +131,8 @@ type FSharpConsoleView() as x =
         let tokens =
             if line.StartsWith("#") && line.Length > 1 && not (line.StartsWith("#r")) then
               [ yield TokeniserOutput.PlainHash
-                yield! getTokensForLine "temp.fsx" None line.[1..] state ]
-            else getTokensForLine "temp.fsx" None line state
+                yield! getTokensForLine None None line.[1..] state ]
+            else getTokensForLine None None line state
         tokens |>
         List.fold (fun state t ->
                        match t with
@@ -401,7 +401,7 @@ type FSharpConsoleView() as x =
     member x.WriteOutput (line:string, highlight) =
         using (startInputProcessing()) (fun _ ->
         if highlight then
-            let tokens = getTokensFromLines "temp.fsx" None (line.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)) 0L
+            let tokens = getTokensFromLines None None (line.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)) 0L
             tokens |>
             List.iter
               (List.iter (function

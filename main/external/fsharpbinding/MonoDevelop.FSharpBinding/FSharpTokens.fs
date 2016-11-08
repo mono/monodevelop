@@ -42,7 +42,7 @@ module Tokens =
             LoggingService.LogDebug ("FSharpParser: Processing tokens for {0}", Path.GetFileName fileName)
             let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (source, fileName)
             let lines = readOnlyDoc.GetLines() |> Seq.map readOnlyDoc.GetLineText
-            let tokens = Lexer.getTokensWithInitialState 0L lines fileName defines
+            let tokens = Lexer.getTokensWithInitialState 0L lines (Some fileName) defines
             Some(tokens)
         with ex ->
             LoggingService.LogWarning ("FSharpParser: Couldn't update token information for {0}", Path.GetFileName fileName, ex)
