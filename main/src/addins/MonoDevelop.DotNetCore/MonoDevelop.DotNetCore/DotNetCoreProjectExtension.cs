@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -161,6 +160,30 @@ namespace MonoDevelop.DotNetCore
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
+		}
+
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (!IsDotNetCoreInstalled ()) {
+				return ShowDotNetCoreNotInstalledDialog ();
+			}
+
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		bool IsDotNetCoreInstalled ()
+		{
+			var dotNetCorePath = new DotNetCorePath ();
+			return !dotNetCorePath.IsMissing;
+		}
+
+		Task ShowDotNetCoreNotInstalledDialog ()
+		{
+			return Runtime.RunInMainThread (() => {
+				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
+					dialog.Show ();
+				}
+			});
 		}
 	}
 }

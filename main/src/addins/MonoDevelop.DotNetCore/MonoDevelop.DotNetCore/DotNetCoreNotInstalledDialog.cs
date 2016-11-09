@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCorePath.cs
+// DotNetCoreNotInstalledDialog.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,33 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using System;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCorePath
+	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		public DotNetCorePath ()
+		GenericMessage message;
+		AlertButton downloadButton;
+
+		public DotNetCoreNotInstalledDialog ()
 		{
-			FileName = GetDotNetFileName ();
+			Build ();
 		}
 
-		public string FileName { get; private set; }
-		public bool IsMissing { get; private set; }
-
-		string GetDotNetFileName ()
+		void Build ()
 		{
-			if (!Platform.IsWindows) {
-				const string dotnetFileName = "/usr/local/share/dotnet/dotnet";
-				if (File.Exists (dotnetFileName)) {
-					return dotnetFileName;
-				}
+			message = new GenericMessage {
+				Text = GettextCatalog.GetString (".NET Core is required to run this application."),
+				DefaultButton = 1,
+				Icon = Stock.Information
+			};
 
-				IsMissing = true;
-			}
+			downloadButton = new AlertButton (GettextCatalog.GetString ("Download .NET Core..."));
+			message.Buttons.Add (AlertButton.Cancel);
+			message.Buttons.Add (downloadButton);
 
-			return "dotnet";
+			message.AlertButtonClicked += AlertButtonClicked;
+		}
+
+		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
+		{
+			if (e.Button == downloadButton)
+				DesktopService.ShowUrl ("https://go.microsoft.com/fwlink/?linkid=834543");
+		}
+
+		public void Dispose ()
+		{
+			message.AlertButtonClicked -= AlertButtonClicked;
+		}
+
+		public void Show ()
+		{
+			MessageService.GenericAlert (message);
 		}
 	}
 }
