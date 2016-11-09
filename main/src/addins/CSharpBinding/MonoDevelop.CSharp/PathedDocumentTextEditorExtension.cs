@@ -279,6 +279,8 @@ namespace MonoDevelop.CSharp
 
 		void ResetOwnerProject ()
 		{
+			if (ownerProjects == null)
+				return;
 			if (ownerProjects.Count > 0)
 				DocumentContext.AttachToProject (FindBestDefaultProject ());
 		}
