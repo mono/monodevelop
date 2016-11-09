@@ -1,0 +1,152 @@
+﻿%YAML 1.2
+---
+# CgShader.sublime-syntax
+# 
+#  Author:
+#    Mike Krüger <mikkrg@microsoft.com>
+# 
+#  Copyright (c) 2016 Microsoft Corporation
+# 
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+# 
+#  The above copyright notice and this permission notice shall be included in
+#  all copies or substantial portions of the Software.
+# 
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#  THE SOFTWARE.
+
+name: "Cg Shader"
+file_extensions:
+  - cg
+scope: source.cg
+contexts:
+  main:
+    - include: comments
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: preprocessor
+  comments:
+    - match: '//'
+      scope: comment.line.source.cg
+      push:
+        - include: commenttags
+        - match: $\n?
+          pop: true
+    - match: '///'
+      scope: comment.line.documentation.source.cg
+      push:
+        - match: '$\n?'
+          pop: true
+        - include: xmldoc
+    - match: '/\*'
+      scope: comment.block.source.cg
+      push:
+        - include: commenttags
+        - match: '\*/\n?'
+          pop: true
+  commenttags:
+    - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
+      scope: markup.other.source.cg
+  xmldoc:
+    - match : '<'
+      scope: comment.line.documentation.tag.source.cg
+      push :
+        - match : '(>|$\n?)'
+          pop: true
+  keywords:
+    - match: '\b(asm|asm_fragment|auto|case|class|column_major|compile|const|const_cast|continue|decl|default|delete|discard|do|dword|dynamic_cast|else|emit|enum|explicit|extern|for|friend|get|if|inline|interface|matrix|mutable|new|operator|packed|pass|pixelfragment|pixelshader|private|protected|public|register|reinterpret_cast|row_major|shared|sizeof|static_cast|string|struct|switch|technique|template|texture|texture1D|texture2D|texture3D|textureCUBE|textureRECT|this|typedef|typeid|typename|union|vector|vertexfragment|vertexshader|virtual|volatile|while)\b'
+      scope: keyword.source.cg
+    - match: '\b(break|goto|return)\b'
+      scope: keyword.source.cg
+    - match: '\b(catch|throw|try)\b'
+      scope: keyword.source.cg
+    - match: '\b(namespace|using)\b'
+      scope: keyword.source.cg
+    - match: '\b(const|extern|in|inline|inout|static|out|uniform|varying)\b'
+      scope: keyword.source.cg
+    - match: '\b(float|float1|float2|float3|float4|float1x1|float1x2|float1x3|float1x4|float2x1|float2x2|float2x3|float2x4|float3x1|float3x2|float3x3|float3x4|float4x1|float4x2|float4x3|float4x4)\b'
+      scope: keyword.source.cg
+    - match: '\b(half|half1|half2|half3|half4|half1x1|half1x2|half1x3|half1x4|half2x1|half2x2|half2x3|half2x4|half3x1|half3x2|half3x3|half3x4|half4x1|half4x2|half4x3|half4x4)\b'
+      scope: keyword.source.cg
+    - match: '\b(int|int1|int2|int3|int4|int1x1|int1x2|int1x3|int1x4|int2x1|int2x2|int2x3|int2x4|int3x1|int3x2|int3x3|int3x4|int4x1|int4x2|int4x3|int4x4)\b'
+      scope: keyword.source.cg
+    - match: '\b(fixed|fixed1|fixed2|fixed3|fixed4|fixed1x1|fixed1x2|fixed1x3|fixed1x4|fixed2x1|fixed2x2|fixed2x3|fixed2x4|fixed3x1|fixed3x2|fixed3x3|fixed3x4|fixed4x1|fixed4x2|fixed4x3|fixed4x4)\b'
+      scope: keyword.source.cg
+    - match: '\b(bool|bool1|bool2|bool3|bool4|bool1x1|bool1x2|bool1x3|bool1x4|bool2x1|bool2x2|bool2x3|bool2x4|bool3x1|bool3x2|bool3x3|bool3x4|bool4x1|bool4x2|bool4x3|bool4x4)\b'
+      scope: keyword.source.cg
+    - match: '\b(sampler|sampler1D|sampler1DARRAY|sampler2D|sampler2DARRAY|sampler3D|samplerRECT|samplerCUBE)\b'
+      scope: keyword.source.cg
+    - match: '\b(unsigned|signed|char|short|long|double)\b'
+      scope: keyword.source.cg
+    - match: '\b(cint|cfloat)\b'
+      scope: keyword.source.cg
+    - match: '\b(void)\b'
+      scope: keyword.source.cg
+    - match: '\b(enum|struct|class|union|typedef|packed)\b'
+      scope: keyword.source.cg
+    # Cg standard library http://http.developer.nvidia.com/Cg/index_stdlib.html
+    - match: '\b(abs|acos|all|any|asin|atan|atan2|ceil|clamp|clip|cos|cosh|cross|ddx|ddy|degrees|determinant|distance|dot|exp|exp2|faceforward|floatToIntBits|floatToRawIntBits|floor|fmod|frac|frexp|fwidth|intBitsToFloat|isfinite|isinf|isnan|ldexp|length|lerp|lit|log|log10|log2|max|min|modf|mul|normalize|pow|radians|reflect|refract|round|rsqrt|saturate|sign|sin|sincos|sinh|smoothstep|sqrt|step|tan|tanh|tex1D|tex1DARRAY|tex1DARRAYbias|tex1DARRAYcmpbias|tex1DARRAYcmplod|tex1DARRAYfetch|tex1DARRAYlod|tex1DARRAYproj|tex1DARRAYsize|tex1Dbias|tex1Dcmpbias|tex1Dcmplod|tex1Dfetch|tex1Dlod|tex1Dproj|tex1Dsize|tex2D|tex2DARRAY|tex2DARRAYbias|tex2DARRAYfetch|tex2DARRAYlod|tex2DARRAYproj|tex2DARRAYsize|tex2Dbias|tex2Dcmpbias|tex2Dcmplod|tex2Dfetch|tex2Dlod|tex2Dproj|tex2Dsize|tex3D|tex3Dbias|tex3Dfetch|tex3Dlod|tex3Dproj|tex3Dsize|texBUF|texBUFsize|texCUBE|texCUBEARRAY|texCUBEARRAYbias|texCUBEARRAYlod|texCUBEARRAYsize|texCUBEbias|texCUBElod|texCUBEproj|texCUBEsize|texRECT|texRECTbias|texRECTfetch|texRECTlod|texRECTproj|texRECTsize|transpose|trunc)\b'
+      scope: keyword.source.cg
+    - match: '\b(true|false|NULL)\b'
+      scope: constant.language.source.cg
+  numbers:
+    - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
+      scope: constant.numeric.float.source.cg
+    - match: '\b(0[xX][0-9a-fA-F]+?|\d+)(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
+      scope: constant.numeric.source.cg
+  strings:
+    - match: "'"
+      scope: string.quoted.single.source.cg
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.cg
+        - match: "('|$\n?)"
+          pop: true
+    - match: '@"'
+      scope: string.quoted.other.verbatim.source.cg
+      push:
+        - match: '""'
+          scope: constant.character.verbatim.escape.source.cg
+        - match: '"'
+          pop: true
+    - match: '\$"'
+      scope: string.quoted.other.interpolated.source.cg
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.cg
+        - match: '("|$\n?)'
+          pop: true
+        - match: '({)'
+          captures:
+            1: string.quoted.other.interpolated.source.cg
+          scope: source.cg
+          push:
+            - match: '(})'
+              captures:
+                1: string.quoted.other.interpolated.source.cg
+              pop: true
+            - include: main
+    - match: '"'
+      scope: string.quoted.double.source.cg
+      push:
+        - match: '\\.'
+          scope: constant.character.escape.source.cg
+        - match: '("|$\n?)'
+          pop: true
+  preprocessor:
+    - match: '^\s*#(define|elif|else|endif|error|if|ifdef|ifndef|include|pragma|undef)\b'
+      scope: meta.preprocessor.source.cg
+      push:
+        - match: '\n?'
+          pop: true

@@ -294,15 +294,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (nextContexts != null) {
 					bool first = true;
 					foreach (var nextContext in nextContexts) {
+						var ctx = nextContext;
+						if (curMatch.WithPrototype != null)
+							ctx = new SyntaxContextWithPrototype (nextContext, curMatch.WithPrototype);
+						
 						if (first) {
 							MatchStack = MatchStack.Push (curMatch);
 							first = false;
 						} else {
 							MatchStack = MatchStack.Push (null);
 						}
-						ContextStack = ContextStack.Push (nextContext);
-						PushScopeStack (nextContext.MetaScope);
-						PushScopeStack (nextContext.MetaContentScope);
+						ContextStack = ContextStack.Push (ctx);
+						PushScopeStack (ctx.MetaScope);
+						PushScopeStack (ctx.MetaContentScope);
 					}
 				}
 			}

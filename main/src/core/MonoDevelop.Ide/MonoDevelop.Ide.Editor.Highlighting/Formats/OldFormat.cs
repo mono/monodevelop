@@ -244,6 +244,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
 
+			settings.Add (new ThemeSetting ("meta.tag", new List<string> { "meta.tag" }, ConvertChunkStyle (colorScheme.HtmlServerSideScript)));
+
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 

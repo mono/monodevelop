@@ -8073,6 +8073,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\syntaxes\c.json">
       <LogicalName>c.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CgShader\CgShader.sublime-syntax">
+      <LogicalName>CgShader.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\T4\T4.sublime-syntax">
+      <LogicalName>T4.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9199,6 +9205,8 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Razor\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CgShader\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\T4\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			List<string> scope = new List<string> ();
 			var captures  = new List<Tuple<int, string>> ();
 
-			ContextReference push = null, set = null;
+			ContextReference push = null, set = null, withPrototype = null;
 			bool pop = false;
 			foreach (var entry in mapping.Children) {
 				switch (((YamlScalarNode)entry.Key).Value) {
@@ -106,6 +106,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case "push":
 					push = ReadContextReference (entry.Value, variables);
 					break;
+				case "with_prototype":
+					withPrototype = ReadContextReference (entry.Value, variables);
+					break;
 				case "pop":
 					// according to the spec the only accepted value
 					pop = true;
@@ -118,7 +121,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				}
 			}
-			return new SyntaxMatch (match, scope, new Captures (captures), push, pop, set);
+			return new SyntaxMatch (match, scope, new Captures (captures), push, pop, set, withPrototype);
 		}
 
 		internal static void ParseScopes (List<string> scope, string value)
