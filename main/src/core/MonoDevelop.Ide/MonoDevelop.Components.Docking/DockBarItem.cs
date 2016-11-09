@@ -134,6 +134,12 @@ namespace MonoDevelop.Components.Docking
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
+			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler.Actions = new [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.PerformPress += OnPerformPress;
+
+			Accessible.SetActionDelegate (actionHandler);
+
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			this.size = size;
 			this.bar = bar;
@@ -158,6 +164,8 @@ namespace MonoDevelop.Components.Docking
 			};
 
 			Styles.Changed += UpdateStyle;
+
+			Accessible.Name = "DockbarItem";
 		}
 
 		void IAnimatable.BatchBegin () { }
@@ -216,6 +224,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			mainBox = new Alignment (0,0,1,1);
+			mainBox.Accessible.SetAccessibilityShouldIgnore (true);
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
 				if (bar.AlignToEnd)
@@ -230,16 +239,19 @@ namespace MonoDevelop.Components.Docking
 				else
 					mainBox.SetPadding (9, 11, 5, 5);
 			}
-			
+			box.Accessible.SetAccessibilityShouldIgnore (true);
+
 			if (it.Icon != null) {
 				var desat = it.Icon.WithAlpha (0.5);
 				crossfade = new CrossfadeIcon (desat, it.Icon);
+				crossfade.Accessible.SetAccessibilityShouldIgnore (true);
 				box.PackStart (crossfade, false, false, 0);
 				desat.Dispose ();
 			}
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Label (it.Label);
+				label.Accessible.SetAccessibilityShouldIgnore (true);
 				label.UseMarkup = true;
 				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
 
@@ -259,6 +271,10 @@ namespace MonoDevelop.Components.Docking
 				// TODO: VV: Test Linux
 
 				box.PackStart (label, true, true, 0);
+
+				Accessible.SetAccessibilityLabel (it.Label);
+				Accessible.SetAccessibilityTitle (it.Label);
+				Accessible.Description = GettextCatalog.GetString ("Show the {0} pad", it.Label);
 			} else
 				label = null;
 
@@ -409,6 +425,15 @@ namespace MonoDevelop.Components.Docking
 				QueueDraw ();
 			}
 			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		void OnPerformPress (object sender, EventArgs args)
+		{
+			if (autoShowFrame == null) {
+				AutoShow ();
+			} else {
+				AutoHide (false);
+			}
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
