@@ -111,7 +111,9 @@ namespace MonoDevelop.PackageManagement
 				secondaryRepositories,
 				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
 				new DotNetProjectProxy (dotNetProject),
-				new NuGetProjectContext ());
+				new NuGetProjectContext ()) {
+				LicensesMustBeAccepted = packageReference.RequireLicenseAcceptance
+			};
 		}
 
 		/// <summary>
