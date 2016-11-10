@@ -8001,11 +8001,11 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
       <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\XML.plist">
-      <LogicalName>XML.tmLanguage</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xml.json">
+      <LogicalName>xml.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\XSL.plist">
-      <LogicalName>XSL.tmLanguage</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xsl.json">
+      <LogicalName>xsl.json</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\typescript\syntaxes\TypeScript.tmLanguage.json">
       <LogicalName>TypeScript.tmLanguage.json</LogicalName>
