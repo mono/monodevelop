@@ -431,16 +431,26 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
+		List<Source> existingSourcesWithBreakpoints = new List<Source> ();
+
 		void UpdateBreakpoints ()
 		{
+			//First clear all old breakpoints
+			foreach (var source in existingSourcesWithBreakpoints)
+				protocolClient.SendRequest (new SetBreakpointsRequest (source, new List<SourceBreakpoint> ()), null);
+			existingSourcesWithBreakpoints.Clear ();
+
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().GroupBy (b => b.FileName).ToArray ();
 			foreach (var sourceFile in bks) {
+				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
+				existingSourcesWithBreakpoints.Add (source);
 				protocolClient.SendRequest (new SetBreakpointsRequest (
-					new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key),
+					source,
 					sourceFile.Select (b => new SourceBreakpoint {
 						Line = b.Line,
 						Column = b.Column,
 						Condition = b.ConditionExpression
+						//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
 					}).ToList ()), (obj) => {
 						Task.Run (() => {
 							for (int i = 0; i < obj.Breakpoints.Count; i++) {
