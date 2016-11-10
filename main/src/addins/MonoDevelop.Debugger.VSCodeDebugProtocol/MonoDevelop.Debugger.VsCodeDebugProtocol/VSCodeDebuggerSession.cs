@@ -117,9 +117,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any ();
 			if (currentExceptionState != hasCustomExceptions) {
 				currentExceptionState = hasCustomExceptions;
-				protocolClient.SendRequestSync (new SetExceptionBreakpointsRequest (
+				protocolClient.SendRequest (new SetExceptionBreakpointsRequest (
 					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false)).Select (f => f.Filter).ToList ()
-				));
+				), null);
 			}
 		}
 
