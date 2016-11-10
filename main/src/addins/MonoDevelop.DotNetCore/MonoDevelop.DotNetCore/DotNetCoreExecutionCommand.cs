@@ -42,5 +42,8 @@ namespace MonoDevelop.DotNetCore
 
 		public string OutputPath { get; private set; }
 		public string DotNetArguments { get; private set; }
+
+		public bool PauseConsoleOutput { get; set; }
+		public bool ExternalConsole { get; set; }
 	}
 }
