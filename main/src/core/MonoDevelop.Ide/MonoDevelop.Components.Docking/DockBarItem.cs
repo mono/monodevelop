@@ -334,6 +334,9 @@ namespace MonoDevelop.Components.Docking
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
+				if (!string.IsNullOrEmpty (it.Label)) {
+					autoShowFrame.Title = it.Label;
+				}
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
