@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					} else if (incl.StartsWith ("#", StringComparison.Ordinal)) {
 						includesAndMatches.Add (incl.TrimStart ('#'));
 					} else {
-						includesAndMatches.Add ("#" + incl);
+						includesAndMatches.Add ("scope:" + incl);
 					}
 					continue;
 				}
@@ -402,7 +402,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					var list = new List<object> ();
 					if (end != null)
-						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures ?? captures, null, true, null));
+						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures ?? captures, null, true, null, null));
 					var patternsArray = dict ["patterns"] as PArray;
 					if (patternsArray != null) {
 						ReadPatterns (patternsArray, list);
@@ -414,19 +414,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						metaContent = new List<string> { contentScope };
 					}
 
-					var ctx = new SyntaxContext ("__generated begin/end capture context", list, metaContentScope: metaContent);
+					var ctx = new SyntaxContext ("__generated begin/end capture context", list, metaScope: metaContent);
 
 					pushContext = new AnonymousMatchContextReference (ctx);
 
 				}
 
-				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
+				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null, null);
 			}
 
 			var match = (dict ["match"] as PString)?.Value;
 			if (match == null)
 				return null;
-			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null);
+			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null, null);
 		}
 
 		static Captures ReadCaptureDictionary (PDictionary captureDict)

@@ -178,6 +178,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Keyword", new List<string> { "keyword - (source.c keyword.operator | source.c++ keyword.operator | source.objc keyword.operator | source.objc++ keyword.operator), keyword.operator.word" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage", new List<string> { "storage" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
+			settings.Add (new ThemeSetting ("punctuation", new List<string> { "punctuation" }, ConvertChunkStyle (colorScheme.Punctuation)));
+			settings.Add (new ThemeSetting ("punctuation.definition.comment", new List<string> { "punctuation.definition.comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
+
+
 			settings.Add (new ThemeSetting ("Entity name", new List<string> { "entity.name - (entity.name.filename | entity.name.section | entity.name.tag | entity.name.label)" }, ConvertChunkStyle (colorScheme.PlainText)));
 			settings.Add (new ThemeSetting ("Tag name", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("Preprocessor", new List<string> { "meta.preprocessor" }, ConvertChunkStyle (colorScheme.Preprocessor)));

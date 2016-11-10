@@ -469,19 +469,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
 			string name = fileName;
-
+			SyntaxHighlightingDefinition def = null;
+			string foundType = null;
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
-					if (name != null && h.FileTypes.Any (e => name.EndsWith (e, FilePath.PathComparison))) {
-						return h;
+					foreach (var fileType in h.FileTypes) {
+						if (name.EndsWith (fileType, FilePath.PathComparison)) {
+							if (foundType == null || foundType.Length < fileType.Length) {
+								foundType = fileType;
+								def = h;
+							}
+						}
 					}
 				}
 			}
+			if (def != null)
+				return def;
+			if (mimeType == "application/octet-stream")
+				return null;
 
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
 					foreach (var fe in h.FileTypes) {
-						var mime = DesktopService.GetMimeTypeForUri (fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : fe);
+						var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : fe;
+						var mime = DesktopService.GetMimeTypeForUri (uri);
 						if (mimeType == mime) {
 							return h;
 						}

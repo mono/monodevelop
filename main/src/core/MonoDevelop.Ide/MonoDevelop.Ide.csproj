@@ -8073,6 +8073,21 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\cpp\syntaxes\c.json">
       <LogicalName>c.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CgShader\CgShader.sublime-syntax">
+      <LogicalName>CgShader.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\T4\T4.sublime-syntax">
+      <LogicalName>T4.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ASP\AspNet.sublime-syntax">
+      <LogicalName>AspNet.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ASP\Ashx.sublime-syntax">
+      <LogicalName>Ashx.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ASP\Razor.sublime-syntax">
+      <LogicalName>Razor.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -9197,8 +9212,10 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Razor\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CgShader\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\T4\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ASP\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

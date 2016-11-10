@@ -13,6 +13,7 @@
 		<string>dtml</string>
 		<string>rss</string>
 		<string>opml</string>
+		<string>plist</string>
 	</array>
 	<key>keyEquivalent</key>
 	<string>^~X</string>

@@ -78,23 +78,45 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+
+	class SyntaxContextWithPrototype : SyntaxContext
+	{
+		SyntaxContext ctx;
+
+		public override IReadOnlyList<string> MetaContentScope { get { return ctx.MetaContentScope; } }
+		public override IReadOnlyList<string> MetaScope { get { return ctx.MetaScope; } }
+		public override bool MetaIncludePrototype { get { return ctx.MetaIncludePrototype; }  }
+
+		public SyntaxContextWithPrototype (SyntaxContext ctx, ContextReference withPrototype) :  base (ctx.Name)
+		{
+			this.ctx = ctx;
+			this.definition = ctx.definition;
+			matches = new List<SyntaxMatch> (ctx.Matches);
+			foreach (var c in withPrototype.GetContexts (ctx)) {
+				if (c.Matches == null)
+					c.PrepareMatches ();
+				this.matches.AddRange (c.Matches);
+			}
+		}
+	}
+
 	public class SyntaxContext
 	{
-		List<SyntaxMatch> matches;
+		protected List<SyntaxMatch> matches;
 		internal SyntaxHighlightingDefinition definition;
 
 		public string Name { get; private set; }
 
-		List<string> metaScope = new List<string> ();
-		public IReadOnlyList<string> MetaScope { get { return metaScope; } }
+		protected List<string> metaScope = new List<string> ();
+		public virtual IReadOnlyList<string> MetaScope { get { return metaScope; } }
 
-		List<string> metaContentScope = new List<string> ();
-		public IReadOnlyList<string> MetaContentScope { get { return metaContentScope; } }
+		protected List<string> metaContentScope = new List<string> ();
+		public virtual IReadOnlyList<string> MetaContentScope { get { return metaContentScope; } }
 
 
-		public bool MetaIncludePrototype { get; private set; }
+		public virtual bool MetaIncludePrototype { get; private set; }
 
-		public IEnumerable<SyntaxMatch> Matches { get { return matches; } }
+		public virtual IEnumerable<SyntaxMatch> Matches { get { return matches; } }
 
 		readonly List<object> includesAndMatches;
 
@@ -154,10 +176,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			MetaIncludePrototype = metaIncludePrototype;
 		}
 
-		internal SyntaxContext GetContext (string name)
+		internal virtual SyntaxContext GetContext (string name)
 		{
-			if (name.StartsWith ("#", StringComparison.Ordinal)) {
-				var splittedNames = name.Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+			if (name.StartsWith ("scope:", StringComparison.Ordinal)) {
+				var splittedNames = name.Substring ("scope:".Length).Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
 				if (splittedNames.Length == 0)
 					return null;
 				foreach (var bundle in SyntaxHighlightingService.AllBundles) {
@@ -208,6 +230,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		internal void AddMatch (SyntaxMatch match)
+		{
+			this.matches.Add (match); 
+		}
+
 		internal void SetDefinition (SyntaxHighlightingDefinition definition)
 		{
 			this.definition = definition;
@@ -224,6 +251,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal void PrepareMatches ()
 		{
+			if (this.matches != null)
+				return;
 			var preparedMatches = new List<SyntaxMatch> ();
 			IEnumerable<object> list = includesAndMatches;
 			if (MetaIncludePrototype &&  Name != "prototype") {
@@ -256,6 +285,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			return string.Format ("[SyntaxContext: Name={0}, MetaScope={1}, MetaContentScope={2}, MetaIncludePrototype={3}]", Name, MetaScope.Count == 0 ? "empty" : string.Join (", ", MetaScope), MetaContentScope.Count == 0 ? "empty" : string.Join (", ", MetaContentScope), MetaIncludePrototype);
 		}
+
+		public SyntaxContext Clone ()
+		{
+			return (SyntaxContext)this.MemberwiseClone ();
+		}
 	}
 
 	public class Captures
@@ -285,8 +319,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public ContextReference Push { get; private set; }
 		public bool Pop { get; private set; }
 		public ContextReference Set { get; private set; }
+		public ContextReference WithPrototype { get; private set; }
 
-		internal SyntaxMatch (string match, IReadOnlyList<string> scope, Captures captures, ContextReference push, bool pop, ContextReference set)
+		internal SyntaxMatch (string match, IReadOnlyList<string> scope, Captures captures, ContextReference push, bool pop, ContextReference set, ContextReference withPrototype)
 		{
 			Match = match;
 			Scope = scope;
@@ -294,11 +329,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			Push = push;
 			Pop = pop;
 			Set = set;
+			WithPrototype = withPrototype;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[SyntaxMatch: Match={0}, Scope={1}]", Match, Scope);
+			return string.Format ("[SyntaxMatch: Match={0}, Scope={1}]", Match, Scope.Count == 0 ? "empty" : string.Join (", ", Scope));
 		}
 
 		bool hasRegex;
@@ -334,7 +370,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override IEnumerable<SyntaxContext> GetContexts (SyntaxContext context)
 		{
-			yield return context.GetContext (Name);
+			foreach (var bundle in SyntaxHighlightingService.AllBundles) {
+				foreach (var highlighting in bundle.Highlightings) {
+					if (highlighting.Name == Name) {
+						yield return highlighting.MainContext;
+					}
+				}
+			}
 		}
 	}
 

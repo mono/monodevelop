@@ -139,6 +139,8 @@ type SyntaxHighlighting() =
     [<TestCase("type string=$String$", "entity.name.class")>]
     [<TestCase("module A$=$", "source.fs")>]
     [<TestCase("let $defaultKeyword$ =", "entity.name.field")>]
+    [<TestCase("addButton (\"$gtk-save$\"", "string.quoted.double.source.fs")>]
+
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
