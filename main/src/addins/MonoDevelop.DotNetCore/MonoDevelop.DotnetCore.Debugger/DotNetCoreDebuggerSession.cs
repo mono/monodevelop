@@ -94,10 +94,25 @@ namespace MonoDevelop.DotnetCore.Debugger
 			return launchRequest;
 		}
 
-		protected override async void OnRun (DebuggerStartInfo startInfo)
+		protected override AttachRequest CreateAttachRequest (long processId)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected override void OnAttachToProcess (long processId)
+		{
+			Download (() => Attach (processId));
+		}
+
+		protected override void OnRun (DebuggerStartInfo startInfo)
+		{
+			Download (() => Launch (startInfo));
+		}
+
+		async void Download(Action callback)
 		{
 			if (File.Exists (DebugAdapterPath)) {
-				Launch (startInfo);
+				callback ();
 				return;
 			}
 
@@ -106,7 +121,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 				var installSuccess = await InstallDotNetCoreDebugger (cancelEngineDownload.Token);
 
 				if (installSuccess && !cancelEngineDownload.IsCancellationRequested) {
-					Launch (startInfo);
+					callback ();
 				} else {
 					OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 				}
