@@ -70,6 +70,7 @@ namespace MonoDevelop.Core.Serialization
 
 		internal void UpdateFromItem (DataItem item, HashSet<DataItem> removedItems)
 		{
+			var items = new List<DataNode> ();
 			foreach (var d in item.ItemData) {
 				var current = ItemData[d.Name];
 				if (current != null) {
@@ -86,6 +87,8 @@ namespace MonoDevelop.Core.Serialization
 					} else if (current is DataItem) {
 						((DataItem)current).UpdateFromItem ((DataItem)d, removedItems);
 					}
+					ItemData.Remove (current);
+					items.Add (current);
 				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
 					var dataItem = d as DataItem;
 					if (dataItem != null) {
@@ -94,12 +97,14 @@ namespace MonoDevelop.Core.Serialization
 							UniqueNames = dataItem.UniqueNames
 						};
 						newDataItem.UpdateFromItem (dataItem, removedItems);
-						ItemData.Add (newDataItem);
+						items.Add (newDataItem);
 					} else {
-						ItemData.Add (d);
+						items.Add (d);
 					}
 				}
 			}
+			foreach (var val in items)
+				this.ItemData.Add (val);
 		}
 		
 		public override string ToString ()
