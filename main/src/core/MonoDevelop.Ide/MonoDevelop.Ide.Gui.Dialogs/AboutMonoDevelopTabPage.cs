@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			});
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016–" + DateTime.Now.Year) + " Microsoft Inc.",
+				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016–" + DateTime.Now.Year) + " Microsoft Corp.",
 				MarginLeft = 12
 			});
 			infoBox.PackStart (new Xwt.Label () {
