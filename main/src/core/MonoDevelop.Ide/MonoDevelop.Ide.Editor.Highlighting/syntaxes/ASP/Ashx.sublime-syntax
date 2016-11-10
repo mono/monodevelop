@@ -1,9 +1,9 @@
-%YAML 1.2
+﻿%YAML 1.2
 ---
-# T4.sublime-syntax
+# Ashx.sublime-syntax
 # 
 #  Author:
-#    Mike Krüger <mkrueger@novell.com>
+#    Mike Krüger <mikkrg@microsoft.com>
 # 
 #  Copyright (c) 2016 Microsoft Corporation
 # 
@@ -25,38 +25,51 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #  THE SOFTWARE.
 
-name: "T4"
+name: "ASP.NET ASHX/ASMX/ASIX"
 file_extensions:
-  - tt
-scope: source.tt
+  - ashx
+  - asmx
+  - asix
+scope: source.ashx
 contexts:
   main:
-    - include: directives
-  directives:
-    - match: '(<#@)'
+    - include: scope:source.cs
+    - match: '(<%@)'
       captures:
-        1: meta.tag.source.tt
+        1: punctuation.separator.source.ashx
       push:
-        - match: "'"
-          scope: string.quoted.single.source.cs
-          push:
-            - match: "('|$\n?)"
-              pop: true
-        - match: '@"'
-          scope: string.quoted.other.verbatim.source.cs
-          push:
-            - match: '"'
-              pop: true
-        - match: '(#>)'
-          captures:
-            1: meta.tag.source.tt
+        - include: intag
+        - match: '%>'
+          scope: punctuation.separator.source.ashx
           pop: true
-    - match: '(<#[=+]?)'
+  intag:
+    - match: '<[%!]--'
+      scope: comment.source.ashx
+      push:
+        - include: commenttags
+        - match: '-->'
+          pop: true
+    - match: "'"
+      scope: string.quoted.single.source.ashx
+      push:
+        - match: '&([\w\d]+|#\d+|#[xX]\h+);'
+          scope: constant.character.entity.html
+        - match: "('|$\n?)"
+          pop: true
+    - match: '(?i:[A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)'
       captures:
-        1: meta.tag.source.tt
-      push: C#
-      with_prototype:
-        - match: '(#>)'
-          captures:
-            1: meta.tag.source.tt
+        1: entity.other.attribute-name.source.aspnet
+        2: punctuation.separator.source.aspnet
+    - match: '<%'
+      scope: string.expr.source.aspnet
+      push:
+        - include: commenttags
+        - match: '%>'
+          pop: true
+    - match: '"'
+      scope: string.quoted.double.source.ashx
+      push:
+        - match: '&([\w\d]+|#\d+|#[xX]\h+);'
+          scope: constant.character.entity.html
+        - match: '("|$\n?)'
           pop: true

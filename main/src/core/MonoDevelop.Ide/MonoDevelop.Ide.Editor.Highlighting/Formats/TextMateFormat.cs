@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					} else if (incl.StartsWith ("#", StringComparison.Ordinal)) {
 						includesAndMatches.Add (incl.TrimStart ('#'));
 					} else {
-						includesAndMatches.Add ("#" + incl);
+						includesAndMatches.Add ("scope:" + incl);
 					}
 					continue;
 				}
@@ -414,7 +414,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						metaContent = new List<string> { contentScope };
 					}
 
-					var ctx = new SyntaxContext ("__generated begin/end capture context", list, metaContentScope: metaContent);
+					var ctx = new SyntaxContext ("__generated begin/end capture context", list, metaScope: metaContent);
 
 					pushContext = new AnonymousMatchContextReference (ctx);
 

@@ -212,6 +212,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						segments.Add (new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, ScopeStack));
 						curSegmentOffset = match.Index;
 					}
+					if (curMatch.Pop) {
+						PopMetaContentScopeStack (currentContext, curMatch);
+					}
+
 					PushScopeStack (curMatch.Scope);
 
 					if (curMatch.Captures.Groups.Count > 0) {
@@ -257,6 +261,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						//	segments.Add (new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack));
 						//if (curMatch.Scope != null)
 						//	scopeStack = scopeStack.Pop ();
+						PopMetaContentScopeStack (currentContext, curMatch);
 						PopStack (currentContext, curMatch);
 						//curSegmentOffset = matchEndOffset;
 						var nextContexts = curMatch.Set.GetContexts (currentContext);
@@ -326,8 +331,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				for (int i = 0; !ScopeStack.IsEmpty && i < scopeList.Count; i++)
 					ScopeStack = ScopeStack.Pop ();
 			}
-			
 
+
+
+			void PopMetaContentScopeStack (SyntaxContext currentContext, SyntaxMatch curMatch)
+			{
+				if (ContextStack.Count () == 1) {
+					return;
+				}
+				PopScopeStack (currentContext.MetaContentScope);
+			}
 
 			void PopStack (SyntaxContext currentContext, SyntaxMatch curMatch)
 			{
@@ -342,7 +355,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					MatchStack = MatchStack.Pop ();
 				}
 				PopScopeStack (currentContext.MetaScope);
-				PopScopeStack (currentContext.MetaContentScope);
 
 				if (curMatch.Scope.Count > 0 && !ScopeStack.IsEmpty) {
 					for (int i = 0; i < curMatch.Scope.Count; i++)

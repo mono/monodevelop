@@ -178,8 +178,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal virtual SyntaxContext GetContext (string name)
 		{
-			if (name.StartsWith ("#", StringComparison.Ordinal)) {
-				var splittedNames = name.Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+			if (name.StartsWith ("scope:", StringComparison.Ordinal)) {
+				var splittedNames = name.Substring ("scope:".Length).Split (new [] { '#' }, StringSplitOptions.RemoveEmptyEntries);
 				if (splittedNames.Length == 0)
 					return null;
 				foreach (var bundle in SyntaxHighlightingService.AllBundles) {
@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override string ToString ()
 		{
-			return string.Format ("[SyntaxMatch: Match={0}, Scope={1}]", Match, Scope);
+			return string.Format ("[SyntaxMatch: Match={0}, Scope={1}]", Match, Scope.Count == 0 ? "empty" : string.Join (", ", Scope));
 		}
 
 		bool hasRegex;
