@@ -373,10 +373,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 						var bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => b.FileName == stackFrame.SourceLocation.FileName && b.Line == stackFrame.SourceLocation.Line);
 						if (bp == null) {
-							OnContinue ();
-							return;
+							//None of breakpoints is matching, this is probably Debugger.Break();
+							args = new TargetEventArgs (TargetEventType.TargetStopped);
+						} else {
+							args.BreakEvent = bp;
 						}
-						args.BreakEvent = bp;
 						break;
 					case StoppedEvent.ReasonValue.Step:
 					case StoppedEvent.ReasonValue.Pause:
