@@ -48,7 +48,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 		CancellationTokenSource cancelEngineDownload;
 
 		//TODO: version the download
-		static string DebugAdapterPath = Path.Combine (UserProfile.Current.LocalInstallDir, "CoreClrAdaptor", "OpenDebugAD7");
+		static string DebugAdapterPath = Path.Combine (UserProfile.Current.CacheDir, "CoreClrAdaptor", "OpenDebugAD7");
 		static string DebugAdapterDir = Path.GetDirectoryName (DebugAdapterPath);
 
 		protected override string GetDebugAdapterPath ()
@@ -87,7 +87,8 @@ namespace MonoDevelop.DotnetCore.Debugger
 					{"stopAtEntry" ,JToken.FromObject (false)},
 					{"justMyCode", JToken.FromObject (Options.ProjectAssembliesOnly)},
 					{"requireExactSource", JToken.FromObject (false)},//Mimic XS behavior
-					{"enableStepFiltering",JToken.FromObject (Options.StepOverPropertiesAndOperators)}
+					{"enableStepFiltering", JToken.FromObject (Options.StepOverPropertiesAndOperators)},
+					{"externalConsole", JToken.FromObject (startInfo.UseExternalConsole)}
 				}
 			);
 			return launchRequest;
