@@ -117,9 +117,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any ();
 			if (currentExceptionState != hasCustomExceptions) {
 				currentExceptionState = hasCustomExceptions;
-				protocolClient.SendRequestSync (new SetExceptionBreakpointsRequest (
+				protocolClient.SendRequest (new SetExceptionBreakpointsRequest (
 					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false)).Select (f => f.Filter).ToList ()
-				));
+				), null);
 			}
 		}
 
@@ -373,10 +373,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 						var bp = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().FirstOrDefault (b => b.FileName == stackFrame.SourceLocation.FileName && b.Line == stackFrame.SourceLocation.Line);
 						if (bp == null) {
-							OnContinue ();
-							return;
+							//None of breakpoints is matching, this is probably Debugger.Break();
+							args = new TargetEventArgs (TargetEventType.TargetStopped);
+						} else {
+							args.BreakEvent = bp;
 						}
-						args.BreakEvent = bp;
 						break;
 					case StoppedEvent.ReasonValue.Step:
 					case StoppedEvent.ReasonValue.Pause:
@@ -431,16 +432,26 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
+		List<Source> existingSourcesWithBreakpoints = new List<Source> ();
+
 		void UpdateBreakpoints ()
 		{
+			//First clear all old breakpoints
+			foreach (var source in existingSourcesWithBreakpoints)
+				protocolClient.SendRequest (new SetBreakpointsRequest (source, new List<SourceBreakpoint> ()), null);
+			existingSourcesWithBreakpoints.Clear ();
+
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().GroupBy (b => b.FileName).ToArray ();
 			foreach (var sourceFile in bks) {
+				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
+				existingSourcesWithBreakpoints.Add (source);
 				protocolClient.SendRequest (new SetBreakpointsRequest (
-					new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key),
+					source,
 					sourceFile.Select (b => new SourceBreakpoint {
 						Line = b.Line,
 						Column = b.Column,
 						Condition = b.ConditionExpression
+						//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
 					}).ToList ()), (obj) => {
 						Task.Run (() => {
 							for (int i = 0; i < obj.Breakpoints.Count; i++) {

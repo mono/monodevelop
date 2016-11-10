@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreExecutionCommand.cs
+// DotNetCoreFolderNodeBuilderExtension.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,26 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using System;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	class DotNetCoreFolderNodeBuilderExtension : NodeBuilderExtension
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		public override bool CanBuildNode (Type dataType)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = new DotNetCorePath ().FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
+			return typeof(ProjectFolder).IsAssignableFrom (dataType);
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		{
+			if (parentNode.Options ["ShowAllFiles"])
+				return;
 
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
+			var folder = dataObject as ProjectFolder;
+			if (folder == null)
+				return;
+
+			var project = folder.Project as DotNetProject;
+			if (project == null)
+				return;
+
+			if (!project.HasFlavor<DotNetCoreProjectExtension> ())
+				return;
+
+			if (folder.Path.CanonicalPath == project.BaseIntermediateOutputPath.CanonicalPath) {
+				attributes |= NodeAttributes.Hidden;
+			}
+		}
 	}
 }

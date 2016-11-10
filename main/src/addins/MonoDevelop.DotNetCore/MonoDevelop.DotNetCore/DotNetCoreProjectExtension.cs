@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -141,12 +140,17 @@ namespace MonoDevelop.DotNetCore
 		{
 			FilePath outputDirectory = GetOutputDirectory (configuration);
 			FilePath outputFileName = outputDirectory.Combine (Project.Name + ".dll");
+
+			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
+
 			return new DotNetCoreExecutionCommand (
-				(runConfiguration as AssemblyRunConfiguration)?.StartWorkingDirectory ?? Project.BaseDirectory,
+				assemblyRunConfiguration?.StartWorkingDirectory ?? Project.BaseDirectory,
 				outputFileName,
-				(runConfiguration as AssemblyRunConfiguration)?.StartArguments
+				assemblyRunConfiguration?.StartArguments
 			) {
-				EnvironmentVariables = (runConfiguration as AssemblyRunConfiguration)?.EnvironmentVariables
+				EnvironmentVariables = assemblyRunConfiguration?.EnvironmentVariables,
+				PauseConsoleOutput = assemblyRunConfiguration?.PauseConsoleOutput ?? false,
+				ExternalConsole = assemblyRunConfiguration?.ExternalConsole ?? false
 			};
 		}
 
@@ -161,6 +165,54 @@ namespace MonoDevelop.DotNetCore
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
+		}
+
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (!IsDotNetCoreInstalled ()) {
+				return ShowDotNetCoreNotInstalledDialog ();
+			}
+
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		bool IsDotNetCoreInstalled ()
+		{
+			var dotNetCorePath = new DotNetCorePath ();
+			return !dotNetCorePath.IsMissing;
+		}
+
+		Task ShowDotNetCoreNotInstalledDialog ()
+		{
+			return Runtime.RunInMainThread (() => {
+				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
+					dialog.Show ();
+				}
+			});
+		}
+
+		protected override async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			bool externalConsole = false;
+			bool pauseConsole = false;
+
+			var dotNetCoreExecutionCommand = executionCommand as DotNetCoreExecutionCommand;
+			if (dotNetCoreExecutionCommand != null) {
+				externalConsole = dotNetCoreExecutionCommand.ExternalConsole;
+				pauseConsole = dotNetCoreExecutionCommand.PauseConsoleOutput;
+			}
+
+			OperationConsole console = externalConsole ? context.ExternalConsoleFactory.CreateConsole (!pauseConsole, monitor.CancellationToken)
+				: context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+
+			using (console) {
+				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
+
+				using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
+					await asyncOp.Task;
+
+				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+			}
 		}
 	}
 }

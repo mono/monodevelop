@@ -37,14 +37,17 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		public string FileName { get; private set; }
+		public bool IsMissing { get; private set; }
 
-		private static string GetDotNetFileName ()
+		string GetDotNetFileName ()
 		{
 			if (!Platform.IsWindows) {
 				const string dotnetFileName = "/usr/local/share/dotnet/dotnet";
 				if (File.Exists (dotnetFileName)) {
 					return dotnetFileName;
 				}
+
+				IsMissing = true;
 			}
 
 			return "dotnet";

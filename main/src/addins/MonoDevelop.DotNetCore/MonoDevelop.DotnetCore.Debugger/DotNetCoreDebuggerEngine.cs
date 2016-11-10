@@ -57,7 +57,8 @@ namespace MonoDevelop.DotnetCore.Debugger
 			var dsi = new DebuggerStartInfo {
 				Command = cmd.OutputPath,
 				Arguments = cmd.DotNetArguments,
-				WorkingDirectory = cmd.WorkingDirectory
+				WorkingDirectory = cmd.WorkingDirectory,
+				UseExternalConsole = cmd.ExternalConsole
 			};
 
 			foreach (var envVar in cmd.EnvironmentVariables)
