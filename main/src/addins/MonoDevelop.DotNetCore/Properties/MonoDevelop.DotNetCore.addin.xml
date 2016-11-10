@@ -33,4 +33,8 @@
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="MonoDevelop.DotNetCore.ProjectTemplateWizard" class="MonoDevelop.DotNetCore.Templating.DotNetCoreProjectTemplateWizard" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.DotNetCore.DotNetCoreFolderNodeBuilderExtension" />
+	</Extension>
 </ExtensionModel>
