@@ -32,6 +32,7 @@
 
 using Gtk;
 using Gdk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -70,6 +71,8 @@ namespace MonoDevelop.Components.Docking
 			
 			Box fr;
 			CustomFrame cframe = new CustomFrame ();
+			cframe.Accessible.SetAccessibilityShouldIgnore (true);
+
 			switch (pos) {
 			case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
 			case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
@@ -88,6 +91,11 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			EventBox sepBox = new EventBox ();
+
+			// FIXME How to actually resize this?
+			sepBox.Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitter, GettextCatalog.GetString ("Pad resize handle"));
+			sepBox.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Pad resize handle"));
+
 			cframe.Add (sepBox);
 			
 			if (horiz) {
@@ -99,7 +107,8 @@ namespace MonoDevelop.Components.Docking
 				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorH; };
 				sepBox.HeightRequest = gripSize;
 			}
-			
+			fr.Accessible.SetAccessibilityShouldIgnore (true);
+
 			sepBox.Events = EventMask.AllEventsMask;
 			
 			if (pos == PositionType.Left || pos == PositionType.Top)
@@ -117,6 +126,8 @@ namespace MonoDevelop.Components.Docking
 			scrollable.Show ();
 #endif
 			VBox itemBox = new VBox ();
+			itemBox.Accessible.SetAccessibilityShouldIgnore (true);
+
 			itemBox.Show ();
 			item.TitleTab.Active = true;
 			itemBox.PackStart (item.TitleTab, false, false, 0);
