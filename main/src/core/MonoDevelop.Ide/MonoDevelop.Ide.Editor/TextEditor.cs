@@ -554,8 +554,10 @@ namespace MonoDevelop.Ide.Editor
 		public void InsertAtCaret (string text)
 		{
 			Runtime.AssertMainThread ();
-			foreach (var offset in Carets.Select (c => c.Offset).OrderBy (i => -i)) {
-				InsertText (offset, text);	
+			foreach (var caret in Carets.OrderBy (i => -i.Offset)) {
+				var caretOffset = caret.Offset;
+				InsertText (caretOffset, text);
+				caret.Offset = caretOffset + text.Length;
 			}
 		}
 
