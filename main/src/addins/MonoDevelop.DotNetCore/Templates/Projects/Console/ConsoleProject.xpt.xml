@@ -6,7 +6,7 @@
 
 	<TemplateConfiguration>
 		<_Name>Console Application (.NET Core)</_Name>
-		<Category>other/netcore/general</Category>
+		<Category>netcore/app/general</Category>
 		<Icon>md-console-project</Icon>
 		<Image id="md-console-project" />
 		<LanguageName>C#</LanguageName>
