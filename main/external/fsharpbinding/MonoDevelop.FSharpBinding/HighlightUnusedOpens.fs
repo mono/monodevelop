@@ -41,11 +41,22 @@ module highlightUnusedOpens =
 
             let symbols = pd.AllSymbolsKeyed.Values
 
+            let getAutoOpenAccessPath (ent:FSharpEntity) =
+                // Some.Namespace+AutoOpenedModule+Entity
+
+                // HACK: I can't see a way to get the EnclosingEntity of an Entity
+                // Some.Namespace + Some.Namespace.AutoOpenedModule are both valid
+                ent.TryFullName |> Option.bind(fun _ ->
+                    if (not ent.IsNamespace) && ent.QualifiedName.Contains "+" then 
+                        Some ent.QualifiedName.[0..ent.QualifiedName.IndexOf "+" - 1]
+                    else
+                        None)
+
             let entityNamespace (ent:FSharpEntity) =
                 if ent.IsFSharpModule then
                     [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
                 else
-                    [ent.Namespace; Some ent.AccessPath]
+                    [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
 
             let namespacesInUse =
                 symbols
