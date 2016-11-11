@@ -6,7 +6,7 @@
 
 	<TemplateConfiguration>
 		<_Name>Class Library (.NET Core)</_Name>
-		<Category>other/netcore/general</Category>
+		<Category>netcore/library/general</Category>
 		<Icon>md-library-project</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>C#</LanguageName>
