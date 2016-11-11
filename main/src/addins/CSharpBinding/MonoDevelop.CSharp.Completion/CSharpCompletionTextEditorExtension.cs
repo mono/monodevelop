@@ -477,7 +477,6 @@ namespace MonoDevelop.CSharp.Completion
 //					return null;
 //			}
 			var offset = Editor.CaretOffset;
-
 			var list = new CSharpCompletionDataList ();
 			list.TriggerWordLength = triggerWordLength;
 			var analysisDocument = DocumentContext.AnalysisDocument;
@@ -485,7 +484,6 @@ namespace MonoDevelop.CSharp.Completion
 				return Task.FromResult ((ICompletionDataList)null);
 			return Task.Run (async delegate {
 				try {
-					
 					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
 					var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 
@@ -495,6 +493,7 @@ namespace MonoDevelop.CSharp.Completion
 					var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
 					var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 					ctx.AdditionalContextHandlers = additionalContextHandlers;
+
 					var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
 					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
 					if (completionResult == CompletionResult.Empty)

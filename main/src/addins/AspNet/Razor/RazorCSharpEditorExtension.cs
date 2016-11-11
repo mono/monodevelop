@@ -47,6 +47,7 @@ using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -110,7 +111,7 @@ namespace MonoDevelop.AspNet.Razor
 			defaultEditor = Editor;
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
-			defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
+			// defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
 			//syntaxMode = new RazorSyntaxMode (Editor, DocumentContext);
 			//var textEditorData = DocumentContext.GetContent<TextEditorData> ();
 			//if (textEditorData != null)
@@ -126,7 +127,7 @@ namespace MonoDevelop.AspNet.Razor
 			//	syntaxMode.Dispose ();
 			//	syntaxMode = null;
 			//}
-			defaultEditor.TextChanging -= UnderlyingDocument_TextReplacing;
+			// defaultEditor.TextChanging -= UnderlyingDocument_TextReplacing;
 			base.Dispose ();
 		}
 
@@ -203,38 +204,38 @@ namespace MonoDevelop.AspNet.Razor
 
 		void UpdateHiddenDocument (bool updateSourceCode = true)
 		{
-			if (!updateSourceCode && hiddenInfo != null) {
-				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
-				return;
-			} else if (updateSourceCode && hiddenInfo != null) {
-				hiddenInfo.UnderlyingDocument.Editor.Text = razorDocument.PageInfo.CSharpCode;
-				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
-				hiddenInfo.UnderlyingDocument.HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument;
-				currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
-				codeFragment = null;
-				return;
-			}
+			//if (!updateSourceCode && hiddenInfo != null) {
+			//	hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
+			//	return;
+			//} else if (updateSourceCode && hiddenInfo != null) {
+			//	hiddenInfo.UnderlyingDocument.Editor.Text = razorDocument.PageInfo.CSharpCode;
+			//	hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
+			//	hiddenInfo.UnderlyingDocument.HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument;
+			//	
+			//	codeFragment = null;
+			//	return;
+			//}
 
-			hiddenInfo = new UnderlyingDocumentInfo ();
+			//hiddenInfo = new UnderlyingDocumentInfo ();
 
-			var viewContent = new HiddenTextEditorViewContent ();
-			viewContent.Project = DocumentContext.Project;
-			viewContent.ContentName = "Generated.cs"; // Use a name with .cs extension to get csharp ambience
-			viewContent.Text = razorDocument.PageInfo.CSharpCode;
+			//var viewContent = new HiddenTextEditorViewContent ();
+			//viewContent.Project = DocumentContext.Project;
+			//viewContent.ContentName = "Generated.cs"; // Use a name with .cs extension to get csharp ambience
+			//viewContent.Text = razorDocument.PageInfo.CSharpCode;
 
-			var workbenchWindow = new HiddenWorkbenchWindow ();
-			workbenchWindow.ViewContent = viewContent;
-			hiddenInfo.UnderlyingDocument = new UnderlyingDocument (workbenchWindow) {
-				HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument,
-				HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument
-			};
+			//var workbenchWindow = new HiddenWorkbenchWindow ();
+			//workbenchWindow.ViewContent = viewContent;
+			//hiddenInfo.UnderlyingDocument = new UnderlyingDocument (workbenchWindow) {
+			//	HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument,
+			//	HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument
+			//};
 
-			// completion window needs this
-			Gtk.Widget editor = hiddenInfo.UnderlyingDocument.Editor;
-			editor.Parent = ((Gtk.Widget)Editor).Parent;
+			//// completion window needs this
+			//Gtk.Widget editor = hiddenInfo.UnderlyingDocument.Editor;
+			//editor.Parent = ((Gtk.Widget)Editor).Parent;
 
-			currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
-			codeFragment = null;
+			//currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+			//codeFragment = null;
 		}
 
 		#region Code completion
@@ -278,20 +279,21 @@ namespace MonoDevelop.AspNet.Razor
 			else if (previousChar != '@' && n is XElement && !(state is RazorSpeculativeState) && !(state is RazorExpressionState))
 				return NonCSharpCompletion (descriptor);
 
+			return base.KeyPress (descriptor);
 			// We're in C# context
-			InitializeCodeCompletion ();
-			SwitchToHidden ();
+			//InitializeCodeCompletion ();
+			//SwitchToHidden ();
 
-			bool result;
-			try {
-				result = base.KeyPress (descriptor);
-				if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
-				    base.RunParameterCompletionCommand ();
-			} finally {
-				SwitchToReal ();
-			}
+			//bool result;
+			//try {
+			//	result = base.KeyPress (descriptor);
+			//	if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
+			//	    base.RunParameterCompletionCommand ();
+			//} finally {
+			//	SwitchToReal ();
+			//}
 
-			return result;
+			//return result;
 		}
 
 		protected void SwitchToHidden ()

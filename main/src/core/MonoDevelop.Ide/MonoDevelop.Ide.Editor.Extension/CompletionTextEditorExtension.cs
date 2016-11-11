@@ -49,20 +49,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		// (Settings have been moved to IdeApp.Preferences)
 
-		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
+		bool autoHideCompletionWindow, autoHideParameterWindow;
 
 		ICompletionWidget completionWidget;
 		internal virtual ICompletionWidget CompletionWidget
 		{
 			get { return completionWidget; }
-			set
-			{
-				if (completionWidget != null)
-					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+			set {
+				UnsubscribeCompletionContextChanged ();
 				completionWidget = value;
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			}
+		}
+		internal void UnsubscribeCompletionContextChanged ()
+		{
+			if (completionWidget != null)
+				completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 		}
 
 
@@ -315,6 +318,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (autoHideCompletionWindow) {
 				CompletionWindowManager.HideWindow ();
 			}
+
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);

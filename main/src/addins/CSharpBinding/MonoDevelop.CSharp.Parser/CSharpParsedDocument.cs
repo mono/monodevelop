@@ -290,6 +290,8 @@ namespace MonoDevelop.CSharp.Parser
 						locked = await foldingsSemaphore.WaitAsync (Timeout.Infinite, cancellationToken);
 						if (foldings == null)
 							foldings = (await GenerateFoldings (cancellationToken)).ToList ();
+					} catch (OperationCanceledException) {
+						return new List<FoldingRegion> ();
 					} finally {
 						if (locked)
 							foldingsSemaphore.Release ();
