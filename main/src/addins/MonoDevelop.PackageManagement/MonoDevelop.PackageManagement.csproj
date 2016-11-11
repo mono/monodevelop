@@ -406,6 +406,15 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopDotNetCorePackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LoggingProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\TargetFrameworkNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\TargetFrameworkNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -483,6 +492,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel%402x.png">
       <LogicalName>prefs-package-source-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16.png">
+      <LogicalName>framework-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16%402x.png">
+      <LogicalName>framework-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark.png">
+      <LogicalName>framework-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark%402x.png">
+      <LogicalName>framework-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark~sel.png">
+      <LogicalName>framework-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark~sel%402x.png">
+      <LogicalName>framework-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~sel.png">
+      <LogicalName>framework-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~sel%402x.png">
+      <LogicalName>framework-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16.png">
+      <LogicalName>nuget-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16%402x.png">
+      <LogicalName>nuget-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark.png">
+      <LogicalName>nuget-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark%402x.png">
+      <LogicalName>nuget-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark~sel.png">
+      <LogicalName>nuget-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark~sel%402x.png">
+      <LogicalName>nuget-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~sel.png">
+      <LogicalName>nuget-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~sel%402x.png">
+      <LogicalName>nuget-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

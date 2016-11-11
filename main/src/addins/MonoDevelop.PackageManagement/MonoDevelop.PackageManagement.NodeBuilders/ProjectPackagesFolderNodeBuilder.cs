@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using NuGet.Packaging;
@@ -63,7 +64,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			if (otherNode.DataItem is ProjectReferenceCollection)
 				return 1;
-			if (otherNode.DataItem is Ide.Gui.Pads.ProjectPad.GettingStartedNode)
+			if (otherNode.DataItem is GettingStartedNode)
+				return 1;
+			if (otherNode.DataItem is DependenciesNode)
 				return 1;
 			return -1;
 		}
