@@ -958,6 +958,34 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 
+		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			return BindTask<IEnumerable<PackageDependency>> (async ct => {
+				return await OnGetPackageDependencies (configuration, cancellationToken);
+			});
+		}
+
+		internal protected virtual async Task<List<PackageDependency>> OnGetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
+		{
+			var result = new List<PackageDependency> ();
+			if (CheckUseMSBuildEngine (configuration)) {
+				// Get the references list from the msbuild project
+				RemoteProjectBuilder builder = await GetProjectBuilder ();
+				try {
+					var configs = GetConfigurations (configuration, false);
+
+					PackageDependency [] dependencies;
+					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+						dependencies = await builder.ResolvePackageDependencies (configs, cancellationToken);
+					foreach (var d in dependencies)
+						result.Add (d);
+				} finally {
+					builder.ReleaseReference ();
+				}
+			}
+			return result;
+		}
+
 		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null) {
