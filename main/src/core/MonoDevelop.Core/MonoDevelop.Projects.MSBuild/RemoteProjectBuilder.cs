@@ -375,7 +375,9 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 
 					List<MSBuildEvaluatedItem> items;
-					if (result != null && result.Items.TryGetValue ("_DependenciesDesignTime", out items) && items != null) {
+					if (result == null)
+						return new PackageDependency[0];
+					else if (result.Items.TryGetValue ("_DependenciesDesignTime", out items) && items != null) {
 						packageDependencies = items
 							.Select (i => PackageDependency.Create (i))
 							.Where (dependency => dependency != null)
