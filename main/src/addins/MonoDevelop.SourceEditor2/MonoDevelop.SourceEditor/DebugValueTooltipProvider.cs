@@ -76,7 +76,7 @@ namespace MonoDevelop.SourceEditor
 			if (offset >= editor.Length)
 				return null;
 
-			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
+			if (!DebuggingService.IsPaused)
 				return null;
 
 			StackFrame frame = DebuggingService.CurrentFrame;
