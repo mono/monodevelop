@@ -41,7 +41,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public static readonly string NodeName = "PackageDependencies";
 
 		DotNetProject project;
-		List<PackageDependency> packageDependencies = new List<PackageDependency> ();
+		List<PackageDependency> frameworks = new List<PackageDependency> ();
+		Dictionary<string, PackageDependency> packageDependencies = new Dictionary<string, PackageDependency> ();
 		CancellationTokenSource cancellationTokenSource;
 
 		public PackageDependenciesNode (DependenciesNode dependenciesNode)
@@ -118,7 +119,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				if (task.IsFaulted) {
 					LoggingService.LogError ("OnPackageDependenciesRead error.", task.Exception);
 				} else if (!tokenSource.IsCancellationRequested) {
-					packageDependencies = task.Result.ToList ();
+					LoadPackageDependencies (task.Result);
 					LoadedDependencies = true;
 					OnPackageDependenciesChanged ();
 				}
@@ -127,17 +128,33 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			}
 		}
 
+		void LoadPackageDependencies (IEnumerable<PackageDependency> dependencies)
+		{
+			frameworks.Clear ();
+			packageDependencies.Clear ();
+
+			foreach (PackageDependency dependency in dependencies) {
+				if (dependency.IsTargetFramework) {
+					frameworks.Add (dependency);
+				} else if (dependency.IsPackage) {
+					string key = dependency.Name + "/" + dependency.Version;
+					packageDependencies[key] = dependency;
+				}
+			}
+		}
+
 		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
 		{
-			return packageDependencies.Where (dependency => dependency.IsTargetFramework)
-				.Select (dependency => new TargetFrameworkNode (this, dependency));
+			return frameworks.Select (dependency => new TargetFrameworkNode (this, dependency));
 		}
 
 		public PackageDependency GetDependency (string dependency)
 		{
-			return packageDependencies
-				.Where (d => d.IsPackage)
-				.FirstOrDefault (d => dependency == d.Name + "/" + d.Version);
+			PackageDependency matchedDependency = null;
+			if (packageDependencies.TryGetValue (dependency, out matchedDependency))
+				return matchedDependency;
+
+			return null;
 		}
 	}
 }
