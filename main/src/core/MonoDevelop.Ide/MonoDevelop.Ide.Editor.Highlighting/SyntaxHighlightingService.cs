@@ -471,13 +471,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			string name = fileName;
 			SyntaxHighlightingDefinition def = null;
 			string foundType = null;
-			foreach (var bundle in languageBundles) {
-				foreach (var h in bundle.Highlightings) {
-					foreach (var fileType in h.FileTypes) {
-						if (name.EndsWith (fileType, FilePath.PathComparison)) {
-							if (foundType == null || foundType.Length < fileType.Length) {
-								foundType = fileType;
-								def = h;
+			if (name != null) {
+				foreach (var bundle in languageBundles) {
+					foreach (var h in bundle.Highlightings) {
+						foreach (var fileType in h.FileTypes) {
+							if (name.EndsWith (fileType, FilePath.PathComparison)) {
+								if (foundType == null || foundType.Length < fileType.Length) {
+									foundType = fileType;
+									def = h;
+								}
 							}
 						}
 					}
