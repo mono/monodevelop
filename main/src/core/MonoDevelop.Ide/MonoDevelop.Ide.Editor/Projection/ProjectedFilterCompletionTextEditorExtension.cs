@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 			set {
 				completionTextEditorExtension.CompletionWidget = value;
+				completionTextEditorExtension.UnsubscribeCompletionContextChanged ();
 			}
 		}
 
@@ -57,6 +58,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			this.completionTextEditorExtension = completionTextEditorExtension;
 			this.projections = projections;
+			completionTextEditorExtension.UnsubscribeCompletionContextChanged ();
 		}
 
 		internal protected override bool IsActiveExtension ()

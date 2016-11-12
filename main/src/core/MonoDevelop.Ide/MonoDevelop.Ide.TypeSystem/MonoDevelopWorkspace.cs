@@ -451,7 +451,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (projections == null)
 				throw new ArgumentNullException (nameof (projections));
 			foreach (var entry in projectionList) {
-				if (entry.File.FilePath == projectFile.FilePath) {
+				if (entry?.File?.FilePath == projectFile.FilePath) {
 					projectionList.Remove (entry);
 					break;
 				}

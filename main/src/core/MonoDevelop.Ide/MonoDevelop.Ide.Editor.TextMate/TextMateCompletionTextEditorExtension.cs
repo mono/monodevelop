@@ -32,6 +32,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
@@ -59,8 +60,19 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				}
 				ext = ext.Next;
 			}
-
+			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
 			base.Initialize ();
+		}
+
+		public override void Dispose ()
+		{
+			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
+		}
+
+		void DocumentContext_DocumentParsed (object sender, EventArgs e)
+		{
+			inactive |= (DocumentContext.ParsedDocument.Flags & ParsedDocumentFlags.HasCustomCompletionExtension) == ParsedDocumentFlags.HasCustomCompletionExtension;
+
 		}
 
 		internal protected override bool IsActiveExtension ()

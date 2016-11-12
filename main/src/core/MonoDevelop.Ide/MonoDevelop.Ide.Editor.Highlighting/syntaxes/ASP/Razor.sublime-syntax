@@ -43,6 +43,12 @@ contexts:
         - include: commenttags
         - match: '\*@'
           pop: true
+    - match: '<!--'
+      scope: comment.source.razor
+      push:
+        - include: commenttags
+        - match: '-->'
+          pop: true
   commenttags:
     - match: '\b((?i:todo)|(?i:fixme)|(?i:hack)|(?i:undone))\b'
       scope: markup.other.source.razor

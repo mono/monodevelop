@@ -248,7 +248,6 @@
     <Compile Include="Html\ElementTypes.cs" />
     <Compile Include="Razor\Parser\RazorSymbols.cs" />
     <Compile Include="Razor\Parser\RazorUtils.cs" />
-    <Compile Include="Razor\RazorSyntaxMode.cs" />
     <Compile Include="Razor\RazorCSharpFormatter.cs" />
     <Compile Include="Razor\EditorParserFixed\BackgroundParser.cs" />
     <Compile Include="Razor\EditorParserFixed\CommonResources.Designer.cs" />
