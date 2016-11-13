@@ -8,10 +8,47 @@ open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 open MonoDevelop
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Ast
 
 module highlightUnusedOpens =
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
+    let visitModulesAndNamespaces modulesOrNss =
+        [ for moduleOrNs in modulesOrNss do
+
+            let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
+
+            for decl in decls do
+                match decl with
+                | SynModuleDecl.Open(longIdentWithDots, range) -> 
+                    LoggingService.logDebug "Namespace or module: %A" longIdentWithDots.Lid
+                    yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
+                | _ -> () ]
+
+    let openStatements (tree: ParsedInput option) = 
+        match tree.Value with
+        | ParsedInput.ImplFile(implFile) ->
+            let (ParsedImplFileInput(_fn, _script, _name, _, _, modules, _)) = implFile
+            visitModulesAndNamespaces modules
+        | _ -> []
+
+    let getAutoOpenAccessPath (ent:FSharpEntity) =
+        // Some.Namespace+AutoOpenedModule+Entity
+
+        // HACK: I can't see a way to get the EnclosingEntity of an Entity
+        // Some.Namespace + Some.Namespace.AutoOpenedModule are both valid
+        ent.TryFullName |> Option.bind(fun _ ->
+            if (not ent.IsNamespace) && ent.QualifiedName.Contains "+" then 
+                Some ent.QualifiedName.[0..ent.QualifiedName.IndexOf "+" - 1]
+            else
+                None)
+
+    let entityNamespace (ent:FSharpEntity) =
+        if ent.IsFSharpModule then
+            [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
+        else
+            [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+
+    let getUnusedOpens (context:DocumentContext) =
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -19,44 +56,8 @@ module highlightUnusedOpens =
                 return ast.ParseTree, pd
             }
 
-        ast |> Option.iter(fun (tree, pd) ->
-            let visitModulesAndNamespaces modulesOrNss =
-                [ for moduleOrNs in modulesOrNss do
-
-                    let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
-
-                    for decl in decls do
-                        match decl with
-                        | SynModuleDecl.Open(longIdentWithDots, range) -> 
-                            LoggingService.logDebug "Namespace or module: %A" longIdentWithDots.Lid
-                            yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
-                        | _ -> () ]
-
-            let openStatements = 
-                match tree.Value with
-                | ParsedInput.ImplFile(implFile) ->
-                    let (ParsedImplFileInput(_fn, _script, _name, _, _, modules, _)) = implFile
-                    visitModulesAndNamespaces modules
-                | _ -> []
-
+        ast |> Option.bind (fun (tree, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values
-
-            let getAutoOpenAccessPath (ent:FSharpEntity) =
-                // Some.Namespace+AutoOpenedModule+Entity
-
-                // HACK: I can't see a way to get the EnclosingEntity of an Entity
-                // Some.Namespace + Some.Namespace.AutoOpenedModule are both valid
-                ent.TryFullName |> Option.bind(fun _ ->
-                    if (not ent.IsNamespace) && ent.QualifiedName.Contains "+" then 
-                        Some ent.QualifiedName.[0..ent.QualifiedName.IndexOf "+" - 1]
-                    else
-                        None)
-
-            let entityNamespace (ent:FSharpEntity) =
-                if ent.IsFSharpModule then
-                    [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
-                else
-                    [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
 
             let namespacesInUse =
                 symbols
@@ -72,25 +73,29 @@ module highlightUnusedOpens =
                 |> Seq.choose id
                 |> Set.ofSeq
 
-            let getOffset line col =
-                editor.LocationToOffset (line, col+1)
+            let results =
+                openStatements tree
+                |> List.filter(fun (namepsc, _range) -> not (namespacesInUse.Contains namepsc))
+            Some results)
 
-            openStatements
-            |> List.iter(fun (namepsc,range) -> 
-                let startOffset = getOffset range.StartLine range.StartColumn
-                let markers = editor.GetTextSegmentMarkersAt startOffset
-                markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
+    let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Microsoft.FSharp.Compiler.Range.range) list) =
+        let getOffset line col = editor.LocationToOffset (line, col+1)
+        
+        unusedOpenRanges |> List.iter(fun (_, range) ->
+            let startOffset = getOffset range.StartLine range.StartColumn
+            let endOffset = getOffset range.EndLine range.EndColumn
 
-                if not (namespacesInUse.Contains namepsc) then
-                    let endOffset = getOffset range.EndLine range.EndColumn
-                    let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
-                    let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
-                    marker.IsVisible <- true
-                    editor.AddMarker(marker))
-        )
+            let markers = editor.GetTextSegmentMarkersAt startOffset
+            markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
+
+            let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
+            let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
+            marker.IsVisible <- true
+            editor.AddMarker(marker))
 
 type HighlightUnusedOpens() =
     inherit TextEditorExtension()
 
     override x.Initialize() =
-        x.DocumentContext.DocumentParsed.Add (fun _ -> highlightUnusedOpens.getUnusedOpens x.DocumentContext x.Editor)
+        x.DocumentContext.DocumentParsed.Add (fun _ -> let unused = highlightUnusedOpens.getUnusedOpens x.DocumentContext
+                                                       unused |> Option.iter(fun unused' -> highlightUnusedOpens.highlightUnused x.Editor unused'))
