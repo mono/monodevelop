@@ -35,7 +35,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol">
-      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.0.2.1029.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.0.2.1112.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

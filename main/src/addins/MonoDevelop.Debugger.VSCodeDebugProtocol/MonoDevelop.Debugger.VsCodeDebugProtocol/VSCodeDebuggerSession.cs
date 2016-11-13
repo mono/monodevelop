@@ -169,13 +169,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			Capabilities = protocolClient.SendRequestSync (initRequest);
 		}
 
-		protected override void OnAttachToProcess (long processId)
-		{
-			throw new NotImplementedException ();
-		}
-
 		protected abstract InitializeRequest CreateInitRequest ();
 		protected abstract LaunchRequest CreateLaunchRequest (DebuggerStartInfo startInfo);
+		protected abstract AttachRequest CreateAttachRequest (long processId);
 		protected abstract string GetDebugAdapterPath ();
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -188,6 +184,15 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			StartDebugAgent ();
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
+			OnStarted ();
+			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
+		}
+
+		protected void Attach (long processId)
+		{
+			StartDebugAgent ();
+			var attachRequest = CreateAttachRequest (processId);
+			protocolClient.SendRequestSync (attachRequest);
 			OnStarted ();
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
 		}
@@ -483,7 +488,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnStop ()
 		{
-			protocolClient.SendRequestSync (new PauseRequest (currentThreadId));
+			protocolClient.SendRequestSync (new PauseRequest ());
 		}
 
 		protected override void OnUpdateBreakEvent (BreakEventInfo eventInfo)

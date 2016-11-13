@@ -31,6 +31,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Debugger;
 using MonoDevelop.DotNetCore;
+using System.Linq;
 
 namespace MonoDevelop.DotnetCore.Debugger
 {
@@ -70,6 +71,17 @@ namespace MonoDevelop.DotnetCore.Debugger
 		public override DebuggerSession CreateSession ()
 		{
 			return new DotNetCoreDebuggerSession ();
+		}
+
+		public override ProcessInfo [] GetAttachableProcesses ()
+		{
+			return System.Diagnostics.Process.GetProcessesByName ("dotnet").Select (p => {
+				try {
+					return new ProcessInfo (p.Id, p.ProcessName);
+				} catch {
+					return null;
+				}
+			}).Where (p => p != null).ToArray ();
 		}
 	}
 }
