@@ -488,7 +488,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnStop ()
 		{
-			protocolClient.SendRequestSync (new PauseRequest (currentThreadId));
+			protocolClient.SendRequestSync (new PauseRequest ());
 		}
 
 		protected override void OnUpdateBreakEvent (BreakEventInfo eventInfo)

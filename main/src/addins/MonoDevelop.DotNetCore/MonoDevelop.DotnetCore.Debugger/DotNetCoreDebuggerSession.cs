@@ -96,7 +96,18 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		protected override AttachRequest CreateAttachRequest (long processId)
 		{
-			throw new NotImplementedException ();
+			var attachRequest = new AttachRequest (
+				new Dictionary<string, JToken> () {
+					{"name" , JToken.FromObject (".NET Core Attach")},
+					{"type" , JToken.FromObject ("coreclr")},
+					{"request" , JToken.FromObject ("launch")},
+					{"processId" , JToken.FromObject (processId)},
+					{"justMyCode", JToken.FromObject (Options.ProjectAssembliesOnly)},
+					{"requireExactSource", JToken.FromObject (false)},//Mimic XS behavior
+					{"enableStepFiltering", JToken.FromObject (Options.StepOverPropertiesAndOperators)}
+				}
+			);
+			return attachRequest;
 		}
 
 		protected override void OnAttachToProcess (long processId)

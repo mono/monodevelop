@@ -73,16 +73,15 @@ namespace MonoDevelop.DotnetCore.Debugger
 			return new DotNetCoreDebuggerSession ();
 		}
 
-		//TODO: Uncomment once AttachRequest has AdditionalProperties
-		//public override ProcessInfo [] GetAttachableProcesses ()
-		//{
-		//	return System.Diagnostics.Process.GetProcessesByName ("dotnet").Select (p => {
-		//		try {
-		//			return new ProcessInfo (p.Id, p.ProcessName);
-		//		} catch {
-		//			return null;
-		//		}
-		//	}).Where (p => p != null).ToArray ();
-		//}
+		public override ProcessInfo [] GetAttachableProcesses ()
+		{
+			return System.Diagnostics.Process.GetProcessesByName ("dotnet").Select (p => {
+				try {
+					return new ProcessInfo (p.Id, p.ProcessName);
+				} catch {
+					return null;
+				}
+			}).Where (p => p != null).ToArray ();
+		}
 	}
 }
