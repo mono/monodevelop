@@ -88,9 +88,19 @@ namespace MonoDevelop.DotnetCore.Debugger
 					{"justMyCode", JToken.FromObject (Options.ProjectAssembliesOnly)},
 					{"requireExactSource", JToken.FromObject (false)},//Mimic XS behavior
 					{"enableStepFiltering", JToken.FromObject (Options.StepOverPropertiesAndOperators)},
-					{"externalConsole", JToken.FromObject (startInfo.UseExternalConsole)}
-				}
-			);
+					{"externalConsole", JToken.FromObject (startInfo.UseExternalConsole)},
+					{"launchBrowser", JToken.FromObject(new Dictionary<string, JToken>(){
+						{ "enabled", JToken.FromObject( true)},
+						{ "args", JToken.FromObject( "${auto-detect-url}")},
+						{"windows", JToken.FromObject(new Dictionary<string, JToken>(){
+							{ "command", JToken.FromObject("cmd.exe")},
+							{ "args", JToken.FromObject( "/C start ${auto-detect-url}")}})},
+						{"osx", JToken.FromObject(new Dictionary<string, JToken>(){
+							{ "command", JToken.FromObject("open")}})},
+						{"linux", JToken.FromObject(new Dictionary<string, JToken>() {
+							{ "command", JToken.FromObject("xdg-open")}})}
+					})}
+				});
 			return launchRequest;
 		}
 
@@ -120,7 +130,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 			Download (() => Launch (startInfo));
 		}
 
-		async void Download(Action callback)
+		async void Download (Action callback)
 		{
 			if (File.Exists (DebugAdapterPath)) {
 				callback ();
@@ -190,7 +200,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 					url,
 					tempZipPath,
 					(p) => {
-						int progress = (int) (1000f * p);
+						int progress = (int)(1000f * p);
 						if (reported < progress) {
 							progressMonitor.Step (progress - reported);
 							reported = progress;
@@ -210,7 +220,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 				using (var archive = ZipFile.Open (tempZipPath, ZipArchiveMode.Read)) {
 					foreach (var entry in archive.Entries) {
 						var name = Path.Combine (DebugAdapterDir, entry.FullName);
-						if (name[name.Length-1] == Path.DirectorySeparatorChar) {
+						if (name [name.Length - 1] == Path.DirectorySeparatorChar) {
 							Directory.CreateDirectory (name);
 						} else {
 							var dir = Path.GetDirectoryName (name);
@@ -225,7 +235,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 						Syscall.chmod (file, FilePermissions.S_IRWXU | FilePermissions.S_IRGRP | FilePermissions.S_IXGRP | FilePermissions.S_IROTH | FilePermissions.S_IXOTH);
 					}
 				} else {
-					progressMonitor.ReportError (GettextCatalog.GetString("Failed to extract files"));
+					progressMonitor.ReportError (GettextCatalog.GetString ("Failed to extract files"));
 					return false;
 				}
 			}
