@@ -415,6 +415,7 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\TargetFrameworkNodeBuilder.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageDependenciesNodeCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
