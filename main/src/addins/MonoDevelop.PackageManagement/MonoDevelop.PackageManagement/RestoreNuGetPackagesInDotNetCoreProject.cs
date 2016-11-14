@@ -41,6 +41,8 @@ namespace MonoDevelop.PackageManagement
 			packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
 		}
 
+		public bool ReloadProject { get; set; }
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);
@@ -61,6 +63,7 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
+			packageRestorer.ReloadProject = ReloadProject;
 			await packageRestorer.RestorePackages (cancellationToken);
 
 			packageManagementEvents.OnPackagesRestored ();
