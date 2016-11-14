@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -70,6 +71,25 @@ namespace MonoDevelop.DotNetCore
 			var properties = project.MSBuildProject.EvaluatedProperties;
 			return properties.HasProperty ("TargetFramework") ||
 				properties.HasProperty ("TargetFrameworks");
+		}
+
+		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
+		{
+			if (base.OnGetCanReferenceProject (targetProject, out reason))
+				return true;
+
+			return CanReferenceProject (targetProject);
+		}
+
+		bool CanReferenceProject (DotNetProject targetProject)
+		{
+			if (targetProject.TargetFramework.Id.Identifier != ".NETStandard")
+				return false;
+
+			if (Project.TargetFramework.Id.Identifier != ".NETCoreApp")
+				return false;
+
+			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
 		}
 
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
