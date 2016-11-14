@@ -24,7 +24,7 @@ module highlightUnusedOpens =
                     yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
                 | _ -> () ]
 
-    let openStatements (tree: ParsedInput option) = 
+    let getOpenStatements (tree: ParsedInput option) = 
         match tree.Value with
         | ParsedInput.ImplFile(implFile) ->
             let (ParsedImplFileInput(_fn, _script, _name, _, _, modules, _)) = implFile
@@ -100,14 +100,19 @@ module highlightUnusedOpens =
                     | (namespc, range)::xs when notUsed namespc -> 
                         filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
                     | (namespc, range:Range.range)::xs ->
-                        let startOffset = getOffset editor range.Start
-                        let markers = editor.GetTextSegmentMarkersAt startOffset
-                        markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
+
                         filterInner acc xs (seenNamespaces.Add namespc)
                     | [] -> acc |> List.rev
                 filterInner [] list Set.empty
 
-            let results = openStatements tree |> filter
+            let openStatements = getOpenStatements tree
+
+            openStatements |> List.iter(fun (namspc, range) -> 
+                let startOffset = getOffset editor range.Start
+                let markers = editor.GetTextSegmentMarkersAt startOffset
+                markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))
+
+            let results = getOpenStatements tree |> filter
 
             Some results)
 
