@@ -45,7 +45,7 @@ exit_with_message (char *reason, char *argv0)
 	[alert release];
 	
 	if (answer == NSAlertFirstButtonReturn) {
-		NSString *mono_download_url = @"http://www.go-mono.com/mono-downloads/download.html";
+		NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 		CFURLRef url = CFURLCreateWithString (NULL, (CFStringRef) mono_download_url, NULL);
 		LSOpenCFURLRef (url, NULL);
 		CFRelease (url);
