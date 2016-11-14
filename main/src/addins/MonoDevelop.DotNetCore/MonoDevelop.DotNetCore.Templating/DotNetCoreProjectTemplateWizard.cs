@@ -252,6 +252,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
 			var action = new RestoreNuGetPackagesInDotNetCoreProject (project);
+			action.ReloadProject = true;
 			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 		}
 	}

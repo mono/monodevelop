@@ -51,6 +51,8 @@ namespace MonoDevelop.PackageManagement
 			this.projects = nugetProjects.Select (project => project.DotNetProject).ToList ();
 		}
 
+		public bool ReloadProject { get; set; }
+
 		public async Task RestorePackages (CancellationToken cancellationToken)
 		{
 			foreach (DotNetProject project in projects) {
@@ -61,7 +63,12 @@ namespace MonoDevelop.PackageManagement
 						throw new ApplicationException (result.BuildResult.Errors.First ().ErrorText);
 					}
 
-					RefreshProjectReferences (project);
+					if (ReloadProject) {
+						project.NeedsReload = true;
+						FileService.NotifyFileChanged (project.FileName);
+					} else {
+						RefreshProjectReferences (project);
+					}
 				}
 			}
 		}

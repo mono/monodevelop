@@ -1,5 +1,5 @@
 ﻿//
-// RestoreNuGetPackagesInDotNetCoreProject.cs
+// DotNetCoreFrameworkCompatibility.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,49 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
+using System;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
+using NuGet.Frameworks;
 
 namespace MonoDevelop.PackageManagement
 {
-	class RestoreNuGetPackagesInDotNetCoreProject : IPackageAction
+	static class DotNetCoreFrameworkCompatibility
 	{
-		IPackageManagementEvents packageManagementEvents;
-		MonoDevelopDotNetCorePackageRestorer packageRestorer;
-
-		public RestoreNuGetPackagesInDotNetCoreProject (DotNetProject project)
+		public static bool CanReferenceNetStandardProject (TargetFrameworkMoniker targetFramework, DotNetProject netStandardProject)
 		{
-			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-			packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
-		}
+			var netStandardVersion = new Version (netStandardProject.TargetFramework.Id.Version);
+			netStandardVersion = new Version (netStandardVersion.Major, netStandardVersion.Minor, 0, 0);
 
-		public bool ReloadProject { get; set; }
+			var coreAppVersion = new Version (targetFramework.Version);
+			coreAppVersion = new Version (coreAppVersion.Major, coreAppVersion.Minor, 0, 0);
 
-		public void Execute ()
-		{
-			Execute (CancellationToken.None);
-		}
-
-		public void Execute (CancellationToken cancellationToken)
-		{
-			Task task = ExecuteAsync (cancellationToken);
-			using (var restoreTask = new PackageRestoreTask (task)) {
-				task.Wait ();
-			}
-		}
-
-		public bool HasPackageScriptsToRun ()
-		{
-			return false;
-		}
-
-		async Task ExecuteAsync (CancellationToken cancellationToken)
-		{
-			packageRestorer.ReloadProject = ReloadProject;
-			await packageRestorer.RestorePackages (cancellationToken);
-
-			packageManagementEvents.OnPackagesRestored ();
+			if (coreAppVersion == FrameworkConstants.CommonFrameworks.NetCoreApp10.Version)
+				return netStandardVersion < FrameworkConstants.CommonFrameworks.NetStandard17.Version;
+			else if (coreAppVersion == FrameworkConstants.CommonFrameworks.NetCoreApp11.Version)
+				return netStandardVersion <= FrameworkConstants.CommonFrameworks.NetStandard17.Version;
+			else // Assume compatible.
+				return true;
 		}
 	}
 }
