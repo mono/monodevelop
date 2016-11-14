@@ -117,14 +117,19 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			try {
 				if (task.IsFaulted) {
-					LoggingService.LogError ("OnPackageDependenciesRead error.", task.Exception);
+					// Access task.Exception to avoid 'An unhandled exception has occured'
+					// even if the exception is not being logged.
+					Exception ex = task.Exception;
+					if (!tokenSource.IsCancellationRequested) {
+						LoggingService.LogError ("OnPackageDependenciesRead error.", ex);
+					}
 				} else if (!tokenSource.IsCancellationRequested) {
 					LoadPackageDependencies (task.Result);
 					LoadedDependencies = true;
 					OnPackageDependenciesChanged ();
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ("OnInstalledPackagesRead error.", ex);
+				LoggingService.LogError ("OnPackageDependenciesRead error.", ex);
 			}
 		}
 
