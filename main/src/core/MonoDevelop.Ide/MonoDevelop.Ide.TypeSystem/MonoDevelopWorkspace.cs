@@ -1165,7 +1165,11 @@ namespace MonoDevelop.Ide.TypeSystem
 								id = data.GetDocumentId (projectedDocument.Document.FileName);
 								if (id != null) {
 									ClearDocumentData (id);
-									OnDocumentRemoved (id);
+									try {
+										OnDocumentRemoved (id);
+									} catch {
+										// already removed as document
+									}
 									data.RemoveDocument (projectedDocument.Document.FileName);
 								}
 							}
