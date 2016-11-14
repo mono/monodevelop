@@ -48,7 +48,24 @@ module highlightUnusedOpens =
         else
             [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
 
-    let getUnusedOpens (context:DocumentContext) =
+    let getOffset (editor:TextEditor) (pos:Range.pos) =
+        editor.LocationToOffset (pos.Line, pos.Column+1)
+
+    let symbolIsFullyQualified (editor:TextEditor) (sym:FSharpSymbolUse) (fullName:string) =
+
+        let startOffset = getOffset editor sym.RangeAlternate.Start
+        let endOffset = getOffset editor sym.RangeAlternate.End
+        let startOffset = 
+            if endOffset - startOffset = fullName.Length then
+                startOffset
+            else
+                // Entity range isn't the full longIdent range for some reason
+                let fqdiff = fullName.Length - sym.Symbol.DisplayName.Length
+                startOffset - fqdiff
+        let text = editor.GetTextBetween (startOffset, endOffset)
+        text = fullName
+
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -62,10 +79,11 @@ module highlightUnusedOpens =
             let namespacesInUse =
                 symbols
                 |> Seq.collect (fun sym ->
+                                    let isQualified = symbolIsFullyQualified editor sym
                                     match sym with
-                                    | SymbolUse.Entity ent -> entityNamespace ent
-                                    | SymbolUse.Field f -> entityNamespace f.DeclaringEntity
-                                    | SymbolUse.MemberFunctionOrValue mfv -> 
+                                    | SymbolUse.Entity ent when not (isQualified ent.FullName) -> entityNamespace ent
+                                    | SymbolUse.Field f when not (isQualified f.FullName) -> entityNamespace f.DeclaringEntity
+                                    | SymbolUse.MemberFunctionOrValue mfv when not (isQualified mfv.FullName) -> 
                                         try
                                             entityNamespace mfv.EnclosingEntity
                                         with :? InvalidOperationException -> [None]
@@ -90,11 +108,11 @@ module highlightUnusedOpens =
             Some results)
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Microsoft.FSharp.Compiler.Range.range) list) =
-        let getOffset line col = editor.LocationToOffset (line, col+1)
+
         
         unusedOpenRanges |> List.iter(fun (_, range) ->
-            let startOffset = getOffset range.StartLine range.StartColumn
-            let endOffset = getOffset range.EndLine range.EndColumn
+            let startOffset = getOffset editor range.Start
+            let endOffset = getOffset editor range.End
 
             let markers = editor.GetTextSegmentMarkersAt startOffset
             markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
@@ -108,5 +126,5 @@ type HighlightUnusedOpens() =
     inherit TextEditorExtension()
 
     override x.Initialize() =
-        x.DocumentContext.DocumentParsed.Add (fun _ -> let unused = highlightUnusedOpens.getUnusedOpens x.DocumentContext
+        x.DocumentContext.DocumentParsed.Add (fun _ -> let unused = highlightUnusedOpens.getUnusedOpens x.DocumentContext x.Editor
                                                        unused |> Option.iter(fun unused' -> highlightUnusedOpens.highlightUnused x.Editor unused'))

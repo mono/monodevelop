@@ -7,15 +7,15 @@ open FsUnit
 [<TestFixture>]
 module ``Highlight unused opens`` =
 
-    let getUnusedOpens source expected =
+    let assertUnusedOpens source expected =
         let doc = TestHelpers.createDoc source "defined"
-        let res = highlightUnusedOpens.getUnusedOpens doc
+        let res = highlightUnusedOpens.getUnusedOpens doc doc.Editor
         let opens = fst (res.Value |> List.unzip)
         opens |> should equal expected
 
     [<Test>]
     let Simple() =
-        getUnusedOpens "open System" ["System"]
+        assertUnusedOpens "open System" ["System"]
 
     [<Test>]
     let ``Auto open namespace not needed``() =
@@ -30,7 +30,7 @@ module ``Highlight unused opens`` =
             module module2 =
                 let y = x
             """
-        getUnusedOpens source []
+        assertUnusedOpens source []
 
     [<Test>]
     let ``Auto open namespace not needed for nested module``() =
@@ -46,7 +46,7 @@ module ``Highlight unused opens`` =
             module module3 =
                 let y = module2.x
             """
-        getUnusedOpens source []
+        assertUnusedOpens source []
 
     [<Test>]
     let ``Duplicated open statements``() =
@@ -58,4 +58,14 @@ module ``Highlight unused opens`` =
             module module3 =
                 Console.WriteLine("")
             """
-        getUnusedOpens source ["System"; "System"]
+        assertUnusedOpens source ["System"; "System"]
+
+    [<Test>]
+    let ``Fully qualified symbol``() =
+        let source = 
+            """
+            open System
+            module module1 =
+                System.Console.WriteLine("")
+            """
+        assertUnusedOpens source ["System"]
