@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
@@ -60,10 +61,21 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var dependenciesNode = (PackageDependenciesNode)dataObject;
 			if (dependenciesNode.LoadedDependencies) {
-				treeBuilder.AddChildren (GetTargetFrameworkNodes (dataObject));
+				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
 			} else {
 				var placeHolderNode = new TargetFrameworkNode (dependenciesNode, GettextCatalog.GetString ("Loading..."));
 				treeBuilder.AddChild (placeHolderNode);
+			}
+		}
+
+		void AddLoadedDependencyNodes (ITreeBuilder treeBuilder, PackageDependenciesNode dependenciesNode)
+		{
+			var frameworkNodes = GetTargetFrameworkNodes (dependenciesNode).ToList ();
+			if (frameworkNodes.Count > 1) {
+				treeBuilder.AddChildren (frameworkNodes);
+			} else if (frameworkNodes.Any ()) {
+				var frameworkNode = frameworkNodes.First ();
+				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
 			}
 		}
 
