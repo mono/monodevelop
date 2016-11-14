@@ -88,7 +88,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				threads [i] = new ThreadInfo (processId,
 										  threadsResponse.Threads [i].Id,
 											  threadsResponse.Threads [i].Name,
-											  backtrace.FrameCount > 0 ? backtrace.GetFrame (0).ToString () : "");
+											  backtrace.FrameCount > 0 ? backtrace.GetFrame (0).ToString () : "",
+				                              backtrace);
 			}
 			return threads;
 		}
@@ -232,7 +233,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				foreach (var variablesGroup in scopeBody.Scopes) {
 					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
 					foreach (var variable in varibles.Variables) {
-						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.Type, variable.Value, variable.VariablesReference));
+						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference));
 					}
 				}
 				return results.ToArray ();
@@ -252,6 +253,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			{
 				int variablesReference;
 				VSCodeDebuggerSession vsCodeDebuggerSession;
+				ObjectValue [] objValChildren;
 
 				public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference)
 				{
@@ -261,10 +263,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 				public ObjectValue [] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 				{
-					var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
-						variablesReference
-					)).Variables;
-					return children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.Type, c.Value, c.VariablesReference)).ToArray ();
+					if (objValChildren == null) {
+						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
+							variablesReference
+						)).Variables;
+						objValChildren = children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.EvaluateName, c.Type, c.Value, c.VariablesReference)).ToArray ();
+					}
+					return objValChildren;
 				}
 
 				public object GetRawValue (ObjectPath path, EvaluationOptions options)
@@ -316,7 +321,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				foreach (var variablesGroup in scopeBody.Scopes) {
 					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
 					foreach (var variable in varibles.Variables) {
-						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.Name), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
+						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.EvaluateName), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
 					}
 				}
 				return results.ToArray ();
@@ -398,7 +403,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					//TODO: what happens if thread is not specified?
 					args.Process = OnGetProcesses () [0];
 					args.Thread = GetThread (args.Process, (long)body.ThreadId);
-					args.Backtrace = GetThreadBacktrace ((long)body.ThreadId);
+					args.Backtrace = args.Thread.Backtrace;
 
 					OnTargetEvent (args);
 					break;
@@ -407,7 +412,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					break;
 				case "exited":
 					OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited) {
-						ExitCode = (int)((ExitedEvent)obj.Body).ExitCode
+						ExitCode = ((ExitedEvent)obj.Body).ExitCode
 					});
 					break;
 				case "output":
