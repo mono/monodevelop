@@ -112,7 +112,8 @@ namespace MonoDevelop.PackageManagement
 				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
 				new DotNetProjectProxy (dotNetProject),
 				new NuGetProjectContext ()) {
-				LicensesMustBeAccepted = packageReference.RequireLicenseAcceptance
+				LicensesMustBeAccepted = packageReference.RequireLicenseAcceptance,
+				OpenReadmeFile = false
 			};
 		}
 
