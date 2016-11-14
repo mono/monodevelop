@@ -6,7 +6,6 @@ open FsUnit
 
 [<TestFixture>]
 module ``Highlight unused opens`` =
-
     let assertUnusedOpens source expected =
         let doc = TestHelpers.createDoc source "defined"
         let res = highlightUnusedOpens.getUnusedOpens doc doc.Editor

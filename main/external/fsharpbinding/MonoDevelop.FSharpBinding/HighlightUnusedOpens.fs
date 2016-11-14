@@ -99,7 +99,11 @@ module highlightUnusedOpens =
                     match list with 
                     | (namespc, range)::xs when notUsed namespc -> 
                         filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
-                    | (namespc, _range)::xs -> filterInner acc xs (seenNamespaces.Add namespc)
+                    | (namespc, range:Range.range)::xs ->
+                        let startOffset = getOffset editor range.Start
+                        let markers = editor.GetTextSegmentMarkersAt startOffset
+                        markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
+                        filterInner acc xs (seenNamespaces.Add namespc)
                     | [] -> acc |> List.rev
                 filterInner [] list Set.empty
 
@@ -108,14 +112,9 @@ module highlightUnusedOpens =
             Some results)
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Microsoft.FSharp.Compiler.Range.range) list) =
-
-        
         unusedOpenRanges |> List.iter(fun (_, range) ->
             let startOffset = getOffset editor range.Start
             let endOffset = getOffset editor range.End
-
-            let markers = editor.GetTextSegmentMarkersAt startOffset
-            markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore)
 
             let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
             let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
