@@ -73,9 +73,20 @@ module highlightUnusedOpens =
                 |> Seq.choose id
                 |> Set.ofSeq
 
-            let results =
-                openStatements tree
-                |> List.filter(fun (namepsc, _range) -> not (namespacesInUse.Contains namepsc))
+            let filter list =
+                let rec filterInner acc list (seenNamespaces: Set<string>) = 
+                    let notUsed namespc =
+                        not (namespacesInUse.Contains namespc) || seenNamespaces.Contains namespc
+
+                    match list with 
+                    | (namespc, range)::xs when notUsed namespc -> 
+                        filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
+                    | (namespc, _range)::xs -> filterInner acc xs (seenNamespaces.Add namespc)
+                    | [] -> acc |> List.rev
+                filterInner [] list Set.empty
+
+            let results = openStatements tree |> filter
+
             Some results)
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Microsoft.FSharp.Compiler.Range.range) list) =
