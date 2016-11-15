@@ -1,6 +1,5 @@
 namespace MonoDevelop.FSharp
 
-open System.Reflection
 open System
 open Mono.Cecil
 

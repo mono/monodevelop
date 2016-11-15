@@ -1,9 +1,7 @@
 ﻿namespace MonoDevelop.FSharpInteractive
 open System
 open System.IO
-open System.Text
 open Newtonsoft.Json
-open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
 open MonoDevelop.FSharp.Shared

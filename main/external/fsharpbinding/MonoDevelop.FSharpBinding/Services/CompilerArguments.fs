@@ -5,16 +5,11 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.Collections.Generic
 open System.IO
-open System.Diagnostics
 open System.Reflection
 open System.Globalization
 open System.Runtime.Versioning
-open System.Threading
-open Microsoft.FSharp.Reflection
 open MonoDevelop.Projects
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core

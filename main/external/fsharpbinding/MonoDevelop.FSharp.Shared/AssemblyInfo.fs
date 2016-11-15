@@ -1,6 +1,5 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 open System.Reflection
-open System.Runtime.CompilerServices
 
 [<assembly: AssemblyTitle("MonoDevelop.FSharp.Shared")>]
 [<assembly: AssemblyDescription("")>]

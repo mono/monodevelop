@@ -785,7 +785,7 @@ namespace MonoDevelop.Ide
 		
 		public SolutionFolderItem CreateProject (SolutionFolder parentFolder)
 		{
-			return CreateProject (parentFolder, string.Empty);
+			return CreateProject (parentFolder, null);
 		}
 
 		public SolutionFolderItem CreateProject (SolutionFolder parentFolder, string selectedTemplateId)

@@ -4,8 +4,6 @@ open System
 open System.Reflection
 open System.IO
 open System.Diagnostics
-open MonoDevelop.Ide
-open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Core
 open Newtonsoft.Json
 

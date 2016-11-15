@@ -2,16 +2,11 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Threading.Tasks
-open Mono.TextEditor
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide
-open MonoDevelop.Ide.FindInFiles
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Projects
-open ICSharpCode.NRefactory.Semantics
-open ICSharpCode.NRefactory.TypeSystem
-open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.

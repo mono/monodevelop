@@ -300,6 +300,11 @@ namespace MonoDevelop.CSharp.Completion
 					return false;
 				}
 			}
+
+			public override Task<TooltipInformation> CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
+			{
+				return ParameterHintingData.CreateTooltipInformation (editor, ctx, Symbol, currentParameter, smartWrap, cancelToken);
+			}
 		}
 	}
 }

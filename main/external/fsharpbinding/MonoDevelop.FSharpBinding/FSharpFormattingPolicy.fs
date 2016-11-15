@@ -1,11 +1,8 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open System.Text
-open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Core
 open MonoDevelop.Core.Serialization
-open System.ComponentModel
 open MonoDevelop.Projects.Policies
 
 type FSharpFormattingSettings() =

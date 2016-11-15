@@ -4,7 +4,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
 open System
 open System.IO
-open System.Text.RegularExpressions
 
 type CompletionData = {
     displayText: string

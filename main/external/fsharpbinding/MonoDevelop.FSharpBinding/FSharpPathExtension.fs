@@ -3,7 +3,6 @@
 open System
 open System.Collections.Generic
 open System.Linq
-open System.Diagnostics
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Components

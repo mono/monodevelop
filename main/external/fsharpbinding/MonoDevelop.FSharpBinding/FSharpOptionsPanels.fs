@@ -5,7 +5,6 @@
 namespace MonoDevelop.FSharp
 
 open Gtk
-open Gdk
 open System
 open System.IO
 open MonoDevelop.Components

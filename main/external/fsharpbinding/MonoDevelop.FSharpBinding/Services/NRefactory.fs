@@ -2,9 +2,7 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Immutable
-open Mono.TextEditor
 open MonoDevelop.Ide.FindInFiles
-open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
