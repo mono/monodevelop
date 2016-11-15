@@ -81,26 +81,31 @@ module highlightUnusedOpens =
 
         ast |> Option.bind (fun (tree, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values
+
             let getPartNamespace (sym:FSharpSymbolUse) (fullName:string option) =
+                // given a symbol range such as `Text.ISegment` and a full name
+                // of `MonoDevelop.Core.Text.ISegment`, return `MonoDevelop.Core`
                 fullName |> Option.bind(fun fullName ->
                     let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
                     let lengthDiff = fullName.Length - length - 2
                     Some fullName.[0..lengthDiff])
 
+            let getPossibleNameSpaces sym =
+                let isQualified = symbolIsFullyQualified editor sym
+                match sym with
+                | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
+                    getPartNamespace sym ent.TryFullName::entityNamespace ent
+                | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
+                    getPartNamespace sym (Some f.FullName)::entityNamespace f.DeclaringEntity
+                | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
+                    try
+                        getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntity
+                    with :? InvalidOperationException -> [None]
+                | _ -> [None]
+
             let namespacesInUse =
                 symbols
-                |> Seq.collect (fun sym ->
-                                    let isQualified = symbolIsFullyQualified editor sym
-                                    match sym with
-                                    | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
-                                        getPartNamespace sym ent.TryFullName::entityNamespace ent
-                                    | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
-                                        getPartNamespace sym (Some f.FullName)::entityNamespace f.DeclaringEntity
-                                    | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
-                                        try
-                                            getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntity
-                                        with :? InvalidOperationException -> [None]
-                                    | _ -> [None])
+                |> Seq.collect getPossibleNameSpaces
                 |> Seq.choose id
                 |> Set.ofSeq
 
