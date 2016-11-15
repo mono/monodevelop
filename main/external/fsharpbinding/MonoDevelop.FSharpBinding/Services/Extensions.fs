@@ -4,7 +4,6 @@ open System.Text
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
-open MonoDevelop.Ide.Editor
 open ExtCore
 
 module Seq =

@@ -3,11 +3,9 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open MonoDevelop.Core
-open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.UnitTesting
 open MonoDevelop.Projects
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module unitTestGatherer =

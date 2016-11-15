@@ -1,14 +1,9 @@
 ﻿namespace MonoDevelop.FSharp
 open System
-open System.Reflection
 open System.Collections.Generic
-open System.Linq
 open Gtk
 open MonoDevelop.Core
-open MonoDevelop.Ide.Execution
-open Pango
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Mono.TextEditor
 open Mono.TextEditor.Highlighting
 open MonoDevelop.Ide
 

@@ -1,8 +1,5 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 open System
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler
-open System.Globalization
 
 // --------------------------------------------------------------------------------------
 /// Parsing utilities for IntelliSense (e.g. parse identifier on the left-hand side

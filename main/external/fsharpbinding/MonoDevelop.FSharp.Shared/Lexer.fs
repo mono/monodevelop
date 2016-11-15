@@ -2,7 +2,6 @@
 
 open System.Diagnostics
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open ExtCore.Control
 
 type SymbolKind =
     | Ident

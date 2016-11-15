@@ -1,6 +1,5 @@
 ﻿namespace MonoDevelop.FSharp
 
-open Gtk
 open MonoDevelop.Components
 open MonoDevelop.Ide.Gui.Dialogs
 

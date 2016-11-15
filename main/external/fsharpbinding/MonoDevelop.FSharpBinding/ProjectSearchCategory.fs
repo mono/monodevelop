@@ -1,8 +1,5 @@
 ﻿namespace MonoDevelop.FSharp
-open System
 open System.Collections.Generic
-open System.Linq
-open System.Threading
 open System.Threading.Tasks
 open MonoDevelop.Core
 open MonoDevelop.Core.Text
