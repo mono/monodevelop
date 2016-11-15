@@ -2,19 +2,18 @@
 
 open System
 open System.Collections.Generic
+open ExtCore.Control
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open ExtCore.Control
-open MonoDevelop
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Ast
 
 module highlightUnusedOpens =
     let visitModulesAndNamespaces modulesOrNss =
         [ for moduleOrNs in modulesOrNss do
-
             let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
 
             for decl in decls do
@@ -90,7 +89,7 @@ module highlightUnusedOpens =
                     let lengthDiff = fullName.Length - length - 2
                     Some fullName.[0..lengthDiff])
 
-            let getPossibleNameSpaces sym =
+            let getPossibleNamespaces sym =
                 let isQualified = symbolIsFullyQualified editor sym
                 match sym with
                 | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
@@ -105,7 +104,7 @@ module highlightUnusedOpens =
 
             let namespacesInUse =
                 symbols
-                |> Seq.collect getPossibleNameSpaces
+                |> Seq.collect getPossibleNamespaces
                 |> Seq.choose id
                 |> Set.ofSeq
 
@@ -133,7 +132,7 @@ module highlightUnusedOpens =
 
             Some results)
 
-    let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Microsoft.FSharp.Compiler.Range.range) list) =
+    let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Range.range) list) =
         unusedOpenRanges |> List.iter(fun (_, range) ->
             let startOffset = getOffset editor range.Start
             let endOffset = getOffset editor range.End
