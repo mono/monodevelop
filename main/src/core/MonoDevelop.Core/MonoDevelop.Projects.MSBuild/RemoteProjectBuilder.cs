@@ -185,6 +185,8 @@ namespace MonoDevelop.Projects.MSBuild
 		IProjectBuilder builder;
 		Dictionary<string,AssemblyReference[]> referenceCache;
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
+		Dictionary<string, PackageDependency[]> packageDependenciesCache;
+		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
 		string file;
 		static int lastTaskId;
 
@@ -194,6 +196,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.engine = engine;
 			builder = engine.LoadProject (file);
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
+			packageDependenciesCache = new Dictionary<string, PackageDependency[]> ();
 		}
 
 		public event EventHandler Disconnected;
@@ -327,10 +330,81 @@ namespace MonoDevelop.Projects.MSBuild
 			return refs;
 		}
 
+		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		{
+			PackageDependency[] packageDependencies = null;
+			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
+
+			using (await packageDependenciesCacheLock.EnterAsync ()) {
+				// Check the cache before starting the task
+				if (packageDependenciesCache.TryGetValue (id, out packageDependencies))
+					return packageDependencies;
+			}
+
+			// Get an id for the task, it willf be used later on to cancel the task if necessary
+			var taskId = Interlocked.Increment (ref lastTaskId);
+			IDisposable cr = null;
+
+			packageDependencies = await Task.Run (async () => {
+				using (await packageDependenciesCacheLock.EnterAsync ()) {
+					// Check again the cache, maybe the value was set while the task was starting
+					if (packageDependenciesCache.TryGetValue (id, out packageDependencies))
+						return packageDependencies;
+
+					// Get ready to cancel the task if the cancellation token is signalled
+					cr = RegisterCancellation (cancellationToken, taskId);
+
+					MSBuildResult result;
+					bool locked = false;
+					try {
+						BeginOperation ();
+						locked = await engine.Semaphore.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+						// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
+						result = builder.Run (
+							configurations, null, MSBuildVerbosity.Normal,
+							new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, null, taskId
+						);
+					} catch (Exception ex) {
+						CheckDisconnected ();
+						LoggingService.LogError ("ResolvePackageDependencies failed", ex);
+						return new PackageDependency [0];
+					} finally {
+						if (locked)
+							engine.Semaphore.Release ();
+						EndOperation ();
+					}
+
+					List<MSBuildEvaluatedItem> items;
+					if (result == null)
+						return new PackageDependency[0];
+					else if (result.Items.TryGetValue ("_DependenciesDesignTime", out items) && items != null) {
+						packageDependencies = items
+							.Select (i => PackageDependency.Create (i))
+							.Where (dependency => dependency != null)
+							.ToArray ();
+					} else
+						packageDependencies = new PackageDependency [0];
+
+					packageDependenciesCache [id] = packageDependencies;
+				}
+				return packageDependencies;
+			});
+
+			// Dispose the cancel registration
+			if (cr != null)
+				cr.Dispose ();
+
+			return packageDependencies;
+		}
+
+
 		public async Task Refresh ()
 		{
 			using (await referenceCacheLock.EnterAsync ())
 				referenceCache.Clear ();
+
+			using (await packageDependenciesCacheLock.EnterAsync ())
+				packageDependenciesCache.Clear ();
 
 			await Task.Run (() => {
 				try {

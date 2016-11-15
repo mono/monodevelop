@@ -76,6 +76,7 @@ namespace MonoDevelop.PackageManagement
 		void RefreshProjectReferences (DotNetProject project)
 		{
 			Runtime.RunInMainThread (() => {
+				project.ReloadProjectBuilder ();
 				project.NotifyModified ("References");
 			});
 		}

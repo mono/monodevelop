@@ -164,6 +164,11 @@ namespace MonoDevelop.PackageManagement
 			return Enumerable.Empty<string> ();
 		}
 
+		public static bool IsDotNetCoreProject (this Project project)
+		{
+			return project.GetDotNetCoreTargetFrameworks ().Any ();
+		}
+
 		public static bool HasPackageReferences (this DotNetProject project)
 		{
 			return project.Items.OfType<ProjectPackageReference> ().Any ();
