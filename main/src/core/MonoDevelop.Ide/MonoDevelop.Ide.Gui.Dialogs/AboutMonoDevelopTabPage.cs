@@ -27,6 +27,7 @@
 //
 //
 using System;
+using System.IO;
 
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -75,28 +76,43 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Spacing = 0,
 				MarginLeft = 12
 			};
-			cbox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Visit ")
-			});
 			var linkLabel = new Xwt.Label {
-				Markup = "<span underline='true'>aka.ms/visual-studio-license</span>",
+				Markup = "<span underline='true'>License Terms</span>",
 				Cursor = Xwt.CursorType.Hand,
 			};
 			if (IdeTheme.UserInterfaceTheme == Theme.Light)
 				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
 			
-			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://aka.ms/visual-studio-license");
+			linkLabel.ButtonReleased += (sender, e) => {
+				var binDir = System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetEntryAssembly ().Location);
+				string licensePath = System.IO.Path.Combine (binDir, "branding", "License.txt");
+				if (Platform.IsMac) {
+					var appDir = System.IO.Path.GetFullPath (System.IO.Path.Combine (binDir, "..", "..", "..", ".."));
+					if (appDir.EndsWith (".app", StringComparison.Ordinal)) {
+						licensePath = System.IO.Path.Combine (appDir, "Contents", "License.txt");
+					}
+				}
+				if (!File.Exists (licensePath)) {
+					MessageService.ShowError ("License file is missing");
+				} else {
+					DesktopService.OpenFile (licensePath);
+				}
+			};
 			cbox.PackStart (linkLabel);
 			infoBox.PackStart (cbox);
 
 			linkLabel = new Xwt.Label {
-				Markup = string.Format ("<span underline='true'>{0}</span>", GettextCatalog.GetString ("Privacy Policy")),
+				Markup = string.Format ("<span underline='true'>{0}</span>", GettextCatalog.GetString ("Privacy Statement")),
 				Cursor = Xwt.CursorType.Hand,
 				MarginLeft = 12
 			};
+
+			//TODO: factor out
+			const string PRIVACY_URL = "https://go.microsoft.com/fwlink/?LinkID=824704";
+
 			if (IdeTheme.UserInterfaceTheme == Theme.Light)
 				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
-			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl ("https://privacy.microsoft.com/");
+			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl (PRIVACY_URL);
 			infoBox.PackStart (linkLabel);
 
 			infoBox.PackStart (new Xwt.Label () {
