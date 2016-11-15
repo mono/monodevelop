@@ -801,7 +801,19 @@ namespace MonoDevelop.Ide.Projects
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
+				// handle url schemed actions like opening the getting started page (if any)
+				if (action == "xs://getting-started") {
+					var p = IdeApp.Workspace.GetAllProjects ().FirstOrDefault ();
+					if (p != null) {
+						GettingStarted.GettingStarted.ShowGettingStarted (p);
+					}
+					continue;
+				}
+
+				var fileName = Path.Combine (templateResult.ProjectBasePath, action);
+				if (File.Exists (fileName)) {
+					IdeApp.Workbench.OpenDocument (fileName, project: null);
+				}
 			}
 		}
 
