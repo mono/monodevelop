@@ -151,7 +151,7 @@ namespace MonoDevelop.Gettext
 			}
 			
 			foreach (RegexInfo ri in regexes) {
-				int lineNumber = 0;
+				int lineNumber = 1;
 				int oldIndex  = 0;
 				foreach (Match match in ri.Regex.Matches (text)) {
 					// Ignore matches inside excluded regions
