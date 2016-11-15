@@ -20,7 +20,6 @@ module highlightUnusedOpens =
             for decl in decls do
                 match decl with
                 | SynModuleDecl.Open(longIdentWithDots, range) -> 
-                    LoggingService.logDebug "Namespace or module: %A" longIdentWithDots.Lid
                     yield (longIdentWithDots.Lid |> List.map(fun l -> l.idText) |> String.concat "."), range
                 | _ -> () ]
 
@@ -51,19 +50,26 @@ module highlightUnusedOpens =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let symbolIsFullyQualified (editor:TextEditor) (sym:FSharpSymbolUse) (fullName:string) =
+    let textFromRange (editor:TextEditor) (range:Range.range) =
+        let startOffset = getOffset editor range.Start
+        let endOffset = getOffset editor range.End
+        editor.GetTextBetween (startOffset, endOffset)
 
-        let startOffset = getOffset editor sym.RangeAlternate.Start
-        let endOffset = getOffset editor sym.RangeAlternate.End
-        let startOffset = 
-            if endOffset - startOffset = fullName.Length then
-                startOffset
-            else
-                // Entity range isn't the full longIdent range for some reason
-                let fqdiff = fullName.Length - sym.Symbol.DisplayName.Length
-                startOffset - fqdiff
-        let text = editor.GetTextBetween (startOffset, endOffset)
-        text = fullName
+    let symbolIsFullyQualified (editor:TextEditor) (sym:FSharpSymbolUse) (fullName:string option) =
+        match fullName with
+        | Some fullName' ->
+            let startOffset = getOffset editor sym.RangeAlternate.Start
+            let endOffset = getOffset editor sym.RangeAlternate.End
+            let startOffset =
+                if endOffset - startOffset = fullName'.Length then
+                    startOffset
+                else
+                    // Entity range isn't the full longIdent range for some reason
+                    let fqdiff = fullName'.Length - sym.Symbol.DisplayName.Length
+                    startOffset - fqdiff
+            let text = editor.GetTextBetween (startOffset, endOffset)
+            text = fullName'
+        | None -> true
 
     let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
         let ast =
@@ -81,11 +87,16 @@ module highlightUnusedOpens =
                 |> Seq.collect (fun sym ->
                                     let isQualified = symbolIsFullyQualified editor sym
                                     match sym with
-                                    | SymbolUse.Entity ent when not (isQualified ent.FullName) -> entityNamespace ent
-                                    | SymbolUse.Field f when not (isQualified f.FullName) -> entityNamespace f.DeclaringEntity
-                                    | SymbolUse.MemberFunctionOrValue mfv when not (isQualified mfv.FullName) -> 
+                                    | SymbolUse.Entity ent when not (isQualified ent.TryFullName) -> entityNamespace ent
+                                    | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> entityNamespace f.DeclaringEntity
+                                    | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
                                         try
-                                            entityNamespace mfv.EnclosingEntity
+                                            let text = textFromRange editor sym.RangeAlternate
+                                            let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
+                                            let lengthDiff = mfv.FullName.Length - length - 2
+                                            let x = Some (mfv.FullName.[0..lengthDiff])
+
+                                            [yield x; yield! entityNamespace mfv.EnclosingEntity]
                                         with :? InvalidOperationException -> [None]
                                     | _ -> [None])
                 |> Seq.choose id
@@ -99,15 +110,14 @@ module highlightUnusedOpens =
                     match list with 
                     | (namespc, range)::xs when notUsed namespc -> 
                         filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
-                    | (namespc, range:Range.range)::xs ->
-
+                    | (namespc, _)::xs ->
                         filterInner acc xs (seenNamespaces.Add namespc)
                     | [] -> acc |> List.rev
                 filterInner [] list Set.empty
 
             let openStatements = getOpenStatements tree
 
-            openStatements |> List.iter(fun (namspc, range) -> 
+            openStatements |> List.iter(fun (_, range) -> 
                 let startOffset = getOffset editor range.Start
                 let markers = editor.GetTextSegmentMarkersAt startOffset
                 markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))

@@ -68,3 +68,31 @@ module ``Highlight unused opens`` =
                 System.Console.WriteLine("")
             """
         assertUnusedOpens source ["System"]
+
+    [<Test>]
+    let ``Partly qualified symbol``() =
+        let source = 
+            """
+            namespace MonoDevelop.Core.Text
+            module TextSegment =
+                let x=1
+            namespace consumer
+            open MonoDevelop.Core
+            module module1 =
+                let y=Text.TextSegment.x
+            """
+        assertUnusedOpens source []
+
+    [<Test>]
+    let ``Module function``() =
+        let source = 
+            """
+            namespace namespace1
+            module FsUnit =
+                let should()=1
+            namespace namespace1
+            open FsUnit
+            module module1 =
+                let y=should()
+            """
+        assertUnusedOpens source []
