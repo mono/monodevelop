@@ -1088,6 +1088,9 @@ namespace MonoDevelop.Projects
 
 		async Task<TargetEvaluationResult> DoRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
+			if (configuration == null) {
+				throw new ArgumentNullException ("configuration");
+			}
 			if (target == ProjectService.BuildTarget) {
 				SolutionItemConfiguration conf = GetConfiguration (configuration);
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
@@ -1775,6 +1778,9 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public List<FilePath> GetOutputFiles (ConfigurationSelector configuration)
 		{
+			if (configuration == null) {
+				throw new ArgumentNullException ("configuration");
+			}
 			List<FilePath> list = new List<FilePath> ();
 			PopulateOutputFileList (list, configuration);
 			return list;
