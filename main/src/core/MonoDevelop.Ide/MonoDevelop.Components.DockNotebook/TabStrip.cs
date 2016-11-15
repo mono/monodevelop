@@ -700,8 +700,7 @@ namespace MonoDevelop.Components.DockNotebook
 			int x = GetRenderOffset ();
 			const int y = 0;
 			int n = 0;
-			Action<Context> drawActive = c => {
-			};
+			Action<Context> drawActive = null;
 			var drawCommands = new List<Action<Context>> ();
 			for (; n < notebook.Tabs.Count; n++) {
 				if (x + TabWidth < tabStartX) {
@@ -767,7 +766,7 @@ namespace MonoDevelop.Components.DockNotebook
 			ctx.ResetClip ();
 
 			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-			drawActive (ctx);
+			drawActive?.Invoke (ctx);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
