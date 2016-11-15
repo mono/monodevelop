@@ -802,7 +802,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			foreach (string action in templateResult.Actions) {
 				// handle url schemed actions like opening the getting started page (if any)
-				if (action == "xs://getting-started") {
+				if (action == "monodevelop://getting-started") {
 					var p = IdeApp.Workspace.GetAllProjects ().FirstOrDefault ();
 					if (p != null) {
 						GettingStarted.GettingStarted.ShowGettingStarted (p);
