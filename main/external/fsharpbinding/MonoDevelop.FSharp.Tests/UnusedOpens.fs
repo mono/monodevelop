@@ -96,3 +96,17 @@ module ``Highlight unused opens`` =
                 let y=should()
             """
         assertUnusedOpens source []
+
+    [<Test>]
+    let ``Partially qualified interface``() =
+        let source = 
+            """
+            namespace MonoDevelop.Core.Text
+            type ISegment =
+                abstract member Length : int
+            namespace namespace1
+            open MonoDevelop.Core
+            module module1 =
+                let someFunc(selection:Text.ISegment) = 1
+            """
+        assertUnusedOpens source []

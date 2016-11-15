@@ -81,22 +81,24 @@ module highlightUnusedOpens =
 
         ast |> Option.bind (fun (tree, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values
+            let getPartNamespace (sym:FSharpSymbolUse) (fullName:string option) =
+                fullName |> Option.bind(fun fullName ->
+                    let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
+                    let lengthDiff = fullName.Length - length - 2
+                    Some fullName.[0..lengthDiff])
 
             let namespacesInUse =
                 symbols
                 |> Seq.collect (fun sym ->
                                     let isQualified = symbolIsFullyQualified editor sym
                                     match sym with
-                                    | SymbolUse.Entity ent when not (isQualified ent.TryFullName) -> entityNamespace ent
-                                    | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> entityNamespace f.DeclaringEntity
+                                    | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
+                                        getPartNamespace sym ent.TryFullName::entityNamespace ent
+                                    | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
+                                        getPartNamespace sym (Some f.FullName)::entityNamespace f.DeclaringEntity
                                     | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
                                         try
-                                            let text = textFromRange editor sym.RangeAlternate
-                                            let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
-                                            let lengthDiff = mfv.FullName.Length - length - 2
-                                            let x = Some (mfv.FullName.[0..lengthDiff])
-
-                                            [yield x; yield! entityNamespace mfv.EnclosingEntity]
+                                            getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntity
                                         with :? InvalidOperationException -> [None]
                                     | _ -> [None])
                 |> Seq.choose id
