@@ -59,7 +59,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				DesktopService.ShowUrl ("https://go.microsoft.com/fwlink/?linkid=834543");
+				DesktopService.ShowUrl ("https://aka.ms/vs/mac/install-netcore");
 		}
 
 		public void Dispose ()
