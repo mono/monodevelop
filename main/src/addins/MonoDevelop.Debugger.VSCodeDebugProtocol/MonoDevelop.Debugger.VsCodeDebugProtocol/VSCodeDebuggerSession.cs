@@ -233,7 +233,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				foreach (var variablesGroup in scopeBody.Scopes) {
 					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
 					foreach (var variable in varibles.Variables) {
-						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference));
+						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.Type, variable.Value, variable.VariablesReference));
 					}
 				}
 				return results.ToArray ();
@@ -267,7 +267,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
 							variablesReference
 						)).Variables;
-						objValChildren = children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.EvaluateName, c.Type, c.Value, c.VariablesReference)).ToArray ();
+						objValChildren = children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.Type, c.Value, c.VariablesReference)).ToArray ();
 					}
 					return objValChildren;
 				}
@@ -307,8 +307,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession vsCodeDebuggerSession, string name, string type, string value, int variablesReference)
 			{
+				var indexOfSpace = name.IndexOf (' ');
+				if (indexOfSpace != -1)//Remove " [TypeName]" from variable name
+					name = name.Remove (indexOfSpace);
 				if (type == null)
 					return ObjectValue.CreateError (null, new ObjectPath (name), "", value, ObjectValueFlags.None);
+				if (value == "null")
+					return ObjectValue.CreateNullObject (null, name, type, ObjectValueFlags.ReadOnly);
 				if (variablesReference == 0)//This is some kind of primitive...
 					return ObjectValue.CreatePrimitive (null, new ObjectPath (name), type, new EvaluationResult (value), ObjectValueFlags.ReadOnly);
 				return ObjectValue.CreateObject (new VSCodeObjectSource (vsCodeDebuggerSession, variablesReference), new ObjectPath (name), type, new EvaluationResult (value), ObjectValueFlags.ReadOnly, null);
@@ -321,7 +326,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				foreach (var variablesGroup in scopeBody.Scopes) {
 					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
 					foreach (var variable in varibles.Variables) {
-						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.EvaluateName), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
+						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.Name), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
 					}
 				}
 				return results.ToArray ();

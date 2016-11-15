@@ -39,7 +39,7 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.0.2.1112.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.0.2.1115.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
