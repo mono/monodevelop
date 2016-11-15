@@ -952,7 +952,9 @@ namespace MonoDevelop.MacIntegration
 			var proc = new Process ();
 
 			var path = bundlePath.Combine ("Contents", "MacOS");
-			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+			//assume renames of mdtool end with "tool"
+			var mdtool = Directory.EnumerateFiles (path, "*tool").Single();
+			var psi = new ProcessStartInfo (mdtool) {
 				CreateNoWindow = true,
 				UseShellExecute = false,
 				WorkingDirectory = path,
