@@ -465,8 +465,13 @@ $1234567890");
 			var segments = GetFoldSegments (data.Document);
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (15, data.LogicalToVisualLine (15));
-			data.Document.GetStartFoldings (6).First ().IsCollapsed = true;
-			data.Document.GetStartFoldings (4).First ().IsCollapsed = true;
+			var f = data.Document.GetStartFoldings (6).First ();
+			f.IsCollapsed = true;
+			data.Document.InformFoldChanged (new FoldSegmentEventArgs (f));
+
+			f = data.Document.GetStartFoldings (4).First ();
+			f.IsCollapsed = true;
+			data.Document.InformFoldChanged (new FoldSegmentEventArgs (f));
 			Assert.AreEqual (11, data.LogicalToVisualLine (15));
 		}
 		
@@ -492,9 +497,15 @@ $1234567890");
 16");
 			var segments = GetFoldSegments (data.Document);
 			data.Document.UpdateFoldSegments (segments);
+
 			Assert.AreEqual (11, data.LogicalToVisualLine (15));
-			data.Document.GetStartFoldings (6).First ().IsCollapsed = false;
-			data.Document.GetStartFoldings (4).First ().IsCollapsed = false;
+			var f = data.Document.GetStartFoldings (6).First ();
+			f.IsCollapsed = false;
+			data.Document.InformFoldChanged (new FoldSegmentEventArgs (f));
+
+			f = data.Document.GetStartFoldings (4).First ();
+			f.IsCollapsed = false;
+			data.Document.InformFoldChanged (new FoldSegmentEventArgs (f));
 			Assert.AreEqual (15, data.LogicalToVisualLine (15));
 		}
 		
