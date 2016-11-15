@@ -11,6 +11,9 @@ open Mono.TextEditor.Highlighting
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Editor.Highlighting
+open MonoDevelop.Components
 open MonoDevelop.FSharp.Shared
 open ExtCore.Control
 
