@@ -620,6 +620,7 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Core\StructEqualityComparer.cs" />
     <Compile Include="MonoDevelop.Projects\SimpleExpressionEvaluator.cs" />
+    <Compile Include="MonoDevelop.Projects\PackageDependency.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

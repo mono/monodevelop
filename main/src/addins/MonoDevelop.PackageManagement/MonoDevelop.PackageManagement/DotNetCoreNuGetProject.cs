@@ -308,13 +308,15 @@ namespace MonoDevelop.PackageManagement
 		/// Restore after executing the project actions to ensure the NuGet packages are
 		/// supported by the project.
 		/// </summary>
-		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		public override async Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
 			if (!modified)
-				return Task.FromResult (0);
+				return;;
 
 			var packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
-			return packageRestorer.RestorePackages (token);
+			await packageRestorer.RestorePackages (token);
+
+			PackageManagementServices.PackageManagementEvents.OnPackagesRestored ();
 		}
 	}
 }
