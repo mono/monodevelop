@@ -163,14 +163,14 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\..\..\packages\YamlDotNet.4.0.0\lib\net35\YamlDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.Runtime">
       <HintPath>..\..\..\build\bin\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

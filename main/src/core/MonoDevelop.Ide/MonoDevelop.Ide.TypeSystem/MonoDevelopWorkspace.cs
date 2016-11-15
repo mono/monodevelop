@@ -600,20 +600,24 @@ namespace MonoDevelop.Ide.TypeSystem
 				LoggingService.LogError ("Error while getting referenced assemblies", e);
 			}
 
-			foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
-				if (token.IsCancellationRequested)
-					return result;
-				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
-					continue;
-				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
-					var fileName = referencedProject.GetOutputFileName (configurationSelector);
-					if (!hashSet.Add (fileName))
+			try {
+				foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
+					if (token.IsCancellationRequested)
+						return result;
+					var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
+					if (referencedProject == null)
 						continue;
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
-					if (metadataReference != null)
-						result.Add (metadataReference);
+					if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
+						var fileName = referencedProject.GetOutputFileName (configurationSelector);
+						if (!hashSet.Add (fileName))
+							continue;
+						var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+						if (metadataReference != null)
+							result.Add (metadataReference);
+					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting referenced projects", e);
 			}
 			return result;
 		}
@@ -628,7 +632,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			//MSBuild Condtion='something'
 			//pref.ReferenceOutputAssembly
 			//and for iOS/Android extensions
-			var referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+			MonoDevelop.Projects.DotNetProject [] referencedProjects;
+			try {
+				referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting referenced projects.", e);
+				yield break;
+			};
 			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
 			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
 				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
