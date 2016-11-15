@@ -121,68 +121,84 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 
+		ToggleButton MakeButton (string image, string name, bool active, out Label label)
+		{
+			var btnBox = new HBox (false, 2);
+			btnBox.Accessible.SetAccessibilityShouldIgnore (true);
+			var imageView = new ImageView (image, Gtk.IconSize.Menu);
+			imageView.Accessible.SetAccessibilityShouldIgnore (true);
+			btnBox.PackStart (imageView);
+
+			label = new Label ();
+			label.Accessible.SetAccessibilityShouldIgnore (true);
+			btnBox.PackStart (label);
+
+			var btn = new ToggleButton { Name = name };
+			btn.Active = active;
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
 		protected override void Initialize (IPadWindow window)
 		{
 			window.Title = GettextCatalog.GetString ("Errors");
 
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
+			toolbar.Accessible.Name = "ErrorPad.Toolbar";
+			toolbar.Accessible.SetAccessibilityLabel ("Error Pad Toolbar");
+			toolbar.Accessible.SetAccessibilityRole ("AXToolbar", "Pad toolbar");
+			toolbar.Accessible.Description = GettextCatalog.GetString ("The Error pad toolbar");
 
-			var btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Error, Gtk.IconSize.Menu));
-			errorBtnLbl = new Label ();
-			btnBox.PackStart (errorBtnLbl);
+			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
+			errorBtn.Accessible.Name = "ErrorPad.ErrorButton";
 
-			errorBtn = new ToggleButton { Name = "toggleErrors" };
-			errorBtn.Active = ShowErrors;
-			errorBtn.Child = btnBox;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
+			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Warning, Gtk.IconSize.Menu));
-			warnBtnLbl = new Label ();
-			btnBox.PackStart (warnBtnLbl);
-
-			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
-			warnBtn.Active = ShowWarnings;
-			warnBtn.Child = btnBox;
+			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
+			warnBtn.Accessible.Name = "ErrorPad.WarningButton";
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
+			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Information, Gtk.IconSize.Menu));
-			msgBtnLbl = new Label ();
-			btnBox.PackStart (msgBtnLbl);
-
-			msgBtn = new ToggleButton  { Name = "toggleMessages" };
-			msgBtn.Active = ShowMessages;
-			msgBtn.Child = btnBox;
+			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
+			msgBtn.Accessible.Name = "ErrorPad.MessageButton";
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
+			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum();
 			toolbar.Add (msgBtn);
-			
-			toolbar.Add (new SeparatorToolItem ());
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView ("md-message-log", Gtk.IconSize.Menu));
-			logBtnLbl = new Label (GettextCatalog.GetString ("Build Output"));
-			btnBox.PackStart (logBtnLbl);
+			var sep = new SeparatorToolItem ();
+			sep.Accessible.SetAccessibilityShouldIgnore (true);
+			toolbar.Add (sep);
 
-			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
-			logBtn.Child = btnBox;
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
+			logBtn.Accessible.Name = "ErrorPad.LogButton";
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
+			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
+
+			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
+			logBtn.Accessible.SetAccessibilityTitle (logBtnLbl.Text);
+
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
-			toolbar.Add (new HBox (), true);
+			var spacer = new HBox ();
+			spacer.Accessible.SetAccessibilityShouldIgnore (true);
+			toolbar.Add (spacer, true);
 
 			searchEntry = new SearchEntry ();
+			searchEntry.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Search"));
+			searchEntry.Accessible.Name = "ErrorPad.Search";
+			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the error data");
 			searchEntry.Entry.Changed += searchPatternChanged;
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
@@ -911,16 +927,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdateErrorsNum () 
 		{
 			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
+			errorBtn.Accessible.SetAccessibilityTitle (errorBtnLbl.Text);
 		}
 
 		void UpdateWarningsNum ()
 		{
 			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
+			warnBtn.Accessible.SetAccessibilityTitle (warnBtnLbl.Text);
 		}
 
 		void UpdateMessagesNum ()
 		{
 			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
+			msgBtn.Accessible.SetAccessibilityTitle (msgBtnLbl.Text);
 		}
 
 		void UpdatePadIcon ()

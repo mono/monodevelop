@@ -59,6 +59,7 @@ namespace MonoDevelop.Components
 			AXButton,
 			AXGroup,
 			AXImage,
+			AXMenuButton,
 			AXRadioButton,
 			AXRuler,
 			AXSplitGroup,

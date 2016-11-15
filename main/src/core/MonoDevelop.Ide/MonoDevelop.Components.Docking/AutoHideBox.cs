@@ -131,6 +131,8 @@ namespace MonoDevelop.Components.Docking
 			itemBox.Show ();
 			item.TitleTab.Active = true;
 			itemBox.PackStart (item.TitleTab, false, false, 0);
+
+			item.Widget.Accessible.SetAccessibilityShouldIgnore (true);
 			itemBox.PackStart (item.Widget, true, true, 0);
 
 			item.Widget.Show ();
