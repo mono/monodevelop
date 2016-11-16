@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
@@ -106,12 +107,15 @@ namespace MonoDevelop.PackageManagement
 			var primaryRepositories = repositoryProvider.GetRepositories (packageReference.IsLocalPackage);
 			var secondaryRepositories = GetSecondaryRepositories (primaryRepositories, packageReference.IsLocalPackage);
 
+			var context = new NuGetProjectContext {
+				FileConflictResolution = FileConflictAction.IgnoreAll
+			};
 			return new InstallNuGetPackageAction (
 				primaryRepositories,
 				secondaryRepositories,
 				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
 				new DotNetProjectProxy (dotNetProject),
-				new NuGetProjectContext ()) {
+				context) {
 				LicensesMustBeAccepted = packageReference.RequireLicenseAcceptance,
 				OpenReadmeFile = false
 			};

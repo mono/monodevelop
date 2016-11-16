@@ -66,8 +66,13 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
 		}
 
+		public FileConflictAction? FileConflictResolution { get; set; }
+
 		public FileConflictAction ResolveFileConflict (string message)
 		{
+			if (FileConflictResolution.HasValue && FileConflictResolution != FileConflictAction.PromptUser)
+				return FileConflictResolution.Value;
+
 			return packageManagementEvents.OnResolveFileConflict (message);
 		}
 	}
