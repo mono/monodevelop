@@ -267,8 +267,19 @@ namespace MonoDevelop.Projects.MSBuild
 			foreach (var item in items.Items) {
 
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (item.Condition) || SafeParseAndEvaluate (project, context, item.Condition));
-			
-				if (!string.IsNullOrEmpty (item.Remove)) {
+
+				if (!string.IsNullOrEmpty (item.Update)) {
+					var update = context.EvaluateString (item.Update);
+
+					var it = CreateEvaluatedItem (context, project, project.Project, item, update);
+
+					if (update.IndexOf (';') == -1)
+						UpdateItem (project, item, update, trueCond, it);
+					else {
+						foreach (var inc in update.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+							UpdateItem (project, item, inc, trueCond, it);
+					}
+				} else if (!string.IsNullOrEmpty (item.Remove)) {
 					var remove = context.EvaluateString (item.Remove);
 
 					if (remove.IndexOf (';') == -1)
@@ -291,6 +302,36 @@ namespace MonoDevelop.Projects.MSBuild
 						foreach (var inc in it.Include.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
 							AddItem (project, context, item, it, inc, excludeRegex, trueCond);
 				}
+				}
+			}
+		}
+
+		static void UpdateItem (ProjectInfo project, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
+		{
+			if (IsWildcardInclude (update)) {
+				foreach (var f in GetIncludesForWildcardFilePath (project.Project, update))
+					UpdateEvaluatedItem (project, item, f, trueCond, it);
+			} else
+				UpdateEvaluatedItem (project, item, update, trueCond, it);
+		}
+
+		static void UpdateEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
+		{
+			if (trueCond) {
+				foreach (var item2 in project.EvaluatedItems) {
+					if (item2.Name == item.Name && item2.Include == include) {
+						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetRegisteredProperties ()) {
+							((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+						}
+					}
+				}
+			}
+
+			foreach (var item2 in project.EvaluatedItemsIgnoringCondition) {
+				if (item2.Name == item.Name && item2.Include == include) {
+					foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetRegisteredProperties ()) {
+						((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
+					}
 				}
 			}
 		}

@@ -71,6 +71,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return prop;
 		}
 
+		internal void SetProperty (string key, IMSBuildPropertyEvaluated value)
+		{
+			properties [key] = value;
+		}
+
 		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
 		{
 			this.properties = properties;

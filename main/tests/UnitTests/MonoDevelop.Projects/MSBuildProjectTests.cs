@@ -1,4 +1,4 @@
-﻿//
+//
 // MSBuildProject.cs
 //
 // Author:
@@ -108,17 +108,37 @@ namespace MonoDevelop.Projects
 
 			ig = igs [1];
 			ar = ig.Items.ToArray ();
-			Assert.AreEqual (3, ig.Items.Count());
+			Assert.AreEqual (7, ig.Items.Count());
 
 			it = ar [0];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.Include);
+			Assert.AreEqual ("Test", it.Metadata.GetValue ("AttributeMetadata"));
+			Assert.AreEqual ("$(Platform)", it.Metadata.GetValue ("OverriddenAttributeMetadata"));
 
 			it = ar [1];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file1.txt", it.Include);
+
+			it = ar [2];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("*.txt", it.Update);
+			Assert.AreEqual ("$(Configuration)", it.Metadata.GetValue ("MetaUpdate"));
+
+			it = ar [3];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.Include);
+
+			it = ar [4];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.Update);
+			Assert.AreEqual ("$(Platform)", it.Metadata.GetValue ("MetaUpdate2"));
+
+			it = ar [5];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.Include);
 
-			it = ar [2];
+			it = ar [6];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.Include);
 		}
@@ -158,38 +178,41 @@ namespace MonoDevelop.Projects
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[0]);
 
 			it = items [4];
-			Assert.AreEqual ("None", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file1.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("MetaUpdate"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[1]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [1]);
+
+			// [2] is an Update element, no real elements by itself.
 
 			it = items [5];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("file2.txt", it.Include);
+			Assert.AreEqual (null, it.Metadata.GetValue ("MetaUpdate"));
+			Assert.AreEqual ("AnyCPU", it.Metadata.GetValue ("MetaUpdate2"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [3]);
+
+			// [4] is an Update element, no real elements by itself.
+
+			it = items [6];
+			Assert.AreEqual ("None", it.Name);
+			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("file1.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
+
+			it = items [7];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[1]);
-
-			it = items [6];
-			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
-			Assert.AreEqual ("file1.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
-			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
-
-			it = items [7];
-			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
-			Assert.AreEqual ("file2.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
-			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
 
 			it = items [8];
 			Assert.AreEqual ("Transformed", it.Name);
@@ -198,7 +221,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 
 			it = items [9];
 			Assert.AreEqual ("Transformed", it.Name);
@@ -207,7 +230,25 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			it = items [10];
+			Assert.AreEqual ("Transformed", it.Name);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
+			Assert.AreEqual ("file1.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			it = items [11];
+			Assert.AreEqual ("Transformed", it.Name);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
+			Assert.AreEqual ("file2.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 		}
 
 		[Test]
