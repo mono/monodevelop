@@ -45,6 +45,8 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using System.Text;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -92,6 +94,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
+			foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TypeService/MefHostServices")) {
+				var assemblyNode = node as AssemblyExtensionNode;
+				if (assemblyNode == null)
+					continue;
+				try {
+					var assembly = Assembly.LoadFrom (assemblyNode.FileName);
+					assemblies.Add (assembly);
+				} catch (Exception e) {
+					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
+					continue;
+				}
+			}
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
 
