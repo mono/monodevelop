@@ -55,28 +55,15 @@ str_append (const char *base, const char *append)
 	return buf;
 }
 
-static const char *
+static char *
 xcode_get_dev_path ()
 {
-#define BUFSIZE 128
-	char buf[BUFSIZE];
-	char *cmd = "xcode-select -p";
-	char *res = "";
-	FILE *xcselect = popen(cmd, "r");
-
-	if (!xcselect) {
-		return "";
+	int len;
+	char buf[PATH_MAX];
+	if ((len = readlink ("/var/db/xcode_select_link", (char*) &buf, PATH_MAX)) > 0) {
+		return strndup (buf, len);
 	}
-
-	while (fgets(buf, BUFSIZE, xcselect)) {
-		res = str_append(res, buf);
-	}
-  // Remove trailing \n
-  res[strlen(res) - 1] = 0;
-
-	pclose(xcselect);
-	return res;
-#undef BUFSIZE
+	return NULL;
 }
 
 static char *
@@ -86,7 +73,9 @@ generate_fallback_path (const char *contentsDir)
 	char *monodevelop_bin_dir;
 	char *value;
 	char *result;
+	char *xcode_dev_path;
 	char *xcode_dev_lib_path;
+	char *tmp;
 
 	/* Inject our Resources/lib dir */
 	lib_dir = str_append (contentsDir, "/Resources/lib:");
@@ -101,9 +90,17 @@ generate_fallback_path (const char *contentsDir)
 	if (value == NULL)
 		abort ();
 
-	xcode_dev_lib_path = str_append (xcode_get_dev_path (), "/usr/lib:");
-	/* Mono's lib dirs and Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	result = str_append (value, str_append (xcode_dev_lib_path, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib"));
+	/* Add Mono's lib dirs and Xcode's dev lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+	if ((xcode_dev_path = xcode_get_dev_path ()) != NULL) {
+		xcode_dev_lib_path = str_append (xcode_dev_path, "/usr/lib:");
+		tmp = value;
+		value = str_append (value, xcode_dev_lib_path);
+		free (tmp);
+		free (xcode_dev_path);
+		free (xcode_dev_lib_path);
+	}
+
+	result = str_append (value, "/Library/Frameworks/Mono.framework/Libraries:/lib:/usr/lib:/usr/local/lib");
 
 	free (lib_dir);
 	free (monodevelop_bin_dir);
@@ -276,4 +273,3 @@ update_environment (const char *contentsDir, bool need64Bit)
 
 	return updated;
 }
-
