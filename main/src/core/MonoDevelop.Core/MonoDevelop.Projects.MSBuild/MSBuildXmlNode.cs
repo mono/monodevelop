@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal object StartWhitespace { get; set; }
 		internal object EndWhitespace { get; set; }
+		internal virtual bool SkipSerialization { get { return false; } }
 
 		internal virtual void Read (MSBuildXmlReader reader)
 		{

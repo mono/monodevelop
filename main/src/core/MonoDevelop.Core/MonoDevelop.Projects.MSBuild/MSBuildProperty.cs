@@ -45,6 +45,25 @@ namespace MonoDevelop.Projects.MSBuild
 		string name;
 		string unevaluatedValue;
 		LinkedPropertyFlags flags;
+		bool fromAttribute;
+		string afterAttribute;
+
+		internal bool FromAttribute {
+			get {
+				return fromAttribute;
+			}
+		}
+		internal string AfterAttribute {
+			get {
+				return afterAttribute;
+			}
+		}
+
+		internal override bool SkipSerialization {
+			get {
+				return fromAttribute;
+			}
+		}
 
 		static readonly string EmptyElementMarker = new string ('e', 1);
 
@@ -58,18 +77,28 @@ namespace MonoDevelop.Projects.MSBuild
 			this.name = name;
 		}
 
-		internal MSBuildProperty (MSBuildNode parentNode, string name, string value, string evaluatedValue): this ()
+		internal MSBuildProperty (MSBuildNode parentNode, string name, string value, string evaluatedValue, bool fromAttribute, string afterAttribute): this ()
 		{
 			ParentNode = parentNode;
 			this.name = name;
 			this.unevaluatedValue = value;
 			this.value = evaluatedValue;
+			this.fromAttribute = fromAttribute;
+			this.afterAttribute = afterAttribute;
 		}
 
 		internal override void Read (MSBuildXmlReader reader)
 		{
 			name = reader.LocalName;
 			base.Read (reader);
+		}
+
+		internal override void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			fromAttribute = true;
+			afterAttribute = lastAttr;
+			name = reader.LocalName;
+			value = unevaluatedValue = reader.Value;
 		}
 
 		internal override void ReadContent (MSBuildXmlReader reader)
@@ -267,7 +296,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (value)
 					flags |= LinkedPropertyFlags.IsNew;
 				else
-					flags &= ~LinkedPropertyFlags.IsNew; 
+					flags &= ~LinkedPropertyFlags.IsNew;
 			}
 		}
 

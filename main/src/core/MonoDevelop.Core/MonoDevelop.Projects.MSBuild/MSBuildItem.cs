@@ -75,6 +75,11 @@ namespace MonoDevelop.Projects.MSBuild
 				base.ReadAttribute (name, value);
 		}
 
+		internal override void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			metadata.ReadUnknownAttribute (reader, lastAttr);
+		}
+
 		internal override string WriteAttribute (string name)
 		{
 			if (name == "Include")
@@ -102,7 +107,46 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal override void Write (XmlWriter writer, WriteContext context)
 		{
-			base.Write (writer, context);
+			MSBuildWhitespace.Write (StartWhitespace, writer);
+
+			writer.WriteStartElement (NamespacePrefix, GetElementName (), Namespace);
+
+			var props = metadata.PropertiesAttributeOrder;
+
+			if (props.Count > 0) {
+				int propIndex = 0;
+				int knownIndex = 0;
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				string lastAttr = null;
+				do {
+					if (propIndex < props.Count && (lastAttr == props [propIndex].AfterAttribute || props [propIndex].AfterAttribute == null)) {
+						var prop = props [propIndex++];
+						writer.WriteAttributeString (prop.Name, prop.Value);
+						lastAttr = prop.Name;
+					} else if (knownIndex < knownAtts.Length) {
+						var aname = knownAtts [knownIndex++];
+						lastAttr = aname;
+						var val = WriteAttribute (aname);
+						if (val != null)
+							writer.WriteAttributeString (aname, val);
+					} else
+						lastAttr = null;
+				} while (propIndex < props.Count || knownIndex < knownAtts.Length);
+			} else {
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				for (int i = 0; i < knownAtts.Length; i++) {
+					var aname = knownAtts [i];
+					var val = WriteAttribute (aname);
+					if (val != null)
+						writer.WriteAttributeString (aname, val);
+				}
+			}
+
+			WriteContent (writer, context);
+
+			writer.WriteEndElement ();
+
+			MSBuildWhitespace.Write (EndWhitespace, writer);
 			if (context.Evaluating) {
 				string id = context.ItemMap.Count.ToString ();
 				context.ItemMap [id] = this;

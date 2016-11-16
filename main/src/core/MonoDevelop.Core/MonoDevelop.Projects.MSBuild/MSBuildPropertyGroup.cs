@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.MSBuild
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
-
+		internal List<MSBuildProperty> PropertiesAttributeOrder { get; } = new List<MSBuildProperty> ();
 		public MSBuildPropertyGroup ()
 		{
 		}
@@ -61,6 +61,21 @@ namespace MonoDevelop.Projects.MSBuild
 			get {
 				return (MSBuildObject) (ParentNode as MSBuildItem) ?? this;
 			}
+		}
+
+		internal override void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			MSBuildProperty prevSameName;
+			if (properties.TryGetValue (reader.LocalName, out prevSameName))
+				prevSameName.Overwritten = true;
+
+			var prop = new MSBuildProperty ();
+			prop.ParentNode = PropertiesParent;
+			prop.Owner = this;
+			prop.ReadUnknownAttribute (reader, lastAttr);
+			ChildNodes = ChildNodes.Add (prop);
+			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+			PropertiesAttributeOrder.Add (prop);
 		}
 
 		internal override void ReadChildElement (MSBuildXmlReader reader)
