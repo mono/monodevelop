@@ -306,8 +306,5 @@
 <Extension path="/MonoDevelop/Ide/TargetSelectorCommands">
 </Extension>
 
-<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
-	<Assembly file="Microsoft.CodeAnalysis.Features.dll"/>	
-</Extension>
 	
 </ExtensionModel>

@@ -375,4 +375,9 @@
 		<Description>Setting what languages are supported for user selection.</Description>
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
 	</ExtensionPoint>
+
+
+	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<ExtensionNode name = "Assembly" objectType = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</Extension>	
 </ExtensionModel>
