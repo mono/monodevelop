@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				var binDir = System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetEntryAssembly ().Location);
 				string licensePath = System.IO.Path.Combine (binDir, "branding", "License.txt");
 				if (Platform.IsMac) {
-					var appDir = System.IO.Path.GetFullPath (System.IO.Path.Combine (binDir, "..", "..", "..", ".."));
+					var appDir = System.IO.Path.GetFullPath (System.IO.Path.Combine (binDir, "..", "..", "..", "..", ".."));
 					if (appDir.EndsWith (".app", StringComparison.Ordinal)) {
 						licensePath = System.IO.Path.Combine (appDir, "Contents", "License.txt");
 					}
