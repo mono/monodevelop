@@ -72,7 +72,21 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		protected override LaunchRequest CreateLaunchRequest (DebuggerStartInfo startInfo)
 		{
-			var cwd = string.IsNullOrWhiteSpace (startInfo.WorkingDirectory) ? Path.GetDirectoryName (startInfo.Command) : startInfo.WorkingDirectory;
+			string cwd;
+			if (string.IsNullOrWhiteSpace (startInfo.WorkingDirectory)) {
+				cwd = Path.GetDirectoryName (startInfo.Command);
+
+				//HACK: Need to have proper way of setting CWD for asp.net projects
+				//Check if wwwroot exists in root of project but not in output... That indicates we really want to move CWD to project root
+				if (Directory.Exists (Path.Combine (cwd, ".."/*netcoreapp1.0*/, ".."/*Debug*/, ".."/*bin*/, "wwwroot")) && !Directory.Exists (Path.Combine (cwd, "wwwroot"))) {
+					cwd = Path.GetFullPath (Path.Combine (cwd, ".."/*netcoreapp1.0*/, ".."/*Debug*/, ".."/*bin*/));
+				} else if (Directory.Exists (Path.Combine (cwd, ".."/*Debug*/, ".."/*bin*/, "wwwroot")) && !Directory.Exists (Path.Combine (cwd, "wwwroot"))) {
+					cwd = Path.GetFullPath (Path.Combine (cwd, ".."/*Debug*/, ".."/*bin*/));
+				}
+			} else {
+				cwd = startInfo.WorkingDirectory;
+			}
+
 			var launchRequest = new LaunchRequest (
 				false,
 				new Dictionary<string, JToken> () {
