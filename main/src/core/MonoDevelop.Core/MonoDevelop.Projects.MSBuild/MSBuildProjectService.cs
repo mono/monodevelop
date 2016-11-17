@@ -250,7 +250,7 @@ namespace MonoDevelop.Projects.MSBuild
 				item.NotifyItemReady ();
 			};
 
-			await item.LoadAsync (monitor, fileName, expectedFormat);
+			await item.LoadAsync (monitor, fileName, expectedFormat, itemGuid);
 			return item;
 		}
 
