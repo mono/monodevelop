@@ -282,7 +282,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (include == string.Empty)
 				return;
 			
-			if (include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')') {
+			if (IsIncludeTransform (include)) {
 				// This is a transform
 				List<MSBuildItemEvaluated> evalItems;
 				var transformExp = include.Substring (2, include.Length - 3);
@@ -708,13 +708,21 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };
 
+		static bool IsIncludeTransform (string include)
+		{
+			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
+		}
+
 		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
-			foreach (var c in sourceItem.Metadata.GetProperties ()) {
-				if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
-					md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
+			// Only evaluate properties for non-transforms.
+			if (!IsIncludeTransform (include)) {
+				foreach (var c in sourceItem.Metadata.GetProperties ()) {
+					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
+						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
+				}
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
 			it.SourceItem = sourceItem;
