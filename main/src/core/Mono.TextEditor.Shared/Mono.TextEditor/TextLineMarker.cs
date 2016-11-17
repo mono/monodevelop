@@ -31,6 +31,8 @@ namespace Mono.TextEditor
 {
 	interface IExtendingTextLineMarker
 	{
+		bool IsSpaceAbove { get; }
+
 		double GetLineHeight (MonoTextEditor editor);
 		void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
