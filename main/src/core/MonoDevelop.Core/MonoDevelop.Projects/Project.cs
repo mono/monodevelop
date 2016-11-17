@@ -2267,7 +2267,7 @@ namespace MonoDevelop.Projects
 
 				string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
 				if (itemGuid == null)
-					itemGuid = Guid.NewGuid ().ToString ("B").ToUpper ();
+					itemGuid = defaultItemId ?? Guid.NewGuid ().ToString ("B").ToUpper ();
 
 				// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 				// of shared projects.
