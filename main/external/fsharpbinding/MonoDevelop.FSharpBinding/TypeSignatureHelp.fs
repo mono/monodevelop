@@ -87,7 +87,7 @@ module signatureHelp =
 
             let funs = 
                 symbols
-                |> List.filter(fun f -> f.RangeAlternate.StartLine >= topVisibleLine && f.RangeAlternate.EndLine <= bottomVisibleLine)
+
                 |> List.filter(fun s -> s.IsFromDefinition)
                 |> List.filter(fun s -> match s with 
                                         | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
@@ -104,27 +104,36 @@ module signatureHelp =
                                 document.RemoveMarker markers.[lineNr]
                                 markers.TryRemove(lineNr) |> ignore)
 
+            let addMarker text lineNr =
+                let newMarker = SignatureHelpMarker(document, text, font, lineNr)
+                markers.TryAdd (lineNr, newMarker) |> ignore
+                Runtime.RunInMainThread(fun () -> document.AddMarker(lineNr, newMarker)) |> ignore
+
             funs |> Map.iter(fun _l f ->
                 let range = f.RangeAlternate
                 let lineText = editor.GetLineText(range.StartLine)
-                async {
-                    let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
-                    tooltip |> Option.iter(fun (tooltip, line) ->
-                        let text = extractSignature tooltip
-                        LoggingService.logDebug "Line %d - %s" line text
-                        let res, marker = markers.TryGetValue range.StartLine
-                        let addMarker() =
-                            let newMarker = SignatureHelpMarker(document, text, font, range.StartLine)
-                            markers.TryAdd (range.StartLine, newMarker) |> ignore
-                            Runtime.RunInMainThread(fun () -> document.AddMarker(range.StartLine, newMarker)) |> ignore
-                        if res then 
-                            if marker.Text <> text then
-                                document.RemoveMarker marker
-                                markers.TryRemove(range.StartLine) |> ignore
-                                addMarker()
-                        else
-                            addMarker()) 
-                } |> Async.StartImmediate))
+
+                let res, marker = markers.TryGetValue range.StartLine
+                if not res then
+                    //add placeholder
+                    addMarker "" range.StartLine
+                if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
+                    async {
+                        let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
+                        tooltip |> Option.iter(fun (tooltip, line) ->
+                            let text = extractSignature tooltip
+                            LoggingService.logDebug "Line %d - %s" line text
+                            let res, marker = markers.TryGetValue range.StartLine
+
+                            if res then 
+                                if marker.Text <> text then
+                                    document.RemoveMarker marker
+                                    markers.TryRemove(range.StartLine) |> ignore
+                                    addMarker text range.StartLine
+                            else
+                                addMarker text range.StartLine )
+                    } |> Async.StartImmediate)
+                )
 
 type SignatureHelp() =
     inherit TextEditorExtension()
