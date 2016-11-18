@@ -691,16 +691,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
-			if (document != null) {
-				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+			if (document as Document != null) {
+				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
 					InternalInformDocumentOpen (linkedDoc, editor);
 				}
 			}
 		}
 
-		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
-			var document = this.GetDocument (documentId);
+			TextDocument document = this.GetDocument (documentId) ?? this.GetAdditionalDocument (documentId);
 			if (document == null || IsDocumentOpen (documentId)) {
 				return document;
 			}
@@ -708,7 +708,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
-			OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			if (document is Document) {
+				OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			} else {
+				OnAdditionalDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			}
 			return document;
 		}
 
@@ -764,8 +768,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				var loader = new MonoDevelopTextLoader (filePath);
-				OnDocumentClosed (analysisDocument, loader); 
 				var document = this.GetDocument (analysisDocument);
+				if (document == null) {
+					var ad = this.GetAdditionalDocument (analysisDocument);
+					if (ad != null)
+						OnAdditionalDocumentClosed (analysisDocument, loader);
+					return;
+				}
+				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
 					OnDocumentClosed (linkedDoc, loader); 
 				}
@@ -1104,12 +1114,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 
-		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
+		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var project = CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
 				return null;
 			return project.GetDocument (documentId);
+		}
+
+		internal TextDocument GetAdditionalDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var project = CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
+				return null;
+			return project.GetAdditionalDocument (documentId);
 		}
 
 		internal async void UpdateFileContent (string fileName, string text)
