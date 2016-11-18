@@ -89,6 +89,33 @@ namespace MonoDevelop.Components
 		}
 #endif
 
+#if MAC
+		internal static void DumpAccessibilityTree (NSObject obj = null, int indentLevel = 0)
+		{
+			if (obj == null) {
+				obj = NSApplication.SharedApplication;
+			}
+
+			string desc = obj.Description;
+			desc = desc.PadLeft (desc.Length + indentLevel, ' ');
+			Console.WriteLine ($"{desc}");
+
+			if (!obj.RespondsToSelector (new Selector ("accessibilityChildren"))) {
+				string notAccessible = "Not accessible";
+				Console.WriteLine ($"{notAccessible.PadLeft (notAccessible.Length + indentLevel + 2, ' ')}");
+				return;
+			}
+
+			NSArray children = (NSArray) obj.PerformSelector (new Selector ("accessibilityChildren"));
+			if (children == null) {
+				return;
+			}
+
+			for (nuint i = 0; i < children.Count; i++) {
+				DumpAccessibilityTree (children.GetItem<NSObject> (i), indentLevel + 2);
+			}
+		}
+#endif
 		public static void SetAccessibilityLabel (this Atk.Object o, string label)
 		{
 #if MAC
