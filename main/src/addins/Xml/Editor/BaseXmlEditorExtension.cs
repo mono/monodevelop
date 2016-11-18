@@ -72,7 +72,8 @@ namespace MonoDevelop.Xml.Editor
 		public override bool IsValidInContext (DocumentContext context)
 		{
 			//can only attach if there is not already an attached BaseXmlEditorExtension
-			return context.GetContent<BaseXmlEditorExtension> () == null;
+			var other = context.GetContent<BaseXmlEditorExtension> ();
+			return other == null || other == this;
 		}
 		
 		protected virtual XmlRootState CreateRootState ()
