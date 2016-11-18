@@ -1470,12 +1470,12 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			var dotted = new [] { textEditor.Options.Zoom };
-			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
+			cr.SetDash (dotted, 0);
 			var top = y;
-			var bottom = y + LineHeight;
-			if (Caret.Line == line.LineNumber && textEditor.GetTextEditorData ().HighlightCaretLine) {
-				top += textEditor.Options.Zoom;
-				bottom -= textEditor.Options.Zoom;
+			var bottom = y + LineHeight + spaceBelow;
+			if (isSpaceAbove) {
+				top -= spaceAbove;
+				bottom += spaceAbove;
 			}
 			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
 				var x = System.Math.Floor (xPos + i * charWidth);
@@ -2646,18 +2646,25 @@ namespace Mono.TextEditor
 
 		const double foldMarkerXMargin = 4.0;
 
+		bool isSpaceAbove;
+		int spaceAbove, spaceBelow;
+
 		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNr, double x, double y, double _lineHeight)
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var extendingMarker = (IExtendingTextLineMarker)line?.Markers.FirstOrDefault (l => l is IExtendingTextLineMarker);
-			bool isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
-			int spaceAbove = 0;
+			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
+			spaceAbove = 0;
+			spaceBelow = 0;
 			var originalY = y;
 			if (isSpaceAbove) {
 				spaceAbove = (int)(_lineHeight - LineHeight);
 				y += spaceAbove;
+			} else {
+				if (extendingMarker != null)
+					spaceBelow = (int)(_lineHeight - LineHeight);
 			}
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, LineHeight);
 			var originalLineArea = lineArea;
