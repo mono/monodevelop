@@ -2,10 +2,12 @@
 
 open System
 open System.Collections.Generic
+open System.Collections.Concurrent
 open ExtCore.Control
 open Mono.TextEditor
 open MonoDevelop
 open MonoDevelop.Components
+open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -15,12 +17,13 @@ type SignatureHelpMarker(document, text, font, lineNr) =
     inherit TextLineMarker()
     static member FontScale = 0.8
 
+    member x.Text = text
+
     override this.Draw(editor, g, _metrics) =
         g.SetSourceRGB(0.5, 0.5, 0.5)
         use layout = new Pango.Layout(editor.PangoContext, FontDescription=font)
         let line = editor.GetLine lineNr
         layout.SetText text
-        //let location = editor.OffsetToLocation offset
         let x = editor.ColumnToX (line, (line.GetIndentation(document).Length+1)) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + (editor.TextViewMargin.TextStartPosition |> float)
         let y = (editor.LineToY lineNr) - editor.VAdjustment.Value
 
@@ -39,7 +42,8 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
+    let markers = ConcurrentDictionary<int, SignatureHelpMarker>()
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (document:TextDocument) font =
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -74,36 +78,45 @@ module signatureHelp =
             |> Option.map getSignature
             |> Option.fill ""
 
-        ast |> Option.bind (fun (ast, pd) ->
-            let symbols = pd.AllSymbolsKeyed.Values
-            let funs = symbols |> Seq.filter(fun s -> s.IsFromDefinition) |> List.ofSeq
-            let funs = funs |> List.filter(fun s -> match s with 
-                                                    | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
-                                                    | _ -> false)
-            let res =
-                funs |> List.map(fun f ->
-                    let range = f.RangeAlternate
-                    let lineText = editor.GetLineText(range.StartLine)
-                    ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
-                    )
-            let (tooltips:(FSharpToolTipText * int) []) = 
-                res 
-                |> Async.Parallel 
-                |> Async.RunSynchronously
-                |> Array.choose id
+        ast |> Option.iter (fun (ast, pd) ->
+            let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
+            let funs = 
+                symbols 
+                |> List.filter(fun s -> s.IsFromDefinition)
+                |> List.filter(fun s -> match s with 
+                                        | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
+                                        | _ -> false)
+                |> List.map(fun f -> f.RangeAlternate.StartLine, f)
+                |> Map.ofList
 
-            let res = tooltips |> Array.map(fun (t, line) -> extractSignature t, line)
-            Some res)
+            // remove any markers that are in the wrong positions
+            markers.Keys
+            |> Seq.iter(fun lineNr -> 
+                            if not (funs.ContainsKey lineNr) then
+                                document.RemoveMarker markers.[lineNr]
+                                markers.TryRemove(lineNr) |> ignore)
 
-    let markers = ResizeArray<SignatureHelpMarker>()
-    let highlightUnused (doc:TextDocument) font (unusedOpenRanges: (string * int) []) =
-
-        markers |> Seq.iter(fun m -> doc.RemoveMarker m)
-        markers.Clear()
-        unusedOpenRanges |> Array.iter(fun (text, line) ->
-            let marker = SignatureHelpMarker(doc, text, font, line)
-            markers.Add marker
-            doc.AddMarker(line, marker))
+            funs |> Map.iter(fun _l f ->
+                let range = f.RangeAlternate
+                let lineText = editor.GetLineText(range.StartLine)
+                async {
+                    let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
+                    tooltip |> Option.iter(fun (tooltip, _line) ->
+                        let text = extractSignature tooltip
+                        let res, marker = markers.TryGetValue range.StartLine
+                        let addMarker() =
+                            let newMarker = SignatureHelpMarker(document, text, font, range.StartLine)
+                            markers.TryAdd (range.StartLine, newMarker) |> ignore
+                            Runtime.RunInMainThread(fun () -> document.AddMarker(range.StartLine, newMarker)) |> ignore
+                        if res then 
+                            if marker.Text <> text then
+                                document.RemoveMarker marker
+                                markers.TryRemove(range.StartLine) |> ignore
+                                addMarker()
+                        else
+                            addMarker()) 
+                } |> Async.StartImmediate
+                ))
 
 type SignatureHelp() =
     inherit TextEditorExtension()
@@ -113,5 +126,5 @@ type SignatureHelp() =
         let textDocument = data.Document
         let editorFont = data.Options.Font
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
-        x.DocumentContext.DocumentParsed.Add (fun _ -> let unused = signatureHelp.getUnusedOpens x.DocumentContext x.Editor
-                                                       unused |> Option.iter(fun unused' -> signatureHelp.highlightUnused textDocument font unused'))// TypeSignatureHelp.fs
+        x.DocumentContext.DocumentParsed.Add (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor textDocument font)
+                                                       
