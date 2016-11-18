@@ -331,7 +331,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectJsonBuildIntegratedProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
@@ -417,6 +417,8 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageDependenciesNodeCommandHandler.cs" />
+    <Compile Include="NuGet.Credential\CredentialServiceAdapter.cs" />
+    <Compile Include="NuGet.Credential\CredentialProviderAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

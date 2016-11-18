@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static FilePath GetPackagesFolderPath (this NuGetProject project, IMonoDevelopSolutionManager solutionManager)
 		{
-			if (project is BuildIntegratedProjectSystem) {
+			if (project is ProjectJsonBuildIntegratedProjectSystem ) {
 				string globalPackagesPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings);
 
 				return new FilePath (globalPackagesPath).FullPath;
