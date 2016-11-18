@@ -42,11 +42,16 @@ namespace MonoDevelop.Ide.GettingStarted
 			return project.GetService<GettingStartedProjectExtension> ()?.ProjectPadNode;
 		}
 
-		public static void ShowGettingStarted (Project project)
+		/// <summary>
+		/// Shows the getting started page for the given project.
+		/// </summary>
+		/// <param name="project">The project for which the getting started page should be shown</param>
+		/// <param name="pageHint">A hint to the getting started page for cases when the provide may need assistance in determining the correct content to show</param>
+		public static void ShowGettingStarted (Project project, string pageHint = null)
 		{
 			var provider = project.GetGettingStartedProvider ();
 			if (provider != null) {
-				provider.ShowGettingStarted (project);
+				provider.ShowGettingStarted (project, pageHint);
 			}
 		}
 	}

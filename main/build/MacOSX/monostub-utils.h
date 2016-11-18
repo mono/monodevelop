@@ -273,4 +273,3 @@ update_environment (const char *contentsDir, bool need64Bit)
 
 	return updated;
 }
-

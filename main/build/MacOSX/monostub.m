@@ -228,6 +228,7 @@ correct_locale(void)
 		preferredLanguage = [[preferredLanguage componentsSeparatedByString:@"-"] objectAtIndex:0];
 
 	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
+	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
 }
 
 int main (int argc, char **argv)

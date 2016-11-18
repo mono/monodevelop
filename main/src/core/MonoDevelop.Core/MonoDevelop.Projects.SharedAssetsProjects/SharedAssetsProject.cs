@@ -233,7 +233,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public LanguageBinding LanguageBinding {
 			get {
-				if (languageBinding == null)
+				if (languageBinding == null && languageName != null) 
 					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 				return languageBinding;
 			}
@@ -241,7 +241,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override bool OnGetIsCompileable (string fileName)
 		{
-			return LanguageBinding.IsSourceCodeFile (fileName);
+			return LanguageBinding != null && LanguageBinding.IsSourceCodeFile (fileName);
 		}
 
 		protected override Task<BuildResult> OnBuild (MonoDevelop.Core.ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)

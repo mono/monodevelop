@@ -13,7 +13,9 @@ module ParsedDocument =
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
     let private formatError (error : FSharpErrorInfo) =
         let errorType = if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error else ErrorType.Warning
-        Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+        let startLine = if error.StartLineAlternate = 0 then 1 else error.StartLineAlternate
+        let endLine = if error.EndLineAlternate = 0 then 1 else error.EndLineAlternate
+        Error(errorType, String.wrapText error.Message 80, DocumentRegion (startLine, error.StartColumn + 1, endLine, error.EndColumn + 1))
     
     let inline private isMoreThanNLines n (range:Range.range) =
         range.EndLine - range.StartLine > n
