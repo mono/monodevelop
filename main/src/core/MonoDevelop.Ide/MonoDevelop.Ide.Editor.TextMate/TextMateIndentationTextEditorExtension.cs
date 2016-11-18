@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-            bool isActive = (Editor.IndentationTracker.SupportedFeatures & IndentatitonTrackerFeatures.CustomIndentationEnigne) != IndentatitonTrackerFeatures.CustomIndentationEnigne;
+            bool isActive = Editor.IndentationTracker != null && (Editor.IndentationTracker.SupportedFeatures & IndentatitonTrackerFeatures.CustomIndentationEnigne) != IndentatitonTrackerFeatures.CustomIndentationEnigne;
 
             if (isActive && descriptor.SpecialKey == SpecialKey.Return) {
 				if (Editor.Options.IndentStyle == IndentStyle.Virtual) {

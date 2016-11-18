@@ -1179,7 +1179,7 @@ namespace Mono.TextEditor
 		public IndentationTracker IndentationTracker {
 			get {
 				if (!HasIndentationTracker)
-					throw new InvalidOperationException ("Indentation tracker not installed.");
+					return null;
 				return indentationTracker;
 			}
 			set {

@@ -170,6 +170,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));
 
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
+			settings.Add (new ThemeSetting ("punctuation.definition.string", new List<string> { "punctuation.definition.string" }, ConvertChunkStyle (colorScheme.String)));
+
 			settings.Add (new ThemeSetting ("Number", new List<string> { "constant.numeric" }, ConvertChunkStyle (colorScheme.Number)));
 			settings.Add (new ThemeSetting ("Built-in constant", new List<string> { "constant.language" }, ConvertChunkStyle (colorScheme.KeywordConstants)));
 			settings.Add (new ThemeSetting ("User-defined constant", new List<string> { "constant.character", "constant.other" }, ConvertChunkStyle (colorScheme.Number)));
@@ -187,7 +189,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Preprocessor", new List<string> { "meta.preprocessor" }, ConvertChunkStyle (colorScheme.Preprocessor)));
 			settings.Add (new ThemeSetting ("Preprocessor region name", new List<string> { "meta.preprocessor.region.name" }, ConvertChunkStyle (colorScheme.PreprocessorRegionName)));
 
-			settings.Add (new ThemeSetting ("Tag attribute", new List<string> { "entity.other.attribute-name" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
+			settings.Add (new ThemeSetting ("Tag attribute", new List<string> { "entity.other.attribute-name" }, ConvertChunkStyle (colorScheme.XmlAttribute)));
 			settings.Add (new ThemeSetting ("Function call", new List<string> { "variable.function" }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
 			settings.Add (new ThemeSetting ("Library function", new List<string> { "support.function" }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
 			settings.Add (new ThemeSetting ("Library constant", new List<string> { "support.constant" }, ConvertChunkStyle (colorScheme.KeywordConstants)));
@@ -198,8 +200,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("JSON String", new List<string> { "meta.structure.dictionary.json string.quoted.double.json" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("YAML String", new List<string> { "string.unquoted.yaml" }, ConvertChunkStyle (colorScheme.String)));
 
-			settings.Add (new ThemeSetting ("Entity Names", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
-			settings.Add (new ThemeSetting ("Entity Attributes", new List<string> { "entity.other.attribute" }, ConvertChunkStyle (colorScheme.HtmlAttributeName)));
+			settings.Add (new ThemeSetting ("Entity Names", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.XmlName)));
+			settings.Add (new ThemeSetting ("Entity Attributes", new List<string> { "entity.other.attribute" }, ConvertChunkStyle (colorScheme.XmlAttribute)));
 
 			settings.Add (new ThemeSetting ("Diff Header", new List<string> { "meta.diff", "meta.diff.header" }, ConvertChunkStyle (colorScheme.DiffHeader)));
 			settings.Add (new ThemeSetting ("Diff Line(Removed)", new List<string> { "markup.deleted" }, ConvertChunkStyle (colorScheme.DiffLineRemoved)));

@@ -823,7 +823,7 @@ namespace MonoDevelop.Ide.Gui
 				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
 			}
-			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
+			if (Project != null && !IsUnreferencedSharedProject(Project)) {
 				UnsubscribeRoslynWorkspace ();
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				SubscribeRoslynWorkspace ();

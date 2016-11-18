@@ -1477,12 +1477,12 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			var dotted = new [] { textEditor.Options.Zoom };
-			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
+			cr.SetDash (dotted, 0);
 			var top = y;
-			var bottom = y + LineHeight;
-			if (Caret.Line == line.LineNumber && textEditor.GetTextEditorData ().HighlightCaretLine) {
-				top += textEditor.Options.Zoom;
-				bottom -= textEditor.Options.Zoom;
+			var bottom = y + LineHeight + spaceBelow;
+			if (isSpaceAbove) {
+				top -= spaceAbove;
+				bottom += spaceAbove;
 			}
 			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
 				var x = System.Math.Floor (xPos + i * charWidth);
@@ -2660,12 +2660,28 @@ namespace Mono.TextEditor
 
 		const double foldMarkerXMargin = 4.0;
 
+		bool isSpaceAbove;
+		int spaceAbove, spaceBelow;
+
 		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNr, double x, double y, double _lineHeight)
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
-			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
+			var extendingMarker = (IExtendingTextLineMarker)line?.Markers.FirstOrDefault (l => l is IExtendingTextLineMarker);
+			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
+			spaceAbove = 0;
+			spaceBelow = 0;
+			var originalY = y;
+			if (isSpaceAbove) {
+				spaceAbove = (int)(_lineHeight - LineHeight);
+				y += spaceAbove;
+			} else {
+				if (extendingMarker != null)
+					spaceBelow = (int)(_lineHeight - LineHeight);
+			}
+			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, LineHeight);
+			var originalLineArea = lineArea;
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
 			var bgColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background);
 			// TODO : EditorTheme does that look good ?
@@ -2679,8 +2695,14 @@ namespace Mono.TextEditor
 			var startLineNr = lineNr;
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
-			if (BackgroundRenderer == null)
-				DrawRectangleWithRuler (cr, x, lineArea, defaultBgColor, true);
+			if (BackgroundRenderer == null) {
+				if (LineHeight < _lineHeight) {
+					var extendedLineArea = new Cairo.Rectangle (lineArea.X, originalY, lineArea.Width, _lineHeight);
+					DrawRectangleWithRuler (cr, x, extendedLineArea, defaultBgColor, true);
+				} else {
+					DrawRectangleWithRuler (cr, x, lineArea, defaultBgColor, true);
+				}
+			}
 			bool isSelectionDrawn = false;
 
 			// Check if line is beyond the document length
@@ -2701,7 +2723,7 @@ namespace Mono.TextEditor
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 
 			if ((HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) && Caret.Line == lineNr)
-				DrawCaretLineMarker (cr, x, y, TextStartPosition, _lineHeight);
+				DrawCaretLineMarker (cr, x, y, TextStartPosition, lineArea.Height);
 
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.Offset;
@@ -2709,7 +2731,7 @@ namespace Mono.TextEditor
 					continue;
 
 				if (folding.IsCollapsed) {
-					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
+					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
 
 					offset = folding.EndOffset;
 					markerLayout.SetText (folding.CollapsedText);
@@ -2774,11 +2796,10 @@ namespace Mono.TextEditor
 					isEolFolded = line.EndOffset <= folding.EndOffset;
 				}
 			}
-			
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
 			// and the caret position is calculated in DrawLinePart.
 			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
-				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
+				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
 			}
 
 			bool isEolSelected = 
@@ -2857,7 +2878,7 @@ namespace Mono.TextEditor
 						wrapper = GetLayout (line);
 						DrawIndent (cr, wrapper, line, lx, y);
 					}
-					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, _lineHeight);
+					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, lineArea.Height);
 				}
 			}
 			
@@ -2879,9 +2900,8 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
-				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
+				extendingMarker.Draw (textEditor, cr, lineNr, originalLineArea);
 
 			if (BackgroundRenderer == null) {
 				var metrics = new EndOfLineMetrics {

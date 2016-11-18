@@ -45,6 +45,8 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using System.Text;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -92,6 +94,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
+			foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TypeService/MefHostServices")) {
+				var assemblyNode = node as AssemblyExtensionNode;
+				if (assemblyNode == null)
+					continue;
+				try {
+					var assembly = Assembly.LoadFrom (assemblyNode.FileName);
+					assemblies.Add (assembly);
+				} catch (Exception e) {
+					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
+					continue;
+				}
+			}
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
 
@@ -425,7 +439,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				fileName = new FilePath (p.Name + ".dll");
 
 			var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
-
+			var documents = CreateDocuments (projectData, p, token, sourceFiles);
+			if (documents == null)
+				return null;
 			var info = ProjectInfo.Create (
 				projectId,
 				VersionStamp.Create (),
@@ -436,9 +452,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				fileName,
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions (config) : null,
-				CreateDocuments (projectData, p, token, sourceFiles),
+				documents.Item1,
 				CreateProjectReferences (p, token),
-				references
+				references,
+				additionalDocuments: documents.Item2
 			);
 			projectData.Info = info;
 			return info;
@@ -494,29 +511,35 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
+		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
 		{
-			var duplicates = new HashSet<DocumentId> ();
+			var documents = new List<DocumentInfo> ();
+			var additionalDocuments = new List<DocumentInfo> ();
 
+			var duplicates = new HashSet<DocumentId> ();
 			// use given source files instead of project.Files because there may be additional files added by msbuild targets
 			foreach (var f in sourceFiles) {
 				if (token.IsCancellationRequested)
-					yield break;
+					return null;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
 				SourceCodeKind sck;
 				if (TypeSystemParserNode.IsCompileableFile (f, out sck)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f, sck);
+					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
+					if (duplicates.Add (projectData.GetOrCreateDocumentId (f.Name))) {
+						additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
+					}
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
 						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
 							continue;
-						yield return projectedDocument;
+						documents.Add (projectedDocument);
 					}
 				}
 			}
+			return Tuple.Create (documents, additionalDocuments);
 		}
 
 		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, HashSet<DocumentId> duplicates = null)
@@ -668,24 +691,28 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
-			if (document != null) {
-				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
+			if (document as Document != null) {
+				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
 					InternalInformDocumentOpen (linkedDoc, editor);
 				}
 			}
 		}
 
-		Document InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
-			var document = this.GetDocument (documentId);
-			if (document == null || IsDocumentOpen (documentId)) {
+			TextDocument document = this.GetDocument (documentId) ?? this.GetAdditionalDocument (documentId);
+			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
 				return document;
 			}
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
-			OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			if (document is Document) {
+				OnDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			} else {
+				OnAdditionalDocumentOpened (documentId, monoDevelopSourceTextContainer);
+			}
 			return document;
 		}
 
@@ -741,8 +768,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				var loader = new MonoDevelopTextLoader (filePath);
-				OnDocumentClosed (analysisDocument, loader); 
 				var document = this.GetDocument (analysisDocument);
+				if (document == null) {
+					var ad = this.GetAdditionalDocument (analysisDocument);
+					if (ad != null)
+						OnAdditionalDocumentClosed (analysisDocument, loader);
+					return;
+				}
+				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
 					OnDocumentClosed (linkedDoc, loader); 
 				}
@@ -1081,12 +1114,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 
-		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
+		internal Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var project = CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
 				return null;
 			return project.GetDocument (documentId);
+		}
+
+		internal TextDocument GetAdditionalDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var project = CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
+				return null;
+			return project.GetAdditionalDocument (documentId);
 		}
 
 		internal async void UpdateFileContent (string fileName, string text)
