@@ -12,7 +12,10 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
-
+open System.Reactive
+open System.Reactive.Linq
+open System.Reactive.Concurrency
+open System.Reactive.Disposables
 type SignatureHelpMarker(document, text, font, lineNr) =
     inherit TextLineMarker()
     static member FontScale = 0.8
@@ -129,19 +132,20 @@ module signatureHelp =
 
 type SignatureHelp() =
     inherit TextEditorExtension()
+    let throttle (due:TimeSpan) observable =
+        Observable.Throttle(observable, due)
 
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
-        let textDocument = data.Document
         let editorFont = data.Options.Font
 
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
-        //let ignoreEvent e = Event.map ignore e
 
-        //let merged = Event.merge (ignoreEvent x.Editor.VAdjustmentChanged) (ignoreEvent x.DocumentContext.DocumentParsed)
-        //let ev = Async.AwaitEvent merged
-       
-        x.Editor.VAdjustmentChanged.Add(fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
-        x.DocumentContext.DocumentParsed.Add (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
-                                                       
+        Observable.merge x.Editor.VAdjustmentChanged x.DocumentContext.DocumentParsed
+        |> throttle (TimeSpan.FromMilliseconds 350.)
+        |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
+        |> ignore
+
+        
+                                                               
