@@ -701,7 +701,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		TextDocument InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			TextDocument document = this.GetDocument (documentId) ?? this.GetAdditionalDocument (documentId);
-			if (document == null || IsDocumentOpen (documentId)) {
+			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
 				return document;
 			}
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
