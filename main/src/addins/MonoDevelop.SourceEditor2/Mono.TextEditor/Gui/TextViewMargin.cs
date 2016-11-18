@@ -2667,8 +2667,12 @@ namespace Mono.TextEditor
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var extendingMarker = (IExtendingTextLineMarker)line?.Markers.FirstOrDefault (l => l is IExtendingTextLineMarker);
 			bool isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
-			if (isSpaceAbove)
-				y += LineHeight;
+			int spaceAbove = 0;
+			var originalY = y;
+			if (isSpaceAbove) {
+				spaceAbove = (int)(_lineHeight - LineHeight);
+				y += spaceAbove;
+			}
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, LineHeight);
 			var originalLineArea = lineArea;
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
@@ -2686,7 +2690,7 @@ namespace Mono.TextEditor
 			// background will be drawn when rendering the text chunks.
 			if (BackgroundRenderer == null) {
 				if (LineHeight < _lineHeight) {
-					var extendedLineArea = new Cairo.Rectangle (lineArea.X, y + (isSpaceAbove ? -LineHeight : LineHeight), lineArea.Width, _lineHeight);
+					var extendedLineArea = new Cairo.Rectangle (lineArea.X, originalY, lineArea.Width, _lineHeight);
 					DrawRectangleWithRuler (cr, x, extendedLineArea, defaultBgColor, true);
 				} else {
 					DrawRectangleWithRuler (cr, x, lineArea, defaultBgColor, true);
