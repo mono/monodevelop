@@ -43,7 +43,8 @@ module signatureHelp =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
     let markers = ConcurrentDictionary<int, SignatureHelpMarker>()
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (document:TextDocument) font =
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
+        let document = data.Document
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -80,17 +81,25 @@ module signatureHelp =
 
         ast |> Option.iter (fun (ast, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
+            let topVisibleLine = ((data.VAdjustment.Value / data.LineHeight) |> int) + 1
+            let bottomVisibleLine =
+                Math.Min(data.LineCount - 1,
+                    topVisibleLine + ((data.VAdjustment.PageSize / data.LineHeight) |> int))
+
             let funs = 
-                symbols 
+                symbols
+                |> List.filter(fun f -> f.RangeAlternate.StartLine >= topVisibleLine && f.RangeAlternate.EndLine <= bottomVisibleLine)
                 |> List.filter(fun s -> s.IsFromDefinition)
                 |> List.filter(fun s -> match s with 
                                         | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
                                         | _ -> false)
                 |> List.map(fun f -> f.RangeAlternate.StartLine, f)
                 |> Map.ofList
+            
 
             // remove any markers that are in the wrong positions
             markers.Keys
+            |> Seq.filter(fun lineNumber -> lineNumber >= topVisibleLine && lineNumber <= bottomVisibleLine)
             |> Seq.iter(fun lineNr -> 
                             if not (funs.ContainsKey lineNr) then
                                 document.RemoveMarker markers.[lineNr]
@@ -123,8 +132,16 @@ type SignatureHelp() =
 
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+
         let textDocument = data.Document
         let editorFont = data.Options.Font
+
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
-        x.DocumentContext.DocumentParsed.Add (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor textDocument font)
+        //let ignoreEvent e = Event.map ignore e
+
+        //let merged = Event.merge (ignoreEvent x.Editor.VAdjustmentChanged) (ignoreEvent x.DocumentContext.DocumentParsed)
+        //let ev = Async.AwaitEvent merged
+       
+        x.Editor.VAdjustmentChanged.Add(fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
+        x.DocumentContext.DocumentParsed.Add (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
                                                        
