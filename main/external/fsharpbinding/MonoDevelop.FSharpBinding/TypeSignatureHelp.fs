@@ -12,10 +12,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
-open System.Reactive
 open System.Reactive.Linq
-open System.Reactive.Concurrency
-open System.Reactive.Disposables
 type SignatureHelpMarker(document, text, font, lineNr) =
     inherit TextLineMarker()
     static member FontScale = 0.8
@@ -45,8 +42,7 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let markers = ConcurrentDictionary<int, SignatureHelpMarker>()
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
+    let getUnusedOpens (markers:ConcurrentDictionary<int, SignatureHelpMarker>) (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
         let document = data.Document
         let ast =
             maybe {
@@ -113,8 +109,9 @@ module signatureHelp =
                 let lineText = editor.GetLineText(range.StartLine)
                 async {
                     let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
-                    tooltip |> Option.iter(fun (tooltip, _line) ->
+                    tooltip |> Option.iter(fun (tooltip, line) ->
                         let text = extractSignature tooltip
+                        LoggingService.logDebug "Line %d - %s" line text
                         let res, marker = markers.TryGetValue range.StartLine
                         let addMarker() =
                             let newMarker = SignatureHelpMarker(document, text, font, range.StartLine)
@@ -127,25 +124,27 @@ module signatureHelp =
                                 addMarker()
                         else
                             addMarker()) 
-                } |> Async.StartImmediate
-                ))
+                } |> Async.StartImmediate))
 
 type SignatureHelp() =
     inherit TextEditorExtension()
+    let mutable disposable = None : IDisposable option
+
     let throttle (due:TimeSpan) observable =
         Observable.Throttle(observable, due)
 
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
+        let markers = ConcurrentDictionary<int, SignatureHelpMarker>()
         let editorFont = data.Options.Font
 
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
 
-        Observable.merge x.Editor.VAdjustmentChanged x.DocumentContext.DocumentParsed
-        |> throttle (TimeSpan.FromMilliseconds 350.)
-        |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font)
-        |> ignore
+        disposable <-
+            Some
+                (Observable.merge x.Editor.VAdjustmentChanged x.DocumentContext.DocumentParsed
+                |> throttle (TimeSpan.FromMilliseconds 350.)
+                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens markers x.DocumentContext x.Editor data font))
 
-        
-                                                               
+    override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())
