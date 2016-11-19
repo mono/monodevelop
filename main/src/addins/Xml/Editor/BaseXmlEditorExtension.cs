@@ -396,16 +396,15 @@ namespace MonoDevelop.Xml.Editor
 					return null;
 				}
 			}
-			
-//			if (Tracker.Engine.CurrentState is XmlRootState) {
-//				if (line < 3) {
-//				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-//			}
 
 			//element completion
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
 				(tracker.Engine.CurrentState is XmlNameState && forced)) {
 				var list = await GetElementCompletions (token);
+				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
+					var encoding = Editor.Encoding.WebName;
+					list.Add ($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>");
+				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
 				return list.Count > 0 ? list : null;
 			}
