@@ -371,29 +371,36 @@ namespace MonoDevelop.Xml.Editor
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
 			     || ((Tracker.Engine.CurrentState is XmlNameState
 			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
-			    Tracker.Engine.CurrentState is XmlTagState)
-			    && (Tracker.Engine.CurrentStateLength == 1 || forced)) {
+			    Tracker.Engine.CurrentState is XmlTagState)) {
 				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-				if (attributedOb == null)
-					return null;
 				
-				//attributes
-				if (attributedOb.Name.IsValid && (forced ||
-					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
-				{
-					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
-					
-					foreach (XAttribute att in attributedOb.Attributes) {
-						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
-					}
-					var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
-					if (result != null) {
-						if (!forced)
-							result.TriggerWordLength = 1;
-						return result;
-					}
+				if (attributedOb == null || !attributedOb.Name.IsValid)
 					return null;
+
+				var currentIsNameStart = XmlNameState.IsValidNameStart (currentChar);
+				var currentIsWhiteSpace = char.IsWhiteSpace (currentChar);
+				var previousIsWhiteSpace = char.IsWhiteSpace (previousChar);
+
+				bool shouldTriggerAttributeCompletion = forced
+					|| (currentIsNameStart && previousIsWhiteSpace)
+					|| currentIsWhiteSpace;
+				if (!shouldTriggerAttributeCompletion)
+					return null;
+
+				var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
+
+				foreach (XAttribute att in attributedOb.Attributes) {
+					existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
+				}
+
+				var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
+				if (result != null) {
+					if (!forced && currentIsNameStart)
+						result.TriggerWordLength = 1;
+					result.AutoSelect = !currentIsWhiteSpace;
+					result.AddKeyHandler (new AttributeKeyHandler());
+					return result;
 				}
 			}
 
@@ -418,7 +425,23 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 
+		class AttributeKeyHandler : ICompletionKeyHandler
+		{
+			public bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				keyAction = KeyActions.None;
+				return false;
+			}
 
+			public bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				if (!listWindow.AutoSelect && char.IsLetterOrDigit (descriptor.KeyChar)) {
+					listWindow.AutoSelect = true;
+				}
+				keyAction = KeyActions.None;
+				return false;
+			}
+		}
 
 		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
 
