@@ -6,7 +6,6 @@
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.AttachToProcessDialog" design-size="656 413">
