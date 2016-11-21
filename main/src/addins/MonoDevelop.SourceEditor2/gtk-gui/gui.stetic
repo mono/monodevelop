@@ -936,9 +936,7 @@
             <property name="Editable">False</property>
             <property name="CursorVisible">False</property>
             <property name="AcceptsTab">False</property>
-            <property name="Text" translatable="yes">Supported formats: 
-TextMate (.tmTheme), Visual Studio (.vssettings) ,Xamarin Studio (.json) 
-Changes in the theme folder require a restart.</property>
+            <property name="Text" translatable="yes">The following color theme formats are supported: Visual Studio (.vssettings), Xamarin Studio (.json), TextMate (.tmTheme). Changes in the theme folder require a restart.</property>
             <property name="WrapMode">Word</property>
             <property name="PixelsBelowLines">6</property>
             <property name="PixelsInsideWrap">3</property>

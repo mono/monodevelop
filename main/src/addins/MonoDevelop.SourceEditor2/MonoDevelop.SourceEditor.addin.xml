@@ -155,7 +155,7 @@
 			<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> -->
 			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion" />
 		</Section>
-		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
+		<Section id="SyntaxHighlighting" _label="Color Theme" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">

@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				error = true;
 				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading color style " + styleName, e);
+				LoggingService.LogError ("Error while loading color theme " + styleName, e);
 				error = true;
 				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			}
@@ -189,11 +189,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void AddColorScheme (object sender, EventArgs args)
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Open) {
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Import Color Theme"), MonoDevelop.Components.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
 
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes (TextMate, Visual Studio, Xamarin Studio) "), "*.json", "*.vssettings", "*.tmTheme");
+			dialog.AddFilter (GettextCatalog.GetString ("Color themes (Visual Studio, Xamarin Studio, TextMate) "), "*.json", "*.vssettings", "*.tmTheme");
 			if (!dialog.Run ())
 				return;
 
