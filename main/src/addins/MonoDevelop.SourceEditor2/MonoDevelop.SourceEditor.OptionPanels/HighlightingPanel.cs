@@ -202,13 +202,22 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			bool success = true;
 			try {
 				if (File.Exists (newFileName)) {
-					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Highlighting with the same name already exists. Remove {0} first."), System.IO.Path.GetFileNameWithoutExtension (newFileName)));
-					return;
+					var answer = MessageService.AskQuestion (
+						GettextCatalog.GetString (
+							"A color theme with the name '{0}' already exists in your theme folder. Would you like to replace it?",
+							System.IO.Path.GetFileName (newFileName)
+						),
+						AlertButton.Cancel,
+						AlertButton.Replace
+					);
+					if (answer != AlertButton.Replace)
+						return;
+					File.Delete (newFileName);
 				}
 				File.Copy (dialog.SelectedFile.FullPath, newFileName);
 			} catch (Exception e) {
 				success = false;
-				LoggingService.LogError ("Can't copy syntax mode file.", e);
+				LoggingService.LogError ("Can't copy color theme file.", e);
 			}
 			if (success) {
 				SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
