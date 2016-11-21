@@ -14,14 +14,13 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
 open System.Reactive.Linq
 
-type SignatureHelpMarker(document, text, font, lineNr, line) =
+type SignatureHelpMarker(document, text, font, line) =
     inherit TextLineMarker()
     let mutable text' = text
-    //let mutable layout: Pango.Layout option = None
     let tag = obj()
     static member FontScale = 0.8
     member x.Text with get() = text' and set(value) = text' <- value
-    //override this.Draw(editor, g, _metrics) = ()
+
     interface ITextLineMarker with
         member x.Line with get() = line
         member x.IsVisible with get() = true and set(value) = ()
@@ -41,7 +40,6 @@ type SignatureHelpMarker(document, text, font, lineNr, line) =
 
             let currentPoint = g.CurrentPoint
             g.MoveTo(x, y + editor.LineHeight * (1.0 - SignatureHelpMarker.FontScale))
-            //g.MoveTo(x, y + 5.0)
             g.ShowLayout layout
             g.MoveTo currentPoint
 
@@ -49,7 +47,7 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let getUnusedOpens (markers:ConcurrentDictionary<int, SignatureHelpMarker>) (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
         let document = data.Document
         let ast =
             maybe {
@@ -87,10 +85,10 @@ module signatureHelp =
 
         ast |> Option.iter (fun (ast, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
-            let topVisibleLine = ((data.VAdjustment.Value / data.LineHeight) |> int) + 1
-            let bottomVisibleLine =
+            let topVisibleLine = data.HeightTree.YToLineNumber data.VAdjustment.Value
+            let bottomVisibleLine = 
                 Math.Min(data.LineCount - 1,
-                    topVisibleLine + ((data.VAdjustment.PageSize / data.LineHeight) |> int))
+                    data.HeightTree.YToLineNumber (data.VAdjustment.Value+data.VAdjustment.PageSize))
 
             let funs = 
                 symbols
@@ -104,11 +102,6 @@ module signatureHelp =
             
 
             // remove any markers that are in the wrong positions
-            //markers.Keys
-            //|> Seq.filter(fun lineNumber -> lineNumber >= topVisibleLine && lineNumber <= bottomVisibleLine)
-            //|> Seq.iter(fun lineNr -> 
-            //                if not (funs.ContainsKey lineNr) then
-            //                    markers.TryRemove(lineNr) |> ignore)
             let lineNumbersWithMarkersToRemove = 
                 [topVisibleLine..bottomVisibleLine] |> List.filter(not << funs.ContainsKey)
             if not lineNumbersWithMarkersToRemove.IsEmpty then
@@ -117,37 +110,19 @@ module signatureHelp =
                     editor.GetLineMarkers line 
                     |> Seq.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
                 document.CommitUpdateAll()
-            //editor.GetLineMarkers(
 
-            let addMarker text lineNr line =
-                let newMarker = SignatureHelpMarker(document, text, font, lineNr, line)
-                markers.TryAdd (lineNr, newMarker) |> ignore
+            let addMarker text (lineNr:int) line =
+                let newMarker = SignatureHelpMarker(document, text, font, line)
                 document.AddMarker(lineNr, newMarker)
                 newMarker :> ITextLineMarker
-                //let line = editor.GetLine lineNr
-
-                //let offset = line.Offset
-                //let location = DocumentLocation(lineNr, 0)
-                //// use a smart marker to store the signature marker
-                //// so that we don't need to keep track of markers separately
-                //let currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (editor, offset, location)
-                ////currentSmartTag.CancelPopup += CurrentSmartTag_CancelPopup;
-                ////currentSmartTag.ShowPopup += CurrentSmartTag_ShowPopup;
-                //currentSmartTag.Tag <- newMarker
-                //currentSmartTag.IsVisible <- false
-                //editor.AddMarker (currentSmartTag)
 
             funs |> Map.iter(fun _l f ->
                 let range = f.RangeAlternate
                 let lineText = editor.GetLineText(range.StartLine)
 
                 let line = editor.GetLine range.StartLine
-                //editor.sm
-                //let res, marker = markers.TryGetValue range.StartLine
                 let marker = editor.GetLineMarkers line |> Seq.tryHead
 
-                //if marker.IsNone then
-                    //add placeholder
                 let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
                 if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
                     async {
@@ -155,17 +130,12 @@ module signatureHelp =
                         tooltip |> Option.iter(fun (tooltip, lineNr) ->
                             let text = extractSignature tooltip
                             LoggingService.logDebug "Line %d - %s" lineNr text
-                            //let res, marker = markers.TryGetValue range.StartLine
-                            //let line = editor.GetLine lineNr
-                            //|> Option.iter(fun marker ->
                             match marker with
                             | :? SignatureHelpMarker as sigMarker ->
                                 if sigMarker.Text <> text then
                                      sigMarker.Text <- text
                                      document.CommitLineUpdate lineNr
                             | _ -> ())
-                            //else
-                                //addMarker text range.StartLine )
                     } |> Async.StartImmediate)
                 )
 
@@ -179,7 +149,6 @@ type SignatureHelp() =
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
-        let markers = ConcurrentDictionary<int, SignatureHelpMarker>()
         let editorFont = data.Options.Font
 
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
@@ -188,6 +157,6 @@ type SignatureHelp() =
             Some
                 (Observable.merge x.Editor.VAdjustmentChanged x.DocumentContext.DocumentParsed
                 |> throttle (TimeSpan.FromMilliseconds 100.)
-                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens markers x.DocumentContext x.Editor data font))
+                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font))
 
     override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())
