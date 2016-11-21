@@ -197,7 +197,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!dialog.Run ())
 				return;
 
-			string newFileName = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
+			var fileName = dialog.SelectedFile.FileName;
+			string newFileName = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath.Combine (fileName);
+
+			//check it's valid by trying to load it
+			try {
+				SyntaxHighlightingService.LoadStyleOrMode (fileName);
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Invalid color theme file '{fileName}'.", ex);
+				MessageService.ShowError (GettextCatalog.GetString ("Could not import color theme."));
+			}
 
 			bool success = true;
 			try {
