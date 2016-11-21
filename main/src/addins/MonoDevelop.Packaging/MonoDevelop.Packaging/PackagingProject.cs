@@ -249,9 +249,19 @@ namespace MonoDevelop.Packaging
 			return text;
 		}
 
+		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceAddedToProject (e);
+
+			DotNetProject project = GetDotNetProject (e.ProjectReference);
+			if (project != null) {
+				EnsureBuildPackagingNuGetPackageIsInstalled (project);
+			}
+		}
+
 		DotNetProject GetDotNetProject (ProjectReference projectReference)
 		{
-			if (ParentSolution == null)
+			if (Loading || ParentSolution == null || projectReference.ReferenceType != ReferenceType.Project)
 				return null;
 
 			var project = projectReference.ResolveProject (ParentSolution) as DotNetProject;
@@ -355,6 +365,13 @@ namespace MonoDevelop.Packaging
 				}
 				return null;
 			});
+		}
+
+		void EnsureBuildPackagingNuGetPackageIsInstalled (DotNetProject project)
+		{
+			if (!project.IsBuildPackagingNuGetPackageInstalled ()) {
+				project.InstallBuildPackagingNuGetPackage ();
+			}
 		}
 	}
 }
