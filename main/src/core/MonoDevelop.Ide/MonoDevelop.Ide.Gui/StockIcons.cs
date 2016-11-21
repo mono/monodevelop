@@ -168,5 +168,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId PadDownload = "md-pad-download";
 		public static readonly IconId PadUpload = "md-pad-upload";
 		public static readonly IconId PadDeviceDeployment = "md-pad-device-deployment";
+		public static readonly IconId PadExecute = "md-pad-execute";
 	}
 }
