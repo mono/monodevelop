@@ -32,6 +32,7 @@ using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.DocFood
 {
@@ -173,8 +174,12 @@ namespace MonoDevelop.DocFood
 			var caretOffset = Editor.CaretOffset;
 			var offset = caretOffset;
 			var root = semanticModel.SyntaxTree.GetRoot ();
+			var tokenAtCaret = root.FindTrivia (offset - 1, true);
+			if (!tokenAtCaret.IsKind (SyntaxKind.SingleLineCommentTrivia))
+				return null;
 			while (offset < Editor.Length) {
 				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
+
 				if (node == null || node.GetLastToken ().SpanStart < caretOffset) {
 					offset++;
 					continue;
