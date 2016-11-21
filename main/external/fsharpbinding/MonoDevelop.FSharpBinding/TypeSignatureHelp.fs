@@ -12,7 +12,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
-open System.Reactive.Linq
+
 
 type SignatureHelpMarker(document, text, font, line) =
     inherit TextLineMarker()
@@ -142,9 +142,6 @@ type SignatureHelp() =
     inherit TextEditorExtension()
     let mutable disposable = None : IDisposable option
 
-    let throttle (due:TimeSpan) observable =
-        Observable.Throttle(observable, due)
-
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
@@ -153,7 +150,7 @@ type SignatureHelp() =
                 (x.Editor.VAdjustmentChanged
                 |> Observable.merge x.DocumentContext.DocumentParsed 
                 |> Observable.merge x.Editor.ZoomLevelChanged
-                |> throttle (TimeSpan.FromMilliseconds 100.)
+                |> Observable.throttle (TimeSpan.FromMilliseconds 100.)
                 |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data))
 
     override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())

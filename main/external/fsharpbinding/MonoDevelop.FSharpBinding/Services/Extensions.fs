@@ -5,6 +5,7 @@ open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
 open ExtCore
+open System.Reactive.Linq
 
 module Seq =
     let tryHead items =
@@ -249,3 +250,7 @@ module LoggingService =
     let logError format = log LoggingService.LogError format
     let logInfo format = log LoggingService.LogInfo format
     let logWarning format = log LoggingService.LogWarning format
+
+module Observable =
+    let throttle (due:TimeSpan) observable =
+        Observable.Throttle(observable, due)
