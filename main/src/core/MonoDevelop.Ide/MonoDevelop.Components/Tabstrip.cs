@@ -102,8 +102,17 @@ namespace MonoDevelop.Components
 			else if (activeTab >= index)
 				activeTab++;
 			QueueResize ();
+
+			tab.Allocation = GetBounds (tab);
+			Accessible.AddAccessibleElement (tab.Accessible);
+			tab.AccessibilityPressed += OnTabPressed;
 		}
-		
+
+		void OnTabPressed (object sender, EventArgs args)
+		{
+			ActiveTab = tabs.IndexOf (sender);
+		}
+
 		Cairo.Rectangle GetBounds (Tab tab)
 		{
 			if (tab == null)
@@ -243,6 +252,23 @@ namespace MonoDevelop.Components
 			get;
 			set;
 		}
+
+		Cairo.Rectangle allocation;
+		public Cairo.Rectangle Allocation {
+			get {
+				return allocation;
+			}
+
+			set {
+				allocation = value;
+
+				Gdk.Rectangle gdkRect = new Gdk.Rectangle ((int)allocation.X, (int)allocation.Y, (int)allocation.Width, (int)allocation.Height);
+				Accessible.SetFrameInRealParent (gdkRect);
+				// If Y != 0, then we need to flip the y axis
+
+				Accessible.SetFrameInParent (gdkRect);
+			}
+		}
 		
 		public Tab (Tabstrip parent, string label) : this (parent, label, TabPosition.Left)
 		{
@@ -258,7 +284,9 @@ namespace MonoDevelop.Components
 			if (layout != null)
 				layout.Dispose ();
 		}
-		
+
+		public AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
+
 		public Tab (Tabstrip parent, string label, TabPosition tabPosition)
 		{
 			//this.parent = parent;
@@ -274,6 +302,11 @@ namespace MonoDevelop.Components
 				w = SpacerWidth * 2;
 			
 			this.TabPosition = tabPosition;
+
+			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			Accessible.SetAccessibilityTitle (label);
+			Accessible.SetRealParent (parent);
+			Accessible.PerformPress += OnTabPressed;
 		}
 		
 		public Cairo.PointD Size {
@@ -337,7 +370,14 @@ namespace MonoDevelop.Components
 				handler (this, e);
 		}
 
+		void OnTabPressed (object sender, EventArgs e)
+		{
+			// Proxy the event to the tab bar so it can set this tab as active
+			AccessibilityPressed?.Invoke (this, e);
+		}
+
 		public event EventHandler Activated;
+		public event EventHandler AccessibilityPressed;
 	}
 }
 
