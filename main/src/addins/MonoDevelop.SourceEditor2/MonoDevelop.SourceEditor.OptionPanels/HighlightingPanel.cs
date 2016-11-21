@@ -198,32 +198,30 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 
 			var fileName = dialog.SelectedFile.FileName;
-			string newFileName = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath.Combine (fileName);
+			var filePath = dialog.SelectedFile.FullPath;
+			string newFilePath = TextEditorDisplayBinding.SyntaxModePath.Combine (fileName);
 
-			//check it's valid by trying to load it
-			try {
-				SyntaxHighlightingService.LoadStyleOrMode (fileName);
-			} catch (Exception ex) {
-				LoggingService.LogError ($"Invalid color theme file '{fileName}'.", ex);
+			if (!SyntaxHighlightingService.IsValidTheme (filePath)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Could not import color theme."));
+				return;
 			}
 
 			bool success = true;
 			try {
-				if (File.Exists (newFileName)) {
+				if (File.Exists (newFilePath)) {
 					var answer = MessageService.AskQuestion (
 						GettextCatalog.GetString (
 							"A color theme with the name '{0}' already exists in your theme folder. Would you like to replace it?",
-							System.IO.Path.GetFileName (newFileName)
+							fileName
 						),
 						AlertButton.Cancel,
 						AlertButton.Replace
 					);
 					if (answer != AlertButton.Replace)
 						return;
-					File.Delete (newFileName);
+					File.Delete (newFilePath);
 				}
-				File.Copy (dialog.SelectedFile.FullPath, newFileName);
+				File.Copy (filePath, newFilePath);
 			} catch (Exception e) {
 				success = false;
 				LoggingService.LogError ("Can't copy color theme file.", e);

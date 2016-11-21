@@ -200,6 +200,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return LoadFile (builtInBundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
 		}
 
+		internal static bool IsValidTheme (string file)
+		{
+			var bundle = new LanguageBundle ("default", null);
+			try {
+				LoadFile (bundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+				return bundle.EditorThemes.Count > 0;
+			} catch (Exception ex) {
+				LoggingService.LogError ($"Invalid color theme file '{file}'.", ex);
+			}
+			return false;
+		}
 
 			/*
 			 * 				if (provider.Name.EndsWith (".vssettings", StringComparison.Ordinal)) {
