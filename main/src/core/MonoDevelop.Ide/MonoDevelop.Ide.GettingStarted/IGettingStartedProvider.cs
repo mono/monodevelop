@@ -8,7 +8,7 @@ namespace MonoDevelop.Ide.GettingStarted
 	{
 		bool SupportsProject (Project project);
 		Control GetGettingStartedWidget (Project project);
-		void ShowGettingStarted (Project project);
+		void ShowGettingStarted (Project project, string pageHint = null);
 	}
 }
 

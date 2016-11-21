@@ -7,8 +7,6 @@ open System.Collections.Generic
 open System.Linq
 open System.Xml
 open System.Xml.Linq
-open Mono.TextEditor
-open Mono.TextEditor.Highlighting
 open MonoDevelop.Core
 open ExtCore.Control
 

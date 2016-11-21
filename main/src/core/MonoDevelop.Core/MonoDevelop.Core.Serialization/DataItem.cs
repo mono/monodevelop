@@ -70,16 +70,23 @@ namespace MonoDevelop.Core.Serialization
 
 		internal void UpdateFromItem (DataItem item, HashSet<DataItem> removedItems)
 		{
-			var items = new List<DataNode> ();
+			var counter = new Dictionary<string, int> ();
 			foreach (var d in item.ItemData) {
-				var current = ItemData[d.Name];
+				DataNode current = null;
+				DataCollection col;
+				if (!counter.ContainsKey (d.Name))
+					counter [d.Name] = 0;
+				var index = ItemData.FindData (d.Name, out col, false, counter[d.Name]);
+				counter [d.Name]++;
+				if (index != -1) {
+					current = col [index];
+				}
 				if (current != null) {
 					if (d.IsDefaultValue || d is DataDeletedNode) {
 						if (current is DataItem)
 							removedItems.Add ((DataItem)current);
 						ItemData.Remove (current);
-					}
-					else if (current.GetType () != d.GetType () || current is DataValue) {
+					} else if (current.GetType () != d.GetType () || current is DataValue) {
 						var i = ItemData.IndexOf (current);
 						ItemData [i] = d;
 						if (current is DataItem)
@@ -87,8 +94,6 @@ namespace MonoDevelop.Core.Serialization
 					} else if (current is DataItem) {
 						((DataItem)current).UpdateFromItem ((DataItem)d, removedItems);
 					}
-					ItemData.Remove (current);
-					items.Add (current);
 				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
 					var dataItem = d as DataItem;
 					if (dataItem != null) {
@@ -97,14 +102,12 @@ namespace MonoDevelop.Core.Serialization
 							UniqueNames = dataItem.UniqueNames
 						};
 						newDataItem.UpdateFromItem (dataItem, removedItems);
-						items.Add (newDataItem);
+						ItemData.Add (newDataItem);
 					} else {
-						items.Add (d);
+						ItemData.Add (d);
 					}
 				}
 			}
-			foreach (var val in items)
-				this.ItemData.Add (val);
 		}
 		
 		public override string ToString ()

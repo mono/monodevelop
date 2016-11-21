@@ -6,7 +6,6 @@
 namespace MonoDevelop.FSharp
 
 open System
-open MonoDevelop.Projects
 open MonoDevelop.Core.Serialization
 
 /// Serializable type respresnting F# compiler parameters

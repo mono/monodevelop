@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,8 +19,7 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <ConsolePause>true</ConsolePause>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
@@ -34,23 +33,17 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
     <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="pango-sharp">
-    </Reference>
-    <Reference Include="atk-sharp">
-    </Reference>
-    <Reference Include="gdk-sharp">
-    </Reference>
-    <Reference Include="gtk-sharp">
-    </Reference>
-    <Reference Include="glib-sharp">
-    </Reference>
+    <Reference Include="pango-sharp"></Reference>
+    <Reference Include="atk-sharp"></Reference>
+    <Reference Include="gdk-sharp"></Reference>
+    <Reference Include="gtk-sharp"></Reference>
+    <Reference Include="glib-sharp"></Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -185,6 +178,7 @@
     <Compile Include="HighlightUsagesTests.fs" />
     <Compile Include="CopyPaste.fs" />
     <Compile Include="SelectionTests.fs" />
+    <Compile Include="UnusedOpens.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

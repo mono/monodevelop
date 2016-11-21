@@ -1,11 +1,9 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.Diagnostics
 open System.IO
 open System.Configuration
 open System.Reflection
-open Microsoft.Win32
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 open MonoDevelop.Core

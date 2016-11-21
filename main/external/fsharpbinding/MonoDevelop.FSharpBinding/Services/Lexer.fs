@@ -3,7 +3,6 @@
 open System.Diagnostics
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
-open ExtCore.Control
 
 type SymbolKind =
     | Ident

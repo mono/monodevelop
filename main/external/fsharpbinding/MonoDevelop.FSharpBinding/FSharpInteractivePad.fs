@@ -15,7 +15,6 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
-open MonoDevelop.Ide.Commands
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content

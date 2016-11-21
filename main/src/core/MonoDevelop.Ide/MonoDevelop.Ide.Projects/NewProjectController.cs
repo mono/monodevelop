@@ -800,8 +800,26 @@ namespace MonoDevelop.Ide.Projects
 
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
+			const string gettingStartedHint = "getting-started://";
+
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
+				// handle url schemed actions like opening the getting started page (if any)
+				if (action.StartsWith (gettingStartedHint, StringComparison.OrdinalIgnoreCase)) {
+					var items = templateResult.WorkspaceItems.ToList ();
+					if (items.OfType<Solution> ().Any ()) {
+						// this is a solution that's been instantiated, lets just look for the first project
+						var p = IdeApp.Workspace.GetAllProjects ().FirstOrDefault ();
+						if (p != null) {
+							GettingStarted.GettingStarted.ShowGettingStarted (p, action.Substring (gettingStartedHint.Length));
+						}
+						continue;
+					}
+				}
+
+				var fileName = Path.Combine (templateResult.ProjectBasePath, action);
+				if (File.Exists (fileName)) {
+					IdeApp.Workbench.OpenDocument (fileName, project: null);
+				}
 			}
 		}
 

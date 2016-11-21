@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.GettingStarted
 
 		public abstract Control GetGettingStartedWidget (Project project);
 
-		public virtual void ShowGettingStarted (Project project)
+		public virtual void ShowGettingStarted (Project project, string pageHint = null)
 		{
 			GettingStartedViewContent view;
 			foreach (var doc in IdeApp.Workbench.Documents) {
