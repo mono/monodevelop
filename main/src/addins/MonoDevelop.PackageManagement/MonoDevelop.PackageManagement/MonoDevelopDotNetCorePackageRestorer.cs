@@ -26,18 +26,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	class MonoDevelopDotNetCorePackageRestorer
 	{
-		DotNetCorePath dotNetCorePath = new DotNetCorePath ();
 		List<DotNetProject> projects;
 
 		public MonoDevelopDotNetCorePackageRestorer (DotNetProject project)
@@ -55,21 +56,87 @@ namespace MonoDevelop.PackageManagement
 
 		public async Task RestorePackages (CancellationToken cancellationToken)
 		{
+			string msbuildFileName = GetMSBuildFileName (projects[0]);
+
 			foreach (DotNetProject project in projects) {
-				using (var monitor = new LoggingProgressMonitor ().WithCancellationToken (cancellationToken)) {
 
-					TargetEvaluationResult result = await project.RunTarget (monitor, "restore", IdeApp.Workspace.ActiveConfiguration, null);
-					if (result.BuildResult.Failed) {
-						throw new ApplicationException (result.BuildResult.Errors.First ().ErrorText);
-					}
+				var console = new DotNetCoreOperationConsole ();
+				ProcessAsyncOperation operation = StartRestoreProcess (msbuildFileName, project, console);
+				using (var registration = cancellationToken.Register (() => operation.Cancel ())) {
+					await operation.Task;
 
-					if (ReloadProject) {
-						project.NeedsReload = true;
-						FileService.NotifyFileChanged (project.FileName);
-					} else {
-						RefreshProjectReferences (project);
-					}
+					CheckForRestoreFailure (operation);
 				}
+
+				if (ReloadProject) {
+					project.NeedsReload = true;
+					FileService.NotifyFileChanged (project.FileName);
+				} else {
+					RefreshProjectReferences (project);
+				}
+			}
+		}
+
+		static string GetMSBuildFileName (DotNetProject project)
+		{
+			TargetRuntime runtime = project.TargetRuntime ?? Runtime.SystemAssemblyService.CurrentRuntime;
+			string msbuildPath = runtime.GetMSBuildBinPath ("15.0");
+
+			string msbuildFileName = Path.Combine (msbuildPath, "MSBuild.dll");
+			if (File.Exists (msbuildFileName))
+				return msbuildFileName;
+
+			msbuildFileName = Path.Combine (msbuildPath, "MSBuild.exe");
+			if (File.Exists (msbuildFileName))
+				return msbuildFileName;
+
+			throw new UserException (GettextCatalog.GetString ("Unable to find MSBuild 15.0 for runtime {0}", runtime.Id));
+		}
+
+		ProcessAsyncOperation StartRestoreProcess (string msbuildFileName, DotNetProject project, OperationConsole console)
+		{
+			string command = GetCommand (msbuildFileName);
+			string arguments = GetArguments (msbuildFileName, project);
+
+			return Runtime.ProcessService.StartConsoleProcess (
+				command,
+				arguments,
+				project.BaseDirectory,
+				console,
+				null,
+				(sender, e) => { }
+			);
+		}
+
+		/// <summary>
+		/// Do not get any Package Console output when using make run on Mono
+		/// unless the full path to Mono is used instead of the MSBuild.dll filename.
+		/// Also running the MSBuild.dll seems to cause the IDE to run another copy of 
+		/// itself and pass the MSBuild path and project filename as parameters which
+		/// causes the workspace item to unload triggering the warning dialog about
+		/// closing a solution whilst NuGet package actions are being run.
+		/// </summary>
+		static string GetCommand (string msbuildFileName)
+		{
+			if (Platform.IsWindows)
+				return msbuildFileName;
+
+			string monoPrefix = MonoRuntimeInfo.FromCurrentRuntime ().Prefix;
+			return Path.Combine (monoPrefix, "bin", "mono");
+		}
+
+		static string GetArguments (string msbuildFileName, DotNetProject project)
+		{
+			if (Platform.IsWindows)
+				return string.Format ("/t:restore \"{0}\"", project.FileName);
+
+			return string.Format ("\"{0}\" /t:restore \"{1}\"", msbuildFileName, project.FileName);
+		}
+
+		void CheckForRestoreFailure (ProcessAsyncOperation operation)
+		{
+			if (operation.Task.IsFaulted || operation.ExitCode != 0) {
+				throw new ApplicationException (GettextCatalog.GetString ("Unable to restore packages."));
 			}
 		}
 
