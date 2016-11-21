@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public static FilePath SyntaxModePath {
 			get {
-				return UserProfile.Current.UserDataRoot.Combine ("HighlightingSchemes");
+				return UserProfile.Current.UserDataRoot.Combine ("ColorThemes");
 			}
 		}
 
