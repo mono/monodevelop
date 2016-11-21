@@ -17,14 +17,17 @@ open System.Reactive.Linq
 type SignatureHelpMarker(document, text, font, line) =
     inherit TextLineMarker()
     let mutable text' = text
+    let mutable font' = font
     let tag = obj()
     static member FontScale = 0.8
     member x.Text with get() = text' and set(value) = text' <- value
+    // Font size can increase with zoom
+    member x.Font with get() = font' and set(value) = font' <- value
 
     interface ITextLineMarker with
         member x.Line with get() = line
-        member x.IsVisible with get() = true and set(value) = ()
-        member x.Tag with get() = tag and set(value) = ()
+        member x.IsVisible with get() = true and set(_value) = ()
+        member x.Tag with get() = tag and set(_value) = ()
 
     interface IExtendingTextLineMarker with
         member x.IsSpaceAbove with get() = true
@@ -33,7 +36,7 @@ type SignatureHelpMarker(document, text, font, line) =
             g.SetSourceRGB(0.5, 0.5, 0.5)
             let line = editor.GetLine lineNr
 
-            use layout = new Pango.Layout(editor.PangoContext, FontDescription=font)
+            use layout = new Pango.Layout(editor.PangoContext, FontDescription=font')
             layout.SetText text'
             let x = editor.ColumnToX (line, (line.GetIndentation(document).Length+1)) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + (editor.TextViewMargin.TextStartPosition |> float)
             let y = (editor.LineToY lineNr) - editor.VAdjustment.Value
@@ -47,7 +50,9 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) font =
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) =
+        let editorFont = data.Options.Font
+        let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
         let document = data.Document
         let ast =
             maybe {
@@ -99,7 +104,6 @@ module signatureHelp =
                                         | _ -> false)
                 |> List.map(fun f -> f.RangeAlternate.StartLine, f)
                 |> Map.ofList
-            
 
             // remove any markers that are in the wrong positions
             let lineNumbersWithMarkersToRemove = 
@@ -114,30 +118,25 @@ module signatureHelp =
             let addMarker text (lineNr:int) line =
                 let newMarker = SignatureHelpMarker(document, text, font, line)
                 document.AddMarker(lineNr, newMarker)
-                newMarker :> ITextLineMarker
+                newMarker
 
             funs |> Map.iter(fun _l f ->
                 let range = f.RangeAlternate
-                let lineText = editor.GetLineText(range.StartLine)
 
                 let line = editor.GetLine range.StartLine
-                let marker = editor.GetLineMarkers line |> Seq.tryHead
+                let marker = editor.GetLineMarkers line |> Seq.tryPick(Option.tryCast<SignatureHelpMarker>)
 
                 let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
                 if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
                     async {
+                        let lineText = editor.GetLineText(range.StartLine)
                         let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
                         tooltip |> Option.iter(fun (tooltip, lineNr) ->
                             let text = extractSignature tooltip
-                            LoggingService.logDebug "Line %d - %s" lineNr text
-                            match marker with
-                            | :? SignatureHelpMarker as sigMarker ->
-                                if sigMarker.Text <> text then
-                                     sigMarker.Text <- text
-                                     document.CommitLineUpdate lineNr
-                            | _ -> ())
-                    } |> Async.StartImmediate)
-                )
+                            marker.Text <- text
+                            marker.Font <- font
+                            document.CommitLineUpdate lineNr)
+                    } |> Async.StartImmediate))
 
 type SignatureHelp() =
     inherit TextEditorExtension()
@@ -149,14 +148,12 @@ type SignatureHelp() =
     override x.Initialize() =
         let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
 
-        let editorFont = data.Options.Font
-
-        let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
-
         disposable <-
             Some
-                (Observable.merge x.Editor.VAdjustmentChanged x.DocumentContext.DocumentParsed
+                (x.Editor.VAdjustmentChanged
+                |> Observable.merge x.DocumentContext.DocumentParsed 
+                |> Observable.merge x.Editor.ZoomLevelChanged
                 |> throttle (TimeSpan.FromMilliseconds 100.)
-                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data font))
+                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data))
 
     override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())
