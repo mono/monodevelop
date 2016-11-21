@@ -120,7 +120,6 @@
     <Compile Include="Properties\AddinInfo.fs" />
     <Compile Include="HighlightUnusedCode.fs" />
     <Compile Include="HighlightUnusedOpens.fs" />
-    <Compile Include="QuickFix.fs" />
     <Compile Include="TypeSignatureHelp.fs" />
   </ItemGroup>
   <ItemGroup>
