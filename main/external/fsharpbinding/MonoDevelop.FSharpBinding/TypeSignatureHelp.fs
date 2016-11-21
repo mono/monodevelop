@@ -10,9 +10,8 @@ open MonoDevelop.Components
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
-open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
-
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type SignatureHelpMarker(document, text, font, line) =
     inherit TextLineMarker()
@@ -50,10 +49,12 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) (data:TextEditorData) =
+    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let editorFont = data.Options.Font
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
         let document = data.Document
+
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -61,6 +62,7 @@ module signatureHelp =
 
                 return ast, pd
             }
+
         let extractSignature (FSharpToolTipText tips) =
             let getSignature (str: string) =
                 let nlpos = str.IndexOfAny([|'\r';'\n'|])
@@ -95,7 +97,7 @@ module signatureHelp =
                 Math.Min(data.LineCount - 1,
                     data.HeightTree.YToLineNumber (data.VAdjustment.Value+data.VAdjustment.PageSize))
 
-            let funs = 
+            let funs =
                 symbols
 
                 |> List.filter(fun s -> s.IsFromDefinition)
@@ -106,12 +108,12 @@ module signatureHelp =
                 |> Map.ofList
 
             // remove any markers that are in the wrong positions
-            let lineNumbersWithMarkersToRemove = 
+            let lineNumbersWithMarkersToRemove =
                 [topVisibleLine..bottomVisibleLine] |> List.filter(not << funs.ContainsKey)
             if not lineNumbersWithMarkersToRemove.IsEmpty then
                 for lineNr in lineNumbersWithMarkersToRemove do
                     let line = editor.GetLine lineNr
-                    editor.GetLineMarkers line 
+                    editor.GetLineMarkers line
                     |> Seq.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
                 document.CommitUpdateAll()
 
@@ -143,14 +145,12 @@ type SignatureHelp() =
     let mutable disposable = None : IDisposable option
 
     override x.Initialize() =
-        let data = x.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
-
         disposable <-
             Some
                 (x.Editor.VAdjustmentChanged
                 |> Observable.merge x.DocumentContext.DocumentParsed 
                 |> Observable.merge x.Editor.ZoomLevelChanged
                 |> Observable.throttle (TimeSpan.FromMilliseconds 100.)
-                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor data))
+                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor))
 
     override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())
