@@ -179,7 +179,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static void LoadStylesAndModesInPath (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
-				LoadStyleOrMode (file);
+				try {
+					LoadStyleOrMode (file);
+				} catch (Exception ex) {
+					LoggingService.LogError ($"Could not load file '{file}'", ex);
+				}
 			}
 		}
 
