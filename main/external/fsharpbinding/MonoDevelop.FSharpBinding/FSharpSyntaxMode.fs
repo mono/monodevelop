@@ -300,7 +300,7 @@ module Patterns =
                     |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
                 else None
     
-            let highlightMutable isMut = isMut && PropertyService.Get("FSharpBinding.HighlightMutables", false)
+            let highlightMutable isMut = isMut && PropertyService.Get(Settings.highlightMutables, false)
 
             let makeSeg (chunkStyle:ChunkStyle) =
                ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)

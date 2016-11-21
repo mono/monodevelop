@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -59,8 +59,7 @@
     </ItemGroup>
     <Copy SourceFiles="..\packages\%(NuGetPackage.Name)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
+  <Target Name="AfterBuild"></Target>
   <Target Name="AfterClean">
     <RemoveDir Directories="$(OutputPath)\packages" />
   </Target>
@@ -86,8 +85,8 @@
     <Compile Include="FSharpTokens.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="ProjectSearchCategory.fs" />
-    <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
+    <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpProject.fs" />
     <Compile Include="PortableFSharpProjectFlavor.fs" />
     <Compile Include="FSharpFoldingParser.fs" />

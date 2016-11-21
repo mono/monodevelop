@@ -17,7 +17,7 @@ type SignatureHelpMarker(document, text, font, line) =
     inherit TextLineMarker()
     let mutable text' = text
     let mutable font' = font
-    let tag = obj()
+    static let tag = obj()
     static member FontScale = 0.8
     member x.Text with get() = text' and set(value) = text' <- value
     // Font size can increase with zoom
@@ -49,6 +49,38 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
+    let removeMarkers (editor:TextEditor) line =
+        editor.GetLineMarkers line
+        |> List.ofSeq
+        |> List.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
+
+    let extractSignature (FSharpToolTipText tips) =
+        let getSignature (str: string) =
+            let nlpos = str.IndexOfAny([|'\r';'\n'|])
+            let firstLine =
+                if nlpos > 0 then str.[0..nlpos-1]
+                else str
+            let res = 
+                if firstLine.StartsWith("type ", StringComparison.Ordinal) then
+                    let index = firstLine.LastIndexOf("=", StringComparison.Ordinal)
+                    if index > 0 then firstLine.[0..index-1]
+                    else firstLine
+                else firstLine
+            let index = res.IndexOf ": "
+            res.[index+2..]
+
+        let firstResult x =
+            match x with
+            | FSharpToolTipElement.Single (t, _) when not (String.IsNullOrWhiteSpace t) -> Some t
+            | FSharpToolTipElement.Group gs -> List.tryPick (fun (t, _) -> if not (String.IsNullOrWhiteSpace t) then Some t else None) gs
+            | _ -> None
+
+        tips
+        |> Seq.sortBy (function FSharpToolTipElement.Single _ -> 0 | _ -> 1)
+        |> Seq.tryPick firstResult
+        |> Option.map getSignature
+        |> Option.fill ""
+
     let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let editorFont = data.Options.Font
@@ -62,33 +94,6 @@ module signatureHelp =
 
                 return ast, pd
             }
-
-        let extractSignature (FSharpToolTipText tips) =
-            let getSignature (str: string) =
-                let nlpos = str.IndexOfAny([|'\r';'\n'|])
-                let firstLine =
-                    if nlpos > 0 then str.[0..nlpos-1]
-                    else str
-                let res = 
-                    if firstLine.StartsWith("type ", StringComparison.Ordinal) then
-                        let index = firstLine.LastIndexOf("=", StringComparison.Ordinal)
-                        if index > 0 then firstLine.[0..index-1]
-                        else firstLine
-                    else firstLine
-                let index = res.IndexOf ": "
-                res.[index+2..]
-
-            let firstResult x =
-                match x with
-                | FSharpToolTipElement.Single (t, _) when not (String.IsNullOrWhiteSpace t) -> Some t
-                | FSharpToolTipElement.Group gs -> List.tryPick (fun (t, _) -> if not (String.IsNullOrWhiteSpace t) then Some t else None) gs
-                | _ -> None
-
-            tips
-            |> Seq.sortBy (function FSharpToolTipElement.Single _ -> 0 | _ -> 1)
-            |> Seq.tryPick firstResult
-            |> Option.map getSignature
-            |> Option.fill ""
 
         ast |> Option.iter (fun (ast, pd) ->
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
@@ -113,8 +118,8 @@ module signatureHelp =
             if not lineNumbersWithMarkersToRemove.IsEmpty then
                 for lineNr in lineNumbersWithMarkersToRemove do
                     let line = editor.GetLine lineNr
-                    editor.GetLineMarkers line
-                    |> Seq.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
+                    removeMarkers editor line
+
                 document.CommitUpdateAll()
 
             let addMarker text (lineNr:int) line =
@@ -140,17 +145,30 @@ module signatureHelp =
                             document.CommitLineUpdate lineNr)
                     } |> Async.StartImmediate))
 
-type SignatureHelp() =
+type SignatureHelp() as x =
     inherit TextEditorExtension()
-    let mutable disposable = None : IDisposable option
+    let mutable disposables = None : IDisposable list option
 
+    let removeAllMarkers() =
+        async {
+            let editor = x.Editor
+            editor.GetLines() |> Seq.iter(signatureHelp.removeMarkers editor)
+            let editorData = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+            editorData.Document.CommitUpdateAll()
+        } |> Async.StartImmediate
+        
     override x.Initialize() =
-        disposable <-
+        disposables <-
             Some
-                (x.Editor.VAdjustmentChanged
+                [x.Editor.VAdjustmentChanged
                 |> Observable.merge x.DocumentContext.DocumentParsed 
                 |> Observable.merge x.Editor.ZoomLevelChanged
+                |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, true))
                 |> Observable.throttle (TimeSpan.FromMilliseconds 100.)
-                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor))
+                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor)
+                ;
+                PropertyService.PropertyChanged
+                    .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures && (not (p.NewValue :?> bool)) then
+                                            removeAllMarkers())]
 
-    override x.Dispose() = disposable |> Option.iter (fun en -> en.Dispose ())
+    override x.Dispose() = disposables |> Option.iter (fun disps -> disps |> List.iter(fun disp -> disp.Dispose()))
