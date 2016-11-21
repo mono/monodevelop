@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"))
+		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"))
 		{
 			this.info = info;
 		}
