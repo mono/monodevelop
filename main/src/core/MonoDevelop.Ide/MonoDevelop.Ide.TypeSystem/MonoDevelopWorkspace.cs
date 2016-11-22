@@ -1132,26 +1132,26 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal async void UpdateFileContent (string fileName, string text)
 		{
-			try {
-				SourceText newText = SourceText.From (text);
-				foreach (var kv in this.projectDataMap) {
-					var projectId = kv.Key;
-					var docId = this.GetDocumentId (projectId, fileName);
-					if (docId != null) {
+			SourceText newText = SourceText.From (text);
+			foreach (var kv in this.projectDataMap) {
+				var projectId = kv.Key;
+				var docId = this.GetDocumentId (projectId, fileName);
+				if (docId != null) {
+					try { 
 						base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
-					}
-					var monoProject = GetMonoProject (projectId);
-					if (monoProject != null) {
-						var pf = monoProject.GetProjectFile (fileName);
-						if (pf != null) {
-							var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-							if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
-								await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
-						}
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Roslyn error on text change", e);
 					}
 				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
+				var monoProject = GetMonoProject (projectId);
+				if (monoProject != null) {
+					var pf = monoProject.GetProjectFile (fileName);
+					if (pf != null) {
+						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
+						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
+							await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
+					}
+				}
 			}
 		}
 

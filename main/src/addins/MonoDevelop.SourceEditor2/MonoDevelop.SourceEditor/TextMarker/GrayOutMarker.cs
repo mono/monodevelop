@@ -56,10 +56,32 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
 					return;
-				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
-					chunks [i] = new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ScopeStack);
-					chunks.Insert (i, newChunk);
+				if (chunk.Contains (markerStart) && chunk.Contains (markerEnd)) {
+					var chunkBefore = new ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+					var chunkAfter = new ColoredSegment (markerEnd, chunk.EndOffset - markerEnd, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (markerStart, markerEnd - markerStart, chunk.ScopeStack);
+					if (chunkAfter.Length > 0) {
+						chunks.Insert (i + 1, chunkAfter);
+						i++;
+					}
+					if (chunkBefore.Length > 0) {
+						chunks.Insert (i, chunkBefore);
+						i++;
+					}
+					continue;
+				}
+				if (chunk.Contains (markerStart)) {
+					var chunkBefore = new ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (markerStart, chunk.EndOffset - markerStart, chunk.ScopeStack);
+					chunks.Insert (i, chunkBefore);
+					i++;
+					continue;
+				}
+				if (chunk.Contains (markerEnd)) {
+					var chunkAfter = new ColoredSegment (markerEnd, markerEnd - chunk.EndOffset, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (chunk.Offset, markerEnd - chunk.Offset, chunk.ScopeStack);
+					chunks.Insert (i + 1, chunkAfter);
+					i++;
 					continue;
 				}
 			}
@@ -73,7 +95,6 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-			
 			var bgc = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
 			double alpha = 0.6;
 			color = new Cairo.Color (

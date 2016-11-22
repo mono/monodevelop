@@ -260,7 +260,23 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			} else if (file.EndsWith (".vssettings", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
 					string styleName = Path.GetFileNameWithoutExtension (file);
-					var theme = OldFormat.ImportVsSetting (styleName, getStreamProvider ().Open ());
+					EditorTheme theme;
+					try {
+						theme = OldFormat.ImportVsSetting (styleName, getStreamProvider ().Open ());
+					} catch (StyleImportException e) {
+						switch (e.Reason) {
+						case StyleImportException.ImportFailReason.Unknown:
+							LoggingService.LogWarning ("Unknown error in theme file : " + file, e);
+							break;
+						case StyleImportException.ImportFailReason.NoValidColorsFound:
+							LoggingService.LogWarning ("No colors defined in vssettings : " + file, e);
+							break;
+						}
+						return null;
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Invalid theme : " + file, e);
+						return null;
+					}
 					if (theme != null)
 						bundle.Add (theme);
 					return theme;
@@ -502,9 +518,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			if (def != null)
 				return def;
-			if (mimeType == "application/octet-stream")
+			if (mimeType == "application/octet-stream" || mimeType == "text/plain")
 				return null;
-
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
 					foreach (var fe in h.FileTypes) {
@@ -516,7 +531,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				}
 			}
-
 			return null;
 		}
 
