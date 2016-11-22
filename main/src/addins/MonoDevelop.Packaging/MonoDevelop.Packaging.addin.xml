@@ -8,6 +8,7 @@
 	</Runtime>
 
 	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />
+	<ConditionType id="IsDotNetProjectOnly" type="MonoDevelop.Packaging.ProjectIsDotNetProjectOnlyCondition" />
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectType
@@ -58,6 +59,13 @@
 
 	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="NuGetPackage" _label="NuGet Package">
+			<Condition id="IsDotNetProjectOnly">
+				<Section
+					id="Build"
+					_label="Build"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.ProjectNuGetBuildOptionsPanel" />
+			</Condition>
 			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject|DotNetProject">
 				<Section
 					id="Metadata"

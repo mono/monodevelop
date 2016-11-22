@@ -39,6 +39,7 @@ namespace MonoDevelop.Packaging.Gui
 	{
 		NuGetPackageMetadata metadata;
 		bool projectOriginallyHadMetadata;
+		bool hasPackageId;
 
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
@@ -46,6 +47,8 @@ namespace MonoDevelop.Packaging.Gui
 
 			PopulateLanguages ();
 		}
+
+		internal static System.Action<bool> OnProjectHasMetadataChanged;
 
 		internal void Load (PackagingProject project)
 		{
@@ -60,6 +63,8 @@ namespace MonoDevelop.Packaging.Gui
 			LoadMetadata ();
 
 			projectOriginallyHadMetadata = ProjectHasMetadata ();
+			hasPackageId = projectOriginallyHadMetadata;
+			packageIdTextBox.Changed += PackageIdTextBoxChanged;
 		}
 
 		void LoadMetadata ()
@@ -154,6 +159,16 @@ namespace MonoDevelop.Packaging.Gui
 		bool ProjectHasMetadata ()
 		{
 			return !string.IsNullOrEmpty (metadata.Id);
+		}
+
+		void PackageIdTextBoxChanged (object sender, EventArgs e)
+		{
+			bool anyPackageIdText = !string.IsNullOrEmpty (packageIdTextBox.Text);
+
+			if (anyPackageIdText != hasPackageId) {
+				hasPackageId = anyPackageIdText;
+				OnProjectHasMetadataChanged?.Invoke (hasPackageId);
+			}
 		}
 	}
 }

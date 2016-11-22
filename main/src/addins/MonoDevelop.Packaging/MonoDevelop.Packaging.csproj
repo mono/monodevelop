@@ -114,6 +114,12 @@
     <Compile Include="MonoDevelop.Packaging\NuGetProjectReferencePropertyDescriptor.cs" />
     <Compile Include="MonoDevelop.Packaging\DotNetProjectPackagingExtension.cs" />
     <Compile Include="MonoDevelop.Packaging\CreateNuGetPackageBuildTarget.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkProjectNuGetBuildOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkProjectNuGetBuildOptionsPanelWidget.UI.cs">
+      <DependentUpon>GtkProjectNuGetBuildOptionsPanelWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Packaging.OptionPanels\ProjectNuGetBuildOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Packaging\ProjectIsDotNetProjectOnlyCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
