@@ -819,6 +819,12 @@
 			_label = "Send Feedback"
 			icon = "md-feedback"
 			_description = "Send feedback to the MonoDevelop development team" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpUITreeHandler"
+			 _label = "Dump UI Tree" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpA11yTreeHandler"
+			 _label = "Dump Accessibility Tree" />
 	</Category>
 
 	<!-- SearchCommands -->

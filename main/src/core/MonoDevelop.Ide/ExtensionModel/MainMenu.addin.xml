@@ -282,6 +282,8 @@
 		<SeparatorItem id = "DiagnosticToolsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree" />
 		<Condition id = "Platform" value = "!mac">
 			<SeparatorItem id = "SeparatorAbout" />
 			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
