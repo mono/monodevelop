@@ -117,7 +117,15 @@ namespace MonoDevelop.Ide.Commands
 		void DumpGtkWidget (Gtk.Widget widget, int indent = 0)
 		{
 			string spacer = new string (' ', indent);
-			Console.WriteLine ($"{spacer}{widget.Name} - {widget.GetType ()}");
+			Console.WriteLine ($"{spacer} {widget.Accessible.Name} - {widget.GetType ()}");
+			if (widget.GetType () == typeof (Gtk.Label)) {
+				var label = (Gtk.Label)widget;
+				Console.WriteLine ($"{spacer}   {label.Text}");
+			} else if (widget.GetType () == typeof (Gtk.Button)) {
+				var button = (Gtk.Button)widget;
+				Console.WriteLine ($"{spacer}   {button.Label}");
+			}
+
 			var container = widget as Gtk.Container;
 			if (container != null) {
 				var children = container.Children;
