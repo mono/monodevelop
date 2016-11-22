@@ -24,13 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.Core.v2;
-using NuGet.Protocol.Core.v3;
 using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
@@ -46,21 +41,7 @@ namespace MonoDevelop.PackageManagement
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider (ISettings settings)
 		{
 			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
-			return new SourceRepositoryProvider (packageSourceProvider, GetResourceProviders ());
-		}
-
-		static IEnumerable<Lazy<INuGetResourceProvider>> GetResourceProviders ()
-		{
-			yield return new Lazy<INuGetResourceProvider> (() => new PackageMetadataResourceLocalProvider ());
-			yield return new Lazy<INuGetResourceProvider> (() => new PackageSearchResourceLocalProvider ());
-
-			foreach (var provider in Repository.Provider.GetCoreV2 ()) {
-				yield return provider;
-			}
-
-			foreach (var provider in Repository.Provider.GetCoreV3 ()) {
-				yield return provider;
-			}
+			return new SourceRepositoryProvider (packageSourceProvider, Repository.Provider.GetVisualStudio ());
 		}
 	}
 }

@@ -523,8 +523,10 @@ namespace MonoDevelop.PackageManagement
 			var provider = new MultiSourcePackageMetadataProvider (
 				selectedPackageSource.GetSourceRepositories (),
 				packageManager.PackagesFolderSourceRepository,
-				packageManager.GlobalPackagesFolderSourceRepository,
-				new NuGet.Logging.NullLogger ());
+				packageManager.GlobalPackageFolderRepositories,
+				new [] { NuGetProject },
+				false,
+				new NuGet.Common.NullLogger ());
 
 			packageViewModel.LoadPackageMetadata (provider, cancellationTokenSource.Token);
 		}

@@ -24,6 +24,7 @@
 
 using NuGet;
 using NuGet.Credentials;
+using NuGet.Protocol;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -35,35 +36,11 @@ namespace MonoDevelop.PackageManagement
 			// We need to sync the v2 proxy cache and v3 proxy cache so that the user will not
 			// get prompted twice for the same authenticated proxy.
 			var v2ProxyCache = ProxyCache.Instance;
-			NuGet.Protocol.Core.v3.HttpHandlerResourceV3.PromptForProxyCredentials = async (uri, proxy, cancellationToken) => {
-				var v2Credentials = v2ProxyCache?.GetProxy (uri)?.Credentials;
-				if (v2Credentials != null && proxy.Credentials != v2Credentials) {
-					// if cached v2 credentials have not been used, try using it first.
-					return v2Credentials;
-				}
 
-				return await credentialService
-					.GetCredentials (uri, proxy, isProxy: true, cancellationToken: cancellationToken);
-			};
+			HttpHandlerResourceV3.CredentialService = credentialService;
 
-			NuGet.Protocol.Core.v3.HttpHandlerResourceV3.ProxyPassed = proxy => {
-				// add the proxy to v2 proxy cache.
-				v2ProxyCache?.Add (proxy);
-			};
-
-			NuGet.Protocol.Core.v3.HttpHandlerResourceV3.PromptForCredentials = async (uri, cancellationToken) => {
-				// Get the proxy for this URI so we can pass it to the credentialService methods
-				// this lets them use the proxy if they have to hit the network.
-				var proxyCache = ProxyCache.Instance;
-				var proxy = proxyCache?.GetProxy (uri);
-
-				return await credentialService
-					.GetCredentials (uri, proxy: proxy, isProxy: false, cancellationToken: cancellationToken);
-			};
-
-			NuGet.Protocol.Core.v3.HttpHandlerResourceV3.CredentialsSuccessfullyUsed = (uri, credentials) => {
+			HttpHandlerResourceV3.CredentialsSuccessfullyUsed = (uri, credentials) => {
 				NuGet.CredentialStore.Instance.Add (uri, credentials);
-				NuGet.Configuration.CredentialStore.Instance.Add (uri, credentials);
 			};
 		}
 	}

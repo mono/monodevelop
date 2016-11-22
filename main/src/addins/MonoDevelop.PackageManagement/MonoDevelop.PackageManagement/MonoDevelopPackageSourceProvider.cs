@@ -44,6 +44,11 @@ namespace MonoDevelop.PackageManagement
 			get { return packageSourceProvider.ActivePackageSourceName; }
 		}
 
+		public string DefaultPushSource {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
 		public event EventHandler PackageSourcesChanged {
 			add {
 				packageSourceProvider.PackageSourcesChanged += value;

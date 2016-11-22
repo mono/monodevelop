@@ -31,9 +31,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.Commands;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.LibraryModel;
-using NuGet.Logging;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
@@ -47,21 +47,17 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
-		string packagesFolder;
+		ISettings settings;
 		ExternalProjectReferenceContext context;
 
 		public MonoDevelopBuildIntegratedRestorer (
 			ISourceRepositoryProvider repositoryProvider,
-			ISettings settings,
-			string solutionDirectory)
+			ISettings settings)
 		{
 			sourceRepositories = repositoryProvider.GetRepositories ().ToList ();
+			this.settings = settings;
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-
-			packagesFolder = BuildIntegratedProjectUtility.GetEffectiveGlobalPackagesFolder (
-				solutionDirectory,
-				settings);
 
 			context = CreateRestoreContext ();
 		}
@@ -110,11 +106,14 @@ namespace MonoDevelop.PackageManagement
 			BuildIntegratedNuGetProject project,
 			CancellationToken cancellationToken)
 		{
+			var nugetPaths = NuGetPathContext.Create (settings);
+
 			RestoreResult restoreResult = await BuildIntegratedRestoreUtility.RestoreAsync (
 				project,
 				context,
 				sourceRepositories, 
-				packagesFolder, 
+				nugetPaths.UserPackageFolder,
+				nugetPaths.FallbackPackageFolders,
 				cancellationToken);
 
 			if (restoreResult.Success) {
@@ -159,9 +158,13 @@ namespace MonoDevelop.PackageManagement
 
 		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
 		{
-			var pathResolver = new VersionFolderPathResolver (packagesFolder);
+			var nugetPaths = NuGetPathContext.Create (settings);
+			var packageFolderPaths = new List<string>();
+			packageFolderPaths.Add (nugetPaths.UserPackageFolder);
+			packageFolderPaths.AddRange (nugetPaths.FallbackPackageFolders);
+
 			var projects = new BuildIntegratedNuGetProject[] { project };
-			return BuildIntegratedRestoreUtility.IsRestoreRequired (projects, pathResolver, context);
+			return BuildIntegratedRestoreUtility.IsRestoreRequired (projects, packageFolderPaths, context);
 		}
 
 		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (

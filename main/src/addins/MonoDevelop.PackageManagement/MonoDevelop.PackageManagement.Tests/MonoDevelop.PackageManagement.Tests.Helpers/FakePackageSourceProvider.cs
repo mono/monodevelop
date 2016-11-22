@@ -72,6 +72,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PackageSources.Clear ();
 			PackageSources.AddRange (sources);
 		}
+
+		public string DefaultPushSource { get; set; }
 	}
 }
 
