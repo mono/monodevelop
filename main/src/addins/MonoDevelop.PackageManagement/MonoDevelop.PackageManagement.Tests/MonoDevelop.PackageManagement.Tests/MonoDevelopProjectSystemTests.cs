@@ -818,7 +818,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "System.Xml");
 
@@ -832,7 +832,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			bool saved = project.IsSaved;
 
@@ -846,7 +846,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			project.Name = "MyTestProject";	
 
-			projectSystem.AddFrameworkReference ("System.Xml");
+			projectSystem.AddFrameworkReference ("System.Xml", "MyPackage");
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName () {
 				Reference = "System.Xml",
