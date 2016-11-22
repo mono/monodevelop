@@ -17,7 +17,7 @@
 
 	<Combine name="${ProjectName}" directory=".">
 		<Project name="${ProjectName}.Shared" directory="${ProjectName}.Shared" type="SharedAssetsProject" if="CreateSharedProject">
-			<Options DefaultNamespace="${ProjectName}" />
+			<Options DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 			</Files>
@@ -26,7 +26,8 @@
 		<Project name="${ProjectName}" directory = "." type="C#PortableLibrary" if="CreatePortableProject">
 			<Options Target="Library"
 				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"
-				DefaultNamespace="${ProjectName}" />
+				DefaultNamespace="${ProjectName}"
+				HideGettingStarted="true" />
 			<Packages>
 				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
 			</Packages>
@@ -39,7 +40,8 @@
 		<Project name="${ProjectName}.iOS" directory="${ProjectName}.iOS" type="XamarinIOS" if="CreateIOSProject">
 			<Options Target="Library"
 				TargetFrameworkVersion="Xamarin.iOS,Version=v1.0"
-				DefaultNamespace="${ProjectName}" />
+				DefaultNamespace="${ProjectName}"
+				HideGettingStarted="true" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -56,7 +58,7 @@
 		</Project>
 		
 		<Project name="${ProjectName}.Android" directory="${ProjectName}.Android" type="MonoDroid" if="CreateAndroidProject">
-			<Options Target="Library" DefaultNamespace="${ProjectName}" />
+			<Options Target="Library" DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -73,7 +75,7 @@
 		</Project>
 
 		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging" if="CreateNuGetProject">
-			<Options TargetFrameworkVersion="4.5" DefaultNamespace="${ProjectName}" />
+			<Options TargetFrameworkVersion="4.5" DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
 			<Packages>
 				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
 			</Packages>
