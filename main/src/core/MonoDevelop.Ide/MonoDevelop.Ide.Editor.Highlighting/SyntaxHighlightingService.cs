@@ -503,9 +503,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			if (def != null)
 				return def;
-			if (mimeType == "application/octet-stream")
+			if (mimeType == "application/octet-stream" || mimeType == "text/plain")
 				return null;
-
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
 					foreach (var fe in h.FileTypes) {
@@ -517,7 +516,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				}
 			}
-
 			return null;
 		}
 
