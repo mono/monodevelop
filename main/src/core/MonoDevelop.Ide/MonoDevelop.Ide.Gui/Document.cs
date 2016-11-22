@@ -827,7 +827,7 @@ namespace MonoDevelop.Ide.Gui
 				UnsubscribeRoslynWorkspace ();
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				SubscribeRoslynWorkspace ();
-				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
+				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
