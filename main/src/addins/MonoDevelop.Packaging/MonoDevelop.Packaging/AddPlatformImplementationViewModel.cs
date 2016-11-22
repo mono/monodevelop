@@ -186,7 +186,7 @@ namespace MonoDevelop.Packaging
 		XmlElement CreateProjectOptions ()
 		{
 			var doc = new XmlDocument ();
-			doc.LoadXml ("<Options Target='Library' />");
+			doc.LoadXml ("<Options Target='Library' HideGettingStarted='true' />");
 			return doc.DocumentElement;
 		}
 
