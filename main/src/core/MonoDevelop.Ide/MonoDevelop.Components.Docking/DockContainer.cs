@@ -258,6 +258,8 @@ namespace MonoDevelop.Components.Docking
 					ts.Show ();
 					notebooks.Add (ts);
 					ts.Parent = this;
+
+					GLib.Signal.Emit (this, "add", ts);
 				}
 				frame.UpdateRegionStyle (grp);
 				ts.VisualStyle = grp.VisualStyle;
