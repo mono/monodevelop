@@ -300,6 +300,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public override string TabAccessibilityDescription {
+			get {
+				return textEditorImpl.ViewContent.TabAccessibilityDescription;
+			}
+		}
+
 		public override bool IsDirty {
 			get { return textEditorImpl.ViewContent.IsDirty; }
 			set {
