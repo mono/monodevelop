@@ -141,10 +141,15 @@ namespace MonoDevelop.Ide.Commands
 		static LayoutListHandler ()
 		{
 			NameMapping = new Dictionary<string, string> ();
-			NameMapping ["Solution"] = "Code";
-			NameMapping ["Visual Design"] = "Design";
-			NameMapping ["Debug"] = "Debug";
-			NameMapping ["Unit Testing"] = "Test";
+			NameMapping ["Solution"] = TranslateString ("Code");
+			NameMapping ["Visual Design"] = TranslateString ("Design");
+			NameMapping ["Debug"] = TranslateString ("Debug");
+			NameMapping ["Unit Testing"] = TranslateString ("Test");
+		}
+
+		static string TranslateString (string str)
+		{
+			return str;
 		}
 
 		protected override void Update (CommandArrayInfo info)
