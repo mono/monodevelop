@@ -105,6 +105,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged += OnCombineRenamed;
 			solution.StartupItemChanged += OnStartupChanged;
+			solution.RunConfigurationsChanged += OnStartupChanged;
+			solution.StartupConfigurationChanged += OnStartupChanged;
 			solution.RootFolder.ItemAdded += OnEntryAdded;
 			solution.RootFolder.ItemRemoved += OnEntryRemoved;
 			solution.RootFolder.SolutionItemFileAdded += OnFileAdded;
@@ -116,6 +118,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged -= OnCombineRenamed;
 			solution.StartupItemChanged -= OnStartupChanged;
+			solution.RunConfigurationsChanged -= OnStartupChanged;
+			solution.StartupConfigurationChanged -= OnStartupChanged;
 			solution.RootFolder.ItemAdded -= OnEntryAdded;
 			solution.RootFolder.ItemRemoved -= OnEntryRemoved;
 			solution.RootFolder.SolutionItemFileAdded -= OnFileAdded;

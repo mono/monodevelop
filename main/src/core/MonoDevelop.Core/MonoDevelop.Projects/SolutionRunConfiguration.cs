@@ -24,12 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Serialization;
+
 namespace MonoDevelop.Projects
 {
 	public class SolutionRunConfiguration: RunConfiguration
 	{
+		[ItemProperty ("Id")]
 		string id;
+
+		[ItemProperty ("Name")]
 		string name;
+
+		internal SolutionRunConfiguration ()
+		{
+		}
 
 		public SolutionRunConfiguration (string id)
 		{
