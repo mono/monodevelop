@@ -235,11 +235,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				var menu = new NSMenu {
 					AutoEnablesItems = false,
-					ShowsStateColumn = false,
+					ShowsStateColumn = true,
 					Font = NSFont.MenuFontOfSize (12),
 				};
 				foreach (var item in runtime.Children)
-					CreateMenuItem (menu, item);
+					if (item.IsSeparator)
+						menu.AddItem (NSMenuItem.SeparatorItem);
+					else
+						CreateMenuItem (menu, item);
 				return menu;
 			}
 
@@ -251,14 +254,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				using (var mutableModel = runtime.GetMutableModel ()) {
 					runtimeFullDisplayString = mutableModel.FullDisplayString;
 
-					menuItem = new NSMenuItem {
-						IndentationLevel = runtime.IsIndented ? 2 : 1,
+					menuItem = new NSMenuItem () {
+						IndentationLevel = runtime.IsIndented ? 1 : 0,
 						AttributedTitle = new NSAttributedString (mutableModel.DisplayString, new NSStringAttributes {
 							Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
 						}),
 						Enabled = mutableModel.Enabled,
 						Hidden = !mutableModel.Visible,
 					};
+					if (ActiveRuntime == runtime || (ActiveRuntime?.Children.Contains (runtime) ?? false)) {
+						menuItem.State = NSCellStateValue.On;
+					}
 				}
 
 				var subMenu = CreateSubMenuForRuntime (runtime);
@@ -267,27 +273,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					menuItem.Enabled = true;
 				} else {
 					menuItem.Activated += (o2, e2) => {
-						string old;
-						using (var activeMutableModel = ActiveRuntime.GetMutableModel ())
-							old = activeMutableModel.FullDisplayString;
+						var old = ActiveRuntime;
 
-						IRuntimeModel newRuntime = runtimeModel.FirstOrDefault (r => {
-							using (var newRuntimeMutableModel = r.GetMutableModel ())
-								return newRuntimeMutableModel.FullDisplayString == runtimeFullDisplayString;
-						});
-						if (newRuntime == null)
-							return;
-
-						ActiveRuntime = newRuntime;
+						ActiveRuntime = runtime;
 						var ea = new HandledEventArgs ();
 						if (RuntimeChanged != null)
 							RuntimeChanged (o2, ea);
 
 						if (ea.Handled)
-							ActiveRuntime = runtimeModel.First (r => {
-								using (var newRuntimeMutableModel = r.GetMutableModel ())
-									return newRuntimeMutableModel.FullDisplayString == old;
-							});
+							ActiveRuntime = old;
 					};
 				}
 				menu.AddItem (menuItem);
@@ -388,7 +382,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				NSMenuItem selectedItem = null;
 				var menu = new NSMenu {
 					AutoEnablesItems = false,
-					ShowsStateColumn = false,
+					ShowsStateColumn = true,
 					Font = NSFont.MenuFontOfSize (12),
 				};
 				if (cellIdx == RunConfigurationIdx) {
@@ -435,9 +429,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 					using (var activeMutableModel = ActiveRuntime.GetMutableModel ()) {
 						foreach (var runtime in RuntimeModel) {
-							if (runtime.HasParent)
-								continue;
-
 							NSMenuItem menuitem = null;
 							if (runtime.IsSeparator)
 								menu.AddItem (NSMenuItem.SeparatorItem);

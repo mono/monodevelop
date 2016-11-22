@@ -59,11 +59,11 @@ namespace MonoDevelop.Components.MainToolbar
 			set { searchForMembers.Value = value; }
 		}
 
-		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
+		Dictionary<SolutionItem, ConfigurationMerger> configurationMergers = new Dictionary<SolutionItem, ConfigurationMerger> ();
 		int ignoreConfigurationChangedCount, ignoreRuntimeChangedCount;
 		Solution currentSolution;
 		bool settingGlobalConfig;
-		SolutionItem currentStartupProject;
+		Tuple<SolutionItem, SolutionItemRunConfiguration> [] startupProjects = new Tuple<SolutionItem, SolutionItemRunConfiguration> [0];
 		EventHandler executionTargetsChanged;
 
 		public MainToolbarController (IMainToolbarView toolbarView)
@@ -141,7 +141,13 @@ namespace MonoDevelop.Components.MainToolbar
 			if (settingGlobalConfig)
 				return;
 
-			configurationMerger.Load (currentSolution);
+			TrackStartupProject ();
+			configurationMergers = new Dictionary<SolutionItem, ConfigurationMerger> ();
+			foreach (var project in startupProjects) {
+				var configurationMerger = new ConfigurationMerger ();
+				configurationMerger.Load (currentSolution, project.Item1, project.Item2);
+				configurationMergers [project.Item1] = configurationMerger;
+			}
 
 			ignoreConfigurationChangedCount++;
 			try {
@@ -152,11 +158,13 @@ namespace MonoDevelop.Components.MainToolbar
 					ToolbarView.RunConfigurationVisible = false;
 					return;
 				}
-
-				ToolbarView.ConfigurationModel = configurationMerger
-					.SolutionConfigurations
-					.Distinct ()
-					.Select (conf => new ConfigurationModel (conf));
+				if (configurationMergers.Count == 1)
+					ToolbarView.ConfigurationModel = configurationMergers.First ().Value.SolutionConfigurations
+						.Distinct ()
+						.Select (conf => new ConfigurationModel (conf));
+				else
+					ToolbarView.ConfigurationModel = currentSolution?.Configurations.OfType<SolutionConfiguration> ()
+						.Select (conf => new ConfigurationModel (conf.Id)) ?? new ConfigurationModel [0];
 
 				if (currentSolution != null)
 					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc)).ToArray ();
@@ -179,64 +187,44 @@ namespace MonoDevelop.Components.MainToolbar
 			ignoreRuntimeChangedCount++;
 			try {
 				ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
-				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
+				if (!IdeApp.Workspace.IsOpen || currentSolution == null)
 					return;
-
-				// Check that the current startup project is enabled for the current configuration
-				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
-					return;
-
-				ExecutionTarget previous = null;
-				int runtimes = 0;
-
 				var list = new List<RuntimeModel> ();
-				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
-					if (target is ExecutionTargetGroup) {
-						var devices = (ExecutionTargetGroup) target;
+				int runtimes = 0;
+				if (currentSolution.StartupConfiguration is MultiItemSolutionRunConfiguration) {
+					bool anyValid = false;
+					foreach (var startConf in ((MultiItemSolutionRunConfiguration)currentSolution.StartupConfiguration).Items) {
+						if (startConf?.SolutionItem == null)
+							continue;
 
-						if (previous != null)
-							list.Add (new RuntimeModel (this, target: null));
-
-						list.Add (new RuntimeModel (this, target));
-						foreach (var device in devices) {
-							if (device is ExecutionTargetGroup) {
-								var versions = (ExecutionTargetGroup) device;
-
-								if (versions.Count > 1) {
-									var parent = new RuntimeModel (this, device) {
-										IsIndented = true,
-									};
-									list.Add (parent);
-
-									foreach (var version in versions) {
-										list.Add (new RuntimeModel (this, version, parent));
-										runtimes++;
-									}
-								} else {
-									list.Add (new RuntimeModel (this, versions[0]) {
-										IsIndented = true,
-									});
-									runtimes++;
-								}
-							} else {
-								list.Add (new RuntimeModel (this, device) {
-									IsIndented = true,
-								});
-								runtimes++;
-							}
+						// Check that the current startup project is enabled for the current configuration
+						var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+						if (solConf == null || !solConf.BuildEnabledForItem (startConf.SolutionItem))
+							continue;
+						anyValid = true;
+						var projectList = new List<RuntimeModel> ();
+						FillRuntimesForProject (projectList, startConf.SolutionItem, ref runtimes);
+						var parent = new RuntimeModel (this, startConf.SolutionItem.Name);
+						parent.HasChildren = true;
+						list.Add (parent);
+						foreach (var p in projectList) {
+							parent.AddChild (p);
 						}
-					} else {
-						if (previous is ExecutionTargetGroup) {
-							list.Add (new RuntimeModel (this, target: null));
-						}
-
-						list.Add (new RuntimeModel (this, target));
-						runtimes++;
 					}
+					if (!anyValid)
+						return;
+				} else {
+					var startConf = currentSolution.StartupConfiguration as SingleItemSolutionRunConfiguration;
+					if (startConf == null || startConf.Item == null)
+						return;
 
-					previous = target;
+					// Check that the current startup project is enabled for the current configuration
+					var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+					if (solConf == null || !solConf.BuildEnabledForItem (startConf.Item))
+						return;
+					FillRuntimesForProject (list, startConf.Item, ref runtimes);
 				}
+
 
 				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
 				if (cmds.Count > 0) {
@@ -251,7 +239,7 @@ namespace MonoDevelop.Components.MainToolbar
 							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (lastCommandTarget));
 							if (ci.Visible) {
 								if (needsSeparator) {
-									list.Add (new RuntimeModel (this, target: null));
+									list.Add (new RuntimeModel (this, displayText: null));
 									needsSeparator = false;
 								}
 								list.Add (new RuntimeModel (this, cmd));
@@ -268,6 +256,57 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		void FillRuntimesForProject (List<RuntimeModel> list, SolutionItem project, ref int runtimes)
+		{
+			ExecutionTarget previous = null;
+
+			foreach (var target in configurationMergers [project].GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, configurationMergers.Count < 2)) {
+				if (target is ExecutionTargetGroup) {
+					var devices = (ExecutionTargetGroup)target;
+
+					if (previous != null)
+						list.Add (new RuntimeModel (this, displayText: null));//Seperator
+
+					foreach (var device in devices) {
+						if (device is ExecutionTargetGroup) {
+							var versions = (ExecutionTargetGroup)device;
+
+							if (versions.Count > 1) {
+								var parent = new RuntimeModel (this, device, true, project) {
+									IsIndented = true,
+								};
+								list.Add (parent);
+
+								foreach (var version in versions) {
+									parent.AddChild (new RuntimeModel (this, version, false, project));
+									runtimes++;
+								}
+							} else {
+								list.Add (new RuntimeModel (this, versions [0], true, project) {
+									IsIndented = true,
+								});
+								runtimes++;
+							}
+						} else {
+							list.Add (new RuntimeModel (this, device, true, project) {
+								IsIndented = true,
+							});
+							runtimes++;
+						}
+					}
+				} else {
+					if (previous is ExecutionTargetGroup) {
+						list.Add (new RuntimeModel (this, displayText: null));//Seperator
+					}
+
+					list.Add (new RuntimeModel (this, target, true, project));
+					runtimes++;
+				}
+
+				previous = target;
+			}
+		}
+
 		void HandleRuntimeChanged (object sender, HandledEventArgs e)
 		{
 			if (ignoreRuntimeChangedCount == 0) {
@@ -278,6 +317,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				NotifyConfigurationChange ();
+				SelectActiveRuntime (runtime);
 			}
 		}
 
@@ -296,14 +336,18 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateBuildConfiguration ()
 		{
 			var config = ToolbarView.ActiveConfiguration;
-			if (config == null)
+			if (config == null || configurationMergers.Count == 0)
 				return;
+			if (configurationMergers.Count > 1) {
+				IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;
+				return;
+			}
 
 			ExecutionTarget newTarget;
 			string fullConfig;
 
 			var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
-			configurationMerger.ResolveConfiguration (config.OriginalId, runtime != null ? runtime.ExecutionTarget : null, out fullConfig, out newTarget);
+			configurationMergers.Values.First ().ResolveConfiguration (config.OriginalId, runtime != null ? runtime.ExecutionTarget : null, out fullConfig, out newTarget);
 			settingGlobalConfig = true;
 			try {
 				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
@@ -321,7 +365,7 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateBuildConfiguration ();
 
 			FillRuntimes ();
-			SelectActiveRuntime ();
+			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
 		void NotifyRunConfigurationChange ()
@@ -365,7 +409,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectActiveConfiguration ()
 		{
-			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
+			var allNames = configurationMergers.Values.Select (cm => cm.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId)).Distinct ();
+			string name;
+			if (allNames.Count () == 1)
+				name = allNames.First ();
+			else
+				name = IdeApp.Workspace.ActiveConfigurationId;
 
 			ignoreConfigurationChangedCount++;
 			try {
@@ -393,79 +442,86 @@ namespace MonoDevelop.Components.MainToolbar
 				ignoreConfigurationChangedCount--;
 			}
 
-			SelectActiveRuntime ();
+			SelectActiveRuntime (ToolbarView.ActiveRuntime as RuntimeModel);
 		}
 
-		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
+		IEnumerable<IRuntimeModel> AllRuntimes (IEnumerable<IRuntimeModel> runtimes)
 		{
-			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
-			string lastRuntimeForProject = currentStartupProject?.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
-			var activeTarget = IdeApp.Workspace.ActiveExecutionTarget;
-			var activeTargetId = activeTarget != null ? activeTarget.Id : null;
+			foreach (var runtime in runtimes) {
+				yield return runtime;
+				foreach (var childRuntime in AllRuntimes (runtime.Children))
+					yield return childRuntime;
+			}
+		}
 
-			for (int iter = 0; iter < runtimes.Count; ++iter) {
-				var item = runtimes [iter];
+		RuntimeModel SelectActiveRuntime (SolutionItem project, RuntimeModel preferedRuntimeModel)
+		{
+			var runtimes = AllRuntimes (ToolbarView.RuntimeModel).Cast<RuntimeModel> ().ToList ();
+			string lastRuntimeForProject = project.UserProperties.GetValue<string> ("PreferredExecutionTarget", defaultValue: null);
+			var activeTarget = preferedRuntimeModel?.Project == project ? preferedRuntimeModel.ExecutionTarget : null;
+			var multiProjectExecutionTarget = activeTarget as MultiProjectExecutionTarget;
+			if (multiProjectExecutionTarget != null) {
+				activeTarget = multiProjectExecutionTarget.GetTarget (project);
+			}
+			var activeTargetId = activeTarget?.Id;
+			RuntimeModel defaultRuntime = null;
+
+			foreach (var item in runtimes) {
 				using (var model = item.GetMutableModel ()) {
 					if (!model.Enabled)
 						continue;
 				}
 
 				var target = item.ExecutionTarget;
-				if (target == null || !target.Enabled)
+				if (target == null || !target.Enabled || item.Project != project)
 					continue;
 
 				if (target is ExecutionTargetGroup)
 					if (item.HasChildren)
 						continue;
 
-				if (defaultTarget == null || lastRuntimeForProject == target.Id) {
-					defaultTarget = target;
-					defaultIter = iter;
+				if (defaultRuntime == null || lastRuntimeForProject == target.Id) {
+					defaultRuntime = item;
 				}
 
 				if (target.Id == activeTargetId) {
-					IdeApp.Workspace.ActiveExecutionTarget = target;
-					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
-					return true;
+					project.UserProperties.SetValue ("PreferredExecutionTarget", target.Id);
+					return item;
 				}
 
 				if (target.Equals (activeTarget)) {
-					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
+					defaultRuntime = item;
 				}
 			}
-
-			return false;
+            if (defaultRuntime?.ExecutionTarget?.Id != null)
+                project.UserProperties.SetValue("PreferredExecutionTarget", defaultRuntime.ExecutionTarget.Id);
+			return defaultRuntime;
 		}
 
-		void SelectActiveRuntime ()
+		void SelectActiveRuntime (RuntimeModel preferedRuntimeModel)
 		{
 			ignoreRuntimeChangedCount++;
 
 			try {
 				if (ToolbarView.RuntimeModel.Any ()) {
-					ExecutionTarget defaultTarget = null;
-					bool selected = false;
-					int defaultIter = 0;
-
-					if (!SelectActiveRuntime (ref selected, ref defaultTarget, ref defaultIter) && !selected) {
-						if (defaultTarget != null) {
-							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
-							ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (defaultIter);
+					if (startupProjects.Length > 1) {
+						var multiProjectTarget = new MultiProjectExecutionTarget ();
+						var multipleRuntime = new RuntimeModel (this, multiProjectTarget, false, null);
+						foreach (var startupProject in startupProjects) {
+							var runtimeModel = SelectActiveRuntime (startupProject.Item1, preferedRuntimeModel);
+							multiProjectTarget.SetExecutionTarget (startupProject.Item1, runtimeModel.ExecutionTarget);
+							multipleRuntime.AddChild (runtimeModel);
 						}
+						ToolbarView.ActiveRuntime = multipleRuntime;
+						IdeApp.Workspace.ActiveExecutionTarget = multipleRuntime.ExecutionTarget;
+					} else if (startupProjects.Length == 1) {
+						var runtimeModel = SelectActiveRuntime (startupProjects.First ().Item1, preferedRuntimeModel);
+						ToolbarView.ActiveRuntime = runtimeModel;
+						IdeApp.Workspace.ActiveExecutionTarget = runtimeModel?.ExecutionTarget;
 						UpdateBuildConfiguration ();
-					}
-
-					if (currentStartupProject == null) {
-						return;
-					}
-
-					var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
-					if (runtime != null && runtime.Command == null) {
-						currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);
+					} else {
+						ToolbarView.ActiveRuntime = null;
+						IdeApp.Workspace.ActiveExecutionTarget = null;
 					}
 				}
 			} finally {
@@ -511,18 +567,28 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void TrackStartupProject ()
 		{
-			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
-				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
+			Tuple<SolutionItem, SolutionItemRunConfiguration> [] projects;
+			if (currentSolution?.StartupConfiguration is MultiItemSolutionRunConfiguration) {
+				var multiRunConfigs = (MultiItemSolutionRunConfiguration)currentSolution.StartupConfiguration;
+				projects = multiRunConfigs.Items.Select (rc => new Tuple<SolutionItem, SolutionItemRunConfiguration> (
+					  rc.SolutionItem,
+					  rc.RunConfiguration
+				)).ToArray ();
+			} else if (currentSolution?.StartupConfiguration is SingleItemSolutionRunConfiguration) {
+				var singleRunConfig = (SingleItemSolutionRunConfiguration)currentSolution.StartupConfiguration;
+				projects = new Tuple<SolutionItem, SolutionItemRunConfiguration> []{ new Tuple<SolutionItem, SolutionItemRunConfiguration> (
+					singleRunConfig.Item, singleRunConfig.RunConfiguration)};
+			} else {
+				projects = new Tuple<SolutionItem, SolutionItemRunConfiguration> [0];
 			}
-
-			if (currentSolution != null) {
-				currentStartupProject = currentSolution.StartupItem;
-				if (currentStartupProject != null) {
-					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
+			if (!startupProjects.SequenceEqual (projects)) {
+				foreach (var item in startupProjects) {
+					item.Item1.ExecutionTargetsChanged -= executionTargetsChanged;
 				}
+				foreach (var item in projects)
+					item.Item1.ExecutionTargetsChanged += executionTargetsChanged;
+				startupProjects = projects;
 			}
-			else
-				currentStartupProject = null;
 		}
 
 		bool updatingCombos;
@@ -842,10 +908,17 @@ namespace MonoDevelop.Components.MainToolbar
 			List<IRuntimeModel> children = new List<IRuntimeModel> ();
 			public object Command { get; private set; }
 			public ExecutionTarget ExecutionTarget { get; private set; }
+			string DisplayText = null;
+			bool fullText;
 
 			RuntimeModel (MainToolbarController controller)
 			{
 				Controller = controller;
+			}
+
+			public RuntimeModel (MainToolbarController controller, string displayText) : this (controller)
+			{
+				DisplayText = displayText;
 			}
 
 			public RuntimeModel (MainToolbarController controller, ActionCommand command) : this (controller)
@@ -853,20 +926,13 @@ namespace MonoDevelop.Components.MainToolbar
 				Command = command.Id;
 			}
 
-			public RuntimeModel (MainToolbarController controller, ExecutionTarget target) : this (controller)
+			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, bool fullText, SolutionItem project) : this (controller)
 			{
+				if (target == null)
+					throw new ArgumentNullException (nameof (target));
 				ExecutionTarget = target;
-			}
-
-			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, RuntimeModel parent) : this (controller, target)
-			{
-				if (parent == null)
-					HasParent = false;
-				else {
-					HasParent = true;
-					parent.HasChildren = true;
-					parent.AddChild (this);
-				}
+				this.fullText = fullText;
+				Project = project;
 			}
 
 			public void AddChild (IRuntimeModel child)
@@ -884,16 +950,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public bool HasChildren {
 				get;
-				private set;
-			}
-
-			public bool HasParent {
-				get;
 				set;
 			}
 
 			public bool IsSeparator {
-				get { return Command == null && ExecutionTarget == null; }
+				get { return Command == null && ExecutionTarget == null && DisplayText == null; }
 			}
 
 			public bool IsIndented {
@@ -916,14 +977,27 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 
+			public SolutionItem Project { get; }
+
 			public IRuntimeMutableModel GetMutableModel ()
 			{
-				return Command != null ? new RuntimeMutableModel (Controller, Command) : new RuntimeMutableModel (ExecutionTarget, HasParent);
+				if (Command != null)
+					return new RuntimeMutableModel (Controller, Command);
+				else if (ExecutionTarget != null)
+					return new RuntimeMutableModel (ExecutionTarget, fullText);
+				else
+					return new RuntimeMutableModel (DisplayText);
 			}
 		}
 
 		class RuntimeMutableModel : IRuntimeMutableModel
 		{
+			public RuntimeMutableModel(string text)
+			{
+				Enabled = Visible = true;
+				DisplayString = FullDisplayString = text;
+			}
+
 			public RuntimeMutableModel (MainToolbarController controller, object command)
 			{
 				var ci = IdeApp.CommandService.GetCommandInfo (command, new CommandTargetRoute (controller.lastCommandTarget));
@@ -932,7 +1006,7 @@ namespace MonoDevelop.Components.MainToolbar
 				DisplayString = FullDisplayString = RemoveUnderline (ci.Text);
 			}
 
-			public RuntimeMutableModel (ExecutionTarget target, bool hasParent)
+			public RuntimeMutableModel (ExecutionTarget target, bool fullName)
 			{
 				Enabled = !(target is ExecutionTargetGroup);
 				Visible = true;
@@ -940,7 +1014,7 @@ namespace MonoDevelop.Components.MainToolbar
 					DisplayString = FullDisplayString = string.Empty;
 				else {
 					FullDisplayString = target.FullName;
-					DisplayString = !hasParent ? target.FullName : target.Name;
+					DisplayString = fullName ? target.FullName : target.Name;
 				}
 			}
 
