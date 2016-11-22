@@ -11936,7 +11936,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                 <property name="Editable">False</property>
                 <property name="CursorVisible">False</property>
                 <property name="AcceptsTab">False</property>
-                <property name="Text" translatable="yes">Language bundles can provide new editor themes, code snippets, code completion items and other information to improve the editing experience of specific languages. Xamarin Studio supports: &lt;b&gt;TextMate (.tmBundle)&lt;/b&gt; and &lt;b&gt;Sublime 3 (.sublime)&lt;/b&gt; package files.</property>
+                <property name="Text" translatable="yes">Language bundles can provide new editor themes, code snippets, code completion items and other information to improve the editing experience of specific languages. Visual Studio for Mac supports: &lt;b&gt;TextMate (.tmBundle)&lt;/b&gt; and &lt;b&gt;Sublime 3 (.sublime)&lt;/b&gt; package files.</property>
                 <property name="WrapMode">Word</property>
                 <property name="PixelsBelowLines">6</property>
                 <property name="PixelsInsideWrap">3</property>
