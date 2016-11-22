@@ -43,7 +43,7 @@
 			icon = "md-toolbox-pad"
 			group = "Designer"
 			defaultLayout="*"
-			defaultPlacement="Left"
+			defaultPlacement="Right"
 			defaultStatus="AutoHide"
 			/>
 		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad"
@@ -51,7 +51,9 @@
 			_label="Properties"
 			icon = "md-properties-pad"
 			group = "Designer"
-			defaultPlacement="ProjectPad/bottom; right"
+			defaultLayout="*"
+			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right"
+			defaultStatus="AutoHide"
 			/>
 		<Pad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad"
 			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad"
@@ -59,22 +61,23 @@
 			icon="md-pad-document-outline"
 			group = "Designer"
 			defaultLayout="*"
-			defaultPlacement="Left"
+			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
 			defaultStatus="AutoHide"
 			/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
 		<Layout id="VisualDesign" _name="Visual Design">
-			<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" status="Dockable" placement="Right" />
-			<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" status="Dockable" placement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right" />
-			<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" placement="Left" status="Dockable" />
+			<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" status="Dockable" />
 		</Layout>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
-		<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" placement="Left" status="AutoHide" />
-		<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" placement="Left" status="AutoHide" />
+		<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" placement="Right" status="AutoHide" />
+		<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" placement="Right" status="AutoHide" />
+		<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" placement="Right" status="AutoHide" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
