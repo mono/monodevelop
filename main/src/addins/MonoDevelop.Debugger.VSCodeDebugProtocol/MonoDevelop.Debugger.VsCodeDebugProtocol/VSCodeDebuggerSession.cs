@@ -233,7 +233,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				foreach (var variablesGroup in scopeBody.Scopes) {
 					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
 					foreach (var variable in varibles.Variables) {
-						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.Type, variable.Value, variable.VariablesReference));
+						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesGroup.VariablesReference, frames [frameIndex].Id));
 					}
 				}
 				return results.ToArray ();
@@ -251,14 +251,27 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			class VSCodeObjectSource : IObjectValueSource
 			{
+				int parentVariablesReference;
 				int variablesReference;
+				int frameId;
 				VSCodeDebuggerSession vsCodeDebuggerSession;
 				ObjectValue [] objValChildren;
+				readonly string name;
+				readonly string evalName;
+				readonly string type;
+				readonly string val;
 
-				public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference)
+
+				public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference, int parentVariablesReference, string name, string type, string evalName, int frameId, string val)
 				{
+					this.type = type;
+					this.frameId = frameId;
+					this.evalName = evalName;
+					this.name = name;
 					this.vsCodeDebuggerSession = vsCodeDebuggerSession;
 					this.variablesReference = variablesReference;
+					this.parentVariablesReference = parentVariablesReference;
+					this.val = val;
 				}
 
 				public ObjectValue [] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
@@ -267,29 +280,76 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
 							variablesReference
 						)).Variables;
-						objValChildren = children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.Type, c.Value, c.VariablesReference)).ToArray ();
+						objValChildren = children.Select (c => VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
 					}
 					return objValChildren;
 				}
 
+				class RawString : IRawValueString
+				{
+					string val;
+
+					public RawString (string val)
+					{
+						this.val = val.Remove (val.Length - 1).Remove (0, 1);
+					}
+
+					public int Length {
+						get {
+							return val.Length;
+						}
+					}
+
+					public string Value {
+						get {
+							return val;
+						}
+					}
+
+					public string Substring (int index, int length)
+					{
+						return val.Substring (index, length);
+					}
+				}
+
 				public object GetRawValue (ObjectPath path, EvaluationOptions options)
 				{
-					throw new NotImplementedException ();
+					var val = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName, frameId)).Result;
+					if (val.StartsWith ("\"", StringComparison.Ordinal))
+						if (options.ChunkRawStrings)
+							return new RawValueString (new RawString (val));
+						else
+							return val.Remove (val.Length - 1).Remove (0, 1);
+					else
+						throw new NotImplementedException ();
 				}
 
 				public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
 				{
-					throw new NotImplementedException ();
+					string shortName = name;
+					var indexOfSpace = name.IndexOf (' ');
+					if (indexOfSpace != -1)//Remove " [TypeName]" from variable name
+						shortName = name.Remove (indexOfSpace);
+					if (type == null)
+						return ObjectValue.CreateError (null, new ObjectPath (shortName), "", val, ObjectValueFlags.None);
+					if (val == "null")
+						return ObjectValue.CreateNullObject (this, shortName, type, parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly);
+					if (variablesReference == 0)//This is some kind of primitive...
+						return ObjectValue.CreatePrimitive (this, new ObjectPath (shortName), type, new EvaluationResult (val), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly);
+					return ObjectValue.CreateObject (this, new ObjectPath (shortName), type, new EvaluationResult (val), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly, null);
 				}
 
 				public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 				{
-					throw new NotImplementedException ();
+					var v = value.ToString ();
+					if (type == "string")
+						v = $"\"{v}\"";
+					vsCodeDebuggerSession.protocolClient.SendRequestSync (new SetVariableRequest (parentVariablesReference, name, v));
 				}
 
 				public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 				{
-					throw new NotImplementedException ();
+					return new EvaluationResult (vsCodeDebuggerSession.protocolClient.SendRequestSync (new SetVariableRequest (parentVariablesReference, name, value)).Value);
 				}
 			}
 
@@ -300,23 +360,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (
 						expr,
 						frames [frameIndex].Id));
-					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference));
+					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference, 0, frames [frameIndex].Id));
 				}
 				return results.ToArray ();
 			}
 
-			static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession vsCodeDebuggerSession, string name, string type, string value, int variablesReference)
+			static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession vsCodeDebuggerSession, string name, string evalName, string type, string value, int variablesReference, int parentVariablesReference, int frameId)
 			{
-				var indexOfSpace = name.IndexOf (' ');
-				if (indexOfSpace != -1)//Remove " [TypeName]" from variable name
-					name = name.Remove (indexOfSpace);
-				if (type == null)
-					return ObjectValue.CreateError (null, new ObjectPath (name), "", value, ObjectValueFlags.None);
-				if (value == "null")
-					return ObjectValue.CreateNullObject (null, name, type, ObjectValueFlags.ReadOnly);
-				if (variablesReference == 0)//This is some kind of primitive...
-					return ObjectValue.CreatePrimitive (null, new ObjectPath (name), type, new EvaluationResult (value), ObjectValueFlags.ReadOnly);
-				return ObjectValue.CreateObject (new VSCodeObjectSource (vsCodeDebuggerSession, variablesReference), new ObjectPath (name), type, new EvaluationResult (value), ObjectValueFlags.ReadOnly, null);
+				return new VSCodeObjectSource (vsCodeDebuggerSession, variablesReference, parentVariablesReference, name, type, evalName, frameId, value).GetValue (default (ObjectPath), null);
 			}
 
 			public ObjectValue [] GetLocalVariables (int frameIndex, EvaluationOptions options)
