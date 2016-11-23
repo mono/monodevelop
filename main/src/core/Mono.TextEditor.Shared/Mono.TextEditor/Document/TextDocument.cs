@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 		ImmutableText buffer;
 		readonly ILineSplitter splitter;
 
-		MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting syntaxMode = null;
+		ISyntaxHighlighting syntaxMode = null;
 
 		TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
 
@@ -62,16 +62,9 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (mimeType != value) {
-					lock (this) {
-						mimeType = value;
-						var def = FileName != null ? SyntaxHighlightingService.GetSyntaxHighlightingDefinition (FileName, value) : null;
-						if (def != null) {
-							SyntaxMode = new SyntaxHighlighting (def, this);
-						} else {
-							SyntaxMode = null;
-						}
-						OnMimeTypeChanged (EventArgs.Empty);
-					}
+					mimeType = value;
+					UpdateSyntaxMode ();
+					OnMimeTypeChanged (EventArgs.Empty);
 				}
 			}
 		}
@@ -91,8 +84,11 @@ namespace Mono.TextEditor
 				return fileName;
 			}
 			set {
-				fileName = value;
-				OnFileNameChanged (EventArgs.Empty);
+				if (fileName != value) {
+					fileName = value;
+					UpdateSyntaxMode ();
+					OnFileNameChanged (EventArgs.Empty);
+				}
 			}
 		}	
 
@@ -134,19 +130,26 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxMode {
+		internal ISyntaxHighlighting SyntaxMode {
 			get {
-				return syntaxMode ?? MonoDevelop.Ide.Editor.Highlighting.DefaultSyntaxHighlighting.Instance;
+				if (syntaxMode == null) {
+					lock (syncObject) {
+						InitializeSyntaxMode ();
+					}
+				}
+				return syntaxMode;
 			}
 			set {
-				var old = syntaxMode;
-				if (old != null)
-					old.HighlightingStateChanged -= SyntaxMode_HighlightingStateChanged;
+				ISyntaxHighlighting old;
+				lock (syncObject) {
+					old = syntaxMode;
+					if (old != null && old != DefaultSyntaxHighlighting.Instance)
+						old.HighlightingStateChanged -= SyntaxMode_HighlightingStateChanged;
 
-				syntaxMode = value;
-				if (syntaxMode != null)
-					syntaxMode.HighlightingStateChanged += SyntaxMode_HighlightingStateChanged;
-
+					syntaxMode = value;
+					if (syntaxMode != null && syntaxMode != DefaultSyntaxHighlighting.Instance)
+						syntaxMode.HighlightingStateChanged += SyntaxMode_HighlightingStateChanged;
+				}
 				OnSyntaxModeChanged (new SyntaxModeChangeEventArgs (old, syntaxMode));
 			}
 		}
@@ -161,6 +164,35 @@ namespace Mono.TextEditor
 			var handler = SyntaxModeChanged;
 			if (handler != null)
 				handler (this, e);
+		}
+
+		string syntaxModeFileName, syntaxModeMimeType;
+
+		void InitializeSyntaxMode ()
+		{
+			var def = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (FileName, mimeType);
+			if (def != null) {
+				SyntaxMode = new SyntaxHighlighting (def, this);
+			} else {
+				SyntaxMode = DefaultSyntaxHighlighting.Instance;
+			}
+		}
+
+		void UpdateSyntaxMode ()
+		{
+			//never been initialized, don't need to update
+			if (syntaxMode == null) {
+				return;
+			}
+
+			//already up to date
+			if (syntaxModeFileName == fileName && syntaxModeMimeType == mimeType) {
+				return;
+			}
+			syntaxModeFileName = fileName;
+			syntaxModeMimeType = mimeType;
+
+			InitializeSyntaxMode ();
 		}
 
 		internal event EventHandler<SyntaxModeChangeEventArgs> SyntaxModeChanged;
