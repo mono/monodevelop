@@ -1924,8 +1924,19 @@ namespace Mono.TextEditor
 		{
 			if (this.isDisposed)
 				return false;
-			UpdateAdjustments ();
 
+			try {
+				ExposeEventInternal (e);
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+
+			return base.OnExposeEvent (e);
+		}
+
+		void ExposeEventInternal (Gdk.EventExpose e)
+		{
+			UpdateAdjustments ();
 
 			var area = e.Region.Clipbox;
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
@@ -1958,10 +1969,8 @@ namespace Mono.TextEditor
 
 			if (Caret.IsVisible)
 				textViewMargin.DrawCaret (e.Window, Allocation);
-
-			return base.OnExposeEvent (e);
 		}
-		
+
 		protected virtual void OnPainted (PaintEventArgs e)
 		{
 			EventHandler<PaintEventArgs> handler = this.Painted;
