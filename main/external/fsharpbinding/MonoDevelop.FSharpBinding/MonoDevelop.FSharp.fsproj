@@ -119,7 +119,7 @@
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="paket.references" />
     <Compile Include="Properties\AddinInfo.fs" />
-    <Compile Include="HighlightUnusedOpens.fs" />
+    <Compile Include="HighlightUnusedCode.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />

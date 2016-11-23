@@ -11,7 +11,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Ast
 
-module highlightUnusedOpens =
+module highlightUnusedCode =
     let visitModulesAndNamespaces modulesOrNss =
         [ for moduleOrNs in modulesOrNss do
             let (SynModuleOrNamespace(_lid, _isRec, _isMod, decls, _xml, _attrs, _, _m)) = moduleOrNs
@@ -70,7 +70,13 @@ module highlightUnusedOpens =
             text = fullName'
         | None -> true
 
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
+    let removeMarkers (editor:TextEditor) (ranges:Range.range list) =
+        ranges |> List.iter(fun range ->
+            let startOffset = getOffset editor range.Start
+            let markers = editor.GetTextSegmentMarkersAt startOffset
+            markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))
+
+    let getUnusedCode (context:DocumentContext) (editor:TextEditor) =
         let ast =
             maybe {
                 let! ast = context.TryGetAst()
@@ -108,7 +114,7 @@ module highlightUnusedOpens =
                 |> Seq.choose id
                 |> Set.ofSeq
 
-            let filter list =
+            let filter list: (string * Range.range) list =
                 let rec filterInner acc list (seenNamespaces: Set<string>) = 
                     let notUsed namespc =
                         not (namespacesInUse.Contains namespc) || seenNamespaces.Contains namespc
@@ -122,29 +128,37 @@ module highlightUnusedOpens =
                 filterInner [] list Set.empty
 
             let openStatements = getOpenStatements tree
+            openStatements |> List.map snd |> removeMarkers editor
 
-            openStatements |> List.iter(fun (_, range) -> 
-                let startOffset = getOffset editor range.Start
-                let markers = editor.GetTextSegmentMarkersAt startOffset
-                markers |> Seq.iter (fun m -> editor.RemoveMarker m |> ignore))
-
-            let results = getOpenStatements tree |> filter
+            let results =
+                let opens = (openStatements |> filter) |> List.map snd
+                opens |> List.append (pd.UnusedCodeRanges |> Option.fill [])
 
             Some results)
 
-    let highlightUnused (editor:TextEditor) (unusedOpenRanges: (string * Range.range) list) =
-        unusedOpenRanges |> List.iter(fun (_, range) ->
+    let highlightUnused (editor:TextEditor) (unusedOpenRanges: Range.range list) (previousUnused: Range.range list)=
+        previousUnused |> removeMarkers editor
+
+        unusedOpenRanges |> List.iter(fun range ->
             let startOffset = getOffset editor range.Start
-            let endOffset = getOffset editor range.End
+            let markers = editor.GetTextSegmentMarkersAt startOffset |> Seq.toList
+            if markers.Length = 0 then
+                let endOffset = getOffset editor range.End
 
-            let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
-            let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
-            marker.IsVisible <- true
-            editor.AddMarker(marker))
+                let segment = new Text.TextSegment(startOffset, endOffset - startOffset)
+                let marker = TextMarkerFactory.CreateGenericTextSegmentMarker(editor, TextSegmentMarkerEffect.GrayOut, segment)
+                marker.IsVisible <- true
 
-type HighlightUnusedOpens() =
+                editor.AddMarker(marker))
+
+type HighlightUnusedCode() =
     inherit TextEditorExtension()
-
+    let mutable previousUnused = []
     override x.Initialize() =
-        x.DocumentContext.DocumentParsed.Add (fun _ -> let unused = highlightUnusedOpens.getUnusedOpens x.DocumentContext x.Editor
-                                                       unused |> Option.iter(fun unused' -> highlightUnusedOpens.highlightUnused x.Editor unused'))
+        let parsed = x.DocumentContext.DocumentParsed
+        parsed.Add(fun _ ->
+                        let unused = highlightUnusedCode.getUnusedCode x.DocumentContext x.Editor
+
+                        unused |> Option.iter(fun unused' ->
+                        highlightUnusedCode.highlightUnused x.Editor unused' previousUnused
+                        previousUnused <- unused'))
