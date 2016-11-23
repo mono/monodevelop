@@ -515,7 +515,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var documents = new List<DocumentInfo> ();
 			var additionalDocuments = new List<DocumentInfo> ();
-
 			var duplicates = new HashSet<DocumentId> ();
 			// use given source files instead of project.Files because there may be additional files added by msbuild targets
 			foreach (var f in sourceFiles) {
@@ -576,6 +575,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			projectionList.Add (entry);
 		}
 
+		internal static readonly string [] DefaultAssemblies = {
+			typeof(string).Assembly.Location,                                // mscorlib
+			typeof(System.Text.RegularExpressions.Regex).Assembly.Location,  // System
+			typeof(System.Linq.Enumerable).Assembly.Location,                // System.Core
+			typeof(System.Data.VersionNotFoundException).Assembly.Location,  // System.Data
+			typeof(System.Xml.XmlDocument).Assembly.Location,                // System.Xml
+		};
+
+
 		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, ProjectId projectId, CancellationToken token)
 		{
 			List<MetadataReference> result = new List<MetadataReference> ();
@@ -583,19 +591,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			var netProject = proj as MonoDevelop.Projects.DotNetProject;
 			if (netProject == null) {
 				// create some default references for unsupported project types.
-				string [] assemblies = {
-					typeof(string).Assembly.Location,                                // mscorlib
-					typeof(System.Text.RegularExpressions.Regex).Assembly.Location,  // System
-					typeof(System.Linq.Enumerable).Assembly.Location,                // System.Core
-					typeof(System.Data.VersionNotFoundException).Assembly.Location,  // System.Data
-					typeof(System.Xml.XmlDocument).Assembly.Location,                // System.Xml
-				};
-
-				foreach (var asm in assemblies) {
+				foreach (var asm in DefaultAssemblies) {
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm);
 					result.Add (metadataReference);
 				}
-
 				return result;
 			}
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
