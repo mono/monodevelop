@@ -32,6 +32,7 @@ namespace MonoDevelop.PackageManagement
 	internal interface IPackageManagementProgressMonitorFactory
 	{
 		ProgressMonitor CreateProgressMonitor (string statusText);
+		ProgressMonitor CreateProgressMonitor (string statusText, bool clearConsole);
 	}
 }
 
