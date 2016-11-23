@@ -184,7 +184,7 @@ namespace MonoDevelop.Gettext
 				string file = foundInStore.GetValue (iter, (int)FoundInColumns.FullFileName) as string;
 				int lineNr = 1;
 				try {
-					lineNr = 1 + int.Parse (line);
+					lineNr = Math.Max(1, int.Parse (line));
 				} catch {
 				}
 				IdeApp.Workbench.OpenDocument (new FileOpenInformation (file, project, lineNr, 1, OpenDocumentOptions.Default));
