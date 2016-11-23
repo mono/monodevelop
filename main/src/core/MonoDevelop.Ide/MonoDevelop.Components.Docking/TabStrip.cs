@@ -47,8 +47,12 @@ namespace MonoDevelop.Components.Docking
 
 		public TabStrip (DockFrame frame)
 		{
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
+
 			VBox vbox = new VBox ();
+			vbox.Accessible.SetAccessibilityShouldIgnore (true);
 			box = new TabStripBox () { TabStrip = this };
+			box.Accessible.SetAccessibilityShouldIgnore (true);
 			vbox.PackStart (box, false, false, 0);
 		//	vbox.PackStart (bottomFiller, false, false, 0);
 			Add (vbox);
