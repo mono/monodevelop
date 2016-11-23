@@ -423,6 +423,7 @@
       <DependentUpon>PackageSourcesLoadErrorWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement\GlobalNuGetConfigFilePath.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetConfigFileChangedMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
