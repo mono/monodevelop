@@ -496,42 +496,83 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new ChunkStyle() { Foreground = result };
 		}
 
-
-		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
+		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByName (FilePath fileName)
 		{
-			string name = fileName;
-			SyntaxHighlightingDefinition def = null;
+			SyntaxHighlightingDefinition bestMatch = null;
+
 			string foundType = null;
-			if (name != null) {
+			var fileNameStr = (string)fileName;
+			var name = fileName.FileName;
+
+			foreach (var bundle in languageBundles) {
+				foreach (var h in bundle.Highlightings) {
+					foreach (var fileType in h.FileTypes) {
+
+						if (!fileNameStr.EndsWith (fileType, StringComparison.OrdinalIgnoreCase))
+							continue;
+
+						//if type is full match to filename e.g. ChangeLog, we're done
+						if (name.Length == fileType.Length) {
+							return h;
+						}
+
+						//if type didn't start with period, check filename has one in the right place
+						//e.g type 'y' is not valid match for name 'ab.xy'
+						if (fileType [0] != '.' && fileNameStr [fileNameStr.Length - fileType.Length - 1] != '.') {
+							continue;
+						}
+
+						//we have a valid match. but there may be a better/longer one
+						//e.g. 'xy' matches 'ab.nm.xy', but 'nm.xy' matches better
+						foundType = fileType;
+						bestMatch = h;
+					}
+				}
+			}
+
+			return bestMatch;
+		}
+
+		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByMimeType (string mimeType)
+		{
+			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+				if (mimeType == "application/octet-stream" || mimeType == "text/plain")
+					return null;
+
 				foreach (var bundle in languageBundles) {
 					foreach (var h in bundle.Highlightings) {
-						foreach (var fileType in h.FileTypes) {
-							if (name.EndsWith (fileType, FilePath.PathComparison)) {
-								if (foundType == null || foundType.Length < fileType.Length) {
-									foundType = fileType;
-									def = h;
-								}
+						foreach (var fe in h.FileTypes) {
+							var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : "a." + fe;
+							var mime = DesktopService.GetMimeTypeForUri (uri);
+							if (mimeType == mime) {
+								return h;
 							}
 						}
 					}
 				}
 			}
-			if (def != null)
-				return def;
-			if (mimeType == "application/octet-stream" || mimeType == "text/plain")
-				return null;
-			foreach (var bundle in languageBundles) {
-				foreach (var h in bundle.Highlightings) {
-					foreach (var fe in h.FileTypes) {
-						var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : fe;
-						var mime = DesktopService.GetMimeTypeForUri (uri);
-						if (mimeType == mime) {
-							return h;
-						}
-					}
+
+			return null;
+		}
+
+		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
+		{
+			if (!fileName.IsNullOrEmpty) {
+				var def = GetSyntaxHighlightingDefinitionByName (fileName);
+				if (def != null) {
+					return def;
+				}
+
+				if (mimeType == null) {
+					mimeType = DesktopService.GetMimeTypeForUri (fileName);
 				}
 			}
-			return null;
+
+			if (mimeType == null) {
+				return null;
+			}
+
+			return GetSyntaxHighlightingDefinitionByMimeType (mimeType);
 		}
 
 		internal static ImmutableStack<string> GetScopeForFileName (string fileName)

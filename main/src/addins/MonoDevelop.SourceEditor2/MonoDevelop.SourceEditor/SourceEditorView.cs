@@ -250,20 +250,6 @@ namespace MonoDevelop.SourceEditor
 
 		void Document_MimeTypeChanged (object sender, EventArgs e)
 		{
-			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
-			var sm = Document.SyntaxMode;
-			if (sm == DefaultSyntaxHighlighting.Instance) {
-				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
-					var syntaxMode = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (Document.FileName, mt);
-					if (syntaxMode != null) {
-						Document.SyntaxMode = new SyntaxHighlighting (syntaxMode, Document);
-					
-						break;
-					} else {
-						Document.SyntaxMode = DefaultSyntaxHighlighting.Instance;
-					}
-				}
-			}
 			if (Document.MimeType != null) {
 				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
 			}
