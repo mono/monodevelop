@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
 			PackageManagementMSBuildExtension.PackageRestoreTask =
-				backgroundPackageActionRunner.RunAsync (progressMessage, installPackageActions);
+				backgroundPackageActionRunner.RunAsync (progressMessage, installPackageActions, clearConsole: false);
 		}
 
 		List<IPackageAction> CreatePackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
