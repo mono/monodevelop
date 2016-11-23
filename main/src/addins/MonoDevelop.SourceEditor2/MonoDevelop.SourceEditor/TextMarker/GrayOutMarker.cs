@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				}
 				if (chunk.Contains (markerEnd)) {
-					var chunkAfter = new ColoredSegment (markerEnd, markerEnd - chunk.EndOffset, chunk.ScopeStack);
+					var chunkAfter = new ColoredSegment (markerEnd, chunk.EndOffset - markerEnd, chunk.ScopeStack);
 					chunks [i] = new ColoredSegment (chunk.Offset, markerEnd - chunk.Offset, chunk.ScopeStack);
 					chunks.Insert (i + 1, chunkAfter);
 					i++;
