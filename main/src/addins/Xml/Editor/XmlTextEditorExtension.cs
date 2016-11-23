@@ -72,9 +72,8 @@ namespace MonoDevelop.Xml.Editor
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetDefaultSchema ();
-			
-			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (string.IsNullOrEmpty (Editor.MimeType) || Editor.MimeType == "text/plain") {
+
+			if (string.IsNullOrEmpty (Editor.MimeType) || Editor.MimeType == "text/plain" || Editor.MimeType == "application/octet-stream") {
 				Editor.MimeType = ApplicationXmlMimeType;
 				DocumentContext.ReparseDocument ();
 			}
