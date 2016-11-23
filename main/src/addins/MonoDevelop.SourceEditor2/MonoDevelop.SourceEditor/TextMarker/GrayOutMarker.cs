@@ -62,12 +62,13 @@ namespace MonoDevelop.SourceEditor
 					chunks [i] = new ColoredSegment (markerStart, markerEnd - markerStart, chunk.ScopeStack);
 					if (chunkAfter.Length > 0) {
 						chunks.Insert (i + 1, chunkAfter);
-						i++;
 					}
 					if (chunkBefore.Length > 0) {
 						chunks.Insert (i, chunkBefore);
 						i++;
 					}
+					if (chunkAfter.Length > 0)
+						i++;
 					continue;
 				}
 				if (chunk.Contains (markerStart)) {
