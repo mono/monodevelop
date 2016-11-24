@@ -88,6 +88,10 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 					min = (double) SByte.MinValue;
 					max = (double) SByte.MaxValue;
 					break;
+				case TypeCode.Decimal:
+					min = (double) Decimal.MinValue;
+					max = (double) Decimal.MaxValue;
+					break;
 				default:
 					throw new ApplicationException ("IntRange editor does not support editing values of type " + session.Property.PropertyType);
 			}
