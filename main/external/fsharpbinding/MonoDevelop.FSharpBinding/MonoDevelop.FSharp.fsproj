@@ -119,7 +119,6 @@
     <None Include="paket.references" />
     <Compile Include="Properties\AddinInfo.fs" />
     <Compile Include="HighlightUnusedCode.fs" />
-    <Compile Include="HighlightUnusedOpens.fs" />
     <Compile Include="TypeSignatureHelp.fs" />
   </ItemGroup>
   <ItemGroup>
