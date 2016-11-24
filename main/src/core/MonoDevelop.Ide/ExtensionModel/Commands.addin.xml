@@ -825,6 +825,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree"
 			 defaultHandler = "MonoDevelop.Ide.Commands.DumpA11yTreeHandler"
 			 _label = "Dump Accessibility Tree" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTreeDelayed"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpA11yTreeDelayedHandler"
+			 _label = "Dump Accessibility Tree (10s)" />
 	</Category>
 
 	<!-- SearchCommands -->

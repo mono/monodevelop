@@ -27,6 +27,8 @@
 
 
 using System;
+using System.Timers;
+
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
@@ -153,6 +155,21 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			Components.AtkCocoaHelper.DumpAccessibilityTree ();
+		}
+	}
+
+	class DumpA11yTreeDelayedHandler : CommandHandler
+	{
+		Timer t;
+		protected override void Run ()
+		{
+			t = new Timer (10000);
+			t.Elapsed += (sender, e) => {
+				Components.AtkCocoaHelper.DumpAccessibilityTree ();
+				t.Dispose ();
+				t = null;
+			};
+			t.Start ();
 		}
 	}
 }
