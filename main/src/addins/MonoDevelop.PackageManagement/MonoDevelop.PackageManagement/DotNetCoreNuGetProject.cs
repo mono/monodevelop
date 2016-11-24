@@ -84,9 +84,7 @@ namespace MonoDevelop.PackageManagement
 
 		public override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
 		{
-			return Runtime.RunInMainThread<IEnumerable<PackageReference>> (() => {
-				return GetPackageReferences ();
-			});
+			return Task.FromResult (GetPackageReferences ());
 		}
 
 		IEnumerable<PackageReference> GetPackageReferences ()
