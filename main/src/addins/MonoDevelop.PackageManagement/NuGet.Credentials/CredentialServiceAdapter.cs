@@ -11,9 +11,9 @@ namespace NuGet.Credentials
 	/// <summary>
 	/// Wraps a CredentialService to match the older v2 NuGet.ICredentialProvider interface
 	/// </summary>
-	public class CredentialServiceAdapter : NuGet.ICredentialProvider
+	class CredentialServiceAdapter : NuGet.ICredentialProvider
 	{
-		private readonly CredentialService _credentialService;
+		readonly CredentialService _credentialService;
 
 		public CredentialServiceAdapter (CredentialService service)
 		{
@@ -27,7 +27,7 @@ namespace NuGet.Credentials
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
 			if (uri == null) {
-				throw new ArgumentNullException(nameof(uri));
+				throw new ArgumentNullException (nameof(uri));
 			}
 
 			var type = credentialType == CredentialType.ProxyCredentials ?

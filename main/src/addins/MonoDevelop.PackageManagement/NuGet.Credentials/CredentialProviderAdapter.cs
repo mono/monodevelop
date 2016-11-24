@@ -12,7 +12,7 @@ namespace NuGet.Credentials
 	/// <summary>
 	/// Wraps a v2 NuGet.ICredentialProvider to match the newer NuGet.Credentials.ICredentialProvider interface
 	/// </summary>
-	public class CredentialProviderAdapter : ICredentialProvider
+	class CredentialProviderAdapter : ICredentialProvider
 	{
 		private readonly NuGet.ICredentialProvider _provider;
 
