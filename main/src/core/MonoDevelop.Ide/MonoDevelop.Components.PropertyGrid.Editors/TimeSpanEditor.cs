@@ -79,12 +79,11 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		void OnChanged (object o, EventArgs a)
 		{
 			string s = entry.Text;
-			
-			try {
-				time = TimeSpan.Parse (s);
-				if (ValueChanged != null)
-					ValueChanged (this, a);
-			} catch {
+
+			TimeSpan temp;
+			if (TimeSpan.TryParse (s, out temp)) {
+				time = temp;
+				ValueChanged?.Invoke (this, a);
 			}
 		}
 		
