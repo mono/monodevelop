@@ -42,11 +42,13 @@ type InteractiveSession() =
     let mutable waitingForResponse = false
 
     let fsiProcess =
+        let processPid = sprintf " %d" (Process.GetCurrentProcess().Id)
+
         let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else path
 
         let arguments = 
-            if Environment.runningOnMono then path else null
+            if Environment.runningOnMono then path + processPid else processPid
 
         let startInfo =
             new ProcessStartInfo
