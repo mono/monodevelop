@@ -49,10 +49,12 @@ module signatureHelp =
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
 
+    let runInMainThread f = Runtime.RunInMainThread(fun () -> f() |> ignore) |> ignore
     let removeMarkers (editor:TextEditor) line =
-        editor.GetLineMarkers line
-        |> List.ofSeq
+        let markers = editor.GetLineMarkers line |> List.ofSeq
+        markers
         |> List.iter(fun m -> Runtime.RunInMainThread(fun() -> editor.RemoveMarker m) |> ignore)
+        markers.Length > 0
 
     let extractSignature (FSharpToolTipText tips) =
         let getSignature (str: string) =
@@ -81,7 +83,7 @@ module signatureHelp =
         |> Option.map getSignature
         |> Option.fill ""
 
-    let getUnusedOpens (context:DocumentContext) (editor:TextEditor) =
+    let displaySignatures (context:DocumentContext) (editor:TextEditor) =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let editorFont = data.Options.Font
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
@@ -96,6 +98,7 @@ module signatureHelp =
             }
 
         ast |> Option.iter (fun (ast, pd) ->
+          if not pd.HasErrors then
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
             let topVisibleLine = data.HeightTree.YToLineNumber data.VAdjustment.Value
             let bottomVisibleLine = 
@@ -115,12 +118,16 @@ module signatureHelp =
             // remove any markers that are in the wrong positions
             let lineNumbersWithMarkersToRemove =
                 [topVisibleLine..bottomVisibleLine] |> List.filter(not << funs.ContainsKey)
-            if not lineNumbersWithMarkersToRemove.IsEmpty then
-                for lineNr in lineNumbersWithMarkersToRemove do
-                    let line = editor.GetLine lineNr
-                    removeMarkers editor line
 
-                document.CommitUpdateAll()
+            let removedAny =
+                lineNumbersWithMarkersToRemove
+                |> List.fold(fun state lineNr ->
+                                let line = editor.GetLine lineNr
+                                state || removeMarkers editor line) false
+
+            if removedAny then
+                runInMainThread (fun() -> document.CommitMultipleLineUpdate(topVisibleLine, bottomVisibleLine))
+
 
             let addMarker text (lineNr:int) line =
                 let newMarker = SignatureHelpMarker(document, text, font, line)
@@ -152,20 +159,26 @@ type SignatureHelp() as x =
     let removeAllMarkers() =
         async {
             let editor = x.Editor
-            editor.GetLines() |> Seq.iter(signatureHelp.removeMarkers editor)
+            editor.GetLines() |> Seq.iter(signatureHelp.removeMarkers editor >> ignore)
             let editorData = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
             editorData.Document.CommitUpdateAll()
         } |> Async.StartImmediate
         
     override x.Initialize() =
+        let displaySignatures dueMs observable =
+            observable
+            |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, true))
+            |> Observable.throttle (TimeSpan.FromMilliseconds dueMs)
+            |> Observable.subscribe (fun _ -> signatureHelp.displaySignatures x.DocumentContext x.Editor)
+
         disposables <-
             Some
                 [x.Editor.VAdjustmentChanged
-                |> Observable.merge x.DocumentContext.DocumentParsed 
                 |> Observable.merge x.Editor.ZoomLevelChanged
-                |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, true))
-                |> Observable.throttle (TimeSpan.FromMilliseconds 100.)
-                |> Observable.subscribe (fun _ -> signatureHelp.getUnusedOpens x.DocumentContext x.Editor)
+                |> displaySignatures 100.
+                ;
+                x.DocumentContext.DocumentParsed
+                |> displaySignatures 1000.
                 ;
                 PropertyService.PropertyChanged
                     .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures && (not (p.NewValue :?> bool)) then
