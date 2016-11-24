@@ -98,7 +98,7 @@ module signatureHelp =
             }
 
         ast |> Option.iter (fun (ast, pd) ->
-          if not pd.HasErrors then
+          if not pd.HasErrors && pd.AllSymbolsKeyed.Count > 0 then
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
             let topVisibleLine = data.HeightTree.YToLineNumber data.VAdjustment.Value
             let bottomVisibleLine = 
@@ -107,7 +107,6 @@ module signatureHelp =
 
             let funs =
                 symbols
-
                 |> List.filter(fun s -> s.IsFromDefinition)
                 |> List.filter(fun s -> match s with 
                                         | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
@@ -127,7 +126,6 @@ module signatureHelp =
 
             if removedAny then
                 runInMainThread (fun() -> document.CommitMultipleLineUpdate(topVisibleLine, bottomVisibleLine))
-
 
             let addMarker text (lineNr:int) line =
                 let newMarker = SignatureHelpMarker(document, text, font, line)
