@@ -24,12 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Gui.Pads;
+using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -37,6 +37,13 @@ namespace MonoDevelop.PackageManagement
 	{
 		public ProgressMonitor CreateProgressMonitor (string title)
 		{
+			return CreateProgressMonitor (title, clearConsole: true);
+		}
+
+		public ProgressMonitor CreateProgressMonitor (string title, bool clearConsole)
+		{
+			ConfigureConsoleClearing (clearConsole);
+
 			OutputProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
 
 			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
@@ -61,6 +68,18 @@ namespace MonoDevelop.PackageManagement
 				Stock.Console,
 				false,
 				true);
+		}
+
+		void ConfigureConsoleClearing (bool clearConsole)
+		{
+			var workbench = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
+			var codon = workbench.PadContentCollection.FirstOrDefault (pad => pad.PadId.Contains ("PackageConsole"));
+			if (codon != null) {
+				var pad = codon.PadContent as DefaultMonitorPad;
+				if (pad != null) {
+					pad.ClearOnBeginProgress = clearConsole;
+				}
+			}
 		}
 	}
 }
