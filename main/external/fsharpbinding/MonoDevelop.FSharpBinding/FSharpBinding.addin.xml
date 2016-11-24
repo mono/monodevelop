@@ -9,7 +9,6 @@
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
     <Import file="MonoDevelop.FSharpInteractive.Service.exe" />
-    <Import assembly="Newtonsoft.Json.dll" />
 	<Import assembly="FSharp.Compiler.Interactive.Settings.dll" />	
   <!--INSTALL_DEBUG
     <Import file = "FSharpBinding.dll.mdb" />
