@@ -87,21 +87,32 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public OptionsDialog (MonoDevelop.Components.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
+			buttonCancel.Accessible.Name = "Dialogs.Options.Cancel";
+			buttonCancel.Accessible.Description = GettextCatalog.GetString ("Close the options dialog and discard any changes");
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
 
 			buttonOk = new Gtk.Button (Gtk.Stock.Ok);
+			buttonOk.Accessible.Name = "Dialogs.Options.Ok";
+			buttonOk.Accessible.Description = GettextCatalog.GetString ("Close the options dialog and keep the changes");
 			this.ActionArea.PackStart (buttonOk);
 			buttonOk.Clicked += OnButtonOkClicked;
 
 			mainHBox = new HBox ();
+			mainHBox.Accessible.SetAccessibilityShouldIgnore (true);
 			tree = new TreeView ();
+			tree.Accessible.Name = "Dialogs.Options.Categories";
+			tree.Accessible.Description = GettextCatalog.GetString ("The categories of options that are available in this dialog");
+
 			var sw = new ScrolledWindow ();
+			sw.Accessible.SetAccessibilityShouldIgnore (true);
 			sw.Add (tree);
 			sw.HscrollbarPolicy = PolicyType.Never;
 			sw.VscrollbarPolicy = PolicyType.Automatic;
 			sw.ShadowType = ShadowType.None;
 
 			var fboxTree = new HeaderBox ();
+			fboxTree.Accessible.SetAccessibilityShouldIgnore (true);
+
 			fboxTree.SetMargins (0, 1, 0, 1);
 			fboxTree.SetPadding (0, 0, 0, 0);
 			fboxTree.BackgroundColor = new Gdk.Color (255, 255, 255);
@@ -113,21 +124,28 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			};
 
 			var vbox = new VBox ();
+			vbox.Accessible.SetAccessibilityShouldIgnore (true);
 			mainHBox.PackStart (vbox, true, true, 0);
 			var headerBox = new HBox (false, 6);
+			headerBox.Accessible.SetAccessibilityShouldIgnore (true);
 
 			labelTitle = new Label ();
+			labelTitle.Accessible.Name = "Dialogs.Options.PageTitle";
 			labelTitle.Xalign = 0;
 			textHeader = new Alignment (0, 0, 1, 1);
+			textHeader.Accessible.SetAccessibilityShouldIgnore (true);
 			textHeader.Add (labelTitle);
 			textHeader.BorderWidth = 12;
 			headerBox.PackStart (textHeader, true, true, 0);
 
 			imageHeader = new OptionsDialogHeader ();
 			imageHeader.Hide ();
-			headerBox.PackStart (imageHeader.ToGtkWidget ());
+			var imageHeaderWidget = imageHeader.ToGtkWidget ();
+			imageHeaderWidget.Accessible.SetAccessibilityShouldIgnore (true);
+			headerBox.PackStart (imageHeaderWidget);
 
 			var fboxHeader = new HeaderBox ();
+			fboxHeader.Accessible.SetAccessibilityShouldIgnore (true);
 			fboxHeader.SetMargins (0, 1, 0, 0);
 			fboxHeader.Add (headerBox);
 //			fbox.GradientBackround = true;
@@ -147,7 +165,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			vbox.PackStart (fboxHeader, false, false, 0);
 
 			pageFrame = new HBox ();
+			pageFrame.Accessible.SetAccessibilityShouldIgnore (true);
 			var fbox = new HeaderBox ();
+			fbox.Accessible.SetAccessibilityShouldIgnore (true);
 			fbox.SetMargins (0, 1, 0, 0);
 			fbox.ShowTopShadow = true;
 			fbox.Add (pageFrame);
