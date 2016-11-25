@@ -1,4 +1,4 @@
-﻿//
+//
 // BreakpointsAndSteppingTests.cs
 //
 // Author:
@@ -880,7 +880,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void CatchPointTest2 ()
 		{
 			IgnoreSoftDebugger ("I'm having problem testing this because. There is error nonstop happening in framework about CurrentCulture featching.");
-			IgnoreCorDebugger ("Randomly fails");
+			IgnoreWin32Debugger ("Randomly fails");
 
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);
@@ -894,7 +894,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void CatchpointIgnoreExceptionsInNonUserCodeTest ()
 		{
 			//It seems CorDebugger has different definition of what is user code and what is not.
-			IgnoreCorDebugger ("CorDebugger: TODO");
+			IgnoreWin32Debugger ("CorDebugger: TODO");
 
 			InitializeTest ();
 			Session.Options.ProjectAssembliesOnly = true;
@@ -928,7 +928,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("2", val.Value);
 			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
 
-			IgnoreCorDebugger ("TODO: Conditional breakpoints with compare against string or enum is not working on CorDebugger");
+			IgnoreWin32Debugger ("TODO: Conditional breakpoints with compare against string or enum is not working on CorDebugger");
 
 			InitializeTest ();
 			bp = AddBreakpoint ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");

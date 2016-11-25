@@ -36,12 +36,12 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 {
 	interface IFoo
 	{
-		int this[int index] { get; }
+		int this [int index] { get; }
 		int Prop { get; }
 	}
 	interface IBar
 	{
-		int this[int index] { get; }
+		int this [int index] { get; }
 		int Prop { get; }
 	}
 	class Bo
@@ -54,18 +54,14 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		int IFoo.Prop { get { return 2; } }
 		public int Prop { get { return 3; } }
 
-		int IFoo.this[int index]
-		{
-			get
-			{
+		int IFoo.this [int index] {
+			get {
 				return index;
 			}
 		}
 
-		int IBar.this[int index]
-		{
-			get
-			{
+		int IBar.this [int index] {
+			get {
 				return -index;
 			}
 		}
@@ -79,7 +75,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			return 2;
 		}
 
-		protected string ProtectedStringProperty{ get; set; }
+		protected string ProtectedStringProperty { get; set; }
 
 		public virtual int TestMethodBase (string a)
 		{
@@ -143,7 +139,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 	{
 		static string staticString = "some static";
 		string someString = "hi";
-		string[] numbers = { "one", "two", "three" };
+		string [] numbers = { "one", "two", "three" };
 
 		public static void RunTest ()
 		{
@@ -160,11 +156,12 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			stringList.Add ("aaa");
 			stringList.Add ("bbb");
 			stringList.Add ("ccc");
-
+#if !CORE
 			var alist = new ArrayList ();
 			alist.Add (1);
 			alist.Add ("two");
 			alist.Add (3);
+#endif
 			string modifyInLamda = "";
 
 			var debugDisplayMethodTest = new DebuggerDisplayMethodTest ();
@@ -214,7 +211,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var richObject = new RichClass ();
 			byte[] nulledByteArray = null;
 
-			var arrayWithLowerBounds = Array.CreateInstance (typeof(int), new int[] { 3, 4, 5 }, new int[] { 5, 4, 3 });
+			var arrayWithLowerBounds = (int [,,])Array.CreateInstance (typeof(int), new int[] { 3, 4, 5 }, new int[] { 5, 4, 3 });
 			int m = 100;
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 4; j++) {

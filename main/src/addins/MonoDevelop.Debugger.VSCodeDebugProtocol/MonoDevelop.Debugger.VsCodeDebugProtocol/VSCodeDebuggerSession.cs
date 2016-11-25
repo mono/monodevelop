@@ -259,19 +259,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				readonly string name;
 				readonly string evalName;
 				readonly string type;
-				readonly string val;
-
+				readonly string value;
 
 				public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference, int parentVariablesReference, string name, string type, string evalName, int frameId, string val)
 				{
-					this.type = type;
+					if (type != null && type.Length > 0 && type [type.Length - 1] == '}' && type.Contains (" {")) {
+						this.type = type.Remove (type.Length - 1).Remove (0, type.IndexOf (" {", StringComparison.Ordinal) + 2);
+					} else {
+						this.type = type;
+					}
 					this.frameId = frameId;
 					this.evalName = evalName;
 					this.name = name;
 					this.vsCodeDebuggerSession = vsCodeDebuggerSession;
 					this.variablesReference = variablesReference;
 					this.parentVariablesReference = parentVariablesReference;
-					this.val = val;
+					this.value = val;
 				}
 
 				public ObjectValue [] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
@@ -331,12 +334,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					if (indexOfSpace != -1)//Remove " [TypeName]" from variable name
 						shortName = name.Remove (indexOfSpace);
 					if (type == null)
-						return ObjectValue.CreateError (null, new ObjectPath (shortName), "", val, ObjectValueFlags.None);
-					if (val == "null")
+						return ObjectValue.CreateError (null, new ObjectPath (shortName), "", value, ObjectValueFlags.None);
+					if (value == "null")
 						return ObjectValue.CreateNullObject (this, shortName, type, parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly);
 					if (variablesReference == 0)//This is some kind of primitive...
-						return ObjectValue.CreatePrimitive (this, new ObjectPath (shortName), type, new EvaluationResult (val), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly);
-					return ObjectValue.CreateObject (this, new ObjectPath (shortName), type, new EvaluationResult (val), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly, null);
+						return ObjectValue.CreatePrimitive (this, new ObjectPath (shortName), type, new EvaluationResult (value), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly);
+					return ObjectValue.CreateObject (this, new ObjectPath (shortName), type, new EvaluationResult (value), parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly, null);
 				}
 
 				public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)

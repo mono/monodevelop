@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			while (true) {
 				Console.Write ("");/*break*/
 				try {
-					typeof(AdvancedEvaluation).GetMethod (NextMethodToCall).Invoke (this, null);
+					typeof (AdvancedEvaluation).GetMethod (NextMethodToCall).Invoke (this, null);
 				} catch {
 				}
 			}
@@ -59,7 +60,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 		public IEnumerable<string> YieldMethod ()
 		{
-			var someVariable = new ArrayList ();
+			var someVariable = new List<int> ();
 			yield return "1";/*0b1212f8-9035-43dc-bf01-73efd078d680*/
 			someField = "das1";
 			someVariable.Add (1);
@@ -76,14 +77,15 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		}
 
 		string someField;
+		int someIntField;
 		public async Task Bug24998 ()
 		{
-			someField = "das";
-			var someVariable = new ArrayList ();
+			someIntField = 2;
+			var someVariable = new List<int> ();
 			var action = new Action (() => someVariable.Add (1));
 			await Task.Delay (100);
 			action ();
-			someVariable.Add (someField);/*cc622137-a162-4b91-a85c-88241e68c3ea*/
+			someVariable.Add (someIntField);/*cc622137-a162-4b91-a85c-88241e68c3ea*/
 		}
 	}
 }

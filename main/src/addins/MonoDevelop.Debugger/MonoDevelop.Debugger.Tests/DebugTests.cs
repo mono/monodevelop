@@ -65,16 +65,28 @@ namespace MonoDevelop.Debugger.Tests
 			EngineId = engineId;
 		}
 
-		public void IgnoreCorDebugger (string message = "")
+		public bool IsCoreDebugger ()
 		{
-			if (!(Session is SoftDebuggerSession)) {
+			return EngineId == "NetCoreDebugger";
+		}
+
+		public void IgnoreCoreDebugger (string message = "")
+		{
+			if (IsCoreDebugger()) {
+				Assert.Ignore (message);
+			}
+		}
+
+		public void IgnoreWin32Debugger (string message = "")
+		{
+			if (EngineId == "MonoDevelop.Debugger.Win32") {
 				Assert.Ignore (message);
 			}
 		}
 
 		public void IgnoreSoftDebugger (string message = "")
 		{
-			if (Session is SoftDebuggerSession) {
+			if (EngineId == "Mono.Debugger.Soft") {
 				Assert.Ignore (message);
 			}
 		}
@@ -143,20 +155,27 @@ namespace MonoDevelop.Debugger.Tests
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
+			ExecutionCommand cmd;
+			string exe;
+			if (EngineId == "NetCoreDebugger") {
+				exe = Path.Combine (path, "netcoreapp1.0", "MonoDevelop.Debugger.Tests.TestAppCore.dll");
+				cmd = new DotNetCore.DotNetCoreExecutionCommand (path, exe, test);
+			} else {
+				exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
+				cmd = new DotNetExecutionCommand () {
+					TargetRuntime = runtime,
+					Command = exe,
+					Arguments = test
+				};
 
-			var cmd = new DotNetExecutionCommand ();
-			cmd.TargetRuntime = runtime;
-			cmd.Command = exe;
-			cmd.Arguments = test;
-
-			if (Platform.IsWindows) {
-				var monoRuntime = runtime as MonoTargetRuntime;
-				if (monoRuntime != null) {
-					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), cmd.Command);
-					psi.UseShellExecute = false;
-					psi.CreateNoWindow = true;
-					System.Diagnostics.Process.Start (psi).WaitForExit ();
+				if (Platform.IsWindows) {
+					var monoRuntime = runtime as MonoTargetRuntime;
+					if (monoRuntime != null) {
+						var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), exe);
+						psi.UseShellExecute = false;
+						psi.CreateNoWindow = true;
+						System.Diagnostics.Process.Start (psi).WaitForExit ();
+					}
 				}
 			}
 

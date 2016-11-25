@@ -1,0 +1,42 @@
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType></DebugType>
+    <OutputPath>..\..\..\..\build\tests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;CORE;NETCOREAPP$(TargetFrameworkVersion_SubString(1))</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\..\build\tests\</OutputPath>
+	<DefineConstants>CORE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+	<Compile Include="**\*.cs" />
+    <EmbeddedResource Include="**\*.resx" />
+    <Compile Remove="AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.App">
+      <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Sdk">
+      <Version>1.0.0-alpha-20161104-2</Version>
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MonoDevelop.Debugger.Tests.NonUserCodeTestLibCore">
+      <HintPath>..\MonoDevelop.Debugger.Tests.NonUserCodeTestLib\bin\Debug\netcoreapp1.0\MonoDevelop.Debugger.Tests.NonUserCodeTestLibCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

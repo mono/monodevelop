@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Diagnostics;
 using MonoDevelop.Debugger.Tests.NonUserCodeTestLib;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			while (true) {
 				Console.Write ("");/*break*/
 				try {
-					typeof(BreakpointsAndStepping).GetMethod (NextMethodToCall).Invoke (this, null);
+					typeof (BreakpointsAndStepping).GetMethod (NextMethodToCall).Invoke (this, null);
 				} catch {
 				}
 			}
@@ -60,7 +61,9 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			Console.Write ("NormalText");
 			Debug.Write ("DebugText");
 			Debug.Write ("");
+#if !CORE
 			System.Diagnostics.Debugger.Log (3, "SomeCategory", "DebugText2");
+#endif
 			Console.Error.Write ("ErrorText");
 			Console.Write ("");
 			Console.Write ("");/*5070ed1c-593d-4cbe-b4fa-b2b0c7b25289*/
@@ -151,7 +154,9 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				Test2 ();/*d110546f-a622-4ec3-9564-1c51bfec28f9*/
 			}
 
+#if !CORE
 			[DebuggerStepperBoundary]
+#endif
 			public void Test2 ()
 			{
 				Test3 ();
@@ -219,7 +224,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public void ForeachEnumerable ()
 		{
 			var testClass = new TestClass ();/*b73bec88-2c43-4157-8574-ad517730bc74*/
-			foreach (var a in testClass.Iter_1()) {
+			foreach (var a in testClass.Iter_1 ()) {
 				/*69dba3ab-0941-47e9-99fa-10222a2e894d*/
 			}
 			/*e01a5428-b067-4ca3-ac8c-a19d5d800228*/
@@ -273,8 +278,10 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			{
 				/*c9b18785-1348-42e3-a479-9cac1e7c5360*/
 				var result = new PListScheme ();
+#if !CORE
 				var doc = new System.Xml.XmlDocument ();
 				doc.Load (reader);
+#endif
 				return result;
 			}
 		}
@@ -299,7 +306,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				Instance.Test ();/*a062e69c-e3f7-4fd7-8985-fc7abd5c27d2*/
 			}
 		}
-
+#if !CORE
 		public void EmptyForLoopTest ()
 		{
 			Thread t = new Thread (new ThreadStart (delegate {
@@ -313,6 +320,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			t.Abort ();
 			t.Join ();
 		}
+#endif
 
 		private void EmptyForLoop ()
 		{
@@ -549,8 +557,9 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 					EmptyTestMethod ();/*754272b8-a14b-4de0-9075-6a911c37e6ce*/
 				Console.Write ("");
 			}
-
+#if !CORE
 			[System.Diagnostics.DebuggerStepperBoundary]
+#endif
 			public void DebuggerStepperBoundaryMethod (bool callEmptyMethod, int resursive = 0)
 			{
 				if (resursive > 0) {
