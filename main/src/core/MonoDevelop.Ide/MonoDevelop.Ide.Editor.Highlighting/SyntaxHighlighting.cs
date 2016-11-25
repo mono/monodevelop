@@ -174,8 +174,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (lastContexts.Contains (currentContext)) {
 						offset++;
 						length--;
-						if (length <= 0)
-							goto end;
 					} else {
 						lastContexts.Add (currentContext);
 					}
@@ -183,6 +181,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					lastContexts.Clear ();
 					lastContexts.Add (currentContext);
 				}
+				if (length <= 0)
+					goto end;
 				lastMatch = offset;
 				currentContext = ContextStack.Peek ();
 				match = null;
