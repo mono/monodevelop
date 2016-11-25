@@ -46,7 +46,7 @@ module ParsedDocument =
                         | true, unused ->
                             doc.UnusedCodeRanges <- Some (unused |> List.map formatUnused)
                         | false, errors ->
-                            doc.HasErrors <- errors.Length > 0
+                            doc.HasErrors <- errors |> List.exists(fun e -> e.Severity = FSharpErrorSeverity.Error)
                             errors |> (Seq.map formatError >> doc.AddRange))
 
             let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
