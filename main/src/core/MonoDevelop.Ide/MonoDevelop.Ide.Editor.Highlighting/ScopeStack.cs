@@ -83,8 +83,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return stack.Peek ();
 		}
 
-		public IEnumerator<string> GetEnumerator ()
+		public ImmutableStack<string>.Enumerator GetEnumerator ()
 		{
+			return stack.GetEnumerator ();
+		}
+
+		IEnumerator<string> IEnumerable<string>.GetEnumerator ()
+		{			
 			return ((IEnumerable<string>)stack).GetEnumerator ();
 		}
 
