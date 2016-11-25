@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 {
 	public class TextMateLanguage
 	{
-		readonly System.Collections.Immutable.ImmutableStack<string> scope;
+		readonly ScopeStack scope;
 
 		Dictionary<string, string> shellVariables;
 		Dictionary<string, string> ShellVariables {
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			}
 		}
 
-		TextMateLanguage (System.Collections.Immutable.ImmutableStack<string> scope)
+		TextMateLanguage (ScopeStack scope)
 		{
 			this.scope = scope;
 			cancelCompletion = new Lazy<Regex> (() => ReadSetting ("cancelCompletion"));
@@ -190,6 +190,6 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			return null;
 		}
 
-		public static TextMateLanguage Create (System.Collections.Immutable.ImmutableStack<string> scope) => new TextMateLanguage (scope);
+		public static TextMateLanguage Create (ScopeStack scope) => new TextMateLanguage (scope);
 	}
 }

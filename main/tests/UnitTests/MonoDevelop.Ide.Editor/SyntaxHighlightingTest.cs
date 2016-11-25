@@ -331,7 +331,7 @@ typedef struct
 							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
 							string mk = null;
 							var expr = StackMatchExpression.Parse (segi);
-							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, ImmutableStack<string>.Empty.Push (ss), ref mk)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
+							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, new ScopeStack (ss), ref mk)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 						}
 						expectedSegments.RemoveAt (i);
 						i--;

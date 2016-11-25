@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ChunkStyle
 	{
-		public ImmutableStack<string> ScopeStack { get; set; }
+		public ScopeStack ScopeStack { get; set; }
 		public HslColor Foreground { get; set; }
 		public HslColor Background { get; set; }
 

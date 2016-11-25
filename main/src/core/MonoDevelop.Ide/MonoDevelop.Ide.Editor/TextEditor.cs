@@ -1507,7 +1507,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ShowTooltipWindow (window, options);
 		}
 
-		public Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return textEditorImpl.GetScopeStackAsync (offset, cancellationToken);
 		}

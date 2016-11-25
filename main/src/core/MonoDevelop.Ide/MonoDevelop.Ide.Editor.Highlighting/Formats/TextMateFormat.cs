@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			ThemeSetting result = null;
 			string cs = null;
-			var stack = ImmutableStack<string>.Empty.Push (scope);
+			var stack = new ScopeStack (scope);
 			foreach (var s in settings.Skip (1)) {
 				if (s.Scopes.Any (a => EditorTheme.IsCompatibleScope (a, stack, ref cs))) {
 					result = s;

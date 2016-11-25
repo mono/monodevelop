@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return high.GetColoredSegments (line.Offset, line.Length);
 		}
 
-		public async Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = Document.GetLineByOffset (offset);
 			var state = GetState (line);
@@ -108,14 +108,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			public ImmutableStack<SyntaxContext> ContextStack;
 			public ImmutableStack<SyntaxMatch> MatchStack;
-			public ImmutableStack<string> ScopeStack;
+			public ScopeStack ScopeStack;
 
 
 			public static HighlightState CreateNewState (SyntaxHighlighting highlighting)
 			{
 				return new HighlightState {
 					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.definition.MainContext),
-					ScopeStack = ImmutableStack<string>.Empty.Push (highlighting.definition.Scope),
+					ScopeStack = new ScopeStack (highlighting.definition.Scope),
 					MatchStack = ImmutableStack<SyntaxMatch>.Empty
 				};
 			}
@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			SyntaxHighlighting highlighting;
 			ImmutableStack<SyntaxContext> ContextStack { get { return state.ContextStack; } set { state.ContextStack = value; } }
 			ImmutableStack<SyntaxMatch> MatchStack { get { return state.MatchStack; } set { state.MatchStack = value; } }
-			ImmutableStack<string> ScopeStack { get { return state.ScopeStack; } set { state.ScopeStack = value; } }
+			ScopeStack ScopeStack { get { return state.ScopeStack; } set { state.ScopeStack = value; } }
 
 			public HighlightState State {
 				get {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public Task<HighlightedLine> GetColoredSegments (int offset, int length)
 			{
 				if (ContextStack.IsEmpty)
-					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (offset, length, ImmutableStack<string>.Empty.Push ("")) }));
+					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (offset, length, new ScopeStack ("")) }));
 				SyntaxContext currentContext = null;
 				List<SyntaxContext> lastContexts = new List<SyntaxContext> ();
 				Match match = null;
@@ -346,7 +346,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 				if (ContextStack.Count () == 1) {
 					MatchStack = MatchStack.Clear ();
-					ScopeStack = ImmutableStack<string>.Empty.Push (highlighting.definition.Scope);
+					ScopeStack = new ScopeStack (highlighting.definition.Scope);
 					return;
 				}
  				ContextStack = ContextStack.Pop ();

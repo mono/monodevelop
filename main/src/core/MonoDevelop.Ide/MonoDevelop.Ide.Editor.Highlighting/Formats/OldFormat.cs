@@ -1124,7 +1124,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						var el = (XElement)node;
 						switch (el.Name.LocalName) {
 						case "name":
-							result.ScopeStack = ImmutableStack<string>.Empty.Push (el.Value);
+							result.ScopeStack = new ScopeStack (el.Value);
 							break;
 						case "fore":
 							result.Foreground = ColorScheme.ParsePaletteColor (palette, el.Value);
@@ -1385,7 +1385,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			internal static ChunkStyle ImportChunkStyle (string name, VSSettingColor vsc)
 			{
 				var textColor = new ChunkStyle ();
-				textColor.ScopeStack = ImmutableStack<string>.Empty.Push (name);
+				textColor.ScopeStack = new ScopeStack (name);
 				if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
 					textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
 					if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")

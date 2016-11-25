@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Utils
 {
 	class ClipboardColoredText
 	{
-		public ImmutableStack<string> ScopeStack { get; set; }
+		public ScopeStack ScopeStack { get; set; }
 		public string Text { get; set; }
 
 		public ClipboardColoredText (ColoredSegment chunk, TextDocument doc)

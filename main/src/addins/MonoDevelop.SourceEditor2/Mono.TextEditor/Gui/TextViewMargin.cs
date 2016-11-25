@@ -864,7 +864,7 @@ namespace Mono.TextEditor
 				foreach (var chunk in chunks) {
 					if (!disableHighlighting && sw.ElapsedMilliseconds > 50) {
 						chunks.Clear ();
-						chunks.Add (new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (line.Offset, line.Length, ImmutableStack<string>.Empty.Push ("")));
+						chunks.Add (new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (line.Offset, line.Length, new ScopeStack ("")));
 						disableHighlighting = true;
 						atts.Dispose ();
 						atts = new FastPangoAttrList ();

@@ -284,7 +284,7 @@ module Patterns =
             let highlightMutable isMut = isMut && PropertyService.Get("FSharpBinding.HighlightMutables", false)
 
             let makeSeg (chunkStyle:string) =
-               ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, ImmutableStack<string>.Empty.Push(chunkStyle))
+               ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, ScopeStack.Empty.Push(chunkStyle))
                |> Some
                 //Uncomment to visualise tokens segments
                 //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )

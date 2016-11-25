@@ -143,10 +143,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.Uuid = uuuid;
 		}
 
-		HslColor GetColor (string key, ImmutableStack<string> scopeStack)
+		HslColor GetColor (string key, ScopeStack scopeStack)
 		{
 			HslColor result = default (HslColor);
 			string found = null;
+			if (scopeStack.Count > 1) {
+				if (scopeStack.Peek ()== scopeStack.FirstElement) {
+					HslColor tryC;
+					if (settings[0].TryGetColor (key, out tryC)) {
+						result = tryC;
+						return tryC;
+					}
+				}
+			}
+
 			foreach (var setting in settings) {
 				string compatibleScope = null;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope)) {
@@ -165,7 +175,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
-		bool IsValidScope (ThemeSetting setting, ImmutableStack<string> scopeStack, ref string compatibleScope)
+		bool IsValidScope (ThemeSetting setting, ScopeStack scopeStack, ref string compatibleScope)
 		{
 			if (setting.Scopes.Count == 0)
 				return true;
@@ -176,7 +186,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-		string GetSetting (string key, ImmutableStack<string> scopeStack)
+		string GetSetting (string key, ScopeStack scopeStack)
 		{
 			string result = null;
 			string found = null;
@@ -203,7 +213,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			string found = null;
 			var foundColor = default (HslColor);
-			var stack = ImmutableStack<string>.Empty.Push (scope);
+			var stack = new ScopeStack (scope);
 			foreach (var setting in settings) {
 				string compatibleScope = null;
 				if (IsValidScope (setting, stack, ref compatibleScope)) {
@@ -232,7 +242,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-		internal static bool IsCompatibleScope (StackMatchExpression expr, ImmutableStack<string> scope, ref string matchingKey)
+		internal static bool IsCompatibleScope (StackMatchExpression expr, ScopeStack scope, ref string matchingKey)
 		{
 			while (!scope.IsEmpty) {
 				var result = expr.MatchesStack (scope, ref matchingKey);
@@ -244,7 +254,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-		internal ChunkStyle GetChunkStyle (ImmutableStack<string> scope)
+		internal ChunkStyle GetChunkStyle (ScopeStack scope)
 		{
 			var fontStyle = GetSetting ("fontStyle", scope);
 
@@ -266,7 +276,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground)
-				return GetColor (EditorThemeColors.Foreground, ImmutableStack<string>.Empty.Push (""));
+				return GetColor (EditorThemeColors.Foreground, new ScopeStack (""));
 			return chunkStyle.Foreground;
 		}
 

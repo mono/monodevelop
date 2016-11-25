@@ -146,17 +146,17 @@ namespace MonoDevelop.VBNet
 
 
 				int lastClassifiedOffsetEnd = offset;
-				ImmutableStack<string> scopeStack;
+				ScopeStack scopeStack;
 
 				foreach (var curSpan in classifications) {
 					if (curSpan.TextSpan.Start > lastClassifiedOffsetEnd) {
-						scopeStack = ImmutableStack<string>.Empty.Push (EditorThemeColors.UserTypes);
+						scopeStack = vbScope.Push (EditorThemeColors.UserTypes);
 						ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd, curSpan.TextSpan.Start - lastClassifiedOffsetEnd, scopeStack);
 						coloredSegments.Add (whitespaceSegment);
 					}
 
 					string styleName = GetStyleNameFromClassificationType (curSpan.ClassificationType);
-					scopeStack = ImmutableStack<string>.Empty.Push (styleName);
+					scopeStack = vbScope.Push (styleName);
 					ColoredSegment curColoredSegment = new ColoredSegment (curSpan.TextSpan.Start, curSpan.TextSpan.Length, scopeStack);
 					coloredSegments.Add (curColoredSegment);
 
@@ -164,7 +164,7 @@ namespace MonoDevelop.VBNet
 				}
 
 				if (offset + length > lastClassifiedOffsetEnd) {
-					scopeStack = ImmutableStack<string>.Empty.Push (EditorThemeColors.UserTypes);
+					scopeStack = vbScope.Push (EditorThemeColors.UserTypes);
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd, offset + length - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
@@ -191,9 +191,11 @@ namespace MonoDevelop.VBNet
 				}
 			}
 
-			public Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+			static readonly ScopeStack vbScope = new ScopeStack ("source.vb");
+
+			public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 			{
-				return Task.FromResult (ImmutableStack<string>.Empty.Push ("source.vb"));
+				return Task.FromResult (vbScope);
 			}
 		}
 	}
