@@ -1164,8 +1164,10 @@ namespace MonoDevelop.Projects
 					cmd.Arguments = rc.StartArguments;
 				if (!rc.StartWorkingDirectory.IsNullOrEmpty)
 					cmd.WorkingDirectory = rc.StartWorkingDirectory;
-				foreach (var env in rc.EnvironmentVariables)
-					cmd.EnvironmentVariables [env.Key] = env.Value;
+				if (cmd.EnvironmentVariables != rc.EnvironmentVariables) {
+					foreach (var env in rc.EnvironmentVariables)
+						cmd.EnvironmentVariables [env.Key] = env.Value;
+				}
 				cmd.PauseConsoleOutput = rc.PauseConsoleOutput;
 				cmd.ExternalConsole = rc.ExternalConsole;
 				cmd.TargetRuntime = Runtime.SystemAssemblyService.GetTargetRuntime (rc.TargetRuntimeId);
