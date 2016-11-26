@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-17 08:14:03+0300\n"
+"POT-Creation-Date: 2016-11-26 19:28:04+0300\n"
 "PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
 "Last-Translator: Bálint Kriván <balint@krivan.info>\n"
 "Language-Team: \n"
@@ -1352,6 +1352,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:280
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:502
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:146
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:73
@@ -3123,7 +3124,7 @@ msgid "Create new layout"
 msgstr "Új nézet létrehozása"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:205
 msgid "_Delete Current Layout"
 msgstr "Aktív _nézet törlése"
 
@@ -4298,6 +4299,11 @@ msgstr "_Nézet"
 msgid "Layout"
 msgstr "Nézet"
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:114
+#, fuzzy
+msgid "Editor Columns"
+msgstr "Mező törlése"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
 #, fuzzy
 msgid "Inline _Messages"
@@ -4310,6 +4316,15 @@ msgstr "Bl_okkok"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:142
 msgid "_Search"
 msgstr "_Keresés"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:156
+#, fuzzy
+msgid "Bookmarks"
+msgstr "Következő könyvjelző"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:164
+msgid "Go To"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:176
 msgid "Navigation _History"
@@ -4795,37 +4810,53 @@ msgstr "Egyéni szabályok"
 msgid "Show {0}"
 msgstr "{0} megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:158
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:163
 msgid "Switch to layout '{0}'"
 msgstr "{0} nézetbe való váltás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:203
 #, fuzzy
 msgid "_Delete “{0}” Layout"
 msgstr "Aktív _nézet törlése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 #, fuzzy
 msgid "Are you sure you want to delete the “{0}” layout?"
 msgstr "Biztos benne, hogy törli az aktív nézetet?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:226
 #, fuzzy
 msgid "Exit Full Screen"
 msgstr "Teljes képernyő"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:227
 #, fuzzy
 msgid "Enter Full Screen"
 msgstr "Teljes képernyő"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:253
 msgid "Show Next ({0})"
 msgstr "Következő mutatása ({0})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:271
 msgid "Show Previous ({0})"
 msgstr "Előző mutatása ({0})"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:144
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
+msgid "Code"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:145
+#, fuzzy
+msgid "Design"
+msgstr "Tervező"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:147
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
+#, fuzzy
+msgid "Test"
+msgstr "Teszt futtatása"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:107
 #, fuzzy
@@ -6149,11 +6180,6 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:147
 msgid "Alpha updates (very often, very unstable)"
 msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
-#, fuzzy
-msgid "Test"
-msgstr "Teszt futtatása"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:189
 #, fuzzy
@@ -9627,42 +9653,14 @@ msgid "_Show Hidden Message"
 msgstr "Üzenetek megjelenítése"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
-msgid ""
-"Run Configuration: \" + configInfo.EditedConfig.Name);\n"
-"\t\t\tIcon = \"md-prefs-play\";\n"
-"\t\t}\n"
-"\t\t\n"
-"\t\t//this is used by the options dialog to look up the icon as needed, at "
-"required scales\n"
-"\t\tpublic SolutionItemRunConfiguration RunConfiguration { get; private "
-"set; }\n"
-"\t}\n"
-"\t\n"
-"\tpartial class RunConfigurationsPanelWidget: Xwt.VBox\n"
-"\t{\n"
-"\t\tRunConfigurationsPanel panel;\n"
-"\t\tRunConfigurationsList list;\n"
-"\n"
-"\t\tXwt.Button removeButton;\n"
-"\t\tXwt.Button copyButton;\n"
-"\t\tXwt.Button renameButton;\n"
-"\n"
-"\t\tpublic RunConfigurationsPanelWidget (RunConfigurationsPanel panel, "
-"OptionsDialog dialog)\n"
-"\t\t{\n"
-"\t\t\tthis.panel = panel;\n"
-"\n"
-"\t\t\tthis.Margin = 6;\n"
-"\t\t\tSpacing = 6;\n"
-"\n"
-"\t\t\tlist = new RunConfigurationsList ();\n"
-"\t\t\tthis.PackStart (list, true);\n"
-"\n"
-"\t\t\tvar box = new Xwt.HBox ();\n"
-"\t\t\tbox.Spacing = 6;\n"
-"\n"
-"\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
-msgstr ""
+#, fuzzy
+msgid "Run Configuration: {0}"
+msgstr "Konfigurációk"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
+#, fuzzy
+msgid "New"
+msgstr "Ú_j"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #, fuzzy
@@ -24307,10 +24305,6 @@ msgstr "<b>Whitespace</b>"
 msgid "Snippet {0}"
 msgstr "Beágyazás: '{0}'"
 
-#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
-msgid "Code"
-msgstr ""
-
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
 #, fuzzy
 msgid "Add to the project"
@@ -24408,35 +24402,6 @@ msgstr ""
 #, fuzzy
 msgid "Add Service"
 msgstr "Forrás"
-
-#: ../external/ikvm/reflect/Projection.cs:266
-msgid ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\n"
-"\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-msgstr ""
-
-#: ../external/ikvm/reflect/Projection.cs:339
-msgid "Dispose"
-msgstr ""
 
 #: ../external/cecil/Mono.Security.Cryptography/CryptoService.cs:152
 #: ../external/mono-addins/Mono.Addins.CecilReflector/Mono.Cecil/Mono.Security.Cryptography/CryptoService.cs:170
@@ -29937,9 +29902,6 @@ msgstr "Nézet módosítása"
 #~ msgid "Pre_vious Bookmark"
 #~ msgstr "Előző könyvjelző"
 
-#~ msgid "Ne_xt Bookmark"
-#~ msgstr "Következő könyvjelző"
-
 #, fuzzy
 #~ msgid "Use Selection for Find"
 #~ msgstr "Kijelölt szöveg _nagybetűssé tétele"
@@ -29954,9 +29916,6 @@ msgstr "Nézet módosítása"
 #, fuzzy
 #~ msgid "Recenter editor"
 #~ msgstr "Szövegszerkesztő"
-
-#~ msgid "_New"
-#~ msgstr "Ú_j"
 
 #, fuzzy
 #~ msgid "_Message Bubbles"

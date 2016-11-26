@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-17 08:14:03+0300\n"
+"POT-Creation-Date: 2016-11-26 19:28:04+0300\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -1364,6 +1364,7 @@ msgstr "Mono 명령에 제공할 추가 명령줄 옵션입니다."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:280
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:502
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:146
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:73
@@ -3010,7 +3011,7 @@ msgid "Create new layout"
 msgstr "새 레이아웃 만들기"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:205
 msgid "_Delete Current Layout"
 msgstr "현재 레이아웃 삭제(_D)"
 
@@ -4104,6 +4105,11 @@ msgstr "보기(_V)"
 msgid "Layout"
 msgstr "레이아웃"
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:114
+#, fuzzy
+msgid "Editor Columns"
+msgstr "두 개의 편집기 열"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
 msgid "Inline _Messages"
 msgstr "인라인 메시지(_M)"
@@ -4115,6 +4121,15 @@ msgstr "접기(_O)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:142
 msgid "_Search"
 msgstr "검색(_S)"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:156
+#, fuzzy
+msgid "Bookmarks"
+msgstr "책갈피 지우기"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:164
+msgid "Go To"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:176
 msgid "Navigation _History"
@@ -4555,33 +4570,48 @@ msgstr "사용자 지정 도구 추가..."
 msgid "Show {0}"
 msgstr "{0} 표시"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:158
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:163
 msgid "Switch to layout '{0}'"
 msgstr "'{0}' 레이아웃으로 전환"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:203
 msgid "_Delete “{0}” Layout"
 msgstr "“{0}” 레이아웃 삭제(_D)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "Are you sure you want to delete the “{0}” layout?"
 msgstr "“{0}” 레이아웃을 삭제할까요?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:226
 msgid "Exit Full Screen"
 msgstr "전체 화면 끝내기"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:227
 msgid "Enter Full Screen"
 msgstr "전체화면으로 전환"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:253
 msgid "Show Next ({0})"
 msgstr "다음 표시({0})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:271
 msgid "Show Previous ({0})"
 msgstr "이전 표시({0})"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:144
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
+msgid "Code"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:145
+#, fuzzy
+msgid "Design"
+msgstr "디자이너"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:147
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
+msgid "Test"
+msgstr "테스트"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:107
 msgid "Activate document '{0}'"
@@ -5873,10 +5903,6 @@ msgstr "베타 업데이트(매주)"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:147
 msgid "Alpha updates (very often, very unstable)"
 msgstr "알파 업데이트(매우 빈번하고 불안정함)"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
-msgid "Test"
-msgstr "테스트"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:189
 msgid "Check for Updates Now"
@@ -9043,42 +9069,14 @@ msgid "_Show Hidden Message"
 msgstr "숨겨진 메시지 표시(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
-msgid ""
-"Run Configuration: \" + configInfo.EditedConfig.Name);\n"
-"\t\t\tIcon = \"md-prefs-play\";\n"
-"\t\t}\n"
-"\t\t\n"
-"\t\t//this is used by the options dialog to look up the icon as needed, at "
-"required scales\n"
-"\t\tpublic SolutionItemRunConfiguration RunConfiguration { get; private "
-"set; }\n"
-"\t}\n"
-"\t\n"
-"\tpartial class RunConfigurationsPanelWidget: Xwt.VBox\n"
-"\t{\n"
-"\t\tRunConfigurationsPanel panel;\n"
-"\t\tRunConfigurationsList list;\n"
-"\n"
-"\t\tXwt.Button removeButton;\n"
-"\t\tXwt.Button copyButton;\n"
-"\t\tXwt.Button renameButton;\n"
-"\n"
-"\t\tpublic RunConfigurationsPanelWidget (RunConfigurationsPanel panel, "
-"OptionsDialog dialog)\n"
-"\t\t{\n"
-"\t\t\tthis.panel = panel;\n"
-"\n"
-"\t\t\tthis.Margin = 6;\n"
-"\t\t\tSpacing = 6;\n"
-"\n"
-"\t\t\tlist = new RunConfigurationsList ();\n"
-"\t\t\tthis.PackStart (list, true);\n"
-"\n"
-"\t\t\tvar box = new Xwt.HBox ();\n"
-"\t\t\tbox.Spacing = 6;\n"
-"\n"
-"\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
-msgstr ""
+#, fuzzy
+msgid "Run Configuration: {0}"
+msgstr "구성"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
+#, fuzzy
+msgid "New"
+msgstr "새로 만들기..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #, fuzzy
@@ -23176,10 +23174,6 @@ msgstr "<b>종속성</b>"
 msgid "Snippet {0}"
 msgstr "'{0}'을(를) 건너뜀"
 
-#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
-msgid "Code"
-msgstr ""
-
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
 #, fuzzy
 msgid "Add to the project"
@@ -23275,54 +23269,6 @@ msgstr ""
 #, fuzzy
 msgid "Add Service"
 msgstr "소스 추가"
-
-#: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
-msgid ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\r\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\r\n"
-"\t\t\t\t\t}\r\n"
-"\r\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\r\n"
-"\t\t\t\t\t{\r\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\r\n"
-"\t\t\t\t\t}\r\n"
-"\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\r\n"
-"\t\t\t\t\t{\r\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\r\n"
-"\t\t\t\t\t}\r\n"
-"\r\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\r\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\r\n"
-"\t\t\t\t\t{\r\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\r\n"
-"\t\t\t\t\t\t{\r\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-msgstr ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-
-#: ../external/ikvm/reflect/Projection.cs:339
-msgid "Dispose"
-msgstr "Dispose"
 
 #: ../external/cecil/Mono.Security.Cryptography/CryptoService.cs:152
 #: ../external/mono-addins/Mono.Addins.CecilReflector/Mono.Cecil/Mono.Security.Cryptography/CryptoService.cs:170
@@ -28294,6 +28240,54 @@ msgstr "시간 뷰"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "목록 뷰"
+
+#, fuzzy
+#~ msgid ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\r\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\r\n"
+#~ "\t\t\t\t\t}\r\n"
+#~ "\r\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\r\n"
+#~ "\t\t\t\t\t{\r\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\r\n"
+#~ "\t\t\t\t\t}\r\n"
+#~ "\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\r\n"
+#~ "\t\t\t\t\t{\r\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\r\n"
+#~ "\t\t\t\t\t}\r\n"
+#~ "\r\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\r\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\r\n"
+#~ "\t\t\t\t\t{\r\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\r\n"
+#~ "\t\t\t\t\t\t{\r\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+#~ msgstr ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
+#~ "\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
+#~ "\t\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+
+#~ msgid "Dispose"
+#~ msgstr "Dispose"
 
 #, fuzzy
 #~ msgid "Object allocation"

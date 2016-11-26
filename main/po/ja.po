@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-17 08:14:03+0300\n"
+"POT-Creation-Date: 2016-11-26 19:28:04+0300\n"
 "PO-Revision-Date: 2012-11-22 23:11:05+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -1377,6 +1377,7 @@ msgstr "Mono コマンドに提供される追加のコマンド ライン オ�
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:280
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:502
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:146
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:73
@@ -3023,7 +3024,7 @@ msgid "Create new layout"
 msgstr "新しいレイアウトの作成"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:205
 msgid "_Delete Current Layout"
 msgstr "現在のレイアウトを削除(_D)"
 
@@ -4118,6 +4119,11 @@ msgstr "表示(_V)"
 msgid "Layout"
 msgstr "レイアウト"
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:114
+#, fuzzy
+msgid "Editor Columns"
+msgstr "2 エディター列"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
 msgid "Inline _Messages"
 msgstr "インライン メッセージ(_M)"
@@ -4129,6 +4135,15 @@ msgstr "折りたたみ(_O)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:142
 msgid "_Search"
 msgstr "検索(_S)"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:156
+#, fuzzy
+msgid "Bookmarks"
+msgstr "ブックマークをクリアします"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:164
+msgid "Go To"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:176
 msgid "Navigation _History"
@@ -4569,33 +4584,48 @@ msgstr "カスタム ツールの追加..."
 msgid "Show {0}"
 msgstr "{0} を表示"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:158
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:163
 msgid "Switch to layout '{0}'"
 msgstr "レイアウト '{0}' に切り替え"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:203
 msgid "_Delete “{0}” Layout"
 msgstr "“{0}” レイアウトの削除(_D)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "Are you sure you want to delete the “{0}” layout?"
 msgstr "“{0}” レイアウトを削除しますか?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:226
 msgid "Exit Full Screen"
 msgstr "全画面表示の終了"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:227
 msgid "Enter Full Screen"
 msgstr "全画面表示にする"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:253
 msgid "Show Next ({0})"
 msgstr "次の ({0}) を表示"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:271
 msgid "Show Previous ({0})"
 msgstr "前の ({0}) を表示"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:144
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
+msgid "Code"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:145
+#, fuzzy
+msgid "Design"
+msgstr "デザイナー"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:147
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
+msgid "Test"
+msgstr "テスト"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:107
 msgid "Activate document '{0}'"
@@ -5898,10 +5928,6 @@ msgstr "ベータ版更新プログラム (毎週)"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:147
 msgid "Alpha updates (very often, very unstable)"
 msgstr "アルファ版更新プログラム (ほとんどの場合、非常に不安定)"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
-msgid "Test"
-msgstr "テスト"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:189
 msgid "Check for Updates Now"
@@ -9098,42 +9124,14 @@ msgid "_Show Hidden Message"
 msgstr "非表示メッセージを表示する(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
-msgid ""
-"Run Configuration: \" + configInfo.EditedConfig.Name);\n"
-"\t\t\tIcon = \"md-prefs-play\";\n"
-"\t\t}\n"
-"\t\t\n"
-"\t\t//this is used by the options dialog to look up the icon as needed, at "
-"required scales\n"
-"\t\tpublic SolutionItemRunConfiguration RunConfiguration { get; private "
-"set; }\n"
-"\t}\n"
-"\t\n"
-"\tpartial class RunConfigurationsPanelWidget: Xwt.VBox\n"
-"\t{\n"
-"\t\tRunConfigurationsPanel panel;\n"
-"\t\tRunConfigurationsList list;\n"
-"\n"
-"\t\tXwt.Button removeButton;\n"
-"\t\tXwt.Button copyButton;\n"
-"\t\tXwt.Button renameButton;\n"
-"\n"
-"\t\tpublic RunConfigurationsPanelWidget (RunConfigurationsPanel panel, "
-"OptionsDialog dialog)\n"
-"\t\t{\n"
-"\t\t\tthis.panel = panel;\n"
-"\n"
-"\t\t\tthis.Margin = 6;\n"
-"\t\t\tSpacing = 6;\n"
-"\n"
-"\t\t\tlist = new RunConfigurationsList ();\n"
-"\t\t\tthis.PackStart (list, true);\n"
-"\n"
-"\t\t\tvar box = new Xwt.HBox ();\n"
-"\t\t\tbox.Spacing = 6;\n"
-"\n"
-"\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
-msgstr ""
+#, fuzzy
+msgid "Run Configuration: {0}"
+msgstr "構成"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
+#, fuzzy
+msgid "New"
+msgstr "新規作成..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #, fuzzy
@@ -23323,10 +23321,6 @@ msgstr "<b>依存関係</b>"
 msgid "Snippet {0}"
 msgstr "'{0}' をスキップしました"
 
-#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
-msgid "Code"
-msgstr ""
-
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
 #, fuzzy
 msgid "Add to the project"
@@ -23422,54 +23416,6 @@ msgstr ""
 #, fuzzy
 msgid "Add Service"
 msgstr "ソースの追加"
-
-#: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
-msgid ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\n"
-"\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-msgstr ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-
-#: ../external/ikvm/reflect/Projection.cs:339
-msgid "Dispose"
-msgstr "破棄"
 
 #: ../external/cecil/Mono.Security.Cryptography/CryptoService.cs:152
 #: ../external/mono-addins/Mono.Addins.CecilReflector/Mono.Cecil/Mono.Security.Cryptography/CryptoService.cs:170
@@ -28477,6 +28423,54 @@ msgstr "時間ビュー"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "リスト ビュー"
+
+#, fuzzy
+#~ msgid ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
+#~ "\t\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+#~ msgstr ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
+#~ "\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
+#~ "\t\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+
+#~ msgid "Dispose"
+#~ msgstr "破棄"
 
 #, fuzzy
 #~ msgid "Object allocation"

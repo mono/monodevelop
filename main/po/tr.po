@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 1.0\n"
 "Report-Msgid-Bugs-To: ealtin@gmail.com\n"
-"POT-Creation-Date: 2016-11-17 08:14:03+0300\n"
+"POT-Creation-Date: 2016-11-26 19:28:04+0300\n"
 "PO-Revision-Date: 2008-02-24 00:46+0200\n"
 "Last-Translator: Enver ALTIN <ealtin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -1375,6 +1375,7 @@ msgstr "Mono komutuna sağlanacak ek komut satırı seçenekleri."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:280
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:502
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:164
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:146
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:40
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:43
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:73
@@ -3019,7 +3020,7 @@ msgid "Create new layout"
 msgstr "Yeni düzen oluştur"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:558
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:205
 msgid "_Delete Current Layout"
 msgstr "Geçerli Düzeni _Sil"
 
@@ -4110,6 +4111,11 @@ msgstr "_Görüntüle"
 msgid "Layout"
 msgstr "Düzen"
 
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:114
+#, fuzzy
+msgid "Editor Columns"
+msgstr "İki Düzenleyici Sütunu"
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
 msgid "Inline _Messages"
 msgstr "Satır İçi _İletiler"
@@ -4121,6 +4127,15 @@ msgstr "K_atla"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:142
 msgid "_Search"
 msgstr "_Ara"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:156
+#, fuzzy
+msgid "Bookmarks"
+msgstr "Yer işaretlerini temizle"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:164
+msgid "Go To"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:176
 msgid "Navigation _History"
@@ -4561,33 +4576,48 @@ msgstr "Özel Araç Ekle..."
 msgid "Show {0}"
 msgstr "{0} öğesini göster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:158
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:163
 msgid "Switch to layout '{0}'"
 msgstr "'{0}' düzenine geç"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:203
 msgid "_Delete “{0}” Layout"
 msgstr "“{0}” Düzenini _Sil"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:212
 msgid "Are you sure you want to delete the “{0}” layout?"
 msgstr "“{0}” düzenini silmek istediğinizden emin misiniz?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:221
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:226
 msgid "Exit Full Screen"
 msgstr "Tam Ekrandan Çık"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:227
 msgid "Enter Full Screen"
 msgstr "Tam Ekrana Geç"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:253
 msgid "Show Next ({0})"
 msgstr "Sonraki ({0}) Öğesini Göster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:271
 msgid "Show Previous ({0})"
 msgstr "Önceki ({0}) Öğesini Göster"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:144
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
+msgid "Code"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:145
+#, fuzzy
+msgid "Design"
+msgstr "Tasarımcı"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:147
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
+msgid "Test"
+msgstr "Test"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:107
 msgid "Activate document '{0}'"
@@ -5853,10 +5883,6 @@ msgstr "Beta güncelleştirmeler (haftalık)"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:147
 msgid "Alpha updates (very often, very unstable)"
 msgstr "Alfa güncelleştirmeler (çok sık, çok kararsız)"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:159
-msgid "Test"
-msgstr "Test"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs:189
 msgid "Check for Updates Now"
@@ -9055,42 +9081,14 @@ msgid "_Show Hidden Message"
 msgstr "_Gizli İletiyi Göster"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
-msgid ""
-"Run Configuration: \" + configInfo.EditedConfig.Name);\n"
-"\t\t\tIcon = \"md-prefs-play\";\n"
-"\t\t}\n"
-"\t\t\n"
-"\t\t//this is used by the options dialog to look up the icon as needed, at "
-"required scales\n"
-"\t\tpublic SolutionItemRunConfiguration RunConfiguration { get; private "
-"set; }\n"
-"\t}\n"
-"\t\n"
-"\tpartial class RunConfigurationsPanelWidget: Xwt.VBox\n"
-"\t{\n"
-"\t\tRunConfigurationsPanel panel;\n"
-"\t\tRunConfigurationsList list;\n"
-"\n"
-"\t\tXwt.Button removeButton;\n"
-"\t\tXwt.Button copyButton;\n"
-"\t\tXwt.Button renameButton;\n"
-"\n"
-"\t\tpublic RunConfigurationsPanelWidget (RunConfigurationsPanel panel, "
-"OptionsDialog dialog)\n"
-"\t\t{\n"
-"\t\t\tthis.panel = panel;\n"
-"\n"
-"\t\t\tthis.Margin = 6;\n"
-"\t\t\tSpacing = 6;\n"
-"\n"
-"\t\t\tlist = new RunConfigurationsList ();\n"
-"\t\t\tthis.PackStart (list, true);\n"
-"\n"
-"\t\t\tvar box = new Xwt.HBox ();\n"
-"\t\t\tbox.Spacing = 6;\n"
-"\n"
-"\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
-msgstr ""
+#, fuzzy
+msgid "Run Configuration: {0}"
+msgstr "Yapılandırmalar"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
+#, fuzzy
+msgid "New"
+msgstr "Yeni..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #, fuzzy
@@ -23211,10 +23209,6 @@ msgstr "<b>Bağımlılıklar</b>"
 msgid "Snippet {0}"
 msgstr "'{0}' atlandı"
 
-#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:31
-msgid "Code"
-msgstr ""
-
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
 #, fuzzy
 msgid "Add to the project"
@@ -23310,54 +23304,6 @@ msgstr ""
 #, fuzzy
 msgid "Add Service"
 msgstr "Kaynak Ekle"
-
-#: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
-msgid ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\n"
-"\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\n"
-"\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-msgstr ""
-"<WinRT>\" + module.GetString(types[i].TypeName));\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr & "
-"TypeAttributes.Interface) == 0))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
-"\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
-"\t\t\t\t\t}\"n\n"
-"\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
-"types[i + 1].MethodList - 1;\n"
-"\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j++)\n"
-"\t\t\t\t\t{\n"
-"\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
-"\t\t\t\t\t\t{\n"
-"\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
-
-#: ../external/ikvm/reflect/Projection.cs:339
-msgid "Dispose"
-msgstr "At"
 
 #: ../external/cecil/Mono.Security.Cryptography/CryptoService.cs:152
 #: ../external/mono-addins/Mono.Addins.CecilReflector/Mono.Cecil/Mono.Security.Cryptography/CryptoService.cs:170
@@ -28397,6 +28343,54 @@ msgstr "Zaman Görünümü"
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:70
 msgid "List View"
 msgstr "Liste Görünümü"
+
+#, fuzzy
+#~ msgid ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\n"
+#~ "\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
+#~ "\t\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+#~ msgstr ""
+#~ "<WinRT>\" + module.GetString(types[i].TypeName));\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tif (types[i].Extends != typeofSystemAttribute && (!clr || (attr "
+#~ "& TypeAttributes.Interface) == 0))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags |= (int)TypeAttributes.Import;\n"
+#~ "\t\t\t\t\t}\"n\t\t\t\t\tif (projections.ContainsKey(GetTypeDefName(i)))\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
+#~ "\t\t\t\t\t}\"n\n"
+#~ "\t\t\t\t\tint endOfMethodList = i == types.Length - 1 ? methods.Length : "
+#~ "types[i + 1].MethodList - 1;\n"
+#~ "\t\t\t\t\tfor (int j = types[i].MethodList - 1; j < endOfMethodList; j+"
+#~ "+)\n"
+#~ "\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\tif (types[i].Extends == typeofSystemMulticastDelegate)\n"
+#~ "\t\t\t\t\t\t{\n"
+#~ "\t\t\t\t\t\t\tif (module.GetString(methods[j].Name) == \".ctor"
+
+#~ msgid "Dispose"
+#~ msgstr "At"
 
 #, fuzzy
 #~ msgid "Object allocation"
