@@ -87,7 +87,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static bool IsSettingMatch (ScopeStack scopes, StackMatchExpression expr)
 		{
 			string cs = null;
-			if (EditorTheme.IsCompatibleScope (expr, scopes, ref cs)) {
+			int d = 0;
+			if (EditorTheme.IsCompatibleScope (expr, scopes, ref cs, ref d)) {
 				return true;
 			}
 			return false;

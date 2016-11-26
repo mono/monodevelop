@@ -108,5 +108,17 @@ namespace MonoDevelop.Ide.Editor
 			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo").Push ("bar"), ref tmp).Item1);
 			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("bar").Push ("foo"), ref tmp).Item1);
 		}
+
+
+		/// <summary>
+		/// Bug 45378 - [Text Mate] Syntax Highlighting not works properly for XML file while applying "Tomorrow.tmTheme" to Xamarin Studio.
+		/// </summary>
+		[Test]
+		public void TestBug45378 ()
+		{
+			var expr = StackMatchExpression.Parse ("string, constant.other.symbol, entity.other.inherited-class, markup.heading, markup.inserted.git_gutter");
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("text.xml").Push("meta.tag.xml").Push ("string.quoted.double.xml"), ref tmp).Item1);
+		}
 	}
 }

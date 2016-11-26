@@ -330,8 +330,9 @@ typedef struct
 						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries)) {
 							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
 							string mk = null;
+							int d = 0;
 							var expr = StackMatchExpression.Parse (segi);
-							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, new ScopeStack (ss), ref mk)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
+							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, new ScopeStack (ss), ref mk, ref d)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 						}
 						expectedSegments.RemoveAt (i);
 						i--;
