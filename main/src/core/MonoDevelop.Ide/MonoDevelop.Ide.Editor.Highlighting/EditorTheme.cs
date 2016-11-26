@@ -177,8 +177,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		bool IsValidScope (ThemeSetting setting, ScopeStack scopeStack, ref string compatibleScope)
 		{
-			if (setting.Scopes.Count == 0)
+			if (setting.Scopes.Count == 0) {
+				compatibleScope = "";
 				return true;
+			}
 			foreach (var s in setting.Scopes) {
 				if (IsCompatibleScope (s, scopeStack, ref compatibleScope))
 					return true;
