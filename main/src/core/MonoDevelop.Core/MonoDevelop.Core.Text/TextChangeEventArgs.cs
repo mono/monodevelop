@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
 
 namespace MonoDevelop.Core.Text
 {
@@ -129,6 +130,35 @@ namespace MonoDevelop.Core.Text
 		public virtual TextChangeEventArgs Invert()
 		{
 			return new TextChangeEventArgs(offset, insertedText, removedText);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[TextChangeEventArgs: offset={0}, removedText={1}, insertedText={2}, RemovalLength={3}, InsertionLength={4}]", offset, Escape(removedText?.Text), Escape(insertedText?.Text), RemovalLength, InsertionLength);
+		}
+
+		static string Escape (string text)
+		{
+			if (text == null)
+				return null;
+			var sb = new StringBuilder ();
+			foreach (var ch in text) {
+				switch (ch) {
+				case '\r':
+					sb.Append ("\\r");
+					break;
+				case '\n':
+					sb.Append ("\\n");
+					break;
+				case '\t':
+					sb.Append ("\\t");
+					break;
+				default:
+					sb.Append (ch);
+					break;
+				}
+			}
+			return sb.ToString ();
 		}
 	}
 }

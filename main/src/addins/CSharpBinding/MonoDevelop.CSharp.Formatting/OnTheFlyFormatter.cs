@@ -109,8 +109,12 @@ namespace MonoDevelop.CSharp.Formatting
 						if (exact && !span.Contains (change.Span.Start))
 							continue;
 						var newText = change.NewText;
-						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
-						delta = delta - change.Span.Length + newText.Length;
+						var length = change.Span.Length;
+						var changeEnd = delta + change.Span.End - 1;
+						if (changeEnd < editor.Length && changeEnd >= 0 && editor.GetCharAt (changeEnd) == '\r')
+							length--;
+						editor.ReplaceText (delta + change.Span.Start, length, newText);
+						delta = delta - length + newText.Length;
 					}
 					if (startOffset < caretOffset) {
 						var caretEndOffset = caretOffset + delta;
