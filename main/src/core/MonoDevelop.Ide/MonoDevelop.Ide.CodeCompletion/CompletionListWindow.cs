@@ -791,7 +791,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool CompleteWord ()
 		{
 			KeyActions ka = KeyActions.None;
-			return CompleteWord (ref ka, KeyDescriptor.Empty);
+			return CompleteWord (ref ka, KeyDescriptor.Tab);
 		}
 
 		internal bool IsInCompletion { get; set;  }

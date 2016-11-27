@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	public struct KeyDescriptor
 	{
 		public static KeyDescriptor Empty = new KeyDescriptor (SpecialKey.None, '\0', ModifierKeys.None, null);
+		public static KeyDescriptor Tab = new KeyDescriptor (SpecialKey.Tab, '\t', ModifierKeys.None, null);
 
 		public readonly SpecialKey SpecialKey;
 		public readonly char KeyChar;
