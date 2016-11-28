@@ -162,6 +162,15 @@ namespace MonoDevelop.Ide.Editor
 				handler (this, e);
 		}
 
+		public event EventHandler BeforeSaved;
+
+		protected virtual void OnBeforeSaved (EventArgs e)
+		{
+			var handler = BeforeSaved;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		internal virtual Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return null;
