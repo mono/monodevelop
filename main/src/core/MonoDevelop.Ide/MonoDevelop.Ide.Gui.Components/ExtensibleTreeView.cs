@@ -141,6 +141,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			protected override bool OnScrollEvent (Gdk.EventScroll evnt)
 			{
+				control.HideStatusMessage ();
 				var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
 				                    //Mac window manager already uses control-scroll, so use command
 				                    //Command might be either meta or mod1, depending on GTK version
@@ -2030,6 +2031,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
+			HideStatusMessage ();
+			
 			if (args.Event.Key == Gdk.Key.Delete || args.Event.Key == Gdk.Key.KP_Delete) {
 				DeleteCurrentItem ();
 				args.RetVal = true;
