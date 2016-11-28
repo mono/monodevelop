@@ -1,21 +1,21 @@
-﻿//
-// DotNetCoreExecutionCommand.cs
-//
+// 
+// SdbEvaluationTests.cs
+//  
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
-//
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
-//
+//       Lluis Sanchez Gual <lluis@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,26 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using NUnit.Framework;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.Debugger.Tests.Soft
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	[TestFixture]
+	public class SdbEvaluationAllowTargetInvokesTests: EvaluationTests
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		public SdbEvaluationAllowTargetInvokesTests (): base ("Mono.Debugger.Soft", true)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = new DotNetCorePath ().FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
+	}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
-
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
+	[TestFixture]
+	public class SdbEvaluationNoTargetInvokesTests: EvaluationTests
+	{
+		public SdbEvaluationNoTargetInvokesTests (): base ("Mono.Debugger.Soft", false)
+		{
+		}
 	}
 }

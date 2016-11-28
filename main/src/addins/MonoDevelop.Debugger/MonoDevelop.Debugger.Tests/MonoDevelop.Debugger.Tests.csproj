@@ -38,9 +38,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DebugTests.cs" />
+    <Compile Include="SdbEvaluationTests.cs" />
     <Compile Include="EvaluationTests.cs" />
     <Compile Include="StackFrameTests.cs" />
     <Compile Include="SdbStackFrameTests.cs" />
+    <Compile Include="CorEvaluationTests.cs" />
     <Compile Include="CorStackFrameTests.cs" />
     <Compile Include="BreakpointsAndSteppingTests.cs" />
     <Compile Include="CorBreakpointsAndSteppingTests.cs" />
@@ -90,10 +92,6 @@
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
-      <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
-      <Name>MonoDevelop.DotNetCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

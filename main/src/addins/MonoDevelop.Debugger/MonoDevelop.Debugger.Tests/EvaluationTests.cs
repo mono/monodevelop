@@ -32,70 +32,6 @@ using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Tests
 {
-	namespace Win32
-	{
-		[TestFixture]
-		[Platform (Include = "Win")]
-		public class CorEvaluationAllowTargetInvokesTests : EvaluationTests
-		{
-			public CorEvaluationAllowTargetInvokesTests () : base ("MonoDevelop.Debugger.Win32", true)
-			{
-			}
-		}
-
-		[TestFixture]
-		[Platform (Include = "Win")]
-		[Ignore ("Disabled for now")]
-		public class CorEvaluationNoTargetInvokesTests : EvaluationTests
-		{
-			public CorEvaluationNoTargetInvokesTests () : base ("MonoDevelop.Debugger.Win32", false)
-			{
-			}
-		}
-	}
-
-	namespace Soft
-	{
-		[TestFixture]
-		public class SdbEvaluationAllowTargetInvokesTests : EvaluationTests
-		{
-			public SdbEvaluationAllowTargetInvokesTests () : base ("Mono.Debugger.Soft", true)
-			{
-			}
-		}
-
-		[TestFixture]
-		public class SdbEvaluationNoTargetInvokesTests : EvaluationTests
-		{
-			public SdbEvaluationNoTargetInvokesTests () : base ("Mono.Debugger.Soft", false)
-			{
-			}
-		}
-	}
-
-	namespace Core
-	{
-		[TestFixture]
-		[Platform (Include = "Unix")]
-		[Ignore ("Disabled for now")]
-		public class CoreEvaluationAllowTargetInvokesTests : EvaluationTests
-		{
-			public CoreEvaluationAllowTargetInvokesTests () : base ("NetCoreDebugger", true)
-			{
-			}
-		}
-
-		[TestFixture]
-		[Platform (Include = "Unix")]
-		[Ignore ("Disabled for now")]
-		public class CoreEvaluationNoTargetInvokesTests : EvaluationTests
-		{
-			public CoreEvaluationNoTargetInvokesTests () : base ("NetCoreDebugger", false)
-			{
-			}
-		}
-	}
-
 	[TestFixture]
 	public abstract class EvaluationTests: DebugTests
 	{
@@ -246,7 +182,7 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public virtual void HiddenMembers ()
 		{
-			IgnoreWin32Debugger ("TODO");
+			IgnoreCorDebugger ("TODO");
 			if (Session is SoftDebuggerSession) {
 				if (!((SoftDebuggerSession)Session).ProtocolVersion.AtLeast (2, 40)) {
 					Assert.Ignore ("Need newer Mono with SDB protocol 2.40+");
@@ -560,7 +496,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"AbstractImplementation\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 
-			IgnoreWin32Debugger("TODO: CorDebugger support explicit interfaces");
+			IgnoreCorDebugger("TODO: CorDebugger support explicit interfaces");
 
 			val = Eval ("((IInterfaceWithMethodA)objWithMethodA).MethodA()");
 			if (!AllowTargetInvokes) {
@@ -698,45 +634,43 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("'m'", val.Value);
 			Assert.AreEqual ("char", val.TypeName);
 
-			if (!IsCoreDebugger ()) {
-				val = Eval ("alist[0]");
-				if (!AllowTargetInvokes) {
-					var options = Session.Options.EvaluationOptions.Clone ();
-					options.AllowTargetInvoke = true;
+			val = Eval ("alist[0]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
 
-					Assert.IsTrue (val.IsNotSupported);
-					val.Refresh (options);
-					val = val.Sync ();
-				}
-				Assert.AreEqual ("1", val.Value);
-				Assert.AreEqual ("int", val.TypeName);
-
-				val = Eval ("alist[1]");
-				if (!AllowTargetInvokes) {
-					var options = Session.Options.EvaluationOptions.Clone ();
-					options.AllowTargetInvoke = true;
-
-					Assert.IsTrue (val.IsNotSupported);
-					val.Refresh (options);
-					val = val.Sync ();
-				}
-				Assert.AreEqual ("\"two\"", val.Value);
-				Assert.AreEqual ("string", val.TypeName);
-
-				val = Eval ("alist[2]");
-				if (!AllowTargetInvokes) {
-					var options = Session.Options.EvaluationOptions.Clone ();
-					options.AllowTargetInvoke = true;
-
-					Assert.IsTrue (val.IsNotSupported);
-					val.Refresh (options);
-					val = val.Sync ();
-				}
-				Assert.AreEqual ("3", val.Value);
-				Assert.AreEqual ("int", val.TypeName);
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
 			}
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 
-			IgnoreWin32Debugger("TODO: CorDebugger support explicit interfaces");
+			val = Eval ("alist[1]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"two\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("alist[2]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			IgnoreCorDebugger("TODO: CorDebugger support explicit interfaces");
 
 			val = Eval ("FooBar[2]");
 			Assert.IsTrue (val.IsUnknown);
@@ -864,30 +798,26 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
 
-			if (!IsCoreDebugger ()) {
-				val = Eval ("alist.Count");
-				if (!AllowTargetInvokes) {
-					// Note: this is a simple property which gets evaluated client-side by the SDB backend
-					var options = Session.Options.EvaluationOptions.Clone ();
-					options.AllowTargetInvoke = true;
+			val = Eval ("alist.Count");
+			if (!AllowTargetInvokes) {
+				// Note: this is a simple property which gets evaluated client-side by the SDB backend
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
 
-					Assert.IsTrue (val.IsNotSupported);
-					val.Refresh (options);
-					val = val.Sync ();
-				}
-				Assert.AreEqual ("3", val.Value);
-				Assert.AreEqual ("int", val.TypeName);
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
 			}
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+			
+			Eval ("var tt = this");
 
-			if (!IsCoreDebugger ()) {
-				Eval ("var tt = this");
-
-				// FIXME: this errors out when target invokes are disabled
-				if (AllowTargetInvokes) {
-					val = Eval ("tt.someString");
-					Assert.AreEqual ("\"hi\"", val.Value);
-					Assert.AreEqual ("string", val.TypeName);
-				}
+			// FIXME: this errors out when target invokes are disabled
+			if (AllowTargetInvokes) {
+				val = Eval ("tt.someString");
+				Assert.AreEqual ("\"hi\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
 			}
 
 			val = Eval ("MonoDevelop.Debugger.Tests");
@@ -1014,7 +944,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
-			IgnoreWin32Debugger("TODO: CorDebugger support explicit interfaces");
+			IgnoreCorDebugger("TODO: CorDebugger support explicit interfaces");
 
 			val = Eval ("Bar.Prop");
 			if (!AllowTargetInvokes) {
@@ -1286,7 +1216,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 
-			IgnoreWin32Debugger ("CorDebugger: Implicit casting");
+			IgnoreCorDebugger ("CorDebugger: Implicit casting");
 
 			// Casting primitive <-> custom class via implicit operator
 			val = Eval ("(myNint)3");
@@ -1601,12 +1531,11 @@ namespace MonoDevelop.Debugger.Tests
 			AssertAssignment ("numbers[0] = \"test\"", "numbers[0]", "\"test\"", "string");
 			AssertAssignment ("numbers[0] = \"one\"", "numbers[0]", "\"one\"", "string");
 
-			AssertAssignment ("ProtectedStringProperty = \"test\"", "ProtectedStringProperty", "\"test\"", "string");
-			AssertAssignment ("ProtectedStringProperty = \"hi\"", "ProtectedStringProperty", "\"hi\"", "string");
-
-			IgnoreCoreDebugger ();
 			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
 			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
+
+			AssertAssignment ("ProtectedStringProperty = \"test\"", "ProtectedStringProperty", "\"test\"", "string");
+			AssertAssignment ("ProtectedStringProperty = \"hi\"", "ProtectedStringProperty", "\"hi\"", "string");
 		}
 
 		[Test]
@@ -1781,7 +1710,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{int[2][]}", val.Value);
 			Assert.AreEqual ("int[][]", val.TypeName);
 
-			IgnoreWin32Debugger ("Randomly fails");
+			IgnoreCorDebugger ("Randomly fails");
 
 			val = Eval ("arrayWithLowerBounds");
 			Assert.AreEqual ("int[,,]", val.TypeName);
@@ -1803,25 +1732,25 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatGeneric ()
 		{
 			ObjectValue val;
-			if (!AllowTargetInvokes) {
-				try {
-					Session.Options.EvaluationOptions.AllowTargetInvoke = false;
-					val = Eval ("dict");
-				} finally {
-					Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
-				}
-				Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>}", val.Value);
-				Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>", val.TypeName);
 
-				try {
-					Session.Options.EvaluationOptions.AllowTargetInvoke = false;
-					val = Eval ("dictArray");
-				} finally {
-					Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
-				}
-				Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
-				Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
+			try {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = false;
+				val = Eval ("dict");
+			} finally {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
 			}
+			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>}", val.Value);
+			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>", val.TypeName);
+
+			try {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = false;
+				val = Eval ("dictArray");
+			} finally {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
+			}
+			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
+			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
+
 
 			var soft = Session as SoftDebuggerSession;
 			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
@@ -1897,7 +1826,7 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("{str 45 }", val.Value);
 			Assert.AreEqual ("SimpleStruct", val.TypeName);
-			IgnoreCoreDebugger ();
+
 			val = Eval ("nulledSimpleStruct");
 			Assert.AreEqual ("null", val.Value);
 			Assert.AreEqual ("SimpleStruct?", val.TypeName);
@@ -2255,7 +2184,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual("2", val.Value);
 			Assert.AreEqual("int", val.TypeName);
 
-			IgnoreWin32Debugger("Not working on CorDebugger");
+			IgnoreCorDebugger("Not working on CorDebugger");
 
 			val = Eval("b.PropNoVirt2");
 			if (!AllowTargetInvokes)
@@ -2287,6 +2216,22 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual("1", val.Value);
 			Assert.AreEqual("int", val.TypeName);
 
+			val = Eval ("System.Text.Encoding.UTF8.GetPreamble ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("byte[]", val.TypeName);
+			Assert.AreEqual ("{byte[3]}", val.Value);
+			var bytes = ((RawValueArray)val.GetRawValue ()).ToArray ();
+			Assert.AreEqual (239, bytes.GetValue (0));
+			Assert.AreEqual (187, bytes.GetValue (1));
+			Assert.AreEqual (191, bytes.GetValue (2));
+
 			val = Eval ("b.TestMethod ()");
 			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
@@ -2310,24 +2255,6 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
-
-			IgnoreCoreDebugger ("Support arrays values");
-
-			val = Eval ("System.Text.Encoding.UTF8.GetPreamble ()");
-			if (!AllowTargetInvokes) {
-				var options = Session.Options.EvaluationOptions.Clone ();
-				options.AllowTargetInvoke = true;
-
-				Assert.IsTrue (val.IsNotSupported);
-				val.Refresh (options);
-				val = val.Sync ();
-			}
-			Assert.AreEqual ("byte[]", val.TypeName);
-			Assert.AreEqual ("{byte[3]}", val.Value);
-			var bytes = ((RawValueArray)val.GetRawValue ()).ToArray ();
-			Assert.AreEqual (239, bytes.GetValue (0));
-			Assert.AreEqual (187, bytes.GetValue (1));
-			Assert.AreEqual (191, bytes.GetValue (2));
 		}
 
 		[Test]
@@ -2348,7 +2275,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual (2, children.Length);
 				Assert.AreEqual ("[0]", children [0].Name);
 				Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
-				Assert.IsTrue (children [1].Name.StartsWith ("Raw", StringComparison.Ordinal), children [1].Name);
+				Assert.AreEqual ("Raw View", children [1].Name);
 
 				children = children [0].GetAllChildrenSync ();
 				Assert.AreEqual ("Key", children [0].Name);
@@ -2379,7 +2306,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("[0]", children [0].Name);
 				Assert.AreEqual ("[1]", children [1].Name);
 				Assert.AreEqual ("[2]", children [2].Name);
-				Assert.IsTrue (children [3].Name.StartsWith ("Raw", StringComparison.Ordinal), children [3].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
 				Assert.AreEqual ("\"aaa\"", children [0].Value);
 				Assert.AreEqual ("\"bbb\"", children [1].Value);
 				Assert.AreEqual ("\"ccc\"", children [2].Value);
@@ -2392,8 +2319,6 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("IEnumerator", children [9].Name);
 			}
 
-			IgnoreCoreDebugger (".Net Core doesn't support System.Array");
-
 			val = Eval ("alist");
 			children = val.GetAllChildrenSync ();
 
@@ -2403,7 +2328,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("[0]", children [0].Name);
 				Assert.AreEqual ("[1]", children [1].Name);
 				Assert.AreEqual ("[2]", children [2].Name);
-				Assert.IsTrue (children [3].Name.StartsWith ("Raw", StringComparison.Ordinal), children [3].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
 				Assert.AreEqual ("1", children [0].Value);
 				Assert.AreEqual ("\"two\"", children [1].Value);
 				Assert.AreEqual ("3", children [2].Value);

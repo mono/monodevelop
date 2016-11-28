@@ -28,7 +28,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
