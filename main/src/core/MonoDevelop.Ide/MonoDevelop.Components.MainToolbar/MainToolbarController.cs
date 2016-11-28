@@ -339,7 +339,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (config == null || configurationMergers.Count == 0)
 				return;
 			if (configurationMergers.Count > 1) {
-				IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;
+				settingGlobalConfig = true;
+				try {
+					IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;
+				} finally {
+					settingGlobalConfig = false;
+				}
 				return;
 			}
 

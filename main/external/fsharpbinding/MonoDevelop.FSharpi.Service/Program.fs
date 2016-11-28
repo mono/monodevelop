@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelop.FSharpInteractive
 open System
+open System.Diagnostics
 open System.IO
 open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.Interactive.Shell
@@ -13,6 +14,7 @@ module CompletionServer =
         let outStream = Console.Out
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
 
+        let editorPid = Int32.Parse argv.[0]
         // This flag makes fsi send the SERVER-PROMPT> prompt
         // once it's output the header
         let args = "--fsi-server:" + server + " "
@@ -23,7 +25,10 @@ module CompletionServer =
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Microsoft.FSharp.Compiler.Interactive.Settings.fsi, true)
 
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
-       
+        // Add a watch on the editor PID. If it goes away we will self terminate.
+
+        let editorProcess = Process.GetProcessById(editorPid)
+
         let (|Input|_|) (command: string) =
             if command.StartsWith("input ") then
                 Some(command.[6..])
@@ -80,6 +85,9 @@ module CompletionServer =
             }
 
         let rec main(currentInput) =
+            if editorProcess.HasExited then 
+                Process.GetCurrentProcess().Kill()
+
             let parseInput() =
                 async {
                     let! command = inStream.ReadLineAsync() |> Async.AwaitTask

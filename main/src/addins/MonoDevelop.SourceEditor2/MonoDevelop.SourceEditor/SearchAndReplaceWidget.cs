@@ -634,8 +634,12 @@ But I leave it in in the case I've missed something. Mike
 		{
 			base.OnFocusChildSet (widget);
 			var mainResult = textEditor.TextViewMargin.MainSearchResult;
-			textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid () &&
-				textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+			if (mainResult != null) {
+				textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid () &&
+					textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+			} else {
+				textEditor.TextViewMargin.HideSelection = false;
+			}
 			
 			if (textEditor.TextViewMargin.HideSelection)
 				textEditor.QueueDraw ();

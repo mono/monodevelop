@@ -291,7 +291,8 @@ namespace MonoDevelop.Ide.Gui
 			lock (searchMonitors) {
 				searchMonitors.Add (pad);
 
-				if (searchMonitors.Count > 1) {					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
+				if (searchMonitors.Count > 1) {
+					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
 					var searchMonitorsCopy = searchMonitors;
 					// Additional search pads will be destroyed when hidden
 					pad.Window.PadHidden += delegate {

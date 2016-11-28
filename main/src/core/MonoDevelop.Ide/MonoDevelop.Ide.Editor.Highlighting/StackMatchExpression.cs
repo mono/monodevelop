@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public abstract class StackMatchExpression
 	{
-		public abstract Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr);
+		public abstract Tuple<bool, ScopeStack> MatchesStack (ScopeStack scopeStack, ref string matchExpr);
 
 		public static StackMatchExpression Parse (string expression)
 		{
@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
+			public override Tuple<bool, ScopeStack> MatchesStack (ScopeStack scopeStack, ref string matchExpr)
 			{
 				var leftResult = left.MatchesStack (scopeStack, ref matchExpr);
 				if (leftResult.Item1)
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
+			public override Tuple<bool, ScopeStack> MatchesStack (ScopeStack scopeStack, ref string matchExpr)
 			{
 				var leftResult = left.MatchesStack (scopeStack, ref matchExpr);
 				if (!leftResult.Item1)
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.right = right;
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
+			public override Tuple<bool, ScopeStack> MatchesStack (ScopeStack scopeStack, ref string matchExpr)
 			{
 				var secondResult = right.MatchesStack (scopeStack, ref matchExpr);
 				if (secondResult.Item1)
@@ -198,14 +198,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		class StringMatchExpression : StackMatchExpression
 		{
 			readonly string scope;
-			static readonly Tuple<bool, ImmutableStack<string>> mismatch = Tuple.Create (false, (ImmutableStack<string>)null);
+			static readonly Tuple<bool, ScopeStack> mismatch = Tuple.Create (false, (ScopeStack)null);
 
 			public StringMatchExpression (string scope)
 			{
 				this.scope = scope;
 			}
 
-			public override Tuple<bool, ImmutableStack<string>> MatchesStack (ImmutableStack<string> scopeStack, ref string matchExpr)
+			public override Tuple<bool, ScopeStack> MatchesStack (ScopeStack scopeStack, ref string matchExpr)
 			{
 				if (scopeStack.IsEmpty)
 					return mismatch;

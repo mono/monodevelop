@@ -145,8 +145,11 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public ColoredSegment GetColoredSegment ()
 		{
-			return new ColoredSegment (Offset, Length, ImmutableStack<string>.Empty.Push (style));
+			return new ColoredSegment (Offset, Length,  csScope.Push(style));
 		}
+
+		static readonly ScopeStack csScope = new ScopeStack ("source.cs");
+		
 	}
 
 	class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>

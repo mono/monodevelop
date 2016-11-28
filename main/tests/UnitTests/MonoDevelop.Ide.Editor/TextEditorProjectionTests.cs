@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Editor
 				for (int i = 0; i < segment.Length; i++) {
 					char ch = base.editor.GetCharAt (segment.Offset + i);
 					if (ch == '1' || ch == '5' || ch == '9')
-						yield return new ColoredSegment (segment.Offset + i, 1, ImmutableStack<string>.Empty.Push ("keyword"));
+						yield return new ColoredSegment (segment.Offset + i, 1, new ScopeStack ("keyword"));
 				}
 			}
 

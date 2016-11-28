@@ -315,6 +315,8 @@ namespace MonoDevelop.Core.Text
 		/// </param>
 		protected AbstractSegment (int offset, int length)
 		{
+			if (length < 0)
+				throw new System.ArgumentOutOfRangeException (nameof (length), "was " + length);
 			this.offset = offset;
 			this.length = length;
 		}

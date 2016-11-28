@@ -62,12 +62,13 @@ namespace MonoDevelop.SourceEditor
 					chunks [i] = new ColoredSegment (markerStart, markerEnd - markerStart, chunk.ScopeStack);
 					if (chunkAfter.Length > 0) {
 						chunks.Insert (i + 1, chunkAfter);
-						i++;
 					}
 					if (chunkBefore.Length > 0) {
 						chunks.Insert (i, chunkBefore);
 						i++;
 					}
+					if (chunkAfter.Length > 0)
+						i++;
 					continue;
 				}
 				if (chunk.Contains (markerStart)) {
@@ -78,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				}
 				if (chunk.Contains (markerEnd)) {
-					var chunkAfter = new ColoredSegment (markerEnd, markerEnd - chunk.EndOffset, chunk.ScopeStack);
+					var chunkAfter = new ColoredSegment (markerEnd, chunk.EndOffset - markerEnd, chunk.ScopeStack);
 					chunks [i] = new ColoredSegment (chunk.Offset, markerEnd - chunk.Offset, chunk.ScopeStack);
 					chunks.Insert (i + 1, chunkAfter);
 					i++;

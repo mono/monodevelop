@@ -190,7 +190,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return new HighlightedLine (segments);
 		}
 
-		async Task<ImmutableStack<string>> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		async Task<ScopeStack> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = editor.GetLineByOffset (offset);
 

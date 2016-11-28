@@ -132,9 +132,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			ThemeSetting result = null;
 			string cs = null;
-			var stack = ImmutableStack<string>.Empty.Push (scope);
+			int d = 0;
+			var stack = new ScopeStack (scope);
 			foreach (var s in settings.Skip (1)) {
-				if (s.Scopes.Any (a => EditorTheme.IsCompatibleScope (a, stack, ref cs))) {
+				if (s.Scopes.Any (a => EditorTheme.IsCompatibleScope (a, stack, ref cs, ref d))) {
 					result = s;
 				}
 			}
@@ -189,7 +190,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (dict.TryGetValue ("name", out val))
 				name = ((PString)val).Value;
 			if (dict.TryGetValue ("scope", out val)) {
-				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()));
+				var scope = ((PString)val).Value;
+				scopes.Add (scope);
 			}
 			if (dict.TryGetValue ("settings", out val)) {
 				var settingsDictionary = val as PDictionary;

@@ -48,8 +48,8 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("bar"), ref tmp).Item1);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("entity.other.attribute-name");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("entity.other.attribute-name"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("entity.other.attribute-name"), ref tmp).Item1);
 		}
 
 
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo.bar"), ref tmp).Item1);
 		}
 
 
@@ -75,8 +75,8 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo, bar");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("bar"), ref tmp).Item1);
 		}
 
 		[Test]
@@ -84,8 +84,8 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo - foo.bar");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("foo.bar"), ref tmp).Item1);
 		}
 
 		[Test]
@@ -93,9 +93,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo - (foo.bar | foo.foobar)");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo"), ref tmp).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.bar"), ref tmp).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo.foobar"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("foo.bar"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("foo.foobar"), ref tmp).Item1);
 		}
 
 
@@ -105,8 +105,20 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var expr = StackMatchExpression.Parse ("foo bar");
 			string tmp = "";
-			Assert.IsTrue (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("foo").Push ("bar"), ref tmp).Item1);
-			Assert.IsFalse (expr.MatchesStack (ImmutableStack<string>.Empty.Push ("bar").Push ("foo"), ref tmp).Item1);
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("foo").Push ("bar"), ref tmp).Item1);
+			Assert.IsFalse (expr.MatchesStack (new ScopeStack ("bar").Push ("foo"), ref tmp).Item1);
+		}
+
+
+		/// <summary>
+		/// Bug 45378 - [Text Mate] Syntax Highlighting not works properly for XML file while applying "Tomorrow.tmTheme" to Xamarin Studio.
+		/// </summary>
+		[Test]
+		public void TestBug45378 ()
+		{
+			var expr = StackMatchExpression.Parse ("string, constant.other.symbol, entity.other.inherited-class, markup.heading, markup.inserted.git_gutter");
+			string tmp = "";
+			Assert.IsTrue (expr.MatchesStack (new ScopeStack ("text.xml").Push("meta.tag.xml").Push ("string.quoted.double.xml"), ref tmp).Item1);
 		}
 	}
 }

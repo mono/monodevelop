@@ -129,9 +129,9 @@ namespace MonoDevelop.Ide.Projects
 			TreeIter treeIter;
 
 			if (catView.Selection.GetSelected (out treeModel, out treeIter)) {
-				okButton.Sensitive = false;
 				FillCategoryTemplates (treeIter);
 				catView.ExpandRow (treeModel.GetPath (treeIter), false);
+				UpdateOkStatus ();
 			}
 		}
 

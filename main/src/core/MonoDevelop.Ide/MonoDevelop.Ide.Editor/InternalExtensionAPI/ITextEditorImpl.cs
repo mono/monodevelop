@@ -230,6 +230,6 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler FocusLost;
 
 		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
-		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
+		Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 }
 }

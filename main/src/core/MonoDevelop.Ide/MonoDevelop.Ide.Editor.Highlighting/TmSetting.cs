@@ -84,10 +84,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return string.Format ("[ThemeSetting: Name={0}]", Name);
 		}
 
-		internal static bool IsSettingMatch (ImmutableStack<string> scopes, StackMatchExpression expr)
+		internal static bool IsSettingMatch (ScopeStack scopes, StackMatchExpression expr)
 		{
 			string cs = null;
-			if (EditorTheme.IsCompatibleScope (expr, scopes, ref cs)) {
+			int d = 0;
+			if (EditorTheme.IsCompatibleScope (expr, scopes, ref cs, ref d)) {
 				return true;
 			}
 			return false;

@@ -100,8 +100,8 @@ contexts:
         - match: '({)'
           captures:
             1: string.quoted.other.interpolated.source.cs
-          scope: source.cs
           push:
+            - meta_content_scope: source.cs
             - match: '(})'
               captures:
                 1: string.quoted.other.interpolated.source.cs

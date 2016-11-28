@@ -3575,7 +3575,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
 		}
 
-		Task<ImmutableStack<string>> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		Task<ScopeStack> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return TextEditor.SyntaxHighlighting.GetScopeStackAsync (offset, cancellationToken);
 		}

@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return (bgColor.L > 0.5);
 		}
 
-		internal static IEnumerable<TmSetting> GetSettings (ImmutableStack<string> scope)
+		internal static IEnumerable<TmSetting> GetSettings (ScopeStack scope)
 		{
 			foreach (var bundle in languageBundles) {
 				foreach (var setting in bundle.Settings) {
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 		}
-		internal static IEnumerable<TmSnippet> GetSnippets (ImmutableStack<string> scope)
+		internal static IEnumerable<TmSnippet> GetSnippets (ScopeStack scope)
 		{
 			foreach (var bundle in languageBundles) {
 				foreach (var setting in bundle.Snippets) {
@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return GetSyntaxHighlightingDefinitionByMimeType (mimeType);
 		}
 
-		internal static ImmutableStack<string> GetScopeForFileName (string fileName)
+		internal static ScopeStack GetScopeForFileName (string fileName)
 		{
 			string scope = null;
 			if (fileName != null) {
@@ -590,9 +590,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			if (scope == null)
-				return ImmutableStack<string>.Empty;
+				return ScopeStack.Empty;
 
-			return ImmutableStack<string>.Empty.Push (scope);
+			return new ScopeStack (scope);
 		}
 	}
 }

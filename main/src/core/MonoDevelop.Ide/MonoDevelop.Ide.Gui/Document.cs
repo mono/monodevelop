@@ -59,6 +59,7 @@ using MonoDevelop.Projects.SharedAssetsProjects;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.TextMate;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -90,7 +91,8 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (analysisDocument == null)
 					return null;
-				return TypeSystemService.GetCodeAnalysisDocument (analysisDocument);
+				
+				return RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
 			}
 		}
  		
@@ -174,12 +176,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
+			if (IsAdHocProject)
+				return;
 			UnsubscibeAnalysisdocument ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
 			});
-
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -716,7 +719,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project project)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
@@ -832,7 +835,6 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			} else {
-				CancelEnsureAnalysisDocumentIsOpen ();
 				lock (adhocProjectLock) {
 					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
@@ -865,7 +867,7 @@ namespace MonoDevelop.Ide.Gui
 							UnsubscribeRoslynWorkspace ();
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
 							SubscribeRoslynWorkspace ();
-							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, newProject, adHocFile);
+							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
 						});
 					}

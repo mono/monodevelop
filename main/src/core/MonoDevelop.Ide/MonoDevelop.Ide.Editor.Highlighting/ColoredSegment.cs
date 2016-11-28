@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// </summary>
 	public sealed class ColoredSegment : AbstractSegment
 	{
-		readonly ImmutableStack<string> scopeStack;
+		readonly ScopeStack scopeStack;
 
 		/// <summary>
 		/// Gets the color style. The style is looked up in the current color scheme.
@@ -47,18 +47,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal ImmutableStack<string> ScopeStack {
+		internal ScopeStack ScopeStack {
 			get {
 				return scopeStack;
 			}
 		}
 
-		public ColoredSegment (int offset, int length, ImmutableStack<string> scopeStack) : base (offset, length)
+		public ColoredSegment (int offset, int length, ScopeStack scopeStack) : base (offset, length)
 		{
 			this.scopeStack = scopeStack;
 		}
 
-		public ColoredSegment (ISegment segment, ImmutableStack<string> scopeStack) : base (segment)
+		public ColoredSegment (ISegment segment, ScopeStack scopeStack) : base (segment)
 		{
 			this.scopeStack = scopeStack;
 		}
