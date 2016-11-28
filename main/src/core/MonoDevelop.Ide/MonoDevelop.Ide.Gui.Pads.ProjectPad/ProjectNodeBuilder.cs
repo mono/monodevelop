@@ -123,9 +123,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 
 			nodeInfo.Icon = Context.GetIcon (p.StockIcon);
-			if (p.ParentSolution != null && p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
+			var sc = p.ParentSolution?.StartupConfiguration;
+			if (sc != null && IsStartupProject (p, sc)) {
 				nodeInfo.Label = "<b>" + escapedProjectName + "</b>";
-			else
+			} else
 				nodeInfo.Label = escapedProjectName;
 
 			// Gray out the project name if it is not selected in the current build configuration
@@ -144,6 +145,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					nodeInfo.StatusMessage = GettextCatalog.GetString ("Project not built in active configuration");
 				}
 			}
+		}
+
+		bool IsStartupProject (Project p, SolutionRunConfiguration sc)
+		{
+			var single = sc as SingleItemSolutionRunConfiguration;
+			if (single != null)
+				return single.Item == p;
+			var multi = sc as MultiItemSolutionRunConfiguration;
+			return multi != null && multi.Items.Any (si => si.SolutionItem == p);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -389,11 +399,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = CurrentNode.DataItem as Project;
 			project.ParentSolution.StartupItem = project;
-			if (!project.ParentSolution.SingleStartup) {
-				project.ParentSolution.SingleStartup = true;
-				await IdeApp.ProjectOperations.SaveAsync (project.ParentSolution);
-			} else
-				await project.ParentSolution.SaveUserProperties ();
+			await project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()

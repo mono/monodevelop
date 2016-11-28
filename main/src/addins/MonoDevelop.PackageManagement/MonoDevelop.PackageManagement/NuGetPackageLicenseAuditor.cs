@@ -30,7 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;

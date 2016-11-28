@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using NuGet.Configuration;
+using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -40,6 +41,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public SourceRepository CreateRepository (PackageSource source)
+		{
+			return CreateRepository (source, FeedType.Undefined);
+		}
+
+		public SourceRepository CreateRepository (PackageSource source, FeedType type)
 		{
 			return new SourceRepository (source, new INuGetResourceProvider[0]);
 		}

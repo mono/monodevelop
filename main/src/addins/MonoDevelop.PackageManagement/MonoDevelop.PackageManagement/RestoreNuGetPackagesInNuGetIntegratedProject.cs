@@ -50,8 +50,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageRestorer = new MonoDevelopBuildIntegratedRestorer (
 				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager.SolutionDirectory);
+				solutionManager.Settings);
 		}
 
 		public void Execute ()

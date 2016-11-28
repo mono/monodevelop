@@ -169,10 +169,6 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackageSourceToViewModel (NuGet.Configuration.PackageSource packageSource, string password)
 		{
-			// HACK: Workaround NuGet 3.4.3 bug.
-			// Set the password text after the view model is created.
-			packageSource.PasswordText = null;
-
 			var packageSourceViewModel = new PackageSourceViewModel (packageSource);
 			packageSourceViewModel.Password = password;
 

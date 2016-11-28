@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			info.Enabled = ((buildTarget != null) && (!(buildTarget is Workspace)) && IdeApp.ProjectOperations.CanExecute (buildTarget) && IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted);
+			info.Enabled = ((buildTarget != null) && (!(buildTarget is Workspace)) && IdeApp.ProjectOperations.CanExecute (buildTarget));
 		}
 
 		protected override void Run ()

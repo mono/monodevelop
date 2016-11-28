@@ -8,8 +8,8 @@ open FsUnit
 module ``Highlight unused opens`` =
     let assertUnusedOpens source expected =
         let doc = TestHelpers.createDoc source "defined"
-        let res = highlightUnusedOpens.getUnusedOpens doc doc.Editor
-        let opens = fst (res.Value |> List.unzip)
+        let res = highlightUnusedCode.getUnusedCode doc doc.Editor
+        let opens = res.Value |> List.map(fun range -> highlightUnusedCode.textFromRange doc.Editor range)
         opens |> should equal expected
 
     [<Test>]

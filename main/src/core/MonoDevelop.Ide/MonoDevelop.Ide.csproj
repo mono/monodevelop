@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -2601,6 +2601,30 @@
     <EmbeddedResource Include="icons\pad-immediate-16~dark~sel%402x.png">
       <LogicalName>pad-immediate-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16.png">
+      <LogicalName>pad-execute-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16%402x.png">
+      <LogicalName>pad-execute-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~dark.png">
+      <LogicalName>pad-execute-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~dark%402x.png">
+      <LogicalName>pad-execute-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~sel.png">
+      <LogicalName>pad-execute-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~sel%402x.png">
+      <LogicalName>pad-execute-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~dark~sel.png">
+      <LogicalName>pad-execute-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-execute-16~dark~sel%402x.png">
+      <LogicalName>pad-execute-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-generic-16.png">
       <LogicalName>pad-generic-16.png</LogicalName>
     </EmbeddedResource>
@@ -4257,6 +4281,18 @@
     <EmbeddedResource Include="icons\add-16~dark~disabled%402x.png">
       <LogicalName>add-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-simple-16.png">
+      <LogicalName>add-simple-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-simple-16%402x.png">
+      <LogicalName>add-simple-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-simple-16~dark.png">
+      <LogicalName>add-simple-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-simple-16~dark%402x.png">
+      <LogicalName>add-simple-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16.png">
       <LogicalName>warning-16.png</LogicalName>
     </EmbeddedResource>
@@ -4688,6 +4724,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-16~dark~disabled%402x.png">
       <LogicalName>remove-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-simple-16.png">
+      <LogicalName>remove-simple-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-simple-16%402x.png">
+      <LogicalName>remove-simple-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-simple-16~dark.png">
+      <LogicalName>remove-simple-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-simple-16~dark%402x.png">
+      <LogicalName>remove-simple-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\run-unit-tests-16.png">
       <LogicalName>run-unit-tests-16.png</LogicalName>
@@ -8554,7 +8602,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\BaseDirectoryPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\BaseDirectoryPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeFormattingPanel.cs" />
@@ -8571,7 +8618,6 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionItemConfigurationsPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\StartupOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.DeleteConfigDialog.cs" />
@@ -9117,6 +9163,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\LanguageBundle.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\StackMatchExpression.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationsPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionRunConfigurationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStarted.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNode.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilder.cs" />

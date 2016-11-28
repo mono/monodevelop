@@ -208,7 +208,9 @@ namespace MonoDevelop.Debugger
 
 		void OnDebuggingServiceStopped (object sender, EventArgs e)
 		{
-			if (store != null)
+			TreeIter iter;
+
+			if (store != null && store.GetIterFirst (out iter) && (store.GetValue (iter, FrameColumn) as StackFrame)?.DebuggerSession == sender)
 				store.Clear ();
 		}
 

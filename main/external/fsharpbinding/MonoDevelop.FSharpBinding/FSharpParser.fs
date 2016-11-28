@@ -16,7 +16,12 @@ module ParsedDocument =
         let startLine = if error.StartLineAlternate = 0 then 1 else error.StartLineAlternate
         let endLine = if error.EndLineAlternate = 0 then 1 else error.EndLineAlternate
         Error(errorType, String.wrapText error.Message 80, DocumentRegion (startLine, error.StartColumn + 1, endLine, error.EndColumn + 1))
-    
+
+    let private formatUnused (error: FSharpErrorInfo) =
+        let startPos = Range.mkPos error.StartLineAlternate  error.StartColumn
+        let endPos = Range.mkPos error.EndLineAlternate  error.EndColumn
+        Range.mkRange error.FileName startPos endPos
+
     let inline private isMoreThanNLines n (range:Range.range) =
         range.EndLine - range.StartLine > n
         
@@ -31,8 +36,15 @@ module ParsedDocument =
 
             //Get all the symboluses now rather than in semantic highlighting
             LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
+            let errors = parseResults.GetErrors()
+            errors
+            |> Seq.groupBy(fun error -> error.ErrorNumber = 1182) //"The value '%s' is unused"
+            |> Seq.iter(function
+                        | true, unused ->
+                            doc.UnusedCodeRanges <- Some (unused |> Seq.map formatUnused |> List.ofSeq)
+                        | false, errors ->
+                            errors |> (Seq.map formatError >> doc.AddRange))
 
-            parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
             let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
 
             allSymbolUses
