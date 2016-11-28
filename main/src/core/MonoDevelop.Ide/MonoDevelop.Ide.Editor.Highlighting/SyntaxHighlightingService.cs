@@ -508,7 +508,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings) {
 					foreach (var fe in h.FileTypes) {
-						var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : fe;
+						var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : "a." + fe;
 						var mime = DesktopService.GetMimeTypeForUri (uri);
 						if (mimeType == mime) {
 							return h;
