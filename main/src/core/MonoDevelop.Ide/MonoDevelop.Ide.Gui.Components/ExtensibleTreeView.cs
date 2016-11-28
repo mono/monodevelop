@@ -327,7 +327,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (CustomCellRendererText)renderer;
+			SetTextCellData (cell, info);
+		}
 
+		static void SetTextCellData (CustomCellRendererText cell, NodeInfo info)
+		{
 			cell.DisabledStyle = info.DisabledStyle;
 			cell.TextMarkup = info.Label;
 			cell.SecondaryTextMarkup = info.SecondaryLabel;
@@ -492,9 +496,12 @@ namespace MonoDevelop.Ide.Gui.Components
 						int sp, w;
 						col.CellGetPosition (text_render, out sp, out w);
 						cellArea.X += sp;
+						cellArea.X++; // GetCellArea is off by 1px compared to the cellArea passed to cell renderers directly
 						cellArea.Width = w;
+						SetTextCellData (text_render, info); // update cell renderer data for size calculations
 						var rect = text_render.GetStatusIconArea (tree, cellArea);
 						if (cx >= rect.X && cx <= rect.Right) {
+							tree.ConvertBinWindowToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
 							ShowStatusMessage (it, rect, info);
 							popupShown = true;
 						}
