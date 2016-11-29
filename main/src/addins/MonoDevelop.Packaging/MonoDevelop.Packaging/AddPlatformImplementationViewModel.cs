@@ -73,7 +73,7 @@ namespace MonoDevelop.Packaging
 
 		public bool AnyItemsToCreate ()
 		{
-			return CreateAndroidProject || CreateIOSProject;
+			return CreateAndroidProject || CreateIOSProject || CreateSharedProject;
 		}
 
 		public async Task CreateProjects (ProgressMonitor monitor)

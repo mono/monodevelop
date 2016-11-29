@@ -88,6 +88,7 @@ namespace MonoDevelop.Packaging.Gui
 		void UseSharedProjectCheckBoxClicked (object sender, EventArgs e)
 		{
 			viewModel.CreateSharedProject = useSharedProjectCheckBox.Active;
+			UpdateOkButton ();
 		}
 	}
 }
