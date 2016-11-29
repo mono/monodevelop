@@ -36,6 +36,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class HighlightedLine
 	{
+		/// <summary>
+		/// The segment offsets are 0 at line start regardless of where the line is inside the document.
+		/// </summary>
 		public IReadOnlyList<ColoredSegment> Segments { get; private set; }
 
 		public HighlightedLine (IReadOnlyList<ColoredSegment> segments)

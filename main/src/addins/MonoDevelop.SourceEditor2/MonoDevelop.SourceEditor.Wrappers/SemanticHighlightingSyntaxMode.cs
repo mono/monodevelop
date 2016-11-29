@@ -153,52 +153,53 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
 				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
-			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
+			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false);
 			if (syntaxLine.Segments.Count == 0)
 				return syntaxLine;
-			var segments = new List<ColoredSegment> (syntaxLine.Segments);
-			int endOffset = segments [segments.Count - 1].EndOffset;
-
-			try {
-				var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
-				if (tree == null) {
-					tree = Tuple.Create (line, new HighlightingSegmentTree ());
-					tree.Item2.InstallListener (editor.Document);
+			lock (lineSegments) {
+				var segments = new List<ColoredSegment> (syntaxLine.Segments);
+				int endOffset = segments [segments.Count - 1].EndOffset;
+				try {
+					var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
 					int lineOffset = line.Offset;
-					foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
-						tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
+					if (tree == null) {
+						tree = Tuple.Create (line, new HighlightingSegmentTree ());
+						tree.Item2.InstallListener (editor.Document);
+						foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
+							tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
+						}
+						while (lineSegments.Count > MaximumCachedLineSegments) {
+							var removed = lineSegments.Dequeue ();
+							try {
+								removed.Item2.RemoveListener ();
+							} catch (Exception) { }
+						}
+						lineSegments.Enqueue (tree);
 					}
-					while (lineSegments.Count > MaximumCachedLineSegments) {
-						var removed = lineSegments.Dequeue ();
-						try {
-							removed.Item2.RemoveListener ();
-						} catch (Exception) { }
-					}
-					lineSegments.Enqueue (tree);
-				}
 
-				foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
-					var toffset = treeseg.Offset;
-					if (toffset + treeseg.Length > endOffset)
-						continue;
-					SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (toffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+					foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
+						var toffset = treeseg.Offset;
+						if (toffset + treeseg.Length > endOffset)
+							continue;
+						SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (toffset - lineOffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in semantic highlighting: " + e);
+					return syntaxLine;
 				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in semantic highlighting: " + e);
-				return syntaxLine;
+				return new HighlightedLine (segments);
 			}
-			return new HighlightedLine (segments);
 		}
 
 		async Task<ScopeStack> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = editor.GetLineByOffset (offset);
 
-			foreach (var seg in (await ((ISyntaxHighlighting)this).GetHighlightedLineAsync (line, cancellationToken)).Segments) {
+			foreach (var seg in (await ((ISyntaxHighlighting)this).GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false)).Segments) {
 				if (seg.Contains (offset))
 					return seg.ScopeStack;
 			}
-			return await syntaxMode.GetScopeStackAsync (offset, cancellationToken);
+			return await syntaxMode.GetScopeStackAsync (offset, cancellationToken).ConfigureAwait (false);
 		}
 
 		public event EventHandler<Ide.Editor.LineEventArgs> HighlightingStateChanged {

@@ -339,18 +339,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		bool hasRegex;
 		Regex cachedRegex;
+		object lockObj = new object ();
 
 		internal Regex GetRegex ()
 		{
 			if (hasRegex)
 				return cachedRegex;
-			hasRegex = true;
-			try {
-				cachedRegex = new Regex (Match);
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Warning regex : '" + Match + "' can't be parsed.", e);
+			
+			lock (lockObj) {
+				if (hasRegex)
+					return cachedRegex;
+				hasRegex = true;
+				try {
+					cachedRegex = new Regex (Match);
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Warning regex : '" + Match + "' can't be parsed.", e);
+				}
+				return cachedRegex;
 			}
-			return cachedRegex;
 		}
 	}
 
