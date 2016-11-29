@@ -9,13 +9,18 @@ open System
 open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
-
+open System.Threading
+open System.Threading.Tasks
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
+open MonoDevelop.Core.Execution
+open MonoDevelop.Debugger
 open MonoDevelop.Projects
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Components
+
+open CompilerArguments
 // --------------------------------------------------------------------------------------
 
 /// Functions that implement compilation, parsing, etc..
@@ -86,7 +91,7 @@ module CompilerService =
 
     /// Run the F# compiler with the specified arguments (passed as a list)
     /// and print the arguments to progress monitor (Output in MonoDevelop)
-    let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:ProgressMonitor) projectDir argsList =
+    let compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:ProgressMonitor) projectDir argsList =
 
   //    let nw x = if x = None then "None" else x.Value
   //    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
@@ -172,6 +177,7 @@ module CompilerService =
         let root = Path.GetDirectoryName(config.ParentItem.FileName.FullPath.ToString())
         let args =
             [ yield! [ "--noframework --nologo" ]
+              
               yield! generateCmdArgs(config, None, configSel)
               yield! CompilerArguments.generateOtherItems items
 
@@ -183,31 +189,79 @@ module CompilerService =
 
         compile runtime framework monitor root args
 
-type DebugScriptCommands = Debug=0
+    //let compileScript scriptPath =
 
+//type DebugScriptCommands = Debug=0
+
+type ScriptBuildTarget(scriptPath: FilePath) =
+    interface IBuildTarget with
+        member x.Build(monitor, config, buildReferencedTargets, operationContext) =
+            async {
+                //let c = config.GetConfiguration(DefaultConfigurationSelector())
+                //let dcs = DefaultConfigurationSelector()
+                //let config = ConfigurationSelector.Default
+                //dcs.GetConfiguration
+                //let runtime = config .TargetRuntime
+                //let framework = config.TargetFramework
+                let root = scriptPath.ParentDirectory |> string
+                let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
+                let framework = Project.getDefaultTargetFramework runtime
+                let args =
+                    [ yield! [ "--target:exe --noframework --nologo --debug+" ]
+                      yield! [" -g --debug:full --noframework --define:DEBUG --optimize- --tailcalls- --fullpaths --flaterrors --highentropyva-"]
+                      yield "-r:/Library/Frameworks/Mono.framework/Versions/4.8.0/lib/mono/4.5-api/System.dll"
+                      //yield! generateCmdArgs(config, None, configSel)
+                      //yield! CompilerArguments.generateOtherItems items
+
+                      // Generate source files
+                      //let files = items
+                      //            |> CompilerArguments.getSourceFiles
+                      //            |> List.map CompilerArguments.wrapFile
+                      yield wrapFile (scriptPath |> string) ]
+                return CompilerService.compile runtime framework monitor root args
+            } |> Async.StartAsTask
+        member x.CanBuild configSelector = true
+        member x.NeedsBuilding configSelector = true
+        member x.CanExecute(context, configSelector) = true
+        member x.Clean(monitor, config, operationContext) =
+            async { return BuildResult() } |> Async.StartAsTask
+        member x.Execute(monitor, context, configSelector) =
+            let r = Runtime.ProcessService.CreateCommand (scriptPath.ChangeExtension ".exe" |> string)
+            //let r = Runtime.ProcessService.CreateCommand ("/Library/Frameworks/Mono.framework/Versions/4.8.0/lib/mono/4.5/fsi.exe")
+            //let r = new DotNetExecutionCommand("/Library/Frameworks/Mono.framework/Versions/4.8.0/lib/mono/4.5/fsi.exe")
+            r.Arguments <- "--debug " + (scriptPath |> string)
+            let tokenSource = new CancellationTokenSource()
+            let token = tokenSource.Token
+            let console = context.ExternalConsoleFactory.CreateConsole(token)
+            let console = context.ConsoleFactory.CreateConsole token
+            let e = context.ExecutionHandler.Execute(r, console)
+            e.Task
+            //console.
+            //async { return () } |> Async.startAsPlainTask
+        member x.PrepareExecution(monitor, context, configSelector) =
+            async { return () } |> Async.startAsPlainTask
+        member x.GetExecutionDependencies() = Seq.empty
+        member x.Name = scriptPath |> string
 
 type DebugScript() =
     inherit NodeCommandHandler()
-    let x = 1
+
     [<CommandHandler ("MonoDevelop.FSharp.DebugScript")>]
     member x.DebugScript () =
         //let nodes = base.CurrentNodes
-        //let file =  base.CurrentNode.DataItem :?> ProjectFile
-        //let s = ob :?> string
-        //LoggingService.logDebug "%s" s//file.Name
-        LoggingService.logDebug "here"
+        let file =  base.CurrentNode.DataItem :?> ProjectFile
+
+        let s = ""//ob :?> string
+        LoggingService.logDebug "%s" s//file.Name
+        //LoggingService.logDebug "here"
+        let buildTarget = ScriptBuildTarget file.FilePath
+        let debug = IdeApp.ProjectOperations.Debug buildTarget
+        debug.Task
 
     [<CommandUpdateHandler("MonoDevelop.FSharp.DebugScript")>]
     ////member x.DebugScript_Update(ci:CommandArrayInfo) = ()
     member x.DebugScript_Update(ci:CommandInfo) =
         ci.Enabled <- true
-
-//type DebugScriptDefault() = 
-//    inherit CommandHandler()
-//    [<CommandUpdateHandler("MonoDevelop.FSharp.DebugScript")>]
-//    ////member x.DebugScript_Update(ci:CommandArrayInfo) = ()
-//    member x.DebugScript_Update(ci:CommandInfo) =
-//        ci.Enabled <- true
 
 type DebugScriptBuilder() =
     inherit NodeBuilderExtension()
