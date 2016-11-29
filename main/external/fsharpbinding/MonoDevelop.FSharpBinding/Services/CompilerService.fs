@@ -8,15 +8,14 @@ namespace MonoDevelop.FSharp
 open System
 open System.IO
 open System.Diagnostics
-open System.CodeDom.Compiler
 open System.Text.RegularExpressions
 
+open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Projects
 open MonoDevelop.Ide
-open FSharp.Compiler.CodeDom
-
+open MonoDevelop.Ide.Gui.Components
 // --------------------------------------------------------------------------------------
 
 /// Functions that implement compilation, parsing, etc..
@@ -183,3 +182,34 @@ module CompilerService =
               yield! files ]
 
         compile runtime framework monitor root args
+
+type DebugScriptCommands = Debug=0
+
+
+type DebugScript() =
+    inherit NodeCommandHandler()
+    let x = 1
+    [<CommandHandler ("MonoDevelop.FSharp.DebugScript")>]
+    member x.DebugScript () =
+        //let nodes = base.CurrentNodes
+        //let file =  base.CurrentNode.DataItem :?> ProjectFile
+        //let s = ob :?> string
+        //LoggingService.logDebug "%s" s//file.Name
+        LoggingService.logDebug "here"
+
+    [<CommandUpdateHandler("MonoDevelop.FSharp.DebugScript")>]
+    ////member x.DebugScript_Update(ci:CommandArrayInfo) = ()
+    member x.DebugScript_Update(ci:CommandInfo) =
+        ci.Enabled <- true
+
+//type DebugScriptDefault() = 
+//    inherit CommandHandler()
+//    [<CommandUpdateHandler("MonoDevelop.FSharp.DebugScript")>]
+//    ////member x.DebugScript_Update(ci:CommandArrayInfo) = ()
+//    member x.DebugScript_Update(ci:CommandInfo) =
+//        ci.Enabled <- true
+
+type DebugScriptBuilder() =
+    inherit NodeBuilderExtension()
+    override x.CanBuildNode _dataType = true
+    override x.CommandHandlerType = typeof<DebugScript>
