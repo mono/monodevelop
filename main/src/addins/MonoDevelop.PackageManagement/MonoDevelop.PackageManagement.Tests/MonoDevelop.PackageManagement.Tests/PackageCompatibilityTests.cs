@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Runtime.Versioning;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -39,6 +40,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackage package;
 		PackageCompatibility packageCompatibility;
 		FakeDotNetProject project;
+
+		NetPortableProfileTable profileTable;
+
+		[TestFixtureSetUp]
+		public void SetUp ()
+		{
+			string appDataFolder = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+			string dummyPath = Path.Combine (appDataFolder, "MonoDevelopPackageManagementTests");
+			Environment.SetEnvironmentVariable ("NuGetPortableReferenceAssemblyPath", dummyPath);
+			profileTable = NetPortableProfileTable.Instance;
+		}
 
 		void CreateProject (string frameworkVersion)
 		{
