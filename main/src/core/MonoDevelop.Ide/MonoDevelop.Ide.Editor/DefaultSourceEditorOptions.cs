@@ -464,7 +464,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		bool tabsToSpaces = false;
+		bool tabsToSpaces = true;
 		public bool TabsToSpaces {
 			get {
 				return tabsToSpaces;
@@ -592,7 +592,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		int  rulerColumn = 80;
+		int  rulerColumn = 120;
 
 		public int RulerColumn {
 			get {
@@ -695,7 +695,7 @@ namespace MonoDevelop.Ide.Editor
 			OnChanged (EventArgs.Empty);
 		}
 		
-		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", false);
+		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", true);
 		public bool GenerateFormattingUndoStep {
 			get {
 				return generateFormattingUndoStep;
