@@ -821,7 +821,9 @@ namespace Mono.TextEditor
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
 			}
 			StringBuilder textBuilder = new StringBuilder ();
-			var chunks = GetCachedChunks (Document, line, offset, length);
+			var cachedChunks = GetCachedChunks (Document, line, offset, length);
+			var lineOffset = line.Offset;
+			var chunks = new List<ColoredSegment> (cachedChunks.Item1.Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack)));;
 			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetVisibleTextSegmentMarkersAt (line)).ToList ();
 			foreach (var marker in markers) {
 				var chunkMarker = marker as IChunkMarker;
@@ -838,7 +840,6 @@ namespace Mono.TextEditor
 					Console.WriteLine (chunk);
 				}
 			}
-			int lineOffset = line.Offset;
 			string lineText = textBuilder.ToString ();
 			uint preeditLength = 0;
 			
@@ -1006,7 +1007,7 @@ namespace Mono.TextEditor
 				selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 				selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
 				descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
-				if (!containsPreedit) {
+				if (!containsPreedit && cachedChunks.Item2) {
 					layoutDict [line] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
@@ -1040,7 +1041,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-
+			cachedLines.Remove (line);
 		}
 
 		internal void DisposeLayoutDict ()
@@ -1050,6 +1051,9 @@ namespace Mono.TextEditor
 				descr.Dispose ();
 			}
 			layoutDict.Clear ();
+			cacheSrc.Cancel ();
+			cacheSrc = new CancellationTokenSource ();
+			cachedLines.Clear ();
 		}
 
 		public void PurgeLayoutCache ()
@@ -1069,11 +1073,29 @@ namespace Mono.TextEditor
 				this.Chunk = chunk;
 			}
 		}
-
-		List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
+		Dictionary<DocumentLine, HighlightedLine> cachedLines = new Dictionary<DocumentLine, HighlightedLine> ();
+		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
+		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
-			var highlightedLine = doc.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).Result;
-			return TrimChunks(highlightedLine.Segments, offset, length);
+			HighlightedLine result;
+			if (cachedLines.TryGetValue (line, out result))
+				return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
+			var token = cacheSrc.Token;
+			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
+			task.Wait (100);
+			if (task.IsCompleted) {
+				cachedLines [line] = task.Result;
+				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
+			}
+			task.ContinueWith (t => {
+				Runtime.RunInMainThread (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					cachedLines [line] = t.Result;
+					Document.CommitLineUpdate (line);
+				});
+			});
+			return Tuple.Create (new List<ColoredSegment> (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }), false);
 		}
 
 		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)

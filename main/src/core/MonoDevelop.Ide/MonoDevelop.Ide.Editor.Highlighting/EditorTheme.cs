@@ -143,17 +143,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.Uuid = uuuid;
 		}
 
-		HslColor GetColor (string key, ScopeStack scopeStack)
+		Tuple<HslColor, HslColor> GetColor (ScopeStack scopeStack)
 		{
-			HslColor result = default (HslColor);
+			HslColor foreground = default (HslColor);
+			HslColor background = default (HslColor);
+
 			string found = null;
 			int foundDepth = int.MaxValue;
 			if (scopeStack.Count > 1) {
 				if (scopeStack.Peek ()== scopeStack.FirstElement) {
-					HslColor tryC;
-					if (settings[0].TryGetColor (key, out tryC)) {
-						result = tryC;
-						return tryC;
+					if (settings [0].TryGetColor (EditorThemeColors.Foreground, out foreground) &&
+					    settings [0].TryGetColor (EditorThemeColors.Background, out background)) {
+						return Tuple.Create (foreground, background);
 					}
 				}
 			}
@@ -162,20 +163,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
-					if (found != null && depth >= foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 					HslColor tryC;
-					if (setting.TryGetColor (key, out tryC)) {
+					if (setting.TryGetColor (EditorThemeColors.Foreground, out tryC)) {
 						found = compatibleScope;
-						result = tryC;
+						foreground = tryC;
 						foundDepth = depth;
+					}
+					if (setting.TryGetColor (EditorThemeColors.Background, out tryC)) {
+						background = tryC;
 					}
 				}
 			}
-			if (found != null) {
-				return result;
-			}
-			return result;
+			return Tuple.Create (foreground, background);
 		}
 
 		bool IsValidScope (ThemeSetting setting, ScopeStack scopeStack, ref string compatibleScope, ref int depth)
@@ -202,7 +203,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
-					if (found != null && depth > foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 
 					string tryC;
@@ -212,9 +213,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						foundDepth = depth;
 					}
 				}
-			}
-			if (found != null) {
-				return result;
 			}
 			return result;
 		}
@@ -229,7 +227,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, stack, ref compatibleScope, ref depth)) {
-					if (found != null && depth > foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 
 					if (setting.TryGetColor (key, out foundColor)) {
@@ -273,11 +271,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal ChunkStyle GetChunkStyle (ScopeStack scope)
 		{
 			var fontStyle = GetSetting ("fontStyle", scope);
-
+			var color = GetColor (scope);
 			return new ChunkStyle () {
 				ScopeStack = scope,
-				Foreground = GetColor (EditorThemeColors.Foreground, scope),
-				Background = GetColor (EditorThemeColors.Background, scope),
+				Foreground = color.Item1,
+				Background = color.Item2,
 				FontStyle = ConvertFontStyle (fontStyle)
 			};
 		}
@@ -291,8 +289,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
-			if (chunkStyle.TransparentForeground)
-				return GetColor (EditorThemeColors.Foreground, new ScopeStack (""));
+			if (chunkStyle.TransparentForeground) {
+				return GetColor (new ScopeStack ("")).Item1;
+			}
 			return chunkStyle.Foreground;
 		}
 
