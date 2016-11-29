@@ -44,15 +44,17 @@ namespace MonoDevelop.Ide.WelcomePage
 	class WelcomePageFrame: EventBox
 	{
 		WelcomePageProjectBar projectBar;
+		Gtk.Widget welcomePage;
 
 		public WelcomePageFrame (Gtk.Widget w)
 		{
+			welcomePage = w;
 			VBox box = new VBox ();
 			box.Show ();
 			projectBar = new WelcomePageProjectBar ();
 			box.PackStart (projectBar, false, false, 0);
 
-			box.PackStart (w, true, true, 0);
+			box.PackStart (welcomePage, true, true, 0);
 			CanFocus = true;
 
 			Add (box);
@@ -88,6 +90,11 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 			else
 				projectBar.Hide ();
+		}
+
+		protected override void OnFocusGrabbed ()
+		{
+			welcomePage.GrabFocus ();
 		}
 
 		protected override bool OnKeyPressEvent (EventKey evnt)
