@@ -135,20 +135,21 @@ module signatureHelp =
             funs |> Map.iter(fun _l f ->
                 let range = f.RangeAlternate
 
-                let line = editor.GetLine range.StartLine
-                let marker = editor.GetLineMarkers line |> Seq.tryPick(Option.tryCast<SignatureHelpMarker>)
+                let lineOption = editor.GetLine range.StartLine |> Option.ofObj
+                lineOption |> Option.iter(fun line ->
+                    let marker = editor.GetLineMarkers line |> Seq.tryPick(Option.tryCast<SignatureHelpMarker>)
 
-                let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
-                if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
-                    async {
-                        let lineText = editor.GetLineText(range.StartLine)
-                        let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
-                        tooltip |> Option.iter(fun (tooltip, lineNr) ->
-                            let text = extractSignature tooltip
-                            marker.Text <- text
-                            marker.Font <- font
-                            document.CommitLineUpdate lineNr)
-                    } |> Async.StartImmediate))
+                    let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line)
+                    if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
+                        async {
+                            let lineText = editor.GetLineText(range.StartLine)
+                            let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
+                            tooltip |> Option.iter(fun (tooltip, lineNr) ->
+                                let text = extractSignature tooltip
+                                marker.Text <- text
+                                marker.Font <- font
+                                document.CommitLineUpdate lineNr)
+                        } |> Async.StartImmediate)))
 
 type SignatureHelp() as x =
     inherit TextEditorExtension()
