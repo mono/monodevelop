@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			string projectJsonPath = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);
 
 			if (File.Exists (projectJsonPath)) {
-				return new BuildIntegratedProjectSystem (
+				return new ProjectJsonBuildIntegratedProjectSystem  (
 					projectJsonPath,
 					project.FileName,
 					project,

@@ -186,6 +186,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			projects = null;
 		}
+
+		public bool IsSolutionDPLEnabled { get; private set; }
+
+		public void EnsureSolutionIsLoaded ()
+		{
+		}
 	}
 }
 

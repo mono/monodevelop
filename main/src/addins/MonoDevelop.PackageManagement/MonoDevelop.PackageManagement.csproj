@@ -120,9 +120,6 @@
     <Reference Include="NuGet.Client">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Client.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.DependencyResolver">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Commands.dll</HintPath>
     </Reference>
@@ -145,9 +142,6 @@
     </Reference>
     <Reference Include="NuGet.Indexing">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Credentials">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -331,7 +325,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectJsonBuildIntegratedProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
@@ -424,6 +418,14 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement\GlobalNuGetConfigFilePath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetConfigFileChangedMonitor.cs" />
+    <Compile Include="NuGet.Credentials\CredentialServiceAdapter.cs" />
+    <Compile Include="NuGet.Credentials\CredentialProviderAdapter.cs" />
+    <Compile Include="NuGet.Credentials\CredentialService.cs" />
+    <Compile Include="NuGet.Credentials\ICredentialProvider.cs" />
+    <Compile Include="NuGet.Credentials\CredentialResponse.cs" />
+    <Compile Include="NuGet.Credentials\CredentialStatus.cs" />
+    <Compile Include="NuGet.Credentials\ProviderException.cs" />
+    <Compile Include="NuGet.Credentials\DefaultCredentialsCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
