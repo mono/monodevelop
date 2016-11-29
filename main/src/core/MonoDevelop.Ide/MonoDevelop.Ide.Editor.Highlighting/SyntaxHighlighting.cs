@@ -60,9 +60,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var high = new Highlighter (this, GetState (line));
 			int offset = line.Offset;
 			int length = line.Length;
-			return Task.Run (async delegate {
-				return await high.GetColoredSegments (snapshot, offset, length).ConfigureAwait (false);
-		 	});
+			//return Task.Run (async delegate {
+			return high.GetColoredSegments (snapshot, offset, length);
+		 	//});
 		}
 
 		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)

@@ -165,7 +165,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					if (tree == null) {
 						tree = Tuple.Create (line, new HighlightingSegmentTree ());
 						tree.Item2.InstallListener (editor.Document);
-						foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
+						foreach (var seg2 in semanticHighlighting.GetColoredSegments (new TextSegment (lineOffset, line.Length))) {
 							tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
 						}
 						while (lineSegments.Count > MaximumCachedLineSegments) {
@@ -178,10 +178,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					}
 
 					foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
-						var toffset = treeseg.Offset;
+						var toffset = treeseg.Offset - lineOffset;
 						if (toffset + treeseg.Length > endOffset)
 							continue;
-						SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (toffset - lineOffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+						var semanticSegment = new ColoredSegment (toffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style));
+						SyntaxHighlighting.ReplaceSegment (segments, semanticSegment);
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in semantic highlighting: " + e);
