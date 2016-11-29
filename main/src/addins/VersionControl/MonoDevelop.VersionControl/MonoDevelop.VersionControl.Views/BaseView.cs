@@ -7,7 +7,11 @@ namespace MonoDevelop.VersionControl
 		readonly string name;
 		readonly string accessibilityDescription;
 
-		protected BaseView (string name, string description = "")
+		protected BaseView (string name) :this (name, "")
+		{
+		}
+
+		protected BaseView (string name, string description)
 		{
 			ContentName = this.name = name;
 			accessibilityDescription = description;
