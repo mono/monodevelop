@@ -254,7 +254,11 @@ namespace MonoDevelop.Ide.Editor
 
 		DefaultSourceEditorOptions (TextStylePolicy currentPolicy)
 		{
-			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", WordNavigationStyle.Windows);
+			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
+			if (Platform.IsWindows) {
+				defaultWordNavigation = WordNavigationStyle.Windows;
+			}
+			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", defaultWordNavigation);
 			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
@@ -530,7 +534,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", true);
+		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", false);
 		public bool ShowFoldMargin {
 			get {
 				return showFoldMargin;
@@ -555,7 +559,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", true);
+		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", false);
 		public bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
@@ -647,7 +651,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", true);
+		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", false);
 		public bool EnableQuickDiff {
 			get {
 				return enableQuickDiff;
