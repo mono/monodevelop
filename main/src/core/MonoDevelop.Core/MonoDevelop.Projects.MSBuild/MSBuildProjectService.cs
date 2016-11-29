@@ -812,56 +812,61 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			
 			// If we're on Windows, don't need to fix file casing.
-			if (Platform.IsWindows) {
+			//if (Platform.IsWindows) {
 				resultPath = FileService.GetFullPath (path);
 				return true;
-			}
-			
-			// If the path exists with the exact casing specified, then we're done
-			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
-				resultPath = Path.GetFullPath (path);
-				return true;
-			}
-			
-			// Not on Windows, file doesn't exist. That could mean the project was brought from Windows
-			// and the filename case in the project doesn't match the file on disk, because Windows is
-			// case-insensitive. Since we have an absolute path, search the directory for the file with
-			// the correct case.
-			string[] names = path.Substring (1).Split ('/');
-			string part = "/";
-			
-			for (int n=0; n<names.Length; n++) {
-				IEnumerable<string> entries;
+			//}
 
-				if (names [n] == ".."){
-					if (part == "/")
-						return false; // Can go further back. It's not an existing file
-					part = Path.GetFullPath (part + "/..");
-					continue;
-				}
-				
-				entries = Directory.EnumerateFileSystemEntries (part);
-				
-				string fpath = null;
-				foreach (string e in entries) {
-					if (string.Compare (Path.GetFileName (e), names [n], StringComparison.OrdinalIgnoreCase) == 0) {
-						fpath = e;
-						break;
-					}
-				}
-				if (fpath == null) {
-					// Part of the path does not exist. Can't do any more checking.
-					part = Path.GetFullPath (part);
-					if (n < names.Length)
-						part += "/" + string.Join ("/", names, n, names.Length - n);
-					resultPath = part;
-					return true;
-				}
+			// Code below and IF above are commented because after we replaced XBuild with MSBuild .targets files
+			// load time of Main.sln(as example) went from 30sec to 2.5min because MSBuild .targets have many more Before/After targets tries
+			// resulting in a lot of Directory.EnumerateFileSystemEntries fetching from hard drive resulting in slow load time.
+			// Since MSBuild.exe doesn't handle file name case mismatches on case-sensetive file system, it doesn't make sense to do this in IDE.
 
-				part = fpath;
-			}
-			resultPath = Path.GetFullPath (part);
-			return true;
+			//// If the path exists with the exact casing specified, then we're done
+			//if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
+			//	resultPath = Path.GetFullPath (path);
+			//	return true;
+			//}
+
+			//// Not on Windows, file doesn't exist. That could mean the project was brought from Windows
+			//// and the filename case in the project doesn't match the file on disk, because Windows is
+			//// case-insensitive. Since we have an absolute path, search the directory for the file with
+			//// the correct case.
+			//string[] names = path.Substring (1).Split ('/');
+			//string part = "/";
+			
+			//for (int n=0; n<names.Length; n++) {
+			//	IEnumerable<string> entries;
+
+			//	if (names [n] == ".."){
+			//		if (part == "/")
+			//			return false; // Can go further back. It's not an existing file
+			//		part = Path.GetFullPath (part + "/..");
+			//		continue;
+			//	}
+				
+			//	entries = Directory.EnumerateFileSystemEntries (part);
+				
+			//	string fpath = null;
+			//	foreach (string e in entries) {
+			//		if (string.Compare (Path.GetFileName (e), names [n], StringComparison.OrdinalIgnoreCase) == 0) {
+			//			fpath = e;
+			//			break;
+			//		}
+			//	}
+			//	if (fpath == null) {
+			//		// Part of the path does not exist. Can't do any more checking.
+			//		part = Path.GetFullPath (part);
+			//		if (n < names.Length)
+			//			part += "/" + string.Join ("/", names, n, names.Length - n);
+			//		resultPath = part;
+			//		return true;
+			//	}
+
+			//	part = fpath;
+			//}
+			//resultPath = Path.GetFullPath (part);
+			//return true;
 		}
 
 		//Given a filename like foo.it.resx, splits it into - foo, it, resx
