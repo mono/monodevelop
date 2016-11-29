@@ -218,6 +218,8 @@ namespace MonoDevelop.DotNetCore.Templating
 				solution.EnsureConfigurationHasBuildEnabled (project);
 			}
 
+			UpdateDefaultRunConfiguration (project);
+
 			if (Parameters.GetBoolValue ("CreateWebRoot")) {
 				FilePath webRootDirectory = project.BaseDirectory.Combine ("wwwroot");
 				Directory.CreateDirectory (webRootDirectory);
@@ -231,6 +233,16 @@ namespace MonoDevelop.DotNetCore.Templating
 			OpenProjectFile (project);
 
 			RestorePackages (project);
+		}
+
+		void UpdateDefaultRunConfiguration (DotNetProject project)
+		{
+			if (!Parameters.GetBoolValue ("ExternalConsole", true))
+				return;
+
+			var runConfig = project.GetDefaultRunConfiguration () as ProcessRunConfiguration;
+			if (runConfig != null)
+				runConfig.ExternalConsole = true;
 		}
 
 		void RemoveProjectDirectoryCreatedByNewProjectDialog (FilePath parentDirectory, string projectName)
