@@ -560,7 +560,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return GetSyntaxHighlightingDefinitionByMimeType (mimeType);
 		}
 
-		internal static ImmutableStack<string> GetScopeForFileName (string fileName)
+		internal static ScopeStack GetScopeForFileName (string fileName)
 		{
 			string scope = null;
 			if (fileName != null) {

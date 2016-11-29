@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
-					if (found != null && depth >= foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 					HslColor tryC;
 					if (setting.TryGetColor (key, out tryC)) {
@@ -171,9 +171,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						foundDepth = depth;
 					}
 				}
-			}
-			if (found != null) {
-				return result;
 			}
 			return result;
 		}
@@ -202,7 +199,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
-					if (found != null && depth > foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 
 					string tryC;
@@ -212,9 +209,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						foundDepth = depth;
 					}
 				}
-			}
-			if (found != null) {
-				return result;
 			}
 			return result;
 		}
@@ -229,7 +223,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, stack, ref compatibleScope, ref depth)) {
-					if (found != null && depth > foundDepth)
+					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
 						continue;
 
 					if (setting.TryGetColor (key, out foundColor)) {
