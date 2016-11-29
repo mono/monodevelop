@@ -13,7 +13,7 @@
 		<_Description>Creates a new .NET Core console project.</_Description>
 		<DefaultFilename>ConsoleProject</DefaultFilename>
 		<Wizard>MonoDevelop.DotNetCore.ProjectTemplateWizard</Wizard>
-		<DefaultParameters>Template=ConsoleProject;OpenFile=Program.cs;Files=Program.cs</DefaultParameters>
+		<DefaultParameters>Template=ConsoleProject;OpenFile=Program.cs;Files=Program.cs;ExternalConsole=true</DefaultParameters>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">

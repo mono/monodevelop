@@ -13,7 +13,7 @@
 		<_Description>Creates a new .NET Core class library project.</_Description>
 		<DefaultFilename>ClassLibrary</DefaultFilename>
 		<Wizard>MonoDevelop.DotNetCore.ProjectTemplateWizard</Wizard>
-		<DefaultParameters>Template=LibraryProject;OpenFile=MyClass.cs;Files=MyClass.cs;ExternalConsole=false</DefaultParameters>
+		<DefaultParameters>Template=LibraryProject;OpenFile=MyClass.cs;Files=MyClass.cs</DefaultParameters>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">

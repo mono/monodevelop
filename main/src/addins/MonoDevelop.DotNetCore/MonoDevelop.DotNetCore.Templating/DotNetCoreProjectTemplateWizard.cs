@@ -237,7 +237,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		void UpdateDefaultRunConfiguration (DotNetProject project)
 		{
-			if (!Parameters.GetBoolValue ("ExternalConsole", true))
+			if (!Parameters.GetBoolValue ("ExternalConsole"))
 				return;
 
 			var runConfig = project.GetDefaultRunConfiguration () as ProcessRunConfiguration;
