@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (line.Offset, line.Length, new ScopeStack ("")) }));
+			return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
 		}
 
 		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
