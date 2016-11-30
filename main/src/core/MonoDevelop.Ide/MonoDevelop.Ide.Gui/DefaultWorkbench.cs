@@ -222,6 +222,8 @@ namespace MonoDevelop.Ide.Gui
 
 			IdeApp.CommandService.SetRootWindow (this);
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
+
+			Accessible.SetAccessibilityIsMainWindow (true);
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)
@@ -547,7 +549,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationLongName;
 		}
-		
+
+		void SetAccessibilityDetails (IWorkbenchWindow window)
+		{
+			string documentUrl, filename;
+			if (window.ViewContent.Project != null) {
+				Console.WriteLine ($"{window.ViewContent.Project.FileName}");
+				Console.WriteLine ($"{window.ViewContent.PathRelativeToProject}");
+
+				documentUrl = "file://" + window.ViewContent.Project.FileName;
+				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
+			} else {
+				documentUrl = string.Empty;
+				filename = string.Empty;
+			}
+
+			Accessible.SetAccessibilityDocument (documentUrl);
+			Accessible.SetAccessibilityFilename (filename);
+		}
+
 		void SetWorkbenchTitle ()
 		{
 			try {
@@ -560,8 +580,12 @@ namespace MonoDevelop.Ide.Gui
 					if (IsInFullViewMode)
 						this.ToggleFullViewMode ();
 				}
+
+				SetAccessibilityDetails (window);
 			} catch (Exception) {
 				Title = GetDefaultTitle ();
+				Accessible.SetAccessibilityDocument ("");
+				Accessible.SetAccessibilityFilename ("");
 			}
 		}
 		

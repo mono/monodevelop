@@ -76,11 +76,12 @@ namespace MonoDevelop.Components
 
 #if MAC
 		const string XamarinPrivateAtkCocoaNSAccessibilityKey = "xamarin-private-atkcocoa-nsaccessibility";
-		internal static NSAccessibilityElement GetNSAccessibilityElement (Atk.Object o)
+		internal static INSAccessibility GetNSAccessibilityElement (Atk.Object o)
 		{
 			IntPtr handle = GtkWorkarounds.GetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey);
 
-			return Runtime.GetNSObject<NSAccessibilityElement> (handle, false);
+			// The object returned could either be an NSAccessibilityElement or it might be an NSObject that implements INSAccessibility
+			return Runtime.GetNSObject<NSObject> (handle, false) as INSAccessibility;
 		}
 
 		internal static void SetNSAccessibilityElement (Atk.Object o, INativeObject native)
@@ -152,6 +153,59 @@ namespace MonoDevelop.Components
 #endif
 		}
 
+		public static void SetAccessibilityDocument (this Atk.Object o, string documentUrl)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityDocument = documentUrl;
+#endif
+		}
+
+		public static void SetAccessibilityFilename (this Atk.Object o, string filename)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityFilename = filename;
+#endif
+		}
+
+		public static void SetAccessibilityIsMainWindow (this Atk.Object o, bool isMainWindow)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityMain = isMainWindow;
+#endif
+		}
+
+		public static void SetAccessibilityMainWindow (this Atk.Object o, Atk.Object mainWindow)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			var windowAccessible = GetNSAccessibilityElement (mainWindow);
+			if (windowAccessible == null) {
+				return;
+			}
+
+			nsa.AccessibilityMainWindow = (NSObject)windowAccessible;
+#endif
+		}
+
 		public static void SetAccessibilityValue (this Atk.Object o, string stringValue)
 		{
 #if MAC
@@ -219,7 +273,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			nsa.AccessibilityTitleUIElement = titleNsa;
+			nsa.AccessibilityTitleUIElement = (NSObject)titleNsa;
 #endif
 		}
 
@@ -265,7 +319,7 @@ namespace MonoDevelop.Components
 					return;
 				}
 
-				titleElements [idx] = nsao;
+				titleElements [idx] = (NSObject)nsao;
 				idx++;
 			}
 
@@ -286,7 +340,7 @@ namespace MonoDevelop.Components
 			NSObject [] oldElements = titleNsa.AccessibilityServesAsTitleForUIElements;
 			int length = oldElements != null ? oldElements.Length : 0;
 
-			if (oldElements != null && oldElements.IndexOf (nsa) != -1) {
+			if (oldElements != null && oldElements.IndexOf ((NSObject)nsa) != -1) {
 				return;
 			}
 
@@ -294,7 +348,7 @@ namespace MonoDevelop.Components
 			if (oldElements != null) {
 				oldElements.CopyTo (titleElements, 0);
 			}
-			titleElements [length] = nsa;
+			titleElements [length] = (NSObject)nsa;
 #endif
 		}
 
@@ -313,7 +367,7 @@ namespace MonoDevelop.Components
 			}
 
 			List<NSObject> oldElements = new List<NSObject> (titleNsa.AccessibilityServesAsTitleForUIElements);
-			oldElements.Remove (nsa);
+			oldElements.Remove ((NSObject)nsa);
 
 			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
 #endif
@@ -457,7 +511,7 @@ namespace MonoDevelop.Components
 		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
 		{
 #if MAC
-			var nsa = GetNSAccessibilityElement (o);
+			var nsa = GetNSAccessibilityElement (o) as NSAccessibilityElement;
 			if (nsa == null) {
 				return;
 			}
@@ -521,7 +575,7 @@ namespace MonoDevelop.Components
 
 #if MAC
 			protected Gtk.Widget parent;
-			NSAccessibilityElement parentElement;
+			INSAccessibility parentElement;
 			Gdk.Rectangle realFrame;
 #endif
 
