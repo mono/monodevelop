@@ -397,7 +397,7 @@ namespace Mono.TextEditor
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 
-				foreach (var chunk in TextViewMargin.TrimChunks (mode.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
