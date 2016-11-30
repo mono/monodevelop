@@ -11,6 +11,8 @@ open System.Diagnostics
 open System.Text.RegularExpressions
 open System.Threading
 open System.Threading.Tasks
+open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
@@ -190,27 +192,72 @@ module CompilerService =
         compile runtime framework monitor root args
 
 type ScriptBuildTarget(scriptPath: FilePath) =
+    let runtimeFolder  =
+        match IdeApp.Preferences.DefaultTargetRuntime.Value with
+        | :? MonoTargetRuntime as monoRuntime -> monoRuntime.MonoDirectory
+        | :? MsNetTargetRuntime as dotnetRuntime -> dotnetRuntime.RootDirectory |> string
+        | _ -> failwith "Unknown runtime"
+
+    let tempPath = Path.GetTempPath()
+    let scriptFileName = Path.GetFileName (scriptPath |> string)
+    let exeName = Path.Combine(tempPath, Path.ChangeExtension (scriptFileName, ".exe"))
+
+    let getSourceReferences() =
+        async {
+            let filename = scriptPath |> string
+            //let! doc = Runtime.RunInMainThread(fun() -> openDoc().Result)// |> Async.AwaitTask// |> Async.RunSynchronously
+            //let editor = doc.Editor
+            //let doc = runInMainThread openDoc
+            let context = System.Threading.SynchronizationContext.Current
+            do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
+            let! doc = IdeApp.Workbench.OpenDocument(scriptPath, null, true) |> Async.AwaitTask
+            do! Async.SwitchToContext(context)
+            let source = doc.Editor.Text
+            let checker = FSharpChecker.Create()
+            //let opts = languageService.GetScriptCheckerOptions(filename, filename, source)
+            let! opts = checker.GetProjectOptionsFromScript(filename, source)
+            //languageService.ParseAndCheckFile(filename, source, 0, opts, )
+            let! _parseFileResults, checkFileResults = 
+                    checker.ParseAndCheckFileInProject(filename, 0, source, opts)
+            let checkResults =
+                match checkFileResults with
+                | FSharpCheckFileAnswer.Succeeded res -> res
+                | res -> failwithf "Parsing did not finish... (%A)" res
+
+            let projectContext = checkResults.ProjectContext
+            return projectContext.GetReferencedAssemblies()
+                   |> List.choose (fun a -> a.FileName)
+                   |> List.filter(fun a -> not(a.StartsWith runtimeFolder))
+        }
+
     interface IBuildTarget with
-        member x.Build(monitor, config, buildReferencedTargets, operationContext) =
+        member x.Build(monitor, _config, _buildReferencedTargets, _operationContext) =
             async {
-                let root = scriptPath.ParentDirectory |> string
+                let! references = getSourceReferences()
+                references 
+                |> List.iter(fun r -> let destination = tempPath + Path.GetFileName(r)
+                                      File.Copy(r, destination, true))
+                let root = tempPath// scriptPath.ParentDirectory |> string
                 let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
                 let framework = Project.getDefaultTargetFramework runtime
                 let args =
                     [ yield! [ "--target:exe --noframework --nologo --debug+" ]
                       yield! [" -g --debug:full --noframework --define:DEBUG --optimize- --tailcalls- --fullpaths --flaterrors --highentropyva-"]
-                      yield "-r:/Library/Frameworks/Mono.framework/Versions/4.8.0/lib/mono/4.5-api/System.dll"
+                      yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
+                      yield sprintf "--out:%s" exeName
                       yield wrapFile (scriptPath |> string) ]
                 return CompilerService.compile runtime framework monitor root args
             } |> Async.StartAsTask
-        member x.CanBuild configSelector = true
-        member x.NeedsBuilding configSelector = true
-        member x.CanExecute(context, configSelector) = true
-        member x.Clean(monitor, config, operationContext) =
+
+        member x.CanBuild _configSelector = true
+        member x.NeedsBuilding _configSelector = true
+        member x.CanExecute(_context, _configSelector) = true
+        member x.Clean(_monitor, _config, _operationContext) =
             async { return BuildResult() } |> Async.StartAsTask
-        member x.Execute(monitor, context, configSelector) =
+
+        member x.Execute(monitor, context, _configSelector) =
             async {
-                let command = Runtime.ProcessService.CreateCommand (scriptPath.ChangeExtension ".exe" |> string)
+                let command = Runtime.ProcessService.CreateCommand exeName
                 let tokenSource = new CancellationTokenSource()
                 let token = tokenSource.Token
                // let console = context.ExternalConsoleFactory.CreateConsole(token)
@@ -223,7 +270,7 @@ type ScriptBuildTarget(scriptPath: FilePath) =
                 stopper.Dispose ();
             } |> Async.startAsPlainTask
 
-        member x.PrepareExecution(monitor, context, configSelector) =
+        member x.PrepareExecution(_monitor, _context, _configSelector) =
             async { return () } |> Async.startAsPlainTask
         member x.GetExecutionDependencies() = Seq.empty
         member x.Name = scriptPath |> string
