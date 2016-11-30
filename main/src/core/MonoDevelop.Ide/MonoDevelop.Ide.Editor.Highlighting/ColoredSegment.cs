@@ -68,9 +68,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new ColoredSegment (offset, length, scopeStack);
 		}
 
+		public ColoredSegment WithOffset (int offset)
+		{
+			return new ColoredSegment (offset, Length, scopeStack);
+		}
+
+		public ColoredSegment WithLength (int length)
+		{
+			return new ColoredSegment (Offset, length, scopeStack);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[ColoredSegment: Offset={0}, Length={1},ColorStyleKey={2}]", Offset, Length, ColorStyleKey);
 		}
-	}
+
+}
 }

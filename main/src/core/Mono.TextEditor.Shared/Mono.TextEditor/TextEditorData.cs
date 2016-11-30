@@ -448,12 +448,12 @@ namespace Mono.TextEditor
 		{
 			var lineOffset = line.Offset;
 			return TextViewMargin.TrimChunks (
-				document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
+				        document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
 				        .WaitAndGetResult (CancellationToken.None)
 				        .Segments
-				        .Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack))
+				        .Select (c => c.WithOffset (c.Offset + lineOffset))
 				        .ToList (), offset, length);
-		}		
+		}
 	
 		public int Insert (int offset, string value)
 		{
