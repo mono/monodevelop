@@ -1138,9 +1138,11 @@ namespace MonoDevelop.Gettext
 			}
 			
 			if (!CompareTasks (tasks, currentTasks)) {
-				ClearTasks ();
-				currentTasks = tasks;
-				TaskService.Errors.AddRange (tasks);
+				Runtime.RunInMainThread (() => {
+					ClearTasks ();
+					currentTasks = tasks;
+					TaskService.Errors.AddRange (tasks);
+				});
 			}
 		}
 		
