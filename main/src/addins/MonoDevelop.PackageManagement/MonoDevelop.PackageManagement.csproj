@@ -153,7 +153,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AggregateExceptionErrorMessage.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ConfigSettingsFileSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DelegateCommand.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FileConflictResolver.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ICommand.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IFolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ILicenseAcceptanceService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
@@ -171,7 +169,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
@@ -192,7 +189,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessageLoggedEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSourceConverter.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
@@ -266,8 +262,6 @@
     <Compile Include="MonoDevelop.PackageManagement\SolutionProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IDotNetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISettingsProvider.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
@@ -301,8 +295,6 @@
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
