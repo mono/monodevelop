@@ -167,7 +167,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPropertyService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
@@ -198,8 +197,6 @@
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryPath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
