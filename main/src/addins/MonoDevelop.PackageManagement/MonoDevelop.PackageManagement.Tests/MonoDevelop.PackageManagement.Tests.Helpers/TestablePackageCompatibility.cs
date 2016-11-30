@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// TestablePackageCompatibility.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,46 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Xml.Linq;
+using NuGet.Frameworks;
 using NuGet.Packaging;
-using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	class TestablePackageCompatibility : PackageCompatibility
 	{
-		public NuGetActionType ActionType { get; set; }
-
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
-		}
-
-		public void Log (MessageLevel level, string message, params object [] args)
-		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
-		}
-
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
-
-		public void ReportError (string message)
+		public TestablePackageCompatibility (
+			NuGetFramework projectTargetFramework,
+			PackageReference packageReference,
+			string packageFileName)
+			: base (projectTargetFramework, packageReference, packageFileName)
 		{
 		}
 
-		public FileConflictAction ResolveFileConflict (string message)
+		public FakePackageFilesReader PackageFilesReader = new FakePackageFilesReader ();
+
+		protected override IPackageFilesReader CreatePackageFilesReader (string fileName)
 		{
-			return FileConflictAction.Ignore;
+			return PackageFilesReader;
 		}
 	}
 }
-

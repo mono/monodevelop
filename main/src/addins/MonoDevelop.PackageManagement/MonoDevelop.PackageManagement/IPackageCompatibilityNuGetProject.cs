@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// IPackageCompatibilityNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,46 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.Frameworks;
 using NuGet.Packaging;
-using NuGet.ProjectManagement;
+using NuGet.Packaging.Core;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	interface IPackageCompatibilityNuGetProject
 	{
-		public NuGetActionType ActionType { get; set; }
-
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
-		}
-
-		public void Log (MessageLevel level, string message, params object [] args)
-		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
-		}
-
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
-
-		public void ReportError (string message)
-		{
-		}
-
-		public FileConflictAction ResolveFileConflict (string message)
-		{
-			return FileConflictAction.Ignore;
-		}
+		NuGetFramework TargetFramework { get; }
+		Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token);
+		string GetInstalledPackageFilePath (PackageIdentity packageIdentity);
 	}
 }
-

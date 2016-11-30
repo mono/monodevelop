@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// FakePackageCompatibilityNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,45 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.Frameworks;
 using NuGet.Packaging;
-using NuGet.ProjectManagement;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	class FakePackageCompatibilityNuGetProject : IPackageCompatibilityNuGetProject
 	{
-		public NuGetActionType ActionType { get; set; }
-
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
+		public FakePackageCompatibilityNuGetProject ()
+		{
+			TargetFramework = NuGetFramework.Parse ("net45");
 		}
 
-		public void Log (MessageLevel level, string message, params object [] args)
+		public NuGetFramework TargetFramework { get; set; }
+
+		public string InstalledPackageFilePath = "MyPackages";
+
+		public string GetInstalledPackageFilePath (PackageIdentity packageIdentity)
 		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
+			return InstalledPackageFilePath;
 		}
 
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
+		public Exception ExceptionToThrowWhenInstalledPackagesCalled;
+		public List<PackageReference> InstalledPackages = new List<PackageReference> ();
 
-		public void ReportError (string message)
+		public Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
 		{
-		}
+			if (ExceptionToThrowWhenInstalledPackagesCalled != null)
+				throw ExceptionToThrowWhenInstalledPackagesCalled;
 
-		public FileConflictAction ResolveFileConflict (string message)
-		{
-			return FileConflictAction.Ignore;
+			return Task.FromResult (InstalledPackages.AsEnumerable ());
 		}
 	}
 }
-

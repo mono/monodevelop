@@ -36,6 +36,7 @@ using NuGet.Configuration;
 using NuGet.LibraryModel;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
@@ -48,12 +49,23 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
 		ISettings settings;
-		ExternalProjectReferenceContext context;
+		IMonoDevelopSolutionManager solutionManager;
+		DependencyGraphCacheContext context;
+
+		public MonoDevelopBuildIntegratedRestorer (IMonoDevelopSolutionManager solutionManager)
+			: this (
+				solutionManager,
+				solutionManager.CreateSourceRepositoryProvider (),
+				solutionManager.Settings)
+		{
+		}
 
 		public MonoDevelopBuildIntegratedRestorer (
+			IMonoDevelopSolutionManager solutionManager,
 			ISourceRepositoryProvider repositoryProvider,
 			ISettings settings)
 		{
+			this.solutionManager = solutionManager;
 			sourceRepositories = repositoryProvider.GetRepositories ().ToList ();
 			this.settings = settings;
 
@@ -106,14 +118,18 @@ namespace MonoDevelop.PackageManagement
 			BuildIntegratedNuGetProject project,
 			CancellationToken cancellationToken)
 		{
-			var nugetPaths = NuGetPathContext.Create (settings);
+			var now = DateTime.UtcNow;
+			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
 
-			RestoreResult restoreResult = await BuildIntegratedRestoreUtility.RestoreAsync (
+			RestoreResult restoreResult = await DependencyGraphRestoreUtility.RestoreProjectAsync (
+				solutionManager,
 				project,
 				context,
-				sourceRepositories, 
-				nugetPaths.UserPackageFolder,
-				nugetPaths.FallbackPackageFolders,
+				new RestoreCommandProvidersCache (),
+				cacheContextModifier,
+				sourceRepositories,
+				settings,
+				context.Logger,
 				cancellationToken);
 
 			if (restoreResult.Success) {
@@ -128,7 +144,7 @@ namespace MonoDevelop.PackageManagement
 
 		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
 		{
-			var bips = project as BuildIntegratedProjectSystem;
+			var bips = project as ProjectJsonBuildIntegratedProjectSystem ;
 			if (bips != null) {
 				bips.Project.RefreshProjectBuilder ();
 				bips.Project.DotNetProject.NotifyModified ("References");
@@ -140,9 +156,9 @@ namespace MonoDevelop.PackageManagement
 			return new PackageManagementLogger (packageManagementEvents);
 		}
 
-		ExternalProjectReferenceContext CreateRestoreContext ()
+		DependencyGraphCacheContext CreateRestoreContext ()
 		{
-			return new ExternalProjectReferenceContext (CreateLogger ());
+			return new DependencyGraphCacheContext (CreateLogger ());
 		}
 
 		void ReportRestoreError (RestoreResult restoreResult)
@@ -158,9 +174,15 @@ namespace MonoDevelop.PackageManagement
 
 		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
 		{
-			var nugetPaths = NuGetPathContext.Create (settings);
-			var projects = new BuildIntegratedNuGetProject[] { project };
-			return DependencyGraphRestoreUtility.IsRestoreRequiredAsync (projects, false, nugetPaths, context);
+			var pathContext = NuGetPathContext.Create (settings);
+			var packageFolderPaths = new List<string> ();
+			packageFolderPaths.Add (pathContext.UserPackageFolder);
+			packageFolderPaths.AddRange (pathContext.FallbackPackageFolders);
+			var pathResolvers = packageFolderPaths.Select (path => new VersionFolderPathResolver (path));
+
+			var packagesChecked = new HashSet<PackageIdentity> ();
+
+			return project.IsRestoreRequired (pathResolvers, packagesChecked, context);
 		}
 
 		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (

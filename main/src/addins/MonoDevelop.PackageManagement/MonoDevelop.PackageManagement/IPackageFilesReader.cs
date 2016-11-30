@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// IPackageFilesReader.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,45 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Xml.Linq;
 using NuGet.Packaging;
-using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	interface IPackageFilesReader : IPackageContentReader, IDisposable
 	{
-		public NuGetActionType ActionType { get; set; }
-
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
-		}
-
-		public void Log (MessageLevel level, string message, params object [] args)
-		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
-		}
-
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
-
-		public void ReportError (string message)
-		{
-		}
-
-		public FileConflictAction ResolveFileConflict (string message)
-		{
-			return FileConflictAction.Ignore;
-		}
 	}
 }
-

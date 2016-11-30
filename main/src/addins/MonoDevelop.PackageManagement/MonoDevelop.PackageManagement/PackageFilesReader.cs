@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// PackageFilesReader.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,46 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
 using NuGet.Packaging;
-using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	class PackageFilesReader : IPackageFilesReader
 	{
-		public NuGetActionType ActionType { get; set; }
+		PackageArchiveReader packageArchiveReader;
 
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
+		public PackageFilesReader (string fileName)
+		{
+			packageArchiveReader = new PackageArchiveReader (fileName);
 		}
 
-		public void Log (MessageLevel level, string message, params object [] args)
+		public void Dispose ()
 		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
+			packageArchiveReader.Dispose ();
 		}
 
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
-
-		public void ReportError (string message)
+		public IEnumerable<FrameworkSpecificGroup> GetBuildItems ()
 		{
+			return packageArchiveReader.GetBuildItems ();
 		}
 
-		public FileConflictAction ResolveFileConflict (string message)
+		public IEnumerable<FrameworkSpecificGroup> GetContentItems ()
 		{
-			return FileConflictAction.Ignore;
+			return packageArchiveReader.GetContentItems ();
+		}
+
+		public IEnumerable<FrameworkSpecificGroup> GetFrameworkItems ()
+		{
+			return packageArchiveReader.GetFrameworkItems ();
+		}
+
+		public IEnumerable<FrameworkSpecificGroup> GetLibItems ()
+		{
+			return packageArchiveReader.GetLibItems ();
+		}
+
+		public IEnumerable<PackageDependencyGroup> GetPackageDependencies ()
+		{
+			return packageArchiveReader.GetPackageDependencies ();
+		}
+
+		public IEnumerable<FrameworkSpecificGroup> GetReferenceItems ()
+		{
+			return packageArchiveReader.GetReferenceItems ();
+		}
+
+		public IEnumerable<FrameworkSpecificGroup> GetToolItems ()
+		{
+			return packageArchiveReader.GetToolItems ();
 		}
 	}
 }
-

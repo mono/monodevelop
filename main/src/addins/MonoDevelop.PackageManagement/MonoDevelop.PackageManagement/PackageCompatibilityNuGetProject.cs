@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectContext.cs
+// PackageCompatibilityNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,46 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.Frameworks;
 using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeNuGetProjectContext : INuGetProjectContext
+	class PackageCompatibilityNuGetProject : IPackageCompatibilityNuGetProject
 	{
-		public NuGetActionType ActionType { get; set; }
+		MSBuildNuGetProject nugetProject;
 
-		public ExecutionContext ExecutionContext { get; set; }
-
-		public XDocument OriginalPackagesConfig { get; set; }
-
-		public PackageExtractionContext PackageExtractionContext { get; set; }
-
-		public TelemetryServiceHelper TelemetryService { get; set; }
-
-		public ISourceControlManagerProvider SourceControlManagerProvider {
-			get { return null; }
+		public PackageCompatibilityNuGetProject (MSBuildNuGetProject nugetProject)
+		{
+			this.nugetProject = nugetProject;
 		}
 
-		public void Log (MessageLevel level, string message, params object [] args)
-		{
-			LastLogLevel = level;
-			LastMessageLogged = String.Format (message, args);
+		public NuGetFramework TargetFramework {
+			get {
+				return nugetProject.MSBuildNuGetProjectSystem.TargetFramework;
+			}
 		}
 
-		public MessageLevel? LastLogLevel { get; set; }
-		public string LastMessageLogged { get; set; }
-
-		public void ReportError (string message)
+		public string GetInstalledPackageFilePath (PackageIdentity packageIdentity)
 		{
+			return nugetProject.FolderNuGetProject.GetInstalledPackageFilePath (packageIdentity);
 		}
 
-		public FileConflictAction ResolveFileConflict (string message)
+		public Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationToken token)
 		{
-			return FileConflictAction.Ignore;
+			return nugetProject.GetInstalledPackagesAsync (token);
 		}
 	}
 }
-
