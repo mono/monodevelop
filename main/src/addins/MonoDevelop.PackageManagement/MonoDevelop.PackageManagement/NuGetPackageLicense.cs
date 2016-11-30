@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using NuGet;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
 
@@ -43,26 +42,12 @@ namespace MonoDevelop.PackageManagement
 			IconUrl = metadata.IconUrl;
 		}
 
-		public NuGetPackageLicense (IPackage package)
-		{
-			PackageId = package.Id;
-			PackageTitle = package.Title;
-			PackageAuthor = GetAuthor (package);
-			LicenseUrl = package.LicenseUrl;
-			IconUrl = package.IconUrl;
-		}
-
 		public PackageIdentity PackageIdentity { get; private set; }
 		public string PackageId { get; private set; }
 		public string PackageTitle { get; private set; }
 		public string PackageAuthor { get; private set; }
 		public Uri LicenseUrl { get; private set; }
 		public Uri IconUrl { get; private set; }
-
-		static string GetAuthor (IPackage package)
-		{
-			return String.Join (", ", package.Authors);
-		}
 	}
 }
 

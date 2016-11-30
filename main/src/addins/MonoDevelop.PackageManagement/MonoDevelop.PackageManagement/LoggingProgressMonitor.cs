@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -39,12 +40,12 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void OnWriteLog (string message)
 		{
-			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, message);
+			packageEvents.OnPackageOperationMessageLogged (MessageLevel.Info, message);
 		}
 
 		protected override void OnWriteErrorLog (string message)
 		{
-			packageEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
+			packageEvents.OnPackageOperationMessageLogged (MessageLevel.Error, message);
 		}
 	}
 }

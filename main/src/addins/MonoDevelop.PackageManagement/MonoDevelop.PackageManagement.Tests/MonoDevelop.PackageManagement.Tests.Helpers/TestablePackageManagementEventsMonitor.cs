@@ -26,10 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
 using MonoDevelop.Core;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {

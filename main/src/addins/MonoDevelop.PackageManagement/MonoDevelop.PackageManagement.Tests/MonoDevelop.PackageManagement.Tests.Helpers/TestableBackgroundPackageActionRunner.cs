@@ -26,9 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using NuGet;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {

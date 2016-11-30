@@ -286,7 +286,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestoredEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />

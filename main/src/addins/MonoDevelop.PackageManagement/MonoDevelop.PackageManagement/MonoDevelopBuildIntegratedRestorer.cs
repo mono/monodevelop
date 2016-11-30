@@ -165,7 +165,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (LibraryRange libraryRange in restoreResult.GetAllUnresolved ()) {
 				packageManagementEvents.OnPackageOperationMessageLogged (
-					NuGet.MessageLevel.Info,
+					MessageLevel.Info,
 					GettextCatalog.GetString ("Restore failed for '{0}'."),
 					libraryRange.ToString ());
 			}
