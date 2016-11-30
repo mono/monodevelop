@@ -114,7 +114,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public static DebuggerSession DebuggerSession {
-			get { return currentSession?.Session; }
+			get { return currentSession?.Session ?? sessions.Values.FirstOrDefault ()?.Session; }
 		}
 
 
@@ -398,7 +398,7 @@ namespace MonoDevelop.Debugger
 
 			Runtime.RunInMainThread (delegate {
 				if (DebugSessionStarted != null)
-					DebugSessionStarted (null, EventArgs.Empty);
+					DebugSessionStarted (session, EventArgs.Empty);
 				NotifyLocationChanged ();
 			});
 		}

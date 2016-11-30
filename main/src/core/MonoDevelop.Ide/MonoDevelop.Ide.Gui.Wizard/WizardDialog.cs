@@ -100,6 +100,8 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			contentWidth = Math.Max (contentWidth, pageRequest.Width);
 			pageRequest = currentPageWidget.Surface.GetPreferredSize (SizeConstraint.WithSize (contentWidth), SizeConstraint.Unconstrained, true);
 			var contentHeight = pageRequest.Height;
+			currentPageFrame.MinHeight = Math.Max (contentHeight, Controller.DefaultPageSize.Height); // force default page height for smaller content
+			currentPageFrame.MinWidth = Math.Max (contentWidth, Controller.DefaultPageSize.Width); // force default page width for smaller content
 			var rightSideWidget = currentPage.GetRightSideWidget () ?? Controller.RightSideWidget;
 			if (rightSideWidget != null) {
 				var widget = (Xwt.Widget)rightSideWidget;

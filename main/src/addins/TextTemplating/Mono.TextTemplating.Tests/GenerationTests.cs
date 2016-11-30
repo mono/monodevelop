@@ -52,6 +52,7 @@ namespace Mono.TextTemplating.Tests
 			var gen = new TemplateGenerator ();
 			string tmp = null;
 			gen.ReferencePaths.Add (Path.GetDirectoryName (typeof (Uri).Assembly.Location));
+			gen.ReferencePaths.Add (Path.GetDirectoryName (typeof (System.Linq.Enumerable).Assembly.Location));
 			gen.ProcessTemplate (null, "<#@ assembly name=\"System.dll\" #>\n<#@ assembly name=\"System.Core.dll\" #>", ref tmp, out tmp);
 			Assert.AreEqual (0, gen.Errors.Count, "ImportReferencesTest");
 		}
