@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static Dictionary<string, string> ConvertChunkStyle (ChunkStyle style)
 		{
+			if (style.Foreground.Alpha == 0)
+				return new Dictionary<string, string> ();
 			return new Dictionary<string, string> {
 				{ "foreground", style.Foreground.ToPangoString () }
 			};

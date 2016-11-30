@@ -145,21 +145,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		Tuple<HslColor, HslColor> GetColor (ScopeStack scopeStack)
 		{
-			HslColor foreground = default (HslColor);
-			HslColor background = default (HslColor);
+			HslColor foreground;
+			HslColor background;
+			settings [0].TryGetColor (EditorThemeColors.Foreground, out foreground);
+			settings [0].TryGetColor (EditorThemeColors.Background, out background);
 
 			string found = null;
 			int foundDepth = int.MaxValue;
 			if (scopeStack.Count > 1) {
-				if (scopeStack.Peek ()== scopeStack.FirstElement) {
-					if (settings [0].TryGetColor (EditorThemeColors.Foreground, out foreground) &&
-					    settings [0].TryGetColor (EditorThemeColors.Background, out background)) {
-						return Tuple.Create (foreground, background);
-					}
-				}
+				if (scopeStack.Peek () == scopeStack.FirstElement)
+					return Tuple.Create (foreground, background);
 			}
 
-			foreach (var setting in settings) {
+			foreach (var setting in settings.Skip (1)) {
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
