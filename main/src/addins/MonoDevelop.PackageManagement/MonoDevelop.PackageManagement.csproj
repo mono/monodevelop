@@ -426,6 +426,10 @@
     <Compile Include="NuGet.Credentials\CredentialStatus.cs" />
     <Compile Include="NuGet.Credentials\ProviderException.cs" />
     <Compile Include="NuGet.Credentials\DefaultCredentialsCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPackageFilesReader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageFilesReader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPackageCompatibilityNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

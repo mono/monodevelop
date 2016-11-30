@@ -219,6 +219,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetCoreNuGetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\DummyDotNetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableDotNetCoreNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageFilesReader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageCompatibilityNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using NuGet;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -43,7 +42,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				progressMonitorFactory,
 				packageManagementEvents)
 		{
-			PackageReferenceFile = new PackageReferenceFile (FileSystem, "packages.config");
 		}
 
 		public void ExecuteBackgroundDispatch ()
@@ -74,17 +72,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public ProgressMonitorStatusMessage ProgressStatusMessage;
 
-		protected override PackageCompatibilityChecker CreatePackageCompatibilityChecker (
-			ISolution solution)
-		{
-			return new TestablePackageCompatibilityChecker (PackageRepository) {
-				PackageReferenceFile = PackageReferenceFile
-			};
-		}
+		public TestablePackageCompatibilityChecker PackageCompatibilityChecker = new TestablePackageCompatibilityChecker ();
 
-		public FakeSolutionPackageRepository PackageRepository = new FakeSolutionPackageRepository ();
-		public PackageReferenceFile PackageReferenceFile;
-		public FakeFileSystem FileSystem = new FakeFileSystem ();
+		protected override PackageCompatibilityChecker CreatePackageCompatibilityChecker ()
+		{
+			return PackageCompatibilityChecker;
+		}
 
 		public bool PackageConsoleIsShown;
 
