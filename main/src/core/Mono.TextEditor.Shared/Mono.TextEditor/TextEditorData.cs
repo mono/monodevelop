@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -396,7 +397,7 @@ namespace Mono.TextEditor
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 
-				foreach (var chunk in TextViewMargin.TrimChunks (mode.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
@@ -445,7 +446,13 @@ namespace Mono.TextEditor
 
 		internal IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetChunks (DocumentLine line, int offset, int length)
 		{
-			return TextViewMargin.TrimChunks (document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments, offset, length);
+			var lineOffset = line.Offset;
+			return TextViewMargin.TrimChunks (
+				document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
+				        .WaitAndGetResult (CancellationToken.None)
+				        .Segments
+				        .Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack))
+				        .ToList (), offset, length);
 		}		
 	
 		public int Insert (int offset, string value)
