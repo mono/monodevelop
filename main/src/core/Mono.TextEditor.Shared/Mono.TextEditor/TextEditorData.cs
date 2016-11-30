@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -445,7 +446,13 @@ namespace Mono.TextEditor
 
 		internal IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetChunks (DocumentLine line, int offset, int length)
 		{
-			return TextViewMargin.TrimChunks (document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments, offset, length);
+			var lineOffset = line.Offset;
+			return TextViewMargin.TrimChunks (
+				document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None)
+				        .WaitAndGetResult (CancellationToken.None)
+				        .Segments
+				        .Select (c => new ColoredSegment (c.Offset + lineOffset, c.Length, c.ScopeStack))
+				        .ToList (), offset, length);
 		}		
 	
 		public int Insert (int offset, string value)
