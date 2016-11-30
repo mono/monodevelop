@@ -217,7 +217,8 @@
   <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
     <Condition id="ItemType" value="IFileItem|IFolderItem">
       <ItemSet id = "FSharp" _label = "_Debug" insertafter = "Tools">
-        <CommandItem id = "MonoDevelop.FSharp.DebugScript"/>
+        <CommandItem id = "MonoDevelop.FSharp.DebugScriptInternal"/>
+        <CommandItem id = "MonoDevelop.FSharp.DebugScriptExternal"/>
       </ItemSet>
     </Condition>
   </Extension>
@@ -289,7 +290,11 @@
         <Command _description="Start debugging an .fsx script"
                  _label="Start Debugging"
 
-                 id="MonoDevelop.FSharp.DebugScript" />
+                 id="MonoDevelop.FSharp.DebugScriptInternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging on External Console"
+
+                 id="MonoDevelop.FSharp.DebugScriptExternal" />
       </Category>
     </ComplexCondition>
   </Extension>

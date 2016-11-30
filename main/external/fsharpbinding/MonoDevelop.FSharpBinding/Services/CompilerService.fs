@@ -191,8 +191,10 @@ module CompilerService =
 
         compile runtime framework monitor root args
 
-type ScriptBuildTarget(scriptPath: FilePath) =
-    let runtimeFolder  =
+type ConsoleKind = Internal | External
+
+type ScriptBuildTarget(scriptPath, consoleKind) =
+    let runtimeFolder =
         match IdeApp.Preferences.DefaultTargetRuntime.Value with
         | :? MonoTargetRuntime as monoRuntime -> monoRuntime.MonoDirectory
         | :? MsNetTargetRuntime as dotnetRuntime -> dotnetRuntime.RootDirectory |> string
@@ -205,18 +207,13 @@ type ScriptBuildTarget(scriptPath: FilePath) =
     let getSourceReferences() =
         async {
             let filename = scriptPath |> string
-            //let! doc = Runtime.RunInMainThread(fun() -> openDoc().Result)// |> Async.AwaitTask// |> Async.RunSynchronously
-            //let editor = doc.Editor
-            //let doc = runInMainThread openDoc
-            let context = System.Threading.SynchronizationContext.Current
+            let context = SynchronizationContext.Current
             do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
             let! doc = IdeApp.Workbench.OpenDocument(scriptPath, null, true) |> Async.AwaitTask
             do! Async.SwitchToContext(context)
             let source = doc.Editor.Text
             let checker = FSharpChecker.Create()
-            //let opts = languageService.GetScriptCheckerOptions(filename, filename, source)
             let! opts = checker.GetProjectOptionsFromScript(filename, source)
-            //languageService.ParseAndCheckFile(filename, source, 0, opts, )
             let! _parseFileResults, checkFileResults = 
                     checker.ParseAndCheckFileInProject(filename, 0, source, opts)
             let checkResults =
@@ -237,16 +234,18 @@ type ScriptBuildTarget(scriptPath: FilePath) =
                 references 
                 |> List.iter(fun r -> let destination = tempPath + Path.GetFileName(r)
                                       File.Copy(r, destination, true))
-                let root = tempPath// scriptPath.ParentDirectory |> string
                 let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
                 let framework = Project.getDefaultTargetFramework runtime
                 let args =
-                    [ yield! [ "--target:exe --noframework --nologo --debug+" ]
-                      yield! [" -g --debug:full --noframework --define:DEBUG --optimize- --tailcalls- --fullpaths --flaterrors --highentropyva-"]
-                      yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
-                      yield sprintf "--out:%s" exeName
-                      yield wrapFile (scriptPath |> string) ]
-                return CompilerService.compile runtime framework monitor root args
+                    [ //yield! [ "--target:exe --noframework --nologo --debug+" ]
+                      yield "--target:exe --nologo -g --debug:full --define:DEBUG --optimize- --tailcalls-"
+                      yield "--fullpaths --flaterrors --highentropyva-"
+                      if not Platform.IsWindows then
+                          yield "--noframework"
+                          yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
+                      yield wrapFile (scriptPath |> string)
+                      yield sprintf "--out:%s" exeName ]
+                return CompilerService.compile runtime framework monitor tempPath args
             } |> Async.StartAsTask
 
         member x.CanBuild _configSelector = true
@@ -260,9 +259,11 @@ type ScriptBuildTarget(scriptPath: FilePath) =
                 let command = Runtime.ProcessService.CreateCommand exeName
                 let tokenSource = new CancellationTokenSource()
                 let token = tokenSource.Token
-               // let console = context.ExternalConsoleFactory.CreateConsole(token)
-                let console = context.ConsoleFactory.CreateConsole token
 
+                let console =
+                    match consoleKind with
+                    | Internal -> context.ConsoleFactory.CreateConsole token
+                    | External -> context.ExternalConsoleFactory.CreateConsole token
                 let oper = context.ExecutionHandler.Execute(command, console)
 
                 let stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
@@ -278,13 +279,21 @@ type ScriptBuildTarget(scriptPath: FilePath) =
 type DebugScript() =
     inherit NodeCommandHandler()
 
-    [<CommandHandler ("MonoDevelop.FSharp.DebugScript")>]
-    member x.DebugScript () =
+    member x.StartDebugging consoleKind =
         let file =  base.CurrentNode.DataItem :?> ProjectFile
-        let buildTarget = ScriptBuildTarget file.FilePath
+        let buildTarget = ScriptBuildTarget (file.FilePath, consoleKind)
         let debug = IdeApp.ProjectOperations.Debug buildTarget
         debug.Task
 
+    [<CommandHandler("MonoDevelop.FSharp.DebugScriptInternal")>]
+    member x.DebugScriptInternalConsole () =
+        x.StartDebugging Internal
+
+    [<CommandHandler("MonoDevelop.FSharp.DebugScriptExternal")>]
+    member x.DebugScriptExternalConsole () =
+        x.StartDebugging External
+
+    
 type DebugScriptBuilder() =
     inherit NodeBuilderExtension()
     override x.CanBuildNode _dataType = true
