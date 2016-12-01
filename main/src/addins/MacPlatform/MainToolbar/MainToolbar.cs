@@ -211,11 +211,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public bool RunButtonSensitivity {
 			get { return runButton.Enabled; }
-			set { runButton.Enabled = value; }
+			set { 
+				runButton.Enabled = value;
+				awesomeBar.UpdateTouchBar ();
+			}
 		}
 
 		public OperationIcon RunButtonIcon {
-			set { runButton.Icon = value; }
+			set {
+				runButton.Icon = value;
+				awesomeBar.UpdateTouchBar ();
+			}
 		}
 
 		public bool ConfigurationPlatformSensitivity {

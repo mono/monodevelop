@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 using AppKit;
 using CoreGraphics;
@@ -35,7 +36,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
-	public class AwesomeBar : NSView
+	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
@@ -62,7 +63,89 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			SearchBar = new SearchBar ();
 			AddSubview (SearchBar);
 
-			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
+			Ide.Gui.Styles.Changed += (o, e) => UpdateLayout ();
+
+			UpdateTouchBar ();
+		}
+
+		NSTouchBar MakeTouchBar ()
+		{
+			var touchbar = new NSTouchBar ();
+			touchbar.Delegate = this;
+
+			touchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
+
+			return touchbar;
+		}
+
+		public void UpdateTouchBar ()
+		{
+			NSApplication.SharedApplication.SetTouchBar (MakeTouchBar ());
+		}
+
+		string [] GetItemIdentifiers ()
+		{
+			List<string> ids = new List<string> ();
+			if (RunButton.Enabled) {
+				switch (RunButton.Icon) {
+				case Components.MainToolbar.OperationIcon.Build:
+					ids.Add ("build");
+					break;
+
+				case Components.MainToolbar.OperationIcon.Run:
+					ids.Add ("continue");
+					break;
+
+				case Components.MainToolbar.OperationIcon.Stop:
+					ids.Add ("stop");
+					break;
+				}
+			}
+
+			return ids.ToArray ();
+		}
+
+		[Export ("touchBar:makeItemForIdentifier:")]
+		public NSTouchBarItem MakeItem (NSTouchBar touchbar, string identifier)
+		{
+			NSTouchBarItem item = null;
+
+			switch (identifier) {
+			case "continue":
+			case "stop":
+			case "build":
+				var customItem = new NSCustomTouchBarItem (identifier);
+
+#if WANT_TO_SEE_BIG_CRASH
+				var button = NSButton.CreateButton ("", MultiResImage.CreateMultiResImage (identifier, ""), () => { RunButton.PerformClick (RunButton); });
+#else
+				var button = NSButton.CreateButton ("", MultiResImage.CreateMultiResImage (identifier, ""), () => { });
+				button.Activated += (sender, e) => {
+					RunButton.PerformClick (RunButton);
+				};
+#endif
+				customItem.View = button;
+				string label = string.Empty;
+				switch (identifier) {
+				case "continue":
+					label = GettextCatalog.GetString ("Run");
+					break;
+
+				case "stop":
+					label = GettextCatalog.GetString ("Stop");
+					break;
+
+				case "build":
+					label = GettextCatalog.GetString ("Build");
+					break;
+				}
+				customItem.CustomizationLabel = label;
+
+				item = customItem;
+				break;
+			}
+
+			return item;
 		}
 
 		const float toolbarPadding = 8.0f;
