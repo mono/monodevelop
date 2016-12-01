@@ -113,7 +113,7 @@
 		{ "name": "Link Color", "color": "#41e2cb" },
 		{ "name": "Link Color(Active)", "color": "#41e2cb" }
 	],
-
+    
 	"text": [
 		{ "name": "Plain Text", "fore": "NormalVim", "back": "BlackVim" },
 		{ "name": "Selected Text", "back": "#2647DD" },
@@ -123,8 +123,8 @@
 
 		{ "name": "Line Numbers", "fore": "LineNrVim", "back": "BlackVim" },
 
-		{ "name": "Punctuation", "fore": "StringVim" },
-		{ "name": "Punctuation(Brackets)", "fore": "StringVim" },
+		{ "name": "Punctuation", "fore": "NormalVim" },
+		{ "name": "Punctuation(Brackets)", "fore": "NormalVim" },
 
 		{ "name": "Comment(Line)", "fore": "CommentVim" },
 		{ "name": "Comment(Block)", "fore": "CommentVim" },
