@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int offset, int length)
 			{
 				if (ContextStack.IsEmpty)
-					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (0, length, new ScopeStack ("")) }));
+					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				SyntaxContext currentContext = null;
 				List<SyntaxContext> lastContexts = new List<SyntaxContext> ();
 				Match match = null;

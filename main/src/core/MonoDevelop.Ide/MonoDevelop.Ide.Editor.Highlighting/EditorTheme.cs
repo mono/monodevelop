@@ -73,18 +73,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return settings.TryGetValue (key, out value);
 		}
 
+		Dictionary<string, HslColor> colorCache = new Dictionary<string, HslColor> ();
+		
 		public bool TryGetColor (string key, out HslColor color)
 		{
 			string value;
+			if (colorCache.TryGetValue (key, out color))
+				return true;
 			if (!settings.TryGetValue (key, out value)) {
 				color = new HslColor (0, 0, 0);
 				return false;
 			}
 			try {
 				color = HslColor.Parse (value);
+				colorCache [key] = color;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while parsing color " + key, e);
 				color = new HslColor (0, 0, 0);
+				colorCache [key] = color;
 				return false;
 			}
 			return true;
@@ -143,18 +149,34 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.Uuid = uuuid;
 		}
 
-		Tuple<HslColor, HslColor> GetColor (ScopeStack scopeStack)
+
+		struct FontColorStyle {
+			public readonly HslColor Foreground;
+			public readonly HslColor Background;
+			public readonly string FontStyle;
+
+			public FontColorStyle (HslColor foregound, HslColor background, string fontStyle)
+			{
+				Foreground = foregound;
+				Background = background;
+				FontStyle = fontStyle;
+			}
+		}
+
+		FontColorStyle GetColor (ScopeStack scopeStack)
 		{
 			HslColor foreground;
 			HslColor background;
+			string fontStyle;
 			settings [0].TryGetColor (EditorThemeColors.Foreground, out foreground);
 			settings [0].TryGetColor (EditorThemeColors.Background, out background);
+			settings [0].TryGetSetting ("fontStyle", out fontStyle);
 
 			string found = null;
 			int foundDepth = int.MaxValue;
 			if (scopeStack.Count > 1) {
 				if (scopeStack.Peek () == scopeStack.FirstElement)
-					return Tuple.Create (foreground, background);
+					return new FontColorStyle (foreground, background, fontStyle);
 			}
 
 			foreach (var setting in settings.Skip (1)) {
@@ -172,9 +194,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (setting.TryGetColor (EditorThemeColors.Background, out tryC)) {
 						background = tryC;
 					}
+					string tryS;
+					if (setting.TryGetSetting ("fontStyle", out tryS)) {
+						fontStyle = tryS;
+					}
+
 				}
 			}
-			return Tuple.Create (foreground, background);
+			return new FontColorStyle (foreground, background, fontStyle);
 		}
 
 		bool IsValidScope (ThemeSetting setting, ScopeStack scopeStack, ref string compatibleScope, ref int depth)
@@ -190,29 +217,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			return false;
-		}
-
-		string GetSetting (string key, ScopeStack scopeStack)
-		{
-			string result = null;
-			string found = null;
-			int foundDepth = int.MaxValue;
-			foreach (var setting in settings) {
-				string compatibleScope = null;
-				int depth = 0;
-				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
-					if (found != null && (depth > foundDepth || depth == foundDepth && found.Length >= compatibleScope.Length))
-						continue;
-
-					string tryC;
-					if (setting.TryGetSetting (key, out tryC)) {
-						found = compatibleScope;
-						result = tryC;
-						foundDepth = depth;
-					}
-				}
-			}
-			return result;
 		}
 
 		public bool TryGetColor (string scope, string key, out HslColor result)
@@ -268,13 +272,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal ChunkStyle GetChunkStyle (ScopeStack scope)
 		{
-			var fontStyle = GetSetting ("fontStyle", scope);
 			var color = GetColor (scope);
 			return new ChunkStyle () {
 				ScopeStack = scope,
-				Foreground = color.Item1,
-				Background = color.Item2,
-				FontStyle = ConvertFontStyle (fontStyle)
+				Foreground = color.Foreground,
+				Background = color.Background,
+				FontStyle = ConvertFontStyle (color.FontStyle)
 			};
 		}
 
@@ -288,7 +291,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground) {
-				return GetColor (new ScopeStack ("")).Item1;
+				return GetColor (ScopeStack.Empty).Foreground;
 			}
 			return chunkStyle.Foreground;
 		}
