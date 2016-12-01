@@ -1,0 +1,136 @@
+﻿namespace MonoDevelop.FSharp
+open System
+open System.IO
+open System.Threading
+open System.Threading.Tasks
+open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop.Components.Commands
+open MonoDevelop.Core
+open MonoDevelop.Core.Assemblies
+open MonoDevelop.Core.Execution
+open MonoDevelop.Debugger
+open MonoDevelop.Projects
+open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor.Extension
+open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide.Gui.Components
+open CompilerArguments
+
+type ConsoleKind = Internal | External
+
+type ScriptBuildTarget(scriptPath, consoleKind, source) =
+    let runtimeFolder =
+        match IdeApp.Preferences.DefaultTargetRuntime.Value with
+        | :? MonoTargetRuntime as monoRuntime -> monoRuntime.MonoDirectory
+        | :? MsNetTargetRuntime as dotnetRuntime -> dotnetRuntime.RootDirectory |> string
+        | _ -> failwith "Unknown runtime"
+
+    let tempPath = Path.GetTempPath()
+    let scriptFileName = Path.GetFileName (scriptPath |> string)
+    let exeName = Path.Combine(tempPath, Path.ChangeExtension (scriptFileName, ".exe"))
+
+    let getSourceReferences() =
+        async {
+            let filename = scriptPath |> string
+            let checker = FSharpChecker.Create()
+            let! opts = checker.GetProjectOptionsFromScript(filename, source)
+            let! _parseFileResults, checkFileResults = 
+                    checker.ParseAndCheckFileInProject(filename, 0, source, opts)
+            let checkResults =
+                match checkFileResults with
+                | FSharpCheckFileAnswer.Succeeded res -> res
+                | res -> failwithf "Parsing did not finish... (%A)" res
+
+            let projectContext = checkResults.ProjectContext
+            return projectContext.GetReferencedAssemblies()
+                   |> List.choose (fun a -> a.FileName)
+                   |> List.filter(fun a -> not(a.StartsWith runtimeFolder))
+        }
+
+    static let emptyTask = Task.FromResult None :> Task
+    interface IBuildTarget with
+        member x.Build(monitor, _config, _buildReferencedTargets, _operationContext) =
+            async {
+                let! references = getSourceReferences()
+                references 
+                |> List.iter(fun r -> let destination = tempPath + Path.GetFileName(r)
+                                      File.Copy(r, destination, true))
+                let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
+                let framework = Project.getDefaultTargetFramework runtime
+                let args =
+                    [ 
+                      yield "--target:exe --nologo -g --debug:full --define:DEBUG --define:INTERACTIVE --optimize- --tailcalls-"
+                      yield "--fullpaths --flaterrors --highentropyva-"
+                      if not Platform.IsWindows then
+                          yield "--noframework"
+                          yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
+                      yield wrapFile (scriptPath |> string)
+                      yield sprintf "--out:%s" (wrapFile exeName) ]
+                return CompilerService.compile runtime framework monitor tempPath args
+            } |> Async.StartAsTask
+
+        member x.CanBuild _configSelector = true
+        member x.NeedsBuilding _configSelector = true
+        member x.CanExecute(_context, _configSelector) = true
+        member x.Clean(_monitor, _config, _operationContext) = Task.FromResult (BuildResult())
+
+        member x.Execute(monitor, context, _configSelector) =
+            async {
+                let command = Runtime.ProcessService.CreateCommand exeName
+                let tokenSource = new CancellationTokenSource()
+                let token = tokenSource.Token
+
+                let console =
+                    match consoleKind with
+                    | Internal -> context.ConsoleFactory.CreateConsole token
+                    | External -> context.ExternalConsoleFactory.CreateConsole token
+                let oper = context.ExecutionHandler.Execute(command, console)
+
+                let stopper = monitor.CancellationToken.Register (Action(fun() -> oper.Cancel()))
+                oper.Task |> Async.AwaitTask |> Async.RunSynchronously
+                stopper.Dispose ();
+            } |> Async.startAsPlainTask
+
+        member x.PrepareExecution(_monitor, _context, _configSelector) = emptyTask
+
+        member x.GetExecutionDependencies() = Seq.empty
+        member x.Name = scriptPath |> string
+
+type FSharpDebugScriptTextEditorExtension() =
+    inherit TextEditorExtension()
+
+    member x.StartDebugging consoleKind =
+        let buildTarget = ScriptBuildTarget (x.Editor.FileName, consoleKind, x.Editor.Text)
+        let debug = IdeApp.ProjectOperations.Debug buildTarget
+        debug.Task
+
+    [<CommandHandler("MonoDevelop.FSharp.Editor.DebugScriptInternal")>]
+    member x.DebugScriptInternalConsole() =
+        x.StartDebugging Internal
+
+    [<CommandHandler("MonoDevelop.FSharp.Editor.DebugScriptExternal")>]
+    member x.DebugScriptExternalConsole() =
+        x.StartDebugging External
+
+type DebugScriptNodeHandler() =
+    inherit NodeCommandHandler()
+
+    member x.StartDebugging consoleKind =
+        let file = x.CurrentNode.DataItem :?> ProjectFile
+        let doc = IdeApp.Workbench.OpenDocument(file.FilePath, null, true) |> Async.AwaitTask |> Async.RunSynchronously
+        let buildTarget = ScriptBuildTarget (file.FilePath, consoleKind, doc.Editor.Text)
+        let debug = IdeApp.ProjectOperations.Debug buildTarget
+        debug.Task
+
+    [<CommandHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptInternal")>]
+    member x.DebugScriptInternalConsole () =
+        x.StartDebugging Internal
+
+    [<CommandHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptExternal")>]
+    member x.DebugScriptExternalConsole () =
+        x.StartDebugging External
+    
+type DebugScriptBuilder() =
+    inherit NodeBuilderExtension()
+    override x.CanBuildNode _dataType = true
+    override x.CommandHandlerType = typeof<DebugScriptNodeHandler>
