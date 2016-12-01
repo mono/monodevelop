@@ -2,7 +2,7 @@ require 'pp'
 
 NOT_INSTALLED_VERSION="-1"
 
-XAMARIN_MAC_MIN_VERSION="2.3"
+XAMARIN_MAC_MIN_VERSION="3.0"
 XAMARIN_MAC_VERSION=lambda { product_version ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/bin/mmp") }
 XAMARIN_MAC_URL="http://www.xamarin.com"
 
@@ -61,7 +61,7 @@ end
 def check_monodevelop_dependencies()
 	result = [
 		check_product(MONO_MIN_VERSION, MONO_VERSION, MONO_URL, "Mono"),
-		check_product(XAMARIN_MAC_MIN_VERSION, XAMARIN_MAC_VERSION, XAMARIN_MAC_URL, "Xamarin.Mac")
+#		check_product(XAMARIN_MAC_MIN_VERSION, XAMARIN_MAC_VERSION, XAMARIN_MAC_URL, "Xamarin.Mac")
 	]
 	if (result.min < 0)
 		exit 1
