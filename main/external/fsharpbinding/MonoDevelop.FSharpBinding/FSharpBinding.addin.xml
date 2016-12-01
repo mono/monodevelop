@@ -169,6 +169,7 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />	
+    <Class fileExtensions = ".fsx" class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />	
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
@@ -217,8 +218,8 @@
   <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
     <Condition id="ItemType" value="IFileItem|IFolderItem">
       <ItemSet id = "FSharp" _label = "_Debug" insertafter = "Tools">
-        <CommandItem id = "MonoDevelop.FSharp.DebugScriptInternal"/>
-        <CommandItem id = "MonoDevelop.FSharp.DebugScriptExternal"/>
+        <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptInternal"/>
+        <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptExternal"/>
       </ItemSet>
     </Condition>
   </Extension>
@@ -289,12 +290,17 @@
                  shortcut="Ctrl|Alt|C" />
         <Command _description="Start debugging an .fsx script"
                  _label="Start Debugging"
-
-                 id="MonoDevelop.FSharp.DebugScriptInternal" />
+                 id="MonoDevelop.FSharp.SolutionPad.DebugScriptInternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging on External Console"
+                 id="MonoDevelop.FSharp.SolutionPad.DebugScriptExternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging"
+                 id="MonoDevelop.FSharp.Editor.DebugScriptInternal" />
         <Command _description="Start debugging an .fsx script"
                  _label="Start Debugging on External Console"
 
-                 id="MonoDevelop.FSharp.DebugScriptExternal" />
+                 id="MonoDevelop.FSharp.Editor.DebugScriptExternal" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -306,6 +312,9 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
+      <SeparatorItem id = "FSharpScriptDebug" />
+      <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
+      <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptExternal" />
       <SeparatorItem id = "FSharpInteractiveStart" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
