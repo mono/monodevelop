@@ -147,6 +147,9 @@ namespace MonoDevelop.MacInterop
 
 			IntPtr error;
 			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, options, config.Handle, out error);
+			if (appHandle == IntPtr.Zero)
+				return -1;
+
 			NSRunningApplication app = (NSRunningApplication)ObjCRuntime.Runtime.GetNSObject (appHandle);
 
 			return app.ProcessIdentifier;
