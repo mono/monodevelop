@@ -491,6 +491,24 @@ namespace MonoDevelop.UnitTesting
 			return RunTest (FindTestNode (test), mode, false);
 		}
 
+		AsyncOperation RunTests (ITreeNavigator[] navs, IExecutionHandler mode, bool bringToFront = true)
+		{
+			if (navs == null)
+				return null;
+			var tests = new List<UnitTest> ();
+			WorkspaceObject ownerObject = null;
+			foreach (var nav in navs) {
+				var test = nav.DataItem as UnitTest;
+				if (test != null) {
+					tests.Add (test);
+					ownerObject = test.OwnerObject;
+				}
+			}
+			if (tests.Count == 0)
+				return null;
+			return RunTest (new UnitTestSelection (tests, ownerObject), mode, bringToFront);
+		}
+
 		AsyncOperation RunTest (ITreeNavigator nav, IExecutionHandler mode, bool bringToFront = true)
 		{
 			if (nav == null)
@@ -498,6 +516,11 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return null;
+			return RunTest (test, mode, bringToFront);
+		}
+
+		AsyncOperation RunTest (UnitTest test, IExecutionHandler mode, bool bringToFront)
+		{
 			UnitTestService.ResetResult (test.RootTest);
 			
 			this.buttonRunAll.Sensitive = false;
@@ -519,7 +542,7 @@ namespace MonoDevelop.UnitTesting
 		
 		void RunSelectedTest (IExecutionHandler mode)
 		{
-			RunTest (TreeView.GetSelectedNode (), mode);
+			RunTests (TreeView.GetSelectedNodes (), mode);
 		}
 		
 		void OnTestSessionCompleted ()

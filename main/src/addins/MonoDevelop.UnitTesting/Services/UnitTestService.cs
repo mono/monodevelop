@@ -113,8 +113,6 @@ namespace MonoDevelop.UnitTesting
 
 		internal static async Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
-			string testName = test.FullName;
-			
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
 				if (bt != null) {
@@ -128,9 +126,7 @@ namespace MonoDevelop.UnitTesting
 						return;
 
 					await RefreshTests (cs.Token);
-					test = SearchTest (testName);
-					if (test != null)
-						await RunTest (test, context, false, checkCurrentRunOperation, cs);
+					await RunTest (test, context, false, checkCurrentRunOperation, cs);
 					return;
 				}
 			}
