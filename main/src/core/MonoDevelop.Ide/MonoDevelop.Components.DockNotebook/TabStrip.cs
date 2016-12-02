@@ -257,6 +257,8 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			QueueResize ();
+
+			UpdateAccessibilityTabs ();
 		}
 
 		void PageRemovedHandler (object sender, EventArgs args)
@@ -277,6 +279,21 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			QueueResize ();
+
+			UpdateAccessibilityTabs ();
+		}
+
+		void UpdateAccessibilityTabs ()
+		{
+			int idx = 0;
+			var tabs = new AtkCocoaHelper.AccessibilityElementProxy [allTabs.Count];
+
+			foreach (var tab in allTabs) {
+				tabs [idx] = tab.Accessible;
+				idx++;
+			}
+
+			Accessible.SetAccessibilityTabs (tabs);
 		}
 
 		void IAnimatable.BatchBegin ()

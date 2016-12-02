@@ -94,6 +94,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			tab.ButtonPressEvent += OnTabPress;
+			UpdateAccessibilityTabs ();
 		}
 
 		void HandleRemoved (object o, RemovedArgs args)
@@ -102,6 +103,8 @@ namespace MonoDevelop.Components.Docking
 			w.ButtonPressEvent -= OnTabPress;
 			if (currentTab >= box.Children.Length)
 				currentTab = box.Children.Length - 1;
+
+			UpdateAccessibilityTabs ();
 		}
 
 		public void SetTabLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
@@ -113,6 +116,19 @@ namespace MonoDevelop.Components.Docking
 					break;
 				}
 			}
+		}
+
+		void UpdateAccessibilityTabs ()
+		{
+			var tabs = new Atk.Object [box.Children.Length];
+			int i = 0;
+
+			foreach (DockItemTitleTab tab in box.Children) {
+				tabs [i] = tab.Accessible;
+				i++;
+			}
+
+			Accessible.SetAccessibilityTabs (tabs);
 		}
 		
 		public void UpdateStyle (DockItem item)

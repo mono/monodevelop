@@ -327,6 +327,37 @@ namespace MonoDevelop.Components
 #endif
 		}
 
+		public static void SetAccessibilityTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityTabs = tabs;
+#endif
+		}
+
+		public static void SetAccessibilityTabs (this Atk.Object o, Atk.Object [] tabs)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			NSObject [] realTabs = new NSObject [tabs.Length];
+			int i = 0;
+			foreach (var tab in tabs) {
+				realTabs [i] = (NSObject) GetNSAccessibilityElement (tab);
+				i++;
+			}
+
+			nsa.AccessibilityTabs = realTabs;
+#endif
+		}
+
 		public static void AccessibilityAddElementToTitle (this Atk.Object title, Atk.Object o)
 		{
 #if MAC

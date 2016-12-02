@@ -106,11 +106,25 @@ namespace MonoDevelop.Components
 			tab.Allocation = GetBounds (tab);
 			Accessible.AddAccessibleElement (tab.Accessible);
 			tab.AccessibilityPressed += OnTabPressed;
+
+			UpdateAccessibilityTabs ();
 		}
 
 		void OnTabPressed (object sender, EventArgs args)
 		{
 			ActiveTab = tabs.IndexOf (sender);
+		}
+
+		void UpdateAccessibilityTabs ()
+		{
+			int i = 0;
+			var proxies = new AtkCocoaHelper.AccessibilityElementProxy [tabs.Count];
+			foreach (var tab in tabs) {
+				proxies [i] = tab.Accessible;
+				i++;
+			}
+
+			Accessible.SetAccessibilityTabs (proxies);
 		}
 
 		Cairo.Rectangle GetBounds (Tab tab)
