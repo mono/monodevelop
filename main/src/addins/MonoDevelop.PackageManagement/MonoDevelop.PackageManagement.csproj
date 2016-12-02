@@ -418,6 +418,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageFilesReader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageCompatibilityNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSpecCreator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
