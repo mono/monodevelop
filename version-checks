@@ -1,4 +1,4 @@
-#!/bin/bash -e
+i#!/bin/bash -e
 
 cd `dirname $0`
 top_srcdir=`pwd`

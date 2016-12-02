@@ -27,7 +27,7 @@
 using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {

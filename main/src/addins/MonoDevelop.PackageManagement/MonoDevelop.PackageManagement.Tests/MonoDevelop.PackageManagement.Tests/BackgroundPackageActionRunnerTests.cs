@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
-using NuGet;
 using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests

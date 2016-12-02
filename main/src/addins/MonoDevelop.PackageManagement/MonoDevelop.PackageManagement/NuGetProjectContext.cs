@@ -59,12 +59,12 @@ namespace MonoDevelop.PackageManagement
 
 		public void Log (MessageLevel level, string message, params object [] args)
 		{
-			packageManagementEvents.OnPackageOperationMessageLogged ((NuGet.MessageLevel)level, message, args);
+			packageManagementEvents.OnPackageOperationMessageLogged (level, message, args);
 		}
 
 		public void ReportError (string message)
 		{
-			packageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Error, message);
 		}
 
 		public FileConflictAction? FileConflictResolution { get; set; }

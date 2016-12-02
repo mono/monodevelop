@@ -30,7 +30,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
