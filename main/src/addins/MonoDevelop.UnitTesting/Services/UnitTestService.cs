@@ -108,29 +108,43 @@ namespace MonoDevelop.UnitTesting
 		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
-			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
+			return new AsyncOperation (RunTests (new UnitTest [] { test }, context, buildOwnerObject, true, cs), cs);
 		}
 
-		internal static async Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		internal static Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
-			string testName = test.FullName;
-			
+			return RunTests (new UnitTest [] { test }, context, buildOwnerObject, checkCurrentRunOperation, cs);
+		}
+
+		internal static async Task RunTests (IEnumerable<UnitTest> tests, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		{
 			if (buildOwnerObject) {
-				IBuildTarget bt = test.OwnerObject as IBuildTarget;
-				if (bt != null) {
+				var build_targets = new HashSet<IBuildTarget> ();
+				foreach (var t in tests) {
+					IBuildTarget bt = t.OwnerObject as IBuildTarget;
+					if (bt != null)
+						build_targets.Add (bt);
+				}
+				if (build_targets.Count > 0) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
 						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
 					}
-	
-					var res = await IdeApp.ProjectOperations.Build (bt, cs.Token).Task;
-					if (res.HasErrors)
-						return;
+
+					foreach (var bt in build_targets) {
+						var res = await IdeApp.ProjectOperations.Build (bt, cs.Token).Task;
+						if (res.HasErrors)
+							return;
+					}
+
+					var test_names = new HashSet<string> (tests.Select ((v) => v.FullName));
 
 					await RefreshTests (cs.Token);
-					test = SearchTest (testName);
-					if (test != null)
-						await RunTest (test, context, false, checkCurrentRunOperation, cs);
+
+					tests = test_names.Select ((fullName) => SearchTest (fullName)).Where ((t) => t != null);
+
+					if (tests.Any ())
+						await RunTests (tests, context, false, checkCurrentRunOperation, cs);
 					return;
 				}
 			}
@@ -149,6 +163,7 @@ namespace MonoDevelop.UnitTesting
 			resultsPad.Sticky = true;
 			resultsPad.BringToFront ();
 			
+			var test = tests.Count () == 1 ? tests.First () : new UnitTestSelection (tests, tests.First ().OwnerObject);
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content, cs);
 			
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
@@ -161,6 +176,19 @@ namespace MonoDevelop.UnitTesting
 			} finally {
 				resultsPad.Sticky = false;
 			}
+		}
+
+		public static AsyncOperation RunTests (IEnumerable<UnitTest> tests, MonoDevelop.Projects.ExecutionContext context)
+		{
+			var result = RunTests (tests, context, IdeApp.Preferences.BuildBeforeRunningTests);
+			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
+			return result;
+		}
+
+		public static AsyncOperation RunTests (IEnumerable<UnitTest> tests, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
+		{
+			var cs = new CancellationTokenSource ();
+			return new AsyncOperation (RunTests (tests, context, buildOwnerObject, true, cs), cs);
 		}
 
 		/// <summary>
