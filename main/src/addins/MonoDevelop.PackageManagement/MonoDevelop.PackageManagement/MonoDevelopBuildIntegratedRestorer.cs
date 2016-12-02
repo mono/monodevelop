@@ -144,10 +144,9 @@ namespace MonoDevelop.PackageManagement
 
 		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
 		{
-			var bips = project as ProjectJsonBuildIntegratedProjectSystem ;
-			if (bips != null) {
-				bips.Project.RefreshProjectBuilder ();
-				bips.Project.DotNetProject.NotifyModified ("References");
+			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
+			if (buildIntegratedProject != null) {
+				buildIntegratedProject.NotifyProjectReferencesChanged ();
 			}
 		}
 

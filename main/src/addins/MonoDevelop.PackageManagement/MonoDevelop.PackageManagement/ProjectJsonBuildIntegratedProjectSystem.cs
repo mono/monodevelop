@@ -41,7 +41,8 @@ using NuGet.ProjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class ProjectJsonBuildIntegratedProjectSystem : ProjectJsonBuildIntegratedNuGetProject, IBuildIntegratedNuGetProject
+	internal class ProjectJsonBuildIntegratedProjectSystem
+		: ProjectJsonBuildIntegratedNuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		DotNetProjectProxy dotNetProject;
 		PackageManagementEvents packageManagementEvents;
@@ -244,6 +245,14 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return excludedReferences;
+		}
+
+		public void NotifyProjectReferencesChanged ()
+		{
+			Runtime.AssertMainThread ();
+
+			dotNetProject.RefreshProjectBuilder ();
+			dotNetProject.DotNetProject.NotifyModified ("References");
 		}
 	}
 }

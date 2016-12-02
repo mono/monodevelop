@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,6 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
@@ -40,17 +42,27 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreNuGetProject : BuildIntegratedNuGetProject, IHasDotNetProject
+	class DotNetCoreNuGetProject : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		DotNetProject project;
+		IPackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks)
+			: this (project, targetFrameworks, PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public DotNetCoreNuGetProject (
+			DotNetProject project,
+			IEnumerable<string> targetFrameworks,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
+			this.packageManagementEvents = packageManagementEvents;
 
 			var targetFramework = NuGetFramework.UnsupportedFramework;
 
@@ -170,8 +182,13 @@ namespace MonoDevelop.PackageManagement
 
 		public override Task<string> GetAssetsFilePathAsync ()
 		{
-			string assetsFilePath = project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
+			string assetsFilePath = GetAssetsFilePath ();
 			return Task.FromResult (assetsFilePath);
+		}
+
+		string GetAssetsFilePath ()
+		{
+			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
 		}
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
@@ -246,6 +263,33 @@ namespace MonoDevelop.PackageManagement
 			projectContext.Log (MessageLevel.Info, message);
 
 			return Task.FromResult (false);
+		}
+
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
+		{
+			Runtime.RunInMainThread (() => {
+				DotNetProject.NotifyModified ("References");
+			});
+
+			packageManagementEvents.OnFileChanged (GetAssetsFilePath ());
+
+			return base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
+		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
+		{
+		}
+
+		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
+		{
+		}
+
+		public void NotifyProjectReferencesChanged ()
+		{
+			Runtime.AssertMainThread ();
+
+			DotNetProject.RefreshProjectBuilder ();
+			DotNetProject.NotifyModified ("References");
 		}
 	}
 }
