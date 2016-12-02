@@ -110,6 +110,10 @@ namespace MonoDevelop.Core.Execution
 			if (cancelReg != null)
 				cancelReg.Dispose ();
 		}
+
+		public virtual void SetName (string name)
+		{
+		}
 	}
 
 	class OperationConsoleWrapper : OperationConsole

@@ -199,6 +199,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (pad != null) {
 					if (bringToFront) pad.BringToFront ();
+					//Remove any old appendix from pad title since it might cause confusion if debugged app changed
+					//before app is started
+					((DefaultMonitorPad)pad.Content).LogView.SetTitle (null);
 					return pad;
 				}
 			}
@@ -208,7 +211,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			string newPadId = "OutputPad-" + id + "-" + instanceCount;
 			string basePadId = "OutputPad-" + id + "-0";
-			
+			string originalTitle = title;
 			if (instanceCount > 0) {
 				// Translate the title before adding the count
 				title = GettextCatalog.GetString (title);
@@ -219,7 +222,17 @@ namespace MonoDevelop.Ide.Gui
 				pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", DockItemStatus.AutoHide, icon);
 			else
 				pad = IdeApp.Workbench.AddPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", DockItemStatus.AutoHide, icon);
-			
+
+			monitorPad.LogView.TitleChanged += (newTitleAppendix) => {
+				Runtime.RunInMainThread (delegate {
+					if (string.IsNullOrEmpty (newTitleAppendix))
+						pad.Title = title;
+					else
+						pad.Title = GettextCatalog.GetString (originalTitle) + " - " + newTitleAppendix;
+
+				});
+			};
+
 			monitorPad.StatusSourcePad = pad;
 			pad.Sticky = true;
 			lock (outputMonitors) {

@@ -377,6 +377,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			ShowSearchBox ();
 		}
 
+		internal void SetTitle (string title)
+		{
+			TitleChanged?.Invoke (title);
+		}
+
+		internal event Action<string> TitleChanged;
+
 		static StringComparison GetComparer ()
 		{
 			if (PropertyService.Get ("AutoSetPatternCasing", true)) {
@@ -737,7 +744,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				pad.UnsafeEndTask ();
 			}
 		}
-	}
+}
 
 	public class LogViewProgressMonitor : OutputProgressMonitor
 	{
@@ -839,6 +846,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				CancellationSource = monitor.CancellationTokenSource;
 			}
 
+			public override void SetName (string name)
+			{
+				monitor.outputPad.SetTitle (name);
+			}
+
 			public override TextReader In {
 				get {
 					return monitor.inputReader;
@@ -875,7 +887,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				base.Dispose ();
 			}
 		}
-	}
+}
 	
 	class NotSupportedTextReader: TextReader
 	{

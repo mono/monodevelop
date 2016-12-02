@@ -710,8 +710,19 @@ namespace MonoDevelop.Debugger
 				Engine = engine;
 				Session = session;
 				this.console = console;
+				session.TargetReady += delegate {
+					UpdateConsoleName ();	
+				};
+				UpdateConsoleName ();
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
+			}
+
+			void UpdateConsoleName ()
+			{
+				var processName = Session.GetProcesses ().FirstOrDefault ()?.Name;
+				if (processName != null)
+					this.console.SetName (processName);
 			}
 
 			void Cancel ()
