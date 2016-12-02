@@ -189,12 +189,19 @@ namespace MonoDevelop.Debugger
 				}
 				set {
 					Uri uri;
-					if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
-						Underline = Pango.Underline.Single;
-						Foreground = Ide.Gui.Styles.LinkForegroundColor.ToHexString (false);
-					} else {
+
+					try {
+						if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
+							Underline = Pango.Underline.Single;
+							Foreground = Ide.Gui.Styles.LinkForegroundColor.ToHexString (false);
+						} else {
+							Underline = Pango.Underline.None;
+						}
+					} catch (Exception) {
+						// MONO BUG: Uri.TryCreate() throws when unicode characters are encountered. See bug #47364
 						Underline = Pango.Underline.None;
 					}
+
 					Text = value;
 				}
 			}

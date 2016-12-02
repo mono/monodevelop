@@ -1,4 +1,4 @@
-#!/bin/bash -e
+i#!/bin/bash -e
 
 cd `dirname $0`
 top_srcdir=`pwd`
@@ -19,13 +19,13 @@ DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
 DEP_NEEDED_VERSION[0]=b4909e3302b16ce8547ca79985cd80a1753b5418
 DEP_BRANCH_AND_REMOTE[0]="dotnetcore origin/dotnetcore"
-
+ 
 # heap-shot
 DEP[1]=heap-shot
 DEP_NAME[1]=HEAPSHOT
 DEP_PATH[1]=${top_srcdir}/../heap-shot
 DEP_MODULE[1]=git://github.com/mono/heap-shot.git
-DEP_NEEDED_VERSION[1]=c3acb21cafd80302786aee67c2f2c8a368a9baca
+DEP_NEEDED_VERSION[1]=a7597928f9f4bbd3d9f7750ec4ec8f2a9f565cfc
 DEP_BRANCH_AND_REMOTE[1]="master origin/master"
 
 # other dependencies

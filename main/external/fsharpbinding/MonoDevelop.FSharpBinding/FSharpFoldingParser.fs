@@ -1,5 +1,4 @@
 ﻿namespace MonoDevelop.FSharp
-open System
 open MonoDevelop.Ide.TypeSystem
 
 /// The folding parser is used for generating a preliminary parsed document that does not

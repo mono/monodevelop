@@ -1,35 +1,35 @@
 namespace MonoDevelop.FSharp
 
-#if MDVERSION_5_5
-#else
 open System
 open System.Collections.Generic
 open MonoDevelop.Core
-open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.UnitTesting
 open MonoDevelop.Projects
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module unitTestGatherer =
-    let hasAttributeNamed name (att:FSharpAttribute) =
-        att.AttributeType.FullName.Contains name
-   
+    let hasAttributeNamed (att:FSharpAttribute) (unitTestMarkers: IUnitTestMarkers[]) (filter:  string -> IUnitTestMarkers -> bool) =
+        let attributeName = att.AttributeType.FullName
+        unitTestMarkers
+        |> Seq.exists (filter attributeName)
+
     let createTestCase (tc:FSharpAttribute) =
         let sb = Text.StringBuilder()
-        sb.Append "(" |> ignore
+        let print format = Printf.bprintf sb format
+        print "%s" "("
         tc.ConstructorArguments 
         |> Seq.iteri (fun i (_,arg) ->
-            if i > 0 then sb.Append ", " |> ignore
+            if i > 0 then print "%s" ", "
             match arg with
-            | :? string as s -> sb.AppendFormat ("\"{0}\"", s) |> ignore
-            | :? char as c -> sb.AppendFormat ("\"{0}\"", c) |> ignore
-            | other -> sb.Append (other) |> ignore )
-        sb.Append ")" |> ignore
-        sb.ToString ()
+            | :? string as s -> print "\"%s\"" s
+            | :? char as c -> print "\"%c\"" c
+            | other -> print "%s" (other |> string))
+        print "%s" ")"
+        sb |> string
 
-    let gatherUnitTests (editor: TextEditor, allSymbols:FSharpSymbolUse [] option) =
+    let gatherUnitTests (unitTestMarkers: IUnitTestMarkers[], editor: TextEditor, allSymbols:FSharpSymbolUse [] option) =
+        let hasAttribute a = hasAttributeNamed a unitTestMarkers
         let tests = ResizeArray<UnitTestLocation>()
         
         let testSymbols = 
@@ -41,11 +41,11 @@ module unitTestGatherer =
                     (fun s -> match s.Symbol with
                               | :? FSharpMemberOrFunctionOrValue as fom -> 
                                   fom.Attributes
-                                  |> Seq.exists (fun a -> hasAttributeNamed "NUnit.Framework.TestAttribute" a || 
-                                                          hasAttributeNamed "NUnit.Framework.TestCaseAttribute" a)
-                              | :? FSharpEntity as fse ->
-                                  fse.Attributes
-                                  |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
+                                  |> Seq.exists (fun a -> hasAttribute a (fun attributeName m -> m.TestMethodAttributeMarker = attributeName || m.TestCaseMethodAttributeMarker = attributeName) )
+                              | :? FSharpEntity as fse -> 
+                                      fse.MembersFunctionsAndValues
+                                      |> Seq.exists (fun fom -> fom.Attributes
+                                                                |> Seq.exists (fun a -> hasAttribute a (fun attributeName m -> m.TestMethodAttributeMarker = attributeName || m.TestCaseMethodAttributeMarker = attributeName) ))
                               | _ -> false )
                 |> Seq.distinctBy (fun su -> su.RangeAlternate)
                 |> Seq.choose
@@ -64,23 +64,22 @@ module unitTestGatherer =
                             let methName = PrettyNaming.QuoteIdentifierIfNeeded func.CompiledName
                             let isIgnored =
                                 func.Attributes
-                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                                |> Seq.exists (fun a -> hasAttribute a (fun attributeName m -> m.IgnoreTestMethodAttributeMarker = attributeName))
                             //add test cases
                             let testCases =
                                 func.Attributes
-                                |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
+                                |> Seq.filter (fun a -> hasAttribute a (fun attributeName m -> m.TestCaseMethodAttributeMarker = attributeName))
                             testCases
                             |> Seq.map createTestCase
                             |> test.TestCases.AddRange
                             test.UnitTestIdentifier <- typeName + "." + methName
-        
                             test.IsIgnored <- isIgnored
                             Some test
                         | :? FSharpEntity as entity ->
                             let typeName = entity.QualifiedName
                             let isIgnored =
                                 entity.Attributes
-                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                                |> Seq.exists (fun a -> hasAttribute a (fun attributeName m -> m.IgnoreTestMethodAttributeMarker = attributeName))
                             test.UnitTestIdentifier <- typeName
                             test.IsIgnored <- isIgnored
                             test.IsFixture <- true
@@ -124,10 +123,9 @@ type FSharpUnitTestTextEditorExtension() =
                 match x.DocumentContext.ParsedDocument.Ast with
                 | :? ParseAndCheckResults as ast ->
                     let! symbols = ast.GetAllUsesOfAllSymbolsInFile()
-                    tests.AddRange (unitTestGatherer.gatherUnitTests (x.Editor, symbols))
+                    tests.AddRange (unitTestGatherer.gatherUnitTests (unitTestMarkers, x.Editor, symbols))
                 | _ -> ()
                 return tests :> IList<_>})
-    #endif
 
 type FSharpNUnitSourceCodeLocationFinder() =
     inherit NUnitSourceCodeLocationFinder()
@@ -171,4 +169,3 @@ type FSharpNUnitSourceCodeLocationFinder() =
                 | _ -> return null //?
             } 
         Async.StartAsTask(computation = computation, cancellationToken = token)
-

@@ -84,13 +84,10 @@ namespace MonoDevelop.Components.MainToolbar
 		bool Notable { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether this instance has a parent.
+		/// Gets the project to which this runtime belongs.
 		/// </summary>
-		/// <remarks>
-		/// If a menu item has a parent, it means it is in this list just for easier traversal and it should not be displayed.
-		/// </remarks>
-		/// <value><c>true</c> if this instance has a parent; otherwise, <c>false</c>.</value>
-		bool HasParent { get; }
+		/// <value>The project.</value>
+		MonoDevelop.Projects.SolutionItem Project { get; }
 
 		/// <summary>
 		/// Gets the runtime combo item model.

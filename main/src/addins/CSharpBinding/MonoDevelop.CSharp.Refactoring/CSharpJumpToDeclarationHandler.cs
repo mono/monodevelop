@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -37,7 +38,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			var lookup = await CSharpFindReferencesProvider.TryLookupSymbol (documentIdString, hintProject, token);
 			if (!lookup.Success || lookup.Symbol.Locations.First().IsInMetadata)
 				return false;
-			IdeApp.ProjectOperations.JumpToDeclaration (lookup.Symbol, lookup.MonoDevelopProject);
+			var symbol = (lookup.Symbol as IMethodSymbol)?.PartialImplementationPart ?? lookup.Symbol;
+			IdeApp.ProjectOperations.JumpToDeclaration (symbol, lookup.MonoDevelopProject);
 			return true;
 		}
 	}

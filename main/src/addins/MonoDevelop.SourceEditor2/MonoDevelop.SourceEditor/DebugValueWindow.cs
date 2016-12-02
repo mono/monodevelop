@@ -67,7 +67,7 @@ namespace MonoDevelop.SourceEditor
 
 	class DebugValueWindow : PopoverWindow
 	{
-		ObjectValueTreeView tree;
+		internal ObjectValueTreeView tree;
 		ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";

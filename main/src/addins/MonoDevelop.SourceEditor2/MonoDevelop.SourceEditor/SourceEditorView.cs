@@ -1224,6 +1224,8 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTargetExited (object sender, EventArgs e)
 		{
+			if (DebuggingService.IsDebugging)
+				return;
 			foreach (var marker in currentErrorMarkers) {
 				marker.IsVisible = true;
 			}
@@ -1339,7 +1341,7 @@ namespace MonoDevelop.SourceEditor
 					return;
 				}
 				DocumentLine line = document.GetLine (bp.Line);
-				var status = bp.GetStatus (DebuggingService.DebuggerSession);
+				var status = DebuggingService.GetBreakpointStatus(bp);
 				bool tracepoint = (bp.HitAction & HitAction.Break) == HitAction.None;
 
 				if (line == null)

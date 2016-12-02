@@ -39,10 +39,11 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
-	public class ThreadsPad: PadContent
+	public class ThreadsPad : PadContent
 	{
 		ThreadsPadWidget control = new ThreadsPadWidget ();
 
@@ -66,7 +67,7 @@ namespace MonoDevelop.Debugger
 		TreeStore store;
 		bool needsUpdate;
 		IPadWindow window;
-		
+
 		enum Columns
 		{
 			Icon,
@@ -74,15 +75,16 @@ namespace MonoDevelop.Debugger
 			Name,
 			Object,
 			Weight,
-			Location
+			Location,
+			Session
 		}
-		
+
 		public ThreadsPadWidget ()
 		{
 			this.ShadowType = ShadowType.None;
 
-			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
-			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Id","store_Name",
+			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (object), typeof (int), typeof (string), typeof (object));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Id", "store_Name",
 				"store_Object", "store_Weight", "store_Location");
 			TypeDescriptor.AddAttributes (store, modelAttr);
 
@@ -90,18 +92,18 @@ namespace MonoDevelop.Debugger
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			treeViewState = new TreeViewState (tree, (int)Columns.Object);
-			
+
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRenderer crp = new CellRendererImage ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock_id", (int) Columns.Icon);
+			col.AddAttribute (crp, "stock_id", (int)Columns.Icon);
 			tree.AppendColumn (col);
-				
+
 			TreeViewColumn FrameCol = new TreeViewColumn ();
 			FrameCol.Title = GettextCatalog.GetString ("Id");
 			FrameCol.PackStart (tree.TextRenderer, true);
-			FrameCol.AddAttribute (tree.TextRenderer, "text", (int) Columns.Id);
-			FrameCol.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
+			FrameCol.AddAttribute (tree.TextRenderer, "text", (int)Columns.Id);
+			FrameCol.AddAttribute (tree.TextRenderer, "weight", (int)Columns.Weight);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
@@ -110,30 +112,56 @@ namespace MonoDevelop.Debugger
 			col.Title = GettextCatalog.GetString ("Name");
 			col.Resizable = true;
 			col.PackStart (tree.TextRenderer, false);
-			col.AddAttribute (tree.TextRenderer, "text", (int) Columns.Name);
-			col.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
+			col.AddAttribute (tree.TextRenderer, "text", (int)Columns.Name);
+			col.AddAttribute (tree.TextRenderer, "weight", (int)Columns.Weight);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Location");
 			col.Resizable = true;
 			col.PackStart (tree.TextRenderer, false);
-			col.AddAttribute (tree.TextRenderer, "text", (int) Columns.Location);
-			col.AddAttribute (tree.TextRenderer, "weight", (int) Columns.Weight);
+			col.AddAttribute (tree.TextRenderer, "text", (int)Columns.Location);
+			col.AddAttribute (tree.TextRenderer, "weight", (int)Columns.Weight);
 			tree.AppendColumn (col);
-			
+
 			Add (tree);
 			ShowAll ();
-			
+
 			UpdateDisplay ();
-			
+
 			tree.RowActivated += OnRowActivated;
+			tree.DoPopupMenu = ShowPopup;
 			DebuggingService.CallStackChanged += OnStackChanged;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.StoppedEvent += OnDebuggerStopped;
 		}
-		
+
+		void ShowPopup (Gdk.EventButton evt)
+		{
+			TreeIter selected;
+
+			if (!tree.Selection.GetSelected (out selected))
+				return;
+			var process = store.GetValue (selected, (int)Columns.Object) as ProcessInfo;
+			if (process == null)
+				return;//User right-clicked on thread and not process
+			var session = store.GetValue (selected, (int)Columns.Session) as DebuggerSession;
+			var context_menu = new ContextMenu ();
+			var continueExecution = new ContextMenuItem (GettextCatalog.GetString ("Resume"));
+			continueExecution.Sensitive = !session.IsRunning;
+			continueExecution.Clicked += delegate {
+				session.Continue ();
+			};
+			context_menu.Items.Add (continueExecution);
+			var pauseExecution = new ContextMenuItem (GettextCatalog.GetString ("Pause"));
+			pauseExecution.Sensitive = session.IsRunning;
+			pauseExecution.Clicked += delegate {
+				session.Stop ();
+			};
+			context_menu.Items.Add (pauseExecution);
+			context_menu.Show (this, evt);
+		}
 		public override void Dispose ()
 		{
 			base.Dispose ();
@@ -142,12 +170,12 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent -= OnDebuggerResumed;
 			DebuggingService.StoppedEvent -= OnDebuggerStopped;
 		}
-		
+
 		void OnStackChanged (object s, EventArgs a)
 		{
 			UpdateDisplay ();
 		}
-		
+
 		public void Initialize (IPadWindow window)
 		{
 			this.window = window;
@@ -156,7 +184,7 @@ namespace MonoDevelop.Debugger
 					Update ();
 			};
 		}
-		
+
 		public void UpdateDisplay ()
 		{
 			if (window != null && window.ContentVisible)
@@ -171,50 +199,58 @@ namespace MonoDevelop.Debugger
 				tree.ScrollToPoint (0, 0);
 
 			treeViewState.Save ();
-			
+
 			store.Clear ();
 
-			if (!DebuggingService.IsPaused)
-				return;
-
 			try {
-				var processes = DebuggingService.DebuggerSession.GetProcesses ();
-				
-				if (processes.Length == 1) {
-					AppendThreads (TreeIter.Zero, processes[0]);
-				} else {
-					foreach (var process in processes) {
-						TreeIter iter = store.AppendValues (null, process.Id.ToString (), process.Name, process, (int) Pango.Weight.Normal, "");
-						AppendThreads (iter, process);
+				if (DebuggingService.GetSessions ().SelectMany (s => s.GetProcesses ()).Count () > 1) {
+					foreach (var session in DebuggingService.GetSessions ()) {
+						foreach (var process in session.GetProcesses ()) {
+							var iter = store.AppendValues (
+								session.IsRunning ? "md-continue-debug" : "md-pause-debug",
+								process.Id.ToString (),
+								process.Name,
+								process,
+								session == DebuggingService.DebuggerSession ? (int)Pango.Weight.Bold : (int)Pango.Weight.Normal,
+								"",
+								session);
+							if (session.IsRunning)
+								continue;
+							AppendThreads (iter, process, session);
+						}
 					}
+				} else {
+					if (!DebuggingService.IsPaused)
+						return;
+					AppendThreads (TreeIter.Zero, DebuggingService.DebuggerSession.GetProcesses () [0], DebuggingService.DebuggerSession);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			}
-			
+
 			tree.ExpandAll ();
-			
+
 			treeViewState.Load ();
 		}
 
-		void AppendThreads (TreeIter iter, ProcessInfo process)
+		void AppendThreads (TreeIter iter, ProcessInfo process, DebuggerSession session)
 		{
 			var threads = process.GetThreads ();
 
 			Array.Sort (threads, (ThreadInfo t1, ThreadInfo t2) => t1.Id.CompareTo (t2.Id));
 
-			DebuggingService.DebuggerSession.FetchFrames (threads);
+			session.FetchFrames (threads);
 
+			var activeThread = session.ActiveThread;
 			foreach (var thread in threads) {
-				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
-				var name = thread.Name == null && thread.Id == 1 ? GettextCatalog.GetString("Main Thread") : thread.Name;
+				var name = thread.Name == null && thread.Id == 1 ? GettextCatalog.GetString ("Main Thread") : thread.Name;
 				var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
 				var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
 
 				if (iter.Equals (TreeIter.Zero))
-					store.AppendValues (icon, thread.Id.ToString (), name, thread, (int) weight, thread.Location);
+					store.AppendValues (icon, thread.Id.ToString (), name, thread, (int)weight, thread.Location, session);
 				else
-					store.AppendValues (iter, icon, thread.Id.ToString (), name, thread, (int) weight, thread.Location);
+					store.AppendValues (iter, icon, thread.Id.ToString (), name, thread, (int)weight, thread.Location, session);
 			}
 		}
 
@@ -223,8 +259,8 @@ namespace MonoDevelop.Debugger
 			var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
 			var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
 
-			store.SetValue (iter, (int) Columns.Weight, (int) weight);
-			store.SetValue (iter, (int) Columns.Icon, icon);
+			store.SetValue (iter, (int)Columns.Weight, (int)weight);
+			store.SetValue (iter, (int)Columns.Icon, icon);
 		}
 
 		void UpdateThreads (ThreadInfo activeThread)
@@ -235,16 +271,18 @@ namespace MonoDevelop.Debugger
 				return;
 
 			do {
-				var thread = store.GetValue (iter, (int) Columns.Object) as ThreadInfo;
+				var thread = store.GetValue (iter, (int)Columns.Object) as ThreadInfo;
 
 				if (thread == null) {
+					store.SetValue (iter, (int)Columns.Weight, (int)(((ProcessInfo)store.GetValue (iter, (int)Columns.Object)).GetThreads ().Contains (activeThread) ? Pango.Weight.Bold : Pango.Weight.Normal));
+					var sessionActiveThread = ((DebuggerSession)store.GetValue (iter, (int)Columns.Session)).ActiveThread;
 					// this is a process... descend into our children
 					TreeIter child;
 
-					if (store.IterChildren (out child)) {
+					if (store.IterChildren (out child, iter)) {
 						do {
-							thread = store.GetValue (iter, (int) Columns.Object) as ThreadInfo;
-							UpdateThread (child, thread, activeThread);
+							thread = store.GetValue (child, (int)Columns.Object) as ThreadInfo;
+							UpdateThread (child, thread, sessionActiveThread);
 						} while (store.IterNext (ref child));
 					}
 				} else {
@@ -252,7 +290,7 @@ namespace MonoDevelop.Debugger
 				}
 			} while (store.IterNext (ref iter));
 		}
-		
+
 		void OnRowActivated (object s, RowActivatedArgs args)
 		{
 			TreeIter selected;
@@ -260,7 +298,7 @@ namespace MonoDevelop.Debugger
 			if (!tree.Selection.GetSelected (out selected))
 				return;
 
-			var thread = store.GetValue (selected, (int) Columns.Object) as ThreadInfo;
+			var thread = store.GetValue (selected, (int)Columns.Object) as ThreadInfo;
 
 			if (thread != null) {
 				DebuggingService.CallStackChanged -= OnStackChanged;
@@ -279,12 +317,12 @@ namespace MonoDevelop.Debugger
 		{
 			UpdateDisplay ();
 		}
-		
+
 		void OnDebuggerResumed (object s, EventArgs a)
 		{
 			UpdateDisplay ();
 		}
-		
+
 		void OnDebuggerStopped (object s, EventArgs a)
 		{
 			UpdateDisplay ();

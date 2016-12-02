@@ -49,6 +49,9 @@
     <None Include="*.txt">
     	<Meta2>$(Configuration)</Meta2>
     </None>
+    <Transformed Include="@(None -&gt; WithMetadataValue('Meta2', 'Debug'))">
+        <Meta3>$(Configuration)</Meta3>
+    </Transformed>
   </ItemGroup>
   <Target Name="Conditioned" Condition="false"></Target>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -9,7 +9,6 @@
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
     <Import file="MonoDevelop.FSharpInteractive.Service.exe" />
-    <Import assembly="Newtonsoft.Json.dll" />
 	<Import assembly="FSharp.Compiler.Interactive.Settings.dll" />	
   <!--INSTALL_DEBUG
     <Import file = "FSharpBinding.dll.mdb" />
@@ -166,6 +165,7 @@
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
+    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUnusedCode" />
     <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />

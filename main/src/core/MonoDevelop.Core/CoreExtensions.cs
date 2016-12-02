@@ -106,7 +106,7 @@ namespace System
 
 		static class MemoizeUtil<Value>
 		{
-			public static Dictionary<Key, Value> Create<Key> (Key justForFancyTypeInherence)
+			public static Dictionary<Key, Value> Create<Key> (Key justForFancyTypeInference)
 			{
 				return new Dictionary<Key, Value> ();
 			}

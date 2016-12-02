@@ -70,15 +70,23 @@ namespace MonoDevelop.Core.Serialization
 
 		internal void UpdateFromItem (DataItem item, HashSet<DataItem> removedItems)
 		{
+			var counter = new Dictionary<string, int> ();
 			foreach (var d in item.ItemData) {
-				var current = ItemData[d.Name];
+				DataNode current = null;
+				DataCollection col;
+				if (!counter.ContainsKey (d.Name))
+					counter [d.Name] = 0;
+				var index = ItemData.FindData (d.Name, out col, false, counter[d.Name]);
+				counter [d.Name]++;
+				if (index != -1) {
+					current = col [index];
+				}
 				if (current != null) {
 					if (d.IsDefaultValue || d is DataDeletedNode) {
 						if (current is DataItem)
 							removedItems.Add ((DataItem)current);
 						ItemData.Remove (current);
-					}
-					else if (current.GetType () != d.GetType () || current is DataValue) {
+					} else if (current.GetType () != d.GetType () || current is DataValue) {
 						var i = ItemData.IndexOf (current);
 						ItemData [i] = d;
 						if (current is DataItem)

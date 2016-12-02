@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -147,7 +148,8 @@ namespace MonoDevelop.Core
 				return Path.GetExtension (fileName);
 			}
 		}
-		
+
+		[Pure]
 		public bool HasExtension (string extension)
 		{
 			return fileName.Length > extension.Length
@@ -171,6 +173,7 @@ namespace MonoDevelop.Core
 			get { return Path.IsPathRooted (fileName); }
 		}
 
+		[Pure]
 		public bool IsChildPathOf (FilePath basePath)
 		{
 			bool startsWith = fileName.StartsWith (basePath.fileName, PathComparison);
@@ -193,11 +196,13 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <returns>The new file path</returns>
 		/// <param name="newName">New file name</param>
+		[Pure]
 		public FilePath ChangeName (string newName)
 		{
 			return ParentDirectory.Combine (newName) + Extension;
 		}
 
+		[Pure]
 		public FilePath Combine (params FilePath[] paths)
 		{
 			string path = fileName;
@@ -206,6 +211,7 @@ namespace MonoDevelop.Core
 			return new FilePath (path);
 		}
 
+		[Pure]
 		public FilePath Combine (params string[] paths)
 		{
 			return new FilePath (Path.Combine (fileName, Path.Combine (paths)));
@@ -268,11 +274,13 @@ namespace MonoDevelop.Core
 		/// <summary>
 		/// Builds a path by combining all provided path sections
 		/// </summary>
+		[Pure]
 		public static FilePath Build (params string[] paths)
 		{
 			return Empty.Combine (paths);
 		}
-		
+
+		[Pure]
 		public static FilePath GetCommonRootPath (IEnumerable<FilePath> paths)
 		{
 			FilePath root = FilePath.Null;

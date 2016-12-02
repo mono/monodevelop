@@ -867,11 +867,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 //						return false;
 //					style = Engine.options.EnumBraceStyle;
 //					return true;
-//				case Body.Switch:
-//					if (!Engine.options.IndentSwitchBody)
-//						return false;
-//					style = Engine.options.StatementBraceStyle;
-//					return true;
 //				case Body.Try:
 //				case Body.Catch:
 //				case Body.Finally:
@@ -887,7 +882,19 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// </summary>
 		void AddIndentation(Body body)
 		{
-			NextLineIndent.Push(IndentType.Block);
+			switch (body) {
+			case Body.Switch:
+				if (!Engine.options.GetOption (CSharpFormattingOptions.IndentSwitchSection)) {
+					NextLineIndent.Push (IndentType.Empty);
+					break;
+				}
+				NextLineIndent.Push (IndentType.Block);
+				break;
+			default:
+				NextLineIndent.Push (IndentType.Block);
+				break;
+			}
+
 
 //			BraceStyle style;
 //			if (TryGetBraceStyle (body, out style)) {
@@ -998,19 +1005,16 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public override void InitializeState()
 		{
 			ThisLineIndent = Parent.ThisLineIndent.Clone();
-			NextLineIndent = ThisLineIndent.Clone();
 
 			// remove all continuations and extra spaces
 			ThisLineIndent.RemoveAlignment(); 
 			ThisLineIndent.PopWhile(IndentType.Continuation);
 
-			NextLineIndent.RemoveAlignment();
-			NextLineIndent.PopWhile(IndentType.Continuation);
-			
+			NextLineIndent = ThisLineIndent.Clone ();
 
-			if (Engine.options.GetOption(CSharpFormattingOptions.IndentSwitchSection))
+			if (Engine.options.GetOption (CSharpFormattingOptions.IndentSwitchCaseSection)) 
 			{
-				NextLineIndent.Push(IndentType.Block);
+				NextLineIndent.Push (IndentType.Block);
 			}
 			else
 			{
@@ -1042,7 +1046,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				// OPTION: Engine.formattingOptions.IndentBreakStatements
 				if (true/*!Engine.options.IndentBreakStatements*/)
 				{
-					ThisLineIndent = Parent.ThisLineIndent.Clone();
+					// ThisLineIndent = Parent.ThisLineIndent.Clone();
 				}
 			}
 

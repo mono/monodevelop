@@ -81,12 +81,11 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			string s = entry.Text;
 			
 			foreach (string form in formats) {
-				try {
-					time = DateTime.ParseExact (s, form, null);
-					if (ValueChanged != null)
-						ValueChanged (this, a);
+				DateTime temp;
+				if (DateTime.TryParseExact (s, form, null, System.Globalization.DateTimeStyles.None, out temp)) {
+					time = temp;
+					ValueChanged?.Invoke (this, a);
 					break;
-				} catch {
 				}
 			}
 		}

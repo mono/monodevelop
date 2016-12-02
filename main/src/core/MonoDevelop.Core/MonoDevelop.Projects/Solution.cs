@@ -56,8 +56,10 @@ namespace MonoDevelop.Projects
 
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
-		SolutionRunConfigurationCollection runConfigurations;
+		MultiItemSolutionRunConfigurationCollection runConfigurations;
+
 		MultiItemSolutionRunConfiguration multiStartupConfig = new MultiItemSolutionRunConfiguration (MultiStartupConfigId, "Multi-Startup");
+
 		const string MultiStartupConfigId = "MonoDevelop.Projects.MultiStartup";
 
 		MSBuildEngineManager msbuildEngineManager = new MSBuildEngineManager ();
@@ -80,7 +82,7 @@ namespace MonoDevelop.Projects
 			loadingFromConstructor = loading;
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
-			runConfigurations = new SolutionRunConfigurationCollection (this);
+			runConfigurations = new MultiItemSolutionRunConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
 		}
@@ -188,27 +190,28 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete ("Use StartupConfiguration")]
 		public bool SingleStartup {
 			get {
 				return StartupConfiguration is SingleItemSolutionRunConfiguration;
 			}
 			set {
-				if (value == SingleStartup)
-					return;
-				if (value) {
-					StartupItem = multiStartupConfig.Items.FirstOrDefault () ?? GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().Select (i => i.Item).FirstOrDefault ();
-				} else {
-					if (!runConfigurations.Contains (multiStartupConfig))
-						runConfigurations.Add (multiStartupConfig);
-					StartupConfiguration = multiStartupConfig;
-				}
 			}
 		}
 		
+		[Obsolete ("Use StartupConfiguration or MultiStartupRunConfigurations")]
 		public List<SolutionItem> MultiStartupItems {
 			get {
-				return multiStartupConfig.Items;
+				var sc = StartupConfiguration as MultiItemSolutionRunConfiguration;
+				if (sc != null)
+					return sc.Items.Select (it => it.SolutionItem).ToList ();
+				else
+					return new List<SolutionItem> ();
 			}
+		}
+
+		public MultiItemSolutionRunConfigurationCollection MultiStartupRunConfigurations {
+			get { return runConfigurations; }
 		}
 
 		/// <summary>
@@ -244,6 +247,12 @@ namespace MonoDevelop.Projects
 
 			bool startupConfigSet = false;
 
+			var mconfigs = UserProperties.GetValue<MultiItemSolutionRunConfiguration []> ("MultiItemStartupConfigurations");
+			if (mconfigs != null) {
+				MultiStartupRunConfigurations.Clear ();
+				MultiStartupRunConfigurations.AddRange (mconfigs);
+			}
+
 			var sitem = UserProperties.GetValue<string> ("StartupItem");
 			if (!string.IsNullOrEmpty (sitem)) {
 				// Old StartupItem property. Find the corresponding SingleItemSolutionRunConfiguration instance and get rid of the property.
@@ -259,14 +268,16 @@ namespace MonoDevelop.Projects
 			var sitems = UserProperties.GetValue<string []> ("StartupItems");
 			if (sitems != null && sitems.Length > 0) {
 				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
+				UserProperties.RemoveValue ("StartupItems");
 				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (FindSolutionItem).Where (i => i != null);
-				multiStartupConfig.Items.Clear ();
-				multiStartupConfig.Items.AddRange (multiStartupItems.ToArray ());
-				runConfigurations.Add (multiStartupConfig);
+				var msc = new MultiItemSolutionRunConfiguration ("Multi-Startup", "Multi-Startup");
+				foreach (var si in multiStartupItems)
+					msc.Items.Add (new StartupItem (si, si.GetDefaultRunConfiguration ()));
+				runConfigurations.Add (msc);
 				if (!startupConfigSet) {
 					// If the config has not been set by StartupItem it means that this is an old solution that had been configured with multiple startup.
 					// Select the multi-startup config in this case.
-					StartupConfiguration = multiStartupConfig;
+					StartupConfiguration = msc;
 					startupConfigSet = true;
 				}
 			}
@@ -289,13 +300,9 @@ namespace MonoDevelop.Projects
 		protected override async Task OnSaveUserProperties ()
 		{
 			UserProperties.SetValue ("StartupConfiguration", (string)StartupConfiguration?.Id);
-
+			UserProperties.SetValue ("MultiItemStartupConfigurations", MultiStartupRunConfigurations.ToArray ());
+			              
 			// Save the multi-startup configuration only if it is the one that's selected 
-			var msc = StartupConfiguration as MultiItemSolutionRunConfiguration;
-			if (msc != null)
-				UserProperties.SetValue ("StartupItems", msc.Items.Select (p => (string)GetRelativeChildPath (p.FileName)).ToArray ());
-			else
-				UserProperties.RemoveValue ("StartupItems");
 
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 			await base.OnSaveUserProperties ();
@@ -818,8 +825,13 @@ namespace MonoDevelop.Projects
 
 			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
 			if (msc != null) {
-				foreach (SolutionItem it in msc.Items) {
-					if (it.CanExecute (context, configuration))
+				var multiProject = context.ExecutionTarget as MultiProjectExecutionTarget;
+				foreach (StartupItem it in msc.Items) {
+					var localContext = context;
+					//Set project specific execution target to context if exists
+					if (multiProject?.GetTarget (it.SolutionItem) != null)
+						localContext = new ExecutionContext (context.ExecutionHandler, context.ExternalConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
+					if (it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						return true;
 				}
 				return false;
@@ -840,16 +852,18 @@ namespace MonoDevelop.Projects
 				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
 
-				var secondaryContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionMode, context.ConsoleFactory, null);
-				
-				foreach (SolutionItem it in msc.Items) {
-					if (!it.CanExecute (context, configuration))
+				var multiProject = context.ExecutionTarget as MultiProjectExecutionTarget;
+				foreach (StartupItem it in msc.Items) {
+					var localContext = context;
+					//Set project specific execution target to context if exists
+					if (multiProject?.GetTarget (it.SolutionItem) != null)
+						localContext = new ExecutionContext (context.ExecutionHandler, context.ConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
+					if (!it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 					mon.AddFollowerMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.FollowerCancel);
 					monitors.Add (mon);
-					tasks.Add (it.Execute (mon, context, configuration));
-					context = secondaryContext;
+					tasks.Add (it.SolutionItem.Execute (mon, localContext, configuration, it.RunConfiguration));
 				}
 				try {
 					await Task.WhenAll (tasks);
@@ -967,13 +981,12 @@ namespace MonoDevelop.Projects
 						// Reuse the configuration information of the replaced item
 						foreach (SolutionConfiguration conf in Configurations)
 							conf.ReplaceItem ((SolutionItem)replacedItem, eitem);
+
 						if (StartupItem == replacedItem)
 							StartupItem = eitem;
-						else {
-							int i = MultiStartupItems.IndexOf ((SolutionItem)replacedItem);
-							if (i != -1)
-								MultiStartupItems [i] = eitem;
-						}
+
+						foreach (var sc in MultiStartupRunConfigurations.OfType<MultiItemSolutionRunConfiguration> ())
+							sc.ReplaceItem ((SolutionItem)replacedItem, eitem);
 					}
 				}
 			}
@@ -1009,8 +1022,9 @@ namespace MonoDevelop.Projects
 
 				if (StartupItem == item)
 					StartupItem = null;
-				else
-					MultiStartupItems.Remove (item);
+
+				foreach (var sc in MultiStartupRunConfigurations)
+					sc.RemoveItem (item);
 			}
 			
 			// Update the file name because the file format may have changed

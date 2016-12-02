@@ -40,18 +40,22 @@ namespace MonoDevelop.Core.Serialization
 		{
 			get {
 				DataCollection col;
-				int i = FindData (name, out col, false);
+				int i = FindData (name, out col, false, 0);
 				if (i != -1) return col [i];
 				else return null;
 			}
 		}
 		
-		int FindData (string name, out DataCollection colec, bool buildTree)
+		internal int FindData (string name, out DataCollection colec, bool buildTree, int skipCount)
 		{
 			if (name.IndexOf ('/') == -1) {
 				for (int n=0; n<Items.Count; n++) {
 					DataNode data = Items [n];
 					if (data.Name == name) {
+						if (skipCount > 0) {
+							skipCount--;
+							continue;
+						}
 						colec = this;
 						return n;
 					}
@@ -99,14 +103,14 @@ namespace MonoDevelop.Core.Serialization
 				throw new ArgumentNullException ("entry");
 				
 			DataCollection col;
-			FindData (itemPath + "/", out col, true);
+			FindData (itemPath + "/", out col, true, 0);
 			Add (entry);
 		}
 		
 		public DataNode Extract (string name)
 		{
 			DataCollection col;
-			int i = FindData (name, out col, false);
+			int i = FindData (name, out col, false, 0);
 			if (i != -1) {
 				DataNode data = col [i];
 				col.RemoveAt (i);

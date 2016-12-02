@@ -3,7 +3,7 @@ open System
 open NUnit.Framework
 open MonoDevelop.FSharp
 open FsUnit
-
+open MonoDevelop.UnitTesting
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
     let gatherTests (text:string) =
@@ -11,7 +11,15 @@ type FSharpUnitTestTextEditorExtensionTests() =
         let ast = editor.Ast
         let symbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
 
-        unitTestGatherer.gatherUnitTests (editor.Editor, symbols)
+        let markers =
+            [|{ new IUnitTestMarkers
+                with
+                    member x.TestMethodAttributeMarker = "NUnit.Framework.TestAttribute"
+                    member x.TestCaseMethodAttributeMarker = "NUnit.Framework.TestCaseAttribute"
+                    member x.IgnoreTestMethodAttributeMarker = "NUnit.Framework.IgnoreAttribute"
+                    member x.IgnoreTestClassAttributeMarker = "NUnit.Framework.IgnoreAttribute" }|]
+
+        unitTestGatherer.gatherUnitTests (markers, editor.Editor, symbols)
         |> Seq.toList
 
     let gatherTestsWithReference (text:string) =
@@ -86,7 +94,7 @@ module someModule =
 """
 
         let tests = gatherTestsWithReference noTests
-        tests.Length |> should equal 1
+        tests.Length |> should equal 2
 
     [<Test>]
     member x.NestedTestCoveringNormalAndDoubleQuotedTestsInATestFixture () =

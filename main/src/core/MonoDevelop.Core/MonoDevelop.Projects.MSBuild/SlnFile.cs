@@ -75,8 +75,11 @@ namespace MonoDevelop.Projects.MSBuild
 			string strVersion;
 			using (var reader = new StreamReader (file)) {
 				var strInput = reader.ReadLine();
-				if (strInput == null)
-					return null;
+				while (string.IsNullOrWhiteSpace (strInput)) {
+					if (strInput == null)
+						return null;
+					strInput = reader.ReadLine ();
+				}
 
 				var match = slnVersionRegex.Match (strInput);
 				if (!match.Success) {
@@ -559,7 +562,8 @@ namespace MonoDevelop.Projects.MSBuild
 				values [name] = val;
 			} else {
 				line = line.Trim ();
-				values.Add (line, null);
+				if (!string.IsNullOrWhiteSpace (line))
+					values.Add (line, null);
 			}
 		}
 

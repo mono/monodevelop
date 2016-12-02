@@ -108,6 +108,11 @@ namespace MonoDevelop.Ide
 				ActiveConfigurationChanged (this, EventArgs.Empty);
 		}
 
+		public ExecutionTarget GetActiveExecutionTarget (SolutionItem project)
+		{
+			return (activeExecutionTarget as MultiProjectExecutionTarget)?.GetTarget (project) ?? activeExecutionTarget;
+		}
+
 		ExecutionTarget activeExecutionTarget;
 		public ExecutionTarget ActiveExecutionTarget {
 			get { return activeExecutionTarget; }
