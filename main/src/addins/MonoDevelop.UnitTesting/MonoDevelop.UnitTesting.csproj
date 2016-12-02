@@ -258,7 +258,6 @@
     <Compile Include="Services\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="Services\UnitTestMarkersExtension.cs" />
     <Compile Include="Services\UnitTestingRunConfiguration.cs" />
-    <Compile Include="Services\UnitTestSelection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
