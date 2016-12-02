@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=20d6c94179a1e8357dddff47fa7b784938765f71
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_NEEDED_VERSION[0]=aa6a03efb7f09ee5154ad1e98282a3d0935302c1
+DEP_BRANCH_AND_REMOTE[0]="servicehub-native-launcher origin/servicehub-native-launcher"
  
 # heap-shot
 DEP[1]=heap-shot
