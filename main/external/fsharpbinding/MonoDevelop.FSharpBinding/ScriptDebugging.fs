@@ -10,7 +10,6 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core.Execution
 open MonoDevelop.Debugger
 open MonoDevelop.Projects
-open MonoDevelop.Projects.Extensions
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
@@ -54,8 +53,13 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
             async {
                 let! references = getSourceReferences()
                 references 
-                |> List.iter(fun r -> let destination = tempPath + Path.GetFileName(r)
-                                      File.Copy(r, destination, true))
+                |> List.iter(fun r -> // copy dll + pdb, mdb, optdata, sigdata etc
+                                      let wildcardPath = Path.ChangeExtension(r, "*")
+                                      let files = Directory.GetFiles wildcardPath
+                                      files |> Seq.iter(fun file ->   
+                                          let destination = tempPath + Path.GetFileName(file)
+                                          File.Copy(file, destination, true)))
+
                 let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
                 let framework = Project.getDefaultTargetFramework runtime
                 let args =
