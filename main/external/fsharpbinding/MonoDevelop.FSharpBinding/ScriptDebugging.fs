@@ -10,6 +10,7 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core.Execution
 open MonoDevelop.Debugger
 open MonoDevelop.Projects
+open MonoDevelop.Projects.Extensions
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
@@ -112,8 +113,19 @@ type FSharpDebugScriptTextEditorExtension() =
     member x.DebugScriptExternalConsole() =
         x.StartDebugging External
 
+    [<CommandUpdateHandler("MonoDevelop.FSharp.Editor.DebugScriptInternal")>]
+    member x.DebugScriptInternalConsole(ci:CommandInfo) =
+        ci.Visible <- FileSystem.IsAScript (x.Editor.FileName |> string)
+
+    [<CommandUpdateHandler("MonoDevelop.FSharp.Editor.DebugScriptExternal")>]
+    member x.DebugScriptExternalConsole(ci:CommandInfo) =
+        ci.Visible <- FileSystem.IsAScript (x.Editor.FileName |> string)
+
 type DebugScriptNodeHandler() =
     inherit NodeCommandHandler()
+    member x.IsVisible ()=
+        let filepath = (x.CurrentNode.DataItem :?> ProjectFile).FilePath |> string
+        FileSystem.IsAScript filepath
 
     member x.StartDebugging consoleKind =
         let file = x.CurrentNode.DataItem :?> ProjectFile
@@ -123,13 +135,21 @@ type DebugScriptNodeHandler() =
         debug.Task
 
     [<CommandHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptInternal")>]
-    member x.DebugScriptInternalConsole () =
+    member x.``Debug script on internal console`` () =
         x.StartDebugging Internal
 
+    [<CommandUpdateHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptInternal")>]
+    member x.``Debug script on internal console (update command)`` (ci: CommandInfo) =
+        ci.Visible <- x.IsVisible()
+                     
     [<CommandHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptExternal")>]
-    member x.DebugScriptExternalConsole () =
+    member x.``Debug script on external console`` () =
         x.StartDebugging External
-    
+
+    [<CommandUpdateHandler("MonoDevelop.FSharp.SolutionPad.DebugScriptExternal")>]
+    member x.``Debug script on external console (update command)`` (ci: CommandInfo) =
+        ci.Visible <- x.IsVisible()
+
 type DebugScriptBuilder() =
     inherit NodeBuilderExtension()
     override x.CanBuildNode _dataType = true
