@@ -36,6 +36,11 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static PackageSpec CreatePackageSpec (DotNetProject project)
 		{
+			return CreatePackageSpec (new DotNetProjectProxy (project));
+		}
+
+		public static PackageSpec CreatePackageSpec (IDotNetProject project)
+		{
 			var packageSpec = new PackageSpec (GetTargetFrameworks (project));
 			packageSpec.FilePath = project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
 			packageSpec.Name = project.Name;
@@ -47,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 			return packageSpec;
 		}
 
-		static IList<TargetFrameworkInformation> GetTargetFrameworks (DotNetProject project)
+		static IList<TargetFrameworkInformation> GetTargetFrameworks (IDotNetProject project)
 		{
 			return GetFrameworks (project)
 				.Select (framework => new TargetFrameworkInformation {
@@ -56,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 				.ToList();
 		}
 
-		static IEnumerable<NuGetFramework> GetFrameworks (DotNetProject project)
+		static IEnumerable<NuGetFramework> GetFrameworks (IDotNetProject project)
 		{
 			return GetOriginalTargetFrameworks (project)
 				.Select (NuGetFramework.Parse);
@@ -65,9 +70,9 @@ namespace MonoDevelop.PackageManagement
 		/// <summary>
 		/// Return the parsed version or 1.0.0 if the property does not exist.
 		/// </summary>
-		static NuGetVersion GetVersion (DotNetProject project)
+		static NuGetVersion GetVersion (IDotNetProject project)
 		{
-			string versionString = project.MSBuildProject.EvaluatedProperties.GetValue ("Version");
+			string versionString = project.EvaluatedProperties.GetValue ("Version");
 
 			if (string.IsNullOrEmpty(versionString)) {
 				// Default to 1.0.0 if the property does not exist
@@ -78,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 			return NuGetVersion.Parse (versionString);
 		}
 
-		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, DotNetProject project)
+		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project)
 		{
 			return new ProjectRestoreMetadata {
 				OutputType = RestoreOutputType.NETCore,
@@ -90,10 +95,9 @@ namespace MonoDevelop.PackageManagement
 			};
 		}
 
-		static IEnumerable<string> GetOriginalTargetFrameworks (DotNetProject project)
+		static IEnumerable<string> GetOriginalTargetFrameworks (IDotNetProject project)
 		{
-			var msproject = project.MSBuildProject;
-			var properties = msproject.EvaluatedProperties;
+			var properties = project.EvaluatedProperties;
 			if (properties != null) {
 				string targetFramework = properties.GetValue ("TargetFramework");
 				if (targetFramework != null) {
@@ -109,9 +113,9 @@ namespace MonoDevelop.PackageManagement
 			return new string[0];
 		}
 
-		static void AddPackageReferences (PackageSpec packageSpec, DotNetProject project)
+		static void AddPackageReferences (PackageSpec packageSpec, IDotNetProject project)
 		{
-			foreach (var packageReference in project.Items.OfType<ProjectPackageReference> ()) {
+			foreach (var packageReference in project.GetPackageReferences ()) {
 				var dependency = new LibraryDependency ();
 
 				dependency.LibraryRange = new LibraryRange (
@@ -150,7 +154,7 @@ namespace MonoDevelop.PackageManagement
 			var excludeFlags = GetIncludeFlags (packageReference.Metadata.GetValue ("ExcludeAssets"), LibraryIncludeFlags.None);
 
 			dependency.IncludeType = includeFlags & ~excludeFlags;
-			dependency.SuppressParent = GetIncludeFlags( packageReference.Metadata.GetValue ("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent);
+			dependency.SuppressParent = GetIncludeFlags (packageReference.Metadata.GetValue ("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent);
 		}
 
 		static LibraryIncludeFlags GetIncludeFlags (string value, LibraryIncludeFlags defaultValue)
@@ -173,7 +177,7 @@ namespace MonoDevelop.PackageManagement
 			return new string[0];
 		}
 
-		static HashSet<NuGetFramework> GetProjectFrameworks (DotNetProject project)
+		static HashSet<NuGetFramework> GetProjectFrameworks (IDotNetProject project)
 		{
 			return new HashSet<NuGetFramework> (
 				GetOriginalTargetFrameworks (project).Select (NuGetFramework.Parse));

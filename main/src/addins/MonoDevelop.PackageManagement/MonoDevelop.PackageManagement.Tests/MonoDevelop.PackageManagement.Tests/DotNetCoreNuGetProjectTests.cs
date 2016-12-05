@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using NUnit.Framework;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.ProjectModel;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -42,12 +43,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		DotNetProject dotNetProject;
 		TestableDotNetCoreNuGetProject project;
 		FakeNuGetProjectContext context;
+		DependencyGraphCacheContext dependencyGraphCacheContext;
 
-		void CreateNuGetProject (string projectName = "MyProject")
+		void CreateNuGetProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			context = new FakeNuGetProjectContext ();
 			dotNetProject = new DummyDotNetProject ();
 			dotNetProject.Name = projectName;
+			dotNetProject.FileName = fileName.ToNativePath ();
 			project = new TestableDotNetCoreNuGetProject (dotNetProject);
 		}
 
@@ -70,6 +73,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
 			var versionRange = new VersionRange (packageIdentity.Version);
 			return project.InstallPackageAsync (packageId, versionRange, context, null, CancellationToken.None);
+		}
+
+		Task<PackageSpec> GetPackageSpecsAsync ()
+		{
+			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+			return GetPackageSpecsAsync (dependencyGraphCacheContext);
+		}
+
+		async Task<PackageSpec> GetPackageSpecsAsync (DependencyGraphCacheContext cacheContext)
+		{
+			var specs = await project.GetPackageSpecsAsync (cacheContext);
+			return specs.Single ();
 		}
 
 		[Test]
@@ -147,6 +162,53 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (project.IsSaved);
 			Assert.AreEqual ("Package 'NUnit.2.6.1' already exists in project 'MyProject'", context.LastMessageLogged);
 			Assert.AreEqual (MessageLevel.Warning, context.LastLogLevel);
+		}
+
+		[Test]
+		public async Task GetAssetsFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
+
+			string assetsFilePath = await project.GetAssetsFilePathAsync ();
+
+			Assert.AreEqual (expectedAssetsFilePath, assetsFilePath);
+		}
+
+		[Test]
+		public async Task GetPackageSpecsAsync_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
+
+			PackageSpec spec = await GetPackageSpecsAsync ();
+
+			Assert.AreEqual (expectedAssetsFilePath, spec.FilePath);
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
+			Assert.AreEqual (RestoreOutputType.NETCore, spec.RestoreMetadata.OutputType);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
+			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
+			Assert.AreEqual (dotNetProject.BaseIntermediateOutputPath.ToString (), spec.RestoreMetadata.OutputPath);
+			Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache[dotNetProject.FileName.ToString ()]);
+
+			// Cannot currently test this - needs the target framework to be available in the 
+			// MSBuild.EvaluatedProperties
+			//Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+		}
+
+		[Test]
+		public async Task GetPackageSpecsAsync_PackageSpecExistsInCache_CachedPackageSpecReturned ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			var cachedSpec = new PackageSpec ();
+			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+			dependencyGraphCacheContext.PackageSpecCache.Add (dotNetProject.FileName.ToString (), cachedSpec);
+
+			PackageSpec spec = await GetPackageSpecsAsync (dependencyGraphCacheContext);
+
+			Assert.AreSame (cachedSpec, spec);
 		}
 	}
 }
