@@ -19,15 +19,17 @@ open CompilerArguments
 type ConsoleKind = Internal | External
 
 type ScriptBuildTarget(scriptPath, consoleKind, source) =
+    let (/) a b = Path.Combine(a,b)
     let runtimeFolder =
         match IdeApp.Preferences.DefaultTargetRuntime.Value with
         | :? MonoTargetRuntime as monoRuntime -> monoRuntime.MonoDirectory
         | :? MsNetTargetRuntime as dotnetRuntime -> dotnetRuntime.RootDirectory |> string
         | _ -> failwith "Unknown runtime"
 
-    let tempPath = Path.GetTempPath()
+    let tempPath = Path.GetTempPath() / Path.GetFileNameWithoutExtension (scriptPath |> string)
+
     let scriptFileName = Path.GetFileName (scriptPath |> string)
-    let exeName = Path.Combine(tempPath, Path.ChangeExtension (scriptFileName, ".exe"))
+    let exeName = tempPath / Path.ChangeExtension (scriptFileName, ".exe")
 
     let getSourceReferences() =
         async {
@@ -51,6 +53,9 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
     interface IBuildTarget with
         member x.Build(monitor, _config, _buildReferencedTargets, _operationContext) =
             async {
+                if not (Directory.Exists tempPath) then
+                    Directory.CreateDirectory tempPath |> ignore
+
                 let! references = getSourceReferences()
                 references 
                 |> List.iter(fun r -> // copy dll + pdb, mdb, optdata, sigdata etc
@@ -71,8 +76,11 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                       if not Platform.IsWindows then
                           yield "--noframework"
                           yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
+                      else
+                          yield "--platform:x86" // Our debugger only works for 32bit apps on Windows
                       yield wrapFile (scriptPath |> string)
                       yield sprintf "--out:%s" (wrapFile exeName) ]
+
                 return CompilerService.compile runtime framework monitor tempPath args
             } |> Async.StartAsTask
 
