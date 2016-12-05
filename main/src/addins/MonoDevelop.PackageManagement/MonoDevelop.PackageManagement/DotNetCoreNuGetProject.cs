@@ -255,13 +255,8 @@ namespace MonoDevelop.PackageManagement
 			INuGetProjectContext projectContext,
 			bool throwOnFailure)
 		{
-			string message = GettextCatalog.GetString (
-				"WARNING: {0} Package contains init.ps1 PowerShell script '{1}' which will not be run.",
-				identity.Id,
-				packageInstallPath);
-
-			projectContext.Log (MessageLevel.Info, message);
-
+			// Not supported. This gets called for every NuGet package
+			// even if they do not have an init.ps1 so do not report this.
 			return Task.FromResult (false);
 		}
 
