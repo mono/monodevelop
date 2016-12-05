@@ -382,7 +382,8 @@ namespace MonoDevelop.Autotools
 				return;
 			}
 
-			OperationConsole console = context.ConsoleFactory.CreateConsole ();
+			OperationConsole console = context.ConsoleFactory.CreateConsole (
+				OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (Project.Name));
 			monitor.BeginTask (GettextCatalog.GetString ("Executing {0}", Project.Name), 1);
 			try
 			{

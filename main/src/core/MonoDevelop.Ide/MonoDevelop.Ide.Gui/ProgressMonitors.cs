@@ -78,9 +78,9 @@ namespace MonoDevelop.Ide.Gui
 			return mon;
 		}
 		
-		public OutputProgressMonitor GetRunProgressMonitor ()
+		public OutputProgressMonitor GetRunProgressMonitor (string titleSuffix = null)
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true, titleSuffix: titleSuffix);
 		}
 		
 		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 			{
-				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true)).Console;
+				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true, titleSuffix:options.Title)).Console;
 			}
 		}
 
@@ -142,8 +142,12 @@ namespace MonoDevelop.Ide.Gui
 			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse, visible);
 		}
 		
-		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
+		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true, string titleSuffix = null)
 		{
+			if (!string.IsNullOrEmpty (titleSuffix)) {
+				title += " - " + titleSuffix;
+				id += titleSuffix;//We need different Id to prevent sufixes like "Application Output - MyProject (2)" where (2) is index 2 of AppOutput Id
+			}
 			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = visible;
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
