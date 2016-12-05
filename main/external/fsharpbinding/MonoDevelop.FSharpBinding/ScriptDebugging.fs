@@ -76,6 +76,9 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                       if not Platform.IsWindows then
                           yield "--noframework"
                           yield sprintf "-r:%s/4.5-api/System.dll" runtimeFolder
+                          yield sprintf "-r:%s/4.5-api/System.Core.dll" runtimeFolder
+                          yield sprintf "-r:%s/4.5-api/System.Drawing.dll" runtimeFolder
+                          yield "--define:MONO"
                       else
                           yield "--platform:x86" // Our debugger only works for 32bit apps on Windows
                       yield wrapFile (scriptPath |> string)
@@ -92,6 +95,7 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
         member x.Execute(monitor, context, _configSelector) =
             async {
                 let command = Runtime.ProcessService.CreateCommand exeName
+                command.WorkingDirectory <- Path.GetDirectoryName (scriptPath |> string)
                 let tokenSource = new CancellationTokenSource()
                 let token = tokenSource.Token
 
