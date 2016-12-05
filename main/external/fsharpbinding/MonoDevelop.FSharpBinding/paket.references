@@ -4,3 +4,4 @@ FSharp.Core
 FSharp.Compiler.CodeDom
 Mono.Cecil
 Newtonsoft.Json
+System.Reactive.Linq

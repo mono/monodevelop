@@ -19,6 +19,7 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
     member x.ParsedLocation = location
 
     member val UnusedCodeRanges : Range.range list option = None with get, set
+    member val HasErrors = false with get, set
 
 [<AutoOpen>]
 module DocumentContextExt =
