@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 			packageSpec.Version = GetVersion (project);
 
 			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
+			AddProjectReferences (packageSpec, project);
 			AddPackageReferences (packageSpec, project);
 
 			return packageSpec;
@@ -113,6 +114,67 @@ namespace MonoDevelop.PackageManagement
 			return new string[0];
 		}
 
+		static void AddProjectReferences (PackageSpec spec, IDotNetProject project)
+		{
+			// Add groups for each spec framework
+			var frameworkGroups = new Dictionary<NuGetFramework, List<ProjectRestoreReference>> ();
+			foreach (var framework in spec.TargetFrameworks.Select (e => e.FrameworkName).Distinct ()) {
+				frameworkGroups.Add (framework, new List<ProjectRestoreReference> ());
+			}
+
+			var flatReferences = project.References.Where (projectReference => projectReference.ReferenceType == ReferenceType.Project)
+				.Select (projectReference => GetProjectRestoreReference (projectReference, project));
+
+			// Add project paths
+			foreach (var frameworkPair in flatReferences) {
+				// If no frameworks were given, apply to all
+				var addToFrameworks = frameworkPair.Item1.Count == 0
+					? frameworkGroups.Keys.ToList ()
+					: frameworkPair.Item1;
+
+				foreach (var framework in addToFrameworks) {
+					List<ProjectRestoreReference> references;
+					if (frameworkGroups.TryGetValue (framework, out references)) {
+						// Ensure unique
+						if (!references
+							.Any(e => e.ProjectUniqueName
+								.Equals (frameworkPair.Item2.ProjectUniqueName, StringComparison.OrdinalIgnoreCase))) {
+							references.Add (frameworkPair.Item2);
+						}
+					}
+				}
+			}
+
+			// Add groups to spec
+			foreach (var frameworkPair in frameworkGroups) {
+				spec.RestoreMetadata.TargetFrameworks.Add (new ProjectRestoreMetadataFrameworkInfo (frameworkPair.Key) {
+					ProjectReferences = frameworkPair.Value
+				});
+			}
+		}
+
+		static Tuple<List<NuGetFramework>, ProjectRestoreReference> GetProjectRestoreReference (
+			ProjectReference item,
+			IDotNetProject project)
+		{
+			var frameworks = GetFrameworks (project).ToList ();
+
+			var referencedProject = project.ParentSolution.ResolveProject (item);
+
+			var reference = new ProjectRestoreReference () {
+				ProjectPath = referencedProject.FileName,
+				ProjectUniqueName = referencedProject.FileName,
+			};
+
+			ApplyIncludeFlags (
+				reference,
+				item.Metadata.GetValue ("IncludeAssets"),
+				item.Metadata.GetValue ("ExcludeAssets"),
+				item.Metadata.GetValue ("PrivateAssets"));
+
+			return new Tuple<List<NuGetFramework>, ProjectRestoreReference> (frameworks, reference);
+		}
+
 		static void AddPackageReferences (PackageSpec packageSpec, IDotNetProject project)
 		{
 			foreach (var packageReference in project.GetPackageReferences ()) {
@@ -155,6 +217,17 @@ namespace MonoDevelop.PackageManagement
 
 			dependency.IncludeType = includeFlags & ~excludeFlags;
 			dependency.SuppressParent = GetIncludeFlags (packageReference.Metadata.GetValue ("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent);
+		}
+
+		static void ApplyIncludeFlags (
+			ProjectRestoreReference dependency,
+			string includeAssets,
+			string excludeAssets,
+			string privateAssets)
+		{
+			dependency.IncludeAssets = GetIncludeFlags (includeAssets, LibraryIncludeFlags.All);
+			dependency.ExcludeAssets = GetIncludeFlags (excludeAssets, LibraryIncludeFlags.None);
+			dependency.PrivateAssets = GetIncludeFlags (privateAssets, LibraryIncludeFlagUtils.DefaultSuppressParent);
 		}
 
 		static LibraryIncludeFlags GetIncludeFlags (string value, LibraryIncludeFlags defaultValue)

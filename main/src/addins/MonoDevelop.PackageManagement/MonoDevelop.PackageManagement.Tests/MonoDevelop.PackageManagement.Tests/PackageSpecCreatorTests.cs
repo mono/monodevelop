@@ -26,6 +26,7 @@
 
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 using NUnit.Framework;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
@@ -37,10 +38,13 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		PackageSpec spec;
 		FakeDotNetProject project;
+		FakeSolution solution;
 
 		void CreateProject (string name, string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
+			solution = new FakeSolution ();
 			project = new FakeDotNetProject (fileName.ToNativePath ());
+			project.ParentSolution = solution;
 			project.Name = name;
 		}
 
@@ -58,6 +62,20 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var packageReference = new TestableProjectPackageReference (id, version);
 			project.PackageReferences.Add (packageReference);
+		}
+
+		void AddProjectReference (string projectName, string fileName)
+		{
+			fileName = fileName.ToNativePath ();
+			var otherProject = new DummyDotNetProject ();
+			otherProject.Name = projectName;
+			otherProject.FileName = fileName;
+			var projectReference = ProjectReference.CreateProjectReference (otherProject);
+			project.References.Add (projectReference);
+
+			var fakeOtherProject = new FakeDotNetProject (fileName);
+			fakeOtherProject.Name = projectName;
+			solution.Projects.Add (fakeOtherProject);
 		}
 
 		[Test]
@@ -104,6 +122,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("[9.0.1, )", dependency.LibraryRange.VersionRange.ToString ());
 			Assert.AreEqual (LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
 			Assert.AreEqual ("Newtonsoft.Json", dependency.LibraryRange.Name);
+		}
+
+		[Test]
+		public void CreatePackageSpec_OneProjectReference_ProjectReferencedAddedToPackageSpec ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string referencedProjectFileName = @"d:\projects\MyProject\Lib\Lib.csproj".ToNativePath ();
+			AddProjectReference ("Lib", referencedProjectFileName);
+
+			CreatePackageSpec ();
+
+			var targetFramework = spec.RestoreMetadata.TargetFrameworks.Single ();
+			var projectReference = targetFramework.ProjectReferences.Single ();
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (referencedProjectFileName, projectReference.ProjectPath);
+			Assert.AreEqual (referencedProjectFileName, projectReference.ProjectUniqueName);
+			Assert.AreEqual (LibraryIncludeFlags.All, projectReference.IncludeAssets);
+			Assert.AreEqual (LibraryIncludeFlags.None, projectReference.ExcludeAssets);
+			Assert.AreEqual (
+				LibraryIncludeFlags.Analyzers | LibraryIncludeFlags.Build | LibraryIncludeFlags.ContentFiles,
+				projectReference.PrivateAssets);
 		}
 	}
 }

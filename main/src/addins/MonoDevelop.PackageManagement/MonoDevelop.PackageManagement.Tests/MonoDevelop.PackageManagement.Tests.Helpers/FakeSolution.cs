@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -78,6 +79,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool Equals (ISolution solution)
 		{
 			return this == solution;
+		}
+
+		public IDotNetProject ResolveProject (ProjectReference projectReference)
+		{
+			return Projects.FirstOrDefault (project => project.Name == projectReference.Include);
 		}
 	}
 }
