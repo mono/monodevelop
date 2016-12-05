@@ -1151,7 +1151,7 @@ namespace MonoDevelop.Debugger
 					strval = string.Empty;
 				}
 				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
-			} else if (val.IsError) {
+			} else if (val.IsError || val.IsNotSupported) {
 				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
@@ -1159,7 +1159,7 @@ namespace MonoDevelop.Debugger
 					strval = strval.Substring (0, i);
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueErrorText);
 				canEdit = false;
-			} else if (val.IsNotSupported) {
+			} else if (val.IsImplicitNotSupported) {
 				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				if (val.CanRefresh)
