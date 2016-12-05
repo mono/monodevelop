@@ -54,10 +54,12 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
                 let! references = getSourceReferences()
                 references 
                 |> List.iter(fun r -> // copy dll + pdb, mdb, optdata, sigdata etc
-                                      let wildcardPath = Path.ChangeExtension(r, "*")
-                                      let files = Directory.GetFiles wildcardPath
+                                      let wildcardPath = Path.ChangeExtension(Path.GetFileName r, "*")
+                                      let path = Path.GetDirectoryName r
+                                      LoggingService.logDebug "Getting files in %s %s" path wildcardPath
+                                      let files = Directory.GetFiles(path, wildcardPath)
                                       files |> Seq.iter(fun file ->   
-                                          let destination = tempPath + Path.GetFileName(file)
+                                          let destination = Path.Combine(tempPath, Path.GetFileName file)
                                           File.Copy(file, destination, true)))
 
                 let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
