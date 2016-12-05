@@ -26,19 +26,28 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	class RestoreNuGetPackagesInDotNetCoreProject : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
-		MonoDevelopDotNetCorePackageRestorer packageRestorer;
+		MonoDevelopBuildIntegratedRestorer packageRestorer;
+		BuildIntegratedNuGetProject nugetProject;
+		DotNetProject project;
 
 		public RestoreNuGetPackagesInDotNetCoreProject (DotNetProject project)
 		{
+			this.project = project;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-			packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
+
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project)) as BuildIntegratedNuGetProject;
+
+			packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 		}
 
 		public bool ReloadProject { get; set; }
@@ -63,10 +72,24 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			packageRestorer.ReloadProject = ReloadProject;
-			await packageRestorer.RestorePackages (cancellationToken);
+			await packageRestorer.RestorePackages (nugetProject, cancellationToken);
+
+			if (ReloadProject) {
+				project.NeedsReload = true;
+				FileService.NotifyFileChanged (project.FileName);
+			} else {
+				RefreshProjectReferences (project);
+			}
 
 			packageManagementEvents.OnPackagesRestored ();
+		}
+
+		static void RefreshProjectReferences (DotNetProject project)
+		{
+			Runtime.RunInMainThread (() => {
+				project.ReloadProjectBuilder ();
+				project.NotifyModified ("References");
+			});
 		}
 	}
 }
