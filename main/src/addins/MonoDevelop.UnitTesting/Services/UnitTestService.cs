@@ -141,7 +141,7 @@ namespace MonoDevelop.UnitTesting
 
 					await RefreshTests (cs.Token);
 
-					tests = test_names.Select ((fullName) => SearchTest (fullName)).Where ((t) => t != null);
+					tests = test_names.Select ((fullName) => SearchTest (fullName)).Where ((t) => t != null).ToList ();
 
 					if (tests.Any ())
 						await RunTests (tests, context, false, checkCurrentRunOperation, cs);
