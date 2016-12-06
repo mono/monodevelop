@@ -2138,7 +2138,6 @@ namespace MonoDevelop.SourceEditor
 				if (ClipbardRingUpdated != null)
 					ClipbardRingUpdated (null, EventArgs.Empty);
 			};
-			SyntaxModeLoader.Init ();
 		}
 		
 		public void UpdateClipboardRing (object sender, EventArgs e)

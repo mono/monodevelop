@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[NodeAttribute("file", "Name of the file where the template is stored.")]
 		string file;
 
-		public string Name { get { return file; } }
+		public string Name { get { return file ?? resource; } }
 
 		public TemplateCodon ()
 		{

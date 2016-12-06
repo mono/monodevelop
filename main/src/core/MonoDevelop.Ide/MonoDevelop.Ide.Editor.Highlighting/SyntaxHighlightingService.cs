@@ -452,7 +452,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			PrepareMatches ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Bundles", OnSyntaxModeExtensionChanged);
 		}
+
+		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
+		{
+			var codon = (TemplateCodon)args.ExtensionNode;
+
+			if (args.Change == ExtensionChange.Add) {
+				try {
+					LoadFile (builtInBundle, codon.Name, () => codon.Open (), () => codon);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading custom editor extension file.", e);
+				}
+			}
+		}
+
 
 		public static HslColor GetColor (EditorTheme style, string key)
 		{
