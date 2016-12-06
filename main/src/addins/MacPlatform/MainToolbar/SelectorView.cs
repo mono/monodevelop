@@ -273,15 +273,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					menuItem.Enabled = true;
 				} else {
 					menuItem.Activated += (o2, e2) => {
-						var old = ActiveRuntime;
-
 						ActiveRuntime = runtime;
-						var ea = new HandledEventArgs ();
-						if (RuntimeChanged != null)
-							RuntimeChanged (o2, ea);
-
-						if (ea.Handled)
-							ActiveRuntime = old;
 					};
 				}
 				menu.AddItem (menuItem);
@@ -576,10 +568,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					if (activeRuntime == value)
 						return;
+					var old = ActiveRuntime;
+
 					activeRuntime = value;
+					var ea = new HandledEventArgs ();
+					if (RuntimeChanged != null)
+						RuntimeChanged (this, ea);
+					
+					if (ea.Handled) {
+						activeRuntime = old;
+
+						// Do not update the runtime if we don't change it.
+						return;
+					}
+
 					using (var mutableModel = value.GetMutableModel ()) {
-						if (RuntimeChanged != null)
-							RuntimeChanged (this, new HandledEventArgs ());
 						UpdatePathText (RuntimeIdx, mutableModel.FullDisplayString);
 						OnSizeChanged ();
 					}
