@@ -77,10 +77,15 @@ namespace MonoDevelop.Ide.Gui
 			mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
 			return mon;
 		}
-		
-		public OutputProgressMonitor GetRunProgressMonitor (string titleSuffix = null)
+
+		public OutputProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true, titleSuffix: titleSuffix);
+			return GetRunProgressMonitor (null);
+		}
+		
+		public OutputProgressMonitor GetRunProgressMonitor (string titleSuffix)
+		{
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, false, true, titleSuffix);
 		}
 		
 		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
@@ -141,8 +146,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse, visible);
 		}
+
+		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
+		{
+			return GetOutputProgressMonitor (id, title, icon, bringToFront, allowMonitorReuse, null, visible);
+		}
 		
-		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true, string titleSuffix = null)
+		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, string titleSuffix, bool visible = true)
 		{
 			if (!string.IsNullOrEmpty (titleSuffix)) {
 				title += " - " + titleSuffix;
