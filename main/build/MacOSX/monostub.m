@@ -287,7 +287,7 @@ int main (int argc, char **argv)
   char **extra_argv;
   int extra_argc;
 #if USE_SIMPLE_PATH
-  exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: @SIMPLE_PATH];
+  exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: SIMPLE_PATH];
 #else
   NSString *exeName;
 	const char *basename;
