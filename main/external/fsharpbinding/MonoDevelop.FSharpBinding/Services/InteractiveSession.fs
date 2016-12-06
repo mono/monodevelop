@@ -114,8 +114,6 @@ type InteractiveSession() =
                         tooltipReceivedEvent.Trigger tooltip
                     | ParameterHints hints ->
                         parameterHintReceivedEvent.Trigger hints
-                    | Image image ->
-                        imageReceivedEvent.Trigger image
                     | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
                     
                 with 
