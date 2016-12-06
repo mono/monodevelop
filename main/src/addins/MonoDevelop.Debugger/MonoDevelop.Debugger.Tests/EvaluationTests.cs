@@ -381,7 +381,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -393,7 +393,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -405,7 +405,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -417,7 +417,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -429,7 +429,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -441,7 +441,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -453,7 +453,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -465,7 +465,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -477,7 +477,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -489,7 +489,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -503,7 +503,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -515,7 +515,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -627,7 +627,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -639,7 +639,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -651,7 +651,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -663,7 +663,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -681,7 +681,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -692,7 +692,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -703,7 +703,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -714,7 +714,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -745,7 +745,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -757,7 +757,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -769,7 +769,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -780,7 +780,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -791,7 +791,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -804,7 +804,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -937,7 +937,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -951,7 +951,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -962,7 +962,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -986,10 +986,10 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (richChildren [2].IsNotSupported);
+				Assert.IsTrue (richChildren [2].IsImplicitNotSupported);
 				richChildren [2].Refresh (options);
 				richChildren [2] = richChildren [2].Sync ();
-				Assert.IsTrue (richChildren [3].IsNotSupported);
+				Assert.IsTrue (richChildren [3].IsImplicitNotSupported);
 				richChildren [3].Refresh (options);
 				richChildren [3] = richChildren [3].Sync ();
 			}
@@ -1224,7 +1224,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1236,7 +1236,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1248,7 +1248,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1260,7 +1260,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1481,7 +1481,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1490,7 +1490,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual (type, val.TypeName);
 
 			val = Eval (variable);
-			if (!AllowTargetInvokes && val.IsNotSupported) {
+			if (!AllowTargetInvokes && val.IsImplicitNotSupported) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1600,7 +1600,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1874,7 +1874,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1885,7 +1885,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1896,7 +1896,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1937,7 +1937,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1949,7 +1949,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1961,7 +1961,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1977,7 +1977,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -1989,7 +1989,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2001,7 +2001,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2016,7 +2016,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2028,7 +2028,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2040,7 +2040,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2056,7 +2056,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2068,7 +2068,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2080,7 +2080,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2092,7 +2092,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2104,7 +2104,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2116,7 +2116,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2128,7 +2128,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2140,7 +2140,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2152,7 +2152,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2164,7 +2164,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2177,7 +2177,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue(val.IsNotSupported);
+				Assert.IsTrue(val.IsImplicitNotSupported);
 				val.Refresh(options);
 				val = val.Sync();
 			}
@@ -2192,7 +2192,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue(val.IsNotSupported);
+				Assert.IsTrue(val.IsImplicitNotSupported);
 				val.Refresh(options);
 				val = val.Sync();
 			}
@@ -2209,7 +2209,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue(val.IsNotSupported);
+				Assert.IsTrue(val.IsImplicitNotSupported);
 				val.Refresh(options);
 				val = val.Sync();
 			}
@@ -2221,7 +2221,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2237,7 +2237,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2249,7 +2249,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2373,7 +2373,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -2385,7 +2385,7 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
+				Assert.IsTrue (val.IsImplicitNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
