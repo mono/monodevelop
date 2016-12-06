@@ -80,12 +80,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public OutputProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, false, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.PadExecute, false, true);
 		}
 		
 		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.RunProgramIcon, bringToFront, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.PadExecute, bringToFront, true);
 		}
 		
 		public ProgressMonitor GetLoadProgressMonitor (bool lockGui)
@@ -291,7 +291,8 @@ namespace MonoDevelop.Ide.Gui
 			lock (searchMonitors) {
 				searchMonitors.Add (pad);
 
-				if (searchMonitors.Count > 1) {					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
+				if (searchMonitors.Count > 1) {
+					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
 					var searchMonitorsCopy = searchMonitors;
 					// Additional search pads will be destroyed when hidden
 					pad.Window.PadHidden += delegate {

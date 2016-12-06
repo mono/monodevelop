@@ -60,7 +60,12 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = (PackageManagementEvents)PackageManagementServices.PackageManagementEvents;
 
 			string path = SettingsUtility.GetGlobalPackagesFolder (settings);
-			packagePathResolver = new VersionFolderPathResolver (path, normalizePackageId: false);
+			packagePathResolver = new VersionFolderPathResolver (path);
+		}
+
+		public Task SaveProject ()
+		{
+			return dotNetProject.SaveAsync ();
 		}
 
 		public DotNetProjectProxy Project {

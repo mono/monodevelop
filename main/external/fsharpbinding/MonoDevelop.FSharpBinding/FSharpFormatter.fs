@@ -1,13 +1,11 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open System.Diagnostics
 open MonoDevelop.Core
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide
 open MonoDevelop.Projects.Policies
 open MonoDevelop.Ide.CodeFormatting
-open Mono.TextEditor
 open Fantomas
 open Fantomas.FormatConfig
 open Microsoft.FSharp.Compiler

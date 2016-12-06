@@ -130,6 +130,8 @@ namespace MonoDevelop.Debugger
 		
 		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
+			if (DebuggingService.IsDebugging)
+				return;
 			tree.ResetChangeTracking ();
 			tree.ClearAll ();
 			lastFrame = null;

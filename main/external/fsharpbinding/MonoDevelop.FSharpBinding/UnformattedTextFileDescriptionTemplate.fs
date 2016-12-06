@@ -9,7 +9,6 @@ open MonoDevelop.Projects
 open MonoDevelop.Ide.StandardHeader
 open System.Text
 open MonoDevelop.Ide.Gui.Content
-open ExtCore
 
 type UnformattedTextFileDescriptionTemplate() =
     inherit TextFileDescriptionTemplate()

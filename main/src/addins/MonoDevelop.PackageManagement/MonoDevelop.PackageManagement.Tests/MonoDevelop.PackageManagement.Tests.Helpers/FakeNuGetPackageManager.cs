@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;

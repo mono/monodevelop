@@ -189,12 +189,19 @@ namespace MonoDevelop.Debugger
 				}
 				set {
 					Uri uri;
-					if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
-						Underline = Pango.Underline.Single;
-						Foreground = Ide.Gui.Styles.LinkForegroundColor.ToHexString (false);
-					} else {
+
+					try {
+						if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
+							Underline = Pango.Underline.Single;
+							Foreground = Ide.Gui.Styles.LinkForegroundColor.ToHexString (false);
+						} else {
+							Underline = Pango.Underline.None;
+						}
+					} catch (Exception) {
+						// MONO BUG: Uri.TryCreate() throws when unicode characters are encountered. See bug #47364
 						Underline = Pango.Underline.None;
 					}
+
 					Text = value;
 				}
 			}
@@ -1151,7 +1158,7 @@ namespace MonoDevelop.Debugger
 					strval = string.Empty;
 				}
 				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
-			} else if (val.IsError) {
+			} else if (val.IsError || val.IsNotSupported) {
 				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
@@ -1159,7 +1166,7 @@ namespace MonoDevelop.Debugger
 					strval = strval.Substring (0, i);
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueErrorText);
 				canEdit = false;
-			} else if (val.IsNotSupported) {
+			} else if (val.IsImplicitNotSupported) {
 				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
 				valueColor = Ide.Gui.Styles.ColorGetHex (Styles.ObjectValueTreeValueDisabledText);
 				if (val.CanRefresh)

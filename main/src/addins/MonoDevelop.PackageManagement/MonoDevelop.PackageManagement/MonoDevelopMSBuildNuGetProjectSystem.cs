@@ -110,6 +110,11 @@ namespace MonoDevelop.PackageManagement
 			return NuGetFramework.Parse (projectTargetFramework.TargetFrameworkName.FullName);
 		}
 
+		public Task SaveProject ()
+		{
+			return project.SaveAsync ();
+		}
+
 		public void AddBindingRedirects ()
 		{
 		}
@@ -182,7 +187,7 @@ namespace MonoDevelop.PackageManagement
 			DebugLogFormat("Added file '{0}' to project '{1}'.", fileName, projectName);
 		}
 
-		public void AddFrameworkReference (string name)
+		public void AddFrameworkReference (string name, string packageId)
 		{
 			GuiSyncDispatch (async () => {
 				ProjectReference assemblyReference = CreateGacReference (name);

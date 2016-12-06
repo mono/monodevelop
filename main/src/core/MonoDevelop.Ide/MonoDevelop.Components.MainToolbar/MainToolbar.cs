@@ -518,9 +518,6 @@ namespace MonoDevelop.Components.MainToolbar
 				runtimeModel = value;
 				runtimeStore.Clear ();
 				foreach (var item in value) {
-					if (item.HasParent)
-						continue;
-
 					var iter = runtimeStore.AppendValues (item);
 					foreach (var subitem in item.Children)
 						runtimeStore.AppendValues (iter, subitem);

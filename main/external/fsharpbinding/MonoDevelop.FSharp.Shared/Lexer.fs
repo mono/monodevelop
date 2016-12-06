@@ -2,7 +2,6 @@
 
 open System.Diagnostics
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open ExtCore.Control
 
 type SymbolKind =
     | Ident
@@ -47,7 +46,7 @@ module Lexer =
                 | Some _, newLexState ->
                     loop lineTokenizer newLexState
 
-            let sourceTokenizer = SourceTokenizer(defines, "/tmp.fsx")
+            let sourceTokenizer = SourceTokenizer(defines, None)
             let lines = String.getLines source
             let mutable lexState = 0L
             for line in lines do
@@ -84,7 +83,7 @@ module Lexer =
         let defines =
             args |> Seq.choose (fun s -> if s.StartsWith "--define:" then Some s.[9..] else None)
                  |> Seq.toList
-        let sourceTokenizer = SourceTokenizer(defines, "/tmp.fsx")
+        let sourceTokenizer = SourceTokenizer(defines, None)
         let lineTokenizer = sourceTokenizer.CreateLineTokenizer lineStr
         let rec loop lexState acc =
             match lineTokenizer.ScanToken lexState with

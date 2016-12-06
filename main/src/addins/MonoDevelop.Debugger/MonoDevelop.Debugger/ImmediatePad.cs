@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger
 	{
 		static readonly object mutex = new object();
 		DebuggerConsoleView view;
-		readonly List<uint> timersList = new List<uint>();
+		readonly Dictionary<DebuggerSession, List<uint>> timersList = new Dictionary<DebuggerSession, List<uint>> ();
 		
 		protected override void Initialize (IPadWindow container)
 		{
@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger
 
 				var val = frame.GetExpressionValue (expression, ops);
 				if (val.IsEvaluating) {
-					WaitForCompleted (val);
+					WaitForCompleted (val, frame.DebuggerSession);
 					return;
 				}
 
@@ -195,14 +195,15 @@ namespace MonoDevelop.Debugger
 			view.Buffer.Insert (ref start, text + "\n");
 		}
 
-		void WaitForCompleted (ObjectValue val)
+		void WaitForCompleted (ObjectValue val, DebuggerSession session)
 		{
 			var mark = view.Buffer.CreateMark (null, view.InputLineEnd, true);
 			var iteration = 0;
 			uint timerId = 0;
 
 			timerId = GLib.Timeout.Add (100, () => {
-				if (!timersList.Contains (timerId)) {
+				List<uint> list;
+				if (!timersList.TryGetValue (session, out list) || !list.Contains (timerId)) {
 					SetLineText (GettextCatalog.GetString ("Debugging stopped"), mark);
 					FinishPrinting ();
 					return false;
@@ -210,7 +211,7 @@ namespace MonoDevelop.Debugger
 				if (!val.IsEvaluating) {
 					if (iteration >= 5)
 						DeleteLineAtMark (mark);
-					timersList.Remove (timerId);
+					list.Remove (timerId);
 
 					PrintValue (val);
 
@@ -226,7 +227,10 @@ namespace MonoDevelop.Debugger
 
 				return true;
 			});
-			timersList.Add (timerId);
+			List<uint> tList;
+			if (!timersList.TryGetValue (session, out tList))
+				timersList [session] = tList = new List<uint> ();
+			tList.Add (timerId);
 		}
 
 		void WaitChildForCompleted (ObjectValue val, IDictionary<ObjectValue, bool> evaluatingList, bool hasMore)
@@ -279,18 +283,18 @@ namespace MonoDevelop.Debugger
 
 		void DebuggerResumed (object sender, EventArgs e)
 		{
-			view.Editable = false;
+			view.Editable = DebuggingService.IsPaused;
 		}
 
 		void DebuggerPaused (object sender, EventArgs e)
 		{
-			view.Editable = true;
+			view.Editable = DebuggingService.IsPaused;
 		}
 
 		void DebuggerStopped (object sender, EventArgs e)
 		{
-			timersList.Clear ();
-			view.Editable = false;
+			timersList.Remove ((DebuggerSession)sender);
+			view.Editable = DebuggingService.IsPaused;
 		}
 	}
 }

@@ -173,24 +173,24 @@ namespace Mono.TextTemplating
 				pars.CompilerOptions = "/noconfig " + pars.CompilerOptions;
 			return settings.Provider.CompileAssemblyFromDom (pars, ccu);
 		}
-		
-		static HashSet<string> ProcessReferences (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings)
+
+		static string [] ProcessReferences (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings)
 		{
-			var resolved = new HashSet<string> ();
-			
+			var resolved = new Dictionary<string, string> ();
+
 			foreach (string assem in settings.Assemblies.Union (host.StandardAssemblyReferences)) {
-				if (resolved.Contains (assem))
+				if (resolved.Values.Contains (assem))
 					continue;
-				
+
 				string resolvedAssem = host.ResolveAssemblyReference (assem);
-				if (!string.IsNullOrEmpty (resolvedAssem)) {
-					resolved.Add (resolvedAssem);
+				if (!string.IsNullOrEmpty (resolvedAssem) && File.Exists (resolvedAssem)) {
+					resolved [AssemblyName.GetAssemblyName (resolvedAssem).FullName] = resolvedAssem;
 				} else {
 					pt.LogError ("Could not resolve assembly reference '" + assem + "'");
 					return null;
 				}
 			}
-			return resolved;
+			return resolved.Values.ToArray ();
 		}
 		
 		public static TemplateSettings GetSettings (ITextTemplatingEngineHost host, ParsedTemplate pt)

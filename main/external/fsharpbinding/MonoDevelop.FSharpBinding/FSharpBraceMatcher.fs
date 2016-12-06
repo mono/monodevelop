@@ -2,11 +2,9 @@
 
 open System
 open System.Threading.Tasks
-open MonoDevelop
 open MonoDevelop.Core.Text
 open MonoDevelop.Ide.Editor
 open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type FSharpBraceMatcher() =
     inherit AbstractBraceMatcher()

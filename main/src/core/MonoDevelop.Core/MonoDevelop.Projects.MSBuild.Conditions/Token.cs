@@ -28,6 +28,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics.Contracts;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 
@@ -57,6 +58,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			get { return position; }
 		}
 
+		[Pure]
 		public static string TypeAsString (TokenType tokenType)
 		{
 			switch (tokenType) {

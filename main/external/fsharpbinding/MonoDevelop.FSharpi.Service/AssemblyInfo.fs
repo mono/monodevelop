@@ -1,6 +1,5 @@
 ﻿namespace MonoDevelop.FSharpi.Service
 open System.Reflection
-open System.Runtime.CompilerServices
 
 [<assembly: AssemblyTitle("MonoDevelop.FSharpi.Service")>]
 [<assembly: AssemblyDescription("")>]

@@ -29,7 +29,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Configuration;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;

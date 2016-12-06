@@ -80,16 +80,16 @@
 	<Section id="Run" _label="Run">
 		<Section id="General" _label="Configurations">
 			<Condition id="ItemType" value="Project">
-<!--				<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>-->
 				<Panel id = "RunConfigurationsPanel" _label = "Run Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunConfigurationsPanel"/>
 			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<!--<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>-->
+				<Panel id = "SolutionRunConfigurationsPanel" _label = "Run Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionRunConfigurationsPanel" icon="md-prefs-startup-project" />
+			</Condition>
+			<Condition id="ItemType" value="SolutionItem">
+	<!--			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />-->
+			</Condition>
 		</Section>
-		<Condition id="ItemType" value="Solution">
-			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel" icon="md-prefs-startup-project" />
-		</Condition>
-		<Condition id="ItemType" value="SolutionItem">
-<!--			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />-->
-		</Condition>
 	</Section>
 	<Section id="SourceCode" _label="Source Code">
 		<Section id="DotNetNamingPolicies" _label=".NET Naming Policies" icon="md-prefs-dotnet-naming-policies">

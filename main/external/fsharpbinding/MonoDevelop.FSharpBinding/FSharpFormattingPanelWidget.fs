@@ -1,11 +1,8 @@
 ﻿namespace MonoDevelop.FSharp
 
-open System
 open Gtk
 open MonoDevelop.Core
-open MonoDevelop.Ide
 open MonoDevelop.Components.PropertyGrid
-open Mono.Unix
 
 // Handwritten GUI, feel free to edit
 

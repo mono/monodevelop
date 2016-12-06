@@ -39,13 +39,13 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageManagementWorkspace ()
 		{
-			if (IdeApp.IsInitialized) {
+			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 				IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 				IdeApp.Workspace.ItemAddedToSolution += SolutionItemAddedOrRemoved;
 				IdeApp.Workspace.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
 			} else {
-				LoggingService.LogError ("IdeApp not initialized when creating PackageManagementWorkspace.");
+				LoggingService.LogError ("IdeApp workspace is not available when creating PackageManagementWorkspace.");
 			}
 		}
 

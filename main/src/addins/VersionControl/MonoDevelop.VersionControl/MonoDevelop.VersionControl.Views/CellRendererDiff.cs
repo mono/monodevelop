@@ -247,9 +247,10 @@ namespace MonoDevelop.VersionControl.Views
 						string s = ProcessLine (lines [n]);
 						if (n > block.FirstLine)
 							sb.Append ('\n');
-						if (block.Type != BlockType.Info && s.Length > 0)
+						if ((block.Type == BlockType.Added || block.Type == BlockType.Removed) && s.Length > 0) {
+							sb.Append (' ');
 							sb.Append (s, 1, s.Length - 1);
-						else
+						} else
 							sb.Append (s);
 					}
 					

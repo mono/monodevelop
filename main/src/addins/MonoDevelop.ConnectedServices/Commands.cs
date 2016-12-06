@@ -22,5 +22,10 @@ namespace MonoDevelop.ConnectedServices
 		/// Removes the selected service from the project
 		/// </summary>
 		RemoveService,
+
+		/// <summary>
+		/// Used to send telemetry
+		/// </summary>
+		AddServiceTelemetry
 	}
 }

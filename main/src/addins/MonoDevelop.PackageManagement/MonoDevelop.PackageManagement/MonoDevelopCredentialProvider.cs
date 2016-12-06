@@ -32,6 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Web;
+using NuGet.Configuration;
 using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
@@ -42,21 +43,32 @@ namespace MonoDevelop.PackageManagement
 			get { return "MonoDevelop.PackageManagement.CredentialProvider"; }
 		}
 
-		public Task<CredentialResponse> Get (Uri uri, IWebProxy proxy, bool isProxyRequest, bool isRetry, bool nonInteractive, CancellationToken cancellationToken)
+		public Task<CredentialResponse> GetAsync (Uri uri, IWebProxy proxy, CredentialRequestType type, string message, bool isRetry, bool nonInteractive, CancellationToken cancellationToken)
 		{
 			var cp = WebRequestHelper.CredentialProvider;
 			if (cp == null)
 				return null;
 
-			var credentialType = isProxyRequest ? CredentialType.ProxyCredentials : CredentialType.RequestCredentials;
+			CredentialType credentialType = GetCredentialType (type);
 
 			return Task.Run (() => {
 				ICredentials credentials = cp.GetCredentials (uri, proxy, credentialType, isRetry);
 				if (credentials != null) {
-					return new CredentialResponse (credentials, CredentialStatus.Success);
+					return new CredentialResponse (credentials);
 				}
-				return new CredentialResponse (CredentialStatus.ProviderNotApplicable);
+				return new CredentialResponse (CredentialStatus.UserCanceled);
 			});
+		}
+
+		CredentialType GetCredentialType (CredentialRequestType type)
+		{
+			switch (type) {
+				case CredentialRequestType.Proxy:
+					return CredentialType.ProxyCredentials;
+
+				default:
+					return CredentialType.RequestCredentials;
+			}
 		}
 	}
 }

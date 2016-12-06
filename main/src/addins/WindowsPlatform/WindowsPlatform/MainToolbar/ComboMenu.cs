@@ -276,36 +276,68 @@ namespace WindowsPlatform.MainToolbar
 			};
 		}
 
+		IEnumerable<RuntimeMenuItem> Flatten(IEnumerable<RuntimeMenuItem> list)
+		{
+			foreach (var item in list)
+			{
+				yield return item;
+				foreach (var child in Flatten(item.Items.OfType<RuntimeMenuItem>()))
+					yield return child;
+			}
+		}
+
 		IRuntimeModel active;
 		public override IRuntimeModel Active
 		{
 			get
 			{
 				return active;
-            }
+			}
 
 			set
 			{
 				var menuItem = DropMenu.Items
-					.OfType<RuntimeMenuItem> ()
-					.FirstOrDefault (it => it.Model == value);
-
-				if (menuItem == null) {
-					active = null;
-					DropMenuText = "Default";
-					IsEnabled = false;
+					.OfType<RuntimeMenuItem>()
+					.FirstOrDefault(it => it.Model == value);
+				active = value;
+				if (menuItem == null)
+				{
+					if (value != null)
+					{
+						//We have MultipleTargets runtime
+						foreach (var item in value.Children)
+						{
+							menuItem = Flatten(DropMenu.Items
+											.OfType<RuntimeMenuItem>())
+											.FirstOrDefault(it => it.Model == item);
+							if (menuItem != null)
+							{
+								menuItem.Margin = new Thickness(0, 0, 0, 0);
+								menuItem.FontWeight = FontWeights.Normal;
+							}
+						}
+						using (var mutableModel = active.GetMutableModel())
+						{
+							DropMenuText = mutableModel.FullDisplayString;
+							IsEnabled = true;
+						}
+					}
+					else
+					{
+						DropMenuText = "Default";
+						IsEnabled = false;
+					}
 					return;
 				}
-
-				active = menuItem.Model;
-				menuItem.Margin = new Thickness (0, 0, 0, 0);
+				menuItem.Margin = new Thickness(0, 0, 0, 0);
 				menuItem.FontWeight = FontWeights.Normal;
 
-				using (var mutableModel = active.GetMutableModel ()) {
+				using (var mutableModel = active.GetMutableModel())
+				{
 					DropMenuText = mutableModel.FullDisplayString;
 					IsEnabled = true;
 				}
-            }
+			}
 		}
 
 		IEnumerable<IRuntimeModel> model;
@@ -336,38 +368,34 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
-		void OnMenuItemClicked (object sender, RoutedEventArgs args)
+		void OnMenuItemClicked(object sender, RoutedEventArgs args)
 		{
 			var item = (RuntimeMenuItem)sender;
-
-			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IRuntimeModel> (item.Model, Active));
+			args.Handled = true;
+			SelectionChanged?.Invoke(this, new SelectionChangedEventArgs<IRuntimeModel>(item.Model, Active));
 		}
 
-		void FillSource (ItemCollection source, IEnumerable<IRuntimeModel> model)
+		void FillSource(ItemCollection source, IEnumerable<IRuntimeModel> model)
 		{
-			foreach (var item in source.OfType<MenuItem> ()) {
-				item.Click -= OnMenuItemClicked;
-				foreach (var subItem in item.Items.OfType<MenuItem> ())
-					subItem.Click -= OnMenuItemClicked;
-			}
+			Flatten(source.OfType<RuntimeMenuItem>()).ToList().ForEach(mi => mi.Click -= OnMenuItemClicked);
+			source.Clear();
+			RecursiveFillChildren(source, model);
+		}
 
-			source.Clear ();
-
-			foreach (var item in model) {
-				if (item.HasParent)
-					continue;
-
+		void RecursiveFillChildren(ItemCollection source, IEnumerable<IRuntimeModel> children)
+		{
+			foreach (var item in children)
+			{
 				if (item.IsSeparator)
-					source.Add (new Separator { UseLayoutRounding = true, });
-				else {
-					var menuItem = new RuntimeMenuItem (item);
+				{
+					source.Add(new Separator { UseLayoutRounding = true, });
+				}
+				else
+				{
+					var menuItem = new RuntimeMenuItem(item);
 					menuItem.Click += OnMenuItemClicked;
-					foreach (var child in item.Children) {
-						var childMenuItem = new RuntimeMenuItem (item);
-						childMenuItem.Click += OnMenuItemClicked;
-						menuItem.Items.Add (childMenuItem);
-					}
-					source.Add (menuItem);
+					source.Add(menuItem);
+					RecursiveFillChildren(menuItem.Items, item.Children);
 				}
 			}
 		}

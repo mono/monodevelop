@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
