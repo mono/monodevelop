@@ -37,6 +37,20 @@ type InteractiveSession() =
             Some (JsonConvert.DeserializeObject<MonoDevelop.FSharp.Shared.ParameterTooltip list> payload)
         else
             None
+    let (|Image|_|) (command: string) =
+        if command.StartsWith("image ") then
+            let base64image = command.[6..command.Length - 1]
+            let bytes = Convert.FromBase64String base64image
+            use ms = new MemoryStream(bytes)
+            Some (Xwt.Drawing.Image.FromStream ms)
+        else
+            None
+
+    let (|ServerPrompt|_|) (command:string) =
+        if command = "SERVER-PROMPT>" then
+            Some ()
+        else
+            None
 
     let path = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
     let mutable waitingForResponse = false
@@ -74,6 +88,7 @@ type InteractiveSession() =
         stream.Flush()
 
     let completionsReceivedEvent = new Event<CompletionData list>()
+    let imageReceivedEvent = new Event<Xwt.Drawing.Image>()
     let tooltipReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ToolTips>()
     let parameterHintReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ParameterTooltip list>()
     do
@@ -81,11 +96,13 @@ type InteractiveSession() =
           |> Event.filter (fun de -> de.Data <> null)
           |> Event.add (fun de ->
               LoggingService.logDebug "Interactive: received %s" de.Data
-              if de.Data.Trim() = "SERVER-PROMPT>" then
-                  promptReady.Trigger()
-              elif de.Data.Trim() <> "" then
-                  if waitingForResponse then waitingForResponse <- false
-                  textReceived.Trigger(de.Data + "\n"))
+              match de.Data with
+              | Image image -> imageReceivedEvent.Trigger image
+              | ServerPrompt -> promptReady.Trigger()
+              | data ->
+                  if data.Trim() <> "" then
+                      if waitingForResponse then waitingForResponse <- false
+                      textReceived.Trigger(data + "\n"))
 
         fsiProcess.ErrorDataReceived.Subscribe(fun de -> 
             if not (String.isNullOrEmpty de.Data) then
@@ -97,6 +114,8 @@ type InteractiveSession() =
                         tooltipReceivedEvent.Trigger tooltip
                     | ParameterHints hints ->
                         parameterHintReceivedEvent.Trigger hints
+                    | Image image ->
+                        imageReceivedEvent.Trigger image
                     | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
                     
                 with 
@@ -112,7 +131,7 @@ type InteractiveSession() =
     member x.CompletionsReceived = completionsReceivedEvent.Publish
     member x.TooltipReceived = tooltipReceivedEvent.Publish
     member x.ParameterHintReceived = parameterHintReceivedEvent.Publish
-
+    member x.ImageReceived = imageReceivedEvent.Publish
     member x.StartReceiving() =
         fsiProcess.BeginOutputReadLine()
         fsiProcess.BeginErrorReadLine()
