@@ -559,7 +559,7 @@ namespace MonoDevelop.Projects
 
 				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
 					evaluatedCompileItemsTask.SetResult (new ProjectFile [0]);
-					return evaluatedCompileItemsTask.Task.Result;
+					return await evaluatedCompileItemsTask.Task;
 				}
 
 				var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
