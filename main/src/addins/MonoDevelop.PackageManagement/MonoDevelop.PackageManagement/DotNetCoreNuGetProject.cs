@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -285,6 +285,25 @@ namespace MonoDevelop.PackageManagement
 
 			DotNetProject.RefreshProjectBuilder ();
 			DotNetProject.NotifyModified ("References");
+		}
+
+		public bool ProjectRequiresReloadAfterRestore ()
+		{
+			if (NuGetMSBuildFilesExist ())
+				return false;
+
+			return true;
+		}
+
+		bool NuGetMSBuildFilesExist ()
+		{
+			var baseDirectory = project.BaseIntermediateOutputPath;
+			string projectFileName = project.FileName.FileName;
+			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
+			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
+
+			return File.Exists (propsFileName) ||
+				File.Exists (targetsFileName);
 		}
 	}
 }

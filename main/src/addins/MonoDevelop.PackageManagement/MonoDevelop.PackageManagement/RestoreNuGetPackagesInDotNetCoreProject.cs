@@ -74,13 +74,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			await packageRestorer.RestorePackages (nugetProject, cancellationToken);
 
-			if (ReloadProject) {
-				project.NeedsReload = true;
-				FileService.NotifyFileChanged (project.FileName);
-			} else {
-				RefreshProjectReferences (project);
-			}
-
 			packageManagementEvents.OnPackagesRestored ();
 		}
 
