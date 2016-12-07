@@ -196,6 +196,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return DisplayText == other.DisplayText;
 		}
+
+		const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
+		
+		public virtual bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			return commitChars.Contains (keyChar);
+		}
 	}
 
 	public class ISymbolCompletionData : CompletionData

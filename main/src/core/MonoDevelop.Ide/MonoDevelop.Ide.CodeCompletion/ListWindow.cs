@@ -310,7 +310,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var keyChar = descriptor.KeyChar;
 
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -319,8 +318,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			
-			if (commitChars.Contains (keyChar)) {
+			var data = DataProvider.GetCompletionData (SelectedItem);
+
+			if (data.IsCommitCharacter (keyChar, PartialWord)) {
 				bool hasMismatches;
 				var curword = PartialWord;
 				int match = FindMatchedEntry (curword, out hasMismatches);
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
 					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
 						match = -1;	 
-				}
+				}    
 				if (match >= 0 && !hasMismatches && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
