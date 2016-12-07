@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+			RestorePackagesConfigProjects = true;
 
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
 
@@ -82,6 +83,8 @@ namespace MonoDevelop.PackageManagement
 			return nugetProjects.OfType<BuildIntegratedNuGetProject> ();
 		}
 
+		public bool RestorePackagesConfigProjects { get; set; }
+
 		public void Execute ()
 		{
 			Execute (CancellationToken.None);
@@ -102,7 +105,7 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			if (restoreManager != null) {
+			if (restoreManager != null && RestorePackagesConfigProjects) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
 					await restoreManager.RestoreMissingPackagesInSolutionAsync (
 						solutionManager.SolutionDirectory,
