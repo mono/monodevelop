@@ -243,7 +243,7 @@
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
 		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
-		<Scheme id="VS14MAC" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
+		<Scheme id="VS14MAC" _name = "Visual Studio (Mixed)" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
 		<Scheme id="VS14MAC2" _name = "Visual Studio (Windows)" resource="KeyBindingSchemeVisualStudio.xml" forMac="true"/>
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
