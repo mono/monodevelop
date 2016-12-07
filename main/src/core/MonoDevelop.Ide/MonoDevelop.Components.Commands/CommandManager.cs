@@ -312,6 +312,10 @@ namespace MonoDevelop.Components.Commands
 				if (window.PerformKeyEquivalent (ev))
 					return null;
 
+				// Try the default NSApplication handlers, like copy/paste commands inside native entries
+				if (PerformDefaultNSAppAction (window, ev))
+					return null;
+
 				// If the window is a gtk window and is registered in the command manager
 				// process the events through the handler.
 				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
@@ -331,6 +335,77 @@ namespace MonoDevelop.Components.Commands
 					return null;
 			}
 			return ev;
+		}
+
+		bool PerformDefaultNSAppAction (AppKit.NSWindow window, AppKit.NSEvent ev)
+		{
+			// Try the user defined bindings first
+			var gdkev = Mac.GtkMacInterop.ConvertKeyEvent (ev);
+			if (gdkev != null) {
+				bool complete;
+				KeyboardShortcut [] accels = KeyBindingManager.AccelsFromKey (gdkev, out complete);
+				if (complete) {
+					foreach (var accel in accels) {
+						var binding = KeyBindingManager.AccelLabelFromKey (accel.Key, accel.Modifier);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.Copy, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("copy:"), null, window);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.Paste, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("paste:"), null, window);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.Cut, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("cut:"), null, window);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.SelectAll, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("selectAll:"), null, window);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.Undo, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("undo:"), null, window);
+
+						if (IsCommandBinding (Ide.Commands.EditCommands.Redo, binding))
+							return AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("redo:"), null, window);
+					}
+				}
+			}
+
+			// Try default OSX selectors
+			bool actionResult = false;
+			if (ev.Type == AppKit.NSEventType.KeyDown) {
+				if ((ev.ModifierFlags & AppKit.NSEventModifierMask.CommandKeyMask) != 0) {
+					switch (ev.CharactersIgnoringModifiers) {
+					case "c":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("copy:"), null, window);
+						break;
+					case "v":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("paste:"), null, window);
+						break;
+					case "x":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("cut:"), null, window);
+						break;
+					case "a":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("selectAll:"), null, window);
+						break;
+					case "z":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("undo:"), null, window);
+						break;
+					case "Z":
+						actionResult = AppKit.NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("redo:"), null, window);
+						break;
+					}
+				}
+			}
+			return actionResult;
+		}
+
+		bool IsCommandBinding (object commandId, string binding)
+		{
+			var cmd = GetCommand (ToCommandId (commandId));
+			if (cmd != null) {
+				var bds = KeyBindingService.CurrentKeyBindingSet.GetBindings (cmd);
+				return bds.Contains (binding);
+			}
+			return false;
 		}
 		#endif
 
