@@ -151,6 +151,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return GetProperties ();
 		}
 
+		IEnumerable<IMSBuildPropertyEvaluated> IMSBuildPropertyGroupEvaluated.GetProperties ()
+		{
+			return GetProperties ();
+		}
+
 		IMSBuildPropertyEvaluated IMSBuildPropertyGroupEvaluated.GetProperty (string name)
 		{
 			return GetProperty (name);
@@ -463,5 +468,7 @@ namespace MonoDevelop.Projects.MSBuild
 		bool HasProperty (string name);
 
 		IMSBuildPropertyEvaluated GetProperty (string name);
+
+		IEnumerable<IMSBuildPropertyEvaluated> GetProperties ();
 	}
 }

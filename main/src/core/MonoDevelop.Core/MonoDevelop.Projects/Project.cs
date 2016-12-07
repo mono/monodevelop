@@ -44,6 +44,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 using System.Collections.Immutable;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Projects
 {
@@ -3031,7 +3032,14 @@ namespace MonoDevelop.Projects
 		{
 			public ProjectItem ProjectItem;
 			public MSBuildItem MSBuildItem;
-			public bool Modified;
+			public ExpandedItemAction Action;
+		}
+
+		enum ExpandedItemAction
+		{
+			None,
+			Exclude,
+			AddUpdateItem
 		}
 
 		/// <summary>
@@ -3063,12 +3071,18 @@ namespace MonoDevelop.Projects
 						foreach (var removed in loadedProjectItems.Where (i => i.BackingItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
 							var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
 							msproject.AddItem (removeItem);
+							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
 						}
+
 						// Exclude modified items
-						foreach (var it in expandedList.Where (it => it.Modified)) {
-							globItem.AddExclude (it.ProjectItem.Include);
-							it.ProjectItem.BackingItem = it.MSBuildItem;
-							msproject.AddItem (it.MSBuildItem);
+						foreach (var it in expandedList) {
+							if (it.Action == ExpandedItemAction.Exclude) {
+								globItem.AddExclude (it.ProjectItem.Include);
+								it.ProjectItem.BackingItem = it.MSBuildItem;
+								msproject.AddItem (it.MSBuildItem);
+							} else if (it.Action == ExpandedItemAction.AddUpdateItem) {
+								msproject.AddItem (it.MSBuildItem);
+							}
 						}
 					} else {
 						// Expand the list
@@ -3112,9 +3126,12 @@ namespace MonoDevelop.Projects
 
 				unusedItems.Remove (item.BackingItem);
 
-				if ((!items.Modified || UseAdvancedGlobSupport) && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingEvalItem))) {
+				if (UseAdvancedGlobSupport) {
+					einfo.Action = GenerateItemDiff (item.BackingItem, bitem, item.BackingEvalItem);
+					if (einfo.Action != ExpandedItemAction.None)
+						items.Modified = true;
+				} else if (!items.Modified && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingEvalItem))) {
 					items.Modified = true;
-					einfo.Modified = true;
 				}
 				return;
 			}
@@ -3175,24 +3192,134 @@ namespace MonoDevelop.Projects
 					return false;
 				n++;
 			}
-			if (evalItem.SourceItem.Metadata.GetProperties ().Count () != n)
+			if (evalItem.Metadata.GetProperties ().Count () != n)
 				return false;
 			return true;
+		}
+
+		ExpandedItemAction GenerateItemDiff (MSBuildItem globItem, MSBuildItem item, IMSBuildItemEvaluated evalItem)
+		{
+			// This method compares the evaluated item that was used to load a project item with the msbuild
+			// item that has now been saved. If there are changes, it saves the changes in an item with Update
+			// attribute.
+
+			MSBuildItem updateItem = null;
+			HashSet<MSBuildItem> itemsToDelete = null;
+			List <MSBuildItem> updateItems = null;
+			List<MSBuildProperty> unchangedProperties = null;
+			bool generateNewUpdateItem = false;
+
+			foreach (var p in item.Metadata.GetProperties ()) {
+				var p2 = evalItem.Metadata.GetProperty (p.Name);
+				if (p2 == null || !p.ValueType.Equals (p.Value, p2.UnevaluatedValue)) {
+					if (generateNewUpdateItem)
+						continue;
+					if (updateItem == null) {
+						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
+						updateItem = updateItems.LastOrDefault ();
+						if (updateItem == null) {
+							// There is no existing update item. A new one will be generated.
+							generateNewUpdateItem = true;
+							continue;
+						}
+					}
+
+					var globProp = globItem.Metadata.GetProperty (p.Name);
+					if (globProp != null && p.ValueType.Equals (globProp.Value, p.Value)) {
+						// The custom value of the item is defined in the glob item that creates it,
+						// so we are actually reverting a custom metadata value. The update item
+						// can probably be removed.
+						foreach (var upi in updateItems) {
+							upi.Metadata.RemoveProperty (p.Name);
+							if (!upi.Metadata.GetProperties ().Any ()) {
+								if (itemsToDelete == null)
+									itemsToDelete = new HashSet<MSBuildItem> ();
+								itemsToDelete.Add (upi);
+							}
+						}
+						continue;
+					}
+
+					updateItem.Metadata.SetValue (p.Name, p.Value);
+					if (itemsToDelete != null)
+						itemsToDelete.Remove (updateItem);
+				} else {
+					if (unchangedProperties == null)
+						unchangedProperties = new List<MSBuildProperty> ();
+					unchangedProperties.Add (p);
+				}
+			}
+
+			if (generateNewUpdateItem) {
+				// Convert the item into an update item
+				item.Update = item.Include;
+				item.Include = "";
+				if (unchangedProperties != null) {
+					// Remove properties that have not changed, so they don't have to
+					// be included in the update item.
+					foreach (var p in unchangedProperties)
+						item.Metadata.RemoveProperty (p.Name);
+				}
+				return ExpandedItemAction.AddUpdateItem;
+			}
+
+			if (itemsToDelete != null) {
+				foreach (var it in itemsToDelete)
+					it.ParentGroup.RemoveItem (it);
+			}
+			
+			foreach (var p in evalItem.Metadata.GetProperties ()) {
+				var p2 = item.Metadata.GetProperty (p.Name);
+				if (p2 == null) {
+					// The evaluated item has a property that the msbuild item doesn't have. If that metadata is
+					// set by the glob item, the only option is to exclude it from the glob. If the metadata was set by
+					// an update item, we have to remove that metadata definition
+
+					if (updateItems == null)
+						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
+					foreach (var it in updateItems.Where (i => i.ParentNode != null)) {
+						if (it.Metadata.RemoveProperty (p.Name) && !it.Metadata.GetProperties ().Any ())
+							it.ParentGroup.RemoveItem (it);
+					}
+					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
+					if (globItem.Metadata.HasProperty (p.Name)) {
+						// Get rid of all update items, not needed anymore since a full new item will be added
+						foreach (var it in updateItems) {
+							if (it.ParentNode != null)
+								it.ParentGroup.RemoveItem (it);
+						}
+						return ExpandedItemAction.Exclude;
+					}
+				}
+			}
+			return ExpandedItemAction.None;
+		}
+
+		IEnumerable<MSBuildItem> FindUpdateItemsForItem (MSBuildItem globItem, string include)
+		{
+			bool globItemFound = false;
+			foreach (var it in globItem.ParentProject.GetAllItems ()) {
+				if (!globItemFound)
+					globItemFound = (it == globItem);
+				else {
+					if (it.Update == include)
+						yield return it;
+				}
+			}
 		}
 
 		bool ItemsAreEqual (IMSBuildItemEvaluated item1, IMSBuildItemEvaluated item2)
 		{
 			// Compare only metadata, since item name and include can't change
 
-			if (item1.SourceItem == null || item2.SourceItem == null || item1.SourceItem.Metadata.GetProperties ().Count () != item2.SourceItem.Metadata.GetProperties ().Count ())
+			if (item1.SourceItem == null || item2.SourceItem == null || item1.Metadata.GetProperties ().Count () != item2.Metadata.GetProperties ().Count ())
 				return false;
 
-			foreach (var p in item1.SourceItem.Metadata.GetProperties ()) {
-				var p1 = item1.Metadata.GetProperty (p.Name);
-				var p2 = item2.Metadata.GetProperty (p.Name);
+			foreach (var p1 in item1.Metadata.GetProperties ()) {
+				var p2 = item2.Metadata.GetProperty (p1.Name);
 				if (p2 == null || p2 == null)
 					return false;
-				if (!p.ValueType.Equals (p1.Value, p2.Value))
+				if (p1.Value != p2.Value)
 					return false;
 			}
 			return true;

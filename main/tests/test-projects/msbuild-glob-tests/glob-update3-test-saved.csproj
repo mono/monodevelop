@@ -32,9 +32,15 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\\*.cs" Exclude="*9.cs" />
-    <Compile Update="c2.cs">
+    <Compile Include="**\\*.cs" Exclude="*9.cs">
+	  <base>one</base>
       <foo>bar</foo>
+    </Compile>
+    <Compile Update="c2.cs">
+      <foo>custom</foo>
+    </Compile>
+    <Compile Update="c1.cs">
+      <foo>custom</foo>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

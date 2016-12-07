@@ -218,7 +218,207 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			string projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName.ChangeName ("glob-test-saved5")));
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-test-saved5")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateChangeMetadata ()
+		{
+			// There is an update item with metadata that is modified.
+			// The update item has to be modified.
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update1-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			Assert.AreEqual ("bar", f.Metadata.GetValue ("foo"));
+			f.Metadata.SetValue ("foo", "test");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update1-test-saved")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateChangeMetadata2 ()
+		{
+			// Same as previous, but there are several update items
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update2-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			Assert.AreEqual ("bar", f.Metadata.GetValue ("foo"));
+			Assert.AreEqual ("test1", f.Metadata.GetValue ("one"));
+			f.Metadata.SetValue ("foo", "test");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update2-test-saved")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateRemoveMetadata ()
+		{
+			// There is an update item with metadata that is removed.
+			// The update item has to be removed
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update1-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			f.Metadata.RemoveProperty ("foo");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update1-test-saved2")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateRemoveMetadata2 ()
+		{
+			// Same as previous, but there are several update items
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update2-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			f.Metadata.RemoveProperty ("foo");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update2-test-saved2")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateChangeMetadataDefinedInGlob ()
+		{
+			// The glob item defines a metadata. All evaluated items have that value.
+			// If the value is modified, an update item is created
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update3-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+			Assert.AreEqual ("bar", f.Metadata.GetValue ("foo"));
+			f.Metadata.SetValue ("foo", "custom");
+		
+			f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			Assert.AreEqual ("custom", f.Metadata.GetValue ("foo"));
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateChangeMetadataDefinedInGlob2 ()
+		{
+			// Same as before, but if the custom metadata is redefined in an update item, and the metadata
+			// value is modified so that it has the same value as the metadata in glob item, then
+			// the update item removed.
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update3-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+			Assert.AreEqual ("bar", f.Metadata.GetValue ("foo"));
+
+			f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			Assert.AreEqual ("custom", f.Metadata.GetValue ("foo"));
+			f.Metadata.SetValue ("foo", "bar");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved2")), projectXml);
+		}
+
+		[Test]
+		public async Task RemoveFileWithMetadataUpdates ()
+		{
+			// Same as before, but if the custom metadata is redefined in an update item, and the metadata
+			// value is modified so that it has the same value as the metadata in glob item, then
+			// the update item removed.
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update4-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			p.Items.Remove (f);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update4-test-saved")), projectXml);
+		}
+
+		[Test]
+		public async Task FileUpdateRemoveMetadataDefinedInGlob ()
+		{
+			// The glob item defines a metadata. All evaluated items have that value.
+			// If the value is modified, an update item is created
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-update3-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+			f.Metadata.RemoveProperty ("foo");
+
+			f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			f.Metadata.RemoveProperty ("foo");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved3")), projectXml);
+		}
+
+		[Test]
+		public async Task ProjectSerializationRoundtrip ()
+		{
+			string solFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-test.csproj");
+			foreach (var f in Directory.GetFiles (Path.GetDirectoryName (solFile), "*.csproj")) {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), f);
+
+				var refXml = File.ReadAllText (p.FileName);
+				await p.SaveAsync (Util.GetMonitor ());
+				var savedXml = File.ReadAllText (p.FileName);
+
+				p.Dispose ();
+
+				Console.WriteLine ("Serialization roundtrip test: " + Path.GetFileName (f));
+				Assert.AreEqual (refXml, savedXml, Path.GetFileName (f) + ": roundtrip serialization failure");
+			}
 		}
 	}
 }

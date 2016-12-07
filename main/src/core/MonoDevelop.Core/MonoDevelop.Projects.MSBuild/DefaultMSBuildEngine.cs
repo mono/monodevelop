@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (trueCond) {
 				foreach (var item2 in project.EvaluatedItems) {
 					if (item2.Name == item.Name && item2.Include == include) {
-						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetRegisteredProperties ()) {
+						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
 							((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 						}
 					}
@@ -329,7 +329,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			foreach (var item2 in project.EvaluatedItemsIgnoringCondition) {
 				if (item2.Name == item.Name && item2.Include == include) {
-					foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetRegisteredProperties ()) {
+					foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
 						((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 					}
 				}
@@ -447,7 +447,7 @@ namespace MonoDevelop.Projects.MSBuild
 						var md = new Dictionary<string, IMSBuildPropertyEvaluated> ();
 						// Add metadata from the evaluated item
 						var col = (MSBuildPropertyGroupEvaluated)eit.Metadata;
-						foreach (var p in col.GetRegisteredProperties ()) {
+						foreach (var p in col.GetProperties ()) {
 							md [p.Name] = new MSBuildPropertyEvaluated (project.Project, p.Name, p.UnevaluatedValue, p.Value);
 						}
 						// Now override metadata from the new item definition
@@ -1049,6 +1049,14 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			IMSBuildItemEvaluated it = (IMSBuildItemEvaluated) item;
 			return it.Metadata.GetValue (name);
+		}
+
+		public override IEnumerable<string> GetItemMetadataNames (object item)
+		{
+			var it = item as MSBuildItem;
+			if (it != null)
+				return it.Metadata.GetProperties ().Select (p => p.Name);
+			return ((IMSBuildItemEvaluated)item).Metadata.GetProperties ().Select (p => p.Name);
 		}
 
 		public override IEnumerable<object> GetImports (object projectInstance)

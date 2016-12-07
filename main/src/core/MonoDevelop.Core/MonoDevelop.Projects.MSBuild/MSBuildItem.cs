@@ -83,13 +83,13 @@ namespace MonoDevelop.Projects.MSBuild
 		internal override string WriteAttribute (string name)
 		{
 			if (name == "Include")
-				return include;
+				return !string.IsNullOrEmpty (include) || string.IsNullOrEmpty (update) ? include : null;
 			else if (name == "Exclude")
 				return exclude;
 			else if (name == "Remove")
 				return remove;
 			else if (name == "Update")
-				return update;
+				return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (update) ? update : null;
 			else
 				return base.WriteAttribute (name);
 		}

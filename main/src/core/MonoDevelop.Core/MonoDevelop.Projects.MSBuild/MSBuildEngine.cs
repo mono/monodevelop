@@ -85,6 +85,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public abstract string GetEvaluatedItemMetadata (object item, string name);
 
+		public abstract IEnumerable<string> GetItemMetadataNames (object item);
+
 		public abstract IEnumerable<object> GetImports (object projectInstance);
 
 		public abstract string GetImportEvaluatedProjectPath (object projectInstance, object import);

@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects
 
 			if (buildItem.SourceItem != null) {
 				HashSet<string> knownProps = GetKnownMetadata ();
-				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
+				foreach (var prop in buildItem.Metadata.GetProperties ()) {
 					if (!knownProps.Contains (prop.Name)) {
 						if (metadata == null)
 							metadata = new ProjectItemMetadata (project.MSBuildProject);

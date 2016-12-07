@@ -34,7 +34,10 @@
   <ItemGroup>
     <Compile Include="**\\*.cs" Exclude="*9.cs" />
     <Compile Update="c2.cs">
-      <foo>bar</foo>
+      <foo>bar1</foo>
+    </Compile>
+    <Compile Update="c2.cs">
+      <foo>bar2</foo>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
