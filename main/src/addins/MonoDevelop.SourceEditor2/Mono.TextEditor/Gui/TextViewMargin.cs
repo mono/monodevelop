@@ -1352,6 +1352,9 @@ namespace Mono.TextEditor
 			var chars = layout.LineChars;
 			if (Array.IndexOf (chars, spaceOrTab) == -1)
 				return;
+			var chunks = layout.Chunks;
+			if (chunks == null)
+				return;
 
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
@@ -1407,7 +1410,7 @@ namespace Mono.TextEditor
 				double xpos2 = x + posX / Pango.Scale.PangoScale;
 				var col = new Cairo.Color (0, 0, 0);
 				//if (SelectionColor.TransparentForeground) {
-				while (curchunk + 1 < layout.Chunks.Count && layout.Chunks [curchunk].Offset < offset + i)
+				while (curchunk + 1 < chunks.Count && chunks [curchunk].Offset < offset + i)
 					curchunk++;
 					/*if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
 						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
