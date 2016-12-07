@@ -302,7 +302,7 @@ namespace MonoDevelop.PackageManagement
 			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
 			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
 
-			return File.Exists (propsFileName) ||
+			return File.Exists (propsFileName) &&
 				File.Exists (targetsFileName);
 		}
 	}
