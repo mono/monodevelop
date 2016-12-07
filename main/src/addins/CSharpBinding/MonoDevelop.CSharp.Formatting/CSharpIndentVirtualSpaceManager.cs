@@ -37,9 +37,9 @@ namespace MonoDevelop.CSharp.Formatting
 		readonly TextEditor data;
 		readonly CacheIndentEngine stateTracker;
 
-        public override IndentatitonTrackerFeatures SupportedFeatures { 
+        public override IndentationTrackerFeatures SupportedFeatures { 
             get {
-                return IndentatitonTrackerFeatures.SmartBackspace | IndentatitonTrackerFeatures.CustomIndentationEngine;
+                return IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
             }
         }
 
