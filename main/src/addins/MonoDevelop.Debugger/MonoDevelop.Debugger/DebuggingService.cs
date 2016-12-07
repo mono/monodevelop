@@ -597,7 +597,6 @@ namespace MonoDevelop.Debugger
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger);
-			sessions.Add (session, sessionManager);
 			session.ExceptionHandler = ExceptionHandler;
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
