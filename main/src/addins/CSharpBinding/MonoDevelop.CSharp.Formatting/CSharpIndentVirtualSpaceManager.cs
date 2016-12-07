@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Formatting
 
         public override IndentatitonTrackerFeatures SupportedFeatures { 
             get {
-                return IndentatitonTrackerFeatures.SmartBackspace | IndentatitonTrackerFeatures.CustomIndentationEnigne;
+                return IndentatitonTrackerFeatures.SmartBackspace | IndentatitonTrackerFeatures.CustomIndentationEngine;
             }
         }
 
