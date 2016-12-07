@@ -127,4 +127,4 @@ type FSharpIndentationTracker(editor:TextEditor) =
         | ex -> LoggingService.LogError ("FSharpIndentationTracker", ex)
                 ""
 
-    override x.SupportedFeatures = IndentationTrackerFeatures.None
+    override x.SupportedFeatures = IndentationTrackerFeatures.None ||| IndentatitonTrackerFeatures.CustomIndentationEngine
