@@ -58,6 +58,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Templating\FileTemplateProcessor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreFolderNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectFileRenamedHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
