@@ -823,6 +823,24 @@ namespace MonoDevelop.SourceEditor
 			widget.Document.UseBOM = hadBom;
 		}
 
+		class MyExtendingLineMarker : TextLineMarker, IExtendingTextLineMarker
+		{
+			public bool IsSpaceAbove {
+				get {
+					return true;
+				}
+			}
+
+			public void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea)
+			{
+			}
+
+			public double GetLineHeight (MonoTextEditor editor)
+			{
+				return editor.LineHeight *  3 / 2;
+			}
+		}
+
 		public Task Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			var document = Document;
@@ -876,6 +894,9 @@ namespace MonoDevelop.SourceEditor
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			UpdateTextDocumentEncoding ();
+/*			for (int i = 1; i < document.LineCount; i += 2) {
+				document.AddMarker (i, new MyExtendingLineMarker ());
+			}*/
 			document.TextChanged += OnTextReplaced;
 			return TaskUtil.Default<object> ();
 		}
