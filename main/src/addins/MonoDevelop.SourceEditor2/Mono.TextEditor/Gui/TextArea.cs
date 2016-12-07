@@ -398,7 +398,7 @@ namespace Mono.TextEditor
 			}
 			
 			InitAnimations ();
-			this.Document.EndUndo += HandleDocumenthandleEndUndo;
+			this.Document.HeightChanged += HandleDocumentHeightChanged;
 			this.textEditorData.HeightTree.LineUpdateFrom += HeightTree_LineUpdateFrom;
 //#if ATK
 //			TextEditorAccessible.Factory.Init (this);
@@ -422,12 +422,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void HandleDocumenthandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
+		void HandleDocumentHeightChanged (object sender, EventArgs e)
 		{
-			if (this.Document.HeightChanged) {
-				this.Document.HeightChanged = false;
-				SetAdjustments ();
-			}
+			SetAdjustments ();
 		}
 
 		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
@@ -798,7 +795,7 @@ namespace Mono.TextEditor
 			this.Options = null;
 			Gtk.Key.SnooperRemove (snooperID);
 			HideTooltip ();
-			Document.EndUndo -= HandleDocumenthandleEndUndo;
+			Document.HeightChanged -= TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.TextChanged -= OnDocumentStateChanged;
 			Document.TextSet -= OnTextSet;
 			Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 

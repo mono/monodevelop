@@ -230,6 +230,12 @@ namespace Mono.TextEditor
 			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated += HandleFoldTreeUpdated;
+			document.HeightChanged += Document_HeightChanged;
+		}
+
+		void Document_HeightChanged (object sender, EventArgs e)
+		{
+			HeightTree.Rebuild ();
 		}
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
@@ -583,6 +589,7 @@ namespace Mono.TextEditor
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
+			document.HeightChanged -= Document_HeightChanged;
 			document = null;
 		}
 
