@@ -234,5 +234,31 @@ namespace MonoDevelop.DotNetCore
 				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
 			}
 		}
+
+		/// <summary>
+		/// Cannot use SolutionItemExtension.OnModified. It does not seem to be called.
+		/// </summary>
+		protected void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
+		{
+			if (Project.Loading)
+				return;
+
+			var fileNameChange = args.LastOrDefault (arg => arg.Hint == "FileName");
+			if (fileNameChange != null) {
+				DotNetCoreProjectFileRenamedHandler.OnProjectFileRenamed (Project);
+			}
+		}
+
+		protected override void OnItemReady ()
+		{
+			base.OnItemReady ();
+			Project.Modified += OnProjectModified;
+		}
+
+		public override void Dispose ()
+		{
+			Project.Modified -= OnProjectModified;
+			base.Dispose ();
+		}
 	}
 }

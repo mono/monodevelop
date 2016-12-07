@@ -43,7 +43,6 @@ namespace MonoDevelop.PackageManagement
 		List<PackageRestoreData> packagesToRestore;
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
-		MonoDevelopDotNetCorePackageRestorer dotNetCorePackageRestorer;
 		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
@@ -56,6 +55,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
+			solutionManager.ClearProjectCache ();
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
 			if (AnyProjectsUsingPackagesConfig ()) {
@@ -66,11 +66,9 @@ namespace MonoDevelop.PackageManagement
 				);
 			}
 
-			if (AnyProjectsUsingProjectJson ()) {
+			if (AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()) {
 				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 			}
-
-			CreateDotNetCorePackageRestorer ();
 		}
 
 		bool AnyProjectsUsingPackagesConfig ()
@@ -78,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 			return nugetProjects.Any (project => !(project is BuildIntegratedNuGetProject));
 		}
 
-		bool AnyProjectsUsingProjectJson ()
+		bool AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()
 		{
 			return GetBuildIntegratedNuGetProjects ().Any ();
 		}
@@ -86,14 +84,6 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<BuildIntegratedNuGetProject> GetBuildIntegratedNuGetProjects ()
 		{
 			return nugetProjects.OfType<BuildIntegratedNuGetProject> ();
-		}
-
-		void CreateDotNetCorePackageRestorer ()
-		{
-			var dotNetCoreProjects = nugetProjects.OfType<DotNetCoreNuGetProject> ().ToList ();
-			if (dotNetCoreProjects.Any ()) {
-				dotNetCorePackageRestorer = new MonoDevelopDotNetCorePackageRestorer (dotNetCoreProjects);
-			}
 		}
 
 		public bool CheckForUpdatesAfterRestore { get; set; }
@@ -115,11 +105,6 @@ namespace MonoDevelop.PackageManagement
 				var projects = await buildIntegratedRestorer.GetProjectsRequiringRestore (GetBuildIntegratedNuGetProjects ());
 				buildIntegratedProjectsToBeRestored = projects.ToList ();
 				return buildIntegratedProjectsToBeRestored.Any ();
-			}
-
-			if (dotNetCorePackageRestorer != null) {
-				// No way to currently determine if restore is not required.
-				return true;
 			}
 
 			return false;
@@ -173,10 +158,6 @@ namespace MonoDevelop.PackageManagement
 
 			if (buildIntegratedRestorer != null) {
 				await buildIntegratedRestorer.RestorePackages (buildIntegratedProjectsToBeRestored, cancellationToken);
-			}
-
-			if (dotNetCorePackageRestorer != null) {
-				await dotNetCorePackageRestorer.RestorePackages (cancellationToken);
 			}
 
 			await Runtime.RunInMainThread (() => RefreshProjectReferences ());

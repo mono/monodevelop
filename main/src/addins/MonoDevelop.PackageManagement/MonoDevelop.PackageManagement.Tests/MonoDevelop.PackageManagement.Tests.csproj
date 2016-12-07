@@ -96,6 +96,12 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.ProjectModel">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.ProjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.LibraryModel">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.LibraryModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -189,6 +195,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageFilesReader.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageCompatibilityNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSpecCreatorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMSBuildEvaluatedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackageReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

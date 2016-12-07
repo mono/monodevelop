@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,21 +37,32 @@ using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
-using NuGet.Protocol.Core.Types;
+using NuGet.ProjectModel;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	class DotNetCoreNuGetProject : NuGetProject, INuGetIntegratedProject, IHasDotNetProject
+	class DotNetCoreNuGetProject : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		DotNetProject project;
-		bool modified;
+		IPackageManagementEvents packageManagementEvents;
+		string msbuildProjectPath;
+		string projectName;
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks)
+			: this (project, targetFrameworks, PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public DotNetCoreNuGetProject (
+			DotNetProject project,
+			IEnumerable<string> targetFrameworks,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
+			this.packageManagementEvents = packageManagementEvents;
 
 			var targetFramework = NuGetFramework.UnsupportedFramework;
 
@@ -62,10 +73,21 @@ namespace MonoDevelop.PackageManagement
 			InternalMetadata.Add (NuGetProjectMetadataKeys.TargetFramework, targetFramework);
 			InternalMetadata.Add (NuGetProjectMetadataKeys.Name, project.Name);
 			InternalMetadata.Add (NuGetProjectMetadataKeys.FullPath, project.BaseDirectory);
+
+			msbuildProjectPath = project.FileName;
+			projectName = project.Name;
 		}
 
 		internal DotNetProject DotNetProject {
 			get { return project; }
+		}
+
+		public override string ProjectName {
+			get { return projectName; }
+		}
+
+		public override string MSBuildProjectPath {
+			get { return msbuildProjectPath; }
 		}
 
 		public static NuGetProject Create (DotNetProject project)
@@ -94,19 +116,21 @@ namespace MonoDevelop.PackageManagement
 				.ToList ();
 		}
 
-		public override async Task<bool> InstallPackageAsync (
-			PackageIdentity packageIdentity,
-			DownloadResourceResult downloadResourceResult,
+		public async override Task<bool> InstallPackageAsync (
+			string packageId,
+			VersionRange range,
 			INuGetProjectContext nuGetProjectContext,
+			BuildIntegratedInstallationContext installationContext,
 			CancellationToken token)
 		{
+			var packageIdentity = new PackageIdentity (packageId, range.MinVersion);
+
 			bool added = await Runtime.RunInMainThread (() => {
 				return AddPackageReference (packageIdentity, nuGetProjectContext);
 			});
 
 			if (added) {
 				await SaveProject ();
-				modified = true;
 			}
 
 			return added;
@@ -137,7 +161,6 @@ namespace MonoDevelop.PackageManagement
 
 			if (removed) {
 				await SaveProject ();
-				modified = true;
 			}
 
 			return removed;
@@ -157,164 +180,130 @@ namespace MonoDevelop.PackageManagement
 			return true;
 		}
 
-		public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (PackageIdentity packageIdentity, IEnumerable<NuGetProjectAction> actions)
+		public override Task<string> GetAssetsFilePathAsync ()
 		{
-			await CheckPackageNotAlreadyInstalled (packageIdentity);
-
-			return await AddUninstallActionsForExistingPackages (actions);
+			string assetsFilePath = GetAssetsFilePath ();
+			return Task.FromResult (assetsFilePath);
 		}
 
-		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackageAsync (IEnumerable<NuGetProjectAction> actions)
+		string GetAssetsFilePath ()
 		{
-			return AddUninstallActionsForExistingPackages (actions);
+			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
 		}
 
-		async Task CheckPackageNotAlreadyInstalled (PackageIdentity packageIdentity)
+		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
-			var installedPackages = await GetInstalledPackagesAsync (CancellationToken.None);
-			if (installedPackages.Select (package => package.PackageIdentity).Contains (packageIdentity)) {
-				string alreadyInstalledMessage = GettextCatalog.GetString ("Package '{0}' already exists in project '{1}'", packageIdentity, project.Name);
-				throw new InvalidOperationException (
-					alreadyInstalledMessage,
-					new PackageAlreadyInstalledException (alreadyInstalledMessage));
+			PackageSpec existingPackageSpec = GetExistingProjectPackageSpec (context);
+			if (existingPackageSpec != null) {
+				return new [] { existingPackageSpec };
 			}
+
+			PackageSpec packageSpec = await CreateProjectPackageSpec ();
+
+			if (context != null) {
+				AddToCache (context, packageSpec);
+			}
+
+			return new [] { packageSpec };
 		}
 
-		// Need to add uninstall actions for existing NuGet packages installed in the project
-		// here otherwise the rollback will not add back the originally installed NuGet packages.
-		async Task<IEnumerable<NuGetProjectAction>> AddUninstallActionsForExistingPackages (IEnumerable<NuGetProjectAction> actions)
+		PackageSpec GetExistingProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			var packagesBeingInstalled = actions
-				.Where (action => action.NuGetProjectActionType == NuGetProjectActionType.Install)
-				.Select (action => action.PackageIdentity)
-				.ToList ();
-
-			if (!packagesBeingInstalled.Any ())
-				return actions;
-
-			var packagesBeingUninstalled = actions
-				.Where (action => action.NuGetProjectActionType == NuGetProjectActionType.Uninstall)
-				.Select (action => action.PackageIdentity)
-				.ToList ();
-
-			var packageReferences = await GetInstalledPackagesAsync (CancellationToken.None);
-			var packagesToUninstall = packageReferences
-				.Select (packageReference => packageReference.PackageIdentity)
-				.Where (package => IsDifferentVersionBeingInstalled (packagesBeingInstalled, package))
-				.ToList ();
-
-			packagesToUninstall = packagesToUninstall
-				.Where (package => !packagesBeingUninstalled.Contains (package))
-				.ToList ();
-
-			if (!packagesToUninstall.Any ())
-				return actions;
-
-			var modifiedActions = actions.ToList ();
-			modifiedActions.AddRange (packagesToUninstall.Select (package => NuGetProjectAction.CreateUninstallProjectAction (package, this)));
-
-			return modifiedActions;
-		}
-
-		static bool IsDifferentVersionBeingInstalled (IEnumerable<PackageIdentity> packages, PackageIdentity otherPackage)
-		{
-			return packages.Any (package => {
-				return StringComparer.OrdinalIgnoreCase.Equals (package.Id, otherPackage.Id) &&
-					!package.Equals (otherPackage);
-			});
-		}
-
-		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
-			INuGetPackageManager packageManager,
-			ResolutionContext resolutionContext,
-			INuGetProjectContext nuGetProjectContext,
-			IEnumerable<SourceRepository> primarySources,
-			IEnumerable<SourceRepository> secondarySources,
-			CancellationToken token)
-		{
-			var installPackages = await GetInstalledPackagesAsync (token);
-
-			var log = new LoggerAdapter (nuGetProjectContext);
-			var actions = new List<NuGetProjectAction>();
-
-			foreach (PackageReference installedPackage in installPackages) {
-				NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync(
-					installedPackage.PackageIdentity.Id,
-					this,
-					resolutionContext,
-					primarySources,
-					log,
-					token);
-
-				if (latestVersion != null && latestVersion > installedPackage.PackageIdentity.Version) {
-					actions.Add(NuGetProjectAction.CreateUninstallProjectAction (
-						installedPackage.PackageIdentity,
-						this));
-
-					actions.Add (NuGetProjectAction.CreateInstallProjectAction (
-						new PackageIdentity (installedPackage.PackageIdentity.Id, latestVersion),
-						primarySources.FirstOrDefault (),
-						this));
+			PackageSpec packageSpec = null;
+			if (context != null) {
+				if (context.PackageSpecCache.TryGetValue (MSBuildProjectPath, out packageSpec)) {
+					return packageSpec;
 				}
 			}
-
-			return actions;
+			return packageSpec;
 		}
 
-		public async Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
-			string packageId,
-			INuGetPackageManager packageManager,
-			ResolutionContext resolutionContext,
-			INuGetProjectContext nuGetProjectContext,
-			IEnumerable<SourceRepository> primarySources,
-			IEnumerable<SourceRepository> secondarySources,
-			CancellationToken token)
+		async Task<PackageSpec> CreateProjectPackageSpec ()
 		{
-			var log = new LoggerAdapter (nuGetProjectContext);
+			PackageSpec packageSpec = await Runtime.RunInMainThread (() => CreateProjectPackageSpec (project));
+			return packageSpec;
+		}
 
-			NuGetVersion latestVersion = await packageManager.GetLatestVersionAsync (
-				packageId,
-				this,
-				resolutionContext,
-				primarySources,
-				log,
-				token);
+		static PackageSpec CreateProjectPackageSpec (DotNetProject project)
+		{
+			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project);
+			return packageSpec;
+		}
 
-			if (latestVersion == null) {
-				throw new InvalidOperationException (GettextCatalog.GetString ("Unknown package '{0}'", packageId));
+		void AddToCache (DependencyGraphCacheContext context, PackageSpec projectPackageSpec)
+		{
+			if (IsMissingFromCache (context, projectPackageSpec)) {
+				context.PackageSpecCache.Add (
+					projectPackageSpec.RestoreMetadata.ProjectUniqueName, 
+					projectPackageSpec);
 			}
-
-			var installPackages = await GetInstalledPackagesAsync (token);
-			var packageIdentity = new PackageIdentity (packageId, latestVersion);
-
-			if (!IsDifferentVersionBeingInstalled (installPackages.Select (p => p.PackageIdentity), packageIdentity))
-				return new NuGetProjectAction[0];
-
-			SourceRepository sourceRepository = primarySources.First ();
-
-			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, sourceRepository, this);
-			return new [] { action };
 		}
 
-		public override Task PreProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		bool IsMissingFromCache (
+			DependencyGraphCacheContext context,
+			PackageSpec packageSpec)
 		{
-			modified = false;
-			return base.PreProcessAsync (nuGetProjectContext, token);
+			PackageSpec ignore;
+			return !context.PackageSpecCache.TryGetValue (
+				packageSpec.RestoreMetadata.ProjectUniqueName,
+				out ignore);
 		}
 
-		/// <summary>
-		/// Restore after executing the project actions to ensure the NuGet packages are
-		/// supported by the project.
-		/// </summary>
-		public override async Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		public override Task<bool> ExecuteInitScriptAsync (
+			PackageIdentity identity,
+			string packageInstallPath,
+			INuGetProjectContext projectContext,
+			bool throwOnFailure)
 		{
-			if (!modified)
-				return;;
+			// Not supported. This gets called for every NuGet package
+			// even if they do not have an init.ps1 so do not report this.
+			return Task.FromResult (false);
+		}
 
-			var packageRestorer = new MonoDevelopDotNetCorePackageRestorer (project);
-			await packageRestorer.RestorePackages (token);
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
+		{
+			Runtime.RunInMainThread (() => {
+				DotNetProject.NotifyModified ("References");
+			});
 
-			PackageManagementServices.PackageManagementEvents.OnPackagesRestored ();
+			packageManagementEvents.OnFileChanged (GetAssetsFilePath ());
+
+			return base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
+		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
+		{
+		}
+
+		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
+		{
+		}
+
+		public void NotifyProjectReferencesChanged ()
+		{
+			Runtime.AssertMainThread ();
+
+			DotNetProject.RefreshProjectBuilder ();
+			DotNetProject.NotifyModified ("References");
+		}
+
+		public bool ProjectRequiresReloadAfterRestore ()
+		{
+			if (NuGetMSBuildFilesExist ())
+				return false;
+
+			return true;
+		}
+
+		bool NuGetMSBuildFilesExist ()
+		{
+			var baseDirectory = project.BaseIntermediateOutputPath;
+			string projectFileName = project.FileName.FileName;
+			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
+			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
+
+			return File.Exists (propsFileName) ||
+				File.Exists (targetsFileName);
 		}
 	}
 }

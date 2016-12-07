@@ -1,5 +1,5 @@
 ﻿//
-// IBuildIntegratedNuGetProject.cs
+// DotNetCoreProjectFileRenamedHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,20 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
+using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.DotNetCore
 {
-	internal interface IBuildIntegratedNuGetProject
+	static class DotNetCoreProjectFileRenamedHandler
 	{
-		void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions);
-		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
-		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
-		void NotifyProjectReferencesChanged ();
+		public static void OnProjectFileRenamed (DotNetProject project)
+		{
+			if (!PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled)
+				return;
+
+			RestorePackagesHandler.RestoreBuildIntegratedNuGetProjects (project.ParentSolution);
+		}
 	}
 }
-

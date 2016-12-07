@@ -24,19 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NuGet.Configuration;
 using NUnit.Framework;
-using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
-using NuGet.Protocol.Core.Types;
+using NuGet.ProjectModel;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -47,16 +43,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		DotNetProject dotNetProject;
 		TestableDotNetCoreNuGetProject project;
 		FakeNuGetProjectContext context;
-		List<SourceRepository> primaryRepositories;
-		FakeNuGetPackageManager packageManager;
-		FakeNuGetProjectContext projectContext;
-		ResolutionContext resolutionContext;
+		DependencyGraphCacheContext dependencyGraphCacheContext;
 
-		void CreateNuGetProject (string projectName = "MyProject")
+		void CreateNuGetProject (string projectName = "MyProject", string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
 			context = new FakeNuGetProjectContext ();
 			dotNetProject = new DummyDotNetProject ();
 			dotNetProject.Name = projectName;
+			dotNetProject.FileName = fileName.ToNativePath ();
 			project = new TestableDotNetCoreNuGetProject (dotNetProject);
 		}
 
@@ -77,49 +71,20 @@ namespace MonoDevelop.PackageManagement.Tests
 		Task<bool> InstallPackageAsync (string packageId, string version)
 		{
 			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
-			return project.InstallPackageAsync (packageIdentity, null, context, CancellationToken.None);
+			var versionRange = new VersionRange (packageIdentity.Version);
+			return project.InstallPackageAsync (packageId, versionRange, context, null, CancellationToken.None);
 		}
 
-		void CreatePackageManager ()
+		Task<PackageSpec> GetPackageSpecsAsync ()
 		{
-			packageManager = new FakeNuGetPackageManager ();
-			projectContext = new FakeNuGetProjectContext ();
-			resolutionContext = new ResolutionContext ();
-
-			var metadataResourceProvider = new FakePackageMetadataResourceProvider ();
-
-			var source = new PackageSource ("http://test.com");
-			var providers = new INuGetResourceProvider[] {
-				metadataResourceProvider
-			};
-
-			var sourceRepository = new SourceRepository (source, providers);
-			primaryRepositories = new [] {
-				sourceRepository
-			}.ToList ();
+			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+			return GetPackageSpecsAsync (dependencyGraphCacheContext);
 		}
 
-		Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (string packageId)
+		async Task<PackageSpec> GetPackageSpecsAsync (DependencyGraphCacheContext cacheContext)
 		{
-			return project.PreviewUpdatePackagesAsync (
-				packageId,
-				packageManager,
-				resolutionContext,
-				projectContext,
-				primaryRepositories,
-				null,
-				CancellationToken.None);
-		}
-
-		Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync ()
-		{
-			return project.PreviewUpdatePackagesAsync (
-				packageManager,
-				resolutionContext,
-				projectContext,
-				primaryRepositories,
-				null,
-				CancellationToken.None);
+			var specs = await project.GetPackageSpecsAsync (cacheContext);
+			return specs.Single ();
 		}
 
 		[Test]
@@ -133,89 +98,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			var packageReference = packageReferences.Single ();
 			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
 			Assert.AreEqual ("2.6.1", packageReference.PackageIdentity.Version.ToNormalizedString ());
-		}
-
-		[Test]
-		public async Task PreviewInstallPackageAsync_OldPackageInstalled_UninstallActionForOldPackageAdded ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			var actions = new List<NuGetProjectAction> ();
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
-			var packageIdentity = actions[0].PackageIdentity;
-
-			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
-
-			var lastAction = updatedActions.LastOrDefault ();
-			Assert.AreEqual (actions[0], updatedActions[0]);
-			Assert.AreEqual (2, updatedActions.Count);
-			Assert.AreEqual ("NUnit", lastAction.PackageIdentity.Id);
-			Assert.AreEqual ("2.6.1", lastAction.PackageIdentity.Version.ToNormalizedString ());
-			Assert.AreEqual (NuGetProjectActionType.Uninstall, lastAction.NuGetProjectActionType);
-		}
-
-		[Test]
-		public async Task PreviewInstallPackageAsync_NoExistingPackagesInstalled_UninstallActionForOldPackageIsNotAdded ()
-		{
-			CreateNuGetProject ();
-			var actions = new List<NuGetProjectAction> ();
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
-			var packageIdentity = actions[0].PackageIdentity;
-
-			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
-
-			Assert.AreEqual (actions, updatedActions);
-		}
-
-		[Test]
-		public async Task PreviewInstallPackageAsync_OldPackageInstalledAndUninstallActionAlreadyExistsForOldPackage_UninstallActionForOldPackageIsNotAdded ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			var actions = new List<NuGetProjectAction> ();
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Uninstall));
-			var packageIdentity = actions[0].PackageIdentity;
-
-			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
-
-			Assert.AreEqual (actions, updatedActions);
-		}
-
-		[Test]
-		public async Task PreviewInstallPackageAsync_OldPackageInstalledMatchesNewPackageBeingInstalled_UninstallActionForOldPackageIsNotAdded ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			var actions = new List<NuGetProjectAction> ();
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Uninstall));
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "3.5.0", NuGetProjectActionType.Install));
-			var packageIdentity = actions[1].PackageIdentity;
-
-			var updatedActions = (await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
-
-			Assert.AreEqual (actions, updatedActions);
-		}
-
-		[Test]
-		public async Task PreviewInstallPackageAsync_OldPackageInstalledMatchesNewPackageBeingInstalled_PackageAlreadyExistsExceptionThrown ()
-		{
-			CreateNuGetProject ("MyProject");
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			var actions = new List<NuGetProjectAction> ();
-			actions.Add (new FakeNuGetProjectAction ("NUnit", "2.6.1", NuGetProjectActionType.Install));
-			var packageIdentity = actions[0].PackageIdentity;
-
-			InvalidOperationException exception = null;
-			try {
-				(await project.PreviewInstallPackageAsync (packageIdentity, actions)).ToList ();
-				Assert.Fail ("Expected exception");
-			} catch (InvalidOperationException ex) {
-				exception = ex;
-			}
-
-			var innerEx = exception.InnerException as PackageAlreadyInstalledException;
-			Assert.AreEqual ("Package 'NUnit.2.6.1' already exists in project 'MyProject'", innerEx.Message);
 		}
 
 		[Test]
@@ -283,80 +165,50 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public async Task PreviewUpdatePackagesAsync_PackageIdSet_InstallActionCreatedForLatestPackageVersion ()
+		public async Task GetAssetsFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			CreatePackageManager ();
-			packageManager.LatestVersion = new NuGetVersion ("3.5.0");
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
 
-			var actions = (await PreviewUpdatePackagesAsync ("NUnit")).ToList ();
+			string assetsFilePath = await project.GetAssetsFilePathAsync ();
 
-			var action = actions.Single ();
-			Assert.AreEqual ("NUnit", action.PackageIdentity.Id);
-			Assert.AreEqual ("3.5.0", action.PackageIdentity.Version.ToNormalizedString ());
-			Assert.AreEqual (NuGetProjectActionType.Install, action.NuGetProjectActionType);
+			Assert.AreEqual (expectedAssetsFilePath, assetsFilePath);
 		}
 
 		[Test]
-		public async Task PreviewUpdatePackagesAsync_SamePackageInstalled_NoActionsReturned ()
+		public async Task GetPackageSpecsAsync_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			CreatePackageManager ();
-			packageManager.LatestVersion = new NuGetVersion ("2.6.1");
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
 
-			var actions = (await PreviewUpdatePackagesAsync ("NUnit")).ToList ();
+			PackageSpec spec = await GetPackageSpecsAsync ();
 
-			Assert.AreEqual (0, actions.Count);
+			Assert.AreEqual (expectedAssetsFilePath, spec.FilePath);
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
+			Assert.AreEqual (RestoreOutputType.NETCore, spec.RestoreMetadata.OutputType);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
+			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
+			Assert.AreEqual (dotNetProject.BaseIntermediateOutputPath.ToString (), spec.RestoreMetadata.OutputPath);
+			Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache[dotNetProject.FileName.ToString ()]);
+
+			// Cannot currently test this - needs the target framework to be available in the 
+			// MSBuild.EvaluatedProperties
+			//Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
 		}
 
 		[Test]
-		public async Task PreviewUpdatePackagesAsync_NoLatestVersionFound_ExceptionThrown ()
+		public async Task GetPackageSpecsAsync_PackageSpecExistsInCache_CachedPackageSpecReturned ()
 		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			CreatePackageManager ();
-			packageManager.LatestVersion = null;
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			var cachedSpec = new PackageSpec ();
+			dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+			dependencyGraphCacheContext.PackageSpecCache.Add (dotNetProject.FileName.ToString (), cachedSpec);
 
-			try {
-				await PreviewUpdatePackagesAsync ("NUnit");
-				Assert.Fail ("Exception expected");
-			} catch (InvalidOperationException) {
-			}
-		}
+			PackageSpec spec = await GetPackageSpecsAsync (dependencyGraphCacheContext);
 
-		[Test]
-		public async Task PreviewUpdatePackagesAllPackagesAsync_OldPackageInstalled_InstallActionCreatedForLatestPackageVersion ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			CreatePackageManager ();
-			packageManager.LatestVersion = new NuGetVersion ("3.5.0");
-
-			var actions = (await PreviewUpdatePackagesAsync ()).ToList ();
-
-			var firstAction = actions.First ();
-			var secondAction = actions.Last ();
-			Assert.AreEqual ("NUnit", firstAction.PackageIdentity.Id);
-			Assert.AreEqual ("2.6.1", firstAction.PackageIdentity.Version.ToNormalizedString ());
-			Assert.AreEqual (NuGetProjectActionType.Uninstall, firstAction.NuGetProjectActionType);
-			Assert.AreEqual ("NUnit", secondAction.PackageIdentity.Id);
-			Assert.AreEqual ("3.5.0", secondAction.PackageIdentity.Version.ToNormalizedString ());
-			Assert.AreEqual (NuGetProjectActionType.Install, secondAction.NuGetProjectActionType);
-		}
-
-		[Test]
-		public async Task PreviewUpdatePackagesAllPackagesAsync_SamePackageInstalled_NoActionsReturned ()
-		{
-			CreateNuGetProject ();
-			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
-			CreatePackageManager ();
-			packageManager.LatestVersion = new NuGetVersion ("2.6.1");
-
-			var actions = (await PreviewUpdatePackagesAsync ()).ToList ();
-
-			Assert.AreEqual (0, actions.Count);
+			Assert.AreSame (cachedSpec, spec);
 		}
 	}
 }

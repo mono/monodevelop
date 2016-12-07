@@ -1,5 +1,5 @@
 ﻿//
-// IBuildIntegratedNuGetProject.cs
+// TestableProjectPackageReference.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,20 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
-
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	internal interface IBuildIntegratedNuGetProject
+	class TestableProjectPackageReference : ProjectPackageReference
 	{
-		void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions);
-		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
-		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
-		void NotifyProjectReferencesChanged ();
+		public TestableProjectPackageReference (string id, string version)
+		{
+			Include = id;
+			Metadata.SetValue ("Version", version);
+		}
 	}
 }
-

@@ -106,6 +106,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 			return Task.FromResult (0);
 		}
+
+		public void NotifyProjectReferencesChanged ()
+		{
+		}
 	}
 }
 

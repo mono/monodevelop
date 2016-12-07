@@ -149,8 +149,6 @@ namespace MonoDevelop.PackageManagement
 				secondarySources,
 				cancellationToken);
 
-			actions = await project.PreviewInstallPackageAsync (identity, actions);
-
 			if (LicensesMustBeAccepted) {
 				await CheckLicenses (cancellationToken);
 			}

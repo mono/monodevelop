@@ -139,19 +139,6 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> secondarySources,
 			CancellationToken token)
 		{
-			var dotNetCoreProject = nuGetProject as DotNetCoreNuGetProject;
-			if (dotNetCoreProject != null) {
-				return dotNetCoreProject.PreviewUpdatePackagesAsync (
-					packageId,
-					this,
-					resolutionContext,
-					nuGetProjectContext,
-					primarySources,
-					secondarySources,
-					token
-				);
-			}
-
 			return packageManager.PreviewUpdatePackagesAsync (
 				packageId,
 				new [] { nuGetProject },
@@ -171,18 +158,6 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> secondarySources,
 			CancellationToken token)
 		{
-			var dotNetCoreProject = nuGetProject as DotNetCoreNuGetProject;
-			if (dotNetCoreProject != null) {
-				return dotNetCoreProject.PreviewUpdatePackagesAsync (
-					this,
-					resolutionContext,
-					nuGetProjectContext,
-					primarySources,
-					secondarySources,
-					token
-				);
-			}
-
 			return packageManager.PreviewUpdatePackagesAsync (
 				new [] { nuGetProject },
 				resolutionContext,

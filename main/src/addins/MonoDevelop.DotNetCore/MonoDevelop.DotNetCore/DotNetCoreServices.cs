@@ -1,5 +1,5 @@
 ﻿//
-// IBuildIntegratedNuGetProject.cs
+// DotNetCoreServices.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,21 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.Core;
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
-
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.DotNetCore
 {
-	internal interface IBuildIntegratedNuGetProject
+	class DotNetCoreServices
 	{
-		void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions);
-		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
-		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
-		void NotifyProjectReferencesChanged ();
+		static readonly DotNetCoreProjectFileRenamedHandler projectFileRenamedHandler = 
+			new DotNetCoreProjectFileRenamedHandler ();
+
+		public static void Initialize ()
+		{
+			// Do nothing.
+		}
 	}
 }
-
