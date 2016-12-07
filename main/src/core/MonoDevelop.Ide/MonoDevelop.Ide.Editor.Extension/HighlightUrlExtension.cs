@@ -29,99 +29,119 @@ using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 using MonoDevelop.Core;
+using System.Threading;
+using YamlDotNet.Core.Tokens;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	class HighlightUrlExtension : TextEditorExtension
 	{
+		SegmentTree<TextMarkerSegment> scannedSegmentTree = new SegmentTree<TextMarkerSegment> ();
 		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\.,;_/\-~%@()+:?&^=#!]*[\w\d/]";
-
 		public static readonly Regex UrlRegex = new Regex (urlRegexStr, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		public static readonly Regex MailRegex = new Regex (@"[\w\d._%+-]+@[\w\d.-]+\.\w+", RegexOptions.Compiled);
 
-		List<IUrlTextLineMarker> urlTextMarker = new List<IUrlTextLineMarker> ();
+		CancellationTokenSource src = new CancellationTokenSource ();
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Editor.TextChanged += Update;
-			Update (null, null);
+			Editor.LineShown += Editor_LineShown;
+			Editor.TextChanged += Editor_TextChanged;
 		}
 
 		public override void Dispose ()
 		{
+			src.Cancel ();
 			DisposeUrlTextMarker ();
 		}
 
 		void DisposeUrlTextMarker ()
 		{
-			foreach (var marker in urlTextMarker) {
-				Editor.RemoveMarker (marker);
+			foreach (var marker in scannedSegmentTree) {
+				foreach (var u in marker.UrlTextMarker)
+					Editor.RemoveMarker (u);
 			}
-			urlTextMarker.Clear ();
+			scannedSegmentTree.Clear ();
 		}
 
-		void Update (object sender, TextChangeEventArgs e)
+		void Editor_LineShown (object sender, LineEventArgs e)
+		{
+			var matches = new List<Tuple<UrlType, Match>> ();
+			var input = Editor;
+			var line = e.Line;
+			var lineOffset = line.Offset;
+			var lineEndOffset = lineOffset + line.Length;
+			var o = lineOffset;
+			if (scannedSegmentTree.GetSegmentsAt (o).Any ())
+				return;
+			
+			var match = UrlRegex.Match (input, lineOffset, line.Length);
+			while (match.Success) {
+				matches.Add (Tuple.Create (UrlType.Url, match));
+				o = lineOffset + match.Index + match.Length;
+				var len = lineEndOffset - o;
+				if (len <= 0)
+					break;
+				match = UrlRegex.Match (input, o, len);
+			}
+
+			o = lineOffset;
+			match = MailRegex.Match (input, lineOffset, line.Length);
+			while (match.Success) {
+				matches.Add (Tuple.Create (UrlType.Email, match));
+				var delta = line.Offset - o + match.Length;
+				o += delta;
+				o = lineOffset + match.Index + match.Length;
+				var len = lineEndOffset - o;
+				if (len <= 0)
+					break;
+				match = MailRegex.Match (input, o, len);
+			}
+			var newSegment = new TextMarkerSegment (line);
+			scannedSegmentTree.Add (newSegment);
+			foreach (var m in matches) {
+				var startCol = m.Item2.Index - line.Offset;
+				var url = m.Item2.Value;
+				var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, line, url, m.Item1, "url", startCol, startCol + m.Item2.Length);
+				Editor.AddMarker (line, marker);
+				newSegment.UrlTextMarker.Add (marker);
+			}
+		}
+
+		void Editor_TextChanged (object sender, TextChangeEventArgs e)
 		{
 			var startLine = e != null ? Editor.GetLineByOffset (e.Offset) : Editor.GetLine (1);
-			var endLine = e != null ? Editor.GetLineByOffset (e.Offset + e.RemovalLength) : Editor.GetLine (Editor.LineCount);
-			var stopLine = endLine.NextLine;
 			int startLineOffset = startLine.Offset;
-			var endLineOffset = endLine.Offset + endLine.Length;
 
-			for (int i = 0; i < urlTextMarker.Count; i++) {
-				var marker = urlTextMarker [i];
-				var o = marker.Line.Offset;
-				if (startLineOffset <= o && o < endLineOffset) {
-					Editor.RemoveMarker (marker);
-					urlTextMarker.RemoveAt (i);
-					i--;
-					continue;
+			var segments = scannedSegmentTree.GetSegmentsOverlapping(e.Offset, e.RemovalLength).ToList ();
+			foreach (var seg in segments) {
+				foreach  (var u in seg.UrlTextMarker) {
+					Editor.RemoveMarker (u);
+				}
+				scannedSegmentTree.Remove (seg);
+			}
+			scannedSegmentTree.UpdateOnTextReplace (sender, e);
+		}
+
+		class TextMarkerSegment : TreeSegment
+		{
+			List<IUrlTextLineMarker> urlTextMarker = new List<IUrlTextLineMarker> ();
+
+			public List<IUrlTextLineMarker> UrlTextMarker {
+				get {
+					return urlTextMarker;
 				}
 			}
 
-			Task.Run (delegate {
-				var matches = new List<Tuple<IDocumentLine, UrlType, Match>> ();
-				var line = startLine;
-				while (line != stopLine) {
-					var lineOffset = line.Offset;
-					var o = line.Offset;
-					var len = line.Length;
-					var match = UrlRegex.Match (Editor, o, len);
-					while (match.Success) {
-						matches.Add (Tuple.Create (line, UrlType.Url, match));
-						var delta = line.Offset - o + match.Length;
-						o += delta;
-						len -= delta;
-						if (len < 0)
-							break;
-						match = UrlRegex.Match (Editor, o, len);
-					}
+			public TextMarkerSegment (int offset, int length) : base (offset, length)
+			{
+			}
 
-					o = line.Offset;
-					len = line.Length;
-					match = MailRegex.Match (Editor, o, len);
-					while (match.Success) {
-						matches.Add (Tuple.Create (line, UrlType.Email, match));
-						var delta = line.Offset - o + match.Length;
-						o += delta;
-						len -= delta;
-						if (len < 0)
-							break;
-						match = MailRegex.Match (Editor, o, len);
-					}
-					line = line.NextLine;
-				}
-				Runtime.RunInMainThread (delegate {
-					foreach (var m in matches) {
-						var startCol = m.Item3.Index - m.Item1.Offset;
-						var url = m.Item3.Value;
-						var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, m.Item1, url, m.Item2, "url", startCol, startCol + m.Item3.Length);
-						Editor.AddMarker (m.Item1, marker);
-						urlTextMarker.Add (marker); 
-					}
-				});
-			});
+			public TextMarkerSegment (ISegment segment) : base (segment)
+			{
+			}
 		}
 	}
 }
