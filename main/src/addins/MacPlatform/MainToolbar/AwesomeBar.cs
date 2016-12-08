@@ -102,6 +102,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
+			if (ButtonBarContainer != null) {
+				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
+				if (extraIds != null) {
+					ids.AddRange (extraIds);
+				}
+			}
+
 			return ids.ToArray ();
 		}
 
@@ -109,6 +116,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public NSTouchBarItem MakeItem (NSTouchBar touchbar, string identifier)
 		{
 			NSTouchBarItem item = null;
+
+			if (identifier.StartsWith (ButtonBarContainer.ButtonBarIdPrefix)) {
+				Console.WriteLine ($"Getting items for {identifier}");
+
+				var items = ButtonBarContainer.TouchBarItemsForIdentifier (identifier);
+				if (items == null) {
+					return null;
+				}
+
+				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
+				return item;
+			}
 
 			switch (identifier) {
 			case "continue":

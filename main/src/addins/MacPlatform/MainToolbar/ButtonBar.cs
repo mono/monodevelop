@@ -174,6 +174,63 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			SetNeedsDisplay ();
 		}
 
+		NSImage NSImageFromButton (IButtonBarButton button)
+		{
+			NSImage img;
+
+			Console.WriteLine ($"Icon: {button.Image}");
+			if (button.Image.IsNull) {
+				img = new NSImage ();
+			} else {
+				Console.WriteLine ($"Getting image for {button.Image}");
+				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).ToNSImage ();
+				//img = MultiResImage.CreateMultiResImage (button.Image, "");
+			}
+			return img;
+		}
+
+		public NSTouchBarItem[] ButtonBarForTouchBar ()
+		{
+			List<NSTouchBarItem> items = new List<NSTouchBarItem> ();
+
+			int i = 0;
+			foreach (var button in buttons) {
+				if (button.IsSeparator) {
+					continue;
+				}
+
+				if (!button.Visible) {
+					continue;
+				}
+
+				var _button = button;
+				NSImage img = NSImageFromButton (button);
+
+				NSButton realButton = NSButton.CreateButton ("", img, () => { });
+				realButton.Activated += (sender, e) => {
+					button.NotifyPushed ();
+				};
+
+				button.ImageChanged += (o, e) => {
+					NSImage _img = NSImageFromButton (_button);
+
+					realButton.Image = _img;
+				};
+
+				realButton.Enabled = button.Enabled;
+				button.EnabledChanged += (o, e) => {
+					realButton.Enabled = _button.Enabled;
+				};
+				var item = new NSCustomTouchBarItem ("buttonbar-" + i);
+				item.View = realButton;
+
+				items.Add (item);
+				i++;
+			}
+
+			return items.ToArray ();
+		}
+
 		public event EventHandler ResizeRequested;
 	}
 }

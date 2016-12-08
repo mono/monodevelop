@@ -100,6 +100,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				SizeChanged (this, EventArgs.Empty);
 			}
 		}
+
+		public const string ButtonBarIdPrefix = "com.microsoft.vsfm.buttonbar.";
+		public string[] GetButtonBarTouchBarItems ()
+		{
+			List<string> items = new List<string> ();
+			if (buttonBars != null) {
+				foreach (var bar in buttonBars) {
+					items.Add (ButtonBarIdPrefix + "debug");
+				}
+			}
+
+			return items.ToArray ();
+		}
+
+		public NSTouchBarItem[] TouchBarItemsForIdentifier (string id)
+		{
+			//string realId = id.Remove (0, ButtonBarIdPrefix.Length);
+			foreach (var bar in buttonBars) {
+				/*
+				if (bar.Identifier == realId) {
+					return bar.ButtonBarForTouchBar ();
+				}
+				*/
+				return bar.ButtonBarForTouchBar ();
+			}
+
+			return null;
+		}
 	}
 }
 

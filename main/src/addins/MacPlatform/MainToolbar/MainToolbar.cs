@@ -207,6 +207,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			awesomeBar.ButtonBarContainer.ButtonBars = buttonBars;
+			awesomeBar.UpdateTouchBar ();
 		}
 
 		public bool RunButtonSensitivity {
