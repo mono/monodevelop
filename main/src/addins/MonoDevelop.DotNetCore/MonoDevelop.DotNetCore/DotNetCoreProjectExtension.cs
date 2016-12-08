@@ -260,5 +260,47 @@ namespace MonoDevelop.DotNetCore
 			Project.Modified -= OnProjectModified;
 			base.Dispose ();
 		}
+
+		/// <summary>
+		/// Clean errors are not currently reported by the IDE so the error information is reported 
+		/// directly to the progress monitor instead of just returning a BuildResult. The OnClean
+		/// method is overridden and an error is reported since this is called when a Rebuild is run.
+		/// Without the error being reported here the information about the NuGet restore being
+		/// needed would not be shown when a Rebuild was run.
+		/// </summary>
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			if (ProjectNeedsRestore ()) {
+				var result = CreateNuGetRestoreRequiredBuildResult ();
+				monitor.Log.WriteLine (result.Errors[0].ErrorText);
+				monitor.ReportError (GettextCatalog.GetString ("Clean failed: Packages not restored"));
+				return Task.FromResult (result);
+			}
+			return base.OnClean (monitor, configuration, operationContext);
+		}
+
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			if (ProjectNeedsRestore ()) {
+				return Task.FromResult (CreateNuGetRestoreRequiredBuildResult ());
+			}
+			return base.OnBuild (monitor, configuration, operationContext);
+		}
+
+		bool ProjectNeedsRestore ()
+		{
+			if (Project.NuGetAssetsFileExists () && Project.DotNetCoreNuGetMSBuildFilesExist ())
+				return false;
+
+			return true;
+		}
+
+		BuildResult CreateNuGetRestoreRequiredBuildResult ()
+		{
+			var result = new BuildResult ();
+			result.SourceTarget = Project;
+			result.AddError (GettextCatalog.GetString ("NuGet packages need to be restored before building. NuGet MSBuild targets are missing and are needed for building. The NuGet MSBuild targets are generated when the NuGet packages are restored."));
+			return result;
+		}
 	}
 }

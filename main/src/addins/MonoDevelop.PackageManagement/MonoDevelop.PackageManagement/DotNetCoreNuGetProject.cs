@@ -182,13 +182,8 @@ namespace MonoDevelop.PackageManagement
 
 		public override Task<string> GetAssetsFilePathAsync ()
 		{
-			string assetsFilePath = GetAssetsFilePath ();
+			string assetsFilePath = project.GetNuGetAssetsFilePath ();
 			return Task.FromResult (assetsFilePath);
-		}
-
-		string GetAssetsFilePath ()
-		{
-			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
 		}
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
@@ -266,7 +261,7 @@ namespace MonoDevelop.PackageManagement
 				DotNetProject.NotifyModified ("References");
 			});
 
-			packageManagementEvents.OnFileChanged (GetAssetsFilePath ());
+			packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
 
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
@@ -289,21 +284,10 @@ namespace MonoDevelop.PackageManagement
 
 		public bool ProjectRequiresReloadAfterRestore ()
 		{
-			if (NuGetMSBuildFilesExist ())
+			if (project.DotNetCoreNuGetMSBuildFilesExist ())
 				return false;
 
 			return true;
-		}
-
-		bool NuGetMSBuildFilesExist ()
-		{
-			var baseDirectory = project.BaseIntermediateOutputPath;
-			string projectFileName = project.FileName.FileName;
-			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
-			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
-
-			return File.Exists (propsFileName) &&
-				File.Exists (targetsFileName);
 		}
 	}
 }
