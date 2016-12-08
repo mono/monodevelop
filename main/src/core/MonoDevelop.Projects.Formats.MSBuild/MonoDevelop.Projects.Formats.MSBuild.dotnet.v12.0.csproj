@@ -11,7 +11,7 @@
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <BaseIntermediateOutputPath>obj\dotnet.12.0</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj\dotnet.12.0\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
