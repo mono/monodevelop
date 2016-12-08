@@ -50,6 +50,7 @@
     <Reference Include="FSharp.Compiler.Interactive.Settings">
       <HintPath>lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
