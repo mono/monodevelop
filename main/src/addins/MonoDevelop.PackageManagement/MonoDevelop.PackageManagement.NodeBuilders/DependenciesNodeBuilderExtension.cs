@@ -40,12 +40,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			packageManagementEvents.PackagesRestored += PackagesRestored;
+			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
 		}
 
 		public override void Dispose ()
 		{
-			packageManagementEvents.PackagesRestored -= PackagesRestored;
+			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
 		}
 
 		public override bool CanBuildNode (Type dataType)
@@ -59,7 +59,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return project.IsDotNetCoreProject ();
 		}
 
-		void PackagesRestored (object sender, EventArgs e)
+		void PackageOperationsFinished (object sender, EventArgs e)
 		{
 			RefreshAllChildNodes ();
 		}
