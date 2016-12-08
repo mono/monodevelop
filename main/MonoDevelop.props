@@ -4,6 +4,7 @@
 		<MonoDevelopRootDir>$(MSBuildThisFileDirectory)</MonoDevelopRootDir>
 		<CustomBeforeMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
 		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 	<Import Project="$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.props" />
 	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
