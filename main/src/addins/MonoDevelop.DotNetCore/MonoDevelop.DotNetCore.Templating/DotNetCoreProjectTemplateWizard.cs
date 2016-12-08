@@ -259,9 +259,6 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		void RestorePackages (DotNetProject project)
 		{
-			if (!PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled)
-				return;
-
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
 			var action = new RestoreNuGetPackagesInDotNetCoreProject (project);
 			action.ReloadProject = true;
