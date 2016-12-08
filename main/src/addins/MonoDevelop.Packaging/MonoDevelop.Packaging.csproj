@@ -123,6 +123,9 @@
     <Compile Include="MonoDevelop.Packaging\ProjectIsDotNetProjectOnlyCondition.cs" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>

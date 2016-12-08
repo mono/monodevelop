@@ -123,6 +123,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Templates\Projects\Console\ConsoleProject.csproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

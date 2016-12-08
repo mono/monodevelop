@@ -312,6 +312,12 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
+    <InternalsVisibleTo Include="MonoDevelop.MonoDroid" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="MonoDevelop.AnalysisCore\README.txt" />

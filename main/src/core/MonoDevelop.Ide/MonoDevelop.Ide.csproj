@@ -9329,6 +9329,36 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MacPlatform" />
+    <InternalsVisibleTo Include="WindowsPlatform" />
+    <InternalsVisibleTo Include="MonoDevelop.Debugger" />
+    <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
+    <InternalsVisibleTo Include="Ide.Tests" />
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
+    <InternalsVisibleTo Include="Xamarin.OSXEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.Xml" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="Xamarin.Ide" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
+    <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="Xamarin.Sketches" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting"/>
+    <InternalsVisibleTo Include="MonoDevelop.Packaging"/>
+    <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests"/>
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />

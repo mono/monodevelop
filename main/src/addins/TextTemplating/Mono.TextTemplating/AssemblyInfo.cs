@@ -34,6 +34,4 @@ using System;
 [assembly: AssemblyCopyright("MIT/X11")]
 [assembly: CLSCompliant (true)]
 
-[assembly: InternalsVisibleTo("Mono.TextTemplating.Tests")]
-
 //[assembly: AssemblyVersion("1.0.0.0")]

@@ -126,6 +126,11 @@
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Unix" />
+    <InternalsVisibleTo Include="VersionControl.Subversion.Win32" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Subversion\" />

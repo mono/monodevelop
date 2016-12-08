@@ -67,6 +67,9 @@
     <Folder Include="Microsoft.VisualStudio.TextTemplating\" />
     <Folder Include="Mono.TextTemplating\" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Mono.TextTemplating.Tests" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

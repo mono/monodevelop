@@ -252,6 +252,9 @@
     <Folder Include="MainToolbar\" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MacPlatform.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <LibXammac Include="..\..\..\external\libxammac.dylib" />
   </ItemGroup>
   <Target Name="AfterBuild">

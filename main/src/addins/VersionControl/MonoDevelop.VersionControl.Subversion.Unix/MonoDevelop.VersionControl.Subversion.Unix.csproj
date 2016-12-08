@@ -116,6 +116,9 @@
   <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
     <NativeBinaries Include="..\..\..\..\external\sharpsvn-binary\mac\*.dylib" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Tests" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />

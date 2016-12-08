@@ -451,6 +451,18 @@
       <LogicalName>prefs-completion-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+  </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

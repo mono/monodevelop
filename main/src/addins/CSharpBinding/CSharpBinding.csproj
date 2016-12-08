@@ -839,6 +839,15 @@
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.DocFood" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+    <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
+    <InternalsVisibleTo Include="MonoDevelop.IPhone" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharp.Parser\" />

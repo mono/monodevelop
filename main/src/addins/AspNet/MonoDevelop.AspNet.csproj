@@ -571,6 +571,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
