@@ -8,7 +8,6 @@
     <ProjectGuid>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
-    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>

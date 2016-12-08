@@ -262,8 +262,8 @@
     <EmbeddedResource Include="templates\Makefile.template">
       <LogicalName>Makefile.template</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\Makefile.am.template">
-      <LogicalName>Makefile.am.template</LogicalName>
+    <EmbeddedResource Include="templates\Makefile_am.template">
+      <LogicalName>Makefile.am_template</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16.png">
       <LogicalName>prefs-language-16.png</LogicalName>

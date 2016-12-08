@@ -23,7 +23,6 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\AssemblyBrowser\MonoDevelop.AssemblyBrowser.xml</DocumentationFile>
