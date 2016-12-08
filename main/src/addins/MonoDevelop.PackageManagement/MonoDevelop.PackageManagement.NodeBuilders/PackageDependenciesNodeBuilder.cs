@@ -68,8 +68,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (dependenciesNode.LoadedDependencies) {
 				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
 			} else {
-				var placeHolderNode = new TargetFrameworkNode (dependenciesNode, GettextCatalog.GetString ("Loading..."));
-				treeBuilder.AddChild (placeHolderNode);
+				AddDependencyNodesFromPackageReferencesInProject (treeBuilder, dependenciesNode);
 			}
 		}
 
@@ -81,6 +80,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			} else if (frameworkNodes.Any ()) {
 				var frameworkNode = frameworkNodes.First ();
 				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
+			} else {
+				AddDependencyNodesFromPackageReferencesInProject (treeBuilder, dependenciesNode);
 			}
 		}
 
@@ -88,6 +89,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var dependenciesNode = (PackageDependenciesNode)dataObject;
 			return dependenciesNode.GetTargetFrameworkNodes ();
+		}
+
+		void AddDependencyNodesFromPackageReferencesInProject (ITreeBuilder treeBuilder, PackageDependenciesNode dependenciesNode)
+		{
+			treeBuilder.AddChildren (dependenciesNode.GetProjectPackageReferencesAsDependencyNodes ());
 		}
 
 		public override void OnNodeAdded (object dataObject)
