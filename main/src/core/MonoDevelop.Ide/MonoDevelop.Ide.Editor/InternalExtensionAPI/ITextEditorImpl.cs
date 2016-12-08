@@ -231,5 +231,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
 		Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
-}
+
+		double GetLineHeight (int line);
+	}
 }

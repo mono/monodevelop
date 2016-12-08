@@ -876,6 +876,7 @@ namespace MonoDevelop.SourceEditor
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			UpdateTextDocumentEncoding ();
+
 			document.TextChanged += OnTextReplaced;
 			return TaskUtil.Default<object> ();
 		}
@@ -3577,6 +3578,11 @@ namespace MonoDevelop.SourceEditor
 		Task<ScopeStack> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return TextEditor.SyntaxHighlighting.GetScopeStackAsync (offset, cancellationToken);
+		}
+
+		double ITextEditorImpl.GetLineHeight (int line)
+		{
+			return TextEditor.GetLineHeight (line);
 		}
 	}
 } 
