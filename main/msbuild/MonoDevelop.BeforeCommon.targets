@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+
+	<!-- force Roslyn compiler -->
+	<PropertyGroup>
+		<CscToolExe>csc.exe</CscToolExe>
+		<CscToolPath>/Library/Frameworks/Mono.framework/Versions/4.9.0/lib/mono/4.5</CscToolPath>
+		<DebugType>portable</DebugType>
+		<CscDebugFileExt>.pdb</CscDebugFileExt>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
 		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
