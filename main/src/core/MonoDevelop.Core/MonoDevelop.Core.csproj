@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -669,7 +670,6 @@
       <LogicalName>framework_NET_4_0_client.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
@@ -710,6 +710,7 @@
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
     <Folder Include="MSBuild\" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />

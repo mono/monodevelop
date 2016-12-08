@@ -1,4 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9273,10 +9274,6 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />
-  </Target>
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
     <Folder Include="MonoDevelop.Ide.Execution\" />
@@ -9332,4 +9329,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />
+  </Target>
 </Project>
