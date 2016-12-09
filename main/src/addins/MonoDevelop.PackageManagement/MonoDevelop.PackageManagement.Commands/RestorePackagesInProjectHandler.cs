@@ -64,9 +64,9 @@ namespace MonoDevelop.PackageManagement.Commands
 				return new RestoreNuGetPackagesInNuGetIntegratedProject (project, buildIntegratedProject, solutionManager);
 			}
 
-			var dotNetCoreProject = nugetProject as DotNetCoreNuGetProject;
-			if (dotNetCoreProject != null) {
-				return new RestoreNuGetPackagesInDotNetCoreProject (project);
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null) {
+				return new RestoreNuGetPackagesInNuGetAwareProjectAction (project, solutionManager);
 			}
 
 			return new RestoreNuGetPackagesInProjectAction (project, nugetProject, solutionManager);

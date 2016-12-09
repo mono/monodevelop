@@ -564,7 +564,6 @@
     <Compile Include="MonoDevelop.Projects\ExportProjectItemTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProjectInstance.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV12.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV4.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ExpressionEvaluationException.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildValueType.cs" />

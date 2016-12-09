@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -40,7 +41,6 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -82,8 +82,11 @@ namespace MonoDevelop.PackageManagement
 			var affectedProjects = new List<BuildIntegratedNuGetProject> ();
 
 			foreach (BuildIntegratedNuGetProject project in projects) {
+				DotNetProject projectToReload = GetProjectToReloadAfterRestore (project);
 				var changedLock = await RestorePackagesInternal (project, cancellationToken);
-				if (changedLock != null) {
+				if (projectToReload != null) {
+					await ReloadProject (projectToReload, changedLock);
+				} else if (changedLock != null) {
 					changedLocks.Add (changedLock);
 					affectedProjects.Add (project);
 				}
@@ -103,9 +106,13 @@ namespace MonoDevelop.PackageManagement
 			BuildIntegratedNuGetProject project,
 			CancellationToken cancellationToken)
 		{
+			DotNetProject projectToReload = GetProjectToReloadAfterRestore (project);
+
 			var changedLock = await RestorePackagesInternal (project, cancellationToken);
 
-			if (changedLock != null) {
+			if (projectToReload != null) {
+				await ReloadProject (projectToReload, changedLock);
+			} else if (changedLock != null) {
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFileChanged (changedLock);
 					NotifyProjectReferencesChanged (project);
@@ -144,10 +151,9 @@ namespace MonoDevelop.PackageManagement
 
 		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
 		{
-			var bips = project as ProjectJsonBuildIntegratedProjectSystem ;
-			if (bips != null) {
-				bips.Project.RefreshProjectBuilder ();
-				bips.Project.DotNetProject.NotifyModified ("References");
+			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
+			if (buildIntegratedProject != null) {
+				buildIntegratedProject.NotifyProjectReferencesChanged ();
 			}
 		}
 
@@ -198,6 +204,26 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return projectsToBeRestored;
+		}
+
+		DotNetProject GetProjectToReloadAfterRestore (BuildIntegratedNuGetProject project)
+		{
+			var dotNetCoreNuGetProject = project as DotNetCoreNuGetProject;
+			if (dotNetCoreNuGetProject?.ProjectRequiresReloadAfterRestore () == true)
+				return dotNetCoreNuGetProject.DotNetProject;
+
+			return null;
+		}
+
+		Task ReloadProject (DotNetProject projectToReload, string changedLock)
+		{
+			projectToReload.NeedsReload = true;
+			return Runtime.RunInMainThread (() => {
+				if (changedLock != null) {
+					FileService.NotifyFileChanged (changedLock);
+				}
+				FileService.NotifyFileChanged (projectToReload.FileName);
+			});
 		}
 	}
 }

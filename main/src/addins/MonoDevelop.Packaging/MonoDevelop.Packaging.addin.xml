@@ -1,0 +1,150 @@
+﻿<ExtensionModel>
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Packaging.dll" />
+
+		<Import file="Templates/CrossPlatformLibrary.xpt.xml" />
+		<Import file="Templates/PackagingProject.xpt.xml" />
+	</Runtime>
+
+	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />
+	<ConditionType id="IsDotNetProjectOnly" type="MonoDevelop.Packaging.ProjectIsDotNetProjectOnlyCondition" />
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectType
+			language="NuGet.Packaging"
+			extension="nuproj"
+			guid="{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}"
+			type="MonoDevelop.Packaging.PackagingProject"
+			alias="NuGetPackaging"
+			msbuildSupport="Required" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<ProjectFlavor
+			id="MonoDevelop.Packaging.PackagingProjectFlavor"
+			guid="{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}"
+			type="MonoDevelop.Packaging.PackagingProjectFlavor"
+			alias="NuGetPackaging">
+		</ProjectFlavor>
+		<Class class="MonoDevelop.Packaging.DotNetProjectPackagingExtension" />
+	</Extension>
+
+	<!--
+		Need to define a language binding otherwise it is not possible to
+	 	open a .nuproj since the DotNetProject.SupportsPartialTypes is called
+		when initializing a project and it requires a non-null language binding.
+	-->
+	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding
+			id="NuGet.Packaging"
+			extensions=".nuproj" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
+		<Type
+			id="NuGetPackagingMSBuildPropertyProvider"
+			class="MonoDevelop.Packaging.MSBuildGlobalPropertyProvider" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id="MonoDevelop.Packaging.Project" file="Templates/PackagingProject.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" file="Templates/CrossPlatformLibrary.xpt.xml"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="MonoDevelop.Packaging.ProjectTemplateWizard" class="MonoDevelop.Packaging.Templating.PackagingProjectTemplateWizard" />
+		<Class id="MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard" class="MonoDevelop.Packaging.Templating.CrossPlatformLibraryTemplateWizard" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+		<Section id="NuGetPackage" _label="NuGet Package">
+			<Condition id="IsDotNetProjectOnly">
+				<Section
+					id="Build"
+					_label="Build"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.ProjectNuGetBuildOptionsPanel" />
+			</Condition>
+			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject|DotNetProject">
+				<Section
+					id="Metadata"
+					_label="Metadata"
+					icon="md-prefs-metadata"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
+			</Condition>
+			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+				<Section
+					id="ReferenceAssemblies"
+					_label="Reference Assemblies"
+					icon="md-prefs-package"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.ReferenceAssembliesOptionsPanel" />
+			</Condition>
+		</Section>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="NuGet" id="NuGet">
+			<Command
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				_description="Creates a NuGet package"
+				_label="Create NuGet _Package"
+				defaultHandler="MonoDevelop.Packaging.CreateNuGetPackageHandler" />
+			<Command
+				id="MonoDevelop.Packaging.Commands.AddPlatformImplementation"
+				_description="Adds platform specific implementation for a cross platform project"
+				_label="Add _Platform Implementation..."
+				defaultHandler="MonoDevelop.Packaging.AddPlatformImplementationHandler" />
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/MainMenu/Build">
+		<Condition id="ProjectHasNuGetMetadata">
+			<SeparatorItem
+				id="CreateNuGetPackageSeparator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Clean"
+				insertbefore="Separator1" />
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				insertafter="CreateNuGetPackageSeparator"
+				insertbefore="Separator1" />
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<ComplexCondition>
+			<And>
+				<Condition id="ItemType" value="DotNetProject|MonoDevelop.Packaging.PackagingProject" />
+				<Condition id="ProjectHasNuGetMetadata" />
+			</And>
+			<SeparatorItem
+				id="CreateNuGetPackageSeparator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Unload"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				insertafter="CreateNuGetPackageSeparator"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+		</ComplexCondition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<ComplexCondition>
+			<And>
+				<Condition id="ItemType" value="DotNetProject" />
+				<Condition id="ProjectHasNuGetMetadata" />
+			</And>
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.AddPlatformImplementation"
+				insertafter="MonoDevelop.PackageManagement.Commands.AddPackages"
+				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
+		</ComplexCondition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
+		<Class class="MonoDevelop.Packaging.NuGetFilePropertyProvider" />
+		<Class class="MonoDevelop.Packaging.NuGetProjectReferencePropertyProvider" />
+	</Extension>
+</ExtensionModel>

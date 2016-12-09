@@ -50,6 +50,22 @@ type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultS
     //interface Mono.TextEditor.ITextEditorOptions with
     //    member x.ColorScheme = options.ColorScheme
 
+type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
+    inherit TextLineMarker()
+    static let tag = obj()
+    override x.Draw(editor, cr, metrics) =
+        cr.DrawImage(editor, image, 30.0, metrics.LineYRenderStartPosition)
+
+    interface ITextLineMarker with
+        member x.Line with get() = line
+        member x.IsVisible with get() = true and set(_value) = ()
+        member x.Tag with get() = tag and set(_value) = ()
+
+    interface IExtendingTextLineMarker with
+        member x.GetLineHeight editor = editor.LineHeight + image.Height
+        member x.Draw(editor, g, lineNr, lineArea) = ()
+        member x.IsSpaceAbove with get() = false
+
 type FsiDocumentContext() =
     inherit DocumentContext()
     let name = "__FSI__.fsx"
@@ -185,6 +201,15 @@ type FSharpInteractivePad() =
         editor.CaretOffset <- editor.Text.Length
         editor.ScrollTo editor.CaretLocation
 
+    let renderImage image =
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+        let textDocument = data.Document
+        let line = editor.GetLine editor.CaretLine
+        let imageMarker = ImageRendererMarker(line, image)
+        textDocument.AddMarker(editor.CaretLine, imageMarker)
+        textDocument.CommitUpdateAll()
+        editor.InsertAtCaret "\n"
+
     let input = new ResizeArray<_>()
 
     let setupSession() =
@@ -193,11 +218,13 @@ type FSharpInteractivePad() =
             input.Clear()
             promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
+            let imageReceived = ses.ImageReceived.Subscribe(fun image -> Runtime.RunInMainThread(fun () -> renderImage image) |> Async.AwaitTask |> Async.RunSynchronously)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
 
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
+                imageReceived.Dispose()
                 if killIntent = NoIntent then
                     Runtime.RunInMainThread(fun () ->
                         LoggingService.LogDebug ("Interactive: process stopped")

@@ -29,6 +29,7 @@ using MonoDevelop.Projects.Extensions;
 using NUnit.Framework;
 using UnitTests;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -50,13 +51,26 @@ namespace MonoDevelop.Projects
 			WorkspaceObject.UnregisterCustomExtension (capaNode);
 		}
 
+		List<string> defaultCapabilities;
+		async Task<IEnumerable<string>> GetDefaultCapabilities ()
+		{
+			if (defaultCapabilities == null) {
+				string f = Util.GetSampleProject ("console-project", "ConsoleProject", "ConsoleProject.csproj");
+				var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), f);
+				defaultCapabilities = item.GetProjectCapabilities ().ToList ();
+			}
+			return defaultCapabilities;
+		}
+
 		[Test ()]
 		public async Task LoadCapability ()
 		{
 			string solFile = Util.GetSampleProject ("project-capability-tests", "ConsoleProject.csproj");
 			var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().ToArray ());
+			var defaultCaps = await GetDefaultCapabilities ();
+
+			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
 		}
 
 		[Test ()]
@@ -65,7 +79,9 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("project-capability-tests", "ConsoleProject.csproj");
 			var item = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().ToArray ());
+			var defaultCaps = await GetDefaultCapabilities ();
+
+			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
 			var ext = item.GetFlavor<CustomCapabilityExtension> ();
 			Assert.IsNull (ext);
 
@@ -78,7 +94,7 @@ namespace MonoDevelop.Projects
 			await item.ReevaluateProject (Util.GetMonitor ());
 
 			Assert.IsTrue (capabilitiesChanged);
-			Assert.AreEqual (new [] { "Zero", "One" }, item.GetProjectCapabilities ().ToArray ());
+			Assert.AreEqual (new [] { "Zero", "One" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
 
 			ext = item.GetFlavor<CustomCapabilityExtension> ();
 			Assert.IsNotNull (ext);
@@ -88,7 +104,7 @@ namespace MonoDevelop.Projects
 			await item.ReevaluateProject (Util.GetMonitor ());
 
 			Assert.IsTrue (capabilitiesChanged);
-			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().ToArray ());
+			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
 			ext = item.GetFlavor<CustomCapabilityExtension> ();
 			Assert.IsNull (ext);
 		}

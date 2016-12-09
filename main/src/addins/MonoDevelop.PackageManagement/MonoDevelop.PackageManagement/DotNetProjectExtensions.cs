@@ -36,6 +36,7 @@ using MonoDevelop.Projects.MSBuild;
 using NuGet.Common;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.ProjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -72,6 +73,10 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this DotNetProject project)
 		{
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.HasPackages ();
+
 			return HasPackages (project.BaseDirectory, project.Name) || project.HasPackageReferences ();
 		}
 
@@ -181,6 +186,28 @@ namespace MonoDevelop.PackageManagement
 		{
 			return project.Items.OfType<ProjectPackageReference> ()
 				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity));
+		}
+
+		public static FilePath GetNuGetAssetsFilePath (this DotNetProject project)
+		{
+			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
+		}
+
+		public static bool NuGetAssetsFileExists (this DotNetProject project)
+		{
+			string assetsFile = project.GetNuGetAssetsFilePath ();
+			return File.Exists (assetsFile);
+		}
+
+		public static bool DotNetCoreNuGetMSBuildFilesExist (this DotNetProject project)
+		{
+			var baseDirectory = project.BaseIntermediateOutputPath;
+			string projectFileName = project.FileName.FileName;
+			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
+			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
+
+			return File.Exists (propsFileName) &&
+				File.Exists (targetsFileName);
 		}
 	}
 }

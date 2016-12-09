@@ -40,16 +40,18 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
-		MonoDevelopDotNetCorePackageRestorer dotNetCorePackageRestorer;
+		NuGetAwareProjectPackageRestoreManager nugetAwareRestorer;
 		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
 		List<NuGetProject> nugetProjects;
+		List<INuGetAwareProject> nugetAwareProjects;
 
 		public RestoreNuGetPackagesAction (Solution solution)
 		{
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+			RestorePackagesConfigProjects = true;
 
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
 
@@ -63,11 +65,13 @@ namespace MonoDevelop.PackageManagement
 				);
 			}
 
-			if (AnyProjectsUsingProjectJson ()) {
+			if (AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()) {
 				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 			}
 
-			CreateDotNetCorePackageRestorer ();
+			if (AnyNuGetAwareProjects ()) {
+				nugetAwareRestorer = new NuGetAwareProjectPackageRestoreManager (solutionManager);
+			}
 		}
 
 		bool AnyProjectsUsingPackagesConfig ()
@@ -75,23 +79,23 @@ namespace MonoDevelop.PackageManagement
 			return nugetProjects.Any (project => !(project is BuildIntegratedNuGetProject));
 		}
 
-		bool AnyProjectsUsingProjectJson ()
+		bool AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()
 		{
 			return GetBuildIntegratedNuGetProjects ().Any ();
-		}
-
-		void CreateDotNetCorePackageRestorer ()
-		{
-			var dotNetCoreProjects = nugetProjects.OfType<DotNetCoreNuGetProject> ().ToList ();
-			if (dotNetCoreProjects.Any ()) {
-				dotNetCorePackageRestorer = new MonoDevelopDotNetCorePackageRestorer (dotNetCoreProjects);
-			}
 		}
 
 		IEnumerable<BuildIntegratedNuGetProject> GetBuildIntegratedNuGetProjects ()
 		{
 			return nugetProjects.OfType<BuildIntegratedNuGetProject> ();
 		}
+
+		bool AnyNuGetAwareProjects ()
+		{
+			nugetAwareProjects = solution.GetAllProjects ().OfType<INuGetAwareProject> ().ToList ();
+			return nugetAwareProjects.Any ();
+		}
+
+		public bool RestorePackagesConfigProjects { get; set; }
 
 		public void Execute ()
 		{
@@ -113,7 +117,7 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			if (restoreManager != null) {
+			if (restoreManager != null && RestorePackagesConfigProjects) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
 					await restoreManager.RestoreMissingPackagesInSolutionAsync (
 						solutionManager.SolutionDirectory,
@@ -128,8 +132,11 @@ namespace MonoDevelop.PackageManagement
 					cancellationToken);
 			}
 
-			if (dotNetCorePackageRestorer != null) {
-				await dotNetCorePackageRestorer.RestorePackages (cancellationToken);
+			if (nugetAwareRestorer != null) {
+				await nugetAwareRestorer.RestoreMissingPackagesAsync (
+					nugetAwareProjects,
+					new NuGetProjectContext (),
+					cancellationToken);
 			}
 
 			await Runtime.RunInMainThread (() => RefreshProjectReferences ());

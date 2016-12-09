@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 
@@ -50,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		void RefreshProjectBuilder ();
 		void DisposeProjectBuilder ();
 		void RefreshReferenceStatus ();
+		IEnumerable<ProjectPackageReference> GetPackageReferences ();
 	}
 }
 

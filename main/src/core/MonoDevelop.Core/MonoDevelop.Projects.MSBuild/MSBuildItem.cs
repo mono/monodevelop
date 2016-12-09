@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.MSBuild
 		string include;
 		string exclude;
 		string remove;
+		string update;
 
 		public MSBuildItem ()
 		{
@@ -53,7 +54,19 @@ namespace MonoDevelop.Projects.MSBuild
 			this.name = name;
 		}
 
-		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove" };
+		public bool IsUpdate {
+			get { return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (update); }
+		}
+
+		public bool IsRemove {
+			get { return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (remove); }
+		}
+
+		public bool IsInclusion {
+			get { return !string.IsNullOrEmpty (include); }
+		}
+
+		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove", "Update" };
 
 		internal override string [] GetKnownAttributes ()
 		{
@@ -68,18 +81,27 @@ namespace MonoDevelop.Projects.MSBuild
 				exclude = value;
 			else if (name == "Remove")
 				remove = value;
+			else if (name == "Update")
+				update = value;
 			else
 				base.ReadAttribute (name, value);
+		}
+
+		internal override void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			metadata.ReadUnknownAttribute (reader, lastAttr);
 		}
 
 		internal override string WriteAttribute (string name)
 		{
 			if (name == "Include")
-				return include;
+				return !string.IsNullOrEmpty (include) || string.IsNullOrEmpty (update) ? include : null;
 			else if (name == "Exclude")
 				return exclude;
 			else if (name == "Remove")
 				return remove;
+			else if (name == "Update")
+				return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (update) ? update : null;
 			else
 				return base.WriteAttribute (name);
 		}
@@ -97,7 +119,46 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal override void Write (XmlWriter writer, WriteContext context)
 		{
-			base.Write (writer, context);
+			MSBuildWhitespace.Write (StartWhitespace, writer);
+
+			writer.WriteStartElement (NamespacePrefix, GetElementName (), Namespace);
+
+			var props = metadata.PropertiesAttributeOrder;
+
+			if (props.Count > 0) {
+				int propIndex = 0;
+				int knownIndex = 0;
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				string lastAttr = null;
+				do {
+					if (propIndex < props.Count && (lastAttr == props [propIndex].AfterAttribute || props [propIndex].AfterAttribute == null)) {
+						var prop = props [propIndex++];
+						writer.WriteAttributeString (prop.Name, prop.Value);
+						lastAttr = prop.Name;
+					} else if (knownIndex < knownAtts.Length) {
+						var aname = knownAtts [knownIndex++];
+						lastAttr = aname;
+						var val = WriteAttribute (aname);
+						if (val != null)
+							writer.WriteAttributeString (aname, val);
+					} else
+						lastAttr = null;
+				} while (propIndex < props.Count || knownIndex < knownAtts.Length);
+			} else {
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				for (int i = 0; i < knownAtts.Length; i++) {
+					var aname = knownAtts [i];
+					var val = WriteAttribute (aname);
+					if (val != null)
+						writer.WriteAttributeString (aname, val);
+				}
+			}
+
+			WriteContent (writer, context);
+
+			writer.WriteEndElement ();
+
+			MSBuildWhitespace.Write (EndWhitespace, writer);
 			if (context.Evaluating) {
 				string id = context.ItemMap.Count.ToString ();
 				context.ItemMap [id] = this;
@@ -142,6 +203,15 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		public string Update {
+			get { return update; }
+			set {
+				AssertCanModify ();
+				update = value;
+				NotifyChanged ();
+			}
+		}
+
 		public bool IsImported {
 			get;
 			set;
@@ -160,7 +230,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal int EvaluatedItemCount { get; set; }
 
 		internal bool IsWildcardItem {
-			get { return EvaluatedItemCount > 1 && (Include.Contains ("*") || Include.Contains (";")); }
+			get { return IsInclusion && EvaluatedItemCount > 1 && (Include.Contains ("*") || Include.Contains (";") || Include.StartsWith ("@(")); }
 		}
 
 		public void AddExclude (string excludePath)
@@ -181,7 +251,7 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildPropertyGroupEvaluated metadata;
 		string evaluatedInclude;
 		string include;
-		MSBuildItem sourceItem;
+		object sourceItem;
 
 		internal MSBuildItemEvaluated (MSBuildProject parent, string name, string include, string evaluatedInclude)
 		{
@@ -216,9 +286,43 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		public void AddSourceItem (MSBuildItem item)
+		{
+			item.EvaluatedItemCount++;
+			if (sourceItem == null)
+				sourceItem = item;
+			else if (sourceItem is MSBuildItem) {
+				if (item != (MSBuildItem)sourceItem)
+					sourceItem = new MSBuildItem [] { (MSBuildItem)sourceItem, item };
+			}
+			else {
+				var items = (MSBuildItem [])sourceItem;
+				if (!items.Contains (item)) {
+					var newItems = new MSBuildItem [items.Length + 1];
+					Array.Copy (items, newItems, items.Length);
+					newItems [newItems.Length - 1] = item;
+					sourceItem = newItems;
+				}
+			}
+		}
+
 		public MSBuildItem SourceItem {
-			get { return sourceItem; }
-			set { sourceItem = value; sourceItem.EvaluatedItemCount++; }
+			get {
+				if (sourceItem is MSBuildItem)
+					return (MSBuildItem) sourceItem;
+				else
+					return SourceItems.LastOrDefault (); 
+			}
+		}
+
+		public IEnumerable<MSBuildItem> SourceItems {
+			get {
+				if (sourceItem == null)
+					return Enumerable.Empty<MSBuildItem> ();
+				if (sourceItem is MSBuildItem)
+					return Enumerable.Repeat ((MSBuildItem)sourceItem, 1);
+				return (IEnumerable<MSBuildItem>)sourceItem;
+			}
 		}
 
 		public override string ToString ()
@@ -248,5 +352,12 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		/// <value>The source item.</value>
 		MSBuildItem SourceItem { get; }
+
+		/// <summary>
+		/// The project items that generated this item. It can be a combination of Include + Update itens.
+		/// Empty if this item has not been generated by a project item declared in an ItemGroup.
+		/// </summary>
+		/// <value>The source items.</value>
+		IEnumerable<MSBuildItem> SourceItems { get; }
 	}
 }

@@ -161,5 +161,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			return null;
 		}
+
+		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.Select (PackageDependencyNode.Create);
+		}
 	}
 }

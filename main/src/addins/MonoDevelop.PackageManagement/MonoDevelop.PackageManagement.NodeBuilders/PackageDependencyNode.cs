@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
@@ -36,11 +35,21 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 	{
 		PackageDependenciesNode dependenciesNode;
 		PackageDependency dependency;
+		string name;
+		string version;
 
 		PackageDependencyNode (PackageDependenciesNode dependenciesNode, PackageDependency dependency)
 		{
 			this.dependenciesNode = dependenciesNode;
 			this.dependency = dependency;
+			name = dependency.Name;
+			version = dependency.Version;
+		}
+
+		PackageDependencyNode (ProjectPackageReference packageReference)
+		{
+			name = packageReference.Include;
+			version = packageReference.Metadata.GetValue ("Version", string.Empty);
 		}
 
 		public static PackageDependencyNode Create (PackageDependenciesNode dependenciesNode, string dependencyName)
@@ -52,8 +61,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return null;
 		}
 
+		public static PackageDependencyNode Create (ProjectPackageReference packageReference)
+		{
+			return new PackageDependencyNode (packageReference);
+		}
+
 		public string Name {
-			get { return dependency.Name; }
+			get { return name; }
 		}
 
 		public string GetLabel ()
@@ -63,7 +77,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			return string.Format ("({0})", dependency.Version);
+			return string.Format ("({0})", version);
 		}
 
 		public IconId GetIconId ()
@@ -73,12 +87,18 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public bool HasDependencies ()
 		{
-			return dependency.Dependencies.Any ();
+			if (dependency != null)
+				return dependency.Dependencies.Any ();
+
+			return false;
 		}
 
 		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
 		{
-			return GetDependencyNodes (dependenciesNode, dependency);
+			if (dependency != null)
+				return GetDependencyNodes (dependenciesNode, dependency);
+
+			return new PackageDependencyNode[0];
 		}
 
 		public static IEnumerable<PackageDependencyNode> GetDependencyNodes (

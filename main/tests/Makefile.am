@@ -29,6 +29,7 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.Packaging.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \

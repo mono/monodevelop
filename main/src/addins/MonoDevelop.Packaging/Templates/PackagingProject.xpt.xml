@@ -1,0 +1,30 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	created="2016/08/08"
+	lastModified="2016/08/08">
+
+	<TemplateConfiguration>
+		<_Name>NuGet Package</_Name>
+		<Category>other/net/general</Category>
+		<Icon>md-package-project</Icon>
+		<Image id="md-package-project" />
+		<FileExtension>.nuproj</FileExtension>
+		<_Description>Creates a NuGet Packaging project.</_Description>
+		<Wizard>MonoDevelop.Packaging.ProjectTemplateWizard</Wizard>
+	</TemplateConfiguration>
+
+	<Combine name="${ProjectName}" directory=".">
+		<Project name="${ProjectName}" directory="." type="NuGetPackaging">
+			<Options TargetFrameworkVersion="4.5" />
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
+			</Packages>
+			<Files>
+				<File name="readme.txt"><![CDATA[
+This readme.txt file will be displayed immediately after the NuGet package is installed.
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

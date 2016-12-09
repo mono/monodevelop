@@ -150,6 +150,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void EnsureSolutionIsLoaded ()
 		{
 		}
+
+		public void ClearProjectCache ()
+		{
+		}
 	}
 }
 
