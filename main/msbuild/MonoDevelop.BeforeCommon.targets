@@ -13,6 +13,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<Deterministic>True</Deterministic>
 		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
 		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
