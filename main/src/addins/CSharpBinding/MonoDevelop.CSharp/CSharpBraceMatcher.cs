@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 using MonoDevelop.Core.Text;
 using MonoDevelop.CSharp.Completion;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

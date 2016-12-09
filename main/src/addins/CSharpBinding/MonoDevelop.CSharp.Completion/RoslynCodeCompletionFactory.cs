@@ -75,16 +75,13 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			static SignatureMarkupCreator creator = new SignatureMarkupCreator (null, 0);
 
-			SyntaxKind kind;
-
 			protected readonly RoslynCodeCompletionFactory factory;
 
 			protected CSharpCompletionTextEditorExtension ext { get { return factory?.Ext; } }
 
 
-			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SyntaxKind kind) : base (keyHandler)
+			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory) : base (keyHandler)
 			{
-				this.kind = kind;
 				this.factory = factory;
 			}
 
@@ -109,7 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 			{
-				if (kind == SyntaxKind.SizeOfKeyword || kind == SyntaxKind.NameOfKeyword || kind == SyntaxKind.TypeOfKeyword) {
+				if (this.CompletionText == "sizeof" || this.CompletionText == "nameof" || this.CompletionText == "typeof") {
 					string partialWord = GetCurrentWord (window, descriptor);
 					int skipChars = 0;
 					bool runCompletionCompletionCommand = false;
@@ -157,9 +154,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+		CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data)
 		{
-			return new KeywordCompletionData (keyHandler, this, syntaxKind) {
+			return new KeywordCompletionData (keyHandler, this) {
 				CompletionText = data,
 				DisplayText = data,
 				Icon = "md-keyword"

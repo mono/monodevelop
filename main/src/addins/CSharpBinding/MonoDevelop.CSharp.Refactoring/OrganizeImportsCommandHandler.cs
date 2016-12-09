@@ -25,17 +25,13 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
-using System.Linq;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp.Features.OrganizeImports;
+using Microsoft.CodeAnalysis.CSharp.OrganizeImports;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory6.CSharp.Features.RemoveUnnecessaryImports;
 
@@ -58,18 +54,18 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 
-		internal static Solution UpdateDocument(this Solution solution, DocumentId id, IEnumerable<TextChange> textChanges, CancellationToken cancellationToken)
+		internal static Solution UpdateDocument (this Solution solution, DocumentId id, IEnumerable<TextChange> textChanges, CancellationToken cancellationToken)
 		{
-			var oldDocument = solution.GetDocument(id);
-			var oldText = oldDocument.GetTextAsync(cancellationToken).WaitAndGetResult(cancellationToken);
-			var newText = oldText.WithChanges(textChanges);
-			return solution.WithDocumentText(id, newText, PreservationMode.PreserveIdentity);
+			var oldDocument = solution.GetDocument (id);
+			var oldText = oldDocument.GetTextAsync (cancellationToken).WaitAndGetResult (cancellationToken);
+			var newText = oldText.WithChanges (textChanges);
+			return solution.WithDocumentText (id, newText, PreservationMode.PreserveIdentity);
 		}
 	}
 
 	class RemoveUnusedImportsCommandHandler : CommandHandler
 	{
-		internal static readonly CSharpRemoveUnnecessaryImportsService service = new CSharpRemoveUnnecessaryImportsService();
+		internal static readonly CSharpRemoveUnnecessaryImportsService service = new CSharpRemoveUnnecessaryImportsService ();
 
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)
 		{
@@ -80,8 +76,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				var model = await ad.GetSemanticModelAsync (default (CancellationToken));
 				var root = model.SyntaxTree.GetRoot (default (CancellationToken));
-				var newDocument = service.RemoveUnnecessaryImports(ad, model, root, default (CancellationToken));
-				ad.Project.Solution.Workspace.ApplyDocumentChanges(newDocument, CancellationToken.None);
+				var newDocument = service.RemoveUnnecessaryImports (ad, model, root, default (CancellationToken));
+				ad.Project.Solution.Workspace.ApplyDocumentChanges (newDocument, CancellationToken.None);
 
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while removing unused usings", e);

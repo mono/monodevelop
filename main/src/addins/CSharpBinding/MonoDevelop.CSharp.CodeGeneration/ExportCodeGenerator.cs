@@ -30,6 +30,7 @@ using System.Linq;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.CSharp.Completion;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.CSharp.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;

@@ -23,19 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis;
-using System.Threading;
 using System.Linq;
-using Mono.Addins.Description;
+using System.Threading;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
-{	
+{
 	interface IExtensionContextHandler
 	{
 		void Init (RoslynCodeCompletionFactory factory);
@@ -112,7 +115,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool IsEqualMember (ISymbol m, ISymbol m2)
 		{
-			return SignatureComparer.HaveSameSignature (m, m2, true);
+			return SignatureComparer.Instance.HaveSameSignature (m, m2, true);
 		}
 
 		static void AddProtocolMembers(SemanticModel semanticModel, HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)

@@ -34,10 +34,11 @@ using System.Text;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using NUnit.Framework;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeGeneration;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.CodeGeneration;
 using System.Collections.Immutable;
-using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
@@ -98,7 +99,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 				return new CompletionData (format);
 			}
 
-			CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+			CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data)
 			{
 				return new CompletionData (data);
 			}
@@ -322,7 +323,8 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			Compilation compilation;
 			try {
 				compilation = project.GetCompilationAsync().Result;
-				var service = new CSharpCodeGenerationService(workspace);
+				var provider = workspace.Services.GetLanguageServices(LanguageNames.CSharp);
+				var service = provider.GetService<ICodeGenerationService>();
 
 				var ts = compilation.GetTypeSymbol("System", "Object", 0);
 				foreach (var member in ts.GetMembers ()) {

@@ -30,27 +30,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete]
 	public static class NR5CompatibiltyExtensions
 	{
-		readonly static Type ISymbolExtensionsTypeInfo;
-		static MethodInfo isAccessibleWithin1Method, isAccessibleWithin2Method;
-
-		static NR5CompatibiltyExtensions ()
-		{
-			ISymbolExtensionsTypeInfo = Type.GetType ("Microsoft.CodeAnalysis.Shared.Extensions.ISymbolExtensions, Microsoft.CodeAnalysis.Workspaces", true);
-
-			isAccessibleWithin1Method = ISymbolExtensionsTypeInfo.GetMethod ("IsAccessibleWithin", BindingFlags.Static | BindingFlags.Public, null, new [] { typeof(ISymbol), typeof(IAssemblySymbol), typeof(ITypeSymbol) }, null);
-			if (isAccessibleWithin1Method == null)
-				LoggingService.LogFatalError ("NR5CompatibiltyExtensions: IsAccessibleWithin(1) method not found");
-			isAccessibleWithin2Method = ISymbolExtensionsTypeInfo.GetMethod ("IsAccessibleWithin", BindingFlags.Static | BindingFlags.Public, null, new [] { typeof(ISymbol), typeof(INamedTypeSymbol), typeof(ITypeSymbol) }, null);
-			if (isAccessibleWithin2Method == null)
-				LoggingService.LogFatalError ("NR5CompatibiltyExtensions: IsAccessibleWithin(2) method not found");
-		}
-
 		/// <summary>
 		/// Gets the full name of the metadata.
 		/// In case symbol is not INamedTypeSymbol it returns raw MetadataName
@@ -89,30 +76,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return fullName.ToString ();
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetAllTypes (this INamespaceSymbol namespaceSymbol, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			if (namespaceSymbol == null)
-				throw new ArgumentNullException (nameof (namespaceSymbol));
-			var stack = new Stack<INamespaceOrTypeSymbol> ();
-			stack.Push (namespaceSymbol);
-
-			while (stack.Count > 0) {
-				if (cancellationToken.IsCancellationRequested)
-					yield break;
-				var current = stack.Pop ();
-				var currentNs = current as INamespaceSymbol;
-				if (currentNs != null) {
-					foreach (var member in currentNs.GetMembers ())
-						stack.Push (member);
-				} else {
-					var namedType = (INamedTypeSymbol)current;
-					foreach (var nestedType in namedType.GetTypeMembers ())
-						stack.Push (nestedType);
-					yield return namedType;
-				}
-			}
-		}
-
 		/// <summary>
 		/// Determines if derived from baseType. Includes itself and all base classes, but does not include interfaces.
 		/// </summary>
@@ -130,13 +93,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetBaseTypes (this ITypeSymbol type)
+		public static IEnumerable<INamedTypeSymbol> GetAllTypes (this INamespaceSymbol namespaceSymbol)
 		{
-			var current = type.BaseType;
-			while (current != null) {
-				yield return current;
-				current = current.BaseType;
-			}
+			return namespaceSymbol.GetAllTypes (CancellationToken.None);
 		}
 
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis (this ITypeSymbol type)
@@ -324,84 +283,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			return true;
-		}
-
-		public static INamedTypeSymbol GetEnclosingNamedType(this SemanticModel semanticModel, int position, CancellationToken cancellationToken)
-		{
-			return semanticModel.GetEnclosingSymbol<INamedTypeSymbol>(position, cancellationToken);
-		}
-
-		public static TSymbol GetEnclosingSymbol<TSymbol>(this SemanticModel semanticModel, int position, CancellationToken cancellationToken)
-			where TSymbol : ISymbol
-		{
-			for (var symbol = semanticModel.GetEnclosingSymbol(position, cancellationToken);
-			     symbol != null;
-			     symbol = symbol.ContainingSymbol)
-			{
-				if (symbol is TSymbol)
-				{
-					return (TSymbol)symbol;
-				}
-			}
-
-			return default(TSymbol);
-		}
-
-		/// <summary>
-		/// Checks if 'symbol' is accessible from within 'within'.
-		/// </summary>
-		public static bool IsAccessibleWithin(
-			this ISymbol symbol,
-			ISymbol within,
-			ITypeSymbol throughTypeOpt = null)
-		{
-			if (symbol == null)
-				throw new ArgumentNullException (nameof (symbol));
-			if (within == null)
-				throw new ArgumentNullException (nameof (within));
-			if (within is IAssemblySymbol)
-			{
-				return symbol.IsAccessibleWithin((IAssemblySymbol)within, throughTypeOpt);
-			}
-			else if (within is INamedTypeSymbol)
-			{
-				return symbol.IsAccessibleWithin((INamedTypeSymbol)within, throughTypeOpt);
-			}
-			else
-			{
-				throw new ArgumentException();
-			}
-		}
-
-		/// <summary>
-		/// Checks if 'symbol' is accessible from within assembly 'within'.
-		/// </summary>
-		public static bool IsAccessibleWithin(
-			this ISymbol symbol,
-			IAssemblySymbol within,
-			ITypeSymbol throughTypeOpt = null)
-		{
-			if (symbol == null)
-				throw new ArgumentNullException (nameof (symbol));
-			if (within == null)
-				throw new ArgumentNullException (nameof (within));
-			return (bool)isAccessibleWithin1Method.Invoke (null, new object [] { symbol, within, throughTypeOpt });
-		}
-
-		/// <summary>
-		/// Checks if 'symbol' is accessible from within name type 'within', with an optional
-		/// qualifier of type "throughTypeOpt".
-		/// </summary>
-		public static bool IsAccessibleWithin(
-			this ISymbol symbol,
-			INamedTypeSymbol within,
-			ITypeSymbol throughTypeOpt = null)
-		{
-			if (symbol == null)
-				throw new ArgumentNullException (nameof (symbol));
-			if (within == null)
-				throw new ArgumentNullException (nameof (within));
-			return (bool)isAccessibleWithin2Method.Invoke (null, new object [] { symbol, within, throughTypeOpt });
 		}
 	}
 }

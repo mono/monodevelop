@@ -27,14 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.Recommendations;
-using Microsoft.CodeAnalysis;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Recommendations;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.CodeCompletion;
 
@@ -69,14 +68,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsException (type.BaseType);
 		}
 
-		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override async Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var semanticModel = ctx.SemanticModel;
 			var result = new List<CompletionData> ();
 			if (info.TriggerCharacter == ' ') {
 				var newExpression = ObjectCreationContextHandler.GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);
 				if (newExpression == null && info.CompletionTriggerReason == CompletionTriggerReason.CharTyped  && !ctx.LeftToken.IsKind (SyntaxKind.EqualsToken) && !ctx.LeftToken.IsKind (SyntaxKind.EqualsEqualsToken))
-					return Task.FromResult (Enumerable.Empty<CompletionData> ());
+					return Enumerable.Empty<CompletionData> ();
 
 				completionResult.AutoCompleteEmptyMatch = false;
 			}
@@ -101,7 +100,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			};
 
 			var completionCategoryLookup = new Dictionary<string, CompletionCategory> ();
-			foreach (var symbol in Recommender.GetRecommendedSymbolsAtPosition (semanticModel, completionContext.Position, engine.Workspace, null, cancellationToken)) {
+			foreach (var symbol in await Recommender.GetRecommendedSymbolsAtPositionAsync (semanticModel, completionContext.Position, engine.Workspace, null, cancellationToken)) {
 				if (symbol.Kind == SymbolKind.NamedType) {
 					if (isInAttribute) {
 						var type = (ITypeSymbol)symbol;
@@ -152,7 +151,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				addData (newData);
 			}
-			return Task.FromResult ((IEnumerable<CompletionData>)result);
+			return (IEnumerable<CompletionData>)result;
 		}
 
 		protected override async Task<bool> IsSemanticTriggerCharacterAsync(Document document, int characterPosition, CancellationToken cancellationToken)
