@@ -217,12 +217,11 @@ namespace MonoDevelop.PackageManagement
 
 		Task ReloadProject (DotNetProject projectToReload, string changedLock)
 		{
-			projectToReload.NeedsReload = true;
-			return Runtime.RunInMainThread (() => {
+			return Runtime.RunInMainThread (async () => {
 				if (changedLock != null) {
 					FileService.NotifyFileChanged (changedLock);
 				}
-				FileService.NotifyFileChanged (projectToReload.FileName);
+				await projectToReload.ReevaluateProject (new ProgressMonitor ());
 			});
 		}
 	}
