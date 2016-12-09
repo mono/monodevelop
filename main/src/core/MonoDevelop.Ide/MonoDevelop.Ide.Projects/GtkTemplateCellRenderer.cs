@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Projects
 			using (var ctx = CairoHelper.Create (window)) {
 				using (var layout = new Pango.Layout (widget.PangoContext)) {
 
-					Rectangle iconRect = DrawIcon (window, widget, cell_area, flags);
+					Rectangle iconRect = DrawIcon (ctx, widget, cell_area, flags);
 
 					if (!RenderRecentTemplate && (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags))) {
 						DrawTemplateNameText (window, widget, cell_area, iconRect, Rectangle.Zero, flags);
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Projects
 
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 					if (RenderRecentTemplate)
-						DrawCategoryText (window, widget, cell_area, iconRect, languageRect, flags);
+						DrawCategoryText (ctx, widget, cell_area, iconRect, languageRect, flags);
 
 
 					StateType state = StateType.Normal;
@@ -172,16 +172,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
+		Rectangle DrawIcon (Cairo.Context ctx, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
 			var img = TemplateIcon;
 			if ((flags & Gtk.CellRendererState.Selected) != 0)
 				img = img.WithStyles ("sel");
-			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
-			}
+			ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 
 			return iconRect;
 		}
@@ -206,7 +204,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		void DrawCategoryText (Drawable window, Widget widget, Rectangle cell_area, Rectangle iconRect, Rectangle languageRect, CellRendererState flags)
+		void DrawCategoryText (Cairo.Context ctx, Widget widget, Rectangle cell_area, Rectangle iconRect, Rectangle languageRect, CellRendererState flags)
 		{
 			StateType state = GetState (widget, flags);
 			var isSelected = state == StateType.Selected || state == StateType.Active;
@@ -224,11 +222,9 @@ namespace MonoDevelop.Ide.Projects
 				layout.GetPixelSize (out w, out h);
 				int textY = cell_area.Y + ((cell_area.Height - h) - 2);
 
-				using (var ctx = CairoHelper.Create (window)) {
-					ctx.MoveTo (iconRect.Right + iconTextPadding, textY);
-					ctx.SetSourceColor ((isSelected ? Styles.BaseSelectionTextColor : Styles.DimTextColor).ToCairoColor ());
-					ctx.ShowLayout (layout);
-				}
+				ctx.MoveTo (iconRect.Right + iconTextPadding, textY);
+				ctx.SetSourceColor ((isSelected ? Styles.BaseSelectionTextColor : Styles.DimTextColor).ToCairoColor ());
+				ctx.ShowLayout (layout);
 			}
 		}
 
