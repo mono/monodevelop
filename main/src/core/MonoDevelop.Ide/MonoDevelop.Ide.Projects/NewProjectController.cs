@@ -243,12 +243,7 @@ namespace MonoDevelop.Ide.Projects
 				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
 					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
 						foreach (SolutionTemplate t in thirdLevelCategory.Templates) {
-							if (t.GetTemplate (child => {
-								// HACK: RecentTemplates are not comparable by ref to default templates
-								//       since we're interested in the category only, a simple Id/Category check is enough here
-								var res = child.Id == template.Id && child.Category == template.Category;
-								return res;
-							}) != null) 
+							if (t.GetTemplate (child => child == template) != null) 
 								return String.Format ("{0} → {1}", topLevelCategory.Name, secondLevelCategory.Name);
 						}
 					}
