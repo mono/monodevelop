@@ -174,6 +174,10 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			MSBuildProperty prop;
 			properties.TryGetValue (name, out prop);
+			if (!string.IsNullOrEmpty (condition) && prop != null && prop.Condition != condition) {
+				// There may be more than one property with the same name and different condition. Try to find the correct one.
+				prop = ChildNodes.OfType<MSBuildProperty> ().FirstOrDefault (pr => pr.Name == name && pr.Condition == condition) ?? prop;
+			}
 			return prop;
 		}
 		
