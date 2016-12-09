@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.Projects
 	class NewProjectDialogController : INewProjectDialogController
 	{
 		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
-		string configureYourProjectBannerText = GettextCatalog.GetString ("Configure your new project");
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
 		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
 
@@ -506,7 +505,7 @@ namespace MonoDevelop.Ide.Projects
 			if (FinalConfiguration.IsWorkspace) {
 				return configureYourWorkspaceBannerText;
 			} else if (FinalConfiguration.HasProjects) {
-				return configureYourProjectBannerText;
+				return GettextCatalog.GetString ("Configure your new {0}", FinalConfiguration.Template.Name);
 			}
 			return configureYourSolutionBannerText;
 		}
