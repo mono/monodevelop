@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
@@ -46,15 +47,20 @@ namespace MonoDevelop.PackageManagement
 			nugetSourceRepository = provider.CreateRepository (packageSource);
 		}
 
-		public IEnumerable<SourceRepository> GetRepositories (bool local = false)
+		public IEnumerable<SourceRepository> GetRepositories (ProjectTemplatePackageReference packageReference)
 		{
+			if (packageReference.Directory.IsNotNull) {
+				yield return CreateRepository (packageReference.Directory);
+				yield break;
+			}
+
 			foreach (SourceRepository sourceRepository in GetProjectTemplateRepositories ()) {
-				if (!local || sourceRepository.PackageSource.IsLocal) {
+				if (!packageReference.IsLocalPackage || sourceRepository.PackageSource.IsLocal) {
 					yield return sourceRepository;
 				}
 			}
 
-			if (!local) {
+			if (!packageReference.IsLocalPackage) {
 				yield return nugetSourceRepository;
 			}
 		}
@@ -79,6 +85,12 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return packageSources;
+		}
+
+		SourceRepository CreateRepository (FilePath directory)
+		{
+			var source = new PackageSource (directory);
+			return provider.CreateRepository (source);
 		}
 	}
 }

@@ -26,6 +26,7 @@
 
 using System;
 using System.Xml;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -33,12 +34,18 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static ProjectTemplatePackageReference Create (XmlElement xmlElement)
 		{
+			return Create (xmlElement, FilePath.Null);
+		}
+
+		internal static ProjectTemplatePackageReference Create (XmlElement xmlElement, FilePath baseDirectory)
+		{
 			return new ProjectTemplatePackageReference {
 				Id = GetAttribute (xmlElement, "id"),
 				Version = GetAttribute (xmlElement, "version"),
 				CreateCondition = GetAttribute (xmlElement, "if"),
 				RequireLicenseAcceptance = GetLocalOrParentBoolAttribute (xmlElement, "requireLicenseAcceptance", true),
-				IsLocalPackage = GetBoolAttribute (xmlElement, "local")
+				IsLocalPackage = GetBoolAttribute (xmlElement, "local"),
+				Directory = GetPath (xmlElement, "directory", baseDirectory)
 			};
 		}
 
@@ -48,6 +55,7 @@ namespace MonoDevelop.Ide.Templates
 
 		internal bool IsLocalPackage { get; private set; }
 		internal bool RequireLicenseAcceptance { get; private set; }
+		internal FilePath Directory { get; private set; }
 
 		static string GetAttribute (XmlElement xmlElement, string attributeName, string defaultValue = "")
 		{
@@ -90,6 +98,15 @@ namespace MonoDevelop.Ide.Templates
 				return attributeValue;
 
 			return GetAttribute ((XmlElement)xmlElement.ParentNode, attributeName);
+		}
+
+		static FilePath GetPath (XmlElement xmlElement, string attributeName, FilePath baseDirectory)
+		{
+			string directory = GetAttribute (xmlElement, attributeName, null);
+			if (directory == null)
+				return FilePath.Null;
+
+			return baseDirectory.Combine (directory).FullPath;
 		}
 	}
 }
