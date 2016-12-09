@@ -708,12 +708,18 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
+			NewSolution (defaultTemplate, true);
+		}
+
+		public void NewSolution (string defaultTemplate, bool showTemplateSelection)
+		{
 			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
 				return;
 
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
+			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
 			newProjectDialog.Show ();
 		}
 		
