@@ -157,7 +157,8 @@ namespace MonoDevelop.Projects
 			if (projectCreateInfo != null) {
 				Name = projectCreateInfo.ProjectName;
 				binPath = projectCreateInfo.BinPath;
-				defaultNamespace = SanitisePotentialNamespace (projectCreateInfo.ProjectName);
+				string templateDefaultNamespace = GetDefaultNamespace (projectCreateInfo, projectOptions);
+				defaultNamespace = SanitisePotentialNamespace (templateDefaultNamespace ?? projectCreateInfo.ProjectName);
 			} else {
 				binPath = ".";
 			}
@@ -171,6 +172,15 @@ namespace MonoDevelop.Projects
 				if (projectCreateInfo != null)
 					dotNetProjectConfig.OutputAssembly = projectCreateInfo.ProjectName;
 			}
+		}
+
+		static string GetDefaultNamespace (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		{
+			string defaultNamespace = projectOptions.Attributes["DefaultNamespace"]?.Value;
+			if (defaultNamespace != null)
+				return StringParserService.Parse (defaultNamespace, projectCreateInfo.Parameters);
+
+			return null;
 		}
 
 		void DefineSymbols (DotNetCompilerParameters pars, XmlElement projectOptions, string attributeName)
