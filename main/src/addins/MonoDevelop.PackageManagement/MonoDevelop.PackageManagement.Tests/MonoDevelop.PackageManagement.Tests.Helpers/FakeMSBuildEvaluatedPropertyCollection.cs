@@ -39,6 +39,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
+		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
+		{
+			throw new NotImplementedException ();
+		}
+
 		public FilePath GetPathValue (string name, FilePath defaultValue = default (FilePath), bool relativeToProject = true, FilePath relativeToPath = default (FilePath))
 		{
 			throw new NotImplementedException ();
