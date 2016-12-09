@@ -170,6 +170,7 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpAddMissingOpensTextEditorExtension" />
     <!-- Extension check is done within code -->
     <Class class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
   </Extension>
@@ -300,8 +301,10 @@
                  id="MonoDevelop.FSharp.Editor.DebugScriptInternal" />
         <Command _description="Start debugging an .fsx script"
                  _label="Start Debugging on External Console"
-
                  id="MonoDevelop.FSharp.Editor.DebugScriptExternal" />
+        <Command _description="Add Missing Open"
+                 _label="AddMissingOpen"
+                 id="MonoDevelop.FSharp.Editor.AddMissingOpen" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -314,6 +317,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
+      <CommandItem id = "MonoDevelop.FSharp.Editor.AddMissingOpen" />
       <SeparatorItem id = "FSharpScriptDebug" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptExternal" />

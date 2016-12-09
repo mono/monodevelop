@@ -149,6 +149,7 @@
     <Compile Include="ParsingTests.fs" />
     <Compile Include="CompletionTests.fs" />
     <Compile Include="TemplateTests.fs" />
+    <Compile Include="AddMissingOpen.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
