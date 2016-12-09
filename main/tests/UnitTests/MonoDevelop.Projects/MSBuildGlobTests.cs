@@ -412,6 +412,7 @@ namespace MonoDevelop.Projects
 
 				var refXml = File.ReadAllText (p.FileName);
 				await p.SaveAsync (Util.GetMonitor ());
+				await p.SaveAsync (Util.GetMonitor ());
 				var savedXml = File.ReadAllText (p.FileName);
 
 				p.Dispose ();

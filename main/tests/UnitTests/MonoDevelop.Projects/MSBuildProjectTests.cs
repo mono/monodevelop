@@ -183,7 +183,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("file1.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("MetaUpdate"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [1]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
 
 			// [2] is an Update element, no real elements by itself.
 
@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (null, it.Metadata.GetValue ("MetaUpdate"));
 			Assert.AreEqual ("AnyCPU", it.Metadata.GetValue ("MetaUpdate2"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [3]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [4]);
 
 			// [4] is an Update element, no real elements by itself.
 

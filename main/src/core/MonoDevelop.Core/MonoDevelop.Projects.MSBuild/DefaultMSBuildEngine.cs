@@ -323,6 +323,7 @@ namespace MonoDevelop.Projects.MSBuild
 						foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
 							((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 						}
+						item2.AddSourceItem (item);
 					}
 				}
 			}
@@ -332,6 +333,7 @@ namespace MonoDevelop.Projects.MSBuild
 					foreach (var evaluatedProp in ((MSBuildPropertyGroupEvaluated)it.Metadata).GetProperties ()) {
 						((MSBuildPropertyGroupEvaluated)item2.Metadata).SetProperty (evaluatedProp.Name, evaluatedProp);
 					}
+					item2.AddSourceItem (item);
 				}
 			}
 		}
@@ -457,7 +459,7 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 						((MSBuildPropertyGroupEvaluated)newItem.Metadata).SetProperties (md);
 					}
-					newItem.SourceItem = item;
+					newItem.AddSourceItem (item);
 					newItem.Condition = item.Condition;
 					items.Add (newItem);
 				} finally {
@@ -822,11 +824,11 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!IsIncludeTransform (include)) {
 				foreach (var c in sourceItem.Metadata.GetProperties ()) {
 					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
-						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
+						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value)) { Condition = c.Condition };
 				}
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
-			it.SourceItem = sourceItem;
+			it.AddSourceItem (sourceItem);
 			it.Condition = sourceItem.Condition;
 			return it;
 		}
