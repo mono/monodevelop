@@ -232,6 +232,17 @@ namespace MonoDevelop.Ide.Fonts
 
 			return font;
 		}
+		public static FontDescription CopyModified (this FontDescription font, int absoluteResize, Pango.Weight? weight = null)
+		{
+			font = font.Copy ();
+
+			ResizeAbsolute (font, absoluteResize);
+
+			if (weight.HasValue)
+				font.Weight = weight.Value;
+
+			return font;
+		}
 
 		static void Scale (FontDescription font, double scale)
 		{
@@ -242,6 +253,18 @@ namespace MonoDevelop.Ide.Fonts
 				if (size == 0)
 					size = (int)(10 * Pango.Scale.PangoScale); 
 				font.Size = (int)(Pango.Scale.PangoScale * (int)(scale * size / Pango.Scale.PangoScale));
+			}
+		}
+
+		static void ResizeAbsolute (FontDescription font, int pt)
+		{
+			if (font.SizeIsAbsolute) {
+				font.AbsoluteSize = font.Size + pt;
+			} else {
+				var size = font.Size;
+				if (size == 0)
+					size = (int)((10 + pt) * Pango.Scale.PangoScale);
+				font.Size = (int)(Pango.Scale.PangoScale * (int)(pt + size / Pango.Scale.PangoScale));
 			}
 		}
 	}
