@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Templates
 			if (xmlElement ["Packages"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Packages"].ChildNodes) {
 					if (xmlNode is XmlElement) {
-						var packageReference = ProjectTemplatePackageReference.Create ((XmlElement)xmlNode);
+						var packageReference = ProjectTemplatePackageReference.Create ((XmlElement)xmlNode, baseDirectory);
 						projectDescriptor.packageReferences.Add (packageReference);
 					}
 				}

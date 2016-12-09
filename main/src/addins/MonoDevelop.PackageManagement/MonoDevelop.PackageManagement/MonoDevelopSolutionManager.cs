@@ -162,6 +162,12 @@ namespace MonoDevelop.PackageManagement
 				return;
 			}
 
+			var hasProject = nuGetProject as IHasDotNetProject;
+			if (hasProject != null) {
+				hasProject.SaveProject ().Wait ();
+				return;
+			}
+
 			throw new ApplicationException (string.Format ("Unsupported NuGetProject type: {0}", nuGetProject.GetType ().FullName));
 		}
 
