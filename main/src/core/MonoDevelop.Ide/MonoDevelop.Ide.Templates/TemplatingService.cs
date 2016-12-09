@@ -118,6 +118,7 @@ namespace MonoDevelop.Ide.Templates
 			Func<TemplateCategory, bool> isTopLevelCategoryMatch,
 			Func<TemplateCategory, bool> isSecondLevelCategoryMatch)
 		{
+			Predicate<SolutionTemplate> predicate = (t) => isTemplateMatch (t);
 			foreach (TemplateCategory topLevelCategory in GetProjectTemplateCategories ().Where (isTopLevelCategoryMatch)) {
 				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories.Where (isSecondLevelCategoryMatch)) {
 					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
@@ -125,7 +126,7 @@ namespace MonoDevelop.Ide.Templates
 							if (isTemplateMatch (template))
 								return template;
 							else {
-								var groupedTemplate = template.GetTemplate (t => isTemplateMatch (t));
+								var groupedTemplate = template.GetTemplate (predicate);
 								if (groupedTemplate != null)
 									return groupedTemplate;
 							}
@@ -198,7 +199,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			try {
 				var gp = recentTemplates.GetItemsInGroup (templateGroup);
-				return gp.Select (i => FromRecentItem (i)).ToList ();
+				return gp.Select (FromRecentItem).Where (t => t != null).ToList ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't get recent templates list.", e);
 				return new List<SolutionTemplate> ();
