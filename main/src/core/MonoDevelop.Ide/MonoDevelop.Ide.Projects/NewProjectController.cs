@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Projects
 		const string SelectedLanguagePropertyName = "Dialogs.NewProjectDialog.SelectedLanguage";
 
 		List<TemplateCategory> templateCategories;
+		List<SolutionTemplate> recentTemplates;
 		INewProjectDialogBackend dialog;
 		FinalProjectConfigurationPage finalConfigurationPage;
 		TemplateWizardProvider wizardProvider;
@@ -234,6 +235,27 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 
+		public string GetCategoryPathText (SolutionTemplate template)
+		{
+			foreach (TemplateCategory topLevelCategory in templateCategories) {
+				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
+					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
+						foreach (SolutionTemplate t in thirdLevelCategory.Templates) {
+							if (t.GetTemplate (child => {
+								// HACK: RecentTemplates are not comparable by ref to default templates
+								//       since we're interested in the category only, a simple Id/Category check is enough here
+								var res = child.Id == template.Id && child.Category == template.Category;
+								return res;
+							}) != null) 
+								return String.Format ("{0} → {1}", topLevelCategory.Name, secondLevelCategory.Name);
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
 		string GetDefaultSelectedTemplateId ()
 		{
 			if (SelectedTemplate != null) {
@@ -298,6 +320,10 @@ namespace MonoDevelop.Ide.Projects
 			get { return templateCategories; }
 		}
 
+		public List<SolutionTemplate> RecentTemplates {
+			get { return recentTemplates; }
+		}
+
 		public TemplateCategory SelectedSecondLevelCategory { get; private set; }
 		public SolutionTemplate SelectedTemplate { get; set; }
 		public string SelectedLanguage { get; set; }
@@ -315,6 +341,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
 			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
+			recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().ToList ();
 		}
 
 		Predicate<SolutionTemplate> GetTemplateFilter ()
@@ -329,7 +356,14 @@ namespace MonoDevelop.Ide.Projects
 		{
 			if (SelectedTemplateId != null) {
 				SelectTemplate (SelectedTemplateId);
-			} else if (DefaultSelectedCategoryPath != null) {
+			} else if (RecentTemplates.Count > 0) { // select first recently used template if possible
+				var lastUsedTemplate = RecentTemplates.First ();
+				SelectTemplateInCategory (lastUsedTemplate.Category, lastUsedTemplate.Id);
+				// SelectTemplateInCategory has selected the group containing the recent template,
+				// make sure to select the actual recent template inside the group if the group exists
+				if (SelectedTemplate != null)
+					SelectedTemplate = lastUsedTemplate;
+			} else if (DefaultSelectedCategoryPath != null) { // fallback to old DefaultSelected properties
 				if (DefaultSelectedTemplate != null) {
 					SelectTemplateInCategory (DefaultSelectedCategoryPath, DefaultSelectedTemplate);
 				}
