@@ -441,7 +441,7 @@ namespace MonoDevelop.Projects
 
 		void LoadProjectCapabilities ()
 		{
-			projectCapabilities = sourceProject.EvaluatedItems.Where (it => it.Name == "ProjectCapability").Select (it => it.Include).ToList ();
+			projectCapabilities = sourceProject.EvaluatedItems.Where (it => it.Name == "ProjectCapability").Select (it => it.Include.Trim ()).Where (s => s.Length > 0).Distinct ().ToList ();
 		}
 
 		/// <summary>
@@ -3190,7 +3190,6 @@ namespace MonoDevelop.Projects
 						buildItem.Include = include;
 				}
 			}
-			item.Metadata.ClearModifiedFlags ();
 		}
 
 		void PurgeUpdatePropertiesSetInSourceItems (MSBuildItem buildItem, IEnumerable<MSBuildItem> sourceItems, HashSet<string> propertiesAlreadySet)
