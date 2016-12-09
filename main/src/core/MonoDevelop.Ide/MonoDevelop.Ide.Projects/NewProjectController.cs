@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.Projects
 		public string BasePath { get; set; }
 		public string SelectedTemplateId { get; set; }
 		public Workspace ParentWorkspace { get; set; }
+		public bool ShowTemplateSelection { get; set; }
 
 		string DefaultSelectedCategoryPath {
 			get {
@@ -158,6 +159,7 @@ namespace MonoDevelop.Ide.Projects
 		public NewProjectDialogController ()
 		{
 			IsFirstPage = true;
+			ShowTemplateSelection = true;
 			GetVersionControlHandler ();
 		}
 

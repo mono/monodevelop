@@ -790,11 +790,17 @@ namespace MonoDevelop.Ide
 
 		public SolutionFolderItem CreateProject (SolutionFolder parentFolder, string selectedTemplateId)
 		{
+			return CreateProject (parentFolder, selectedTemplateId, true);
+		}
+
+		public SolutionFolderItem CreateProject (SolutionFolder parentFolder, string selectedTemplateId, bool showTemplateSelection)
+		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.ParentFolder = parentFolder;
 			newProjectDialog.BasePath = basePath;
 			newProjectDialog.SelectedTemplateId = selectedTemplateId;
+			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
 
 			if (newProjectDialog.Show ()) {
 				var item = newProjectDialog.NewItem as SolutionFolderItem;

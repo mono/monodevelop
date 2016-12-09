@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Projects
 		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
 		string SelectedLanguage { get; set; }
+		bool ShowTemplateSelection { get; set; }
 		FinalProjectConfigurationPage FinalConfiguration { get; }
 		bool IsNewSolution { get; }
 

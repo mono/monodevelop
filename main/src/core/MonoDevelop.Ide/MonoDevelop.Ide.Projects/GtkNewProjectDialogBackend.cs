@@ -88,6 +88,8 @@ namespace MonoDevelop.Ide.Projects
 
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
+			if (CanMoveToNextPage && !controller.ShowTemplateSelection)
+				MoveToNextPage ();
 		}
 
 		static void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
