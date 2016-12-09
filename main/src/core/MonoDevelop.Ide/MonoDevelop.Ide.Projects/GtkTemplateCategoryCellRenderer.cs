@@ -54,6 +54,8 @@ namespace MonoDevelop.Ide.Projects
 
 		protected override void Render (Drawable window, Widget widget, Rectangle background_area, Rectangle cell_area, Rectangle expose_area, CellRendererState flags)
 		{
+			StateType state = GetState (widget, flags);
+			var isSelected = state == StateType.Selected || state == StateType.Active;
 			int iconTextPadding = iconTextXPadding;
 			int textYOffset = 0;
 			Rectangle iconRect = GetIconRect (cell_area);
@@ -61,10 +63,19 @@ namespace MonoDevelop.Ide.Projects
 			if (CategoryIcon != null) {
 				iconRect = DrawIcon (window, widget, cell_area, flags);
 				iconTextPadding = topLevelIconTextXPadding;
-				textYOffset = topLevelTemplateHeadingYOffset;
+				textYOffset = (Category == null ? 0 : topLevelTemplateHeadingYOffset);
 			}
 
 			DrawTemplateCategoryText (window, widget, cell_area, iconRect, iconTextPadding, textYOffset, flags);
+			if (Category == null && !isSelected) {
+				using (var ctx = CairoHelper.Create (window)) {
+					ctx.MoveTo (cell_area.X + (int)Xpad, cell_area.Y + cell_area.Height + 1);
+					ctx.SetSourceColor (Gui.Styles.ThinSplitterColor.ToCairoColor ());
+					ctx.LineWidth = 1;
+					ctx.LineTo (cell_area.X + cell_area.Width - (int)Xpad, cell_area.Y + cell_area.Height + 1);
+					ctx.Stroke ();
+				}
+			}
 		}
 
 		Rectangle GetIconRect (Rectangle cell_area)
@@ -88,7 +99,7 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
+			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + (Category == null ? 0 : topLevelTemplateHeadingYOffset);
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, (int)CategoryIcon.Width, (int)CategoryIcon.Height);
 
 			var img = CategoryIcon;
