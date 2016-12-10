@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						subtitle = GettextCatalog.GetString ("Yesterday");
 					}
 					else if (days < 7) {
-						subtitle = GettextCatalog.GetString ("{0} days ago", days);
+						subtitle = GettextCatalog.GetPluralString ("{0} day ago", "{0} days ago", days, days);
 					}
 					else if (weeks < 4) {
 						subtitle = GettextCatalog.GetPluralString ("{0} week ago", "{0} weeks ago", weeks, weeks);
