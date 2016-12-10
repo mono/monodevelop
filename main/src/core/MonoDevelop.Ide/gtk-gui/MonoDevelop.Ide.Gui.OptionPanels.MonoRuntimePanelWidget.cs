@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w2.BottomAttach = ((uint)(2));
 			// Container child table1.Gtk.Table+TableChild
 			this.textview1 = new global::Gtk.TextView ();
-			this.textview1.Buffer.Text = "If you have a parallel installation of Mono you can register it here, so you can use it for building and running projects. The <b>default runtime</b> is the .NET runtime to be used for building and running applications when none is specifically selected.";
+			this.textview1.Buffer.Text = global::Mono.Unix.Catalog.GetString ("If you have a parallel installation of Mono you can register it here, so you can use it for building and running projects. The <b>default runtime</b> is the .NET runtime to be used for building and running applications when none is specifically selected.");
 			this.textview1.Sensitive = false;
 			this.textview1.Name = "textview1";
 			this.textview1.Editable = false;
