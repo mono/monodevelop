@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddRecentTemplateCategory ()
 		{
-			Xwt.Drawing.Image icon = GetIcon ("md-recent-templates", IconSize.Menu);
+			Xwt.Drawing.Image icon = GetIcon ("md-recent", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
 			templateCategoriesListStore.AppendValues (
