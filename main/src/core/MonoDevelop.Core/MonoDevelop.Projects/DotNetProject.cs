@@ -1148,10 +1148,11 @@ namespace MonoDevelop.Projects
 			ExecutionCommand rcmd;
 			var rc = runConfiguration as AssemblyRunConfiguration;
 			if (rc != null && rc.StartAction == AssemblyRunConfiguration.StartActions.Program) {
-				var pcmd = Runtime.ProcessService.CreateCommand (rc.StartProgram);
-				pcmd.Arguments = rc.StartArguments;
-				pcmd.WorkingDirectory = rc.StartWorkingDirectory;
-				pcmd.EnvironmentVariables = rc.EnvironmentVariables;
+				var tagModel = GetStringTagModel (configSel);
+				var pcmd = Runtime.ProcessService.CreateCommand (StringParserService.Parse (rc.StartProgram, tagModel));
+				pcmd.Arguments = StringParserService.Parse (rc.StartArguments, tagModel);
+				pcmd.WorkingDirectory = StringParserService.Parse (rc.StartWorkingDirectory, tagModel);
+				pcmd.EnvironmentVariables = StringParserService.Parse (rc.EnvironmentVariables, tagModel);
 				rcmd = pcmd;
 			} else {
 #pragma warning disable 618 // Type or member is obsolete
@@ -1167,16 +1168,18 @@ namespace MonoDevelop.Projects
 				// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
 				// overload that doesn't take a runConfiguration.
 
+				var tagModel = GetStringTagModel (configSel);
+
 				string monoOptions;
-				rc.MonoParameters.GenerateOptions (cmd.EnvironmentVariables, out monoOptions);
+				rc.MonoParameters.GenerateOptions (StringParserService.Parse (cmd.EnvironmentVariables, tagModel), out monoOptions);
 				cmd.RuntimeArguments = monoOptions;
 				if (!string.IsNullOrEmpty (rc.StartArguments))
-					cmd.Arguments = rc.StartArguments;
+					cmd.Arguments = StringParserService.Parse (rc.StartArguments, tagModel);
 				if (!rc.StartWorkingDirectory.IsNullOrEmpty)
-					cmd.WorkingDirectory = rc.StartWorkingDirectory;
+					cmd.WorkingDirectory = StringParserService.Parse (rc.StartWorkingDirectory, tagModel);
 				if (cmd.EnvironmentVariables != rc.EnvironmentVariables) {
 					foreach (var env in rc.EnvironmentVariables)
-						cmd.EnvironmentVariables [env.Key] = env.Value;
+						cmd.EnvironmentVariables [env.Key] = StringParserService.Parse (env.Value, tagModel);
 				}
 				cmd.PauseConsoleOutput = rc.PauseConsoleOutput;
 				cmd.ExternalConsole = rc.ExternalConsole;

@@ -88,6 +88,14 @@ namespace MonoDevelop.Core
 				inputs[i] = Parse (inputs[i], (string[,])null);
 		}
 		
+		public static IDictionary<string,string> Parse (IDictionary<string, string> input, IStringTagModel customTags)
+		{
+			Dictionary<string, string> res = new Dictionary<string, string> ();
+			foreach (var e in input)
+				res [e.Key] = Parse (e.Value, customTags);
+			return res;
+		}
+
 		static string Replace (string tag, IStringTagModel customTags)
 		{
 			string tname, tformat;
