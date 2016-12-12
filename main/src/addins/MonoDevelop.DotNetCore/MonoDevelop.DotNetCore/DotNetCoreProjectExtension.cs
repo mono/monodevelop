@@ -45,6 +45,7 @@ namespace MonoDevelop.DotNetCore
 
 		public DotNetCoreProjectExtension ()
 		{
+			DotNetCoreProjectReloadMonitor.Initialize ();
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
