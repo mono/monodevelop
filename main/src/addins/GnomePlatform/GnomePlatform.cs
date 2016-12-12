@@ -213,7 +213,7 @@ namespace MonoDevelop.Platform
 				? BashPause.Replace ("'", "\"")
 					: String.Empty;
 
-			return String.Format (@" --nofork --caption ""{4}"" --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
+			return String.Format (@" --title ""{4}"" --workdir=""{3}"" -e ""bash -c '{0} {1} ; {2}'""",
 			                      command,
 			                      args,
 			                      extra_commands,
@@ -230,7 +230,7 @@ namespace MonoDevelop.Platform
 		}
 
 		private static string KdeTerminalOpenFolderRunner (string dir) {
-			return string.Format(@" --nofork --workdir=""{0}""", EscapeDir(dir));
+			return string.Format(@" --workdir=""{0}""", EscapeDir(dir));
 		}
 
 		private static string EscapeArgs (string args)
