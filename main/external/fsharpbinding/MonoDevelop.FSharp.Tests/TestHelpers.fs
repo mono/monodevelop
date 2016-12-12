@@ -33,11 +33,11 @@ module TestHelpers =
 
                 // Construct new typed parse result if the task succeeded
                 let results =
-                  match checkAnswer with
-                  | FSharpCheckFileAnswer.Succeeded(checkResults) ->
-                      ParseAndCheckResults(Some checkResults, Some parseResults)
-                  | FSharpCheckFileAnswer.Aborted ->
-                      ParseAndCheckResults(None, Some parseResults)
+                    match checkAnswer with
+                    | FSharpCheckFileAnswer.Succeeded(checkResults) ->
+                        ParseAndCheckResults(Some checkResults, Some parseResults)
+                    | FSharpCheckFileAnswer.Aborted ->
+                        ParseAndCheckResults(None, Some parseResults)
 
                 return results
             with exn ->

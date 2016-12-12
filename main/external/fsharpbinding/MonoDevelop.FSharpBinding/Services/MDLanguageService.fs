@@ -23,6 +23,10 @@ open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 open MonoDevelop.Ide.TypeSystem
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.Range
+open Microsoft.FSharp.Compiler.Ast
+open Microsoft.FSharp.Compiler.SourceCodeServices.AstTraversal
 
 module MonoDevelop =
 
@@ -37,6 +41,22 @@ module MonoDevelop =
         member x.GetLineInfoByCaretOffset () =
             x.GetLineInfoFromOffset x.CaretOffset
            
+        member x.GetOffsetFromPos (pos:Range.pos) =
+            x.LocationToOffset (pos.Line, pos.Column+1)
+
+        member x.GetOffsetFromLocation (location:DocumentLocation) =
+            x.LocationToOffset (location.Line, location.Column)
+
+        member x.GetTextBetween (range:Range.range) =
+            let startOffset = x.GetOffsetFromPos range.Start
+            let endOffset = x.GetOffsetFromPos range.End
+            x.GetTextBetween(startOffset, endOffset)
+
+        member x.GetTextBetween (range:DocumentRegion) =
+            let startOffset = x.GetOffsetFromLocation range.Begin
+            let endOffset = x.GetOffsetFromLocation range.End
+            x.GetTextBetween(startOffset, endOffset)
+
     let inline private (>>=) a b = Option.bind b a
     let inline private (!) a = Option.ofNull a
     
