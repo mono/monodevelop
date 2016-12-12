@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool IsLanguageButtonPressed (EventButton button)
 		{
-			return languageRect.Contains ((int)button.X, (int)button.Y);
+			return !RenderRecentTemplate && languageRect.Contains ((int)button.X, (int)button.Y);
 		}
 
 		public Rectangle GetLanguageRect ()
