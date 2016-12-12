@@ -25,8 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -37,6 +42,7 @@ namespace MonoDevelop.DotNetCore
 		DotNetCoreProjectReloadMonitor ()
 		{
 			PackageManagementServices.ProjectService.ProjectReloaded += ProjectReloaded;
+			FileService.FileChanged += FileChanged;
 		}
 
 		public static void Initialize ()
@@ -69,6 +75,85 @@ namespace MonoDevelop.DotNetCore
 			var action = new RestoreNuGetPackagesInDotNetCoreProject (e.NewProject.DotNetProject);
 			var message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
 			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+		}
+
+		async void FileChanged (object sender, FileEventArgs e)
+		{
+			Runtime.AssertMainThread ();
+
+			try {
+				if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
+					await OnFileChanged (e);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("DotNetCoreProjectReloadMonitor error", ex);
+			}
+		}
+
+		async Task OnFileChanged (IEnumerable<FileEventInfo> files)
+		{
+			var projectFiles = GetProjectFiles (files);
+			if (!projectFiles.Any ())
+				return;
+
+			var unknownProjects = GetUnknownProjects ();
+			if (!unknownProjects.Any ())
+				return;
+
+			var projectsToReload = GetProjectsToReload (unknownProjects, projectFiles);
+			if (!projectsToReload.Any ())
+				return;
+
+			var reloadedProjects = await ReloadProjects (projectsToReload);
+
+			if (reloadedProjects.Any ()) {
+				RestorePackages (reloadedProjects);
+			}
+		}
+
+		IEnumerable<FileEventInfo> GetProjectFiles (IEnumerable<FileEventInfo> files)
+		{
+			return files.Where (file => file.FileName.HasExtension (".csproj")).ToList ();
+		}
+
+		/// <summary>
+		/// Gets all unknown projects that are not deliberately unloaded.
+		/// Deliberately unloaded projects have Enabled set to false.
+		/// </summary>
+		IEnumerable<UnknownSolutionItem> GetUnknownProjects ()
+		{
+			return IdeApp.Workspace.GetAllItems<UnknownSolutionItem> ()
+				.Where (project => project.Enabled)
+				.ToList ();
+		}
+
+		IEnumerable<UnknownSolutionItem> GetProjectsToReload (
+			IEnumerable<UnknownSolutionItem> unknownProjects,
+			IEnumerable<FileEventInfo> projectFiles)
+		{
+			var projectFileNames = projectFiles.Select (projectFile => projectFile.FileName).ToList ();
+			return unknownProjects.Where (project => projectFileNames.Contains (project.FileName)).ToList ();
+		}
+
+		async Task<IEnumerable<DotNetProject>> ReloadProjects (IEnumerable<UnknownSolutionItem> projectsToReload)
+		{
+			var reloadedProjects = new List<DotNetProject> ();
+			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+				foreach (var project in projectsToReload) {
+					var reloadedProject = (await project.ParentFolder.ReloadItem (monitor, project)) as DotNetProject;
+					if (reloadedProject != null && reloadedProject.HasFlavor<DotNetCoreProjectExtension> ()) {
+						reloadedProjects.Add (reloadedProject);
+					}
+				}
+			}
+			return reloadedProjects;
+		}
+
+		void RestorePackages (IEnumerable<DotNetProject> projects)
+		{
+			var actions = projects.Select (project => new RestoreNuGetPackagesInDotNetCoreProject (project)).ToList ();
+			var message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.Run (message, actions);
 		}
 	}
 }
