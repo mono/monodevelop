@@ -41,8 +41,10 @@ namespace MonoDevelop.DotNetCore
 
 		DotNetCoreProjectReloadMonitor ()
 		{
-			PackageManagementServices.ProjectService.ProjectReloaded += ProjectReloaded;
-			FileService.FileChanged += FileChanged;
+			if (IdeApp.IsInitialized) {
+				PackageManagementServices.ProjectService.ProjectReloaded += ProjectReloaded;
+				FileService.FileChanged += FileChanged;
+			}
 		}
 
 		public static void Initialize ()
