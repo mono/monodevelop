@@ -423,6 +423,7 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetAwareProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetAwareProjectPackageRestoreManager.cs" />
     <Compile Include="NuGet.Commands\MSBuildRestoreResult.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
