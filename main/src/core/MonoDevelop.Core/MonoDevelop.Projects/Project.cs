@@ -1557,6 +1557,7 @@ namespace MonoDevelop.Projects
 		//the configuration of the last build that completed successfully
 		//null if any file in the project has since changed
 		string fastUpToDateCheckGoodConfig;
+		DateTime fastUpToDateTimestamp;
 
 		public bool FastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
@@ -1568,7 +1569,19 @@ namespace MonoDevelop.Projects
 			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
 				return true;
 			var cfg = GetConfiguration (configuration);
-			return cfg == null || cfg.Id != fastUpToDateCheckGoodConfig;
+			if (cfg == null || cfg.Id != fastUpToDateCheckGoodConfig)
+				return true;
+
+			// Shouldn't need to build, but if a dependency was changed since this project build flag was reset,
+			// the project needs to be rebuilt
+
+			foreach (var dep in GetReferencedItems (configuration).OfType<Project> ()) {
+				if (dep.FastCheckNeedsBuild (configuration) || dep.fastUpToDateTimestamp >= fastUpToDateTimestamp) {
+					fastUpToDateCheckGoodConfig = null;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected void SetFastBuildCheckDirty ()
@@ -1580,6 +1593,7 @@ namespace MonoDevelop.Projects
 		{
 			var cfg = GetConfiguration (configuration);
 			fastUpToDateCheckGoodConfig = cfg != null ? cfg.Id : null;
+			fastUpToDateTimestamp = DateTime.Now;
 		}
 
 		/// <summary>
