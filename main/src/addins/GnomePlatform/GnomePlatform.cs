@@ -208,7 +208,7 @@ namespace MonoDevelop.Platform
 		TerminalRunnerHandler runner;
 		TerminalOpenFolderRunnerHandler openDirectoryRunner;
 		
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables, 
 		                                                            string title, bool pauseWhenFinished)
 		{
@@ -225,7 +225,7 @@ namespace MonoDevelop.Platform
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();
-			return proc;
+			return proc.ProcessAsyncOperation;
 		}
 		
 #region Terminal runner implementations
@@ -264,12 +264,22 @@ namespace MonoDevelop.Platform
 				? BashPause.Replace ("'", "\"")
 					: String.Empty;
 
-			return String.Format (@" --nofork --caption ""{4}"" --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
+			return String.Format (@" --workdir=""{3}"" -e ""bash -c '{0} {1} ; {2}'""",
 			                      command,
 			                      args,
 			                      extra_commands,
 			                      EscapeDir (dir),
 			                      title);
+		}
+
+		private static string CustomTerminalRunner (string command, string args, string dir, string title, bool pause)
+		{
+                        return String.Format (System.Environment.GetEnvironmentVariable("MONODEVELOP_CUSTOM_TERMINAL"),
+                                              command,
+                                              args,
+                                              extra_commands,
+                                              EscapeDir (dir),
+                                              title);
 		}
 
 		private static string GnomeTerminalOpenFolderRunner (string dir) {
@@ -284,16 +294,22 @@ namespace MonoDevelop.Platform
 			return string.Format(@" --nofork --workdir=""{0}""", EscapeDir(dir));
 		}
 
+		private static string CustomOpenFolderRunner (string dir) {
+			string customDebug = System.Environment.GetEnvironmentVariable("MONODEVELOP_CUSTOM_FOLDER");
+			System.Console.WriteLine("Using custom debugger command: " + customDebug);
+			return string.Format(customDebug, EscapeDir(dir));
+		}
+
 		private static string EscapeArgs (string args)
 		{
 			return args.Replace ("\\", "\\\\").Replace ("\"", "\\\"");
 		}
-		
+
 		private static string EscapeDir (string dir)
 		{
 			return dir.Replace (" ", "\\ ").Replace (";", "\\;");
 		}
-		
+
 		private static string BashPause {
 			get { return @"echo; read -p 'Press any key to continue...' -n1;"; }
 		}
@@ -318,7 +334,12 @@ namespace MonoDevelop.Platform
 			TerminalOpenFolderRunnerHandler preferedOpenFolderRunner = null;
 			TerminalOpenFolderRunnerHandler fallbackOpenFolderRunner = XtermOpenFolderRunner;
 
-			if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("GNOME_DESKTOP_SESSION_ID"))) {
+			if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_CUSTOM_TERMINAL"))) {
+				preferred_terminal = fallback_terminal;
+				preferred_runner = CustomTerminalRunner;
+				preferredOpenFolderRunner = CustomOpenFolderRunner;
+			}
+			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("GNOME_DESKTOP_SESSION_ID"))) {
 				preferred_terminal = "gnome-terminal";
 				preferred_runner = GnomeTerminalRunner;
 				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
