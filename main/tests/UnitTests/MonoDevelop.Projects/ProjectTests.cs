@@ -960,6 +960,42 @@ namespace MonoDevelop.Projects
 			p.References.Add (pref);
 			Assert.IsTrue (pref.IsValid);
 		}
+
+		[Test]
+		public async Task FastBuildCheckWithLibrary ()
+		{
+			string solFile = Util.GetSampleProject ("fast-build-test", "FastBuildTest.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var app = (DotNetProject)sol.Items [0];
+			var lib = (DotNetProject)sol.Items [1];
+
+			var cs = new SolutionConfigurationSelector ("Debug");
+
+			Assert.IsTrue (app.FastCheckNeedsBuild (cs));
+			Assert.IsTrue (lib.FastCheckNeedsBuild (cs));
+
+			var res = await sol.Build (Util.GetMonitor (), cs);
+			Assert.IsFalse (res.HasErrors);
+			Assert.IsFalse (app.FastCheckNeedsBuild (cs));
+			Assert.IsFalse (lib.FastCheckNeedsBuild (cs));
+
+			var myClass = sol.ItemDirectory.Combine ("MyClass.cs");
+			File.WriteAllText (myClass, "public class MyClass { public const string Message = \"Bye\" ; }");
+			FileService.NotifyFileChanged (myClass);
+
+			Assert.IsTrue (app.FastCheckNeedsBuild (cs));
+			Assert.IsTrue (lib.FastCheckNeedsBuild (cs));
+
+			res = await lib.Build (Util.GetMonitor (), cs);
+			Assert.IsFalse (res.HasErrors);
+			Assert.IsFalse (lib.FastCheckNeedsBuild (cs));
+			Assert.IsTrue (app.FastCheckNeedsBuild (cs));
+
+			res = await app.Build (Util.GetMonitor (), cs);
+			Assert.IsFalse (res.HasErrors);
+			Assert.IsFalse (lib.FastCheckNeedsBuild (cs));
+			Assert.IsFalse (app.FastCheckNeedsBuild (cs));
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension
