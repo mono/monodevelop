@@ -38,15 +38,20 @@ namespace MonoDevelop.PackageManagement
 	{
 		static public HttpClient CreateHttpClient (Uri uri, ICredentialService credentialService)
 		{
-			var httpClient = new HttpClient (CreateHttpMessageHandler (uri, credentialService));
+			return CreateHttpClient (new PackageSource (uri.ToString ()), credentialService);
+		}
+
+		static public HttpClient CreateHttpClient (PackageSource packageSource, ICredentialService credentialService)
+		{
+			var httpClient = new HttpClient (CreateHttpMessageHandler (packageSource, credentialService));
 			UserAgent.SetUserAgent (httpClient);
 
 			return httpClient;
 		}
 
-		static HttpMessageHandler CreateHttpMessageHandler (Uri uri, ICredentialService credentialService)
+		static HttpMessageHandler CreateHttpMessageHandler (PackageSource packageSource, ICredentialService credentialService)
 		{
-			var proxy = ProxyCache.Instance.GetProxy (uri);
+			var proxy = ProxyCache.Instance.GetProxy (packageSource.SourceUri);
 
 			var clientHandler = new HttpClientHandler {
 				Proxy = proxy,
@@ -60,7 +65,6 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			HttpMessageHandler innerHandler = messageHandler;
-			var packageSource = new PackageSource (uri.ToString ());
 			messageHandler = new StsAuthenticationHandler (packageSource, TokenStore.Instance) {
 				InnerHandler = messageHandler
 			};
