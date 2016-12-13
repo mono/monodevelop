@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetDefaultPackagesConfigFilePath (string projectDirectory)
 		{
-			return Path.Combine (projectDirectory, NuGet.Constants.PackageReferenceFile);
+			return Path.Combine (projectDirectory, NuGet.Configuration.NuGetConstants.PackageReferenceFile);
 		}
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
