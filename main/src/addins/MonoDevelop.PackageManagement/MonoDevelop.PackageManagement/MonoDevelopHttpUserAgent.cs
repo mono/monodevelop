@@ -29,7 +29,6 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NuGet;
 using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
@@ -43,13 +42,11 @@ namespace MonoDevelop.PackageManagement
 		
 		public string Client { get; private set; }
 		public string Host { get; private set; }
-		public string HttpUserAgent { get; private set; }
-		
+
 		void CreateUserAgent()
 		{
 			Client = GetClient ();
 			Host = GetHost();
-			HttpUserAgent = HttpUtility.CreateUserAgentString(Client, Host);
 
 			var builder = new UserAgentStringBuilder (Client).WithVisualStudioSKU (Host);
 			UserAgent.SetUserAgentString (builder);
@@ -68,11 +65,6 @@ namespace MonoDevelop.PackageManagement
 		string GetHost()
 		{
 			return String.Format ("{0}/{1}", BrandingService.ApplicationName, IdeApp.Version);
-		}
-		
-		public override string ToString()
-		{
-			return HttpUserAgent;
 		}
 	}
 }

@@ -404,8 +404,6 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement\GlobalNuGetConfigFilePath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetConfigFileChangedMonitor.cs" />
-    <Compile Include="NuGet.Credentials\CredentialServiceAdapter.cs" />
-    <Compile Include="NuGet.Credentials\CredentialProviderAdapter.cs" />
     <Compile Include="NuGet.Credentials\CredentialService.cs" />
     <Compile Include="NuGet.Credentials\ICredentialProvider.cs" />
     <Compile Include="NuGet.Credentials\CredentialResponse.cs" />
@@ -424,6 +422,7 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetAwareProjectPackageRestoreManager.cs" />
     <Compile Include="NuGet.Commands\MSBuildRestoreResult.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
+    <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
