@@ -1700,26 +1700,52 @@ namespace MonoDevelop.Projects
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 		}
 
-		internal override void ImportDefaultRunConfiguration (ProjectRunConfiguration config)
+		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			base.ImportDefaultRunConfiguration (config);
-			if (config is AssemblyRunConfiguration) {
-				var defaultConf = (DefaultConfiguration ?? Configurations.FirstOrDefault<SolutionItemConfiguration> ()) as DotNetProjectConfiguration;
-				if (defaultConf != null) {
-					var drc = (AssemblyRunConfiguration)config;
-					var cmd = defaultConf.CustomCommands.FirstOrDefault (cc => cc.Type == CustomCommandType.Execute);
-					if (cmd != null) {
-						drc.StartAction = AssemblyRunConfiguration.StartActions.Program;
-						drc.StartProgram = cmd.GetCommandFile (this, defaultConf.Selector);
-						drc.StartArguments = cmd.GetCommandArgs (this, defaultConf.Selector);
-						foreach (var v in cmd.EnvironmentVariables)
-							drc.EnvironmentVariables.Add (v.Key, v.Value);
-						drc.StartWorkingDirectory = cmd.GetCommandWorkingDir (this, defaultConf.Selector);
-						drc.ExternalConsole = cmd.ExternalConsole;
-						drc.PauseConsoleOutput = cmd.PauseExternalConsole;
-						defaultConf.CustomCommands.Remove (cmd);
+			base.OnReadProject (monitor, msproject);
+
+			// Load legacy configurations
+
+			var addedConfigs = new List<CustomCommand> ();
+			int count = 1;
+			foreach (var c in Configurations) {
+				foreach (var cmd in c.CustomCommands.Where (cc => cc.Type == CustomCommandType.Execute)) {
+					if (addedConfigs.Any (cc => cc.Equals (cmd)))
+						continue;
+					string exe, args;
+					cmd.ParseCommand (out exe, out args);
+
+					//if the executable name matches an executable in the project directory, use that, for back-compat
+					//else fall back and let the execution handler handle it via PATH, working directory, etc.
+					if (!Path.IsPathRooted (exe)) {
+						string localPath = ((FilePath)exe).ToAbsolute (BaseDirectory).FullPath;
+						if (File.Exists (localPath))
+							exe = localPath;
 					}
+
+					// If the project doesn't have any default run configuration, use the custom command as default configuration
+					AssemblyRunConfiguration rc = RunConfigurations.OfType<AssemblyRunConfiguration> ().FirstOrDefault (co => co.IsDefaultConfiguration && co.IsEmpty);
+
+					if (rc == null) {
+						// There is already a default configuration. Use a custom command.
+						var name = "Custom Command";
+						if (count++ > 1)
+							name += " " + count;
+						rc = new AssemblyRunConfiguration (name);
+					}
+					rc.StartAction = AssemblyRunConfiguration.StartActions.Program;
+					rc.StartProgram = exe ?? "";
+					rc.StartArguments = args ?? "";
+					rc.StartWorkingDirectory = cmd.WorkingDir ?? "";
+					rc.PauseConsoleOutput = cmd.PauseExternalConsole;
+					rc.ExternalConsole = cmd.ExternalConsole;
+					rc.EnvironmentVariables.CopyFrom (cmd.EnvironmentVariables);
+					rc.StoreInUserFile = false;
+					if (!rc.IsDefaultConfiguration)
+						RunConfigurations.Add (rc);
+					addedConfigs.Add (cmd);
 				}
+				c.CustomCommands.RemoveAll (cc => cc.Type == CustomCommandType.Execute);
 			}
 		}
 
