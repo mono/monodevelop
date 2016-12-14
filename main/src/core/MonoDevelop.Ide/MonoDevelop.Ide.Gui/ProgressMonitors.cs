@@ -206,9 +206,11 @@ namespace MonoDevelop.Ide.Gui
 						if (mon.TypeTag == id) {
 							if (mon.InstanceNum > instanceCount)
 								instanceCount = mon.InstanceNum;
-							if (mon.Title == originalTitle)
+							if (mon.Title == originalTitle && !mon.AllowReuse)
 								usedTitleIds.Add (mon.TitleInstanceNum);
-							if (pad == null && mon.AllowReuse) {
+							if (mon.AllowReuse &&
+							   (pad == null ||
+							    mon.Title == originalTitle)) {//Prefer reusing output with same title(project)
 								pad = mpad;
 							}
 						}
