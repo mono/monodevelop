@@ -177,6 +177,9 @@ namespace MonoDevelop.PackageManagement
 
 				case HttpStatusCode.ProxyAuthenticationRequired:
 				return GettextCatalog.GetString ("Proxy authentication required");
+
+				case HttpStatusCode.BadRequest:
+				return GettextCatalog.GetString ("Bad request");
 			}
 
 			return defaultErrorMessage;
