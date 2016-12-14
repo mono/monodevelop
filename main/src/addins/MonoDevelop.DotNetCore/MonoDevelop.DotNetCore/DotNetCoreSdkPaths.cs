@@ -48,7 +48,7 @@ namespace MonoDevelop.DotNetCore
 			if (sdkDirectory == null)
 				return;
 
-			string MSBuildSDKsPath = Path.Combine (sdkDirectory, "Sdks");
+			MSBuildSDKsPath = Path.Combine (sdkDirectory, "Sdks");
 
 			// HACK: Set MSBuildSDKsPath environment variable so MSBuild will find the
 			// SDK files when building and running targets.
@@ -64,5 +64,6 @@ namespace MonoDevelop.DotNetCore
 		public bool Exist { get; private set; }
 		public string ProjectImportProps { get; private set; }
 		public string ProjectImportTargets { get; private set; }
+		public string MSBuildSDKsPath { get; private set; }
 	}
 }

@@ -31,14 +31,14 @@ namespace MonoDevelop.DotNetCore
 {
 	static class MSBuildProjectExtensions
 	{
-		public static void AddImport (
+		public static MSBuildImport AddImport (
 			this MSBuildProject project,
 			string importedProjectFile,
 			bool importAtTop = false,
 			string condition = null)
 		{
 			MSBuildObject before = GetInsertBeforeObject (project, importAtTop);
-			project.AddNewImport (importedProjectFile, condition, before);
+			return project.AddNewImport (importedProjectFile, condition, before);
 		}
 
 		static MSBuildObject GetInsertBeforeObject (MSBuildProject project, bool importAtTop)
@@ -50,6 +50,15 @@ namespace MonoDevelop.DotNetCore
 			// Return an unknown MSBuildItem instead of null so the MSBuildProject adds the import as the last
 			// child in the project.
 			return new MSBuildItem ();
+		}
+
+		public static void AddPropertyBefore (this MSBuildProject project, string name, string value, MSBuildObject beforeItem)
+		{
+			var propertyGroup = project.CreatePropertyGroup ();
+			propertyGroup.Condition = string.Format ("'$({0})' == ''", name);
+			propertyGroup.SetValue (name,value);
+
+			project.AddPropertyGroup (propertyGroup, false, beforeItem);
 		}
 	}
 }
