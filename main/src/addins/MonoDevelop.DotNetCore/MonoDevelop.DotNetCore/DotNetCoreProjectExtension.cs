@@ -42,6 +42,7 @@ namespace MonoDevelop.DotNetCore
 		List<string> targetFrameworks;
 		bool outputTypeDefined;
 		string toolsVersion;
+		string sdk;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -302,6 +303,30 @@ namespace MonoDevelop.DotNetCore
 			result.SourceTarget = Project;
 			result.AddError (GettextCatalog.GetString ("NuGet packages need to be restored before building. NuGet MSBuild targets are missing and are needed for building. The NuGet MSBuild targets are generated when the NuGet packages are restored."));
 			return result;
+		}
+
+		protected override void OnBeginLoad ()
+		{
+			sdk = DotNetCoreProjectReader.GetDotNetCoreSdk (Project.FileName);
+			base.OnBeginLoad ();
+		}
+
+		protected override void OnPrepareForEvaluation (MSBuildProject project)
+		{
+			base.OnPrepareForEvaluation (project);
+
+			if (sdk == null)
+				return;
+
+			var sdkPaths = new DotNetCoreSdkPaths ();
+			sdkPaths.FindSdkPaths (sdk);
+			if (!sdkPaths.Exist)
+				return;
+
+			project.AddImport (sdkPaths.ProjectImportProps, importAtTop: true);
+			project.AddImport (sdkPaths.ProjectImportTargets);
+
+			project.Evaluate ();
 		}
 	}
 }
