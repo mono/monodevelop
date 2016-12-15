@@ -291,8 +291,10 @@ namespace MonoDevelop.DotNetCore
 
 		bool ProjectNeedsRestore ()
 		{
-			if (Project.NuGetAssetsFileExists () && Project.DotNetCoreNuGetMSBuildFilesExist ())
+			if (Project.NuGetAssetsFileExists () &&
+				(HasSdk || Project.DotNetCoreNuGetMSBuildFilesExist ())) {
 				return false;
+			}
 
 			return true;
 		}
@@ -311,11 +313,15 @@ namespace MonoDevelop.DotNetCore
 			base.OnBeginLoad ();
 		}
 
+		public bool HasSdk {
+			get { return sdk != null; }
+		}
+
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
 		{
 			base.OnPrepareForEvaluation (project);
 
-			if (sdk == null)
+			if (!HasSdk)
 				return;
 
 			var sdkPaths = new DotNetCoreSdkPaths ();
