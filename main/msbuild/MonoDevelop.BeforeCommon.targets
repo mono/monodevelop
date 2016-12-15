@@ -10,6 +10,7 @@
 		<CscToolPath>/Library/Frameworks/Mono.framework/Versions/4.9.0/lib/mono/4.5</CscToolPath>
 		<DebugType>portable</DebugType>
 		<CscDebugFileExt>.pdb</CscDebugFileExt>
+		<_DebugFileExt>.pdb</_DebugFileExt>
 	</PropertyGroup>
 
 	<PropertyGroup>
