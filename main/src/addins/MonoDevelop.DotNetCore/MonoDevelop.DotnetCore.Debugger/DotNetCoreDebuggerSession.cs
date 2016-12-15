@@ -115,7 +115,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 							{ "command", JToken.FromObject("xdg-open")}})}
 					})},
 					{"sourceFileMap", JToken.FromObject (new Dictionary<string, JToken> () {
-						{"/", cwd + "/"}
+						{"/Views", Path.Combine(cwd , "Views")}
 					})}});
 			return launchRequest;
 		}
