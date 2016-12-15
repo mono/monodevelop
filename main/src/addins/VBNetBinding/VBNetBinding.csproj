@@ -16,7 +16,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\VBNetBinding</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Execution>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\VBNetBinding</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Execution>

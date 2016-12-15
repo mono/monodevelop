@@ -16,7 +16,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -25,12 +25,11 @@
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\BackendBindings\MonoDevelop.CSharpBinding.Autotools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -38,7 +37,6 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>..\..\..\..\build\AddIns\BackendBindings\MonoDevelop.CSharpBinding.Autotools.xml</DocumentationFile>
     <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
