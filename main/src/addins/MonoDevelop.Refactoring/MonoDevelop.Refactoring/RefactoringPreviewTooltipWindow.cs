@@ -70,32 +70,48 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
+		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, ITextDocument changedTextDocument)
+		{
+			this.editor = editor;
+			this.documentContext = documentContext;
+			//this.codeAction = codeAction;
+			this.changedTextDocument = changedTextDocument;
+			TransientFor = IdeApp.Workbench.RootWindow;
+
+			fontDescription = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
+			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+
+			using (var metrics = PangoContext.GetMetrics (fontDescription, PangoContext.Language)) {
+				lineHeight = (int)Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+			}
+		}		
+
 		internal async void RequestPopup (Xwt.Rectangle rect)
 		{
 			var token = popupSrc.Token;
+			diff = await Task.FromResult (new List<DiffHunk> (editor.GetDiff (changedTextDocument, new DiffOptions (false, true))));
+			//diff = /*await Task.Run */ (async delegate {
+			//	try {
+			//		//foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
+			//		//	var ac = op as ApplyChangesOperation;
+			//		//	if (ac == null) {
+			//		//		continue;
+			//		//	}
+			//		//	var changedDocument = ac.ChangedSolution.GetDocument (documentContext.AnalysisDocument.Id);
 
-			diff = await Task.Run (async delegate {
-				try {
-					foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
-						var ac = op as ApplyChangesOperation;
-						if (ac == null) {
-							continue;
-						}
-						var changedDocument = ac.ChangedSolution.GetDocument (documentContext.AnalysisDocument.Id);
+						//changedTextDocument = TextEditorFactory.CreateNewDocument (new StringTextSource ((await changedDocument.GetTextAsync (token)).ToString ()), editor.FileName);
+			//			try {
+			//				var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument, new DiffOptions (false, true)));
+			//				if (list.Count > 0)
+			//					return list;
+			//			} catch (Exception e) {
+			//				LoggingService.LogError ("Error while getting preview list diff.", e);
+			//			}
 
-						changedTextDocument = TextEditorFactory.CreateNewDocument (new StringTextSource ((await changedDocument.GetTextAsync (token)).ToString ()), editor.FileName);
-						try {
-							var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument, new DiffOptions (false, true)));
-							if (list.Count > 0)
-								return list;
-						} catch (Exception e) {
-							LoggingService.LogError ("Error while getting preview list diff.", e);
-						}
-
-					}
-				} catch (OperationCanceledException) {}
-				return new List<DiffHunk> ();
-			});
+			//		//}
+			//	} catch (OperationCanceledException) {}
+			//	return new List<DiffHunk> ();
+			//});
 			if (diff.Count > 0 && !token.IsCancellationRequested)
 				ShowPopup (rect, PopupPosition.Left);
 		}

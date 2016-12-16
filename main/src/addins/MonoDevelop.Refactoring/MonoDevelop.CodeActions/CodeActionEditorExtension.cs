@@ -527,41 +527,41 @@ namespace MonoDevelop.CodeActions
 			}
 
 			first = false;
+			if (DocumentContext.AnalysisDocument != null) {
+				var warningsAtCaret = (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result)
+					.GetDiagnostics (new TextSpan (Editor.CaretOffset, 0))
+					.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
 
-			var warningsAtCaret = (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result)
-				.GetDiagnostics (new TextSpan (Editor.CaretOffset, 0))
-				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
-			
-			foreach (var warning in warningsAtCaret) {
-				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
-				var subMenu = new FixMenuDescriptor (label);
-				if (first) {
-					menu.Add (FixMenuEntry.Separator);
-					first = false;
-				}
-				var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
-				 	async delegate {
+				foreach (var warning in warningsAtCaret) {
+					var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
+					var subMenu = new FixMenuDescriptor (label);
+					if (first) {
+						menu.Add (FixMenuEntry.Separator);
+						first = false;
+					}
+					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
+						 async delegate {
+							 var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
+							 foreach (var f in fixes) {
+								 CodeDiagnosticDescriptor.RunAction (DocumentContext, f.Action, default (CancellationToken));
+							 }
+						 }
+					);
+					menuItem.ShowPreviewTooltip = async delegate (Xwt.Rectangle rect) {
 						var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
-					 	foreach (var f in fixes) {
-							CodeDiagnosticDescriptor.RunAction (DocumentContext, f.Action, default (CancellationToken));
-					 	}
-				 	}
-				);
-				menuItem.ShowPreviewTooltip = async delegate (Xwt.Rectangle rect) {
-					var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
-					HidePreviewTooltip ();
-					var fix = fixes.FirstOrDefault ();
-					if (fix == null)
-						return;
-					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.Action);
-					currentPreviewWindow.RequestPopup (rect);
-				};
+						HidePreviewTooltip ();
+						var fix = fixes.FirstOrDefault ();
+						if (fix == null)
+							return;
+						currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.Action);
+						currentPreviewWindow.RequestPopup (rect);
+					};
 
-				subMenu.Add (menuItem);
-				menu.Add (subMenu);
-				items++;
+					subMenu.Add (menuItem);
+					menu.Add (subMenu);
+					items++;
+				}
 			}
-
 			foreach (var fix_ in GetCurrentFixes ().DiagnosticsAtCaret) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", fix.GetMessage ());

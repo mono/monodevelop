@@ -171,6 +171,8 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpAddMissingOpensTextEditorExtension" />
     <!-- Extension check is done within code -->
     <Class class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
+    <!--<Class class = "MonoDevelop.FSharp.CodeActionEditorExtension" />-->
+
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
@@ -315,6 +317,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
+      <CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.AddMissingOpen" />
       <SeparatorItem id = "FSharpScriptDebug" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
