@@ -57,10 +57,13 @@ namespace MonoDevelop.Components
 		public enum Roles
 		{
 			AXButton,
+			AXCell,
+			AXColumn,
 			AXGroup,
 			AXImage,
 			AXMenuButton,
 			AXRadioButton,
+			AXRow,
 			AXRuler,
 			AXSplitGroup,
 			AXSplitter,
@@ -107,7 +110,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			NSArray children = (NSArray) obj.PerformSelector (new Selector ("accessibilityChildren"));
+			NSArray children = (NSArray)obj.PerformSelector (new Selector ("accessibilityChildren"));
 			if (children == null) {
 				return;
 			}
@@ -350,7 +353,7 @@ namespace MonoDevelop.Components
 			NSObject [] realTabs = new NSObject [tabs.Length];
 			int i = 0;
 			foreach (var tab in tabs) {
-				realTabs [i] = (NSObject) GetNSAccessibilityElement (tab);
+				realTabs [i] = (NSObject)GetNSAccessibilityElement (tab);
 				i++;
 			}
 
@@ -401,6 +404,45 @@ namespace MonoDevelop.Components
 			oldElements.Remove ((NSObject)nsa);
 
 			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
+#endif
+		}
+
+		public static void AccessibilityReplaceAccessibilityElements (this Atk.Object parent, AtkCocoaHelper.AccessibilityElementProxy [] children)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityChildren = children;
+#endif
+		}
+
+		public static void SetAccessibilityColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityColumns = columns;
+#endif
+		}
+
+		public static void SetAccessibilityRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityRows = rows;
 #endif
 		}
 
@@ -649,6 +691,13 @@ namespace MonoDevelop.Components
 			{
 #if MAC
 				SetAccessibilityRole (role.ToString (), description);
+#endif
+			}
+
+			public void SetAccessibilityValue (string value)
+			{
+#if MAC
+				AccessibilityValue = new NSString (value);
 #endif
 			}
 
