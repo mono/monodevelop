@@ -167,6 +167,9 @@
     <EmbeddedResource Include="icons\build~dark%402x.png">
       <LogicalName>build~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\build-touchbar.png">
+      <LogicalName>build-touchbar.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\continue.png">
       <LogicalName>continue.png</LogicalName>
     </EmbeddedResource>
@@ -178,6 +181,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\continue~dark%402x.png">
       <LogicalName>continue~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-touchbar.png">
+      <LogicalName>continue-touchbar.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\device.png">
       <LogicalName>device.png</LogicalName>
@@ -214,6 +220,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stop~dark%402x.png">
       <LogicalName>stop~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-touchbar.png">
+      <LogicalName>stop-touchbar.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="maintoolbarbg~dark.png">
       <LogicalName>maintoolbarbg~dark.png</LogicalName>

@@ -620,6 +620,9 @@
     <EmbeddedResource Include="icons\mac\pause-16~dark%402x.png">
       <LogicalName>pause-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\pause-touchbar.png">
+      <LogicalName>pause-touchbar.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\continue-16.png">
       <LogicalName>continue-16.png</LogicalName>
     </EmbeddedResource>
@@ -631,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\continue-16~dark%402x.png">
       <LogicalName>continue-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\continue-touchbar.png">
+      <LogicalName>continue-touchbar.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-in-16%402x.png">
       <LogicalName>step-in-16@2x.png</LogicalName>
@@ -656,6 +662,9 @@
     <EmbeddedResource Include="icons\mac\step-in-16~disabled~dark%402x.png">
       <LogicalName>step-in-16~disabled~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-touchbar.png">
+      <LogicalName>step-in-touchbar.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-out-16.png">
       <LogicalName>step-out-16.png</LogicalName>
     </EmbeddedResource>
@@ -680,6 +689,9 @@
     <EmbeddedResource Include="icons\mac\step-out-16~disabled~dark%402x.png">
       <LogicalName>step-out-16~disabled~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-touchbar.png">
+      <LogicalName>step-out-touchbar.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-over-16.png">
       <LogicalName>step-over-16.png</LogicalName>
     </EmbeddedResource>
@@ -703,6 +715,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-over-16~disabled~dark%402x.png">
       <LogicalName>step-over-16~disabled~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-touchbar.png">
+      <LogicalName>step-over-touchbar.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
