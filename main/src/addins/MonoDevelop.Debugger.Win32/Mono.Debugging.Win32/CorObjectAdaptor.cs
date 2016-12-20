@@ -44,7 +44,7 @@ using Microsoft.Samples.Debugging.Extensions;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class CorObjectAdaptor: ObjectValueAdaptor
 	{
