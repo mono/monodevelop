@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Editor
 
 		/// <summary>
 		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
-		/// Even if it's a C# file.
+		/// Even if it's a C# file. Is always not <c>null</c> when the parser returns <c>true</c> on CanGenerateAnalysisDocument.
 		/// </summary>
 		public abstract Microsoft.CodeAnalysis.Document AnalysisDocument
 		{

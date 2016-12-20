@@ -511,6 +511,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			public IReadOnlyList<Projection> Projections;
 		}
 
+		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
+		{
+			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
+			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+
+			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
+		}
+
 		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
 		{
 			var documents = new List<DocumentInfo> ();
@@ -523,11 +531,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
 				SourceCodeKind sck;
-				if (TypeSystemParserNode.IsCompileableFile (f, out sck)) {
+				if (TypeSystemParserNode.IsCompileableFile (f, out sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
+
 					if (duplicates.Add (projectData.GetOrCreateDocumentId (f.Name))) {
 						additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 					}
@@ -1185,7 +1194,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				var projectData = GetProjectData (GetProjectId (project));
 				SourceCodeKind sck;
-				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck)) {
+				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck) || CanGenerateAnalysisContextForNonCompileable (project, projectFile)) {
 					if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
 						return;
 					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile, sck);
@@ -1246,7 +1255,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectId = GetProjectId (project);
 				var data = GetProjectData (projectId);
 				SourceCodeKind sck;
-				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck)) {
+				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck) || CanGenerateAnalysisContextForNonCompileable (project, projectFile)) {
 					var id = data.GetDocumentId (fargs.OldName);
 					if (id != null) {
 						if (this.IsDocumentOpen (id)) {
