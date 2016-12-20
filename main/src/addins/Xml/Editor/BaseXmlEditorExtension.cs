@@ -359,6 +359,7 @@ namespace MonoDevelop.Xml.Editor
 
 					var result = await GetAttributeValueCompletions (attributedOb, att, token);
 					if (result != null) {
+						result.TriggerWordStart = tracker.Engine.Position;
 						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
 						return result;
 					}

@@ -38,6 +38,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int TriggerXCoord { get; set; }
 		public int TriggerYCoord { get; set; }
 		public int TriggerTextHeight { get; set; }
+		public int TriggerWordStart { get; set }
 		public int TriggerWordLength { get; set; }
 
 		public override string ToString ()

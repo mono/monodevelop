@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public interface ICompletionDataList : IList<CompletionData>
 	{
+		int TriggerWordStart { get; }
 		int TriggerWordLength { get; }
 
 		bool IsSorted { get; }
@@ -69,6 +70,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public class CompletionDataList : List<CompletionData>, ICompletionDataList
 	{
+		public int TriggerWordStart { get; set; }
 		public int TriggerWordLength { get; set; }
 
 		public bool IsSorted { get; set; }

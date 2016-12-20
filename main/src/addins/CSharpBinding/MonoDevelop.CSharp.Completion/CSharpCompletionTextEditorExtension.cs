@@ -478,6 +478,7 @@ namespace MonoDevelop.CSharp.Completion
 //			}
 			var offset = Editor.CaretOffset;
 			var list = new CSharpCompletionDataList ();
+			list.TriggerWordStart = offset;
 			list.TriggerWordLength = triggerWordLength;
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
@@ -1357,6 +1358,7 @@ namespace MonoDevelop.CSharp.Completion
 				wlen = 0;
 			}
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
+			CurrentCompletionContext.TriggerWordStart = cpos;
 			CurrentCompletionContext.TriggerWordLength = wlen;
 
 			int triggerWordLength = 0;

@@ -177,6 +177,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.
@@ -234,6 +235,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.

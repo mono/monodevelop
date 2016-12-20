@@ -486,7 +486,8 @@ namespace MonoDevelop.AspNet.Razor
 				CompletionSelectionMode = list.CompletionSelectionMode,
 				DefaultCompletionString = list.DefaultCompletionString,
 				IsSorted = list.IsSorted,
-				TriggerWordLength = list.TriggerWordLength
+				TriggerWordLength = list.TriggerWordLength,
+				TriggerWordStart = list.TriggerWordStart,
 			};
 			foreach (var l in list) {
 				var c =  l as CompletionData;
