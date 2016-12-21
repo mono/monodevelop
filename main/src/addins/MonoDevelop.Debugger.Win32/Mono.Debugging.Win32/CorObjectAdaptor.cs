@@ -414,31 +414,28 @@ namespace Mono.Debugging.Win32
 					argValues[n] = Box (ctx, argValues[n]);
 			}
 
-			try {
-				CorValRef v = new CorValRef (delegate {
-					CorModule mod = null;
-					if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-						mod = ((CorType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
-					}
-					else {
-						mod = methodOwner.Class.Module;
-					}
-					CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
-					CorValue[] args = new CorValue[argValues.Length];
-					for (int n = 0; n < args.Length; n++)
-						args[n] = argValues[n].Val;
-					if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-						return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
-					}
-					else {
-						return ctx.RuntimeInvoke (func, methodOwner.TypeParameters, target != null ? target.Val : null, args);
-					}
-				});
-				return v.Val == null ? null : v;
-			} catch (Exception e) {
-				gctx.WriteDebuggerError (e);
-			}
-			return null;
+			CorValRef v = new CorValRef (delegate {
+				CorModule mod = null;
+				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type)) {
+					mod = ((CorType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
+				}
+				else {
+					mod = methodOwner.Class.Module;
+				}
+				CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
+				CorValue[] args = new CorValue[argValues.Length];
+				for (int n = 0; n < args.Length; n++)
+					args[n] = argValues[n].Val;
+				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type)) {
+					return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+				}
+				else {
+					return ctx.RuntimeInvoke (func, methodOwner.TypeParameters, target != null ? target.Val : null, args);
+				}
+			});
+			return v.Val == null ? null : v;
 		}
 
 		/// <summary>
@@ -481,7 +478,13 @@ namespace Mono.Debugging.Win32
 				} else if (rtype.BaseType != null && rtype.BaseType.FullName == "System.ValueType") {
 					currentType = ctx.Adapter.GetType (ctx, "System.ValueType") as CorType;
 				} else {
-					currentType = currentType.Base;
+					// if the currentType is not a class .Base throws an exception ArgumentOutOfRange (thx for coreclr repo for figure it out)
+					try {
+						currentType = currentType.Base;
+					}
+					catch (Exception) {
+						currentType = null;
+					}
 				}
 			}
 
