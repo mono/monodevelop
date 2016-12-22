@@ -619,9 +619,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void CorProcessEventHandler(Object sender,
-                                                 CorProcessEventArgs e);
-
 
     /**
      * The event arguments for events that contain both a CorProcess
@@ -665,9 +662,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return base.ToString();
         }
     }
-
-    public delegate void CorAppDomainEventHandler(Object sender,
-                                                   CorAppDomainEventArgs e);
 
 
     /**
@@ -731,9 +725,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void CorThreadEventHandler(Object sender,
-                                                CorThreadEventArgs e);
-
 
     /**
      * Arguments for events involving breakpoints.
@@ -777,9 +768,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return base.ToString();
         }
     }
-
-    public delegate void BreakpointEventHandler(Object sender,
-                                                 CorBreakpointEventArgs e);
 
 
     /**
@@ -836,9 +824,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void StepCompleteEventHandler(Object sender,
-                                                   CorStepCompleteEventArgs e);
-
 
     /**
      * For events dealing with exceptions.
@@ -873,9 +858,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
     }
-
-    public delegate void CorExceptionEventHandler(Object sender,
-                                                   CorExceptionEventArgs e);
 
 
     /**
@@ -921,8 +903,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void EvalEventHandler(Object sender, CorEvalEventArgs e);
-
 
     /**
      * For events dealing with module loading/unloading.
@@ -965,9 +945,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void CorModuleEventHandler(Object sender,
-                                                CorModuleEventArgs e);
-
 
     /**
      * For events dealing with class loading/unloading.
@@ -1009,9 +986,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return base.ToString();
         }
     }
-
-    public delegate void CorClassEventHandler(Object sender,
-                                               CorClassEventArgs e);
 
 
     /**
@@ -1064,9 +1038,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void DebuggerErrorEventHandler(Object sender,
-                                                    CorDebuggerErrorEventArgs e);
-
 
     /**
      * For events dealing with Assemblies.
@@ -1109,9 +1080,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return base.ToString();
         }
     }
-
-    public delegate void CorAssemblyEventHandler(Object sender,
-                                                  CorAssemblyEventArgs e);
 
 
     /**
@@ -1175,9 +1143,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return base.ToString();
         }
     }
-
-    public delegate void LogMessageEventHandler(Object sender,
-                                                 CorLogMessageEventArgs e);
 
 
     /**
@@ -1258,9 +1223,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void LogSwitchEventHandler(Object sender,
-                                                CorLogSwitchEventArgs e);
-
 
     /**
      * For events dealing with MDA messages.
@@ -1302,9 +1264,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         //CorProcess m_proc;
         //CorProcess Process { get { return m_proc; } }
     }
-
-    public delegate void MDANotificationEventHandler(Object sender, CorMDAEventArgs e);
-
 
 
     /**
@@ -1352,9 +1311,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
-    public delegate void UpdateModuleSymbolsEventHandler(Object sender,
-                                                          CorUpdateModuleSymbolsEventArgs e);
-
     public sealed class CorExceptionInCallbackEventArgs : CorEventArgs
     {
         public CorExceptionInCallbackEventArgs(CorController controller, Exception exceptionThrown)
@@ -1389,9 +1345,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         private Exception m_exceptionThrown;
     }
-
-    public delegate void CorExceptionInCallbackEventHandler(Object sender,
-                                             CorExceptionInCallbackEventArgs e);
 
 
     /**
@@ -1439,8 +1392,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private CorFunction m_managedFunction;
         private int m_accurate;
     }
-    public delegate void CorEditAndContinueRemapEventHandler(Object sender,
-                                                              CorEditAndContinueRemapEventArgs e);
 
 
     public class CorBreakpointSetErrorEventArgs : CorThreadEventArgs
@@ -1494,8 +1445,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private CorBreakpoint m_breakpoint;
         private int m_errorCode;
     }
-    public delegate void CorBreakpointSetErrorEventHandler(Object sender,
-                                                           CorBreakpointSetErrorEventArgs e);
 
 
     public sealed class CorFunctionRemapOpportunityEventArgs : CorThreadEventArgs
@@ -1564,9 +1513,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private int m_oldILoffset;
     }
 
-    public delegate void CorFunctionRemapOpportunityEventHandler(Object sender,
-                                                       CorFunctionRemapOpportunityEventArgs e);
-
     public sealed class CorFunctionRemapCompleteEventArgs : CorThreadEventArgs
     {
         public CorFunctionRemapCompleteEventArgs(CorAppDomain appDomain,
@@ -1598,9 +1544,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         private CorFunction m_managedFunction;
     }
-
-    public delegate void CorFunctionRemapCompleteEventHandler(Object sender,
-                                                              CorFunctionRemapCompleteEventArgs e);
 
 
     public class CorExceptionUnwind2EventArgs : CorThreadEventArgs
@@ -1657,9 +1600,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         CorDebugExceptionUnwindCallbackType m_eventType;
         int m_flags;
     }
-
-    public delegate void CorExceptionUnwind2EventHandler(Object sender,
-                                                   CorExceptionUnwind2EventArgs e);
 
 
     public class CorException2EventArgs : CorThreadEventArgs
@@ -1744,9 +1684,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         int m_flags;
     }
 
-    public delegate void CorException2EventHandler(Object sender,
-                                                   CorException2EventArgs e);
-
 
     public enum ManagedCallbackType 
     {
@@ -1781,10 +1718,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         OnExceptionUnwind2,
         OnMDANotification,
         OnExceptionInCallback,
-    }
-    internal enum ManagedCallbackTypeCount 
-    {
-        Last = ManagedCallbackType.OnExceptionInCallback,
     }
 
     // Helper class to convert from COM-classic callback interface into managed args.
