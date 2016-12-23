@@ -37,7 +37,6 @@ using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using SR = System.Reflection;
 using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 using Microsoft.Samples.Debugging.Extensions;
@@ -315,9 +314,9 @@ namespace Mono.Debugging.Win32
 
 				var targetType = (CorType)GetValueType (ctx, objr);
 
-				MethodInfo met = OverloadResolve (cctx, "ToString", targetType, new CorType[0], BindingFlags.Public | BindingFlags.Instance, false);
-				if (met != null && met.DeclaringType.FullName != "System.Object") {
-					var args = new object[0];
+				var methodInfo = OverloadResolve (cctx, "ToString", targetType, new CorType[0], BindingFlags.Public | BindingFlags.Instance, false);
+				if (methodInfo != null && methodInfo.Item1.DeclaringType != null && methodInfo.Item1.DeclaringType.FullName != "System.Object") {
+		            var args = new object[0];
 					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", new object[0], args, args);
 					var res = GetRealObject (ctx, ores) as CorStringValue;
                     if (res != null)
@@ -398,7 +397,11 @@ namespace Mono.Debugging.Win32
 				flags |= BindingFlags.Static;
 
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
-			MethodInfo method = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
+			var methodInfo = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
+			if (methodInfo == null)
+				return null;
+			var method = methodInfo.Item1;
+			var methodOwner = methodInfo.Item2;
 			ParameterInfo[] parameters = method.GetParameters ();
 			// TODO: Check this.
 			for (int n = 0; n < parameters.Length; n++) {
@@ -407,36 +410,45 @@ namespace Mono.Debugging.Win32
 			}
 
 			try {
-				if (method != null) {
-					CorValRef v = new CorValRef (delegate {
-						CorModule mod = null;
-						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-							mod = ((CorType)ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
-						} else {
-							mod = targetType.Class.Module;
-						}
-						CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
-						CorValue[] args = new CorValue[argValues.Length];
-						for (int n = 0; n < args.Length; n++)
-							args[n] = argValues[n].Val;
-						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-							return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
-						} else {
-							return ctx.RuntimeInvoke (func, targetType.TypeParameters, target != null ? target.Val : null, args);
-						}
-					});
-					return v.Val == null ? null : v;
-				}
+				CorValRef v = new CorValRef (delegate {
+					CorModule mod = null;
+					if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+						mod = ((CorType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
+					}
+					else {
+						mod = methodOwner.Class.Module;
+					}
+					CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
+					CorValue[] args = new CorValue[argValues.Length];
+					for (int n = 0; n < args.Length; n++)
+						args[n] = argValues[n].Val;
+					if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+						return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+					}
+					else {
+						return ctx.RuntimeInvoke (func, methodOwner.TypeParameters, target != null ? target.Val : null, args);
+					}
+				});
+				return v.Val == null ? null : v;
 			} catch (Exception e) {
 				gctx.WriteDebuggerError (e);
 			}
 			return null;
 		}
 
-
-		MethodInfo OverloadResolve (CorEvaluationContext ctx, string methodName, CorType type, CorType[] argtypes, BindingFlags flags, bool throwIfNotFound)
+		/// <summary>
+		/// Returns a pair of method info and a type on which it was resolved
+		/// </summary>
+		/// <param name="ctx"></param>
+		/// <param name="methodName"></param>
+		/// <param name="type"></param>
+		/// <param name="argtypes"></param>
+		/// <param name="flags"></param>
+		/// <param name="throwIfNotFound"></param>
+		/// <returns></returns>
+		Tuple<MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string methodName, CorType type, CorType[] argtypes, BindingFlags flags, bool throwIfNotFound)
 		{
-			List<MethodInfo> candidates = new List<MethodInfo> ();
+			List<Tuple<MethodInfo, CorType>> candidates = new List<Tuple<MethodInfo, CorType>> ();
 			CorType currentType = type;
 
 			while (currentType != null) {
@@ -444,10 +456,10 @@ namespace Mono.Debugging.Win32
 				foreach (MethodInfo met in rtype.GetMethods (flags)) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						if (argtypes == null)
-							return met;
+							return Tuple.Create (met, currentType);
 						ParameterInfo[] pars = met.GetParameters ();
 						if (pars.Length == argtypes.Length)
-							candidates.Add (met);
+							candidates.Add (Tuple.Create (met, currentType));
 					}
 				}
 
@@ -461,6 +473,8 @@ namespace Mono.Debugging.Win32
 				    currentType.Type == CorElementType.ELEMENT_TYPE_SZARRAY ||
 				    currentType.Type == CorElementType.ELEMENT_TYPE_STRING) {
 					currentType = ctx.Adapter.GetType (ctx, "System.Object") as CorType;
+				} else if (rtype.BaseType != null && rtype.BaseType.FullName == "System.ValueType") {
+					currentType = ctx.Adapter.GetType (ctx, "System.ValueType") as CorType;
 				} else {
 					currentType = currentType.Base;
 				}
@@ -496,12 +510,12 @@ namespace Mono.Debugging.Win32
 			return true;
 		}
 
-		MethodInfo OverloadResolve (CorEvaluationContext ctx, string typeName, string methodName, CorType[] argtypes, List<MethodInfo> candidates, bool throwIfNotFound)
+		Tuple<MethodInfo, CorType> OverloadResolve (CorEvaluationContext ctx, string typeName, string methodName, CorType[] argtypes, List<Tuple<MethodInfo, CorType>> candidates, bool throwIfNotFound)
 		{
 			if (candidates.Count == 1) {
 				string error;
 				int matchCount;
-				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
+				if (IsApplicable (ctx, candidates[0].Item1, argtypes, out error, out matchCount))
 					return candidates[0];
 
 				if (throwIfNotFound)
@@ -518,15 +532,15 @@ namespace Mono.Debugging.Win32
 			}
 
 			// Ok, now we need to find an exact match.
-			MethodInfo match = null;
+			Tuple<MethodInfo, CorType> match = null;
 			int bestCount = -1;
 			bool repeatedBestCount = false;
 
-			foreach (MethodInfo method in candidates) {
+			foreach (var method in candidates) {
 				string error;
 				int matchCount;
 
-				if (!IsApplicable (ctx, method, argtypes, out error, out matchCount))
+				if (!IsApplicable (ctx, method.Item1, argtypes, out error, out matchCount))
 					continue;
 
 				if (matchCount == bestCount) {
@@ -741,10 +755,13 @@ namespace Mono.Debugging.Win32
 				vargs [n] = args [n].Val;
 				targs [n] = vargs [n].ExactType;
 			}
-
-			var ctor = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
+			MethodInfo ctor = null;
+			var ctorInfo = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
+			if (ctorInfo != null) {
+				ctor = ctorInfo.Item1;
+			}
 			if (ctor == null) {
-				//TODO: Remove this if and content when Generic method inovcation is fully implemented
+				//TODO: Remove this if and content when Generic method invocation is fully implemented
 				Type t = type.GetTypeInfo (cctx.Session);
 				foreach (MethodInfo met in t.GetMethods ()) {
 					if (met.IsSpecialName && met.Name == ".ctor") {
@@ -909,7 +926,7 @@ namespace Mono.Debugging.Win32
 				values[n] = (CorValRef) indices[n];
 			}
 
-			List<MethodInfo> candidates = new List<MethodInfo> ();
+			List<Tuple<MethodInfo, CorType>> candidates = new List<Tuple<MethodInfo, CorType>> ();
 			List<PropertyInfo> props = new List<PropertyInfo> ();
 			List<CorType> propTypes = new List<CorType> ();
 
@@ -926,7 +943,7 @@ namespace Mono.Debugging.Win32
 						// Ignore
 					}
 					if (mi != null && !mi.IsStatic && mi.GetParameters ().Length > 0) {
-						candidates.Add (mi);
+						candidates.Add (Tuple.Create (mi, t));
 						props.Add (prop);
 						propTypes.Add (t);
 					}
@@ -936,7 +953,7 @@ namespace Mono.Debugging.Win32
 				t = t.Base;
 			}
 
-			MethodInfo idx = OverloadResolve (cctx, GetTypeName (ctx, targetType), null, types, candidates, true);
+			var idx = OverloadResolve (cctx, GetTypeName (ctx, targetType), null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
 
 			if (props [i].GetGetMethod (true) == null)
