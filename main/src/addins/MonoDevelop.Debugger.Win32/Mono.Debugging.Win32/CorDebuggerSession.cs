@@ -580,6 +580,7 @@ namespace Mono.Debugging.Win32
 
 		void OnModuleUnload (object sender, CorModuleEventArgs e)
 		{
+			List<string> toRemove = new List<string> ();
 			lock (documents) {
 				ModuleInfo moi;
 				modules.TryGetValue (e.Module.Name, out moi);
@@ -587,15 +588,16 @@ namespace Mono.Debugging.Win32
 					return;
 
 				modules.Remove (e.Module.Name);
-				List<string> toRemove = new List<string> ();
 				foreach (KeyValuePair<string, DocInfo> di in documents) {
 					if (di.Value.Module.Name == e.Module.Name)
 						toRemove.Add (di.Key);
 				}
 				foreach (string file in toRemove) {
 					documents.Remove (file);
-					UnbindSourceFileBreakpoints (file);
 				}
+			}
+			foreach (var file in toRemove) {
+				UnbindSourceFileBreakpoints (file);
 			}
 		}
 
