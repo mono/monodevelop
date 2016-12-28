@@ -497,19 +497,23 @@ namespace Mono.Debugging.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
+				if (file.IndexOfAny (badPathChars) == -1) {
 					try {
-						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
-						foreach (ISymbolDocument doc in reader.GetDocuments ()) {
-							if (string.IsNullOrEmpty (doc.URL))
-								continue;
-							string docFile = System.IO.Path.GetFullPath (doc.URL);
-							DocInfo di = new DocInfo ();
-							di.Document = doc;
-							di.Reader = reader;
-							di.Module = e.Module;
-							documents[docFile] = di;
-							BindSourceFileBreakpoints (docFile);
+						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".",
+							SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
+						if (reader != null) {
+							OnDebuggerOutput (false, string.Format("Symbols for module {0} loaded", file));
+							foreach (ISymbolDocument doc in reader.GetDocuments ()) {
+								if (string.IsNullOrEmpty (doc.URL))
+									continue;
+								string docFile = System.IO.Path.GetFullPath (doc.URL);
+								DocInfo di = new DocInfo ();
+								di.Document = doc;
+								di.Reader = reader;
+								di.Module = e.Module;
+								documents[docFile] = di;
+								BindSourceFileBreakpoints (docFile);
+							}
 						}
 					}
 					catch (Exception ex) {
