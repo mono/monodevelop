@@ -512,40 +512,52 @@ namespace Mono.Debugging.Win32
 			}
 
 			string file = e.Module.Assembly.Name;
-			lock (documents) {
-				ISymbolReader reader = null;
-				if (file.IndexOfAny (badPathChars) == -1) {
-					try {
-						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".",
-							SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
-						if (reader != null) {
-							OnDebuggerOutput (false, string.Format("Symbols for module {0} loaded", file));
-							foreach (ISymbolDocument doc in reader.GetDocuments ()) {
-								if (string.IsNullOrEmpty (doc.URL))
-									continue;
-								string docFile = System.IO.Path.GetFullPath (doc.URL);
-								DocInfo di = new DocInfo ();
-								di.Document = doc;
-								di.Reader = reader;
-								di.Module = e.Module;
-								documents[docFile] = di;
-								BindSourceFileBreakpoints (docFile);
-							}
+			var newDocuments = new Dictionary<string, DocInfo> ();
+			ISymbolReader reader = null;
+			if (file.IndexOfAny (badPathChars) == -1) {
+				try {
+					reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".",
+						SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
+					if (reader != null) {
+						OnDebuggerOutput (false, string.Format("Symbols for module {0} loaded", file));
+						foreach (ISymbolDocument doc in reader.GetDocuments ()) {
+							if (string.IsNullOrEmpty (doc.URL))
+								continue;
+							string docFile = System.IO.Path.GetFullPath (doc.URL);
+							DocInfo di = new DocInfo ();
+							di.Document = doc;
+							di.Reader = reader;
+							di.Module = e.Module;
+							newDocuments[docFile] = di;
 						}
 					}
-					catch (Exception ex) {
-						OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
-					}
+				}
+				catch (Exception ex) {
+					OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
+				}
+				try {
 					e.Module.SetJmcStatus (true, null);
 				}
-				else {
-					// Flag modules without debug info as not JMC. In this way
-					// the debugger won't try to step into them
+				catch {
+					// somewhen exceptions is thrown
+				}
+			}
+			else {
+				// Flag modules without debug info as not JMC. In this way
+				// the debugger won't try to step into them
+				try {
 					e.Module.SetJmcStatus (false, null);
 				}
+				catch {
+					// somewhen exceptions is thrown
+				}
+			}
 
+			lock (documents) {
+				foreach (var newDocument in newDocuments) {
+					documents[newDocument.Key] = newDocument.Value;
+				}
 				ModuleInfo moi;
-
 				if (modules.TryGetValue (e.Module.Name, out moi)) {
 					moi.References++;
 				}
@@ -558,6 +570,11 @@ namespace Mono.Debugging.Win32
 					modules[e.Module.Name] = moi;
 				}
 			}
+
+			foreach (var newFile in newDocuments.Keys) {
+				BindSourceFileBreakpoints (newFile);
+			}
+
 			e.Continue = true;
 		}
 
@@ -829,98 +846,102 @@ namespace Mono.Debugging.Win32
 		{
 			return MtaThread.Run (delegate {
 				var binfo = new BreakEventInfo ();
-
-				lock (documents) {
-					var bp = be as Breakpoint;
-					if (bp != null) {
-						if (bp is FunctionBreakpoint) {
-							// FIXME: implement breaking on function name
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
-							return binfo;
-						} else {
-							DocInfo doc;
+				var bp = be as Breakpoint;
+				if (bp != null) {
+					if (bp is FunctionBreakpoint) {
+						// FIXME: implement breaking on function name
+						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						return binfo;
+					} else {
+						DocInfo doc;
+						lock (documents) {
 							if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
 								binfo.SetStatus (BreakEventStatus.NotBound, null);
 								return binfo;
 							}
-
-							int line;
-							try {
-								line = doc.Document.FindClosestLine (bp.Line);
-							} catch {
-								// Invalid line
-								binfo.SetStatus (BreakEventStatus.Invalid, null);
-								return binfo;
-							}
-							ISymbolMethod met = null;
-							if (doc.Reader is ISymbolReader2) {
-								var methods = ((ISymbolReader2)doc.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
-								if (methods != null && methods.Any ()) {
-									if (methods.Count () == 1) {
-										met = methods [0];
-									} else {
-										int deepest = -1;
-										foreach (var method in methods) {
-											var firstSequence = method.GetSequencePoints ().FirstOrDefault ((sp) => sp.StartLine != 0xfeefee);
-											if (firstSequence != null && firstSequence.StartLine >= deepest) {
-												deepest = firstSequence.StartLine;
-												met = method;
-											}
+						}
+						int line;
+						try {
+							line = doc.Document.FindClosestLine (bp.Line);
+						} catch {
+							// Invalid line
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							return binfo;
+						}
+						ISymbolMethod met = null;
+						if (doc.Reader is ISymbolReader2) {
+							var methods = ((ISymbolReader2)doc.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
+							if (methods != null && methods.Any ()) {
+								if (methods.Count () == 1) {
+									met = methods [0];
+								} else {
+									int deepest = -1;
+									foreach (var method in methods) {
+										var firstSequence = method.GetSequencePoints ().FirstOrDefault ((sp) => sp.StartLine != 0xfeefee);
+										if (firstSequence != null && firstSequence.StartLine >= deepest) {
+											deepest = firstSequence.StartLine;
+											met = method;
 										}
 									}
 								}
 							}
-							if (met == null) {
-								met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
-							}
-							if (met == null) {
-								binfo.SetStatus (BreakEventStatus.Invalid, null);
-								return binfo;
-							}
-
-							int offset = -1;
-							int firstSpInLine = -1;
-							foreach (SequencePoint sp in met.GetSequencePoints ()) {
-								if (sp.IsInside (doc.Document.URL, line, bp.Column)) {
-									offset = sp.Offset;
-									break;
-								} else if (firstSpInLine == -1
-								           && sp.StartLine == line
-								           && sp.Document.URL.Equals (doc.Document.URL, StringComparison.OrdinalIgnoreCase)) {
-									firstSpInLine = sp.Offset;
-								}
-							}
-							if (offset == -1) {//No exact match? Use first match in that line
-								offset = firstSpInLine;
-							}
-							if (offset == -1) {
-								binfo.SetStatus (BreakEventStatus.Invalid, null);
-								return binfo;
-							}
-
-							CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
-							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-							corBp.Activate (bp.Enabled);
-							breakpoints [corBp] = binfo;
-
-							binfo.Handle = corBp;
-							binfo.SetStatus (BreakEventStatus.Bound, null);
+						}
+						if (met == null) {
+							met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+						}
+						if (met == null) {
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
 							return binfo;
 						}
-					}
 
-					var cp = be as Catchpoint;
-					if (cp != null) {
+						int offset = -1;
+						int firstSpInLine = -1;
+						foreach (SequencePoint sp in met.GetSequencePoints ()) {
+							if (sp.IsInside (doc.Document.URL, line, bp.Column)) {
+								offset = sp.Offset;
+								break;
+							} else if (firstSpInLine == -1
+									   && sp.StartLine == line
+									   && sp.Document.URL.Equals (doc.Document.URL, StringComparison.OrdinalIgnoreCase)) {
+								firstSpInLine = sp.Offset;
+							}
+						}
+						if (offset == -1) {//No exact match? Use first match in that line
+							offset = firstSpInLine;
+						}
+						if (offset == -1) {
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							return binfo;
+						}
+
+						CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
+						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
+						corBp.Activate (bp.Enabled);
+						breakpoints [corBp] = binfo;
+
+						binfo.Handle = corBp;
+						binfo.SetStatus (BreakEventStatus.Bound, null);
+						return binfo;
+					}
+				}
+
+				var cp = be as Catchpoint;
+				if (cp != null) {
+					var bound = false;
+					lock (documents) {
 						foreach (ModuleInfo mod in modules.Values) {
 							CorMetadataImport mi = mod.Importer;
 							if (mi != null) {
 								foreach (Type t in mi.DefinedTypes)
 									if (t.FullName == cp.ExceptionName) {
-										binfo.SetStatus (BreakEventStatus.Bound, null);
-										return binfo;
+										bound = true;
 									}
 							}
 						}
+					}
+					if (bound) {
+						binfo.SetStatus (BreakEventStatus.Bound, null);
+						return binfo;
 					}
 				}
 
