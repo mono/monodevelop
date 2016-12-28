@@ -187,8 +187,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		Dictionary<string, CorType> nameToTypeCache = new Dictionary<string, CorType> ();
-		Dictionary<CorType, string> typeToNameCache = new Dictionary<CorType, string> ();
+		readonly Dictionary<string, CorType> nameToTypeCache = new Dictionary<string, CorType> ();
+		readonly Dictionary<CorType, string> typeToNameCache = new Dictionary<CorType, string> ();
+		readonly HashSet<string> unresolvedNames = new HashSet<string> ();
+
 
 		string GetCacheName(string name, CorType[] typeArgs)
 		{
@@ -213,23 +215,26 @@ namespace Mono.Debugging.Win32
 			CorType fastRet;
 			if (!string.IsNullOrEmpty (cacheName) && nameToTypeCache.TryGetValue (cacheName, out fastRet))
 				return fastRet;
+			if (unresolvedNames.Contains (cacheName ?? name))
+				return null;
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
 				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
 				if (mi != null) {
-					foreach (Type t in mi.DefinedTypes) {
-						if (t.FullName.Replace ('+', '.') == name.Replace ('+', '.')) {
-							CorClass cls = mod.GetClassFromToken (t.MetadataToken);
-							fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
-							if (!string.IsNullOrEmpty (cacheName)) {
-								nameToTypeCache [cacheName] = fastRet;
-								typeToNameCache [fastRet] = cacheName;
-							}
-							return fastRet;
-						}
+					var token = mi.GetTypeTokenFromName (name);
+					if (token == CorMetadataImport.TokenNotFound)
+						continue;
+					var t = mi.GetType(token);
+					CorClass cls = mod.GetClassFromToken (t.MetadataToken);
+					fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+					if (!string.IsNullOrEmpty (cacheName)) {
+						nameToTypeCache [cacheName] = fastRet;
+						typeToNameCache [fastRet] = cacheName;
 					}
+					return fastRet;
 				}
 			}
+			unresolvedNames.Add (cacheName ?? name);
 			return null;
 		}
 
