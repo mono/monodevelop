@@ -482,7 +482,14 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         protected override PropertyInfo GetPropertyImpl(String name, BindingFlags bindingAttr,Binder binder,
                                                         Type returnType, Type[] types, ParameterModifier[] modifiers)
         {
-            throw new NotImplementedException();
+            // Temp matched only by name
+            var properties = GetProperties(bindingAttr);
+            foreach (var propertyInfo in properties) {
+                if (propertyInfo.Name == name) {
+                    return propertyInfo;
+                }
+            }
+            return null;
         }
 
         public override EventInfo[] GetEvents(BindingFlags bindingAttr)
