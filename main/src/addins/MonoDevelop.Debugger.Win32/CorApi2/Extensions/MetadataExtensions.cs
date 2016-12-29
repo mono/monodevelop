@@ -81,7 +81,11 @@ namespace Microsoft.Samples.Debugging.Extensions
 				mt.m_isByRef = true;
 				return mt;
 			}
-			return t.MakeByRefType ();
+
+			if (t.IsByRef)
+				return t;
+			var makeByRefType = t.MakeByRefType ();
+			return makeByRefType;
 		}
 
 		public static Type MakePointer (Type t)
