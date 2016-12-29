@@ -74,6 +74,14 @@ namespace Microsoft.Samples.Debugging.Extensions
 			return t.MakeArrayType (sizes.Capacity);
 		}
 
+		static Type MakeByRefTypeIfNeeded (Type t)
+		{
+			if (t.IsByRef)
+				return t;
+			var makeByRefType = t.MakeByRefType ();
+			return makeByRefType;
+		}
+
 		public static Type MakeByRef (Type t)
 		{
 			var mt = t as MetadataType;
@@ -82,10 +90,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				return mt;
 			}
 
-			if (t.IsByRef)
-				return t;
-			var makeByRefType = t.MakeByRefType ();
-			return makeByRefType;
+			return MakeByRefTypeIfNeeded (t);
 		}
 
 		public static Type MakePointer (Type t)
@@ -95,7 +100,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				mt.m_isPtr = true;
 				return mt;
 			}
-			return t.MakeByRefType ();
+			return MakeByRefTypeIfNeeded (t);
 		}
 
 		public static Type MakeGeneric (Type t, List<Type> typeArgs)
