@@ -130,7 +130,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     token=CorMetadataImport.TokenNotFound;
                     if((HResult)e.ErrorCode==HResult.CLDB_E_RECORD_NOTFOUND)
                     {
-                        int i = name.LastIndexOf('.');
+                        int i = name.LastIndexOfAny(TypeDelimeters);
                         if(i>0)
                         {
                             int parentToken = GetTypeTokenFromName(name.Substring(0,i));
@@ -254,6 +254,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         //////////////////////////////////////////////////////////////////////////////////
 
         internal IMetadataImport  m_importer;
+        private static readonly char[] TypeDelimeters = new[] {'.', '+'};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
