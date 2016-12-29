@@ -513,6 +513,7 @@ namespace Mono.Debugging.Win32
 
 			string file = e.Module.Assembly.Name;
 			var newDocuments = new Dictionary<string, DocInfo> ();
+			var justMyCode = false;
 			ISymbolReader reader = null;
 			if (file.IndexOfAny (badPathChars) == -1) {
 				try {
@@ -520,6 +521,9 @@ namespace Mono.Debugging.Win32
 						SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
 					if (reader != null) {
 						OnDebuggerOutput (false, string.Format("Symbols for module {0} loaded", file));
+						// set JMC to true only when we got the reader.
+						// When module JMC is true, debugger will step into it
+						justMyCode = true;
 						foreach (ISymbolDocument doc in reader.GetDocuments ()) {
 							if (string.IsNullOrEmpty (doc.URL))
 								continue;
@@ -535,22 +539,13 @@ namespace Mono.Debugging.Win32
 				catch (Exception ex) {
 					OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
 				}
-				try {
-					e.Module.SetJmcStatus (true, null);
-				}
-				catch {
-					// somewhen exceptions is thrown
-				}
 			}
-			else {
-				// Flag modules without debug info as not JMC. In this way
-				// the debugger won't try to step into them
-				try {
-					e.Module.SetJmcStatus (false, null);
-				}
-				catch {
-					// somewhen exceptions is thrown
-				}
+			try {
+				e.Module.SetJmcStatus (justMyCode, null);
+			}
+			catch (COMException ex) {
+				// somewhen exceptions is thrown
+				DebuggerLoggingService.LogMessage ("Exception during setting JMC: {0}", ex.Message);
 			}
 
 			lock (documents) {
