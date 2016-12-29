@@ -181,6 +181,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			case CorElementType.ELEMENT_TYPE_I: return typeof (IntPtr);
 			case CorElementType.ELEMENT_TYPE_U: return typeof (UIntPtr);
 			case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
+			case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return typeof(TypedReference);
 
 			case CorElementType.ELEMENT_TYPE_VAR:
 			case CorElementType.ELEMENT_TYPE_MVAR:
