@@ -83,6 +83,7 @@
     <Compile Include="debug\ModuleEnumerator.cs" />
     <Compile Include="debug\NativeMethods.cs" />
     <Compile Include="debug\ObjectEnumerator.cs" />
+    <Compile Include="debug\PdbHResult.cs" />
     <Compile Include="debug\Process.cs" />
     <Compile Include="debug\ProcessEnumerator.cs" />
     <Compile Include="debug\ProcessSafeHandle.cs" />
