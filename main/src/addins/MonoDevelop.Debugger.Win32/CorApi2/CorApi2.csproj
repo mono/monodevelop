@@ -78,6 +78,7 @@
     <Compile Include="debug\Eval.cs" />
     <Compile Include="debug\FunctionBreakpoint.cs" />
     <Compile Include="debug\HResults.cs" />
+    <Compile Include="debug\HResultUtil.cs" />
     <Compile Include="debug\Module.cs" />
     <Compile Include="debug\ModuleBreakpoint.cs" />
     <Compile Include="debug\ModuleEnumerator.cs" />
