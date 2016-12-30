@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -1414,53 +1414,14 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorValue NewString (CorEvaluationContext ctx, string value)
+		CorValue NewSpecialObject (CorEvaluationContext ctx, Action<CorEval> createCall)
 		{
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
-
+			var eval = ctx.Eval;
 			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
-				OnEndEvaluating ();
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
-				eargs.Continue = false;
-			};
-
-			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs) {
-				OnEndEvaluating ();
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
-				eargs.Continue = false;
-			};
-
-			try {
-				process.OnEvalComplete += completeHandler;
-				process.OnEvalException += exceptionHandler;
-
-				ctx.Eval.NewString (value);
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
-				OnStartEvaluating ();
-				ClearEvalStatus ();
-				process.Continue (false);
-
-				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
-					return result;
-				else
-					return null;
-			} finally {
-				process.OnEvalComplete -= completeHandler;
-				process.OnEvalException -= exceptionHandler;
-			}
-		}
-
-		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
-		{
-			ManualResetEvent doneEvent = new ManualResetEvent (false);
-			CorValue result = null;
-
-			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
-			{
-				OnEndEvaluating ();
+				if (eargs.Eval != eval)
+					return;
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
@@ -1468,17 +1429,17 @@ namespace Mono.Debugging.Win32
 
 			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
-				OnEndEvaluating ();
+				if (eargs.Eval != eval)
+					return;
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
+			process.OnEvalComplete += completeHandler;
+			process.OnEvalException += exceptionHandler;
 
 			try {
-				process.OnEvalComplete += completeHandler;
-				process.OnEvalException += exceptionHandler;
-
-				ctx.Eval.NewParameterizedArray (elemType, 1, 1, 0);
+				createCall (eval);
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				OnStartEvaluating ();
 				ClearEvalStatus ();
@@ -1486,13 +1447,30 @@ namespace Mono.Debugging.Win32
 
 				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
 					return result;
-				else
+				else {
+					eval.Abort ();
 					return null;
+				}
+			}
+			catch (Exception ex) {
+				DebuggerLoggingService.LogError ("Exception during evaluation attempt", ex);
+				return null;
 			}
 			finally {
 				process.OnEvalComplete -= completeHandler;
 				process.OnEvalException -= exceptionHandler;
+				OnEndEvaluating ();
 			}
+		}
+
+		public CorValue NewString (CorEvaluationContext ctx, string value)
+		{
+			return NewSpecialObject (ctx, eval => eval.NewString (value));
+		}
+
+		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
+		{
+			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
 		}
 
 		public void WaitUntilStopped ()
