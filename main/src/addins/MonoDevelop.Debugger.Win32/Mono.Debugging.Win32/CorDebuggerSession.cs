@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,21 +39,28 @@ namespace Mono.Debugging.Win32
 		static int evaluationTimestamp;
 
 		readonly SymbolBinder symbolBinder = new SymbolBinder ();
-		Dictionary<string, DocInfo> documents;
+		readonly object appDomainsLock = new object ();
+
+		Dictionary<int, AppDomainInfo> appDomains = new Dictionary<int, AppDomainInfo> ();
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
-		Dictionary<string, ModuleInfo> modules;
 		readonly Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
 		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 		
 
-		public CorObjectAdaptor ObjectAdapter;
+		public CorObjectAdaptor ObjectAdapter = new CorObjectAdaptor();
+
+		class AppDomainInfo
+		{
+			public CorAppDomain AppDomain;
+			public Dictionary<string, DocInfo> Documents;
+			public Dictionary<string, ModuleInfo> Modules;
+		}
 
 		class DocInfo
 		{
-			public ISymbolReader Reader;
 			public ISymbolDocument Document;
-			public CorModule Module;
+			public ModuleInfo ModuleInfo;
 		}
 
 		class ModuleInfo
@@ -60,16 +68,11 @@ namespace Mono.Debugging.Win32
 			public ISymbolReader Reader;
 			public CorModule Module;
 			public CorMetadataImport Importer;
-			public int References;
 		}
 
 		public CorDebuggerSession(char[] badPathChars)
 		{
 			this.badPathChars = badPathChars;
-			documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
-			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
-
-			ObjectAdapter = new CorObjectAdaptor ();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {
@@ -94,22 +97,17 @@ namespace Mono.Debugging.Win32
 			// There is no explicit way of disposing the metadata objects, so we have
 			// to rely on the GC to do it.
 
-			foreach (var module in modules.Values) {
-				var disposable = module.Reader as IDisposable;
-				if (disposable != null)
-					disposable.Dispose ();
+			lock (appDomainsLock) {
+				foreach (var appDomainInfo in appDomains) {
+					foreach (var module in appDomainInfo.Value.Modules.Values) {
+						var disposable = module.Reader as IDisposable;
+						if (disposable != null)
+							disposable.Dispose ();
+					}
+				}
+				appDomains = null;
 			}
 
-			//Same readers are already disposed in previous loop but
-			//seems more proper to do it again
-			foreach (var doc in documents.Values) {
-				var disposable = doc.Reader as IDisposable;
-				if (disposable != null)
-					disposable.Dispose ();
-			}
-
-			modules = null;
-			documents = null;
 			threads = null;
 			processes = null;
 			activeThread = null;
@@ -205,6 +203,7 @@ namespace Mono.Debugging.Win32
 			processId = corProcess.Id;
 			corProcess.OnCreateProcess += OnCreateProcess;
 			corProcess.OnCreateAppDomain += OnCreateAppDomain;
+			corProcess.OnAppDomainExit += OnAppDomainExit;
 			corProcess.OnAssemblyLoad += OnAssemblyLoad;
 			corProcess.OnAssemblyUnload += OnAssemblyUnload;
 			corProcess.OnCreateThread += OnCreateThread;
@@ -501,18 +500,20 @@ namespace Mono.Debugging.Win32
 
 		void OnModuleLoad (object sender, CorModuleEventArgs e)
 		{
-			CorMetadataImport mi = new CorMetadataImport (e.Module);
+			var currentModule = e.Module;
+			CorMetadataImport mi = new CorMetadataImport (currentModule);
 
 			try {
 				// Required to avoid the jit to get rid of variables too early
-				e.Module.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+				currentModule.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
 			}
 			catch {
 				// Some kind of modules don't allow JIT flags to be changed.
 			}
 
-			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}", e.Module.Name, e.AppDomain.Id, e.AppDomain.Name));
-			string file = e.Module.Assembly.Name;
+			var currentDomain = e.AppDomain;
+			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}", currentModule.Name, currentDomain.Id, currentDomain.Name));
+			string file = currentModule.Assembly.Name;
 			var newDocuments = new Dictionary<string, DocInfo> ();
 			var justMyCode = false;
 			ISymbolReader reader = null;
@@ -531,8 +532,6 @@ namespace Mono.Debugging.Win32
 							string docFile = System.IO.Path.GetFullPath (doc.URL);
 							DocInfo di = new DocInfo ();
 							di.Document = doc;
-							di.Reader = reader;
-							di.Module = e.Module;
 							newDocuments[docFile] = di;
 						}
 					}
@@ -553,29 +552,47 @@ namespace Mono.Debugging.Win32
 				}
 			}
 			try {
-				e.Module.SetJmcStatus (justMyCode, null);
+				currentModule.SetJmcStatus (justMyCode, null);
 			}
 			catch (COMException ex) {
 				// somewhen exceptions is thrown
 				DebuggerLoggingService.LogMessage ("Exception during setting JMC: {0}", ex.Message);
 			}
 
-			lock (documents) {
+			lock (appDomainsLock) {
+				AppDomainInfo appDomainInfo;
+				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
+					OnDebuggerOutput (true, string.Format ("OnCreatedAppDomain was not fired for domain {0} (id {1})", currentDomain.Name, currentDomain.Id));
+					appDomainInfo = new AppDomainInfo {
+						AppDomain = currentDomain,
+						Documents = new Dictionary<string, DocInfo> (StringComparer.InvariantCultureIgnoreCase),
+						Modules = new Dictionary<string, ModuleInfo> (StringComparer.InvariantCultureIgnoreCase)
+					};
+					appDomains[currentDomain.Id] = appDomainInfo;
+				}
+				var modules = appDomainInfo.Modules;
+				if (modules.ContainsKey (currentModule.Name)) {
+					OnDebuggerOutput (true, string.Format("Module {0} was already added for app domain {1} (id {2}). Replacing",
+						currentModule.Name, currentDomain.Name, currentDomain.Id));
+				}
+				var newModuleInfo = new ModuleInfo {
+					Module = currentModule,
+					Reader = reader,
+					Importer = mi,
+				};
+				modules[currentModule.Name] = newModuleInfo;
+				var existingDocuments = appDomainInfo.Documents;
 				foreach (var newDocument in newDocuments) {
-					documents[newDocument.Key] = newDocument.Value;
+					var documentFile = newDocument.Key;
+					var newDocInfo = newDocument.Value;
+					if (existingDocuments.ContainsKey (documentFile)) {
+						OnDebuggerOutput (true, string.Format("Document {0} was already added for module {1} in domain {2} (id {3}). Replacing",
+							documentFile, currentModule.Name, currentDomain.Name, currentDomain.Id));
+					}
+					newDocInfo.ModuleInfo = newModuleInfo;
+					existingDocuments[documentFile] = newDocInfo;
 				}
-				ModuleInfo moi;
-				if (modules.TryGetValue (e.Module.Name, out moi)) {
-					moi.References++;
-				}
-				else {
-					moi = new ModuleInfo ();
-					moi.Module = e.Module;
-					moi.Reader = reader;
-					moi.Importer = mi;
-					moi.References = 1;
-					modules[e.Module.Name] = moi;
-				}
+
 			}
 
 			foreach (var newFile in newDocuments.Keys) {
@@ -587,32 +604,76 @@ namespace Mono.Debugging.Win32
 
 		void OnModuleUnload (object sender, CorModuleEventArgs e)
 		{
-			List<string> toRemove = new List<string> ();
-			lock (documents) {
-				ModuleInfo moi;
-				modules.TryGetValue (e.Module.Name, out moi);
-				if (moi == null || --moi.References > 0)
+			var currentDomain = e.AppDomain;
+			var currentModule = e.Module;
+			var documentsToRemove = new List<string> ();
+			lock (appDomainsLock) {
+				AppDomainInfo appDomainInfo;
+				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
+					OnDebuggerOutput (true,
+						string.Format("Failed unload module {0} for app domain {1} (id {2}) because app domain was not found or already unloaded",
+							currentModule.Name, currentDomain.Name, currentDomain.Id));
 					return;
-
-				modules.Remove (e.Module.Name);
-				foreach (KeyValuePair<string, DocInfo> di in documents) {
-					if (di.Value.Module.Name == e.Module.Name)
-						toRemove.Add (di.Key);
 				}
-				foreach (string file in toRemove) {
-					documents.Remove (file);
+				ModuleInfo moi;
+				if (!appDomainInfo.Modules.TryGetValue (currentModule.Name, out moi)) {
+					OnDebuggerOutput (true, string.Format ("Failed unload module {0} for app domain {1} (id {2}) because the module was not found or already unloaded",
+						currentModule.Name, currentDomain.Name, currentDomain.Id));
+				}
+				else {
+					appDomainInfo.Modules.Remove (currentModule.Name);
+					var disposableReader = moi.Reader as IDisposable;
+					if (disposableReader != null)
+						disposableReader.Dispose ();
+				}
+
+				foreach (var docInfo in appDomainInfo.Documents) {
+					if (docInfo.Value.ModuleInfo.Module.Name == currentModule.Name)
+						documentsToRemove.Add (docInfo.Key);
+				}
+				foreach (var file in documentsToRemove) {
+					appDomainInfo.Documents.Remove (file);
 				}
 			}
-			foreach (var file in toRemove) {
+			foreach (var file in documentsToRemove) {
 				UnbindSourceFileBreakpoints (file);
 			}
 		}
 
 		void OnCreateAppDomain (object sender, CorAppDomainEventArgs e)
 		{
-            e.AppDomain.Attach();
+			var appDomainId = e.AppDomain.Id;
+			lock (appDomainsLock) {
+				if (!appDomains.ContainsKey (appDomainId)) {
+					appDomains[appDomainId] = new AppDomainInfo {
+						AppDomain = e.AppDomain,
+						Documents = new Dictionary<string, DocInfo> (StringComparer.InvariantCultureIgnoreCase),
+						Modules = new Dictionary<string, ModuleInfo> (StringComparer.InvariantCultureIgnoreCase)
+					};
+				}
+				else {
+					OnDebuggerOutput (true, string.Format("App domain {0} (id {1}) was already loaded", e.AppDomain.Name, appDomainId));
+				}
+			}
+			e.AppDomain.Attach();
 			e.Continue = true;
+			OnDebuggerOutput (false, string.Format("Loaded application domain '{0} (id {1})'", e.AppDomain.Name, appDomainId));
 		}
+
+		private void OnAppDomainExit (object sender, CorAppDomainEventArgs e)
+		{
+			var appDomainId = e.AppDomain.Id;
+			lock (appDomainsLock) {
+				if (!appDomains.Remove (appDomainId)) {
+					OnDebuggerOutput (true, string.Format ("Failed to unload app domain {0} (id {1}) because it's not found in map. Possibly alreade unloaded.", e.AppDomain.Name, appDomainId));
+				}
+			}
+			// Detach is not implemented for ICorDebugAppDomain, it's valid only for ICorDebugProcess
+			//e.AppDomain.Detach ();
+			e.Continue = true;
+			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'", e.AppDomain.Name, appDomainId));
+		}
+
 
 		void OnCreateProcess (object sender, CorProcessEventArgs e)
 		{
@@ -681,8 +742,15 @@ namespace Mono.Debugging.Win32
 
 		public bool IsExternalCode (string fileName)
 		{
-			return string.IsNullOrWhiteSpace (fileName)
-			|| !documents.ContainsKey (fileName);
+			if (string.IsNullOrWhiteSpace (fileName))
+				return true;
+			lock (appDomainsLock) {
+				foreach (var appDomainInfo in appDomains) {
+					if (appDomainInfo.Value.Documents.ContainsKey (fileName))
+						return false;
+				}
+			}
+			return true;
 		}
 
 		private bool IsCatchpoint (CorException2EventArgs e)
@@ -804,36 +872,69 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		internal ISymbolReader GetReaderForModule (string file)
+		internal ISymbolReader GetReaderForModule (CorModule module)
 		{
-			lock (documents) {
-				ModuleInfo mod;
-				if (!modules.TryGetValue (System.IO.Path.GetFullPath (file), out mod))
+			lock (appDomainsLock) {
+				AppDomainInfo appDomainInfo;
+				if (!appDomains.TryGetValue (module.Assembly.AppDomain.Id, out appDomainInfo))
 					return null;
-				return mod.Reader;
+				ModuleInfo moduleInfo;
+				if (!appDomainInfo.Modules.TryGetValue (module.Name, out moduleInfo))
+					return null;
+				return moduleInfo.Reader;
 			}
 		}
 
-		internal CorMetadataImport GetMetadataForModule (string file)
+		internal CorMetadataImport GetMetadataForModule (CorModule module)
 		{
-			lock (documents) {
+			lock (appDomainsLock) {
+				AppDomainInfo appDomainInfo;
+				if (!appDomains.TryGetValue (module.Assembly.AppDomain.Id, out appDomainInfo))
+					return null;
 				ModuleInfo mod;
-				if (!modules.TryGetValue (System.IO.Path.GetFullPath (file), out mod))
+				if (!appDomainInfo.Modules.TryGetValue (module.Name, out mod))
 					return null;
 				return mod.Importer;
 			}
 		}
 
-		internal IEnumerable<CorModule> GetModules ( )
+
+		internal IEnumerable<CorAppDomain> GetAppDomains ()
 		{
-			List<CorModule> mods = new List<CorModule> ();
-			lock (documents) {
-				foreach (ModuleInfo mod in modules.Values)
-					mods.Add (mod.Module);
+			lock (appDomainsLock) {
+				var corAppDomains = new List<CorAppDomain> (appDomains.Count);
+				foreach (var appDomainInfo in appDomains) {
+					corAppDomains.Add (appDomainInfo.Value.AppDomain);
+				}
+				return corAppDomains;
 			}
-			return mods;
 		}
-		
+
+		internal IEnumerable<CorModule> GetModules (CorAppDomain appDomain)
+		{
+			lock (appDomainsLock) {
+				List<CorModule> mods = new List<CorModule> ();
+				AppDomainInfo appDomainInfo;
+				if (appDomains.TryGetValue (appDomain.Id, out appDomainInfo)) {
+					foreach (ModuleInfo mod in appDomainInfo.Modules.Values) {
+						mods.Add (mod.Module);
+					}
+				}
+				return mods;
+			}
+		}
+
+		internal IEnumerable<CorModule> GetAllModules ()
+		{
+			lock (appDomainsLock) {
+				var corModules = new List<CorModule> ();
+				foreach (var appDomainInfo in appDomains) {
+					corModules.AddRange (GetModules (appDomainInfo.Value.AppDomain));
+				}
+				return corModules;
+			}
+		}
+
 		internal CorHandleValue GetHandle (CorValue val)
 		{
 			CorHandleValue handleVal = null;
@@ -859,27 +960,33 @@ namespace Mono.Debugging.Win32
 				if (bp != null) {
 					if (bp is FunctionBreakpoint) {
 						// FIXME: implement breaking on function name
-						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						binfo.SetStatus (BreakEventStatus.Invalid, "Function breakpoint is not implemented");
 						return binfo;
 					} else {
-						DocInfo doc;
-						lock (documents) {
-							if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
-								binfo.SetStatus (BreakEventStatus.NotBound, null);
-								return binfo;
+						DocInfo doc = null;
+						lock (appDomainsLock) {
+							foreach (var appDomainInfo in appDomains) {
+								var documents = appDomainInfo.Value.Documents;
+								if (documents.TryGetValue (Path.GetFullPath (bp.FileName), out doc)) {
+									break;
+								}
 							}
+						}
+						if (doc == null) {
+							binfo.SetStatus (BreakEventStatus.NotBound, string.Format("{0} is not found among the loaded symbol documents", bp.FileName));
+							return binfo;
 						}
 						int line;
 						try {
 							line = doc.Document.FindClosestLine (bp.Line);
 						} catch {
 							// Invalid line
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							binfo.SetStatus (BreakEventStatus.Invalid, string.Format("Invalid line {0}", bp.Line));
 							return binfo;
 						}
 						ISymbolMethod met = null;
-						if (doc.Reader is ISymbolReader2) {
-							var methods = ((ISymbolReader2)doc.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
+						if (doc.ModuleInfo.Reader is ISymbolReader2) {
+							var methods = ((ISymbolReader2)doc.ModuleInfo.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
 							if (methods != null && methods.Any ()) {
 								if (methods.Count () == 1) {
 									met = methods [0];
@@ -896,10 +1003,10 @@ namespace Mono.Debugging.Win32
 							}
 						}
 						if (met == null) {
-							met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+							met = doc.ModuleInfo.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
 						}
 						if (met == null) {
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							binfo.SetStatus (BreakEventStatus.Invalid, "Unable to resolve method at position");
 							return binfo;
 						}
 
@@ -919,11 +1026,11 @@ namespace Mono.Debugging.Win32
 							offset = firstSpInLine;
 						}
 						if (offset == -1) {
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							binfo.SetStatus (BreakEventStatus.Invalid, "Unable to calculate an offset in IL code");
 							return binfo;
 						}
 
-						CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
+						CorFunction func = doc.ModuleInfo.Module.GetFunctionFromToken (met.Token.GetToken ());
 						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
 						corBp.Activate (bp.Enabled);
 						breakpoints [corBp] = binfo;
@@ -937,14 +1044,16 @@ namespace Mono.Debugging.Win32
 				var cp = be as Catchpoint;
 				if (cp != null) {
 					var bound = false;
-					lock (documents) {
-						foreach (ModuleInfo mod in modules.Values) {
-							CorMetadataImport mi = mod.Importer;
-							if (mi != null) {
-								foreach (Type t in mi.DefinedTypes)
-									if (t.FullName == cp.ExceptionName) {
-										bound = true;
-									}
+					lock (appDomainsLock) {
+						foreach (var appDomainInfo in appDomains) {
+							foreach (ModuleInfo mod in appDomainInfo.Value.Modules.Values) {
+								CorMetadataImport mi = mod.Importer;
+								if (mi != null) {
+									foreach (Type t in mi.DefinedTypes)
+										if (t.FullName == cp.ExceptionName) {
+											bound = true;
+										}
+								}
 							}
 						}
 					}
@@ -979,7 +1088,7 @@ namespace Mono.Debugging.Win32
 			try {
 				if (stepper != null) {
 					CorFrame frame = activeThread.ActiveFrame;
-					ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
+					ISymbolReader reader = GetReaderForModule (frame.Function.Module);
 					if (reader == null) {
 						RawContinue (into);
 						return;
@@ -1584,7 +1693,7 @@ namespace Mono.Debugging.Win32
 			if (type.Type == CorElementType.ELEMENT_TYPE_PTR)
 				return MetadataExtensions.MakePointer (type.FirstTypeParameter.GetTypeInfo (session));
 
-			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module.Name);
+			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module);
 			if (mi != null) {
 				t = mi.GetType (type.Class.Token);
 				CorType[] targs = type.TypeParameters;
@@ -1603,7 +1712,7 @@ namespace Mono.Debugging.Win32
 
 		public static ISymbolMethod GetSymbolMethod (this CorFunction func, CorDebuggerSession session)
 		{
-			ISymbolReader reader = session.GetReaderForModule (func.Module.Name);
+			ISymbolReader reader = session.GetReaderForModule (func.Module);
 			if (reader == null)
 				return null;
 			return reader.GetMethod (new SymbolToken (func.Token));
@@ -1611,7 +1720,7 @@ namespace Mono.Debugging.Win32
 
 		public static MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
 		{
-			CorMetadataImport mi = session.GetMetadataForModule (func.Module.Name);
+			CorMetadataImport mi = session.GetMetadataForModule (func.Module);
 			if (mi != null)
 				return mi.GetMethodInfo (func.Token);
 			else

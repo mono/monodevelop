@@ -178,8 +178,8 @@ namespace Mono.Debugging.Win32
 		static IEnumerable<Type> GetAllTypes (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			foreach (CorModule mod in ctx.Session.GetModules ()) {
-				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
+			foreach (CorModule mod in ctx.Session.GetAllModules()) {
+				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod);
 				if (mi != null) {
 					foreach (Type t in mi.DefinedTypes)
 						yield return t;
@@ -192,49 +192,61 @@ namespace Mono.Debugging.Win32
 		readonly HashSet<string> unresolvedNames = new HashSet<string> ();
 
 
-		string GetCacheName(string name, CorType[] typeArgs)
+		string GetCacheName (string name, CorType[] typeArgs)
 		{
 			if (typeArgs == null || typeArgs.Length == 0)
 				return name;
-			string result = name + "<";
+			var result = new StringBuilder(name + "<");
 			for (int i = 0; i < typeArgs.Length; i++) {
 				string currentTypeName;
-				if (!typeToNameCache.TryGetValue (typeArgs [i], out currentTypeName))
-					return null;//Unable to resolve? Don't cache. This should never happen.
-				result += currentTypeName;
+				if (!typeToNameCache.TryGetValue (typeArgs[i], out currentTypeName)) {
+					DebuggerLoggingService.LogMessage ("Can't get cached name for generic type {0} because it's substitution type isn't found in cache", name);
+					return null; //Unable to resolve? Don't cache. This should never happen.
+				}
+				result.Append (currentTypeName);
 				if (i < typeArgs.Length - 1)
-					result += ",";
+					result.Append (",");
 			}
-			return result + ">";
+			result.Append (">");
+			return result.ToString();
 		}
 
 		public override object GetType (EvaluationContext gctx, string name, object[] gtypeArgs)
 		{
-			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
-			string cacheName = GetCacheName (name, typeArgs);
-			CorType fastRet;
-			if (!string.IsNullOrEmpty (cacheName) && nameToTypeCache.TryGetValue (cacheName, out fastRet))
-				return fastRet;
-			if (unresolvedNames.Contains (cacheName ?? name))
+			if (string.IsNullOrEmpty (name))
 				return null;
+			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
-			foreach (CorModule mod in ctx.Session.GetModules ()) {
-				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
+			var callingModule = ctx.Frame.Function.Class.Module;
+			var callingDomain = callingModule.Assembly.AppDomain;
+			string domainPrefixedName = string.Format ("{0}:{1}", callingDomain.Id, name);
+			string cacheName = GetCacheName (domainPrefixedName, typeArgs);
+			CorType typeFromCache;
+
+			if (!string.IsNullOrEmpty (cacheName) && nameToTypeCache.TryGetValue (cacheName, out typeFromCache)) {
+				return typeFromCache;
+			}
+			if (unresolvedNames.Contains (cacheName ?? domainPrefixedName))
+				return null;
+			foreach (CorModule mod in ctx.Session.GetModules (callingDomain)) {
+				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod);
 				if (mi != null) {
 					var token = mi.GetTypeTokenFromName (name);
 					if (token == CorMetadataImport.TokenNotFound)
 						continue;
 					var t = mi.GetType(token);
 					CorClass cls = mod.GetClassFromToken (t.MetadataToken);
-					fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
-					if (!string.IsNullOrEmpty (cacheName)) {
-						nameToTypeCache [cacheName] = fastRet;
-						typeToNameCache [fastRet] = cacheName;
+					CorType foundType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+					if (foundType != null) {
+						if (!string.IsNullOrEmpty (cacheName)) {
+							nameToTypeCache[cacheName] = foundType;
+							typeToNameCache[foundType] = cacheName;
+						}
+						return foundType;
 					}
-					return fastRet;
 				}
 			}
-			unresolvedNames.Add (cacheName ?? name);
+			unresolvedNames.Add (cacheName ?? domainPrefixedName);
 			return null;
 		}
 
@@ -1667,7 +1679,7 @@ namespace Mono.Debugging.Win32
 			var wctx = (CorEvaluationContext)ctx;
 			var mod = cType.Class.Module;
 			int token = cType.Class.Token;
-			var module = wctx.Session.GetMetadataForModule (mod.Name);
+			var module = wctx.Session.GetMetadataForModule (mod);
 			foreach (var t in module.DefinedTypes) {
 				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
 					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
