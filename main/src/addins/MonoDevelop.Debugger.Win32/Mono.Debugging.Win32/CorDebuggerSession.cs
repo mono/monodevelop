@@ -816,8 +816,14 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
-				if (bp != null)
-					bp.Activate (enable);
+				if (bp != null) {
+					try {
+						bp.Activate (enable);
+					}
+					catch (COMException e) {
+						HandleBreakpointException (binfo, e);
+					}
+				}
 			});
 		}
 
@@ -1030,12 +1036,16 @@ namespace Mono.Debugging.Win32
 						}
 
 						CorFunction func = doc.ModuleInfo.Module.GetFunctionFromToken (met.Token.GetToken ());
-						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-						corBp.Activate (bp.Enabled);
-						breakpoints [corBp] = binfo;
-
-						binfo.Handle = corBp;
-						binfo.SetStatus (BreakEventStatus.Bound, null);
+						try {
+							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
+							breakpoints[corBp] = binfo;
+							binfo.Handle = corBp;
+							corBp.Activate (bp.Enabled);
+							binfo.SetStatus (BreakEventStatus.Bound, null);
+						}
+						catch (COMException e) {
+							HandleBreakpointException (binfo, e);
+						}
 						return binfo;
 					}
 				}
@@ -1065,6 +1075,31 @@ namespace Mono.Debugging.Win32
 				binfo.SetStatus (BreakEventStatus.Invalid, null);
 				return binfo;
 			});
+		}
+
+		private static void HandleBreakpointException (BreakEventInfo binfo, COMException e)
+		{
+			if (Enum.IsDefined (typeof(HResult), e.ErrorCode)) {
+				var code = (HResult) e.ErrorCode;
+				switch (code) {
+					case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
+						binfo.SetStatus (BreakEventStatus.Invalid, "Invalid breakpoint position");
+						break;
+					case HResult.CORDBG_E_PROCESS_TERMINATED:
+						binfo.SetStatus (BreakEventStatus.BindError, "Process terminated");
+						break;
+					case HResult.CORDBG_E_CODE_NOT_AVAILABLE:
+						binfo.SetStatus (BreakEventStatus.BindError, "Module is not loaded");
+						break;
+					default:
+						binfo.SetStatus (BreakEventStatus.BindError, e.Message);
+						break;
+				}
+			}
+			else {
+				binfo.SetStatus (BreakEventStatus.BindError, e.Message);
+				DebuggerLoggingService.LogError ("Unknown exception when setting breakpoint", e);
+			}
 		}
 
 		protected override void OnNextInstruction ( )
@@ -1153,7 +1188,12 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
-				corBp.Activate (false);
+				try {
+					corBp.Activate (false);
+				}
+				catch (COMException e) {
+					HandleBreakpointException (bi, e);
+				}
 			});
 		}
 
