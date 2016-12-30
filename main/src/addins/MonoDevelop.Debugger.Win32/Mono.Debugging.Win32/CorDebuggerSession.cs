@@ -512,7 +512,7 @@ namespace Mono.Debugging.Win32
 			}
 
 			var currentDomain = e.AppDomain;
-			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}", currentModule.Name, currentDomain.Id, currentDomain.Name));
+			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}\n", currentModule.Name, currentDomain.Id, currentDomain.Name));
 			string file = currentModule.Assembly.Name;
 			var newDocuments = new Dictionary<string, DocInfo> ();
 			var justMyCode = false;
@@ -522,7 +522,7 @@ namespace Mono.Debugging.Win32
 					reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".",
 						SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
 					if (reader != null) {
-						OnDebuggerOutput (false, string.Format ("Symbols for module {0} loaded", file));
+						OnDebuggerOutput (false, string.Format ("Symbols for module {0} loaded\n", file));
 						// set JMC to true only when we got the reader.
 						// When module JMC is true, debugger will step into it
 						justMyCode = true;
@@ -540,15 +540,15 @@ namespace Mono.Debugging.Win32
 					if (Enum.IsDefined (typeof(PdbHResult), ex.ErrorCode)) {
 						var pdbHResult = (PdbHResult)ex.ErrorCode;
 						if (pdbHResult != PdbHResult.E_PDB_OK) {
-							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})", file, pdbHResult, ex.ErrorCode));
+							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, pdbHResult, ex.ErrorCode));
 						}
 					}
 					else {
-						OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
+						DebuggerLoggingService.LogError (string.Format ("Loading symbols of module {0} failed", e.Module.Name), ex);
 					}
 				}
 				catch (Exception ex) {
-					OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
+					DebuggerLoggingService.LogError (string.Format ("Loading symbols of module {0} failed", e.Module.Name), ex);
 				}
 			}
 			try {
@@ -562,7 +562,7 @@ namespace Mono.Debugging.Win32
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
 				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
-					OnDebuggerOutput (true, string.Format ("OnCreatedAppDomain was not fired for domain {0} (id {1})", currentDomain.Name, currentDomain.Id));
+				  DebuggerLoggingService.LogMessage ("OnCreatedAppDomain was not fired for domain {0} (id {1})", currentDomain.Name, currentDomain.Id);
 					appDomainInfo = new AppDomainInfo {
 						AppDomain = currentDomain,
 						Documents = new Dictionary<string, DocInfo> (StringComparer.InvariantCultureIgnoreCase),
@@ -572,8 +572,8 @@ namespace Mono.Debugging.Win32
 				}
 				var modules = appDomainInfo.Modules;
 				if (modules.ContainsKey (currentModule.Name)) {
-					OnDebuggerOutput (true, string.Format("Module {0} was already added for app domain {1} (id {2}). Replacing",
-						currentModule.Name, currentDomain.Name, currentDomain.Id));
+				  DebuggerLoggingService.LogMessage ("Module {0} was already added for app domain {1} (id {2}). Replacing\n",
+						currentModule.Name, currentDomain.Name, currentDomain.Id);
 				}
 				var newModuleInfo = new ModuleInfo {
 					Module = currentModule,
@@ -586,8 +586,8 @@ namespace Mono.Debugging.Win32
 					var documentFile = newDocument.Key;
 					var newDocInfo = newDocument.Value;
 					if (existingDocuments.ContainsKey (documentFile)) {
-						OnDebuggerOutput (true, string.Format("Document {0} was already added for module {1} in domain {2} (id {3}). Replacing",
-							documentFile, currentModule.Name, currentDomain.Name, currentDomain.Id));
+					  DebuggerLoggingService.LogMessage ("Document {0} was already added for module {1} in domain {2} (id {3}). Replacing\n",
+							documentFile, currentModule.Name, currentDomain.Name, currentDomain.Id);
 					}
 					newDocInfo.ModuleInfo = newModuleInfo;
 					existingDocuments[documentFile] = newDocInfo;
@@ -610,15 +610,14 @@ namespace Mono.Debugging.Win32
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
 				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
-					OnDebuggerOutput (true,
-						string.Format("Failed unload module {0} for app domain {1} (id {2}) because app domain was not found or already unloaded",
-							currentModule.Name, currentDomain.Name, currentDomain.Id));
+				  DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because app domain was not found or already unloaded\n",
+							currentModule.Name, currentDomain.Name, currentDomain.Id);
 					return;
 				}
 				ModuleInfo moi;
 				if (!appDomainInfo.Modules.TryGetValue (currentModule.Name, out moi)) {
-					OnDebuggerOutput (true, string.Format ("Failed unload module {0} for app domain {1} (id {2}) because the module was not found or already unloaded",
-						currentModule.Name, currentDomain.Name, currentDomain.Id));
+				  DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because the module was not found or already unloaded\n",
+						currentModule.Name, currentDomain.Name, currentDomain.Id);
 				}
 				else {
 					appDomainInfo.Modules.Remove (currentModule.Name);
@@ -652,12 +651,12 @@ namespace Mono.Debugging.Win32
 					};
 				}
 				else {
-					OnDebuggerOutput (true, string.Format("App domain {0} (id {1}) was already loaded", e.AppDomain.Name, appDomainId));
+					DebuggerLoggingService.LogMessage ("App domain {0} (id {1}) was already loaded", e.AppDomain.Name, appDomainId);
 				}
 			}
 			e.AppDomain.Attach();
 			e.Continue = true;
-			OnDebuggerOutput (false, string.Format("Loaded application domain '{0} (id {1})'", e.AppDomain.Name, appDomainId));
+			OnDebuggerOutput (false, string.Format("Loaded application domain '{0} (id {1})'\n", e.AppDomain.Name, appDomainId));
 		}
 
 		private void OnAppDomainExit (object sender, CorAppDomainEventArgs e)
@@ -665,13 +664,13 @@ namespace Mono.Debugging.Win32
 			var appDomainId = e.AppDomain.Id;
 			lock (appDomainsLock) {
 				if (!appDomains.Remove (appDomainId)) {
-					OnDebuggerOutput (true, string.Format ("Failed to unload app domain {0} (id {1}) because it's not found in map. Possibly alreade unloaded.", e.AppDomain.Name, appDomainId));
+				  DebuggerLoggingService.LogMessage ("Failed to unload app domain {0} (id {1}) because it's not found in map. Possibly already unloaded.", e.AppDomain.Name, appDomainId);
 				}
 			}
 			// Detach is not implemented for ICorDebugAppDomain, it's valid only for ICorDebugProcess
 			//e.AppDomain.Detach ();
 			e.Continue = true;
-			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'", e.AppDomain.Name, appDomainId));
+			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'\n", e.AppDomain.Name, appDomainId));
 		}
 
 
