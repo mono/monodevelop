@@ -511,6 +511,7 @@ namespace Mono.Debugging.Win32
 				// Some kind of modules don't allow JIT flags to be changed.
 			}
 
+			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}", e.Module.Name, e.AppDomain.Id, e.AppDomain.Name));
 			string file = e.Module.Assembly.Name;
 			var newDocuments = new Dictionary<string, DocInfo> ();
 			var justMyCode = false;
@@ -520,7 +521,7 @@ namespace Mono.Debugging.Win32
 					reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".",
 						SymSearchPolicies.AllowOriginalPathAccess | SymSearchPolicies.AllowReferencePathAccess);
 					if (reader != null) {
-						OnDebuggerOutput (false, string.Format("Symbols for module {0} loaded", file));
+						OnDebuggerOutput (false, string.Format ("Symbols for module {0} loaded", file));
 						// set JMC to true only when we got the reader.
 						// When module JMC is true, debugger will step into it
 						justMyCode = true;
@@ -534,6 +535,17 @@ namespace Mono.Debugging.Win32
 							di.Module = e.Module;
 							newDocuments[docFile] = di;
 						}
+					}
+				}
+				catch (COMException ex) {
+					if (Enum.IsDefined (typeof(PdbHResult), ex.ErrorCode)) {
+						var pdbHResult = (PdbHResult)ex.ErrorCode;
+						if (pdbHResult != PdbHResult.E_PDB_OK) {
+							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})", file, pdbHResult, ex.ErrorCode));
+						}
+					}
+					else {
+						OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
 					}
 				}
 				catch (Exception ex) {
@@ -620,7 +632,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyLoad (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Loaded Module '{0}'\n", e.Assembly.Name));
+			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", e.Assembly.Name));
 			e.Continue = true;
 		}
 		
