@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.IO;
@@ -46,7 +47,9 @@ namespace Mono.Debugging.Win32
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		readonly Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
 		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
-		
+
+		readonly BlockingCollection<Action> helperOperationsQueue = new BlockingCollection<Action>(new ConcurrentQueue<Action>());
+		readonly CancellationTokenSource helperOperationsCancellationTokenSource = new CancellationTokenSource ();
 
 		public CorObjectAdaptor ObjectAdapter = new CorObjectAdaptor();
 
@@ -73,6 +76,29 @@ namespace Mono.Debugging.Win32
 		public CorDebuggerSession(char[] badPathChars)
 		{
 			this.badPathChars = badPathChars;
+			var cancellationToken = helperOperationsCancellationTokenSource.Token;
+			new Thread (() => {
+				try {
+					while (!cancellationToken.IsCancellationRequested) {
+						var action = helperOperationsQueue.Take(cancellationToken);
+						try {
+							action ();
+						}
+						catch (Exception e) {
+							DebuggerLoggingService.LogError ("Exception on processing helper thread action", e);
+						}
+					}
+
+				}
+				catch (Exception e) {
+					if (e is OperationCanceledException || e is ObjectDisposedException) {
+						DebuggerLoggingService.LogMessage ("Helper thread was gracefully interrupted");
+					}
+					else {
+						DebuggerLoggingService.LogError ("Unhandled exception in helper thread. Helper thread is terminated", e);
+					}
+				}
+			}) {Name = "CorDebug helper thread "}.Start();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {
@@ -91,6 +117,8 @@ namespace Mono.Debugging.Win32
 				TerminateDebugger ();
 				ObjectAdapter.Dispose();
 			});
+			helperOperationsCancellationTokenSource.Dispose ();
+			helperOperationsQueue.Dispose ();
 
 			base.Dispose ();
 
@@ -122,8 +150,14 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
+		void QueueToHelperThread (Action action)
+		{
+			helperOperationsQueue.Add (action);
+		}
+
 		void TerminateDebugger ()
 		{
+			helperOperationsCancellationTokenSource.Cancel();
 			lock (terminateLock) {
 				if (terminated)
 					return;
@@ -404,59 +438,80 @@ namespace Mono.Debugging.Win32
 				}
 			}
 
-			BreakEventInfo binfo;
-			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
-				e.Continue = true;
-				Breakpoint bp = (Breakpoint)binfo.BreakEvent;
+			// we have to stop an execution and enqueue breakpoint calculations on another thread to release debugger event thread for further events
+			// we can't perform any evaluations inside this handler, because the debugger thread is busy and we won't get evaluation events there
+			e.Continue = false;
 
-				binfo.IncrementHitCount();
-				if (!binfo.HitCountReached)
-					return;
+			QueueToHelperThread (() => {
+				BreakEventInfo binfo;
+				BreakEvent breakEvent = null;
+				if (e.Controller.IsRunning ())
+					throw new InvalidOperationException ("Debuggee isn't stopped to perform breakpoint calculations");
 
-				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
-					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
-					if (bp.BreakIfConditionChanges) {
-						if (res == bp.LastConditionValue)
-							return;
-						bp.LastConditionValue = res;
-					} else {
-						if (res != null && res.ToLower () == "false")
-							return;
+				var shouldContinue = false;
+				if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
+					breakEvent = (Breakpoint) binfo.BreakEvent;
+					try {
+						shouldContinue = ShouldContinueOnBreakpoint (e.Thread, binfo);
+					}
+					catch (Exception ex) {
+						DebuggerLoggingService.LogError ("ShouldContinueOnBreakpoint() has thrown an exception", ex);
 					}
 				}
 
-				if ((bp.HitAction & HitAction.CustomAction) != HitAction.None) {
-						// If custom action returns true, execution must continue
-					if (binfo.RunCustomBreakpointAction (bp.CustomActionId))
-						return;
-				}
-
-				if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
-					string exp = EvaluateTrace (e.Thread, bp.TraceExpression);
-					binfo.UpdateLastTraceValue (exp);
-				}
-
-				if ((bp.HitAction & HitAction.Break) == HitAction.None)
+				if (shouldContinue || e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+					e.Controller.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+					e.Controller.Continue (false);
 					return;
+				}
+
+				OnStopped ();
+				// If a breakpoint is hit while stepping, cancel the stepping operation
+				if (stepper != null && stepper.IsActive ())
+					stepper.Deactivate ();
+				autoStepInto = false;
+				SetActiveThread (e.Thread);
+				var args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint) {
+					Process = GetProcess (process),
+					Thread = GetThread (e.Thread),
+					Backtrace = new Backtrace (new CorBacktrace (e.Thread, this)),
+					BreakEvent = breakEvent
+				};
+				OnTargetEvent (args);
+			});
+		}
+
+		bool ShouldContinueOnBreakpoint (CorThread thread, BreakEventInfo binfo)
+		{
+			var bp = (Breakpoint) binfo.BreakEvent;
+			binfo.IncrementHitCount();
+			if (!binfo.HitCountReached)
+				return true;
+
+			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
+				string res = EvaluateExpression (thread, bp.ConditionExpression);
+				if (bp.BreakIfConditionChanges) {
+					if (res == bp.LastConditionValue)
+						return true;
+					bp.LastConditionValue = res;
+				} else {
+					if (res != null && res.ToLower () != "true")
+						return true;
+				}
 			}
 
-			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
-				e.Continue = true;
-				return;
+			if ((bp.HitAction & HitAction.CustomAction) != HitAction.None) {
+				// If custom action returns true, execution must continue
+				if (binfo.RunCustomBreakpointAction (bp.CustomActionId))
+					return true;
 			}
 
-			OnStopped ();
-			e.Continue = false;
-			// If a breakpoint is hit while stepping, cancel the stepping operation
-			if (stepper != null && stepper.IsActive ())
-				stepper.Deactivate ();
-			autoStepInto = false;
-			SetActiveThread (e.Thread);
-			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
-			args.Process = GetProcess (process);
-			args.Thread = GetThread (e.Thread);
-			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
-			OnTargetEvent (args);
+			if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
+				string exp = EvaluateTrace (thread, bp.TraceExpression);
+				binfo.UpdateLastTraceValue (exp);
+			}
+
+			return (bp.HitAction & HitAction.Break) == HitAction.None;
 		}
 
 		void OnDebuggerError (object sender, CorDebuggerErrorEventArgs e)
@@ -816,8 +871,14 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
-				if (bp != null)
-					bp.Activate (enable);
+				if (bp != null) {
+					try {
+						bp.Activate (enable);
+					}
+					catch (COMException e) {
+						HandleBreakpointException (binfo, e);
+					}
+				}
 			});
 		}
 
@@ -1030,12 +1091,16 @@ namespace Mono.Debugging.Win32
 						}
 
 						CorFunction func = doc.ModuleInfo.Module.GetFunctionFromToken (met.Token.GetToken ());
-						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-						corBp.Activate (bp.Enabled);
-						breakpoints [corBp] = binfo;
-
-						binfo.Handle = corBp;
-						binfo.SetStatus (BreakEventStatus.Bound, null);
+						try {
+							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
+							breakpoints[corBp] = binfo;
+							binfo.Handle = corBp;
+							corBp.Activate (bp.Enabled);
+							binfo.SetStatus (BreakEventStatus.Bound, null);
+						}
+						catch (COMException e) {
+							HandleBreakpointException (binfo, e);
+						}
 						return binfo;
 					}
 				}
@@ -1065,6 +1130,31 @@ namespace Mono.Debugging.Win32
 				binfo.SetStatus (BreakEventStatus.Invalid, null);
 				return binfo;
 			});
+		}
+
+		private static void HandleBreakpointException (BreakEventInfo binfo, COMException e)
+		{
+			if (Enum.IsDefined (typeof(HResult), e.ErrorCode)) {
+				var code = (HResult) e.ErrorCode;
+				switch (code) {
+					case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
+						binfo.SetStatus (BreakEventStatus.Invalid, "Invalid breakpoint position");
+						break;
+					case HResult.CORDBG_E_PROCESS_TERMINATED:
+						binfo.SetStatus (BreakEventStatus.BindError, "Process terminated");
+						break;
+					case HResult.CORDBG_E_CODE_NOT_AVAILABLE:
+						binfo.SetStatus (BreakEventStatus.BindError, "Module is not loaded");
+						break;
+					default:
+						binfo.SetStatus (BreakEventStatus.BindError, e.Message);
+						break;
+				}
+			}
+			else {
+				binfo.SetStatus (BreakEventStatus.BindError, e.Message);
+				DebuggerLoggingService.LogError ("Unknown exception when setting breakpoint", e);
+			}
 		}
 
 		protected override void OnNextInstruction ( )
@@ -1153,7 +1243,12 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
-				corBp.Activate (false);
+				try {
+					corBp.Activate (false);
+				}
+				catch (COMException e) {
+					HandleBreakpointException (bi, e);
+				}
 			});
 		}
 
@@ -1319,53 +1414,14 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorValue NewString (CorEvaluationContext ctx, string value)
+		CorValue NewSpecialObject (CorEvaluationContext ctx, Action<CorEval> createCall)
 		{
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
-
+			var eval = ctx.Eval;
 			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
-				OnEndEvaluating ();
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
-				eargs.Continue = false;
-			};
-
-			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs) {
-				OnEndEvaluating ();
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
-				eargs.Continue = false;
-			};
-
-			try {
-				process.OnEvalComplete += completeHandler;
-				process.OnEvalException += exceptionHandler;
-
-				ctx.Eval.NewString (value);
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
-				OnStartEvaluating ();
-				ClearEvalStatus ();
-				process.Continue (false);
-
-				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
-					return result;
-				else
-					return null;
-			} finally {
-				process.OnEvalComplete -= completeHandler;
-				process.OnEvalException -= exceptionHandler;
-			}
-		}
-
-		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
-		{
-			ManualResetEvent doneEvent = new ManualResetEvent (false);
-			CorValue result = null;
-
-			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
-			{
-				OnEndEvaluating ();
+				if (eargs.Eval != eval)
+					return;
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
@@ -1373,17 +1429,17 @@ namespace Mono.Debugging.Win32
 
 			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
-				OnEndEvaluating ();
+				if (eargs.Eval != eval)
+					return;
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
+			process.OnEvalComplete += completeHandler;
+			process.OnEvalException += exceptionHandler;
 
 			try {
-				process.OnEvalComplete += completeHandler;
-				process.OnEvalException += exceptionHandler;
-
-				ctx.Eval.NewParameterizedArray (elemType, 1, 1, 0);
+				createCall (eval);
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				OnStartEvaluating ();
 				ClearEvalStatus ();
@@ -1391,13 +1447,30 @@ namespace Mono.Debugging.Win32
 
 				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
 					return result;
-				else
+				else {
+					eval.Abort ();
 					return null;
+				}
+			}
+			catch (Exception ex) {
+				DebuggerLoggingService.LogError ("Exception during evaluation attempt", ex);
+				return null;
 			}
 			finally {
 				process.OnEvalComplete -= completeHandler;
 				process.OnEvalException -= exceptionHandler;
+				OnEndEvaluating ();
 			}
+		}
+
+		public CorValue NewString (CorEvaluationContext ctx, string value)
+		{
+			return NewSpecialObject (ctx, eval => eval.NewString (value));
+		}
+
+		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
+		{
+			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
 		}
 
 		public void WaitUntilStopped ()
