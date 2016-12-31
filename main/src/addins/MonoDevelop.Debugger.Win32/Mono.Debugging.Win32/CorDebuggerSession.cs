@@ -1807,7 +1807,7 @@ namespace Mono.Debugging.Win32
 				ValueReference vr = actx.GetMember (ctx, null, thisVal, "value__");
 				vr.Value = val;
 				// Required to make sure that var returns an up-to-date value object
-				thisVal.IsValid = false;
+				thisVal.Invalidate ();
 				return;
 			}
 				
