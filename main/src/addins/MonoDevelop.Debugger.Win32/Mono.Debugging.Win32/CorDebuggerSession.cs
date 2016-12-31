@@ -592,10 +592,10 @@ namespace Mono.Debugging.Win32
 					}
 				}
 				catch (COMException ex) {
-					if (Enum.IsDefined (typeof(PdbHResult), ex.ErrorCode)) {
-						var pdbHResult = (PdbHResult)ex.ErrorCode;
-						if (pdbHResult != PdbHResult.E_PDB_OK) {
-							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, pdbHResult, ex.ErrorCode));
+					var hResult = ex.ToHResult<PdbHResult> ();
+					if (hResult != null) {
+						if (hResult != PdbHResult.E_PDB_OK) {
+							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, hResult, ex.ErrorCode));
 						}
 					}
 					else {
