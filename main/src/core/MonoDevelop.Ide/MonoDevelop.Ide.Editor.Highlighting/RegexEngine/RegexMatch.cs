@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             if (_regex == null)
                 return this;
 
-            return _regex.Run(false, _length, _text, _textbeg, _textend - _textbeg, _textpos);
+			return _regex.Run(false, _length, _text, _textbeg, _textend - _textbeg, _textpos, Regex.InfiniteMatchTimeout);
         }
 
 

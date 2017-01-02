@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             Match match;
 
             do {
-                match = _regex.Run(false, _prevlen, _input, _beginning, _length, _startat);
+                match = _regex.Run(false, _prevlen, _input, _beginning, _length, _startat, Regex.InfiniteMatchTimeout);
 
                 if (!match.Success) {
                     _done = true;

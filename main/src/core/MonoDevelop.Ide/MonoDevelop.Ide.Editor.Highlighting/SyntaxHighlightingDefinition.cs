@@ -320,6 +320,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public bool Pop { get; private set; }
 		public ContextReference Set { get; private set; }
 		public ContextReference WithPrototype { get; private set; }
+		internal bool GotTimeout { get; set; }
 
 		internal SyntaxMatch (string match, IReadOnlyList<string> scope, Captures captures, ContextReference push, bool pop, ContextReference set, ContextReference withPrototype)
 		{
