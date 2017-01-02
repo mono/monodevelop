@@ -461,7 +461,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					LoadFile (builtInBundle, codon.Name, () => codon.Open (), () => codon);
+					var o = LoadFile (builtInBundle, codon.Name, () => codon.Open (), () => codon);
+					if (o is SyntaxHighlightingDefinition)
+						((SyntaxHighlightingDefinition)o).PrepareMatches ();
+					var bundle = o as LanguageBundle;
+					if (bundle != null) {
+						foreach (var h in bundle.Highlightings)
+							h.PrepareMatches ();
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading custom editor extension file.", e);
 				}
