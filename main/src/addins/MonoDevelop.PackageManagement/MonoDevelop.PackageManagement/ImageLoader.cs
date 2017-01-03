@@ -25,14 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using MonoDevelop.Core;
-using NuGet;
-using MonoDevelop.PackageManagement;
+using NuGet.Configuration;
 using Xwt.Drawing;
-using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -43,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		BackgroundDispatcher dispatcher;
 		Dictionary<Uri, List<object>> callersWaitingForImageLoad = new Dictionary<Uri, List<object>> ();
 		static readonly ImageCache imageCache = new ImageCache ();
+		ICredentialService credentialService = HttpClientFactory.CreateNonInteractiveCredentialService ();
 
 		public void LoadFrom (string uri, object state)
 		{
@@ -106,19 +105,25 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		static Stream GetResponseStream (Uri uri)
+		Stream GetResponseStream (Uri uri)
 		{
-			WebResponse response = null;
 			if (uri.IsFile) {
 				var request = WebRequest.Create (uri);
-				response = request.GetResponse ();
+				var response = request.GetResponse ();
+				return CopyResponseStream (response.GetResponseStream ());
 			} else {
-				var httpClient = new HttpClient (uri);
-				response = httpClient.GetResponse ();
+				using (var httpClient = HttpClientFactory.CreateHttpClient (uri, credentialService)) {
+					var task = httpClient.GetStreamAsync (uri);
+					task.Wait ();
+					return CopyResponseStream (task.Result);
+				}
 			}
+		}
 
+		static Stream CopyResponseStream (Stream responseStream)
+		{
 			var stream = new MemoryStream ();
-			response.GetResponseStream ().CopyTo (stream); // force the download to complete
+			responseStream.CopyTo (stream); // force the download to complete
 			stream.Position = 0;
 			return stream;
 		}

@@ -50,6 +50,8 @@ namespace MonoDevelop.DotnetCore.Debugger
 		//TODO: version the download
 		static string DebugAdapterPath = Path.Combine (UserProfile.Current.CacheDir, "CoreClrAdaptor", "OpenDebugAD7");
 		static string DebugAdapterDir = Path.GetDirectoryName (DebugAdapterPath);
+		static string AdapterVersion = "1-6-3";
+		static string DebugAdapterZipPath = UserProfile.Current.CacheDir.Combine ("coreclr-debug-osx.10.11-x64-" + AdapterVersion + ".zip");
 
 		protected override string GetDebugAdapterPath ()
 		{
@@ -115,7 +117,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 							{ "command", JToken.FromObject("xdg-open")}})}
 					})},
 					{"sourceFileMap", JToken.FromObject (new Dictionary<string, JToken> () {
-						{"/", cwd + "/"}
+						{"/Views", Path.Combine(cwd , "Views")}
 					})}});
 			return launchRequest;
 		}
@@ -164,7 +166,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 
 		async Task<bool> EnsureDebuggerInstalled ()
 		{
-			if (File.Exists (DebugAdapterPath)) {
+			if (File.Exists (DebugAdapterPath) && File.Exists (DebugAdapterZipPath)) {
 				return true;
 			}
 
@@ -224,13 +226,12 @@ namespace MonoDevelop.DotnetCore.Debugger
 			//TODO: check whether the file was downloaded already, check hash?
 			//TODO: resume partial downloads?
 			var url = GetDebuggerZipUrl ();
-			var tempZipPath = UserProfile.Current.CacheDir.Combine ("coreclr-debug-osx.10.11-x64.zip");
 
 			using (var progressTask = progressMonitor.BeginTask (GettextCatalog.GetString ("Downloading .NET Core debugger..."), 1000)) {
 				int reported = 0;
 				await DownloadWithProgress (
 					url,
-					tempZipPath,
+					DebugAdapterZipPath,
 					(p) => {
 						int progress = (int)(1000f * p);
 						if (reported < progress) {
@@ -249,7 +250,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 				}
 
 				Directory.CreateDirectory (DebugAdapterDir);
-				using (var archive = ZipFile.Open (tempZipPath, ZipArchiveMode.Read)) {
+				using (var archive = ZipFile.Open (DebugAdapterZipPath, ZipArchiveMode.Read)) {
 					foreach (var entry in archive.Entries) {
 						var name = Path.Combine (DebugAdapterDir, entry.FullName);
 						if (name [name.Length - 1] == Path.DirectorySeparatorChar) {
@@ -328,7 +329,7 @@ namespace MonoDevelop.DotnetCore.Debugger
 		string GetDebuggerZipUrl ()
 		{
 			if (Platform.IsMac)
-				return "https://vsdebugger.azureedge.net/coreclr-debug-1-5-0/coreclr-debug-osx.10.11-x64.zip";
+				return "https://vsdebugger.azureedge.net/coreclr-debug-" + AdapterVersion + "/coreclr-debug-osx.10.11-x64.zip";
 			//TODO: other platforms
 			throw new NotImplementedException ();
 		}

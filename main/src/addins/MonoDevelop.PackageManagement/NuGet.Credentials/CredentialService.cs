@@ -136,6 +136,11 @@ namespace NuGet.Credentials
 			return creds;
 		}
 
+		public CredentialService CreateNonInteractive ()
+		{
+			return new CredentialService (Providers, nonInteractive: true);
+		}
+
 		/// <summary>
 		/// Gets the currently configured providers.
 		/// </summary>

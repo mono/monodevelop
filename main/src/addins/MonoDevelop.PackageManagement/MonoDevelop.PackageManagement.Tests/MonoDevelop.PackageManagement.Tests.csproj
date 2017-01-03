@@ -52,10 +52,6 @@
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="NuGet.Versioning">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
     </Reference>
