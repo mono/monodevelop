@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (msproject);
 			if (!project.SolutionDirectory.IsNullOrEmpty)
-				globalProperties.Add ("SolutionDir", project.SolutionDirectory.ToString ());
+				globalProperties.Add ("SolutionDir", project.SolutionDirectory.ToString () + System.IO.Path.DirectorySeparatorChar);
 		}
 
 		public void Dispose ()

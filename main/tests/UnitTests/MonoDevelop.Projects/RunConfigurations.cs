@@ -30,6 +30,7 @@ using NUnit.Framework;
 using UnitTests;
 using System.Linq;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -415,6 +416,19 @@ namespace MonoDevelop.Projects
 			projectXml = File.ReadAllText (p.FileName + ".user");
 			newProjectXml = File.ReadAllText (projUserFile);
 			Assert.AreEqual (newProjectXml, projectXml);
+		}
+
+		[Test]
+		public async Task EnvVarsInConfigurationAreParsed ()
+		{
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.default-console.csproj");
+			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			var rc = (DotNetProjectRunConfiguration) p.RunConfigurations.FirstOrDefault ();
+			var conf = (DotNetProjectConfiguration) p.Configurations [0];
+			rc.EnvironmentVariables.Add ("abc","${TargetDir}");
+			var cmd = (DotNetExecutionCommand) p.CreateExecutionCommand (conf.Selector, conf, rc);
+			Assert.AreEqual (conf.OutputDirectory.ToString (), cmd.EnvironmentVariables["abc"]);
 		}
 	}
 }
