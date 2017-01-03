@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -47,6 +48,44 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private CorProcess (ICorDebugProcess process)
             : base (process)
         {
+            InitCallbacks ();
+        }
+
+        private void InitCallbacks ()
+        {
+            m_callbacksArray = new Dictionary<ManagedCallbackType, DebugEventHandler<CorEventArgs>> {
+                {ManagedCallbackType.OnBreakpoint, (sender, args) => OnBreakpoint (sender, (CorBreakpointEventArgs) args)},
+                {ManagedCallbackType.OnStepComplete, (sender, args) => OnStepComplete (sender, (CorStepCompleteEventArgs) args)},
+                {ManagedCallbackType.OnBreak, (sender, args) => OnBreak (sender, (CorThreadEventArgs) args)},
+                {ManagedCallbackType.OnException, (sender, args) => OnException (sender, (CorExceptionEventArgs) args)},
+                {ManagedCallbackType.OnEvalComplete, (sender, args) => OnEvalComplete (sender, (CorEvalEventArgs) args)},
+                {ManagedCallbackType.OnEvalException, (sender, args) => OnEvalException (sender, (CorEvalEventArgs) args)},
+                {ManagedCallbackType.OnCreateProcess, (sender, args) => OnCreateProcess (sender, (CorProcessEventArgs) args)},
+                {ManagedCallbackType.OnProcessExit, (sender, args) => OnProcessExit (sender, (CorProcessEventArgs) args)},
+                {ManagedCallbackType.OnCreateThread, (sender, args) => OnCreateThread (sender, (CorThreadEventArgs) args)},
+                {ManagedCallbackType.OnThreadExit, (sender, args) => OnThreadExit (sender, (CorThreadEventArgs) args)},
+                {ManagedCallbackType.OnModuleLoad, (sender, args) => OnModuleLoad (sender, (CorModuleEventArgs) args)},
+                {ManagedCallbackType.OnModuleUnload, (sender, args) => OnModuleUnload (sender, (CorModuleEventArgs) args)},
+                {ManagedCallbackType.OnClassLoad, (sender, args) => OnClassLoad (sender, (CorClassEventArgs) args)},
+                {ManagedCallbackType.OnClassUnload, (sender, args) => OnClassUnload (sender, (CorClassEventArgs) args)},
+                {ManagedCallbackType.OnDebuggerError, (sender, args) => OnDebuggerError (sender, (CorDebuggerErrorEventArgs) args)},
+                {ManagedCallbackType.OnLogMessage, (sender, args) => OnLogMessage (sender, (CorLogMessageEventArgs) args)},
+                {ManagedCallbackType.OnLogSwitch, (sender, args) => OnLogSwitch (sender, (CorLogSwitchEventArgs) args)},
+                {ManagedCallbackType.OnCreateAppDomain, (sender, args) => OnCreateAppDomain (sender, (CorAppDomainEventArgs) args)},
+                {ManagedCallbackType.OnAppDomainExit, (sender, args) => OnAppDomainExit (sender, (CorAppDomainEventArgs) args)},
+                {ManagedCallbackType.OnAssemblyLoad, (sender, args) => OnAssemblyLoad (sender, (CorAssemblyEventArgs) args)},
+                {ManagedCallbackType.OnAssemblyUnload, (sender, args) => OnAssemblyUnload (sender, (CorAssemblyEventArgs) args)},
+                {ManagedCallbackType.OnControlCTrap, (sender, args) => OnControlCTrap (sender, (CorProcessEventArgs) args)},
+                {ManagedCallbackType.OnNameChange, (sender, args) => OnNameChange (sender, (CorThreadEventArgs) args)},
+                {ManagedCallbackType.OnUpdateModuleSymbols, (sender, args) => OnUpdateModuleSymbols (sender, (CorUpdateModuleSymbolsEventArgs) args)},
+                {ManagedCallbackType.OnFunctionRemapOpportunity, (sender, args) => OnFunctionRemapOpportunity (sender, (CorFunctionRemapOpportunityEventArgs) args)},
+                {ManagedCallbackType.OnFunctionRemapComplete, (sender, args) => OnFunctionRemapComplete (sender, (CorFunctionRemapCompleteEventArgs) args)},
+                {ManagedCallbackType.OnBreakpointSetError, (sender, args) => OnBreakpointSetError (sender, (CorBreakpointEventArgs) args)},
+                {ManagedCallbackType.OnException2, (sender, args) => OnException2 (sender, (CorException2EventArgs) args)},
+                {ManagedCallbackType.OnExceptionUnwind2, (sender, args) => OnExceptionUnwind2 (sender, (CorExceptionUnwind2EventArgs) args)},
+                {ManagedCallbackType.OnMDANotification, (sender, args) => OnMDANotification (sender, (CorMDAEventArgs) args)},
+                {ManagedCallbackType.OnExceptionInCallback, (sender, args) => OnExceptionInCallback (sender, (CorExceptionInCallbackEventArgs) args)},
+            };
         }
 
         private static Hashtable m_instances = new Hashtable();
@@ -280,7 +319,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
         // when process is first created wait till callbacks are enabled.
         private ManualResetEvent m_callbackAttachedEvent = new ManualResetEvent(false);
 
-        private Delegate[] m_callbacksArray = new Delegate[(int)ManagedCallbackTypeCount.Last+1];
+        private Dictionary<ManagedCallbackType, DebugEventHandler<CorEventArgs>> m_callbacksArray;
+        
         
         internal void DispatchEvent(ManagedCallbackType callback,CorEventArgs e)
         {
@@ -288,10 +328,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             {
                 if( m_callbackAttachedEvent!=null )
                     m_callbackAttachedEvent.WaitOne(); // waits till callbacks are enabled
-                Debug.Assert((int)callback>=0 && (int)callback<m_callbacksArray.Length);
-                Delegate d = m_callbacksArray[(int)callback];
-                if( d!=null )
-                    d.DynamicInvoke( new Object[]{this,e});
+                var d = m_callbacksArray[callback];
+                d(this,e);
             }
             catch(Exception ex)
             {
@@ -303,9 +341,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     // use DispatchEvent since throwing exception in ExceptionInCallback
                     // would lead to infinite recursion.
                     Debug.Assert( m_callbackAttachedEvent==null);
-                    Delegate d = m_callbacksArray[(int)ManagedCallbackType.OnExceptionInCallback];
-                    if( d!=null )
-                        d.DynamicInvoke( new Object[]{this, e2});
+                    var d = m_callbacksArray[ManagedCallbackType.OnExceptionInCallback];
+                    d(this, e2);
                 } 
                 catch(Exception ex2)
                 {
@@ -316,439 +353,41 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
-        public event BreakpointEventHandler OnBreakpoint
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnBreakpoint;
-                m_callbacksArray[i] = (BreakpointEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnBreakpoint;
-                m_callbacksArray[i] = (BreakpointEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-                
-        public event BreakpointEventHandler OnBreakpointSetError
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnBreakpointSetError;
-                m_callbacksArray[i] = (BreakpointEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnBreakpointSetError;
-                m_callbacksArray[i] = (BreakpointEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
+        public event DebugEventHandler<CorBreakpointEventArgs> OnBreakpoint = delegate { };
+        public event DebugEventHandler<CorBreakpointEventArgs> OnBreakpointSetError = delegate { };
+        public event DebugEventHandler<CorStepCompleteEventArgs> OnStepComplete = delegate { };
+        public event DebugEventHandler<CorThreadEventArgs> OnBreak = delegate { };
+        public event DebugEventHandler<CorExceptionEventArgs> OnException = delegate { };
+        public event DebugEventHandler<CorEvalEventArgs> OnEvalComplete = delegate { };
+        public event DebugEventHandler<CorEvalEventArgs> OnEvalException = delegate { };
+        public event DebugEventHandler<CorProcessEventArgs> OnCreateProcess = delegate { };
+        public event DebugEventHandler<CorProcessEventArgs> OnProcessExit = delegate { };
+        public event DebugEventHandler<CorThreadEventArgs> OnCreateThread = delegate { };
+        public event DebugEventHandler<CorThreadEventArgs> OnThreadExit = delegate { };
+        public event DebugEventHandler<CorModuleEventArgs> OnModuleLoad = delegate { };
+        public event DebugEventHandler<CorModuleEventArgs> OnModuleUnload = delegate { };
+        public event DebugEventHandler<CorClassEventArgs> OnClassLoad = delegate { };
+        public event DebugEventHandler<CorClassEventArgs> OnClassUnload = delegate { };
+        public event DebugEventHandler<CorDebuggerErrorEventArgs> OnDebuggerError = delegate { };
+        public event DebugEventHandler<CorMDAEventArgs> OnMDANotification = delegate { };
+        public event DebugEventHandler<CorLogMessageEventArgs> OnLogMessage = delegate { };
+        public event DebugEventHandler<CorLogSwitchEventArgs> OnLogSwitch = delegate { };
+        public event DebugEventHandler<CorAppDomainEventArgs> OnCreateAppDomain = delegate { };
+        public event DebugEventHandler<CorAppDomainEventArgs> OnAppDomainExit = delegate { };
+        public event DebugEventHandler<CorAssemblyEventArgs> OnAssemblyLoad = delegate { };
+        public event DebugEventHandler<CorAssemblyEventArgs> OnAssemblyUnload = delegate { };
+        public event DebugEventHandler<CorProcessEventArgs> OnControlCTrap = delegate { };
+        public event DebugEventHandler<CorThreadEventArgs> OnNameChange = delegate { };
+        public event DebugEventHandler<CorUpdateModuleSymbolsEventArgs> OnUpdateModuleSymbols = delegate { };
+        public event DebugEventHandler<CorFunctionRemapOpportunityEventArgs> OnFunctionRemapOpportunity = delegate { };
+        public event DebugEventHandler<CorFunctionRemapCompleteEventArgs> OnFunctionRemapComplete = delegate { };
+        public event DebugEventHandler<CorException2EventArgs> OnException2 = delegate { };
+        public event DebugEventHandler<CorExceptionUnwind2EventArgs> OnExceptionUnwind2 = delegate { };
+        public event DebugEventHandler<CorExceptionInCallbackEventArgs> OnExceptionInCallback = delegate { };
 
-        public event StepCompleteEventHandler OnStepComplete
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnStepComplete;
-                m_callbacksArray[i] = (StepCompleteEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnStepComplete;
-                m_callbacksArray[i] = (StepCompleteEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
+    }
 
-        public event CorThreadEventHandler OnBreak
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnBreak;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnBreak;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
+    public delegate void DebugEventHandler<in TArgs> (Object sender, TArgs args) where TArgs : CorEventArgs;
 
-        public event CorExceptionEventHandler OnException
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnException;
-                m_callbacksArray[i] = (CorExceptionEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnException;
-                m_callbacksArray[i] = (CorExceptionEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event EvalEventHandler OnEvalComplete
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnEvalComplete;
-                m_callbacksArray[i] = (EvalEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnEvalComplete;
-                m_callbacksArray[i] = (EvalEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event EvalEventHandler OnEvalException
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnEvalException;
-                m_callbacksArray[i] = (EvalEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnEvalException;
-                m_callbacksArray[i] = (EvalEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorProcessEventHandler OnCreateProcess
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnCreateProcess;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnCreateProcess;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorProcessEventHandler OnProcessExit
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnProcessExit;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnProcessExit;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorThreadEventHandler OnCreateThread
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnCreateThread;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnCreateThread;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorThreadEventHandler OnThreadExit
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnThreadExit;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnThreadExit;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorModuleEventHandler OnModuleLoad
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnModuleLoad;
-                m_callbacksArray[i] = (CorModuleEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnModuleLoad;
-                m_callbacksArray[i] = (CorModuleEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorModuleEventHandler OnModuleUnload
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnModuleUnload;
-                m_callbacksArray[i] = (CorModuleEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnModuleUnload;
-                m_callbacksArray[i] = (CorModuleEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorClassEventHandler OnClassLoad
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnClassLoad;
-                m_callbacksArray[i] = (CorClassEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnClassLoad;
-                m_callbacksArray[i] = (CorClassEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorClassEventHandler OnClassUnload
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnClassUnload;
-                m_callbacksArray[i] = (CorClassEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnClassUnload;
-                m_callbacksArray[i] = (CorClassEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event DebuggerErrorEventHandler OnDebuggerError
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnDebuggerError;
-                m_callbacksArray[i] = (DebuggerErrorEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnDebuggerError;
-                m_callbacksArray[i] = (DebuggerErrorEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-		public event MDANotificationEventHandler OnMDANotification
-		{
-			add {
-				int i = (int)ManagedCallbackType.OnMDANotification;
-				m_callbacksArray[i] = (MDANotificationEventHandler)m_callbacksArray[i] + value; 
-			} 
-			remove { 
-				int i = (int)ManagedCallbackType.OnMDANotification;
-				m_callbacksArray[i] = (MDANotificationEventHandler)m_callbacksArray[i] - value; 
-			}
-		}
-
-        public event LogMessageEventHandler OnLogMessage
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnLogMessage;
-                m_callbacksArray[i] = (LogMessageEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnLogMessage;
-                m_callbacksArray[i] = (LogMessageEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-		
-
-
-        public event LogSwitchEventHandler OnLogSwitch
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnLogSwitch;
-                m_callbacksArray[i] = (LogSwitchEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnLogSwitch;
-                m_callbacksArray[i] = (LogSwitchEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorAppDomainEventHandler OnCreateAppDomain
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnCreateAppDomain;
-                m_callbacksArray[i] = (CorAppDomainEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnCreateAppDomain;
-                m_callbacksArray[i] = (CorAppDomainEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorAppDomainEventHandler OnAppDomainExit
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnAppDomainExit;
-                m_callbacksArray[i] = (CorAppDomainEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnAppDomainExit;
-                m_callbacksArray[i] = (CorAppDomainEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorAssemblyEventHandler OnAssemblyLoad
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnAssemblyLoad;
-                m_callbacksArray[i] = (CorAssemblyEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnAssemblyLoad;
-                m_callbacksArray[i] = (CorAssemblyEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorAssemblyEventHandler OnAssemblyUnload
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnAssemblyUnload;
-                m_callbacksArray[i] = (CorAssemblyEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnAssemblyUnload;
-                m_callbacksArray[i] = (CorAssemblyEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorProcessEventHandler OnControlCTrap
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnControlCTrap;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnControlCTrap;
-                m_callbacksArray[i] = (CorProcessEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorThreadEventHandler OnNameChange
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnNameChange;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnNameChange;
-                m_callbacksArray[i] = (CorThreadEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event UpdateModuleSymbolsEventHandler OnUpdateModuleSymbols
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnUpdateModuleSymbols;
-                m_callbacksArray[i] = (UpdateModuleSymbolsEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnUpdateModuleSymbols;
-                m_callbacksArray[i] = (UpdateModuleSymbolsEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorFunctionRemapOpportunityEventHandler OnFunctionRemapOpportunity
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnFunctionRemapOpportunity;
-                m_callbacksArray[i] = (CorFunctionRemapOpportunityEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnFunctionRemapOpportunity;
-                m_callbacksArray[i] = (CorFunctionRemapOpportunityEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorFunctionRemapCompleteEventHandler OnFunctionRemapComplete
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnFunctionRemapComplete;
-                m_callbacksArray[i] = (CorFunctionRemapCompleteEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnFunctionRemapComplete;
-                m_callbacksArray[i] = (CorFunctionRemapCompleteEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorException2EventHandler OnException2
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnException2;
-                m_callbacksArray[i] = (CorException2EventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnException2;
-                m_callbacksArray[i] = (CorException2EventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorExceptionUnwind2EventHandler OnExceptionUnwind2
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnExceptionUnwind2;
-                m_callbacksArray[i] = (CorExceptionUnwind2EventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnExceptionUnwind2;
-                m_callbacksArray[i] = (CorExceptionUnwind2EventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-        public event CorExceptionInCallbackEventHandler OnExceptionInCallback
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnExceptionInCallback;
-                m_callbacksArray[i] = (CorExceptionInCallbackEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnExceptionInCallback;
-                m_callbacksArray[i] = (CorExceptionInCallbackEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-    } /* class Process */
+/* class Process */
 } /* namespace */

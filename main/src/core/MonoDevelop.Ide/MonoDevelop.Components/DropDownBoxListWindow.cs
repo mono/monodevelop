@@ -79,7 +79,7 @@ namespace MonoDevelop.Components
 		{
 			this.DataProvider = provider;
 			this.TransientFor = IdeApp.Workbench.RootWindow;
-			this.TypeHint = Gdk.WindowTypeHint.Menu;
+			this.TypeHint = Gdk.WindowTypeHint.DropdownMenu;
 			this.Decorated = false;
 			this.BorderWidth = 1;
 			list = new ListWidget (this);

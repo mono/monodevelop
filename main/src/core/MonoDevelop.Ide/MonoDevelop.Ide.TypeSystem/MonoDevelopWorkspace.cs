@@ -668,7 +668,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
-			changedFiles.Clear ();
+			lock (changedFiles)
+				changedFiles.Clear ();
 			return base.TryApplyChanges (newSolution);
 		}
 
@@ -756,11 +757,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 			SourceText formerText;
-			if (changedFiles.TryGetValue (filePath, out formerText)) {
-				if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
-					return;
+			lock (changedFiles) {
+				if (changedFiles.TryGetValue (filePath, out formerText)) {
+					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
+						return;
+				}
+				changedFiles [filePath] = text;
 			}
-			changedFiles [filePath] = text;
 
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
