@@ -130,7 +130,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     token=CorMetadataImport.TokenNotFound;
                     if((HResult)e.ErrorCode==HResult.CLDB_E_RECORD_NOTFOUND)
                     {
-                        int i = name.LastIndexOf('.');
+                        int i = name.LastIndexOfAny(TypeDelimeters);
                         if(i>0)
                         {
                             int parentToken = GetTypeTokenFromName(name.Substring(0,i));
@@ -254,6 +254,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         //////////////////////////////////////////////////////////////////////////////////
 
         internal IMetadataImport  m_importer;
+        private static readonly char[] TypeDelimeters = new[] {'.', '+'};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +425,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                           m_methodToken, out paramToken,1,out count);
                     if(count!=1)
                         break;
-					var mp = new MetadataParameterInfo (m_importer, paramToken, this, m_argTypes [nArg++]);
+                    // this fixes IndexOutOfRange exception. Sometimes EnumParams gives you a param with position that is out of m_argTypes.Count
+                    // return typeof(object) for unmatched parameter
+                    Type argType = nArg < m_argTypes.Count ? m_argTypes[nArg++] : typeof(object);
+
+                    var mp = new MetadataParameterInfo (m_importer, paramToken, this, argType);
 					if (mp.Name != String.Empty)
 						al.Add (mp);
 					//al.Add(new MetadataParameterInfo(m_importer,paramToken,

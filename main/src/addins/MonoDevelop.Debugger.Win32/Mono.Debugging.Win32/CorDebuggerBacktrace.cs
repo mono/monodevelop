@@ -8,7 +8,7 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class CorBacktrace: BaseBacktrace
 	{
@@ -81,7 +81,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static SequencePoint GetSequencePoint(CorDebuggerSession session, CorFrame frame)
 		{
-			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
+			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module);
 			if (reader == null)
 				return null;
 

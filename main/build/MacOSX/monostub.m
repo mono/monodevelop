@@ -283,6 +283,8 @@ int main (int argc, char **argv)
 		}
 	}
 
+	setenv ("MONO_GC_PARAMS", "major=marksweep-conc", 0);
+
   NSString *exePath;
   char **extra_argv;
   int extra_argc;
