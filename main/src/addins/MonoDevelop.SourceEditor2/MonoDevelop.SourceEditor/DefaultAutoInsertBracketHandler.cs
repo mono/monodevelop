@@ -56,12 +56,7 @@ namespace MonoDevelop.SourceEditor
 
 			bool inStringOrComment = false;
 
-			var stack = extEditor.SyntaxHighlighting.GetScopeStackAsync (Math.Max (0, extEditor.Caret.Offset - 1), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
-			// var sm = extEditor.Document.SyntaxMode;
-			// if (sm != null)
-				// extEditor.Caret.Offset - 1 means we care if we were inside string
-				// before typing current char
-				// Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (extEditor.Document, sm, sm, stack, line.Offset, extEditor.Caret.Offset - 1);
+			var stack = extEditor.SyntaxHighlighting.GetScopeStackAsync (Math.Max (0, extEditor.Caret.Offset - 2), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			foreach (var span in stack) {
 				if (string.IsNullOrEmpty (span))
 					continue;

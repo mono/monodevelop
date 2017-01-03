@@ -69,13 +69,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			var line = Document.GetLineByOffset (offset);
 			var state = GetState (line);
-
-			if (line.Offset == offset)
+			var lineOffset = line.Offset;
+			if (lineOffset == offset) {
 				return state.ScopeStack;
+			}
 
 			var high = new Highlighter (this, state);
-			foreach (var seg in (await high.GetColoredSegments (Document, line.Offset, line.Length)).Segments) {
-				if (seg.Contains (offset))
+			foreach (var seg in (await high.GetColoredSegments (Document, lineOffset, line.Length)).Segments) {
+				if (seg.Contains (offset - lineOffset))
 					return seg.ScopeStack;
 			}
 			return high.State.ScopeStack;
