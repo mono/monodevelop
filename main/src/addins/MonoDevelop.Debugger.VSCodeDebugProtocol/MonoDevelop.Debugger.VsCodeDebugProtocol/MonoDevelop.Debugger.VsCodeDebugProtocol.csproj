@@ -68,6 +68,9 @@
   <ItemGroup>
     <Compile Include="AddinInfo.cs" />
     <Compile Include="VSCodeDebuggerSession.cs" />
+    <Compile Include="VsCodeStackFrame.cs" />
+    <Compile Include="VsCodeObjectSource.cs" />
+    <Compile Include="VsCodeBacktrace.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
