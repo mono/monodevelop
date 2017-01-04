@@ -151,6 +151,11 @@ namespace MonoDevelop.DotNetCore
 
 			if (!string.IsNullOrEmpty (toolsVersion))
 				msproject.ToolsVersion = toolsVersion;
+
+			if (HasSdk) {
+				msproject.RemoveInternalImports ();
+				msproject.RemoveInternalPropertyGroups ();
+			}
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -335,9 +340,9 @@ namespace MonoDevelop.DotNetCore
 			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
 			// other files to import. So we define this in a property group at the top of the
 			// project before the Sdk.props is imported so these other files can be found.
-			MSBuildImport propsImport = project.AddImport (sdkPaths.ProjectImportProps, importAtTop: true);
-			project.AddImport (sdkPaths.ProjectImportTargets);
-			project.AddPropertyBefore ("MSBuildSdksPath", sdkPaths.MSBuildSDKsPath, propsImport);
+			MSBuildImport propsImport = project.AddInternalImport (sdkPaths.ProjectImportProps, importAtTop: true);
+			project.AddInternalImport (sdkPaths.ProjectImportTargets);
+			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPaths.MSBuildSDKsPath, propsImport);
 
 			project.Evaluate ();
 		}
