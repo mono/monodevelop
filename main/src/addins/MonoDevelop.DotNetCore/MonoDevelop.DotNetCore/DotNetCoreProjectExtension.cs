@@ -329,6 +329,9 @@ namespace MonoDevelop.DotNetCore
 			if (!sdkPaths.Exist)
 				return;
 
+			if (project.ImportExists (sdkPaths.ProjectImportProps))
+				return;
+
 			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
 			// other files to import. So we define this in a property group at the top of the
 			// project before the Sdk.props is imported so these other files can be found.
