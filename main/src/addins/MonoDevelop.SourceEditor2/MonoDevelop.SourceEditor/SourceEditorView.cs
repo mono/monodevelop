@@ -3134,9 +3134,11 @@ namespace MonoDevelop.SourceEditor
 				if (bracketMarkers.Count > 0 && result.Value.LeftSegment.Offset == bracketMarkers [0].Offset)
 					return;
 				ClearBracketMarkers ();
-				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.LeftSegment.Offset, result.Value.LeftSegment.Length));
-				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.RightSegment.Offset, result.Value.RightSegment.Length));
-				bracketMarkers.ForEach (marker => widget.TextEditor.Document.AddMarker (marker));
+				if ((result.Value.BraceMatchingProperties & BraceMatchingProperties.Hidden) == 0) {
+					bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.LeftSegment.Offset, result.Value.LeftSegment.Length));
+					bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.RightSegment.Offset, result.Value.RightSegment.Length));
+					bracketMarkers.ForEach (marker => widget.TextEditor.Document.AddMarker (marker));
+				}
 			} else {
 				ClearBracketMarkers ();
 			}
