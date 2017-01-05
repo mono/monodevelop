@@ -95,5 +95,37 @@ namespace MonoDevelop.DotNetCore
 		{
 			return element.Label == InternalDotNetCoreLabel;
 		}
+
+		public static bool IsOutputTypeDefined (this MSBuildProject project)
+		{
+			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
+			if (globalPropertyGroup != null)
+				return globalPropertyGroup.HasProperty ("OutputType");
+
+			return false;
+		}
+
+		public static IEnumerable<string> GetTargetFrameworks (this MSBuildProject project)
+		{
+			var properties = project.EvaluatedProperties;
+			if (properties != null) {
+				string targetFramework = properties.GetValue ("TargetFramework");
+				if (targetFramework != null) {
+					return new [] { targetFramework };
+				}
+
+				string targetFrameworks = properties.GetValue ("TargetFrameworks");
+				if (targetFrameworks != null) {
+					return targetFrameworks.Split (';');
+				}
+			}
+
+			return new string[0];
+		}
+
+		public static bool ImportExists (this MSBuildProject project, string importedProjectFile)
+		{
+			return project.GetImport (importedProjectFile) != null;
+		}
 	}
 }

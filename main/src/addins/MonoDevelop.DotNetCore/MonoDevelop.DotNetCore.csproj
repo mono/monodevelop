@@ -63,6 +63,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReader.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreMSBuildProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

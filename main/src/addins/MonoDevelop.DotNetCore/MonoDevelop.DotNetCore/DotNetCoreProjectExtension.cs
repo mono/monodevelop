@@ -39,10 +39,7 @@ namespace MonoDevelop.DotNetCore
 	[ExportProjectModelExtension]
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
-		List<string> targetFrameworks;
-		bool outputTypeDefined;
-		string toolsVersion;
-		string sdk;
+		DotNetCoreMSBuildProject dotNetCoreMSBuildProject = new DotNetCoreMSBuildProject ();
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -98,64 +95,19 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnReadProject (monitor, msproject);
 
-			toolsVersion = msproject.ToolsVersion;
+			dotNetCoreMSBuildProject.ReadProject (msproject);
 
-			outputTypeDefined = IsOutputTypeDefined (msproject);
-			if (!outputTypeDefined)
+			if (!dotNetCoreMSBuildProject.IsOutputTypeDefined)
 				Project.CompileTarget = CompileTarget.Library;
 
-			targetFrameworks = GetTargetFrameworks (msproject).ToList ();
-
 			Project.UseAdvancedGlobSupport = true;
-		}
-
-		static bool IsOutputTypeDefined (MSBuildProject msproject)
-		{
-			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
-			if (globalPropertyGroup != null)
-				return globalPropertyGroup.HasProperty ("OutputType");
-
-			return false;
-		}
-
-		static IEnumerable<string> GetTargetFrameworks (MSBuildProject msproject)
-		{
-			var properties = msproject.EvaluatedProperties;
-			if (properties != null) {
-				string targetFramework = properties.GetValue ("TargetFramework");
-				if (targetFramework != null) {
-					return new [] { targetFramework };
-				}
-
-				string targetFrameworks = properties.GetValue ("TargetFrameworks");
-				if (targetFrameworks != null) {
-					return targetFrameworks.Split (';');
-				}
-			}
-
-			return new string[0];
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			var globalPropertyGroup = msproject.GetGlobalPropertyGroup ();
-			globalPropertyGroup.RemoveProperty ("ProjectGuid");
-
-			if (!outputTypeDefined) {
-				globalPropertyGroup.RemoveProperty ("OutputType");
-			}
-
-			msproject.DefaultTargets = null;
-
-			if (!string.IsNullOrEmpty (toolsVersion))
-				msproject.ToolsVersion = toolsVersion;
-
-			if (HasSdk) {
-				msproject.RemoveInternalImports ();
-				msproject.RemoveInternalPropertyGroups ();
-			}
+			dotNetCoreMSBuildProject.WriteProject (msproject);
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -183,7 +135,7 @@ namespace MonoDevelop.DotNetCore
 
 		FilePath GetOutputDirectory (DotNetProjectConfiguration configuration)
 		{
-			string targetFramework = targetFrameworks.FirstOrDefault ();
+			string targetFramework = dotNetCoreMSBuildProject.TargetFrameworks.FirstOrDefault ();
 			FilePath outputDirectory = configuration.OutputDirectory;
 
 			if (outputDirectory.IsAbsolute)
@@ -314,12 +266,12 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnBeginLoad ()
 		{
-			sdk = DotNetCoreProjectReader.GetDotNetCoreSdk (Project.FileName);
+			dotNetCoreMSBuildProject.Sdk = DotNetCoreProjectReader.GetDotNetCoreSdk (Project.FileName);
 			base.OnBeginLoad ();
 		}
 
 		public bool HasSdk {
-			get { return sdk != null; }
+			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
@@ -330,21 +282,13 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			var sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.FindSdkPaths (sdk);
+			sdkPaths.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 			if (!sdkPaths.Exist)
 				return;
 
-			if (project.ImportExists (sdkPaths.ProjectImportProps))
-				return;
-
-			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
-			// other files to import. So we define this in a property group at the top of the
-			// project before the Sdk.props is imported so these other files can be found.
-			MSBuildImport propsImport = project.AddInternalImport (sdkPaths.ProjectImportProps, importAtTop: true);
-			project.AddInternalImport (sdkPaths.ProjectImportTargets);
-			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPaths.MSBuildSDKsPath, propsImport);
-
-			project.Evaluate ();
+			if (dotNetCoreMSBuildProject.AddInternalSdkImports (project, sdkPaths)) {
+				project.Evaluate ();
+			}
 		}
 	}
 }
