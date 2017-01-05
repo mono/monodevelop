@@ -515,7 +515,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
-
+			if (node?.Parser == null)
+				return false;
 			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 		}
 
