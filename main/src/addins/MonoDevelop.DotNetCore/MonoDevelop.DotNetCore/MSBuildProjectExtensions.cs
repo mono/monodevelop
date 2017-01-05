@@ -98,9 +98,14 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsOutputTypeDefined (this MSBuildProject project)
 		{
+			return project.HasGlobalProperty ("OutputType");
+		}
+
+		public static bool HasGlobalProperty (this MSBuildProject project, string name)
+		{
 			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
 			if (globalPropertyGroup != null)
-				return globalPropertyGroup.HasProperty ("OutputType");
+				return globalPropertyGroup.HasProperty (name);
 
 			return false;
 		}

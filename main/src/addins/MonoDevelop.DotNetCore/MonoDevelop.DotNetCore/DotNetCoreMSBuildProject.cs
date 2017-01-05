@@ -33,6 +33,9 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreMSBuildProject
 	{
 		List<string> targetFrameworks;
+		bool hasRootNamespace;
+		bool hasAssemblyName;
+		bool hasDescription;
 
 		public string ToolsVersion { get; private set; }
 		public bool IsOutputTypeDefined { get; private set; }
@@ -51,16 +54,29 @@ namespace MonoDevelop.DotNetCore
 			ToolsVersion = project.ToolsVersion;
 			IsOutputTypeDefined = project.IsOutputTypeDefined ();
 			targetFrameworks = project.GetTargetFrameworks ().ToList ();
+			hasRootNamespace = project.HasGlobalProperty ("RootNamespace");
+			hasAssemblyName = project.HasGlobalProperty ("AssemblyName");
+			hasDescription = project.HasGlobalProperty ("Description");
 		}
 
 		public void WriteProject (MSBuildProject project)
 		{
 			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
+			globalPropertyGroup.RemoveProperty ("TargetFrameworkIdentifier");
+			globalPropertyGroup.RemoveProperty ("TargetFrameworkVersion");
 
-			if (!IsOutputTypeDefined) {
+			if (!IsOutputTypeDefined)
 				globalPropertyGroup.RemoveProperty ("OutputType");
-			}
+
+			if (!hasAssemblyName)
+				globalPropertyGroup.RemoveProperty ("AssemblyName");
+
+			if (!hasRootNamespace)
+				globalPropertyGroup.RemoveProperty ("RootNamespace");
+
+			if (!hasDescription)
+				globalPropertyGroup.RemoveProperty ("Description");
 
 			project.DefaultTargets = null;
 

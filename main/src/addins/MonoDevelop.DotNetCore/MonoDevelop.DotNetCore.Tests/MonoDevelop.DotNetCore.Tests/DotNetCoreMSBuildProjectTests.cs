@@ -45,11 +45,18 @@ namespace MonoDevelop.DotNetCore.Tests
 			project = new DotNetCoreMSBuildProject ();
 		}
 
-		void AddGlobalPropertyToMSBuildProject (string name, string value)
+		void AddGlobalPropertyToMSBuildProject (string name, string value, string defaultValue = null)
 		{
 			msbuildProject
 				.GetGlobalPropertyGroup ()
-				.SetValue (name, value);
+				.SetValue (name, value, defaultValue);
+		}
+
+		string GetPropertyValueFromMSBuildProject (string name)
+		{
+			return msbuildProject
+				.GetGlobalPropertyGroup ()
+				.GetValue (name);
 		}
 
 		bool MSBuildProjectHasGlobalProperty (string name)
@@ -242,6 +249,102 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual (2, msbuildProject.Imports.Count ());
 			Assert.AreEqual (2, msbuildProject.PropertyGroups.Count ());
+		}
+
+		[Test]
+		public void WriteProject_DescriptionAdded_RemovedOnWritingSinceDefaultIsUsed ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("Description", "Package Description", string.Empty);
+
+			WriteProject ();
+
+			Assert.IsFalse (MSBuildProjectHasGlobalProperty ("Description"));
+		}
+
+		[Test]
+		public void WriteProject_DescriptionInOriginalProjectFile_NotRemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"      <Description>Test</Description>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+
+			WriteProject ();
+
+			Assert.IsTrue (MSBuildProjectHasGlobalProperty ("Description"));
+		}
+
+		[Test]
+		public void WriteProject_TargetFrameworkInformationAdded_RemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("TargetFrameworkVersion", "1.0");
+			AddGlobalPropertyToMSBuildProject ("TargetFrameworkIdentifier", ".NETCoreApp");
+
+			WriteProject ();
+
+			Assert.IsFalse (MSBuildProjectHasGlobalProperty ("TargetFrameworkVersion"));
+			Assert.IsFalse (MSBuildProjectHasGlobalProperty ("TargetFrameworkIdentifier"));
+		}
+
+		[Test]
+		public void WriteProject_AssemblyNameAndRootNamespaceAdded_RemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("AssemblyName", "Test");
+			AddGlobalPropertyToMSBuildProject ("RootNamespace", "Test");
+
+			WriteProject ();
+
+			Assert.IsFalse (MSBuildProjectHasGlobalProperty ("AssemblyName"));
+			Assert.IsFalse (MSBuildProjectHasGlobalProperty ("RootNamespace"));
+		}
+
+		[Test]
+		public void WriteProject_AssemblyNameAndRootNamespaceInOriginalProjectFile_NotRemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"      <AssemblyName>Test</AssemblyName>\r\n" +
+				"      <RootNamespace>Test</RootNamespace>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+
+			WriteProject ();
+
+			Assert.IsTrue (MSBuildProjectHasGlobalProperty ("AssemblyName"));
+			Assert.IsTrue (MSBuildProjectHasGlobalProperty ("RootNamespace"));
 		}
 	}
 }
