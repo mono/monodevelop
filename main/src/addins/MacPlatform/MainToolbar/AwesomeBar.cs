@@ -72,9 +72,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var touchbar = new NSTouchBar ();
 			touchbar.Delegate = this;
-
 			touchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
-
 			return touchbar;
 		}
 
@@ -101,6 +99,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					break;
 				}
 			}
+
+			ids.Add ("navigation");
 
 			if (ButtonBarContainer != null) {
 				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
@@ -130,6 +130,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			switch (identifier) {
+			case "navigation": //contains navigate back & forward buttons
+
+				var customItemForward = new NSCustomTouchBarItem ("navForward");
+				var fButton = NSButton.CreateButton ("", () => { });
+				fButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoForwardTemplate);
+				fButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
+				};
+				customItemForward.View = fButton;
+					
+				var customItemBackward = new NSCustomTouchBarItem ("navBackward");
+				var bButton = NSButton.CreateButton ("", () => { });
+				bButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoBackTemplate);
+				bButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
+				};
+				customItemBackward.View = bButton;
+
+				NSTouchBarItem[] items = { customItemBackward, customItemForward };
+
+				var customGroupItem = NSGroupTouchBarItem.CreateGroupItem(identifier, items);
+
+				item = customGroupItem;
+
+				return item;
+
 			case "continue":
 			case "stop":
 			case "build":
