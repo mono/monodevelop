@@ -50,9 +50,11 @@ namespace MonoDevelop.Core.Assemblies
 						string manifest = Path.Combine (dir, "RedistList", "FrameworkList.xml");
 						if (File.Exists (manifest))
 							return true;
-						string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
-						if (File.Exists (firstAsm))
-							return true;
+						if (framework.Assemblies.Length > 0) {
+							string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
+							if (File.Exists (firstAsm))
+								return true;
+						}
 					}
 				}
 				return false;
