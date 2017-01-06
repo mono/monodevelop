@@ -101,6 +101,7 @@ namespace MonoDevelop.CSharp.Formatting
 					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
+					var caretEndOffset = caretOffset;
 
 					int delta = 0;
 					foreach (var change in newTree.GetChanges (syntaxTree)) {
@@ -115,9 +116,11 @@ namespace MonoDevelop.CSharp.Formatting
 							length--;
 						editor.ReplaceText (delta + change.Span.Start, length, newText);
 						delta = delta - length + newText.Length;
+						if (delta + change.Span.Start < caretEndOffset) {
+							caretEndOffset += newText.Length - length;
+						}
 					}
 					if (startOffset < caretOffset) {
-						var caretEndOffset = caretOffset + delta;
 						if (0 <= caretEndOffset && caretEndOffset < editor.Length)
 							editor.CaretOffset = caretEndOffset;
 						if (editor.CaretColumn == 1) {
