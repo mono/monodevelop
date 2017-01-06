@@ -249,7 +249,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 
-		internal ICompletionWidget CompletionWidget {
+		public ICompletionWidget CompletionWidget {
 			get {
 				return list.CompletionWidget;
 			}
