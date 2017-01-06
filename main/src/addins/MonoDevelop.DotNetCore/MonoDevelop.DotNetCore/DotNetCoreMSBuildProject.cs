@@ -84,8 +84,7 @@ namespace MonoDevelop.DotNetCore
 				project.ToolsVersion = ToolsVersion;
 
 			if (HasSdk) {
-				project.RemoveInternalImports ();
-				project.RemoveInternalPropertyGroups ();
+				project.RemoveInternalElements ();
 			}
 		}
 
@@ -98,6 +97,12 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (project.ImportExists (sdkProps))
 				return false;
+
+			if (Sdk == "Microsoft.NET.Sdk.Web") {
+				// HACK: Add wildcard items to the project since they are not currently evaluated
+				// properly which results in no files being displayed in the solution window.
+				project.AddWebProjectWildcardItems ();
+			}
 
 			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
 			// other files to import. So we define this in a property group at the top of the

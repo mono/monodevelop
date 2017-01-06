@@ -67,23 +67,16 @@ namespace MonoDevelop.DotNetCore
 			project.AddPropertyGroup (propertyGroup, false, beforeItem);
 		}
 
-		public static void RemoveInternalImports (this MSBuildProject project)
+		public static void RemoveInternalElements (this MSBuildProject project)
 		{
-			foreach (var import in GetInternalImports (project).ToArray ()) {
-				project.Remove (import);
+			foreach (var element in GetInternalElements (project).ToArray ()) {
+				project.Remove (element);
 			}
 		}
 
-		public static void RemoveInternalPropertyGroups (this MSBuildProject project)
+		static IEnumerable<MSBuildObject> GetInternalElements (MSBuildProject project)
 		{
-			foreach (var propertyGroup in GetInternalPropertyGroups (project).ToArray ()) {
-				project.Remove (propertyGroup);
-			}
-		}
-
-		static IEnumerable<MSBuildImport> GetInternalImports (MSBuildProject project)
-		{
-			return project.Imports.Where (HasInternalDotNetCoreLabel);
+			return project.GetAllObjects ().OfType<MSBuildElement> ().Where (HasInternalDotNetCoreLabel);
 		}
 
 		static IEnumerable<MSBuildPropertyGroup> GetInternalPropertyGroups (MSBuildProject project)
@@ -131,6 +124,21 @@ namespace MonoDevelop.DotNetCore
 		public static bool ImportExists (this MSBuildProject project, string importedProjectFile)
 		{
 			return project.GetImport (importedProjectFile) != null;
+		}
+
+		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
+		// solution window shows no files.
+		public static void AddWebProjectWildcardItems (this MSBuildProject project)
+		{
+			MSBuildObject before = GetInsertBeforeObject (project, true);
+			MSBuildItemGroup itemGroup = project.AddNewItemGroup (before);
+			itemGroup.Label = InternalDotNetCoreLabel;
+
+			MSBuildItem item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
+			item.Exclude = @"$(GlobalExclude);wwwroot\**";
+
+			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
+			item.Exclude = @"$(GlobalExclude);wwwroot\**";
 		}
 	}
 }
