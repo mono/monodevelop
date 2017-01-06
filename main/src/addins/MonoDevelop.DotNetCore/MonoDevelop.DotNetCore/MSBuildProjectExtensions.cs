@@ -134,7 +134,10 @@ namespace MonoDevelop.DotNetCore
 			MSBuildItemGroup itemGroup = project.AddNewItemGroup (before);
 			itemGroup.Label = InternalDotNetCoreLabel;
 
-			MSBuildItem item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
+			MSBuildItem item = itemGroup.AddNewItem ("Content", @"**\*");
+			item.Exclude = @"$(GlobalExclude);**\*.cs;**\*.resx;Properties\**;.*";
+
+			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
 			item.Exclude = @"$(GlobalExclude);wwwroot\**";
 
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
