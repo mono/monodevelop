@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern ulong objc_msgSend_NSUInt64 (IntPtr klass, IntPtr selector);
-		
+
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect32 (out CGRect32 rect, IntPtr klass, IntPtr selector);
 
@@ -302,7 +302,7 @@ namespace Mono.TextEditor
 
 			return new Gdk.Rectangle (x, y, width, height);
 		}
-		
+
 		public static Gdk.Rectangle GetUsableMonitorGeometry (this Gdk.Screen screen, int monitor)
 		{
 			if (Platform.IsWindows)
