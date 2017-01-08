@@ -267,12 +267,7 @@ namespace MonoDevelop.Platform
 			TerminalOpenFolderRunnerHandler preferedOpenFolderRunner = null;
 			TerminalOpenFolderRunnerHandler fallbackOpenFolderRunner = XtermOpenFolderRunner;
 
-			if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("GNOME_DESKTOP_SESSION_ID"))) {
-				preferred_terminal = "gnome-terminal";
-				preferred_runner = GnomeTerminalRunner;
-				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
-			}
-			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MATE_DESKTOP_SESSION_ID"))) {
+			if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MATE_DESKTOP_SESSION_ID"))) {
 				preferred_terminal = "mate-terminal";
 				preferred_runner = GnomeTerminalRunner;
 				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
