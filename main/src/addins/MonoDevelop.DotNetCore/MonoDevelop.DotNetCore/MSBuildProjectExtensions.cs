@@ -135,13 +135,13 @@ namespace MonoDevelop.DotNetCore
 			itemGroup.Label = InternalDotNetCoreLabel;
 
 			MSBuildItem item = itemGroup.AddNewItem ("Content", @"**\*");
-			item.Exclude = @"$(GlobalExclude);**\*.cs;**\*.resx;Properties\**;.*";
+			item.Exclude = @"**\*.cs;**\*.resx;Properties\**;.*;**\.*\**";
 
 			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
-			item.Exclude = @"$(GlobalExclude);wwwroot\**";
+			item.Exclude = @"**\.*\**;wwwroot\**";
 
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
-			item.Exclude = @"$(GlobalExclude);wwwroot\**";
+			item.Exclude = @"**\.*\**;wwwroot\**";
 		}
 
 		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
