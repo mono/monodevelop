@@ -2349,6 +2349,7 @@ namespace MonoDevelop.Projects
 			foreach (var cgrp in runConfigData)
 				runConfigs.Add (LoadRunConfiguration (monitor, cgrp, cgrp.Config));
 
+			defaultRunConfigurationCreated = false;
 			runConfigurations.SetItems (runConfigs);
 
 			// Read extended properties
