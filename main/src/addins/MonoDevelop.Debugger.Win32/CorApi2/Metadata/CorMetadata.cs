@@ -273,7 +273,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             m_importer = importer;
             m_methodToken=methodToken;
 
-	        int size;
+            int size;
             uint pdwAttr;
             IntPtr ppvSigBlob;
             uint pulCodeRVA,pdwImplFlags;
