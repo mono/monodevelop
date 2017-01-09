@@ -143,5 +143,27 @@ namespace MonoDevelop.DotNetCore
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
 			item.Exclude = @"$(GlobalExclude);wwwroot\**";
 		}
+
+		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
+		// solution window shows no files.
+		public static void AddProjectWildcardItems (this MSBuildProject project)
+		{
+			MSBuildObject before = GetInsertBeforeObject (project, true);
+			MSBuildItemGroup itemGroup = project.AddNewItemGroup (before);
+			itemGroup.Label = InternalDotNetCoreLabel;
+
+			// DefaultExcludesInProjectFolder contains "**/.*/**" which does not
+			// exclude directories starting with '.'. Using "**\.*\**" works so
+			// add it directly instead of using DefaultExcludesInProjectFolder in
+			// the exclude.
+			MSBuildItem item = itemGroup.AddNewItem ("None", @"**\*");
+			item.Exclude = @"**\*.cs;**\*.resx;.*;**\.*\**";
+
+			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
+			item.Exclude = @"**\.*\**";
+
+			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
+			item.Exclude = @"**\.*\**";
+		}
 	}
 }
