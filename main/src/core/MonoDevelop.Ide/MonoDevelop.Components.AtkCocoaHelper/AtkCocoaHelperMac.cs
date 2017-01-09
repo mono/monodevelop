@@ -27,6 +27,7 @@
 #if MAC
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using AppKit;
@@ -37,6 +38,377 @@ using ObjCRuntime;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
+	public static class AtkCocoaMacExtensions
+	{
+		const string XamarinPrivateAtkCocoaNSAccessibilityKey = "xamarin-private-atkcocoa-nsaccessibility";
+		internal static INSAccessibility GetNSAccessibilityElement (Atk.Object o)
+		{
+			IntPtr handle = GtkWorkarounds.GetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey);
+
+			// The object returned could either be an NSAccessibilityElement or it might be an NSObject that implements INSAccessibility
+			return Runtime.GetNSObject<NSObject> (handle, false) as INSAccessibility;
+		}
+
+		internal static void SetNSAccessibilityElement (Atk.Object o, INativeObject native)
+		{
+			GtkWorkarounds.SetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey, native.Handle);
+		}
+
+		internal static void DumpAccessibilityTree (NSObject obj = null, int indentLevel = 0)
+		{
+			if (obj == null) {
+				obj = NSApplication.SharedApplication;
+			}
+
+			string desc = obj.Description;
+			desc = desc.PadLeft (desc.Length + indentLevel, ' ');
+			Console.WriteLine ($"{desc}");
+
+			if (!obj.RespondsToSelector (new Selector ("accessibilityChildren"))) {
+				string notAccessible = "Not accessible";
+				Console.WriteLine ($"{notAccessible.PadLeft (notAccessible.Length + indentLevel + 2, ' ')}");
+				return;
+			}
+
+			NSArray children = (NSArray)obj.PerformSelector (new Selector ("accessibilityChildren"));
+			if (children == null) {
+				return;
+			}
+
+			for (nuint i = 0; i < children.Count; i++) {
+				DumpAccessibilityTree (children.GetItem<NSObject> (i), indentLevel + 2);
+			}
+		}
+
+		public static void SetAccessibilityLabel (this Atk.Object o, string label)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityLabel = label;
+		}
+
+		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityElement = !ignore;
+		}
+
+		public static void SetAccessibilityTitle (this Atk.Object o, string title)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityTitle = title;
+		}
+
+		public static void SetAccessibilityDocument (this Atk.Object o, string documentUrl)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityDocument = documentUrl;
+		}
+
+		public static void SetAccessibilityFilename (this Atk.Object o, string filename)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityFilename = filename;
+		}
+
+		public static void SetAccessibilityIsMainWindow (this Atk.Object o, bool isMainWindow)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityMain = isMainWindow;
+		}
+
+		public static void SetAccessibilityMainWindow (this Atk.Object o, Atk.Object mainWindow)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			var windowAccessible = GetNSAccessibilityElement (mainWindow);
+			if (windowAccessible == null) {
+				return;
+			}
+
+			nsa.AccessibilityMainWindow = (NSObject)windowAccessible;
+		}
+
+		public static void SetAccessibilityValue (this Atk.Object o, string stringValue)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityValue = new NSString (stringValue);
+		}
+
+		public static void SetAccessibilityURL (this Atk.Object o, string url)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityUrl = new NSUrl (url);
+		}
+
+		public static void SetAccessibilityRole (this Atk.Object o, string role, string description = null)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityRole = role;
+
+			if (!string.IsNullOrEmpty (description)) {
+				nsa.AccessibilityRoleDescription = description;
+			}
+		}
+
+		public static void SetAccessibilityRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
+		{
+			o.SetAccessibilityRole (role.ToString (), description);
+		}
+
+		public static void SetAccessibilitySubRole (this Atk.Object o, string subrole)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilitySubrole = subrole;
+		}
+
+		public static void SetAccessibilityTitleUIElement (this Atk.Object o, Atk.Object title)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			var titleNsa = GetNSAccessibilityElement (title);
+
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityTitleUIElement = (NSObject)titleNsa;
+		}
+
+		public static void SetAccessibilityAlternateUIVisible (this Atk.Object o, bool visible)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityAlternateUIVisible = visible;
+		}
+
+		public static void SetAccessibilityOrientation (this Atk.Object o, Gtk.Orientation orientation)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityOrientation = orientation == Gtk.Orientation.Vertical ? NSAccessibilityOrientation.Vertical : NSAccessibilityOrientation.Horizontal;
+		}
+
+		public static void SetAccessibilityTitleFor (this Atk.Object o, params Atk.Object [] objects)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			NSObject [] titleElements = new NSObject [objects.Length];
+			int idx = 0;
+
+			foreach (var obj in objects) {
+				var nsao = GetNSAccessibilityElement (obj);
+				if (nsao == null) {
+					return;
+				}
+
+				titleElements [idx] = (NSObject)nsao;
+				idx++;
+			}
+
+			nsa.AccessibilityServesAsTitleForUIElements = titleElements;
+		}
+
+		public static void SetAccessibilityTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityTabs = tabs;
+		}
+
+		public static void SetAccessibilityTabs (this Atk.Object o, Atk.Object [] tabs)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			NSObject [] realTabs = new NSObject [tabs.Length];
+			int i = 0;
+			foreach (var tab in tabs) {
+				realTabs [i] = (NSObject)GetNSAccessibilityElement (tab);
+				i++;
+			}
+
+			nsa.AccessibilityTabs = realTabs;
+		}
+
+		public static void AccessibilityAddElementToTitle (this Atk.Object title, Atk.Object o)
+		{
+			var titleNsa = GetNSAccessibilityElement (title);
+			var nsa = GetNSAccessibilityElement (o);
+
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
+			NSObject [] oldElements = titleNsa.AccessibilityServesAsTitleForUIElements;
+			int length = oldElements != null ? oldElements.Length : 0;
+
+			if (oldElements != null && oldElements.IndexOf ((NSObject)nsa) != -1) {
+				return;
+			}
+
+			NSObject [] titleElements = new NSObject [length + 1];
+			if (oldElements != null) {
+				oldElements.CopyTo (titleElements, 0);
+			}
+			titleElements [length] = (NSObject)nsa;
+		}
+
+		public static void AccessibilityRemoveElementFromTitle (this Atk.Object title, Atk.Object o)
+		{
+			var titleNsa = GetNSAccessibilityElement (title);
+			var nsa = GetNSAccessibilityElement (o);
+
+			if (nsa == null || titleNsa == null) {
+				return;
+			}
+
+			if (titleNsa.AccessibilityServesAsTitleForUIElements == null) {
+				return;
+			}
+
+			List<NSObject> oldElements = new List<NSObject> (titleNsa.AccessibilityServesAsTitleForUIElements);
+			oldElements.Remove ((NSObject)nsa);
+
+			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
+		}
+
+		public static void AccessibilityReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
+		{
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityChildren = children;
+		}
+
+		public static void SetAccessibilityColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
+		{
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityColumns = columns;
+		}
+
+		public static void SetAccessibilityRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
+		{
+			var nsa = GetNSAccessibilityElement (parent);
+
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityRows = rows;
+		}
+
+		public static void SetActionDelegate (this Atk.Object o, ActionDelegate ad)
+		{
+			ad.Owner = o;
+		}
+
+		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+			var nsa = GetNSAccessibilityElement (o) as NSAccessibilityElement;
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityAddChildElement (child);
+		}
+
+		public static void RemoveAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			var children = nsa.AccessibilityChildren;
+
+			if (children == null || children.Length == 0) {
+				return;
+			}
+
+			var idx = children.IndexOf (child);
+			if (idx == -1) {
+				return;
+			}
+
+			var newChildren = new NSObject [children.Length - 1];
+
+			for (int i = 0, j = 0; i < children.Length; i++) {
+				if (i == idx) {
+					continue;
+				}
+
+				newChildren [j] = children [i];
+				j++;
+			}
+
+			nsa.AccessibilityChildren = newChildren;
+		}
+	}
+
 	public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility, IAccessibilityElementProxy
 	{
 		public event EventHandler PerformCancel;
@@ -60,7 +432,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public void SetRealParent (Gtk.Widget realParent)
 		{
 			parent = realParent;
-			parentElement = AtkCocoa.GetNSAccessibilityElement (parent.Accessible);
+			parentElement = AtkCocoaMacExtensions.GetNSAccessibilityElement (parent.Accessible);
 		}
 
 		// The frame inside the GtkWidget parent, in Gtk coordinate space

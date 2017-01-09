@@ -154,22 +154,26 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Components.AtkCocoaHelper.AtkCocoa.DumpAccessibilityTree ();
+#if MAC
+			Components.AtkCocoaHelper.AtkCocoaMacExtensions.DumpAccessibilityTree ();
+#endif
 		}
 	}
 
 	class DumpA11yTreeDelayedHandler : CommandHandler
 	{
+#if MAC
 		Timer t;
 		protected override void Run ()
 		{
 			t = new Timer (10000);
 			t.Elapsed += (sender, e) => {
-				Components.AtkCocoaHelper.AtkCocoa.DumpAccessibilityTree ();
+				Components.AtkCocoaHelper.AtkCocoaMacExtensions.DumpAccessibilityTree ();
 				t.Dispose ();
 				t = null;
 			};
 			t.Start ();
 		}
+#endif
 	}
 }

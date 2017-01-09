@@ -32,6 +32,113 @@ using Gtk;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
+	public static class AtkCocoaNoopExtensions
+	{
+		public static void SetAccessibilityLabel (this Atk.Object o, string label)
+		{
+		}
+
+		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)
+		{
+		}
+
+		public static void SetAccessibilityTitle (this Atk.Object o, string title)
+		{
+		}
+
+		public static void SetAccessibilityDocument (this Atk.Object o, string documentUrl)
+		{
+		}
+
+		public static void SetAccessibilityFilename (this Atk.Object o, string filename)
+		{
+		}
+
+		public static void SetAccessibilityIsMainWindow (this Atk.Object o, bool isMainWindow)
+		{
+		}
+
+		public static void SetAccessibilityMainWindow (this Atk.Object o, Atk.Object mainWindow)
+		{
+		}
+
+		public static void SetAccessibilityValue (this Atk.Object o, string stringValue)
+		{
+		}
+
+		public static void SetAccessibilityURL (this Atk.Object o, string url)
+		{
+		}
+
+		public static void SetAccessibilityRole (this Atk.Object o, string role, string description = null)
+		{
+		}
+
+		public static void SetAccessibilityRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
+		{
+		}
+
+		public static void SetAccessibilitySubRole (this Atk.Object o, string subrole)
+		{
+		}
+
+		public static void SetAccessibilityTitleUIElement (this Atk.Object o, Atk.Object title)
+		{
+		}
+
+		public static void SetAccessibilityAlternateUIVisible (this Atk.Object o, bool visible)
+		{
+		}
+
+		public static void SetAccessibilityOrientation (this Atk.Object o, Gtk.Orientation orientation)
+		{
+		}
+
+		public static void SetAccessibilityTitleFor (this Atk.Object o, params Atk.Object [] objects)
+		{
+		}
+
+		public static void SetAccessibilityTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		{
+		}
+
+		public static void SetAccessibilityTabs (this Atk.Object o, Atk.Object [] tabs)
+		{
+		}
+
+		public static void AccessibilityAddElementToTitle (this Atk.Object title, Atk.Object o)
+		{
+		}
+
+		public static void AccessibilityRemoveElementFromTitle (this Atk.Object title, Atk.Object o)
+		{
+		}
+
+		public static void AccessibilityReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
+		{
+		}
+
+		public static void SetAccessibilityColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
+		{
+		}
+
+		public static void SetAccessibilityRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
+		{
+		}
+
+		public static void SetActionDelegate (this Atk.Object o, ActionDelegate ad)
+		{
+		}
+
+		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+		}
+
+		public static void RemoveAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+		}
+	}
+
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
 	{
 		public event EventHandler PerformCancel;
@@ -62,7 +169,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public void SetAccessibilityRole (AtkCocoaHelper.Roles role, string description = null)
+		public void SetAccessibilityRole (AtkCocoa.Roles role, string description = null)
 		{
 		}
 
@@ -97,6 +204,58 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public abstract class AccessibilityElementNavigableStaticTextProxy : IAccessibilityNavigableStaticText
 	{
+		public int InsertionPointLineNumber {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public int NumberOfCharacters {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public string Value {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public Rectangle GetFrameForRange (AtkCocoa.Range range)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public int GetLineForIndex (int index)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public AtkCocoa.Range GetRangeForIndex (int index)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public AtkCocoa.Range GetRangeForLine (int line)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public AtkCocoa.Range GetRangeForPosition (Point position)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public string GetStringForRange (AtkCocoa.Range range)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public AtkCocoa.Range GetStyleRangeForIndex (int index)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 
