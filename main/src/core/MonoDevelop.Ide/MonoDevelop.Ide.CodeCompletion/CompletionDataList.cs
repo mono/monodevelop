@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public class CompletionDataList : List<CompletionData>, ICompletionDataList
 	{
-		public int TriggerWordStart { get; set; }
+		public int TriggerWordStart { get; set; } = -1;
 		public int TriggerWordLength { get; set; }
 
 		public bool IsSorted { get; set; }
