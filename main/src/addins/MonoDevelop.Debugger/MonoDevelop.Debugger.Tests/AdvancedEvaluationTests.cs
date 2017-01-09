@@ -180,6 +180,25 @@ namespace MonoDevelop.Debugger.Tests
 
 			Assert.AreEqual ("2", sharedX.Value);
 		}
+
+		[Test]
+		public void MethodWithTypeGenericArgsEval ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("ba6350e5-7149-4cc2-a4cf-8a54c635eb38");
+			StartTest ("MethodWithTypeGenericArgsEval");
+			CheckPosition ("ba6350e5-7149-4cc2-a4cf-8a54c635eb38");
+
+			var baseMethodEval = Eval ("genericClass.BaseMethodWithClassTArg (wrappedA)");
+			Assert.NotNull (baseMethodEval);
+			Assert.AreEqual ("{Wrapper(wrappedA)}", baseMethodEval.Value);
+
+			var thisMethodEval = Eval ("genericClass.RetMethodWithClassTArg (a)");
+			Assert.NotNull (thisMethodEval);
+			Assert.AreEqual ("{Just A}", thisMethodEval.Value);
+		}
+
+
 	}
 }
 
