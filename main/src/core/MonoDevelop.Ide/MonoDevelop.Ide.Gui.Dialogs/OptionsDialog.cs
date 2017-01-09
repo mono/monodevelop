@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {

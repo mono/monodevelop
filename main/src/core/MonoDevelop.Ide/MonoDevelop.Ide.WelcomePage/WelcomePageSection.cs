@@ -28,6 +28,7 @@ using Gtk;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

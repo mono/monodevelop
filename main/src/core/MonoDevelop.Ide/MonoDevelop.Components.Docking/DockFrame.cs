@@ -38,6 +38,7 @@ using Gdk;
 using Xwt.Motion;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Docking
 {

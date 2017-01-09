@@ -31,6 +31,7 @@ using System.Drawing.Design;
 using Cairo;
 using Gtk;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
 
@@ -73,7 +74,7 @@ namespace MonoDevelop.Components
 		
 		public Tabstrip ()
 		{
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		

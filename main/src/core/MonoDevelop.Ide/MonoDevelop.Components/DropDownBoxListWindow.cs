@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide;
 using Gtk;
 using System.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
@@ -81,7 +82,7 @@ namespace MonoDevelop.Components
 
 			this.DataProvider = provider;
 			this.TransientFor = IdeApp.Workbench.RootWindow;
-			this.TypeHint = Gdk.WindowTypeHint.Menu;
+			this.TypeHint = Gdk.WindowTypeHint.DropdownMenu;
 			this.Decorated = false;
 			this.BorderWidth = 1;
 			list = new ListWidget (this);
@@ -255,7 +256,7 @@ namespace MonoDevelop.Components
 				public int RowIndex { get; set; }
 				internal TextElement ()
 				{
-					Actions = new string [] { AtkCocoaHelper.Actions.AXPress.ToString () };
+					Actions = new string [] { AtkCocoa.Actions.AXPress.ToString () };
 				}
 			}
 
@@ -263,18 +264,18 @@ namespace MonoDevelop.Components
 			{
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 				columnElement.SetRealParent (this);
-				columnElement.SetAccessibilityRole (AtkCocoaHelper.Roles.AXColumn);
+				columnElement.SetAccessibilityRole (AtkCocoa.Roles.AXColumn);
 				Accessible.AddAccessibleElement (columnElement);
 
 				for (int i = 0; i < win.DataProvider.IconCount; i++) {
 					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					rowElement.SetRealParent (this);
-					rowElement.SetAccessibilityRole (AtkCocoaHelper.Roles.AXRow);
+					rowElement.SetAccessibilityRole (AtkCocoa.Roles.AXRow);
 					Accessible.AddAccessibleElement (rowElement);
 
 					var cellElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					cellElement.SetRealParent (this);
-					cellElement.SetAccessibilityRole (AtkCocoaHelper.Roles.AXCell);
+					cellElement.SetAccessibilityRole (AtkCocoa.Roles.AXCell);
 					columnElement.AddAccessibleChild (cellElement);
 					rowElement.AddAccessibleChild (cellElement);
 

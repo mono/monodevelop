@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -162,7 +163,7 @@ namespace MonoDevelop.Components
 			entry.Accessible.SetAccessibilitySubRole ("AXSearchField");
 
 			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
-			filter_button.Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXMenuButton);
+			filter_button.Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXMenuButton);
 			filter_button.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Search filter menu"));
 			filter_button.Accessible.Description = GettextCatalog.GetString ("Change the search filters");
 

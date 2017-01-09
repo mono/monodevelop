@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Reflection;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

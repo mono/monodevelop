@@ -33,6 +33,8 @@
 using Gtk;
 using Gdk;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -93,7 +95,7 @@ namespace MonoDevelop.Components.Docking
 			EventBox sepBox = new EventBox ();
 
 			// FIXME How to actually resize this?
-			sepBox.Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitter, GettextCatalog.GetString ("Pad resize handle"));
+			sepBox.Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXSplitter, GettextCatalog.GetString ("Pad resize handle"));
 			sepBox.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Pad resize handle"));
 
 			cframe.Add (sepBox);

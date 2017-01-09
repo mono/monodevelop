@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			Components.AtkCocoaHelper.DumpAccessibilityTree ();
+			Components.AtkCocoaHelper.AtkCocoa.DumpAccessibilityTree ();
 		}
 	}
 
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			t = new Timer (10000);
 			t.Elapsed += (sender, e) => {
-				Components.AtkCocoaHelper.DumpAccessibilityTree ();
+				Components.AtkCocoaHelper.AtkCocoa.DumpAccessibilityTree ();
 				t.Dispose ();
 				t = null;
 			};

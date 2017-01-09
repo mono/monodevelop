@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {

@@ -33,6 +33,7 @@ using Gtk;
 using System;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -47,7 +48,7 @@ namespace MonoDevelop.Components.Docking
 
 		public TabStrip (DockFrame frame)
 		{
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
 
 			VBox vbox = new VBox ();
 			vbox.Accessible.SetAccessibilityShouldIgnore (true);

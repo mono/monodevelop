@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using Cairo;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
@@ -147,7 +148,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
 
 			TabWidth = 125;
 			TargetWidth = 125;

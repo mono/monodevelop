@@ -38,6 +38,7 @@ using Gtk;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Desktop;

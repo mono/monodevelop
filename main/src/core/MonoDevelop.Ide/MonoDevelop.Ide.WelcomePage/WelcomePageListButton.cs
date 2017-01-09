@@ -28,6 +28,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 using Gtk;
 
@@ -80,10 +81,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
 		}
 
-		AtkCocoaHelper.ActionDelegate actionHandler;
+		ActionDelegate actionHandler;
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
 		{
-			actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler = new ActionDelegate ();
 			actionHandler.PerformPress += HandlePress;
 			actionHandler.PerformShowAlternateUI += HandleShowAlternateUI;
 			actionHandler.PerformShowDefaultUI += HandleShowDefaultUI;
@@ -117,12 +118,12 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		void UpdateActions ()
 		{
-			List<AtkCocoaHelper.Actions> actions = new List<AtkCocoaHelper.Actions> ();
-			actions.Add (AtkCocoaHelper.Actions.AXPress);
+			var actions = new List<AtkCocoa.Actions> ();
+			actions.Add (AtkCocoa.Actions.AXPress);
 
 			if (AllowPinning) {
-				actions.Add (AtkCocoaHelper.Actions.AXShowAlternateUI);
-				actions.Add (AtkCocoaHelper.Actions.AXShowDefaultUI);
+				actions.Add (AtkCocoa.Actions.AXShowAlternateUI);
+				actions.Add (AtkCocoa.Actions.AXShowDefaultUI);
 			}
 			actionHandler.Actions = actions.ToArray ();
 		}

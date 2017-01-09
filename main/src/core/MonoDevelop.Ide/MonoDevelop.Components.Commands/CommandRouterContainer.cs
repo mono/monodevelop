@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Commands
 {

@@ -32,6 +32,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Docking
 {

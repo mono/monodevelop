@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

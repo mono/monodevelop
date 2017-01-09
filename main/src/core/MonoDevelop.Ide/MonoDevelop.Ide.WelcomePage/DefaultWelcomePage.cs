@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Gtk;
 
 namespace MonoDevelop.Ide.WelcomePage

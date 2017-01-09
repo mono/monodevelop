@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Docking
@@ -96,12 +97,12 @@ namespace MonoDevelop.Components.Docking
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress, AtkCocoaHelper.Actions.AXShowMenu };
+			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress, AtkCocoa.Actions.AXShowMenu };
 			actionHandler.PerformPress += HandlePress;
 			actionHandler.PerformShowMenu += HandleShowMenu;
 
 			Accessible.SetActionDelegate (actionHandler);
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXGroup, "pad header");
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXGroup, "pad header");
 			Accessible.SetAccessibilitySubRole ("XAPadHeader");
 
 			this.item = item;

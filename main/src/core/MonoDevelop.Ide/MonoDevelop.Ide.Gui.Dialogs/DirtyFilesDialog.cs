@@ -7,6 +7,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Dialogs

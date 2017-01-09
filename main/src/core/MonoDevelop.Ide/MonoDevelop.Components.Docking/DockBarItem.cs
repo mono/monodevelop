@@ -33,6 +33,7 @@ using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 using MonoDevelop.Core;
@@ -135,7 +136,7 @@ namespace MonoDevelop.Components.Docking
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.Actions = new [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += OnPerformPress;
 
 			Accessible.SetActionDelegate (actionHandler);

@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;

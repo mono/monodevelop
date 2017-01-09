@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
@@ -58,7 +59,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitGroup);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXSplitGroup);
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
@@ -489,7 +490,7 @@ namespace MonoDevelop.Components.Docking
 	
 			public SplitterWidget ()
 			{
-				Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitter);
+				Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXSplitter);
 
 				this.VisibleWindow = false;
 				this.AboveChild = true;

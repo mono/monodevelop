@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Text;
 
 using System.Runtime.InteropServices;
@@ -150,8 +151,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageFeedItem ()
 		{
-			var actionDelegate = new AtkCocoaHelper.ActionDelegate ();
-			actionDelegate.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			var actionDelegate = new ActionDelegate ();
+			actionDelegate.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionDelegate.PerformPress += PerformPress;
 
 			Accessible.SetActionDelegate (actionDelegate);

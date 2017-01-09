@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
@@ -40,7 +41,7 @@ namespace MonoDevelop.Components
 		public ImageButton ()
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += HandlePress;
 
 			Accessible.SetActionDelegate (actionHandler);

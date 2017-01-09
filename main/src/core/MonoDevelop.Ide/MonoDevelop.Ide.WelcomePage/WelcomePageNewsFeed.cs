@@ -28,6 +28,7 @@ using Gtk;
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;

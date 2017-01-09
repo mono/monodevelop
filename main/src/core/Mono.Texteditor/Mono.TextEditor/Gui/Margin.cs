@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Mono.TextEditor
 {
@@ -76,11 +76,11 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		AtkCocoaHelper.AccessibilityElementProxy accessible;
-		public virtual AtkCocoaHelper.AccessibilityElementProxy Accessible {
+		AccessibilityElementProxy accessible;
+		public virtual AccessibilityElementProxy Accessible {
 			get {
 				if (accessible == null) {
-					accessible = new AtkCocoaHelper.AccessibilityElementProxy ();
+					accessible = new AccessibilityElementProxy ();
 				}
 				return accessible;
 			}
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 
 		protected Margin ()
 		{
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXRuler);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXRuler);
 			IsVisible = true;
 		}
 		

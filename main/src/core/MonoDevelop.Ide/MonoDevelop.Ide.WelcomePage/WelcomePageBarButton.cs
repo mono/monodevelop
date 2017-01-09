@@ -28,6 +28,7 @@ using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -74,8 +75,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
-			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			var actionHandler = new ActionDelegate ();
+			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += HandlePress;
 
 			Accessible.SetActionDelegate (actionHandler);

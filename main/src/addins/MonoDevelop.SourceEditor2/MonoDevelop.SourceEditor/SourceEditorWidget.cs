@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;

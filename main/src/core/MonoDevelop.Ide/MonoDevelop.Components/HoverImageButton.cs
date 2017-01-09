@@ -29,6 +29,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -57,10 +58,10 @@ namespace MonoDevelop.Components
         {
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
 			Accessible.SetActionDelegate (actionHandler);
-			actionHandler.Actions = new [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.Actions = new [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += OnPerformPress;
 
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXButton);
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXButton);
 
 			Gtk.Alignment al = new Alignment (0.5f, 0.5f, 0f, 0f);
 			al.Accessible.SetAccessibilityShouldIgnore (true);

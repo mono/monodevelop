@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using GLib;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;

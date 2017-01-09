@@ -9004,7 +9004,9 @@
     <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
-    <Compile Include="MonoDevelop.Components\AtkCocoaHelper.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelper.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperMac.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperNoOp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9056,6 +9058,7 @@
     <Folder Include="MonoDevelop.Components\Windows\" />
     <Folder Include="MonoDevelop.Ide.GettingStarted\" />
     <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
+    <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

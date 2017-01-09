@@ -29,6 +29,7 @@ using Gtk;
 using Xwt.Motion;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -213,7 +214,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			Accessible.PerformPress += OnPressTab;
 			// FIXME Should Role descriptions be translated?
-			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXRadioButton, "tab");
+			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXRadioButton, "tab");
 			Accessible.SetRealParent (strip);
 			Accessible.Actions = new string [] { "AXShowMenu" };
 			Accessible.PerformShowPopupMenu += OnShowMenu;
@@ -221,7 +222,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
-			CloseButtonAccessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXButton);
+			CloseButtonAccessible.SetAccessibilityRole (AtkCocoa.Roles.AXButton);
 			CloseButtonAccessible.SetRealParent (strip);
 			CloseButtonAccessible.Actions = new string [] { "AXShowMenu" };
 			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;

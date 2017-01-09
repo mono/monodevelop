@@ -37,6 +37,7 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
@@ -246,9 +247,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			// Add an extra action handler to the tree to handle Press actions
 			var actionHandler = tree.ActionHandler;
-			var actions = new AtkCocoaHelper.Actions [actionHandler.Actions.Length + 1];
+			var actions = new AtkCocoa.Actions [actionHandler.Actions.Length + 1];
 			Array.Copy (actionHandler.Actions, actions, actionHandler.Actions.Length);
-			actions [actionHandler.Actions.Length] = AtkCocoaHelper.Actions.AXPress;
+			actions [actionHandler.Actions.Length] = AtkCocoa.Actions.AXPress;
 			actionHandler.Actions = actions;
 
 			actionHandler.PerformPress += OnPerformPress;
