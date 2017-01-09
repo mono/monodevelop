@@ -116,6 +116,18 @@ namespace Mono.Debugging.Win32
 			return (((CorType)type).Type == CorElementType.ELEMENT_TYPE_GENERICINST) || base.IsGenericType (ctx, type);
 		}
 
+		public override bool NullableHasValue (EvaluationContext ctx, object type, object obj)
+		{
+			ValueReference hasValue = GetMember (ctx, type, obj, "hasValue");
+
+			return (bool) hasValue.ObjectValue;
+		}
+
+		public override ValueReference NullableGetValue (EvaluationContext ctx, object type, object obj)
+		{
+			return GetMember (ctx, type, obj, "value");
+		}
+
 		public override string GetTypeName (EvaluationContext ctx, object gtype)
 		{
 			CorType type = (CorType) gtype;
@@ -1123,6 +1135,19 @@ namespace Mono.Debugging.Win32
 		{
 			var cctx = ctx as CorEvaluationContext;
 			var type = t as CorType;
+
+			if (IsNullableType (ctx, t)) {
+				// 'Value' and 'HasValue' property evaluation gives wrong results when the nullable object is a property of class.
+				// Replace to direct field access to fix it. Actual cause of this problem is unknown
+				switch (name) {
+					case "Value":
+						name = "value";
+						break;
+					case "HasValue":
+						name = "hasValue";
+						break;
+				}
+			}
 
 			while (type != null) {
 				var tt = type.GetTypeInfo (cctx.Session);
