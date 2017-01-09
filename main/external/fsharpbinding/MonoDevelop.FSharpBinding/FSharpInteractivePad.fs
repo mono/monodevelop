@@ -64,6 +64,7 @@ type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
     interface IExtendingTextLineMarker with
         member x.GetLineHeight editor = editor.LineHeight + image.Height
         member x.Draw(editor, g, lineNr, lineArea) = ()
+        member x.IsSpaceAbove = false
 
 type FsiDocumentContext() =
     inherit DocumentContext()
