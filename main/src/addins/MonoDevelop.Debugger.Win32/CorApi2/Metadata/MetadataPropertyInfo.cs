@@ -118,7 +118,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				return null;
 
 			if (m_getter == null)
-				m_getter = new MetadataMethodInfo (m_importer, m_pmdGetter);
+				m_getter = new MetadataMethodInfo (m_importer, m_pmdGetter, Instantiation.Empty);
 
 			if (nonPublic || m_getter.IsPublic)
 				return m_getter;
@@ -139,7 +139,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				return null;
 
 			if (m_setter == null)
-				m_setter = new MetadataMethodInfo (m_importer, m_pmdSetter);
+				m_setter = new MetadataMethodInfo (m_importer, m_pmdSetter, Instantiation.Empty);
 
 			if (nonPublic || m_setter.IsPublic)
 				return m_setter;

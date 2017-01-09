@@ -135,7 +135,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
 		}
 
-		internal static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
+		internal static void ReadMethodSignature (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
 			uint numArgs = 0;
@@ -147,10 +147,10 @@ namespace Microsoft.Samples.Debugging.Extensions
 			if (cconv != CorCallingConvention.Field)
 				numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 
-			retType = ReadType (importer, ref pData);
+			retType = ReadType (importer, instantiation, ref pData);
 			argTypes = new List<Type> ();
 			for (int n = 0; n < numArgs; n++)
-				argTypes.Add (ReadType (importer, ref pData));
+				argTypes.Add (ReadType (importer, instantiation, ref pData));
 		}
 
 		class GenericType
@@ -158,7 +158,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			// Used as marker for generic method args
 		}
 
-		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
+		static Type ReadType (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData)
 		{
 			CorElementType et;
 			unsafe {
@@ -188,29 +188,36 @@ namespace Microsoft.Samples.Debugging.Extensions
 			case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
 			case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return typeof(TypedReference);
 
-			case CorElementType.ELEMENT_TYPE_VAR:
-			case CorElementType.ELEMENT_TYPE_MVAR:
-				// Generic args in methods not supported. Return a dummy type.
-				MetadataHelperFunctions.CorSigUncompressData (ref pData);
-				return typeof(GenericType);
+			case CorElementType.ELEMENT_TYPE_VAR: {
+					var index = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+					if (index < instantiation.TypeArgs.Count) {
+						return instantiation.TypeArgs[(int) index];
+					}
+					return typeof(GenericType);
+				}
+				case CorElementType.ELEMENT_TYPE_MVAR: {
+					// Generic args in methods not supported. Return a dummy type.
+					var index = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+					return typeof(GenericType);
+				}
 
-			case CorElementType.ELEMENT_TYPE_GENERICINST: {
-					Type t = ReadType (importer, ref pData);
+				case CorElementType.ELEMENT_TYPE_GENERICINST: {
+					Type t = ReadType (importer, instantiation, ref pData);
 					var typeArgs = new List<Type> ();
 					uint num = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 					for (int n=0; n<num; n++) {
-						typeArgs.Add (ReadType (importer, ref pData));
+						typeArgs.Add (ReadType (importer, instantiation, ref pData));
 					}
 					return MetadataExtensions.MakeGeneric (t, typeArgs);
 				}
 
 			case CorElementType.ELEMENT_TYPE_PTR: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakePointer (t);
 				}
 
 			case CorElementType.ELEMENT_TYPE_BYREF: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakeByRef(t);
 				}
 
@@ -222,7 +229,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				}
 
 			case CorElementType.ELEMENT_TYPE_ARRAY: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					int rank = (int)MetadataHelperFunctions.CorSigUncompressData (ref pData);
 					if (rank == 0)
 						return MetadataExtensions.MakeArray (t, null, null);
@@ -241,7 +248,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				}
 
 			case CorElementType.ELEMENT_TYPE_SZARRAY: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakeArray (t, null, null);
 				}
 
@@ -249,13 +256,13 @@ namespace Microsoft.Samples.Debugging.Extensions
 					CorCallingConvention cconv;
 					Type retType;
 					List<Type> argTypes;
-					ReadMethodSignature (importer, ref pData, out cconv, out retType, out argTypes);
+					ReadMethodSignature (importer, Instantiation.Empty, ref pData, out cconv, out retType, out argTypes);
 					return MetadataExtensions.MakeDelegate (retType, argTypes);
 				}
 
 			case CorElementType.ELEMENT_TYPE_CMOD_REQD:
 			case CorElementType.ELEMENT_TYPE_CMOD_OPT:
-				return ReadType (importer, ref pData);
+				return ReadType (importer, instantiation, ref pData);
 			}
 			throw new NotSupportedException ("Unknown sig element type: " + et);
 		}

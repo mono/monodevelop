@@ -36,7 +36,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         // methods
         public MethodInfo GetMethodInfo(int methodToken)
         {
-            return new MetadataMethodInfo(m_importer,methodToken);
+            return new MetadataMethodInfo(m_importer,methodToken, Instantiation.Empty);
         }
 
         public Type GetType(int typeToken)
@@ -265,7 +265,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
     public sealed class MetadataMethodInfo : MethodInfo
     {
-        internal MetadataMethodInfo(IMetadataImport importer,int methodToken)
+        internal MetadataMethodInfo(IMetadataImport importer, int methodToken, Instantiation instantiation)
         {
             if(!importer.IsValidToken((uint)methodToken))
                 throw new ArgumentException();
@@ -273,7 +273,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             m_importer = importer;
             m_methodToken=methodToken;
 
-            int size;
+	        int size;
             uint pdwAttr;
             IntPtr ppvSigBlob;
             uint pulCodeRVA,pdwImplFlags;
@@ -304,7 +304,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 			// [Xamarin] Expression evaluator.
 			CorCallingConvention callingConv;
-			MetadataHelperFunctionsExtensions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
+			MetadataHelperFunctionsExtensions.ReadMethodSignature (importer, instantiation, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
             m_name = szMethodName.ToString();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
