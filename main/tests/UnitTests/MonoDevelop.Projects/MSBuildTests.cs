@@ -1147,6 +1147,30 @@ namespace MonoDevelop.Projects
 			}, filesToCopyToOutputDirectory);
 		}
 
+		/// <summary>
+		/// Tests that an include such as "Properties/**/*.txt" does not throw an ArgumentException
+		/// and resolves all files in all subdirectories.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithForwardSlashWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files
+				.Where (f => f.CopyToOutputDirectory == FileCopyMode.PreserveNewest)
+				.Select (f => f.FilePath.FileName)
+				.OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{
