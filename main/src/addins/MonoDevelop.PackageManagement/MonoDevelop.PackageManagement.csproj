@@ -399,6 +399,12 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetAwareProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MSBuildNuGetImportGenerator.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\GlobalPackagesExtractor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetAwareProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetAwareProjectPackageRestoreManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IHasDotNetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -249,7 +249,7 @@ namespace MonoDevelop.Components.AutoTest
 				Description = x.Description,
 				File = x.FileName.FileName,
 				Path = x.FileName.FullPath,
-				Project = x.WorkspaceObject.Name
+				Project = x.WorkspaceObject?.Name
 			}).ToList ();
 		}
 

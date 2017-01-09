@@ -120,6 +120,7 @@
     <None Include="paket.references" />
     <Compile Include="Properties\AddinInfo.fs" />
     <Compile Include="HighlightUnusedCode.fs" />
+    <Compile Include="ScriptDebugging.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp" />

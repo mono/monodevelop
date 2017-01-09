@@ -162,6 +162,18 @@ namespace MonoDevelop.Core.Assemblies
 				return null;
 			}
 		}
+
+		public override string GetMSBuildToolsPath (string toolsVersion)
+		{
+			using (RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + toolsVersion, false)) {
+				if (msb != null) {
+					string path = msb.GetValue ("MSBuildToolsPath") as string;
+					if (path != null && Directory.Exists (path))
+						return path;
+				}
+				return null;
+			}
+		}
 		
 		public override string GetMSBuildExtensionsPath ()
 		{

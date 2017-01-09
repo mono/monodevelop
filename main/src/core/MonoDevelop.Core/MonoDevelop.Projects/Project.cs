@@ -569,7 +569,7 @@ namespace MonoDevelop.Projects
 					ctx.ItemsToEvaluate.Add ("Compile");
 
 					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
-					if (evalResult != null && !evalResult.BuildResult.HasErrors && evalResult.Items != null) {
+					if (evalResult != null && evalResult.Items != null) {
 						result = evalResult
 							.Items
 							.Select (CreateProjectFile)
@@ -1275,7 +1275,7 @@ namespace MonoDevelop.Projects
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1318,7 +1318,7 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
@@ -1373,6 +1373,17 @@ namespace MonoDevelop.Projects
 			return MSBuildEngineSupport.HasFlag (MSBuildSupport.Supported) && (
 				!checkReferences || GetReferencedItems (sel).OfType<Project>().All (i => i.CheckUseMSBuildEngine (sel, false))
 			);
+		}
+
+		bool requiresMicrosoftBuild;
+
+		internal protected bool RequiresMicrosoftBuild {
+			get {
+				return requiresMicrosoftBuild || ProjectExtension.IsMicrosoftBuildRequired;
+			}
+			set {
+				requiresMicrosoftBuild = value;
+			}
 		}
 
 		/// <summary>
@@ -1546,6 +1557,7 @@ namespace MonoDevelop.Projects
 		//the configuration of the last build that completed successfully
 		//null if any file in the project has since changed
 		string fastUpToDateCheckGoodConfig;
+		DateTime fastUpToDateTimestamp;
 
 		public bool FastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
@@ -1557,7 +1569,19 @@ namespace MonoDevelop.Projects
 			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
 				return true;
 			var cfg = GetConfiguration (configuration);
-			return cfg == null || cfg.Id != fastUpToDateCheckGoodConfig;
+			if (cfg == null || cfg.Id != fastUpToDateCheckGoodConfig)
+				return true;
+
+			// Shouldn't need to build, but if a dependency was changed since this project build flag was reset,
+			// the project needs to be rebuilt
+
+			foreach (var dep in GetReferencedItems (configuration).OfType<Project> ()) {
+				if (dep.FastCheckNeedsBuild (configuration) || dep.fastUpToDateTimestamp >= fastUpToDateTimestamp) {
+					fastUpToDateCheckGoodConfig = null;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected void SetFastBuildCheckDirty ()
@@ -1569,6 +1593,7 @@ namespace MonoDevelop.Projects
 		{
 			var cfg = GetConfiguration (configuration);
 			fastUpToDateCheckGoodConfig = cfg != null ? cfg.Id : null;
+			fastUpToDateTimestamp = DateTime.Now;
 		}
 
 		/// <summary>

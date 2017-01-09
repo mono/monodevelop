@@ -129,6 +129,17 @@ namespace MonoDevelop.PackageManagement
 			backgroundActionRunner.Run (progressMessage, actions);
 		}
 
+		internal IEnumerable<INuGetPackageAction> CreateInstallActions (
+			string packageSourceUrl,
+			Project project,
+			IEnumerable<PackageManagementPackageReference> packages)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repository = repositoryProvider.CreateRepository (new PackageSource (packageSourceUrl));
+
+			return CreateInstallActions (new [] { repository }, project, packages, false);
+		}
+
 		IEnumerable<INuGetPackageAction> CreateInstallActions (
 			IEnumerable<SourceRepository> repositories,
 			Project project,

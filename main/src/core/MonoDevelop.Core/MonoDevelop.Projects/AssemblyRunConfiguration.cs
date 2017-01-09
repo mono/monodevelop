@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects
 					else if (!string.IsNullOrEmpty (StartArguments))
 						return GettextCatalog.GetString ("Start the project with arguments '{0}'", StartArguments);
 					else if (envVars != null)
-						return GettextCatalog.GetString ("Start the project with environment variables '{0}''", envVars);
+						return GettextCatalog.GetString ("Start the project with environment variables '{0}'", envVars);
 					else
 						return GettextCatalog.GetString ("Start the project");
 				} else {
