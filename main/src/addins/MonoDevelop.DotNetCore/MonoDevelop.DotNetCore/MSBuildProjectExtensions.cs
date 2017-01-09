@@ -135,7 +135,7 @@ namespace MonoDevelop.DotNetCore
 			itemGroup.Label = InternalDotNetCoreLabel;
 
 			MSBuildItem item = itemGroup.AddNewItem ("Content", @"**\*");
-			item.Exclude = @"**\*.cs;**\*.resx;Properties\**;.*;**\.*\**";
+			item.Exclude = @"**\*.cs;**\*.resx;*.csproj;*.csproj.user;Properties\**;.*;**\.*\**";
 
 			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
 			item.Exclude = @"**\.*\**;wwwroot\**";
@@ -157,7 +157,7 @@ namespace MonoDevelop.DotNetCore
 			// add it directly instead of using DefaultExcludesInProjectFolder in
 			// the exclude.
 			MSBuildItem item = itemGroup.AddNewItem ("None", @"**\*");
-			item.Exclude = @"**\*.cs;**\*.resx;.*;**\.*\**";
+			item.Exclude = @"**\*.cs;**\*.resx;*.csproj;*.csproj.user;.*;**\.*\**";
 
 			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
 			item.Exclude = @"**\.*\**";
