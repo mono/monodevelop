@@ -25,7 +25,7 @@
 
 		<Project name="${ProjectName}" directory = "." type="C#PortableLibrary" if="CreatePortableProject">
 			<Options Target="Library"
-				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"
+				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile111"
 				DefaultNamespace="${ProjectName}"
 				HideGettingStarted="true" />
 			<Packages>
