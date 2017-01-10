@@ -86,7 +86,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			someVariable.Add (someField);/*cc622137-a162-4b91-a85c-88241e68c3ea*/
 		}
 
-		
+
 		public void InvocationsCountDuringExpandingTest ()
 		{
 			var mutableFieldClass = new MutableFieldClass ();
@@ -117,6 +117,77 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			{
 				this.x = x;
 			}
+		}
+
+		public void MethodWithTypeGenericArgsEval ()
+		{
+			var a = new A("Just A");
+			var wrappedA = new Wrapper<A>(new A("wrappedA"));
+			var genericClass = new GenericClass<A>(new A("Constructor arg A"));
+			//genericClass.BaseMethodWithClassTArg (wrappedA);
+			//genericClass.RetMethodWithClassTArg (a)
+			Console.WriteLine("Break for MethodWithTypeGenericArgsEval");/*ba6350e5-7149-4cc2-a4cf-8a54c635eb38*/
+		}
+
+		class A
+		{
+			public A(string myProp)
+			{
+				MyProp = myProp;
+			}
+
+			public string MyProp { get; set; }
+
+			public override string ToString()
+			{
+				return MyProp;
+			}
+		}
+
+		class GenericBaseClass<TBaseClassArg>
+		{
+			public readonly TBaseClassArg myArg;
+
+			public GenericBaseClass(TBaseClassArg arg)
+			{
+				myArg = arg;
+			}
+
+			public TBaseClassArg BaseMethodWithClassTArg(TBaseClassArg arg)
+			{
+				return arg;
+			}
+
+
+		}
+
+		class Wrapper<TObj>
+		{
+			public TObj obj;
+
+			public Wrapper(TObj obj)
+			{
+				this.obj = obj;
+			}
+
+			public override string ToString()
+			{
+				return string.Format("Wrapper({0})", obj);
+			}
+		}
+
+		class GenericClass<TOfClass> : GenericBaseClass<Wrapper<TOfClass>>
+		{
+			public GenericClass(TOfClass arg) : base(new Wrapper<TOfClass>(arg))
+			{
+			}
+
+			public void VoidMethodWithClassTArg(TOfClass tOfClass) {}
+			public TOfClass RetMethodWithClassTArg(TOfClass tOfClass) {return tOfClass;}
+
+			public void VoidMethodWithMethodTArg<TOfMethod>(TOfMethod tOfMethod) { }
+			public void VoidMethodWithMethodAndClassTArg<TOfMethod>(TOfMethod tOfMethod, TOfClass tOfClass) { }
+
 		}
 	}
 }
