@@ -9867,7 +9867,7 @@ msgid ""
 msgstr ""
 "Název větve nesmí:\n"
 "Začínat znakem „.“ nebo končit znaky „/“ a „.lock“.\n"
-"Obsahovat znaky „ „, „..“, „~“, „^“, „:“, „\“, „?“, „[“."
+"Obsahovat znaky „ „, „..“, „~“, „^“, „:“, „\\“, „?“, „[“."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
 msgid "Branch Properties"
