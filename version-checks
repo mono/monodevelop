@@ -1,4 +1,4 @@
-i#!/bin/bash -e
+#!/bin/bash -e
 
 cd `dirname $0`
 top_srcdir=`pwd`
@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=2099919719fa60c08584584ca6b27424d2a2f997
+DEP_NEEDED_VERSION[0]=a8afe6ddb33a457a0a316235de3a5cada9e1cf38
 DEP_BRANCH_AND_REMOTE[0]="dotnetcore origin/dotnetcore"
  
 # heap-shot

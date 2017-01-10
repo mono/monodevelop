@@ -117,8 +117,7 @@ namespace Mono.Debugging.Win32
 				if (thisobj != null) {
 					CorObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as CorObjectValue;
 					if (cob != null && cob.IsValueClass)
-						thisobj.IsValid = false; // Required to make sure that thisobj returns an up-to-date value object
-
+						thisobj.Invalidate (); // Required to make sure that thisobj returns an up-to-date value object
 				}
 			}
 		}

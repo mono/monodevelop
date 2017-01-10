@@ -35,18 +35,17 @@ namespace Mono.Debugging.Win32
 	class ArrayAdaptor: ICollectionAdaptor
 	{
 		readonly CorEvaluationContext ctx;
-		CorArrayValue array;
-		readonly CorValRef obj;
+		readonly CorValRef<CorArrayValue> valRef;
 
-		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj, CorArrayValue array)
+		public ArrayAdaptor (EvaluationContext ctx, CorValRef<CorArrayValue> valRef)
 		{
 			this.ctx = (CorEvaluationContext) ctx;
-			this.array = array;
-			this.obj = obj;
+			this.valRef = valRef;
 		}
 
 		public int[] GetLowerBounds ()
 		{
+			var array = valRef.Val;
 			if (array != null && array.HasBaseIndicies) {
 				return array.GetBaseIndicies ();
 			} else {
@@ -56,18 +55,14 @@ namespace Mono.Debugging.Win32
 		
 		public int[] GetDimensions ()
 		{
+			var array = valRef.Val;
 			return array != null ? array.GetDimensions () : new int[0];
 		}
 		
 		public object GetElement (int[] indices)
 		{
 			return new CorValRef (delegate {
-				// If we have a zombie state array, reload it.
-				if (!obj.IsValid) {
-					obj.Reload ();
-					array = CorObjectAdaptor.GetRealObject (ctx, obj) as CorArrayValue;
-				}
-
+				var array = valRef.Val;
 				return array != null ? array.GetElement (indices) : null;
 			});
 		}
@@ -92,13 +87,13 @@ namespace Mono.Debugging.Win32
 		public void SetElement (int[] indices, object val)
 		{
 			CorValRef it = (CorValRef) GetElement (indices);
-			obj.IsValid = false;
+			valRef.Invalidate ();
 			it.SetValue (ctx, (CorValRef) val);
 		}
 		
 		public object ElementType {
 			get {
-				return obj.Val.ExactType.FirstTypeParameter;
+				return valRef.Val.ExactType.FirstTypeParameter;
 			}
 		}
 	}

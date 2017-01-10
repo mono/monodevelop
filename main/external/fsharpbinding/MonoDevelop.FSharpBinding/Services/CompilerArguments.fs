@@ -311,6 +311,7 @@ module CompilerArguments =
       |> Seq.sortByDescending (fun f -> sharedAssetFiles.Contains f.FilePath)
       |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
       |> Seq.map(fun f -> f.Name)
+      |> Seq.distinct
 
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line

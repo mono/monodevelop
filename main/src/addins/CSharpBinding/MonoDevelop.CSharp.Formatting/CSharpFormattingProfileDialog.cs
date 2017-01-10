@@ -155,9 +155,7 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewIndentOptions.SearchColumn = -1; // disable the interactive search
 			treeviewIndentOptions.HeadersVisible = false;
 			treeviewIndentOptions.Selection.Changed += TreeSelectionChanged;
-			treeviewIndentOptions.AppendColumn (column);
-			
-			column = new TreeViewColumn ();
+
 			var cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
@@ -253,9 +251,7 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewNewLines.SearchColumn = -1; // disable the interactive search
 			treeviewNewLines.HeadersVisible = false;
 			treeviewNewLines.Selection.Changed += TreeSelectionChanged;
-			treeviewNewLines.AppendColumn (column);
-			
-			column = new TreeViewColumn ();
+
 			cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
@@ -407,9 +403,7 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewSpacing.SearchColumn = -1; // disable the interactive search
 			treeviewSpacing.HeadersVisible = false;
 			treeviewSpacing.Selection.Changed += TreeSelectionChanged;
-			treeviewSpacing.AppendColumn (column);
 
-			column = new TreeViewColumn ();
 			cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
@@ -573,9 +567,7 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewStyle.SearchColumn = -1; // disable the interactive search
 			treeviewStyle.HeadersVisible = false;
 			treeviewStyle.Selection.Changed += TreeSelectionChanged;
-			treeviewStyle.AppendColumn (column);
 
-			column = new TreeViewColumn ();
 			cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
@@ -624,9 +616,7 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewWrapping.SearchColumn = -1; // disable the interactive search
 			treeviewWrapping.HeadersVisible = false;
 			treeviewWrapping.Selection.Changed += TreeSelectionChanged;
-			treeviewWrapping.AppendColumn (column);
 
-			column = new TreeViewColumn ();
 			cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
