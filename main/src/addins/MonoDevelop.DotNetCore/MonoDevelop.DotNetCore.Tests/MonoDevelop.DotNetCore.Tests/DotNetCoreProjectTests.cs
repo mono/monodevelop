@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.Tests
 {
 	[TestFixture]
 	class DotNetCoreProjectExtensionTests : TestBase

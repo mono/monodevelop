@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			this.RunConfiguration = configInfo.EditedConfig;
 			Label = configInfo.EditedConfig.Name;
-			HeaderLabel = GettextCatalog.GetString ("Run Configuration: " + configInfo.EditedConfig.Name);
+			HeaderLabel = GettextCatalog.GetString ("Run Configuration: {0}", configInfo.EditedConfig.Name);
 			Icon = "md-prefs-play";
 		}
 		

@@ -689,9 +689,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path)
 		{
-			if (path == "**" || path.EndsWith ("\\**", StringComparison.Ordinal))
-				path = path + "/*";
-			var subpath = path.Split ('\\');
+			var subpath = SplitWildcardFilePath (path);
 		
 			MSBuildProject project = pinfo.Project;
 			WildcardExpansionFunc<MSBuildItemEvaluated> func = delegate (string file, string include, string recursiveDir) {
@@ -703,14 +701,20 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path)
 		{
-			if (path == "**" || path.EndsWith ("\\**", StringComparison.Ordinal))
-				path = path + "/*";
-			var subpath = path.Split ('\\');
+			var subpath = SplitWildcardFilePath (path);
 		
 			WildcardExpansionFunc<string> func = delegate (string file, string include, string recursiveDir) {
 				return include;
 			};
 			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, 0, func);
+		}
+
+		static string[] SplitWildcardFilePath (string path)
+		{
+			path = path.Replace ('/', '\\');
+			if (path == "**" || path.EndsWith ("\\**", StringComparison.Ordinal))
+				path = path + "\\*";
+			return path.Split ('\\');
 		}
 
 		delegate T WildcardExpansionFunc<T> (string filePath, string include, string recursiveDir);

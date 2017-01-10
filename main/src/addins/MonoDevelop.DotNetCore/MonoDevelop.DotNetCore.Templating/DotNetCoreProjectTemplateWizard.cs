@@ -61,8 +61,6 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			createDotNetCoreProject = !Parameters.GetBoolValue ("CreateSolution");
 			Parameters["CreateDotNetCoreProject"] = createDotNetCoreProject.ToString ();
-			Parameters["Microsoft.NET.Sdk.Version"] = "1.0.0-alpha-20161104-2";
-			Parameters["Microsoft.NET.Sdk.Web.Version"] = "1.0.0-alpha-20161104-2-112";
 		}
 
 		public override async void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)

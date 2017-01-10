@@ -43,4 +43,8 @@
 	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class="MonoDevelop.DotNetCore.DotNetCoreFolderNodeBuilderExtension" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
+		<Class id="DotNetCoreProjectReader" class="MonoDevelop.DotNetCore.DotNetCoreProjectReader" />
+	</Extension>
 </ExtensionModel>
