@@ -153,7 +153,7 @@ namespace Mono.Debugging.Win32
 				return type.GetTypeInfo (cctx.Session).FullName;
 			}
 			catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in GetTypeName()", ex);
 				return t.FullName;
 			}
 		}
@@ -1702,7 +1702,7 @@ namespace Mono.Debugging.Win32
 					}
 				}
 			} catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in OnGetTypeDisplayData()", ex);
 			}
 			if (hasTypeData)
 				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, isCompilerGenerated, memberData);
