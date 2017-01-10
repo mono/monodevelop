@@ -66,8 +66,10 @@ namespace MonoDevelop.CSharp
 			if (offset < 0 || root.Span.End <= offset)
 				return null;
 			var trivia = root.FindTrivia (offset).GetStructure () as DirectiveTriviaSyntax;
-			if (trivia != null) {
+			if (trivia != null && (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind (SyntaxKind.EndRegionDirectiveTrivia))) {
 				var matching = trivia.GetMatchingDirective (cancellationToken);
+				if (matching == null)
+					return null;
 				if (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia)) {
 					return new BraceMatchingResult (
 						new TextSegment (trivia.Span.Start, trivia.Span.Length),
@@ -93,11 +95,11 @@ namespace MonoDevelop.CSharp
 				SyntaxToken match;
 				if (token.IsKind (open)) {
 					if (TryFindMatchingToken (token, out match, open, close)) {
-						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, tokenSpan.Length), new TextSegment (match.Span.Start, match.Span.Length), true, BraceMatchingProperties.Hidden);
+						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, tokenSpan.Length), new TextSegment (match.Span.Start, match.Span.Length), true);
 					}
 				} else if (token.IsKind (close)) {
 					if (TryFindMatchingToken (token, out match, open, close)) {
-						return new BraceMatchingResult (new TextSegment (match.Span.Start, match.Span.Length), new TextSegment (tokenSpan.Start, tokenSpan.Length), false, BraceMatchingProperties.Hidden);
+						return new BraceMatchingResult (new TextSegment (match.Span.Start, match.Span.Length), new TextSegment (tokenSpan.Start, tokenSpan.Length), false);
 					}
 				}
 			}
