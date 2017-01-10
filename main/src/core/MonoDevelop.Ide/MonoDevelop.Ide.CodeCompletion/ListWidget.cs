@@ -241,22 +241,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public int SelectionFilterIndex {
 			get {
-				var idx = SelectedItem;
+				var idx = SelectedItemIndex;
 				if (idx < 0)
 					return -1;
 				return filteredItems.IndexOf (idx);
 			}
 			set {
 				if (value < 0) {
-					SelectedItem = -1;
+					SelectedItemIndex = -1;
 					return;
 				}
 				if (value < filteredItems.Count)
-					SelectedItem = filteredItems [value];
+					SelectedItemIndex = filteredItems [value];
 			}
 		}
 		
-		public int SelectedItem {
+		public int SelectedItemIndex {
 			get { 
 				if (selection < 0 || filteredItems.Count == 0)
 					return -1;
@@ -336,23 +336,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void MoveCursor (int relative)
 		{
-			int newIndex = GetIndex (false, SelectedItem) + relative;
+			int newIndex = GetIndex (false, SelectedItemIndex) + relative;
 			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
 
 			int newSelection = GetItem (false, newIndex);
 			if (newSelection < 0)
 				return;
 
-			if (SelectedItem == newSelection && relative < 0) {
-				SelectedItem = GetItem (false, 0);
+			if (SelectedItemIndex == newSelection && relative < 0) {
+				SelectedItemIndex = GetItem (false, 0);
 			} else {
-				SelectedItem = newSelection;
+				SelectedItemIndex = newSelection;
 			}
 		}
 		
 		public void ScrollToSelectedItem ()
 		{
-			var area = GetRowArea (SelectedItem);
+			var area = GetRowArea (SelectedItemIndex);
 			double newValue;
 			if (vadj.PageSize == 1.0) {
 				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
@@ -405,7 +405,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			SelectedItem = GetRowByPosition ((int)e.Y);
+			SelectedItemIndex = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
 			return base.OnButtonPressEvent (e);
 		}
@@ -428,7 +428,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return base.OnMotionNotifyEvent (e);
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			SelectedItem = GetRowByPosition ((int)e.Y);
+			SelectedItemIndex = GetRowByPosition ((int)e.Y);
 			return true;
 		}
 		
@@ -510,7 +510,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					xpos = iconTextSpacing;
 				}
 				string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-				string description = win.DataProvider.GetDescription (item, item == SelectedItem);
+				string description = win.DataProvider.GetDescription (item, item == SelectedItemIndex);
 
 				if (string.IsNullOrEmpty (description)) {
 					layout.SetMarkup (markup);
@@ -532,8 +532,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							bold.EndIndex = (uint)(idx + 1);
 							attrList.Insert (bold);
 
-							if (item != SelectedItem) {
-								var highlightColor = (item == SelectedItem) ? Styles.CodeCompletion.SelectionHighlightColor : Styles.CodeCompletion.HighlightColor;
+							if (item != SelectedItemIndex) {
+								var highlightColor = (item == SelectedItemIndex) ? Styles.CodeCompletion.SelectionHighlightColor : Styles.CodeCompletion.HighlightColor;
 								var fg = new AttrForeground ((ushort)(highlightColor.Red * ushort.MaxValue), (ushort)(highlightColor.Green * ushort.MaxValue), (ushort)(highlightColor.Blue * ushort.MaxValue));
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
@@ -547,7 +547,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
 				int iconHeight, iconWidth;
 				if (icon != null) {
-					if (item == SelectedItem)
+					if (item == SelectedItemIndex)
 						icon = icon.WithStyles ("sel");
 					iconWidth = (int)icon.Width;
 					iconHeight = (int)icon.Height;
@@ -563,7 +563,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (scalef <= 1.0)
 					typos -= 1; // 1px up on non HiDPI
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				if (item == SelectedItem) {
+				if (item == SelectedItemIndex) {
 					var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
 
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.DrawImage (this, icon, xpos, iypos);
 					xpos += iconTextSpacing;
 				}
-				context.SetSourceColor ((item == SelectedItem ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
+				context.SetSourceColor ((item == SelectedItemIndex ? Styles.CodeCompletion.SelectionTextColor : Styles.CodeCompletion.TextColor).ToCairoColor ());
 				var textXPos = xpos + iconWidth + 2;
 				context.MoveTo (textXPos, typos);
 				layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
@@ -592,7 +592,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.Attributes = null;
 				}
 
-				string rightText = win.DataProvider.GetRightSideDescription (item, item == SelectedItem);
+				string rightText = win.DataProvider.GetRightSideDescription (item, item == SelectedItemIndex);
 					if (!string.IsNullOrEmpty (rightText)) {
 						layout.SetMarkup (rightText);
 

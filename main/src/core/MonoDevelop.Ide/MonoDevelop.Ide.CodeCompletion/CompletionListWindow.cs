@@ -798,9 +798,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			if (SelectedItem == -1 || completionDataList == null)
+			if (SelectedItemIndex == -1 || completionDataList == null)
 				return false;
-			var item = completionDataList [SelectedItem];
+			var item = completionDataList [SelectedItemIndex];
 			if (item == null)
 				return false;
 			IsInCompletion = true; 
@@ -879,18 +879,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			RemoveDeclarationViewTimer ();
 			// no selection, try to find a selection
-			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
+			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
 				bool hasMismatches;
 				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString, out hasMismatches);
 			}
 			// no success, hide declaration view
-			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
+			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				HideDeclarationView ();
 				return;
 			}
 
-			var data = completionDataList [List.SelectedItem];
+			var data = completionDataList [List.SelectedItemIndex];
 			if (data != currentData)
 				HideDeclarationView ();
 
@@ -936,7 +936,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			EnsureDeclarationViewWindow ();
 			if (declarationviewwindow.Overloads == 0)
 				return;
-			var selectedItem = List.SelectedItem;
+			var selectedItem = List.SelectedItemIndex;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
 				return;
@@ -962,7 +962,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		async void DelayedTooltipShowAsync ()
 		{
-			var selectedItem = List.SelectedItem;
+			var selectedItem = List.SelectedItemIndex;
 			if (selectedItem < 0 || selectedItem >= completionDataList.Count)
 				return;
 			

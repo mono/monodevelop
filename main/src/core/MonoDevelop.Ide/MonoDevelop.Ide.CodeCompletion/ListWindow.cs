@@ -186,16 +186,33 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public string CurrentCompletionText {
 			get {
-				if (list.SelectedItem != -1 && list.AutoSelect)
-					return DataProvider.GetCompletionText (list.SelectedItem);
+				if (list.SelectedItemIndex != -1 && list.AutoSelect)
+					return DataProvider.GetCompletionText (list.SelectedItemIndex);
 				return null;
 			}
 		}
 
-		public int SelectedItem {
-			get { return list.SelectedItem; }
+		public ICompletionDataList CompletionDataList {
+			get {
+				return completionDataList;
+			}
 		}
-		
+
+		public CompletionData SelectedItem {
+			get {
+				return completionDataList [SelectedItemIndex];
+			}
+		}
+
+		public int SelectedItemIndex {
+			get { return list.SelectedItemIndex; }
+		}
+
+		public event EventHandler SelectionChanged {
+			add { list.SelectionChanged += value; }
+			remove { list.SelectionChanged += value; }
+		}
+
 		public bool AutoSelect {
 			get { return list.AutoSelect; }
 			set { list.AutoSelect = value; }
@@ -318,7 +335,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			var data = DataProvider.GetCompletionData (SelectedItem);
+			var data = DataProvider.GetCompletionData (SelectedItemIndex);
 
 			if (data.IsCommitCharacter (keyChar, PartialWord)) {
 				bool hasMismatches;
@@ -348,12 +365,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
 						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-							list.SelectedItem = item;
+							list.SelectedItemIndex = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
 					}
 				} else {
-					var selectedItem = list.SelectedItem;
+					var selectedItem = list.SelectedItemIndex;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
 					var text = DataProvider.GetText (selectedItem);
@@ -490,12 +507,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
 						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-							list.SelectedItem = item;
+							list.SelectedItemIndex = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
 					}
 				} else {
-					var selectedItem = list.SelectedItem;
+					var selectedItem = list.SelectedItemIndex;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
 					if (DataProvider.GetText (selectedItem).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
