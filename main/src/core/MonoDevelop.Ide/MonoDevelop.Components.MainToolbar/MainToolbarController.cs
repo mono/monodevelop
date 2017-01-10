@@ -267,6 +267,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (previous != null)
 						list.Add (new RuntimeModel (this, displayText: null));//Seperator
 
+					list.Add (new RuntimeModel (this, target, true, project));
 					foreach (var device in devices) {
 						if (device is ExecutionTargetGroup) {
 							var versions = (ExecutionTargetGroup)device;
