@@ -80,8 +80,12 @@ namespace Mono.Debugging.Win32
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
-			var val = (CorValRef)gval;
-			if (val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue)val.Val).IsNull))
+			if (gval == null)
+				return true;
+			var val = gval as CorValRef;
+			if (val == null)
+				return true;
+			if (val.Val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull))
 				return true;
 
 			var obj = GetRealObject (ctx, val);
@@ -156,7 +160,13 @@ namespace Mono.Debugging.Win32
 
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (ctx, val).ExactType;
+			if (val == null)
+				return GetType (ctx, "System.Object");
+
+			var realObject = GetRealObject (ctx, val);
+			if (realObject == null)
+				return GetType (ctx, "System.Object");;
+			return realObject.ExactType;
 		}
 		
 		public override object GetBaseType (EvaluationContext ctx, object type)
