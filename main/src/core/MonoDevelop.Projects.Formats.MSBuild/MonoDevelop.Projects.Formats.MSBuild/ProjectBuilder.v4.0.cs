@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System.Collections.Generic;
@@ -145,8 +146,10 @@ namespace MonoDevelop.Projects.MSBuild
 					p = engine.LoadProject (file);
 				else {
 					Environment.CurrentDirectory = Path.GetDirectoryName (file);
-					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
-					p.FullPath = file;
+					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
+					projectRootElement.FullPath = file;
+					string toolsVersion = projectRootElement.ToolsVersion ?? engine.DefaultToolsVersion;
+					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
 				}
 			}
 			p.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);

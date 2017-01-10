@@ -1089,6 +1089,88 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("t2.dat", f2.Link.ToString ());
 		}
 
+		/// <summary>
+		/// Tests that an include such as "Properties\**" does not throw an ArgumentException
+		/// and resolves all files in all subdirectories.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithPathWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-path-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Data1.cs",
+				"Data2.cs",
+				"Data3.cs",
+				"Program.cs",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+		}
+
+		/// <summary>
+		/// Tests that an update such as "Properties\**" does not throw an ArgumentException.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithPathWildcardUpdate ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-path-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Program.cs",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+
+			var filesToCopyToOutputDirectory = mp.Files
+				.Where (f => f.CopyToOutputDirectory == FileCopyMode.PreserveNewest)
+				.Select (f => f.FilePath.FileName)
+				.OrderBy (f => f).ToArray ();
+
+			Assert.AreEqual (new string [] {
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, filesToCopyToOutputDirectory);
+		}
+
+		/// <summary>
+		/// Tests that an include such as "Properties/**/*.txt" does not throw an ArgumentException
+		/// and resolves all files in all subdirectories.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithForwardSlashWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files
+				.Where (f => f.CopyToOutputDirectory == FileCopyMode.PreserveNewest)
+				.Select (f => f.FilePath.FileName)
+				.OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{

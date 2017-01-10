@@ -752,6 +752,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public MSBuildItemGroup AddNewItemGroup ()
 		{
+			return AddNewItemGroup (null);
+		}
+
+		public MSBuildItemGroup AddNewItemGroup (MSBuildObject beforeObject)
+		{
 			AssertCanModify ();
 			var group = new MSBuildItemGroup ();
 
@@ -766,7 +771,9 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			group.ParentNode = this;
-			if (refNode != null)
+			if (beforeObject != null)
+				ChildNodes = ChildNodes.Insert (ChildNodes.IndexOf (beforeObject), group);
+			else if (refNode != null)
 				ChildNodes = ChildNodes.Insert (ChildNodes.IndexOf (refNode) + 1, group);
 			else
 				ChildNodes = ChildNodes.Add (group);
