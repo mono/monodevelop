@@ -126,6 +126,8 @@ namespace MonoDevelop.DotNetCore
 			return project.GetImport (importedProjectFile) != null;
 		}
 
+		static string DefaultExcludes = @"$(BaseOutputPath)**;$(BaseIntermediateOutputPath)**;**\*.*proj.user;**\*.*proj;**\*.sln;.*;**\.*\**";
+
 		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
 		// solution window shows no files.
 		public static void AddWebProjectWildcardItems (this MSBuildProject project)
@@ -135,13 +137,13 @@ namespace MonoDevelop.DotNetCore
 			itemGroup.Label = InternalDotNetCoreLabel;
 
 			MSBuildItem item = itemGroup.AddNewItem ("Content", @"**\*");
-			item.Exclude = @"**\*.cs;**\*.resx;*.csproj;*.csproj.user;Properties\**;.*;**\.*\**";
+			item.Exclude = DefaultExcludes + @";**\*.cs;**\*.resx;Properties\**;";
 
 			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
-			item.Exclude = @"**\.*\**;wwwroot\**";
+			item.Exclude = DefaultExcludes + @";wwwroot\**";
 
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
-			item.Exclude = @"**\.*\**;wwwroot\**";
+			item.Exclude = DefaultExcludes + @";wwwroot\**";
 		}
 
 		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
@@ -157,13 +159,13 @@ namespace MonoDevelop.DotNetCore
 			// add it directly instead of using DefaultExcludesInProjectFolder in
 			// the exclude.
 			MSBuildItem item = itemGroup.AddNewItem ("None", @"**\*");
-			item.Exclude = @"**\*.cs;**\*.resx;*.csproj;*.csproj.user;.*;**\.*\**";
+			item.Exclude = DefaultExcludes + @";**\*.cs;**\*.resx";
 
 			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
-			item.Exclude = @"**\.*\**";
+			item.Exclude = DefaultExcludes;
 
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
-			item.Exclude = @"**\.*\**";
+			item.Exclude = DefaultExcludes;
 		}
 	}
 }
