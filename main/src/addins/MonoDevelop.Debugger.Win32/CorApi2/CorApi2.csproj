@@ -103,6 +103,7 @@
     <Compile Include="Metadata\MetadataParameterInfo.cs" />
     <Compile Include="Metadata\MetadataPropertyInfo.cs" />
     <Compile Include="Metadata\MetadataType.cs" />
+    <Compile Include="Metadata\GenericParameter.cs" />
     <Compile Include="Metahost\Metahost.cs" />
     <Compile Include="SymStore\ISymBinder2.cs" />
     <Compile Include="SymStore\ISymConstant.cs" />

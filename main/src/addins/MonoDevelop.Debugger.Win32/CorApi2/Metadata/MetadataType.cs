@@ -19,6 +19,23 @@ using Microsoft.Samples.Debugging.Extensions;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
+    public class Instantiation
+    {
+        public static readonly Instantiation Empty = new Instantiation (new List<Type> ());
+
+        public static Instantiation Create (IList<Type> typeArgs)
+        {
+            return new Instantiation (typeArgs);
+        }
+
+        public IList<Type> TypeArgs { get; private set; }
+
+        Instantiation (IList<Type> typeArgs)
+        {
+            TypeArgs = typeArgs;
+        }
+    }
+
     public sealed class MetadataType : Type
     {
         internal MetadataType(IMetadataImport importer,int classToken)
@@ -585,7 +602,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     if(size==0)
                         break;
 					// [Xamarin] Expression evaluator.
-					var met = new MetadataMethodInfo (m_importer, methodToken);
+					var met = new MetadataMethodInfo (m_importer, methodToken, Instantiation.Create (m_typeArgs));
 					if (MetadataExtensions.TypeFlagsMatch (met.IsPublic, met.IsStatic, bindingAttr))
 						al.Add (met);
                 }
