@@ -1127,7 +1127,8 @@ namespace MonoDevelop.Ide
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			if (context.ExecutionHandler.CanExecute (cmd))
-				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole ());
+				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole (
+					OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (Path.GetFileName (file))));
 			else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return AsyncOperation.CompleteOperation;
