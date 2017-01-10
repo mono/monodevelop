@@ -136,12 +136,13 @@ namespace Microsoft.Samples.Debugging.Extensions
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
 		}
 
-		internal static void ReadMethodSignature (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
+		internal static void ReadMethodSignature (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes, out int sentinelIndex)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
 			uint numArgs = 0;
 			// FIXME: Use number of <T>s.
 			uint types = 0;
+			sentinelIndex = -1;
 			if ((cconv & CorCallingConvention.Generic) == CorCallingConvention.Generic)
 				types = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 
@@ -150,8 +151,25 @@ namespace Microsoft.Samples.Debugging.Extensions
 
 			retType = ReadType (importer, instantiation, ref pData);
 			argTypes = new List<Type> ();
-			for (int n = 0; n < numArgs; n++)
+			for (int n = 0; n < numArgs; n++) {
+				CorElementType elemType;
+				unsafe {
+					var pByte = (byte*) pData;
+					var b = *pByte;
+					elemType = (CorElementType) b;
+
+					if (elemType == CorElementType.ELEMENT_TYPE_SENTINEL) {
+						// the case when SENTINEL is presented in a separate position, so we have to increment the pointer
+						sentinelIndex = n;
+						pData = (IntPtr) (pByte + 1);
+					}
+					else if ((elemType & CorElementType.ELEMENT_TYPE_SENTINEL) == CorElementType.ELEMENT_TYPE_SENTINEL) {
+						// SENTINEL is just a flag on element type, so we haven't to promote the pointer
+						sentinelIndex = n;
+					}
+				}
 				argTypes.Add (ReadType (importer, instantiation, ref pData));
+			}
 		}
 
 		static Type ReadType (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData)
@@ -161,6 +179,10 @@ namespace Microsoft.Samples.Debugging.Extensions
 				var pBytes = (byte*)pData;
 				et = (CorElementType) (*pBytes);
 				pData = (IntPtr) (pBytes + 1);
+			}
+
+			if ((et & CorElementType.ELEMENT_TYPE_SENTINEL) == CorElementType.ELEMENT_TYPE_SENTINEL) {
+				et ^= CorElementType.ELEMENT_TYPE_SENTINEL; // substract SENTINEL bits from element type to get clean ET
 			}
 
 			switch (et)
@@ -252,13 +274,26 @@ namespace Microsoft.Samples.Debugging.Extensions
 					CorCallingConvention cconv;
 					Type retType;
 					List<Type> argTypes;
-					ReadMethodSignature (importer, instantiation, ref pData, out cconv, out retType, out argTypes);
+					int sentinelIndex;
+					ReadMethodSignature (importer, instantiation, ref pData, out cconv, out retType, out argTypes, out sentinelIndex);
 					return MetadataExtensions.MakeDelegate (retType, argTypes);
 				}
 
 			case CorElementType.ELEMENT_TYPE_CMOD_REQD:
-			case CorElementType.ELEMENT_TYPE_CMOD_OPT:
+			case CorElementType.ELEMENT_TYPE_CMOD_OPT: {
+					uint token = MetadataHelperFunctions.CorSigUncompressToken (ref pData);
+					return new MetadataType (importer, (int) token);
+				}
+
+			case CorElementType.ELEMENT_TYPE_INTERNAL:
+				return typeof(object); // hack to avoid the exceptions. CLR spec says that this type should never occurs, but it occurs sometimes, mystics
+
+			case CorElementType.ELEMENT_TYPE_NATIVE_ARRAY_TEMPLATE_ZAPSIG:
+			case CorElementType.ELEMENT_TYPE_NATIVE_VALUETYPE_ZAPSIG:
 				return ReadType (importer, instantiation, ref pData);
+
+			case CorElementType.ELEMENT_TYPE_CANON_ZAPSIG:
+				return typeof(object); // this is representation of __Canon type, but it's inaccessible, using object instead
 			}
 			throw new NotSupportedException ("Unknown sig element type: " + et);
 		}
