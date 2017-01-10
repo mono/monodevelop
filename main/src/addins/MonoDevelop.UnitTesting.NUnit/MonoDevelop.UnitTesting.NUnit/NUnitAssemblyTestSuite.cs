@@ -385,7 +385,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
 
-			var console = testContext.ExecutionContext.ConsoleFactory.CreateConsole ();
+			var console = testContext.ExecutionContext.ConsoleFactory.CreateConsole (
+				OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (GettextCatalog.GetString ("Unit Tests")));
 
 			ExternalTestRunner runner = new ExternalTestRunner ();
 			runner.Connect (NUnitVersion, testContext.ExecutionContext.ExecutionHandler, console).Wait ();
@@ -481,7 +482,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 		{
 			var outFile = Path.GetTempFileName ();
 			var xmlOutputConsole = new LocalConsole ();
-			var appDebugOutputConsole = testContext.ExecutionContext.ConsoleFactory.CreateConsole ();
+			var appDebugOutputConsole = testContext.ExecutionContext.ConsoleFactory.CreateConsole (
+				OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (GettextCatalog.GetString ("Unit Tests")));
 			OperationConsole cons;
 			if (appDebugOutputConsole != null) {
 				cons = new MultipleOperationConsoles (appDebugOutputConsole, xmlOutputConsole);
