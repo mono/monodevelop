@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			varKeywordTypeColor = CheckScopeExists("keyword.other.source.cs");
 
 			parameterModifierColor = CheckScopeExists("keyword.other.source.cs");
-			inactiveCodeColor = CheckScopeExists("punctuation.definition.comment.source.cs");
+			inactiveCodeColor = CheckScopeExists("comment.inactivecode.source.cs");
 
 			stringFormatItemColor = CheckScopeExists("constant.character.escape.source.cs");
 			nameofKeywordColor = CheckScopeExists("keyword.other.source.cs");

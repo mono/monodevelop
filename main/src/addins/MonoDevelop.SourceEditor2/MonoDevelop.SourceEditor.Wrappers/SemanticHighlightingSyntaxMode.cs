@@ -176,12 +176,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 						}
 						lineSegments.Enqueue (tree);
 					}
-
 					foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
-						var toffset = treeseg.Offset - lineOffset;
-						if (toffset + treeseg.Length > endOffset)
+						var inLineStartOffset = Math.Max (0, treeseg.Offset - lineOffset);
+						var inLineEndOffset = Math.Min (line.Length, treeseg.EndOffset - lineOffset);
+						if (inLineEndOffset <= inLineStartOffset)
 							continue;
-						var semanticSegment = new ColoredSegment (toffset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style));
+						var semanticSegment = new ColoredSegment (inLineStartOffset, inLineEndOffset - inLineStartOffset, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style));
 						SyntaxHighlighting.ReplaceSegment (segments, semanticSegment);
 					}
 				} catch (Exception e) {
