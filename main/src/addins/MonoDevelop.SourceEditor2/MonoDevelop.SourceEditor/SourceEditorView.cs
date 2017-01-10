@@ -894,9 +894,7 @@ namespace MonoDevelop.SourceEditor
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			UpdateTextDocumentEncoding ();
-/*			for (int i = 1; i < document.LineCount; i += 2) {
-				document.AddMarker (i, new MyExtendingLineMarker ());
-			}*/
+
 			document.TextChanged += OnTextReplaced;
 			return TaskUtil.Default<object> ();
 		}
@@ -2159,7 +2157,6 @@ namespace MonoDevelop.SourceEditor
 				if (ClipbardRingUpdated != null)
 					ClipbardRingUpdated (null, EventArgs.Empty);
 			};
-			SyntaxModeLoader.Init ();
 		}
 		
 		public void UpdateClipboardRing (object sender, EventArgs e)
@@ -3155,9 +3152,11 @@ namespace MonoDevelop.SourceEditor
 				if (bracketMarkers.Count > 0 && result.Value.LeftSegment.Offset == bracketMarkers [0].Offset)
 					return;
 				ClearBracketMarkers ();
-				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.LeftSegment.Offset, result.Value.LeftSegment.Length));
-				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.RightSegment.Offset, result.Value.RightSegment.Length));
-				bracketMarkers.ForEach (marker => widget.TextEditor.Document.AddMarker (marker));
+				if ((result.Value.BraceMatchingProperties & BraceMatchingProperties.Hidden) == 0) {
+					bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.LeftSegment.Offset, result.Value.LeftSegment.Length));
+					bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.RightSegment.Offset, result.Value.RightSegment.Length));
+					bracketMarkers.ForEach (marker => widget.TextEditor.Document.AddMarker (marker));
+				}
 			} else {
 				ClearBracketMarkers ();
 			}
@@ -3599,6 +3598,11 @@ namespace MonoDevelop.SourceEditor
 		Task<ScopeStack> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return TextEditor.SyntaxHighlighting.GetScopeStackAsync (offset, cancellationToken);
+		}
+
+		double ITextEditorImpl.GetLineHeight (int line)
+		{
+			return TextEditor.GetLineHeight (line);
 		}
 	}
 } 

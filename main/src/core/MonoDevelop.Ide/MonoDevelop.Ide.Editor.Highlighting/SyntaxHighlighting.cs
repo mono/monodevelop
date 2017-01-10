@@ -69,13 +69,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			var line = Document.GetLineByOffset (offset);
 			var state = GetState (line);
-
-			if (line.Offset == offset)
+			var lineOffset = line.Offset;
+			if (lineOffset == offset) {
 				return state.ScopeStack;
+			}
 
 			var high = new Highlighter (this, state);
-			foreach (var seg in (await high.GetColoredSegments (Document, line.Offset, line.Length)).Segments) {
-				if (seg.Contains (offset))
+			foreach (var seg in (await high.GetColoredSegments (Document, lineOffset, line.Length)).Segments) {
+				if (seg.Contains (offset - lineOffset))
 					return seg.ScopeStack;
 			}
 			return high.State.ScopeStack;
@@ -162,6 +163,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.state = state;
 			}
 
+			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (50);
+
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int offset, int length)
 			{
 				if (ContextStack.IsEmpty)
@@ -194,20 +197,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				match = null;
 				curMatch = null;
 				foreach (var m in currentContext.Matches) {
+					if (m.GotTimeout)
+						continue;
 					var r = m.GetRegex ();
 					if (r == null)
 						continue;
-					var possibleMatch = r.Match (text, offset, length);
-					if (possibleMatch.Success) {
-						if (match == null || possibleMatch.Index < match.Index) {
-							match = possibleMatch;
-							curMatch = m;
-							// Console.WriteLine (match.Index + " possible match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+					try {
+						var possibleMatch = r.Match (text, offset, length, matchTimeout);
+						if (possibleMatch.Success) {
+							if (match == null || possibleMatch.Index < match.Index) {
+								match = possibleMatch;
+								curMatch = m;
+								// Console.WriteLine (match.Index + " possible match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							} else {
+								// Console.WriteLine (match.Index + " skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							}
 						} else {
-							// Console.WriteLine (match.Index + " skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							// Console.WriteLine ("fail match : " + m);
 						}
-					} else {
-						// Console.WriteLine ("fail match : " + m);
+					} catch (RegexMatchTimeoutException) {
+						LoggingService.LogWarning ("Warning: Regex " + m.Match + " timed out on line:" + text.GetTextAt (offset, length));
+						m.GotTimeout = true;
+						continue;
 					}
 				}
 

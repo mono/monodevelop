@@ -421,7 +421,7 @@ namespace FormatSelectionTest
 	}
 }", (content, ext) => {
 
-				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset);
 
 
 				Assert.AreEqual (@"
@@ -614,6 +614,31 @@ namespace FormatSelectionTest
 				var newText = content.Text;
 				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
 			});
+		}
+
+		/// <summary>
+		/// Bug 38954 - Format document changes position of caret
+		/// </summary>
+		[Test]
+		public async Task TestBug38954 ()
+		{
+			await Simulate (@"
+class EmptyClass
+{
+	public EmptyClass()
+	{
+		$Console.WriteLine() ;
+	}
+}", (content, ext) => { 
+				var oldOffset = ext.Editor.CaretOffset;
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
+				var newOffset = ext.Editor.CaretOffset;
+				Console.WriteLine ("-----");
+				Console.WriteLine (ext.Editor.Text);
+				Console.WriteLine ("-----");
+				Assert.AreEqual (oldOffset, newOffset);
+			});
+
 		}
 
 	}

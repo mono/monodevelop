@@ -118,6 +118,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
+		public virtual bool CanGenerateAnalysisDocument (string mimeType, string buildAction, string [] supportedLanguages)
+		{
+			return false;
+		}
+
 		/// <summary>
 		/// Generates the plain projection. This is used for type system services.
 		/// </summary>

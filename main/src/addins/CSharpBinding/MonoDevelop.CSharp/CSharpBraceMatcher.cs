@@ -33,6 +33,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core.Text;
 using MonoDevelop.CSharp.Completion;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -63,6 +65,26 @@ namespace MonoDevelop.CSharp
 			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (offset < 0 || root.Span.End <= offset)
 				return null;
+			var trivia = root.FindTrivia (offset).GetStructure () as DirectiveTriviaSyntax;
+			if (trivia != null && (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind (SyntaxKind.EndRegionDirectiveTrivia))) {
+				var matching = trivia.GetMatchingDirective (cancellationToken);
+				if (matching == null)
+					return null;
+				if (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia)) {
+					return new BraceMatchingResult (
+						new TextSegment (trivia.Span.Start, trivia.Span.Length),
+						new TextSegment (matching.Span.Start, matching.Span.Length),
+						true,
+						BraceMatchingProperties.Hidden);
+				} else {
+					return new BraceMatchingResult (
+						new TextSegment (matching.Span.Start, matching.Span.Length),
+						new TextSegment (trivia.Span.Start, trivia.Span.Length),
+						false,
+						BraceMatchingProperties.Hidden);
+				}
+			}
+
 			var token = root.FindToken (offset);
 			var tokenSpan = token.Span;
 			if (offset < tokenSpan.Start || offset >= tokenSpan.End)

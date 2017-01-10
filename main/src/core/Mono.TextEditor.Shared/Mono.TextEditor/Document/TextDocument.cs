@@ -101,11 +101,6 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
-		public bool HeightChanged {
-			get;
-			set;
-		}
-
 		public bool UseBOM {
 			get {
 				return buffer.UseBOM;
@@ -1435,15 +1430,15 @@ namespace Mono.TextEditor
 		{
 			if (line == null || marker == null)
 				return;
-			if (marker is IExtendingTextLineMarker) {
-				lock (extendingTextMarkers) {
-					HeightChanged = true;
-					extendingTextMarkers.Add (marker);
-					extendingTextMarkers.Sort (CompareMarkers);
-				}
-			}
 			line.AddMarker (marker, idx);
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
+			if (marker is IExtendingTextLineMarker) {
+				lock (extendingTextMarkers) {
+					extendingTextMarkers.Add (marker);
+					extendingTextMarkers.Sort (CompareMarkers);
+					OnHeightChanged (EventArgs.Empty);
+				}
+			}
 			if (commitUpdate)
 				this.CommitLineUpdate (line);
 		}
@@ -1467,18 +1462,17 @@ namespace Mono.TextEditor
 			var line = marker.LineSegment;
 			if (line == null)
 				return;
-			if (marker is IExtendingTextLineMarker) {
-				lock (extendingTextMarkers) {
-					HeightChanged = true;
-					extendingTextMarkers.Remove (marker);
-				}
-			}
-			
 			if (marker is IDisposable)
 				((IDisposable)marker).Dispose ();
 			
 			line.RemoveMarker (marker);
 			OnMarkerRemoved (new TextMarkerEvent (line, marker));
+			if (marker is IExtendingTextLineMarker) {
+				lock (extendingTextMarkers) {
+					extendingTextMarkers.Remove (marker);
+					OnHeightChanged (EventArgs.Empty);
+				}
+			}
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
@@ -1497,15 +1491,15 @@ namespace Mono.TextEditor
 		{
 			if (line == null || type == null)
 				return;
-			if (typeof(IExtendingTextLineMarker).IsAssignableFrom (type)) {
+			line.RemoveMarker (type);
+			if (typeof (IExtendingTextLineMarker).IsAssignableFrom (type)) {
 				lock (extendingTextMarkers) {
-					HeightChanged = true;
 					foreach (TextLineMarker marker in line.Markers.Where (marker => marker is IExtendingTextLineMarker)) {
 						extendingTextMarkers.Remove (marker);
 					}
+					OnHeightChanged (EventArgs.Empty);
 				}
 			}
-			line.RemoveMarker (type);
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
@@ -1576,11 +1570,11 @@ namespace Mono.TextEditor
 		{
 			foreach (TextLineMarker marker in e.Line.Markers) {
 				if (marker is IExtendingTextLineMarker) {
-					lock (extendingTextMarkers) {
-						HeightChanged = true;
-						extendingTextMarkers.Remove (marker);
-					}
 					UnRegisterVirtualTextMarker ((IExtendingTextLineMarker)marker);
+					lock (extendingTextMarkers) {
+						extendingTextMarkers.Remove (marker);
+						OnHeightChanged (EventArgs.Empty);
+					}
 				}
 			}
 		}
@@ -1972,6 +1966,13 @@ namespace Mono.TextEditor
 		}
 
 		#endregion
+
+		void OnHeightChanged (EventArgs e)
+		{
+			HeightChanged?.Invoke (this, e);
+		}
+
+		internal event EventHandler HeightChanged;
 	}
 	
 	delegate bool ReadOnlyCheckDelegate (int line);

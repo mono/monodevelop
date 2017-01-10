@@ -177,6 +177,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									if (result.TriggerWordStart >= 0)
+										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.
@@ -234,6 +236,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									if (result.TriggerWordStart >= 0)
+										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.
@@ -369,6 +373,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
 		public virtual void RunShowCodeTemplatesWindow ()
 		{
+			Editor.EnsureCaretIsNotVirtual ();
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {

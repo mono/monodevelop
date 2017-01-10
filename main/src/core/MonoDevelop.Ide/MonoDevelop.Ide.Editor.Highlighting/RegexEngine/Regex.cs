@@ -752,7 +752,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             if (input == null)
                 throw new ArgumentNullException("input");
 
-            return (null == Run(true, -1, input, 0, input.Length, startat));
+			return (null == Run(true, -1, input, 0, input.Length, startat, internalMatchTimeout));
         }
 
         /*
@@ -822,7 +822,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             if (input == null)
                 throw new ArgumentNullException("input");
 
-            return Run(false, -1, input, 0, input.Length, startat);
+            return Run(false, -1, input, 0, input.Length, startat, internalMatchTimeout);
         }
 
         /*
@@ -836,12 +836,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       RegexMatch object.
         ///    </para>
         /// </devdoc>
-        public Match Match(ITextSource input, int beginning, int length) {
-            if (input == null)
-                throw new ArgumentNullException("input");
+        public Match Match (ITextSource input, int beginning, int length)
+		{
+			if (input == null)
+				throw new ArgumentNullException ("input");
 
-            return Run(false, -1, input, beginning, length, UseOptionR() ? beginning + length : beginning);
-        }
+			return Run (false, -1, input, beginning, length, UseOptionR () ? beginning + length : beginning, internalMatchTimeout);
+		}
+
+		public Match Match (ITextSource input, int beginning, int length, TimeSpan matchTimeout)
+		{
+			if (input == null)
+				throw new ArgumentNullException ("input");
+
+			return Run (false, -1, input, beginning, length, UseOptionR () ? beginning + length : beginning, matchTimeout);
+		}
 
         /*
          * Static version of simple Matches call
@@ -1258,7 +1267,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Internal worker called by all the public APIs
          */
-        internal Match Run(bool quick, int prevlen, ITextSource input, int beginning, int length, int startat) {
+		internal Match Run(bool quick, int prevlen, ITextSource input, int beginning, int length, int startat, TimeSpan matchTimeout) {
             Match match;
             RegexRunner runner = null;
 
@@ -1285,7 +1294,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 
             try {
                 // Do the scan starting at the requested position            
-                match = runner.Scan(this, input, beginning, beginning + length, startat, prevlen, quick, internalMatchTimeout);
+                match = runner.Scan(this, input, beginning, beginning + length, startat, prevlen, quick, matchTimeout);
             } finally {
                 // Release or fill the cache slot
                 runnerref.Release(runner);

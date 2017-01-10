@@ -1056,10 +1056,10 @@ namespace MonoDevelop.Debugger
 							SetValues (parent, it, null, val.GetArrayItem (0));
 							RegisterValue (val, it);
 							for (int n=1; n<val.ArrayCount; n++) {
-								TreeIter cit = store.InsertNodeAfter (it);
+								it = store.InsertNodeAfter (it);
 								ObjectValue cval = val.GetArrayItem (n);
-								SetValues (parent, cit, null, cval);
-								RegisterValue (cval, cit);
+								SetValues (parent, it, null, cval);
+								RegisterValue (cval, it);
 							}
 						}
 					} else {
@@ -2415,6 +2415,7 @@ namespace MonoDevelop.Debugger
 	
 	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
 	{
+		public int TriggerWordStart { get; set; }
 		public int TriggerWordLength { get; set; }
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)

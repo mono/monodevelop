@@ -104,6 +104,18 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.VAdjustmentChanged -= value; }
 		}
 
+		public double GetLineHeight (int line)
+		{
+			return textEditorImpl.GetLineHeight (line);
+		}
+
+		public double GetLineHeight (IDocumentLine line)
+		{
+			if (line == null)
+				throw new ArgumentNullException (nameof (line));
+			return textEditorImpl.GetLineHeight (line.LineNumber);
+		}
+
 		internal event EventHandler HAdjustmentChanged {
 			add { textEditorImpl.HAdjustmentChanged += value; }
 			remove { textEditorImpl.HAdjustmentChanged -= value; }

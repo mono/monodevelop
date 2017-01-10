@@ -177,8 +177,8 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
-		<Description>Syntax modes</Description>
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Bundles" name = "Text editor extension files">
+		<Description>Text editor language bundles</Description>
 		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
 	</ExtensionPoint>
 
@@ -293,6 +293,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.ErrorHandlerTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.AutoInsertBracketTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.HighlightUrlExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />

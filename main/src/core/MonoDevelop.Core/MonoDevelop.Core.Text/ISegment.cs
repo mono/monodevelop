@@ -140,6 +140,13 @@ namespace MonoDevelop.Core.Text
 			this.length = length;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextSegment"/> struct.
+		/// </summary>
+		public TextSegment (ISegment segment) : this(segment.Offset, segment.Length)
+		{
+		}
+
 		public static bool operator == (TextSegment left, TextSegment right)
 		{
 			return Equals (left, right);
