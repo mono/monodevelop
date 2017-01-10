@@ -43,6 +43,29 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		CompletionListWindowGtk window;
 
+		public ICompletionDataList CompletionDataList {
+			get {
+				return window.CompletionDataList;
+			}
+		}
+
+		public CompletionData SelectedItem {
+			get {
+				return window.SelectedItem;
+			}
+		}
+
+		public int SelectedItemIndex {
+			get { return window.SelectedItemIndex; }
+		}
+
+		public event EventHandler SelectionChanged {
+			add { window.SelectionChanged += value; }
+			remove { window.SelectionChanged += value; }
+		}
+
+
+
 		public CompletionListWindow ()
 		{
 			window = new CompletionListWindowGtk (this);
