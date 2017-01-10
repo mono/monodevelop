@@ -85,6 +85,39 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			action ();
 			someVariable.Add (someField);/*cc622137-a162-4b91-a85c-88241e68c3ea*/
 		}
+
+		
+		public void InvocationsCountDuringExpandingTest ()
+		{
+			var mutableFieldClass = new MutableFieldClass ();
+			Console.WriteLine("InvocationsCountDuringExpandingTest breakpoint");/*8865cace-6b57-42cc-ad55-68a2c12dd3d7*/
+		}
+
+		class MutableFieldClass
+		{
+			int sharedX = 0;
+
+			public MutableField Prop1
+			{
+				get { return new MutableField(sharedX++); }
+			}
+
+			public MutableField Prop2
+			{
+				get { return new MutableField(sharedX++); }
+			}
+		}
+
+
+		class MutableField
+		{
+			int x;
+
+			public MutableField(int x)
+			{
+				this.x = x;
+			}
+		}
 	}
 }
 
