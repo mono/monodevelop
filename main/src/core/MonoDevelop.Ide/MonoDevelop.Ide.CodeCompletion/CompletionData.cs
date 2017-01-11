@@ -203,6 +203,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return commitChars.Contains (keyChar);
 		}
+
+		public virtual bool MuteCharacter (char keyChar, string partialWord)
+		{
+			return false;
+		}
 	}
 
 	public class ISymbolCompletionData : CompletionData

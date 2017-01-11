@@ -493,6 +493,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 //				// AltGr
 //				return KeyActions.Process;
 			}
+			var data = DataProvider.GetCompletionData (SelectedItemIndex);
+
 			if (descriptor.KeyChar == '\0')
 				return KeyActions.Process;
 
@@ -501,6 +503,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (char.IsDigit (descriptor.KeyChar) && string.IsNullOrEmpty (CurrentCompletionText))
 			    return KeyActions.CloseWindow | KeyActions.Process;
+
+			if (data.MuteCharacter (descriptor.KeyChar, PartialWord)) {
+				if (data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
+					return KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
+				} 
+				return KeyActions.CloseWindow | KeyActions.Ignore;
+			}
+
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
 			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
@@ -513,8 +523,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				} else {
 					var selectedItem = list.SelectedItemIndex;
-					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
+					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount) {
 						return KeyActions.CloseWindow;
+					}
 					if (DataProvider.GetText (selectedItem).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
