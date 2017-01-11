@@ -1378,6 +1378,14 @@ namespace Mono.Debugging.Win32
 			try {
 				ObjectAdapter.AsyncExecute (mc, ctx.Options.EvaluationTimeout);
 			}
+			catch (COMException ex) {
+				// eval exception is a 'good' exception that should be shown in value box
+				// all other exceptions must be thrown to error log
+				var evalException = TryConvertToEvalException (ex);
+				if (evalException != null)
+					throw evalException;
+				throw;
+			}
 			finally {
 				process.OnEvalComplete -= completeHandler;
 				process.OnEvalException -= exceptionHandler;
@@ -1452,9 +1460,13 @@ namespace Mono.Debugging.Win32
 					return null;
 				}
 			}
-			catch (Exception ex) {
-				DebuggerLoggingService.LogError ("Exception during evaluation attempt", ex);
-				return null;
+			catch (COMException ex) {
+				var evalException = TryConvertToEvalException (ex);
+				// eval exception is a 'good' exception that should be shown in value box
+				// all other exceptions must be thrown to error log
+				if (evalException != null)
+					throw evalException;
+				throw;
 			}
 			finally {
 				process.OnEvalComplete -= completeHandler;
@@ -1472,6 +1484,33 @@ namespace Mono.Debugging.Win32
 		{
 			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
 		}
+
+		private static EvaluatorException TryConvertToEvalException (COMException ex)
+		{
+			var hResult = ex.ToHResult<HResult> ();
+			string message = null;
+			switch (hResult) {
+				case HResult.CORDBG_E_ILLEGAL_AT_GC_UNSAFE_POINT:
+					message = "The thread is not at a GC-safe point";
+					break;
+				case HResult.CORDBG_E_ILLEGAL_IN_PROLOG:
+					message = "The thread is in the prolog";
+					break;
+				case HResult.CORDBG_E_ILLEGAL_IN_NATIVE_CODE:
+					message = "The thread is in native code";
+					break;
+				case HResult.CORDBG_E_ILLEGAL_IN_OPTIMIZED_CODE:
+					message = "The thread is in optimized code";
+					break;
+				case HResult.CORDBG_E_FUNC_EVAL_BAD_START_POINT:
+					message = "Bad starting point to perform evaluation";
+					break;
+			}
+			if (message != null)
+				return new EvaluatorException ("Evaluation is not allowed: {0}", message);
+			return null;
+		}
+
 
 		public void WaitUntilStopped ()
 		{
