@@ -80,8 +80,12 @@ namespace Mono.Debugging.Win32
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
-			var val = (CorValRef)gval;
-			if (val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue)val.Val).IsNull))
+			if (gval == null)
+				return true;
+			var val = gval as CorValRef;
+			if (val == null)
+				return true;
+			if (val.Val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull))
 				return true;
 
 			var obj = GetRealObject (ctx, val);
@@ -149,14 +153,20 @@ namespace Mono.Debugging.Win32
 				return type.GetTypeInfo (cctx.Session).FullName;
 			}
 			catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in GetTypeName()", ex);
 				return t.FullName;
 			}
 		}
 
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (ctx, val).ExactType;
+			if (val == null)
+				return GetType (ctx, "System.Object");
+
+			var realObject = GetRealObject (ctx, val);
+			if (realObject == null)
+				return GetType (ctx, "System.Object");;
+			return realObject.ExactType;
 		}
 		
 		public override object GetBaseType (EvaluationContext ctx, object type)
@@ -1692,7 +1702,7 @@ namespace Mono.Debugging.Win32
 					}
 				}
 			} catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in OnGetTypeDisplayData()", ex);
 			}
 			if (hasTypeData)
 				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, isCompilerGenerated, memberData);

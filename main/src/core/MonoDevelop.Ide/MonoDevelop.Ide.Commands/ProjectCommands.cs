@@ -401,7 +401,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			var ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as WorkspaceObject;
 			CustomCommand cmd = (CustomCommand) dataItem;
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (cmd.Name);
 			
 			Thread t = new Thread (
 				async delegate () {
