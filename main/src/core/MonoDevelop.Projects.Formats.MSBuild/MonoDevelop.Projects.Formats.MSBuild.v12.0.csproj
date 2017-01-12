@@ -10,7 +10,7 @@
 		<AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
 		<RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
 		<BaseIntermediateOutputPath>obj\12.0</BaseIntermediateOutputPath>
-		<XBuild>$([System.Environment]::CommandLine.Contains("mono "))</XBuild>
+	  <XBuild>$(MonoUseMicrosoftBuildDll)</XBuild>
 		<MSBuildLibPath>$(MSBuildExtensionsPath)\12.0\Bin</MSBuildLibPath>
 		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 	</PropertyGroup>
@@ -84,4 +84,7 @@
 			<Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
 		</None>
 	</ItemGroup>
+  <Target Name="AfterBuild">
+    <Message Text="XBuild: $(XBuild)" />
+  </Target>
 </Project>

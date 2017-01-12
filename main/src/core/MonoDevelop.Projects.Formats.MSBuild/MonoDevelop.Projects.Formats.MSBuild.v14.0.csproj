@@ -10,7 +10,7 @@
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <BaseIntermediateOutputPath>obj\14.0</BaseIntermediateOutputPath>
-	  <XBuild>$([System.Environment]::CommandLine.Contains("mono "))</XBuild>
+	  <XBuild>$(MonoUseMicrosoftBuildDll)</XBuild>
 	  <MSBuildLibPath>$(MSBuildExtensionsPath)\14.0\Bin</MSBuildLibPath>
 	  <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
