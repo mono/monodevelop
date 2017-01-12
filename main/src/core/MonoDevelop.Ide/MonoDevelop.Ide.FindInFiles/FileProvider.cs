@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 				if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
 					return null;
-				return TextFileUtility.OpenStream (FileName);
+				return TextFileUtility.OpenStream (FileName, out hadBom);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
