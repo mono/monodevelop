@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
 using System.Xml;
@@ -680,6 +681,58 @@ namespace MonoDevelop.Projects
 			commandsElement = (XmlElement)commandsElement.ChildNodes[0];
 			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
 			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToExternalProperties (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			Assert.IsFalse (monoDevelopElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("MonoDevelop", monoDevelopElement.Name);
+
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			Assert.IsFalse (propertiesElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("Properties", propertiesElement.Name);
+
+			var externalElement = (XmlElement)propertiesElement.ChildNodes[0];
+			Assert.IsFalse (externalElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("External", externalElement.Name);
+		}
+
+		public class TestExternalPropertiesConfig : ItemConfiguration
+		{
+			public TestExternalPropertiesConfig ()
+				: base ("Debug", "AnyCPU")
+			{
+			}
+
+			[ItemProperty("External", IsExternal=true)]
+			TestExternalPropertyObject external = new TestExternalPropertyObject ();
+		}
+
+		[DataItem ("TestExternalPropertyObject")]
+		public class TestExternalPropertyObject
+		{
+			[ItemProperty ("Value1")]
+			string value1 = "Test";
 		}
 	}
 }

@@ -382,7 +382,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (data != null) {
 						data.Name = prop.Name;
 						if (writer == null)
-							writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
+							writer = new XmlConfigurationWriter { Namespace = project.Namespace };
 
 						XmlDocument doc = new XmlDocument ();
 						var elem = writer.Write (doc, data);

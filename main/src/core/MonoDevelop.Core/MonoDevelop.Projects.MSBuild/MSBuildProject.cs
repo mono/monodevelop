@@ -900,13 +900,13 @@ namespace MonoDevelop.Projects.MSBuild
 			var elem = GetProjectExtension ("MonoDevelop");
 			if (elem == null) {
 				XmlDocument doc = new XmlDocument ();
-				elem = doc.CreateElement (null, "MonoDevelop", MSBuildProject.Schema);
+				elem = doc.CreateElement (null, "MonoDevelop", Namespace);
 			}
 			value = (XmlElement) elem.OwnerDocument.ImportNode (value, true);
 			var parent = elem;
-			elem = parent ["Properties", MSBuildProject.Schema];
+			elem = parent ["Properties", Namespace];
 			if (elem == null) {
-				elem = parent.OwnerDocument.CreateElement (null, "Properties", MSBuildProject.Schema);
+				elem = parent.OwnerDocument.CreateElement (null, "Properties", Namespace);
 				parent.AppendChild (elem);
 				XmlUtil.Indent (format, elem, true);
 			}
@@ -919,7 +919,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			XmlUtil.Indent (format, value, false);
 			var xmlns = value.GetAttribute ("xmlns");
-			if (xmlns == Schema)
+			if (xmlns == Namespace)
 				value.RemoveAttribute ("xmlns");
 			SetProjectExtension (parent);
 			NotifyChanged ();
