@@ -516,7 +516,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			//calculate the indentation
 			var startElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
-			var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
+			//var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
 			
 			//update the tracker to the end of the line 
 			Tracker.UpdateEngine (seg.Offset + seg.Length);
@@ -525,9 +525,9 @@ namespace MonoDevelop.Xml.Editor
 			//because that means there are closing tags on the line, and they de-indent the line they're on
 			var endElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
 			var elementDepth = Math.Min (endElementDepth, startElementDepth);
-			
+
 			//FIXME: use policies
-			return new string ('\t', elementDepth + attributeDepth);
+			return new string ('\t', elementDepth /*+ attributeDepth*/);
 		}
 		
 		static int GetElementIndentDepth (NodeStack nodes)

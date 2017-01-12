@@ -46,13 +46,9 @@ namespace MonoDevelop.Debugger
 
 		public static AsyncOperation Debug (this ProjectOperations opers, IBuildTarget entry, bool buildBeforeExecuting = true)
 		{
-			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
-				return opers.CurrentRunOperation;
-
 			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 
-			AsyncOperation op = opers.Execute (entry, context, buildBeforeExecuting);
-			return op;
+			return opers.Execute (entry, context, buildBeforeExecuting);
 		}
 
 		public static bool CanDebugFile (this ProjectOperations opers, string file)
@@ -72,10 +68,10 @@ namespace MonoDevelop.Debugger
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;
 
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileName (executableFile));
 
 			var oper = DebuggingService.Run (executableFile, args, workingDir, envVars, monitor.Console);
-			opers.CurrentRunOperation = oper;
+			opers.AddRunOperation (oper);
 
 			oper.Task.ContinueWith (t => {
 				monitor.Dispose ();
@@ -91,7 +87,7 @@ namespace MonoDevelop.Debugger
 
 			var oper = DebuggingService.AttachToProcess (debugger, proc);
 
-			opers.CurrentRunOperation = oper;
+			opers.AddRunOperation (oper);
 			return opers.CurrentRunOperation;
 		}
 	}

@@ -26,15 +26,17 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Project name = "${ProjectName}" directory = "." >
+		<Project name = "${ProjectName}" directory = ".">
 			<Options Target = "Library"
-					 TargetFrameworkVersion = ".NETFramework,Version=v4.5,Profile=Profile78"
+					 TargetFrameworkVersion = ".NETPortable,Version=v4.5,Profile=Profile78"
 					 FSharpPortable = "true"
 					 TargetFSharpCoreVersion = "3.78.3.1"
 					 TargetProfile = "netcore" />
 			<References>
-				<Reference type="Package" refto="FSharp.Core" HintPath = "$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll" />
 			</References>
+      <Packages>
+        <Package Id="FSharp.Core" Version="4.0.0.1" local="true" /> 
+      </Packages>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 		        <UnformattedFile name = "Component1.fs" AddStandardHeader="True">

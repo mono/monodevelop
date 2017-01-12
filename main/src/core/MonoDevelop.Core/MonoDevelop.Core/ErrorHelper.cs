@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace MonoDevelop.Core
 {
 	public static class ErrorHelper
 	{
+		[Pure]
 		public static string GetErrorMessage (string message, Exception ex)
 		{
 			var exMsg = ex != null ? GetErrorMessage (ex) : "";
@@ -42,6 +44,7 @@ namespace MonoDevelop.Core
 			return message;
 		}
 
+		[Pure]
 		public static string GetErrorMessage (Exception ex)
 		{
 			if (ex is AggregateException) {

@@ -247,6 +247,7 @@ namespace MonoDevelop.Core.Assemblies
 					return backend;
 				backend = fx.CreateBackendForRuntime (this);
 				if (backend == null) {
+					LoggingService.LogError ("TargetFramework creation fallback for framework: {0}", fx.Name);
 					backend = CreateBackend (fx);
 					if (backend == null)
 						backend = new NotSupportedFrameworkBackend ();
@@ -323,7 +324,12 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>
 		public abstract string GetMSBuildBinPath (string toolsVersion);
-		
+
+		/// <summary>
+		/// Returns the MSBuild bin path for this runtime.
+		/// </summary>
+		public abstract string GetMSBuildToolsPath (string toolsVersion);
+
 		/// <summary>
 		/// Returns the MSBuild extensions path.
 		/// </summary>

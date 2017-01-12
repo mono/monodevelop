@@ -46,52 +46,48 @@ using MonoDevelop.Debugger.Viewers;
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
 	public static class DebuggingService
 	{
 		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerEngines";
-		static DebuggerEngine[] engines;
-		
+		static DebuggerEngine [] engines;
+
 		const string EvaluatorsPath = "/MonoDevelop/Debugging/Evaluators";
 		static Dictionary<string, ExpressionEvaluatorExtensionNode> evaluators;
 
 		static readonly PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
 		static readonly BreakpointStore breakpoints = new BreakpointStore ();
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
-		
-		static OperationConsole console;
-		static IDisposable cancelRegistration;
 
 		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
-		static DebuggerEngine currentEngine;
-		static DebuggerSession session;
+		static Dictionary<DebuggerSession, SessionManager> sessions = new Dictionary<DebuggerSession, SessionManager> ();
 		static Backtrace currentBacktrace;
+		static SessionManager currentSession;
 		static int currentFrame;
-		
+
 		static ExceptionCaughtMessage exceptionDialog;
-		
+
 		static BusyEvaluator busyEvaluator;
 		static StatusBarIcon busyStatusIcon;
 		static bool isBusy;
-
-		static DebugAsyncOperation currentDebugOperation = new DebugAsyncOperation ();
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
 		static public event EventHandler ResumedEvent;
 		static public event EventHandler StoppedEvent;
-		
+
 		static public event EventHandler CallStackChanged;
 		static public event EventHandler CurrentFrameChanged;
 		static public event EventHandler ExecutionLocationChanged;
 		static public event EventHandler DisassemblyRequested;
 		static public event EventHandler<DocumentEventArgs> DisableConditionalCompilation;
-			
+
 		static public event EventHandler EvaluationOptionsChanged;
-		
+
 		static DebuggingService ()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
@@ -110,30 +106,54 @@ namespace MonoDevelop.Debugger
 				// Refresh the evaluators list
 				evaluators = null;
 			});
-        }
+		}
 
 		public static IExecutionHandler GetExecutionHandler ()
 		{
 			return executionHandlerFactory;
 		}
-		
+
 		public static DebuggerSession DebuggerSession {
-			get { return session; }
+			get { return currentSession?.Session ?? sessions.Values.FirstOrDefault ()?.Session; }
 		}
-		
+
+
+		public static DebuggerSession [] GetSessions ()
+		{
+			return sessions.Keys.ToArray ();
+		}
+
+		public static ProcessInfo [] GetProcesses ()
+		{
+			return sessions.Keys.Where (s => !s.IsRunning).SelectMany (s => s.GetProcesses ()).ToArray ();
+		}
+
+		public static BreakEventStatus GetBreakpointStatus (Breakpoint bp)
+		{
+			var result = BreakEventStatus.Disconnected;
+			foreach (var sesion in sessions.Keys.ToArray ()) {
+				var status = bp.GetStatus (sesion);
+				if (status == BreakEventStatus.Bound)
+					return BreakEventStatus.Bound;
+				else
+					result = status;
+			}
+			return result;
+		}
+
 		public static BreakpointStore Breakpoints {
 			get { return breakpoints; }
 		}
-		
+
 		public static PinnedWatchStore PinnedWatches {
 			get { return pinnedWatches; }
 		}
-		
+
 		public static void SetLiveUpdateMode (PinnedWatch watch, bool liveUpdate)
 		{
 			if (watch.LiveUpdate == liveUpdate)
 				return;
-			
+
 			watch.LiveUpdate = liveUpdate;
 			if (liveUpdate) {
 				var bp = new Breakpoint (watch.File, watch.Line);
@@ -149,19 +169,10 @@ namespace MonoDevelop.Debugger
 					breakpoints.Remove (watch.BoundTracer);
 			}
 		}
-		
-		static void BreakpointTraceHandler (BreakEvent be, string trace)
-		{
-			if (be is Breakpoint) {
-				if (pinnedWatches.UpdateLiveWatch ((Breakpoint) be, trace))
-					return; // No need to log the value. It is shown in the watch.
-			}
-			DebugWriter (0, "", trace + Environment.NewLine);
-		}
 
 		[Obsolete]
-		public static string[] EnginePriority {
-			get { return new string[0]; }
+		public static string [] EnginePriority {
+			get { return new string [0]; }
 			set {
 			}
 		}
@@ -245,7 +256,7 @@ namespace MonoDevelop.Debugger
 		{
 			return GetSetConverter<T> (val) != null;
 		}
-		
+
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
 			using (var dlg = new ValueVisualizerDialog ()) {
@@ -258,7 +269,7 @@ namespace MonoDevelop.Debugger
 		{
 			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
-		
+
 		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
 			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
@@ -272,7 +283,7 @@ namespace MonoDevelop.Debugger
 		public static void AddWatch (string expression)
 		{
 			var pad = IdeApp.Workbench.GetPad<WatchPad> ();
-			var wp = (WatchPad) pad.Content;
+			var wp = (WatchPad)pad.Content;
 
 			pad.BringToFront (false);
 			wp.AddWatch (expression);
@@ -291,7 +302,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool CurrentSessionSupportsFeature (DebuggerFeatures feature)
 		{
-			return (currentEngine.SupportedFeatures & feature) == feature;
+			return (currentSession.Engine.SupportedFeatures & feature) == feature;
 		}
 
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
@@ -305,7 +316,7 @@ namespace MonoDevelop.Debugger
 		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
 		{
 			var fc = new FeatureCheckerHandlerFactory ();
-			var ctx = new ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
+			var ctx = new Projects.ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
 
 			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
 
@@ -331,7 +342,7 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExceptionCaughtDialog ()
 		{
-			var ops = session.EvaluationOptions.Clone ();
+			var ops = GetUserOptions ().EvaluationOptions;
 			ops.MemberEvaluationTimeout = 0;
 			ops.EvaluationTimeout = 0;
 			ops.EllipsizeStrings = false;
@@ -362,19 +373,21 @@ namespace MonoDevelop.Debugger
 				return exceptionDialog;
 			}
 		}
-		
-		static void SetupSession ()
+
+		static void SetupSession (SessionManager sessionManager)
 		{
+			sessions.Add (sessionManager.Session, sessionManager);
 			isBusy = false;
+			var session = sessionManager.Session;
 			session.Breakpoints = breakpoints;
 			session.TargetEvent += OnTargetEvent;
 			session.TargetStarted += OnStarted;
-			session.OutputWriter = OutputWriter;
-			session.LogWriter = LogWriter;
-			session.DebugWriter = DebugWriter;
+			session.OutputWriter = sessionManager.OutputWriter;
+			session.LogWriter = sessionManager.LogWriter;
+			session.DebugWriter = sessionManager.DebugWriter;
 			session.BusyStateChanged += OnBusyStateChanged;
 			session.TypeResolverHandler = ResolveType;
-			session.BreakpointTraceHandler = BreakpointTraceHandler;
+			session.BreakpointTraceHandler = sessionManager.BreakpointTraceHandler;
 			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
 			session.ConnectionDialogCreatorExtended = delegate (DebuggerStartInfo dsi) {
 				if (dsi.RequiresManualStart)
@@ -382,61 +395,54 @@ namespace MonoDevelop.Debugger
 
 				return new StatusBarConnectionDialog ();
 			};
-			currentDebugOperation = new DebugAsyncOperation ();
 
-			cancelRegistration = console.CancellationToken.Register (Stop);
-			
 			Runtime.RunInMainThread (delegate {
 				if (DebugSessionStarted != null)
-					DebugSessionStarted (null, EventArgs.Empty);
+					DebugSessionStarted (session, EventArgs.Empty);
 				NotifyLocationChanged ();
 			});
-
 		}
 
 		static readonly object cleanup_lock = new object ();
-		static void Cleanup ()
+		static void Cleanup (SessionManager sessionManager)
 		{
-			DebuggerSession currentSession;
 			StatusBarIcon currentIcon;
-			OperationConsole currentConsole;
 
+			var cleaningCurrentSession = sessionManager == currentSession;
 			lock (cleanup_lock) {
 				if (!IsDebugging)
 					return;
 
 				currentIcon = busyStatusIcon;
-				currentSession = session;
-				currentConsole = console;
 
 				nextStatementLocations.Clear ();
-				currentBacktrace = null;
+				if (cleaningCurrentSession) {
+					currentSession = null;
+					currentBacktrace = null;
+				}
 				busyStatusIcon = null;
-				session = null;
-				console = null;
+				sessions.Remove (sessionManager.Session);
 				pinnedWatches.InvalidateAll ();
 			}
 
-			UnsetDebugLayout ();
+			if (sessions.Count == 0)
+				UnsetDebugLayout ();
+			var session = sessionManager.Session;
+			session.BusyStateChanged -= OnBusyStateChanged;
+			session.TargetEvent -= OnTargetEvent;
+			session.TargetStarted -= OnStarted;
 
-			currentSession.BusyStateChanged -= OnBusyStateChanged;
-			currentSession.TargetEvent -= OnTargetEvent;
-			currentSession.TargetStarted -= OnStarted;
+			session.BreakpointTraceHandler = null;
+			session.GetExpressionEvaluator = null;
+			session.TypeResolverHandler = null;
+			session.OutputWriter = null;
+			session.LogWriter = null;
 
-			currentSession.BreakpointTraceHandler = null;
-			currentSession.GetExpressionEvaluator = null;
-			currentSession.TypeResolverHandler = null;
-			currentSession.OutputWriter = null;
-			currentSession.LogWriter = null;
-			currentDebugOperation.Cleanup ();
+			sessionManager.Dispose ();
 
-			if (currentConsole != null) {
-				cancelRegistration.Dispose ();
-				currentConsole.Dispose ();
-			}
-			
 			Runtime.RunInMainThread (delegate {
-				HideExceptionCaughtDialog ();
+				if (cleaningCurrentSession)
+					HideExceptionCaughtDialog ();
 
 				if (currentIcon != null) {
 					currentIcon.Dispose ();
@@ -444,14 +450,13 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (StoppedEvent != null)
-					StoppedEvent (null, new EventArgs ());
+					StoppedEvent (session, new EventArgs ());
 
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
 			});
 
-			currentSession.Dispose ();
 		}
 
 		static string oldLayout;
@@ -479,31 +484,48 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsDebugging {
 			get {
-				return session != null;
+				return sessions.Count > 0;
 			}
 		}
 
 		public static bool IsConnected {
 			get {
-				return IsDebugging && session.IsConnected;
+				return IsDebugging && sessions.Keys.Any (s => s.IsConnected);
 			}
 		}
 
 		public static bool IsRunning {
 			get {
-				return IsDebugging && session.IsRunning;
+				return IsDebugging && sessions.Keys.Any (s => s.IsRunning);
 			}
 		}
 
 		public static bool IsPaused {
 			get {
-				return IsDebugging && !IsRunning && currentBacktrace != null;
+				return IsDebugging && currentSession != null && currentBacktrace != null;
 			}
 		}
 
 		public static void Pause ()
 		{
-			session.Stop ();
+			foreach (var session in sessions.Keys.ToArray ()) {
+				if (session.IsRunning)
+					session.Stop ();
+			}
+		}
+
+		static ConcurrentQueue<Func<bool>> StopsQueue = new ConcurrentQueue<Func<bool>> ();
+
+		static bool HandleStopQueue ()
+		{
+			Func<bool> delayedStop;
+			while (StopsQueue.TryDequeue (out delayedStop)) {
+				//Returns false if session which scheduled stop is terminated
+				//So we just ignore it's stop entry and keep processing others or resume
+				if (delayedStop ())
+					return true;
+			}
+			return false;
 		}
 
 		public static void Resume ()
@@ -511,8 +533,13 @@ namespace MonoDevelop.Debugger
 			Runtime.AssertMainThread ();
 			if (CheckIsBusy ())
 				return;
+			if (HandleStopQueue ())
+				return;
 
-			session.Continue ();
+			foreach (var session in sessions.Keys.ToArray ()) {
+				if (!session.IsRunning)
+					session.Continue ();
+			}
 			NotifyLocationChanged ();
 		}
 
@@ -525,20 +552,20 @@ namespace MonoDevelop.Debugger
 			var bp = new RunToCursorBreakpoint (fileName, line, column);
 			Breakpoints.Add (bp);
 
-			session.Continue ();
+			Resume ();
 			NotifyLocationChanged ();
 		}
 
 		public static void SetNextStatement (string fileName, int line, int column)
 		{
 			Runtime.AssertMainThread ();
-			if (!IsDebugging || IsRunning || CheckIsBusy ())
+			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
 
-			session.SetNextStatement (fileName, line, column);
+			currentSession.Session.SetNextStatement (fileName, line, column);
 
-			var location = new SourceLocation (CurrentFrame.SourceLocation.MethodName, fileName, line);
-			nextStatementLocations[session.ActiveThread.Id] = location;
+			var location = new SourceLocation (CurrentFrame.SourceLocation.MethodName, fileName, line, column, -1, -1, null);
+			nextStatementLocations [ActiveThread.Id] = location;
 			NotifyLocationChanged ();
 		}
 
@@ -548,10 +575,10 @@ namespace MonoDevelop.Debugger
 			return Run (cmd, console);
 		}
 
-		public static ProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, OperationConsole console)
+		public static ProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string, string> envVars, OperationConsole console)
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
-			if (args != null) 
+			if (args != null)
 				cmd.Arguments = args;
 			if (workingDir != null)
 				cmd.WorkingDirectory = workingDir;
@@ -562,26 +589,24 @@ namespace MonoDevelop.Debugger
 
 		public static ProcessAsyncOperation Run (ExecutionCommand cmd, OperationConsole console, DebuggerEngine engine = null)
 		{
-			InternalRun (cmd, engine, console);
-			return currentDebugOperation;
+			return InternalRun (cmd, engine, console);
 		}
-		
+
 		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
-			currentEngine = debugger;
-			session = debugger.CreateSession ();
+			var session = debugger.CreateSession ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
+			var sessionManager = new SessionManager (session, monitor.Console, debugger);
 			session.ExceptionHandler = ExceptionHandler;
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-			console = monitor.Console;
-			SetupSession ();
+			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
 			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
-			return currentDebugOperation;
+			return sessionManager.debugOperation;
 		}
-		
+
 		public static DebuggerSessionOptions GetUserOptions ()
 		{
 			EvaluationOptions eval = EvaluationOptions.DefaultOptions;
@@ -598,70 +623,68 @@ namespace MonoDevelop.Debugger
 				EvaluationOptions = eval,
 			};
 		}
-		
+
 		public static void SetUserOptions (DebuggerSessionOptions options)
 		{
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", options.StepOverPropertiesAndOperators);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", options.ProjectAssembliesOnly);
-			
+
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", options.EvaluationOptions.AllowTargetInvoke);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", options.EvaluationOptions.AllowToStringCalls);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", options.EvaluationOptions.EvaluationTimeout);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", options.EvaluationOptions.FlattenHierarchy);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", options.EvaluationOptions.GroupPrivateMembers);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", options.EvaluationOptions.GroupStaticMembers);
-			
-			if (session != null) {
+
+			foreach (var session in sessions.Keys.ToArray ()) {
 				session.Options.EvaluationOptions = GetUserOptions ().EvaluationOptions;
-				if (EvaluationOptionsChanged != null)
-					EvaluationOptionsChanged (null, EventArgs.Empty);
 			}
+			if (EvaluationOptionsChanged != null)
+				EvaluationOptionsChanged (null, EventArgs.Empty);
 		}
-		
+
 		public static void ShowDisassembly ()
 		{
 			if (DisassemblyRequested != null)
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
-		
-		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
+
+		internal static ProcessAsyncOperation InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
 				if (factory == null)
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
 			}
-			
-			if (session != null)
-				throw new InvalidOperationException ("A debugger session is already started");
 
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
 			if (startInfo.UseExternalConsole)
 				startInfo.CloseExternalConsoleOnExit = ((ExternalConsole)c).CloseOnDispose;
-			currentEngine = factory;
-			session = factory.CreateSession ();
+
+			var session = factory.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			
+
+			SessionManager sessionManager;
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				console = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ().Console;
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory);
 			else
-				console = c;
-			
-			SetupSession ();
-			
+				sessionManager = new SessionManager (session, c, factory);
+			SetupSession (sessionManager);
+
 			SetDebugLayout ();
-			
+
 			try {
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
-				Cleanup ();
+				Cleanup (sessionManager);
 				throw;
 			}
+			return sessionManager.debugOperation;
 		}
-		
+
 		static bool ExceptionHandler (Exception ex)
 		{
 			Gtk.Application.Invoke (delegate {
@@ -672,34 +695,65 @@ namespace MonoDevelop.Debugger
 			});
 			return true;
 		}
-		
-		static void LogWriter (bool iserr, string text)
+
+		class SessionManager : IDisposable
 		{
-			// Events may come with a bit of delay, so the debug session
-			// may already have been cleaned up
-			var logger = console;
+			OperationConsole console;
+			IDisposable cancelRegistration;
+			public readonly DebuggerSession Session;
+			public readonly DebugAsyncOperation debugOperation;
+			public readonly DebuggerEngine Engine;
 
-			if (logger != null)
-				logger.Log.Write (text);
-		}
+			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine)
+			{
+				Engine = engine;
+				Session = session;
+				this.console = console;
+				cancelRegistration = console.CancellationToken.Register (Cancel);
+				debugOperation = new DebugAsyncOperation (session);
+			}
 
-		static void DebugWriter (int level, string category, string message)
-		{
-			var logger = console;
+			void Cancel ()
+			{
+				Session.Exit ();
+				Cleanup (this);
+			}
 
-			if (logger != null)
-				logger.Debug (level, category, message);
-		}
+			public void LogWriter (bool iserr, string text)
+			{
+				console?.Log.Write (text);
+			}
 
-		static void OutputWriter (bool iserr, string text)
-		{
-			var logger = console;
+			public void DebugWriter (int level, string category, string message)
+			{
+				console?.Debug (level, category, message);
+			}
 
-			if (logger != null) {
+			public void OutputWriter (bool iserr, string text)
+			{
 				if (iserr)
-					logger.Error.Write (text);
+					console?.Error.Write (text);
 				else
-					logger.Out.Write (text);
+					console?.Out.Write (text);
+			}
+
+			public void BreakpointTraceHandler (BreakEvent be, string trace)
+			{
+				if (be is Breakpoint) {
+					if (pinnedWatches.UpdateLiveWatch ((Breakpoint)be, trace))
+						return; // No need to log the value. It is shown in the watch.
+				}
+				DebugWriter (0, "", trace + Environment.NewLine);
+			}
+
+			public void Dispose ()
+			{
+				console?.Dispose ();
+				console = null;
+				Session.Dispose ();
+				debugOperation.Cleanup ();
+				cancelRegistration?.Dispose ();
+				cancelRegistration = null;
 			}
 		}
 
@@ -729,18 +783,21 @@ namespace MonoDevelop.Debugger
 		{
 			MessageService.PlaceDialog (busyEvaluator.Dialog, MessageService.RootWindow);
 		}
-		
+
 		static bool CheckIsBusy ()
 		{
 			if (isBusy && !busyEvaluator.Dialog.Visible)
 				MessageService.PlaceDialog (busyEvaluator.Dialog, MessageService.RootWindow);
 			return isBusy;
 		}
-		
+
 		static void OnStarted (object s, EventArgs a)
 		{
 			nextStatementLocations.Clear ();
-			currentBacktrace = null;
+			if (currentSession?.Session == s) {
+				currentBacktrace = null;
+				currentSession = null;
+			}
 
 			Runtime.RunInMainThread (delegate {
 				HideExceptionCaughtDialog ();
@@ -751,9 +808,10 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 			});
 		}
-		
+
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
+			var session = (DebuggerSession)sender;
 			if (args.BreakEvent != null && args.BreakEvent.NonUserBreakpoint)
 				return;
 			nextStatementLocations.Clear ();
@@ -762,7 +820,9 @@ namespace MonoDevelop.Debugger
 				switch (args.Type) {
 				case TargetEventType.TargetExited:
 					Breakpoints.RemoveRunToCursorBreakpoints ();
-					Cleanup ();
+					SessionManager sessionToCleanup;
+					if (sessions.TryGetValue (session, out sessionToCleanup))//It was already cleanedUp by Stop command
+						Cleanup (sessionToCleanup);
 					break;
 				case TargetEventType.TargetSignaled:
 				case TargetEventType.TargetStopped:
@@ -770,17 +830,30 @@ namespace MonoDevelop.Debugger
 				case TargetEventType.TargetInterrupted:
 				case TargetEventType.UnhandledException:
 				case TargetEventType.ExceptionThrown:
-					Breakpoints.RemoveRunToCursorBreakpoints ();
-					SetCurrentBacktrace (args.Backtrace);
-					NotifyPaused ();
-					NotifyException (args);
+					var action = new Func<bool> (delegate {
+						SessionManager sessionManager;
+						if (!sessions.TryGetValue (session, out sessionManager))
+							return false;
+						Breakpoints.RemoveRunToCursorBreakpoints ();
+						currentSession = sessionManager;
+						ActiveThread = args.Thread;
+						NotifyPaused ();
+						NotifyException (args);
+						return true;
+					});
+					if (currentSession != null && currentSession != sessions [session]) {
+						StopsQueue.Enqueue (action);
+						NotifyPaused ();//Notify about pause again, so ThreadsPad can update, to show all processes
+					} else {
+						action ();
+					}
 					break;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error handling debugger target event", ex);
 			}
 		}
-		
+
 		static void OnDisableConditionalCompilation (DocumentEventArgs e)
 		{
 			EventHandler<DocumentEventArgs> handler = DisableConditionalCompilation;
@@ -791,13 +864,14 @@ namespace MonoDevelop.Debugger
 		static void NotifyPaused ()
 		{
 			Runtime.RunInMainThread (delegate {
+				stepSwitchCts?.Cancel ();
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.GrabDesktopFocus ();
 			});
 		}
-		
+
 		static void NotifyException (TargetEventArgs args)
 		{
 			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
@@ -808,14 +882,14 @@ namespace MonoDevelop.Debugger
 				});
 			}
 		}
-		
+
 		static void NotifyLocationChanged ()
 		{
 			Runtime.AssertMainThread ();
 			if (ExecutionLocationChanged != null)
 				ExecutionLocationChanged (null, EventArgs.Empty);
 		}
-		
+
 		static void NotifyCurrentFrameChanged ()
 		{
 			if (currentBacktrace != null)
@@ -823,53 +897,76 @@ namespace MonoDevelop.Debugger
 			if (CurrentFrameChanged != null)
 				CurrentFrameChanged (null, EventArgs.Empty);
 		}
-		
+
 		static void NotifyCallStackChanged ()
 		{
 			if (CallStackChanged != null)
 				CallStackChanged (null, EventArgs.Empty);
 		}
-		
+
 		public static void Stop ()
 		{
 			if (!IsDebugging)
 				return;
 
-			session.Exit ();
-			Cleanup ();
+			foreach (var pair in sessions.ToArray ()) {
+				pair.Key.Exit ();
+				Cleanup (pair.Value);
+			}
 		}
 
 		public static void StepInto ()
 		{
 			Runtime.AssertMainThread ();
 
-			if (!IsDebugging || IsRunning || CheckIsBusy ())
+			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-
-			session.StepLine ();
+			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
 		}
 
 		public static void StepOver ()
 		{
 			Runtime.AssertMainThread ();
 
-			if (!IsDebugging || IsRunning || CheckIsBusy ())
+			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-
-			session.NextLine ();
+			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
 		}
 
 		public static void StepOut ()
 		{
 			Runtime.AssertMainThread ();
 
-			if (!IsDebugging || IsRunning || CheckIsBusy ())
+			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-
-			session.Finish ();
+			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
+		}
+
+		static CancellationTokenSource stepSwitchCts;
+		static void DelayHandleStopQueue ()
+		{
+			stepSwitchCts?.Cancel ();
+			if (StopsQueue.Count > 0) {
+				stepSwitchCts = new CancellationTokenSource ();
+				var token = stepSwitchCts.Token;
+				Task.Delay (500, token).ContinueWith ((t) => {
+					if (token.IsCancellationRequested)
+						return;
+					Runtime.RunInMainThread (() => {
+						if (token.IsCancellationRequested)
+							return;
+						if (IsPaused)//If session is already paused(stepping finished in time), don't switch
+							return;
+						HandleStopQueue ();
+					});
+				});
+			}
 		}
 
 		public static Backtrace CurrentCallStack {
@@ -881,7 +978,7 @@ namespace MonoDevelop.Debugger
 				SourceLocation location = null;
 
 				if (IsPaused)
-					nextStatementLocations.TryGetValue (session.ActiveThread.Id, out location);
+					nextStatementLocations.TryGetValue (ActiveThread.Id, out location);
 
 				return location;
 			}
@@ -895,7 +992,7 @@ namespace MonoDevelop.Debugger
 				return null;
 			}
 		}
-		
+
 		/// <summary>
 		/// The deepest stack frame with source above the CurrentFrame
 		/// </summary>
@@ -910,7 +1007,7 @@ namespace MonoDevelop.Debugger
 			}
 			return null;
 		}
-		
+
 		public static int CurrentFrameIndex {
 			get {
 				return currentFrame;
@@ -921,22 +1018,33 @@ namespace MonoDevelop.Debugger
 					Runtime.RunInMainThread (delegate {
 						NotifyCurrentFrameChanged ();
 					});
-				}
-				else
+				} else
 					currentFrame = -1;
 			}
 		}
-		
+
 		public static ThreadInfo ActiveThread {
 			get {
-				return session.ActiveThread;
+				return currentSession?.Session.ActiveThread;
 			}
 			set {
-				session.ActiveThread = value;
-				SetCurrentBacktrace (session.ActiveThread.Backtrace);
+				if (currentSession != null && currentSession.Session.GetProcesses () [0].GetThreads ().Contains (value)) {
+					currentSession.Session.ActiveThread = value;
+					SetCurrentBacktrace (value.Backtrace);
+				} else {
+					foreach (var session in sessions) {
+						if (session.Key.GetProcesses () [0].GetThreads ().Contains (value)) {
+							currentSession = session.Value;
+							currentSession.Session.ActiveThread = value;
+							SetCurrentBacktrace (value.Backtrace);
+							return;
+						}
+					}
+					throw new Exception ("Thread not found in any of active sessions.");
+				}
 			}
 		}
-		
+
 		static void SetCurrentBacktrace (Backtrace bt)
 		{
 			currentBacktrace = bt;
@@ -951,7 +1059,7 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 			});
 		}
-		
+
 		public static async void ShowCurrentExecutionLine ()
 		{
 			Runtime.AssertMainThread ();
@@ -976,13 +1084,13 @@ namespace MonoDevelop.Debugger
 				ShowCurrentExecutionLine ();
 			}
 		}
-		
+
 		public static bool CanDebugCommand (ExecutionCommand command)
 		{
 			return GetFactoryForCommand (command) != null;
 		}
-		
-		public static DebuggerEngine[] GetDebuggerEngines ()
+
+		public static DebuggerEngine [] GetDebuggerEngines ()
 		{
 			if (engines == null) {
 				var list = new List<DebuggerEngine> ();
@@ -996,18 +1104,18 @@ namespace MonoDevelop.Debugger
 			return engines;
 		}
 
-		public static Dictionary<string, ExpressionEvaluatorExtensionNode> GetExpressionEvaluators()
+		public static Dictionary<string, ExpressionEvaluatorExtensionNode> GetExpressionEvaluators ()
 		{
 			if (evaluators == null) {
 				var evgs = new Dictionary<string, ExpressionEvaluatorExtensionNode> (StringComparer.InvariantCultureIgnoreCase);
 				foreach (ExpressionEvaluatorExtensionNode node in AddinManager.GetExtensionNodes (EvaluatorsPath))
 					evgs.Add (node.extension, node);
-				
+
 				evaluators = evgs;
 			}
 			return evaluators;
 		}
-		
+
 		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
 			DebuggerEngine supportedEngine = null;
@@ -1025,7 +1133,7 @@ namespace MonoDevelop.Debugger
 			}
 			return supportedEngine;
 		}
-		
+
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
 		{
 			lock (breakpoints) {
@@ -1043,7 +1151,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-		
+
 		static void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
 		{
 			var baseDir = (args.Item as Solution)?.BaseDirectory;
@@ -1051,7 +1159,7 @@ namespace MonoDevelop.Debugger
 				args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save (baseDir));
 			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
-		
+
 		static Task OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
 			var elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints") ?? args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
@@ -1068,21 +1176,21 @@ namespace MonoDevelop.Debugger
 
 			lock (breakpoints)
 				pinnedWatches.BindAll (breakpoints);
-			
+
 			return Task.FromResult (true);
 		}
-		
+
 		static void OnSolutionClosed (object s, EventArgs args)
 		{
 			lock (breakpoints)
 				breakpoints.Clear ();
 		}
-		
+
 		static string ResolveType (string identifier, SourceLocation location)
 		{
 			Document doc = IdeApp.Workbench.GetDocument (location.FileName);
 			if (doc != null) {
-				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
+				ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 				if (textEditorResolver != null) {
 					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
 					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
@@ -1100,7 +1208,7 @@ namespace MonoDevelop.Debugger
 			}
 			return null;
 		}
-		
+
 		public static ExpressionEvaluatorExtensionNode EvaluatorForExtension (string extension)
 		{
 			ExpressionEvaluatorExtensionNode result;
@@ -1118,11 +1226,11 @@ namespace MonoDevelop.Debugger
 			return info != null ? info.Evaluator : null;
 		}
 	}
-	
-	class FeatureCheckerHandlerFactory: IExecutionHandler
+
+	class FeatureCheckerHandlerFactory : IExecutionHandler
 	{
 		public DebuggerFeatures SupportedFeatures { get; set; }
-		
+
 		public bool CanExecute (ExecutionCommand command)
 		{
 			SupportedFeatures = DebuggingService.GetSupportedFeaturesForCommand (command);
@@ -1135,16 +1243,16 @@ namespace MonoDevelop.Debugger
 			throw new NotImplementedException ();
 		}
 	}
-	
-	class InternalDebugExecutionHandler: IExecutionHandler
+
+	class InternalDebugExecutionHandler : IExecutionHandler
 	{
 		readonly DebuggerEngine engine;
-		
+
 		public InternalDebugExecutionHandler (DebuggerEngine engine)
 		{
 			this.engine = engine;
 		}
-		
+
 		public bool CanExecute (ExecutionCommand command)
 		{
 			return engine.CanDebugCommand (command);
@@ -1174,13 +1282,13 @@ namespace MonoDevelop.Debugger
 			});
 		}
 	}
-	
+
 	class GtkConnectionDialog : IConnectionDialog
 	{
 		static readonly string DefaultListenMessage = GettextCatalog.GetString ("Waiting for debugger to connect...");
 		System.Threading.CancellationTokenSource cts;
 		bool disposed;
-		
+
 		public event EventHandler UserCancelled;
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
@@ -1188,22 +1296,22 @@ namespace MonoDevelop.Debugger
 			//FIXME: we don't support changing the message
 			if (disposed || cts != null)
 				return;
-			
+
 			cts = new System.Threading.CancellationTokenSource ();
-			
+
 			//MessageService is threadsafe but we want this to be async
 			Gtk.Application.Invoke (delegate {
 				RunDialog (message);
 			});
 		}
-		
+
 		void RunDialog (string message)
 		{
 			if (disposed)
 				return;
-			
+
 			string title;
-			
+
 			if (message == null) {
 				title = GettextCatalog.GetString ("Waiting for debugger");
 			} else {
@@ -1223,7 +1331,7 @@ namespace MonoDevelop.Debugger
 			gm.DefaultButton = 0;
 			MessageService.GenericAlert (gm);
 			cts = null;
-			
+
 			if (!disposed && UserCancelled != null) {
 				UserCancelled (null, null);
 			}

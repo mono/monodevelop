@@ -6,12 +6,10 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting
 open MonoDevelop.Core
-open Mono.TextEditor
 open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
-open MonoDevelop.FSharp.Symbols
 open MonoDevelop
 open Gtk
 

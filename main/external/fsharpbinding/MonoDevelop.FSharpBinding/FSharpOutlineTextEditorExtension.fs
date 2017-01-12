@@ -1,7 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open ExtCore.Control
 open Gtk
 open MonoDevelop
 open MonoDevelop.Components

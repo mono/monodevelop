@@ -1,8 +1,5 @@
 ﻿namespace MonoDevelop.FSharp
-open System
 open System.Collections.Generic
-open System.Linq
-open System.Threading
 open System.Threading.Tasks
 open MonoDevelop.Core
 open MonoDevelop.Core.Text
@@ -202,7 +199,6 @@ type ProjectSearchCategory() =
             (fun () -> async {
                 for projFile in Search.getAllFSharpProjects() do
                     try
-                        let shortName = projFile.FileName |> string |> IO.Path.GetFileName
                         //LoggingService.LogInfo(sprintf "F# Global Search: Getting all project symbols for %s" shortName )
                         let! allProjectSymbols = Search.getAllProjectSymbols projFile
             

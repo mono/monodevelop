@@ -191,11 +191,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 									}
 								}
 							}
+
 							AddSelectedServices (service, servicesToAdd);
+							IdeApp.CommandService.DispatchCommand (MonoDevelop.ConnectedServices.Commands.AddServiceTelemetry, service.Id);
 						}
 					});
-				} else
+				} else {
 					AddSelectedServices (service, servicesToAdd);
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.ConnectedServices.Commands.AddServiceTelemetry, service.Id);
+				}
 			}
 		}
 

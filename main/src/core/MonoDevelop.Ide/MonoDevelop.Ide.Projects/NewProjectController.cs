@@ -152,7 +152,6 @@ namespace MonoDevelop.Ide.Projects
 
 		ProcessedTemplateResult processedTemplate;
 		List <SolutionItem> currentEntries;
-		bool disposeNewItem = true;
 
 		public NewProjectDialogController ()
 		{
@@ -174,9 +173,6 @@ namespace MonoDevelop.Ide.Projects
 			dialog.RegisterController (this);
 
 			dialog.ShowDialog ();
-
-			if (disposeNewItem)
-				DisposeExistingNewItems ();
 
 			wizardProvider.Dispose ();
 			imageProvider.Dispose ();
@@ -346,7 +342,26 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplate (string templateId)
 		{
-			SelectTemplate (template => template.Id == templateId);
+			SolutionTemplate matchedInGroup = null;
+			SelectTemplate (template => {
+				if (template.HasGroupId) {
+					var inGroup = template.GetTemplate ((t) => t.Id == templateId);
+					// check if the requested template is part of the current group
+					// becasue it may be not referenced by a category directly.
+					// in this case we match/select the group and change the selected
+					// language if required.
+					if (inGroup?.Id == templateId) {
+						matchedInGroup = inGroup;
+						return true;
+					}
+				}
+				return template.Id == templateId;
+			});
+
+			// make sure that the requested language has been selected
+			// if the requested template is part of a group
+			if (matchedInGroup != null)
+				SelectedLanguage = matchedInGroup.Language;
 		}
 
 		void SelectFirstAvailableTemplate ()
@@ -573,6 +588,15 @@ namespace MonoDevelop.Ide.Projects
 					}
 					ParentFolder.AddItem (currentEntry, true);
 				}
+			} else {
+				string solutionFileName = Path.Combine (projectConfiguration.SolutionLocation, finalConfigurationPage.SolutionFileName);
+				if (File.Exists (solutionFileName)) {
+					if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", solutionFileName), AlertButton.OverwriteFile)) {
+						ParentFolder = null;//Reset process of creating solution
+						return;
+					}
+					File.Delete (solutionFileName);
+				}
 			}
 
 			if (ParentFolder != null)
@@ -597,7 +621,6 @@ namespace MonoDevelop.Ide.Projects
 			else {
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
-				disposeNewItem = false;
 				RunTemplateActions (processedTemplate);
 				if (wizardProvider.HasWizard)
 					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
@@ -772,8 +795,26 @@ namespace MonoDevelop.Ide.Projects
 
 		static void RunTemplateActions (ProcessedTemplateResult templateResult)
 		{
+			const string gettingStartedHint = "getting-started://";
+
 			foreach (string action in templateResult.Actions) {
-				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action), project: null);
+				// handle url schemed actions like opening the getting started page (if any)
+				if (action.StartsWith (gettingStartedHint, StringComparison.OrdinalIgnoreCase)) {
+					var items = templateResult.WorkspaceItems.ToList ();
+					if (items.OfType<Solution> ().Any ()) {
+						// this is a solution that's been instantiated, lets just look for the first project
+						var p = IdeApp.Workspace.GetAllProjects ().FirstOrDefault ();
+						if (p != null) {
+							GettingStarted.GettingStarted.ShowGettingStarted (p, action.Substring (gettingStartedHint.Length));
+						}
+						continue;
+					}
+				}
+
+				var fileName = Path.Combine (templateResult.ProjectBasePath, action);
+				if (File.Exists (fileName)) {
+					IdeApp.Workbench.OpenDocument (fileName, project: null);
+				}
 			}
 		}
 

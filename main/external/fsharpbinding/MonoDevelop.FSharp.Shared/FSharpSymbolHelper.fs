@@ -4,7 +4,6 @@ open System.Collections.Generic
 open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open ExtCore.Control
 
 module Symbols =
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =

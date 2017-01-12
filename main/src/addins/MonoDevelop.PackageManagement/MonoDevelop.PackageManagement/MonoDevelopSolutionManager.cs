@@ -96,6 +96,7 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectAdded;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRemoved;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRenamed;
+		public event EventHandler<NuGetProjectEventArgs> AfterNuGetProjectRenamed;
 		public event EventHandler SolutionClosed;
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;
@@ -143,6 +144,31 @@ namespace MonoDevelop.PackageManagement
 		public ISourceRepositoryProvider CreateSourceRepositoryProvider ()
 		{
 			return SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (Settings);
+		}
+
+		public void SaveProject (NuGetProject nuGetProject)
+		{
+			var msbuildProject = nuGetProject as MSBuildNuGetProject;
+			if (msbuildProject != null) {
+				var projectSystem = msbuildProject.MSBuildNuGetProjectSystem as MonoDevelopMSBuildNuGetProjectSystem;
+				projectSystem.SaveProject ().Wait ();
+
+				return;
+			}
+
+			var buildIntegratedProject = nuGetProject as BuildIntegratedProjectSystem;
+			if (buildIntegratedProject != null) {
+				buildIntegratedProject.SaveProject ().Wait ();
+				return;
+			}
+
+			var hasProject = nuGetProject as IHasDotNetProject;
+			if (hasProject != null) {
+				hasProject.SaveProject ().Wait ();
+				return;
+			}
+
+			throw new ApplicationException (string.Format ("Unsupported NuGetProject type: {0}", nuGetProject.GetType ().FullName));
 		}
 
 		public void ReloadSettings ()

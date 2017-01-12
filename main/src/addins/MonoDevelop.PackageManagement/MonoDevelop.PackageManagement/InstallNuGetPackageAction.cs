@@ -194,10 +194,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new ResolutionContext (
 				DependencyBehavior.Lowest,
-				IncludePrerelease,
+				IncludePrerelease || IsPrereleasePackageBeingInstalled (),
 				includeUnlisted,
 				VersionConstraints.None
 			);
+		}
+
+		bool IsPrereleasePackageBeingInstalled ()
+		{
+			return Version?.IsPrerelease == true;
 		}
 
 		public bool IsForProject (DotNetProject project)

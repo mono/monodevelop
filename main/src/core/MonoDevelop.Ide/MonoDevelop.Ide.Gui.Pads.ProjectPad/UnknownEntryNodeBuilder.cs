@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Tasks;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -93,9 +94,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		[CommandHandler (ProjectCommands.Reload)]
 		[AllowMultiSelection]
-		public void OnReload ()
+		public async void OnReload ()
 		{
 			var solutions = new HashSet<Solution> ();
+			Task task = Task.FromResult (0);
 			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
@@ -104,12 +106,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						entry.Enabled = true;
 						solutions.Add (entry.ParentSolution);
 					}
-					entry.ParentFolder.ReloadItem (m, entry);
-					m.Step (1);
+					var am = m.BeginAsyncStep (1);
+					var t = entry.ParentFolder.ReloadItem (am, entry).ContinueWith (ta => {
+						am.Dispose ();
+					});
+					task = Task.WhenAll (task, t);
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.SaveAsync (solutions);
+			await task;
+			await IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]

@@ -491,6 +491,24 @@ namespace MonoDevelop.UnitTesting
 			return RunTest (FindTestNode (test), mode, false);
 		}
 
+		AsyncOperation RunTests (ITreeNavigator[] navs, IExecutionHandler mode, bool bringToFront = true)
+		{
+			if (navs == null)
+				return null;
+			var tests = new List<UnitTest> ();
+			WorkspaceObject ownerObject = null;
+			foreach (var nav in navs) {
+				var test = nav.DataItem as UnitTest;
+				if (test != null) {
+					tests.Add (test);
+					ownerObject = test.OwnerObject;
+				}
+			}
+			if (tests.Count == 0)
+				return null;
+			return RunTests (tests, mode, bringToFront);
+		}
+
 		AsyncOperation RunTest (ITreeNavigator nav, IExecutionHandler mode, bool bringToFront = true)
 		{
 			if (nav == null)
@@ -498,7 +516,13 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return null;
-			UnitTestService.ResetResult (test.RootTest);
+			return RunTests (new UnitTest [] { test }, mode, bringToFront);
+		}
+
+		AsyncOperation RunTests (IEnumerable<UnitTest> tests, IExecutionHandler mode, bool bringToFront)
+		{
+			foreach (var test in tests)
+				UnitTestService.ResetResult (test.RootTest);
 			
 			this.buttonRunAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
@@ -507,7 +531,7 @@ namespace MonoDevelop.UnitTesting
 
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			runningTestOperation = UnitTestService.RunTest (test, context);
+			runningTestOperation = UnitTestService.RunTests (tests, context);
 			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return runningTestOperation;
 		}
@@ -519,7 +543,7 @@ namespace MonoDevelop.UnitTesting
 		
 		void RunSelectedTest (IExecutionHandler mode)
 		{
-			RunTest (TreeView.GetSelectedNode (), mode);
+			RunTests (TreeView.GetSelectedNodes (), mode);
 		}
 		
 		void OnTestSessionCompleted ()

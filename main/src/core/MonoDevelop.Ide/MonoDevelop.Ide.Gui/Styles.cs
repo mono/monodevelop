@@ -39,6 +39,8 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public static event EventHandler Changed;
 
+		public static Theme CurrentStyle { get { return IdeTheme.UserInterfaceTheme; } }
+
 		public static Color BackgroundColor { get; internal set; }        // must be the bg color from Gtkrc
 		public static Color BaseBackgroundColor { get; internal set; }    // must be the base color from Gtkrc
 		public static Color BaseForegroundColor { get; internal set; }    // must be the text color from Gtkrc

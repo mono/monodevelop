@@ -2,11 +2,9 @@
 namespace MonoDevelop.FSharp
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 open System.IO
-open System.Threading
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
-open MonoDevelop.Ide.TypeSystem
 open ExtCore.Control
 type Version = int
 

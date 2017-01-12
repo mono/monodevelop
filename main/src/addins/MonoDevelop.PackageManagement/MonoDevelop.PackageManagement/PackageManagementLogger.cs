@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class PackageManagementLogger : NuGet.ILogger, NuGet.Logging.ILogger
+	internal class PackageManagementLogger : NuGet.ILogger, NuGet.Common.ILogger
 	{
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -79,7 +79,12 @@ namespace MonoDevelop.PackageManagement
 			LogInformation (data);
 		}
 
-		public void LogSummary (string data)
+		public void LogInformationSummary (string data)
+		{
+			LogDebug (data);
+		}
+
+		public void LogErrorSummary (string data)
 		{
 			LogDebug (data);
 		}

@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			var node = dataObject as GettingStartedNode;
 			node.Removed += OnNodeHidden;
+			node.Extension.NotifyNodeAdded ();
 		}
 
 		public override void OnNodeRemoved (object dataObject)

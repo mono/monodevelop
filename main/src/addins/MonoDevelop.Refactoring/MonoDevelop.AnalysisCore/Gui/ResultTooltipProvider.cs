@@ -59,7 +59,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					results.Add (result);
 				}
 			}
-			if (results != null)
+			if (results.Count > 0)
 				return Task.FromResult (new TooltipItem (results, markerOffset, markerEndOffset - markerOffset));
 
 			return Task.FromResult<TooltipItem> (null);

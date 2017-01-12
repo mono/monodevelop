@@ -74,9 +74,6 @@
     <Reference Include="NuGet.Frameworks">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Logging">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Packaging.Core.Types">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
     </Reference>
@@ -91,7 +88,6 @@
     <Reference Include="NuGet.Configuration">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="System.Globalization" />
     <Reference Include="NuGet.Protocol.Core.Types">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
     </Reference>
@@ -99,7 +95,6 @@
     <Reference Include="NuGet.Protocol.Core.v3">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.v3.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Concurrent" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.ServiceModel" />
@@ -109,7 +104,6 @@
     <Reference Include="NuGet.RuntimeModel">
       <HintPath>..\..\..\external\nuget-binary\NuGet.RuntimeModel.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections" />
     <Reference Include="NuGet.DependencyResolver.Core">
       <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.Core.dll</HintPath>
     </Reference>
@@ -135,9 +129,6 @@
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Protocol.Core.v2">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.v2.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
     <Reference Include="NuGet.Resolver">
@@ -159,7 +150,7 @@
       <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -408,6 +399,12 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetAwareProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MSBuildNuGetImportGenerator.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\GlobalPackagesExtractor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetAwareProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetAwareProjectPackageRestoreManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IHasDotNetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

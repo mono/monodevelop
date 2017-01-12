@@ -9,13 +9,7 @@
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
     <Import file="MonoDevelop.FSharpInteractive.Service.exe" />
-    <Import assembly="Newtonsoft.Json.dll" />
-	<Import assembly="FSharp.Compiler.Interactive.Settings.dll" />	
-  <!--INSTALL_DEBUG
-    <Import file = "FSharpBinding.dll.mdb" />
-    <Import file = "FSharpBinding.Gui.dll.mdb" />
-  INSTALL_DEBUG-->
-
+    <Import assembly="FSharp.Compiler.Interactive.Settings.dll" />	
     <Import file = "Templates/EmptyFSharpSource.xft.xml" />
     <Import file = "Templates/EmptyFSharpScript.xft.xml" />
     <Import file = "Templates/EmptyFSharpSignature.xft.xml" />
@@ -38,8 +32,18 @@
   <!-- These live in AddinInfo.fs -->
   </Dependencies>
 
+  <Extension path = "/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
+     <PackageRepository path="Packages" />
+  </Extension>
+
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
     <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
+      <ProjectFlavor guid="{786c830f-07a1-408b-bd7f-6ee04809d6db}" type="MonoDevelop.FSharp.PortableFSharpProjectFlavor" language="F#" alias="F#PortableLibrary"/>
+    </Condition>
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
@@ -82,13 +86,14 @@
     <ProjectTemplate id="MonoDevelop.FSharp.ConsoleProject" file="Templates/FSharpConsoleProject.xpt.xml"/>
     <ProjectTemplate id="MonoDevelop.FSharp.LibraryProject" file="Templates/FSharpLibraryProject.xpt.xml"/>
     <!-- Only include the tutorial project if an F# 3.0 or 3.1 target is available as this includes F# 3.0 specific features -->
-	<ComplexCondition>
-		<Or>
-			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-		</Or>
-		<ProjectTemplate id="MonoDevelop.FSharp.TutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
-	</ComplexCondition>
+    <ComplexCondition>
+      <Or>
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </Or>
+      <ProjectTemplate id="MonoDevelop.FSharp.TutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
+    </ComplexCondition>
 
     <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
@@ -123,10 +128,10 @@
 
   <Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id="F#"
-    				 extensions=".fs,.fsi,.fsx,.fsscript,.sketchfs"
-    				 singleLineCommentTag="//"
-    				 blockCommentStartTag="(*"
-    				 blockCommentEndTag="*)"
+                     extensions=".fs,.fsi,.fsx,.fsscript,.sketchfs"
+                     singleLineCommentTag="//"
+                     blockCommentStartTag="(*"
+                     blockCommentEndTag="*)"
                      codeDomType="FSharp.Compiler.CodeDom.FSharpCleanCodeProvider" />
   </Extension>
 
@@ -156,14 +161,17 @@
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
+    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUnusedCode" />
     <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpNavigationTextEditorExtension" />
-	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebuggerExpressionResolver" />
-	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebuggerExpressionResolver" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
-	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />	
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />
+    <!-- Extension check is done within code -->
+    <Class class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
@@ -178,17 +186,17 @@
     <Class class="MonoDevelop.FSharp.ProjectSearchCategory" />
     <Class class="MonoDevelop.FSharp.FakeSearchCategory" />
   </Extension>
-	
+  
   <Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
- 	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferencesProvider" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferencesProvider" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
- 	<Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
+    <Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
   </Extension>
 
   <Extension path = "/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder">
- 	<Class class="MonoDevelop.FSharp.FSharpNUnitSourceCodeLocationFinder" />
+    <Class class="MonoDevelop.FSharp.FSharpNUnitSourceCodeLocationFinder" />
   </Extension>
   <!-- F# interactive -->
 
@@ -206,72 +214,94 @@
 
   <Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
     <NodeBuilder class = "MonoDevelop.FSharp.FSharpProjectFileNodeExtension"/>
+    <NodeBuilder class = "MonoDevelop.FSharp.DebugScriptBuilder"/>
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+    <Condition id="ItemType" value="IFileItem">
+      <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptInternal"/>
+      <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptExternal"/>
+    </Condition>
+  </Extension>
+  
   <Extension path="/MonoDevelop/Ide/Commands">
         <!-- RefactoryCommands -->
     <Category _name = "Refactoring" id = "Refactoring" >
       <Command id = "MonoDevelop.FSharp.CurrentRefactoringOperations"
-	           defaultHandler = "MonoDevelop.FSharp.CurrentRefactoringOperationsHandler"
-		       type="array"
-			   _label = "Refactoring Operations" />
+               defaultHandler = "MonoDevelop.FSharp.CurrentRefactoringOperationsHandler"
+               type="array"
+               _label = "Refactoring Operations" />
     </Category>
 
     <ComplexCondition>
       <Or>
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
       <Category _name = "F# Integration" id="F# Integration">
         <Command id="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive"
-            _label = "F# Interactive"
-            type="check"
-            _description="Show F# Interactive pad."
-            shortcut="Control|Alt|F"
-            macShortcut="Control|Alt|F"
-            defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
+                 _label = "F# Interactive"
+                 type="check"
+                 _description="Show F# Interactive pad."
+                 shortcut="Control|Alt|F"
+                 macShortcut="Control|Alt|F"
+                 defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
 
         <Command id="MonoDevelop.FSharp.FSharpCommands.SendFile"
-            _label = "Send current file to F# Interactive"
-            _description="Send the current file to F# Interactive"
-            shortcut=""
-            macShortcut=""
-            defaultHandler="MonoDevelop.FSharp.SendFile" />
+                 _label = "Send current file to F# Interactive"
+                 _description="Send the current file to F# Interactive"
+                 shortcut=""
+                 macShortcut=""
+                 defaultHandler="MonoDevelop.FSharp.SendFile" />
 
         <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
-            _label = "Send selection to F# Interactive"
-            _description="Send the selected text to F# Interactive"
-            shortcut="Ctrl|Return"
-            macShortcut="Ctrl|Return"
-            defaultHandler="MonoDevelop.FSharp.SendSelection" />
+                 _label = "Send selection to F# Interactive"
+                 _description="Send the selected text to F# Interactive"
+                 shortcut="Ctrl|Return"
+                 macShortcut="Ctrl|Return"
+                 defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
         <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
-            _label = "Send line to F# Interactive"
-            _description="Send the current line to F# Interactive"
-            shortcut="Ctrl|Alt|L"
-            macShortcut="Ctrl|Alt|L"
-            defaultHandler="MonoDevelop.FSharp.SendLine" />
+                 _label = "Send line to F# Interactive"
+                 _description="Send the current line to F# Interactive"
+                 shortcut="Ctrl|Alt|L"
+                 macShortcut="Ctrl|Alt|L"
+                 defaultHandler="MonoDevelop.FSharp.SendLine" />
 
         <Command _description="Send the current project references to F# Interactive"
-            _label="Send references to F# Interactive"
-            defaultHandler="MonoDevelop.FSharp.SendReferences"
-            id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
-            macShortcut="Ctrl|Alt|P"
-            shortcut="Ctrl|Alt|P" />
+                 _label="Send references to F# Interactive"
+                 defaultHandler="MonoDevelop.FSharp.SendReferences"
+                 id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
+                 macShortcut="Ctrl|Alt|P"
+                 shortcut="Ctrl|Alt|P" />
 
         <Command _description="Restart F# Interactive"
-            _label="Restart F# Interactive"
-            defaultHandler="MonoDevelop.FSharp.RestartFsi"
-            id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
-            macShortcut="Ctrl|Alt|R"
-            shortcut="Ctrl|Alt|R" />
+                 _label="Restart F# Interactive"
+                 defaultHandler="MonoDevelop.FSharp.RestartFsi"
+                 id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
+                 macShortcut="Ctrl|Alt|R"
+                 shortcut="Ctrl|Alt|R" />
 
         <Command _description="Clear F# Interactive"
-            _label="Clear F# Interactive"
-            defaultHandler="MonoDevelop.FSharp.ClearFsi"
-            id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
-            macShortcut="Ctrl|Alt|C"
-            shortcut="Ctrl|Alt|C" />
+                 _label="Clear F# Interactive"
+                 defaultHandler="MonoDevelop.FSharp.ClearFsi"
+                 id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
+                 macShortcut="Ctrl|Alt|C"
+                 shortcut="Ctrl|Alt|C" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging"
+                 id="MonoDevelop.FSharp.SolutionPad.DebugScriptInternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging on External Console"
+                 id="MonoDevelop.FSharp.SolutionPad.DebugScriptExternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging"
+                 id="MonoDevelop.FSharp.Editor.DebugScriptInternal" />
+        <Command _description="Start debugging an .fsx script"
+                 _label="Start Debugging on External Console"
+
+                 id="MonoDevelop.FSharp.Editor.DebugScriptExternal" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -282,7 +312,11 @@
       <Or>
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
+      <SeparatorItem id = "FSharpScriptDebug" />
+      <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
+      <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptExternal" />
       <SeparatorItem id = "FSharpInteractiveStart" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
@@ -290,26 +324,27 @@
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
     </ComplexCondition>
   </Extension>
-	
+  
   <ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi" name = "Editor context menu for fsi">
     <Description>Context menu for fsi</Description>
-	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+    <ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
   </ExtensionPoint>
-	
+  
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi">
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.ClearFsi" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.RestartFsi" />
     <SeparatorItem id = "Separator1" />
-	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
-	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
-	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+    <CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+    <CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+    <CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
   </Extension>
-	
+  
   <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
     <ComplexCondition>
       <Or>
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />

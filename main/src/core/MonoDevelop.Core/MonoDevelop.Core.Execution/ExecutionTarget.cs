@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -202,5 +203,37 @@ namespace MonoDevelop.Core.Execution
 		}
 
 		#endregion
+	}
+
+	public class MultiProjectExecutionTarget : ExecutionTarget
+	{
+		//string id;
+
+		public override string Id {
+			get {
+				return "multiple-projects-5ce70911-0a07-4da6-ad3d-cc7a293f6656";
+			}
+		}
+
+		public override string Name { get; } = GettextCatalog.GetString ("Multiple");
+
+		Dictionary<SolutionItem, ExecutionTarget> list = new Dictionary<SolutionItem, ExecutionTarget> ();
+
+		public void SetExecutionTarget (SolutionItem project, ExecutionTarget target)
+		{
+			if (target == null)
+				list.Remove (project);
+			else
+				list [project] = target;
+			//id = string.Join ("/", list.Select (p => p.Value.Id).OrderBy (id => id));
+		}
+
+		public ExecutionTarget GetTarget(SolutionItem project)
+		{
+			ExecutionTarget target;
+			if (list.TryGetValue (project, out target))
+				return target;
+			return null;
+		}
 	}
 }

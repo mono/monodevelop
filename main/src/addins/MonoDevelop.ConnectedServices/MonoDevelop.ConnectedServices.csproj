@@ -84,7 +84,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -164,6 +164,7 @@
     <Compile Include="JsonFileConnectedService.cs" />
     <Compile Include="StatusChangedEventArgs.cs" />
     <Compile Include="Status.cs" />
+    <Compile Include="AddServiceTelemetryCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">

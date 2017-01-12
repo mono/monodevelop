@@ -84,7 +84,18 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
 			languageName = projectOptions.GetAttribute ("language");
-			DefaultNamespace = projectCreateInfo.ProjectName;
+
+			string templateDefaultNamespace = GetDefaultNamespace (projectCreateInfo, projectOptions);
+			DefaultNamespace = templateDefaultNamespace ?? projectCreateInfo.ProjectName;
+		}
+
+		static string GetDefaultNamespace (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		{
+			string defaultNamespace = projectOptions.Attributes["DefaultNamespace"]?.Value;
+			if (defaultNamespace != null)
+				return StringParserService.Parse (defaultNamespace, projectCreateInfo.Parameters);
+
+			return null;
 		}
 
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -233,7 +244,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public LanguageBinding LanguageBinding {
 			get {
-				if (languageBinding == null)
+				if (languageBinding == null && languageName != null) 
 					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 				return languageBinding;
 			}
@@ -241,7 +252,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override bool OnGetIsCompileable (string fileName)
 		{
-			return LanguageBinding.IsSourceCodeFile (fileName);
+			return LanguageBinding != null && LanguageBinding.IsSourceCodeFile (fileName);
 		}
 
 		protected override Task<BuildResult> OnBuild (MonoDevelop.Core.ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)

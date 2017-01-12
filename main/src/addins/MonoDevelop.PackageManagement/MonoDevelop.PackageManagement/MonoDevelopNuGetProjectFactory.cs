@@ -68,6 +68,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			Runtime.AssertMainThread ();
 
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.CreateNuGetProject ();
+
 			var projectSystem = new MonoDevelopMSBuildNuGetProjectSystem (project, context);
 
 			string projectJsonPath = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);

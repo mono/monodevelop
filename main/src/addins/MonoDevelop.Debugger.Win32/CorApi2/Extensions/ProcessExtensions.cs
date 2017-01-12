@@ -79,9 +79,11 @@ namespace Microsoft.Samples.Debugging.Extensions
 						break; // pipe done - normal exit path.
 
 					string s = System.Text.Encoding.Default.GetString (buffer, 0, nBytesRead);
-					if (OnStdOutput != null)
-						OnStdOutput (proc, new CorTargetOutputEventArgs (s, isStdError));
-				}
+                    List<CorTargetOutputEventHandler> list;
+                    if (events.TryGetValue(proc, out list))
+                        foreach (var del in list)
+                            del(proc, new CorTargetOutputEventArgs(s, isStdError));
+                }
 			} catch {
 			}
 		}
@@ -98,19 +100,14 @@ namespace Microsoft.Samples.Debugging.Extensions
 			list.Add (handler);
 
 			events [proc] = list;
-			OnStdOutput += handler;
 		}
 
 		static void RemoveEventsFor (CorProcess proc)
 		{
-			foreach (CorTargetOutputEventHandler handler in events [proc])
-				OnStdOutput -= handler;
-
 			events.Remove (proc);
 		}
 
 		// [Xamarin] Output redirection.
-		static event CorTargetOutputEventHandler OnStdOutput;
 		static readonly Dictionary<CorProcess, List<CorTargetOutputEventHandler>> events = new Dictionary<CorProcess, List<CorTargetOutputEventHandler>> ();
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using Mono.Debugging.Backend;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class MtaRawValueString : IRawValueString
 	{

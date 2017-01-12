@@ -15,7 +15,6 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
-open MonoDevelop.Ide.Commands
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content
@@ -50,6 +49,21 @@ type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultS
     inherit TextEditorOptions()
     interface Mono.TextEditor.ITextEditorOptions with
         member x.ColorScheme = options.ColorScheme
+
+type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
+    inherit TextLineMarker()
+    static let tag = obj()
+    override x.Draw(editor, cr, metrics) =
+        cr.DrawImage(editor, image, 30.0, metrics.LineYRenderStartPosition)
+
+    interface ITextLineMarker with
+        member x.Line with get() = line
+        member x.IsVisible with get() = true and set(_value) = ()
+        member x.Tag with get() = tag and set(_value) = ()
+
+    interface IExtendingTextLineMarker with
+        member x.GetLineHeight editor = editor.LineHeight + image.Height
+        member x.Draw(editor, g, lineNr, lineArea) = ()
 
 type FsiDocumentContext() =
     inherit DocumentContext()
@@ -183,7 +197,17 @@ type FSharpInteractivePad() =
         if editor.CaretColumn <> 1 then
             editor.InsertAtCaret ("\n")
         editor.InsertAtCaret (nonBreakingSpace + t)
+        editor.CaretOffset <- editor.Text.Length
         editor.ScrollTo editor.CaretLocation
+
+    let renderImage image =
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+        let textDocument = data.Document
+        let line = editor.GetLine editor.CaretLine
+        let imageMarker = ImageRendererMarker(line, image)
+        textDocument.AddMarker(editor.CaretLine, imageMarker)
+        textDocument.CommitUpdateAll()
+        editor.InsertAtCaret "\n"
 
     let input = new ResizeArray<_>()
 
@@ -193,11 +217,13 @@ type FSharpInteractivePad() =
             input.Clear()
             promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
+            let imageReceived = ses.ImageReceived.Subscribe(fun image -> Runtime.RunInMainThread(fun () -> renderImage image) |> Async.AwaitTask |> Async.RunSynchronously)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
 
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
+                imageReceived.Dispose()
                 if killIntent = NoIntent then
                     Runtime.RunInMainThread(fun () ->
                         LoggingService.LogDebug ("Interactive: process stopped")
@@ -207,12 +233,13 @@ type FSharpInteractivePad() =
                 killIntent <- NoIntent)
 
             ses.StartReceiving()
+            editor.GrabFocus()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
             Some(ses)
         with _exn -> None
 
-    let mutable session = setupSession()
+    let mutable session = None
 
     let getCaretLine() =
         let line = 
@@ -227,12 +254,10 @@ type FSharpInteractivePad() =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
 
-    
-    
     let resetFsi intent =
         if promptReceived then
             killIntent <- intent
-            session |> Option.iter (fun ses -> ses.Kill())
+            session |> Option.iter (fun (ses: InteractiveSession) -> ses.Kill())
             if intent = Restart then session <- setupSession()
 
     member x.Text =
@@ -401,6 +426,7 @@ type FSharpInteractivePad() =
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
         toolbar.ShowAll()
+        editor.RunWhenRealized(fun () -> session <- setupSession())
 
     member x.RestartFsi() = resetFsi Restart
 
