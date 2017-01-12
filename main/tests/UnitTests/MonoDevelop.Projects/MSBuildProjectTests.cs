@@ -759,6 +759,39 @@ namespace MonoDevelop.Projects
 			externalElement = p.GetMonoDevelopProjectExtension ("External");
 			Assert.IsNull (externalElement);
 		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void UpdatingMonoDevelopProjectExtensionShouldNotAddAnotherXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			// Update existing extension.
+			config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			var externalElement = (XmlElement)propertiesElement.ChildNodes[0];
+
+			Assert.AreEqual ("External", externalElement.Name);
+			Assert.AreEqual (1, monoDevelopElement.ChildNodes.Count);
+		}
 	}
 }
 

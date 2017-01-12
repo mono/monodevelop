@@ -914,7 +914,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			value = (XmlElement) elem.OwnerDocument.ImportNode (value, true);
 			var parent = elem;
-			elem = parent ["Properties", Namespace];
+			elem = parent ["Properties", Namespace ?? string.Empty];
 			if (elem == null) {
 				elem = parent.OwnerDocument.CreateElement (null, "Properties", Namespace);
 				parent.AppendChild (elem);
