@@ -249,9 +249,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr = Gdk.CairoHelper.Create (mode.backgroundBuffer);
 					
 					cr.LineWidth = 1;
-					var displayScale = Platform.IsWindows ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
-					int w = (int)(mode.backgroundBuffer.ClipRegion.Clipbox.Width);
-					int h = (int)(mode.backgroundBuffer.ClipRegion.Clipbox.Height);
+					int w = mode.backgroundBuffer.ClipRegion.Clipbox.Width;
+					int h = mode.backgroundBuffer.ClipRegion.Clipbox.Height;
 					cr.Rectangle (0, 0, w, h);
 					if (mode.TextEditor.ColorStyle != null)
 						cr.SetSourceColor (mode.TextEditor.ColorStyle.PlainText.Background);
