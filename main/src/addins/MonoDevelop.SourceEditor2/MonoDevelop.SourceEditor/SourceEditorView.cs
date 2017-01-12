@@ -3570,5 +3570,11 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.GrabFocus ();
 		}
 
+		public bool HasFocus {
+			get {
+				return this.TextEditor.HasFocus;
+			}
+		}
+
 	}
 } 
