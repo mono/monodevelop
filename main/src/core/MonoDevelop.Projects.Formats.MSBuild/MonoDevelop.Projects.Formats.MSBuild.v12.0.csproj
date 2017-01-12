@@ -52,7 +52,8 @@
 		</Reference>
 		<Reference Include="System.Xml" />
 		<Reference Include="Microsoft.Build.Utilities.v12.0">
-			<HintPath>C:\Program Files %28x86%29\MSBuild\12.0\Bin\Microsoft.Build.Utilities.v12.0.dll</HintPath>
+			<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Utilities.v12.0.dll</HintPath>
+			<CopyLocal>False</CopyLocal>
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
