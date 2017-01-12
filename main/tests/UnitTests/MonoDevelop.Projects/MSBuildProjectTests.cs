@@ -734,6 +734,31 @@ namespace MonoDevelop.Projects
 			[ItemProperty ("Value1")]
 			string value1 = "Test";
 		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void RemoveMonoDevelopProjectExtension (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			var externalElement = p.GetMonoDevelopProjectExtension ("External");
+			Assert.IsNotNull (externalElement);
+
+			p.RemoveMonoDevelopProjectExtension ("External");
+
+			externalElement = p.GetMonoDevelopProjectExtension ("External");
+			Assert.IsNull (externalElement);
+		}
 	}
 }
 

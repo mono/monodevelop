@@ -875,9 +875,19 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var elem = GetProjectExtension ("MonoDevelop");
 			if (elem != null)
-				return elem.SelectSingleNode ("tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+				return elem.SelectSingleNode ("tns:Properties/tns:" + section, GetNamespaceManagerForProject ()) as XmlElement;
 			else
 				return null;
+		}
+
+		XmlNamespaceManager GetNamespaceManagerForProject ()
+		{
+			if (Namespace == Schema)
+				return XmlNamespaceManager;
+
+			var namespaceManager = new XmlNamespaceManager (new NameTable ());
+			namespaceManager.AddNamespace ("tns", Namespace ?? string.Empty);
+			return namespaceManager;
 		}
 
 		public void SetProjectExtension (XmlElement value)
@@ -942,7 +952,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var md = GetProjectExtension ("MonoDevelop");
 			if (md == null)
 				return;
-			XmlElement elem = md.SelectSingleNode ("tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+			XmlElement elem = md.SelectSingleNode ("tns:Properties/tns:" + section, GetNamespaceManagerForProject ()) as XmlElement;
 			if (elem != null) {
 				var parent = (XmlElement)elem.ParentNode;
 				XmlUtil.RemoveElementAndIndenting (elem);
