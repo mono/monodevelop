@@ -28,6 +28,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
+using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 
 namespace MonoDevelop.Projects
@@ -564,6 +565,83 @@ namespace MonoDevelop.Projects
 
 			items = p.EvaluatedItems.Where (it => it.Name == "Test3").Select (it => it.Include).ToArray ();
 			Assert.AreEqual (new [] { "file2.txt" }, items);
+		}
+
+		[Test]
+		public void SdkProjectMSBuildXmlNamespaceIsNotSaved ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+		}
+
+		[Test]
+		public void NonSdkProjectMSBuildXmlNamespaceIsAddedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
+			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+		}
+
+		[Test]
+		public void ExistingSdkProjectMSBuildXmlNamespaceRemovedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+		}
+
+		[Test]
+		public void NonSdkProjectMSBuildXmlNamespaceIsNotRemovedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
+			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToChildElementsOnSaving (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var propertyGroup = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			Assert.IsFalse (propertyGroup.HasAttribute ("xmlns"));
+			Assert.AreEqual ("PropertyGroup", propertyGroup.Name);
 		}
 	}
 }

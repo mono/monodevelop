@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
 
-		static readonly string [] knownAttributes = { "DefaultTargets", "ToolsVersion", "xmlns" };
+		static readonly string [] knownAttributes = { "Sdk", "DefaultTargets", "ToolsVersion", "xmlns" };
 
 		public static XmlNamespaceManager XmlNamespaceManager
 		{
@@ -295,6 +295,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": defaultTargets = value; return;
 				case "ToolsVersion": toolsVersion = value; return;
+				case "Sdk": sdk = value; return;
 			}
 			base.ReadAttribute (name, value);
 		}
@@ -304,7 +305,8 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
-				case "xmlns": return Schema;
+				case "xmlns": return Namespace;
+				case "Sdk": return sdk;
 			}
 			return base.WriteAttribute (name);
 		}
@@ -511,6 +513,16 @@ namespace MonoDevelop.Projects.MSBuild
 				AssertCanModify ();
 				toolsVersion = value;
 				NotifyChanged ();
+			}
+		}
+
+		string sdk;
+
+		internal override string Namespace {
+			get {
+				if (sdk != null)
+					return null;
+				return Schema;
 			}
 		}
 
