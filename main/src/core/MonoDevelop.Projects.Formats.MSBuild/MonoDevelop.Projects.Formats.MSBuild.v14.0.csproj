@@ -10,7 +10,7 @@
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <BaseIntermediateOutputPath>obj\14.0</BaseIntermediateOutputPath>
-	  <XBuild>$([System.Environment]::CommandLine.ToLower().Contains("mono"))</XBuild>
+	  <XBuild>$([System.Environment]::CommandLine.Contains("mono "))</XBuild>
 	  <MSBuildLibPath>$(MSBuildExtensionsPath)\14.0\Bin</MSBuildLibPath>
 	  <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -40,15 +40,15 @@
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		    <HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		  <HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		  <HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="System.Xml" />
@@ -80,4 +80,7 @@
       <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
     </None>
   </ItemGroup>
+  <Target Name="AfterBuild">
+    <Message Text="XBuild: $(XBuild)" />
+  </Target>
 </Project>
