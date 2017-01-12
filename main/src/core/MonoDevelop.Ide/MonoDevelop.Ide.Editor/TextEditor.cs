@@ -1455,5 +1455,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			this.textEditorImpl.GrabFocus ();
 		}
+
+		public new bool HasFocus {
+			get { return this.textEditorImpl.HasFocus; }
+		}
 	}
 }
