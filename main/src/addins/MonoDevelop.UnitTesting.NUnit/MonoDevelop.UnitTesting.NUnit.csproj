@@ -44,7 +44,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

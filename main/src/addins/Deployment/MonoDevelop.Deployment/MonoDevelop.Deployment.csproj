@@ -91,7 +91,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
