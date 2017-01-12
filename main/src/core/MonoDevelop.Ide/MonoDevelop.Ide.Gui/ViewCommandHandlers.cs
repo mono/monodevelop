@@ -356,7 +356,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// If the current document is not an editor, just ignore the text
 			// editor commands.
-			info.Bypass = doc.Editor == null;
+			info.Bypass = doc.Editor?.HasFocus == false;
 		}
 		
 		[CommandHandler (TextEditorCommands.LineEnd)]
