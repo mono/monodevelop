@@ -10,9 +10,9 @@
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <BaseIntermediateOutputPath>obj\14.0</BaseIntermediateOutputPath>
-	<XBuild>$([System.Environment]::CommandLine.ToLower().Contains("mono"))</XBuild>
-	<MSBuildLibPath>$(MSBuildExtensionsPath)\14.0\Bin</MSBuildLibPath>
-	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+	  <XBuild>$([System.Environment]::CommandLine.ToLower().Contains("mono"))</XBuild>
+	  <MSBuildLibPath>$(MSBuildExtensionsPath)\14.0\Bin</MSBuildLibPath>
+	  <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
