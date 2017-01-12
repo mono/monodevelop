@@ -11,8 +11,7 @@
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <BaseIntermediateOutputPath>obj\14.0</BaseIntermediateOutputPath>
 	<XBuild>$([System.Environment]::CommandLine.ToLower().Contains("mono"))</XBuild>
-    <MonoPath>$(MSBuildProgramFiles32)\Mono</MonoPath>
-	<XBuildLibPath>$(MonoPath)\lib\mono\xbuild\14.0\bin</XBuildLibPath>
+	<MSBuildLibPath>$(MSBuildExtensionsPath)\14.0\Bin</MSBuildLibPath>
 	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -41,15 +40,15 @@
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0">
-		<HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+		<HintPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
 		<CopyLocal>False</CopyLocal>
 	</Reference>
     <Reference Include="System.Xml" />
