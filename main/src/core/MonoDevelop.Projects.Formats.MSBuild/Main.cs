@@ -110,25 +110,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
 		{
-			var msbuildAssemblies = new string[] {
-							"Microsoft.Build",
-							"Microsoft.Build.Engine",
-							"Microsoft.Build.Framework",
-							"Microsoft.Build.Tasks.Core",
-							"Microsoft.Build.Utilities.Core" };
+			var dllName = $"{(new AssemblyName (args.Name).Name)}.dll";
 
-			var asmName = new AssemblyName (args.Name);
-			if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
-				return null;
-
-			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
-			if (File.Exists (fullPath)) {
-				// If the file exists under the msbuild bin dir, then we need
-				// to load it only from there. If that fails, then let that exception
-				// escape
-				return Assembly.LoadFrom (fullPath);
-			} else
-				return null;
+			var exeDir = Path.GetDirectoryName (new Uri (Assembly.GetExecutingAssembly ().CodeBase).LocalPath);
+			var dllPath = Path.Combine (exeDir, dllName); // look in the exe's dir
+			if (!File.Exists (dllPath)) {
+				dllPath = Path.Combine (msbuildBinDir, dllName); // look in the msbuild dir
+				if (!File.Exists (dllPath)) return null;
+			}
+			return Assembly.Load (dllPath);
 		}
 	}
 }

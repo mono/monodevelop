@@ -15,7 +15,7 @@
     <XBuildExtensionsPath Condition=" '$(XBuild)' == 'True' ">$(MSBuildExtensionsPath)</XBuildExtensionsPath>
     <XBuildExtensionsPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildProgramFiles32)\Mono\lib\xbuild</XBuildExtensionsPath>
     <XBuildLibPath>$(XBuildExtensionsPath)\14.0\bin</XBuildLibPath>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+   <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
@@ -44,18 +44,15 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0">
       <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
-			<Private Condition=" '$(XBuild)' != 'True' ">True</Private>
-			<CopyToOutputDirectory Condition=" '$(XBuild)' != 'True' ">PreserveNewest</CopyToOutputDirectory>
+			<Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0">
-      <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
-			<Private Condition=" '$(XBuild)' != 'True' ">True</Private>
-			<CopyToOutputDirectory Condition=" '$(XBuild)' != 'True' ">PreserveNewest</CopyToOutputDirectory>
+      <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Framework.dll</HintPath>
+			<Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0">
       <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
-			<Private Condition=" '$(XBuild)' != 'True' ">True</Private>
-			<CopyToOutputDirectory Condition=" '$(XBuild)' != 'True' ">PreserveNewest</CopyToOutputDirectory>
+			<Private>False</Private>
    </Reference>
   <Reference Include="System.Xml" />
   </ItemGroup>
