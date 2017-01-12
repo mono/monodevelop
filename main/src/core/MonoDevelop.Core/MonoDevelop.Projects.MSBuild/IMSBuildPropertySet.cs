@@ -86,7 +86,8 @@ namespace MonoDevelop.Projects.MSBuild
 					var val = prop.GetValue (ob);
 					if (val != null) {
 						if (cwriter == null) {
-							cwriter = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema, StoreAllInElements = true };
+							string xmlns = (mso?.ParentProject != null) ? mso.ParentProject.Namespace : MSBuildProject.Schema;
+							cwriter = new XmlConfigurationWriter { Namespace = xmlns, StoreAllInElements = true };
 							xdoc = new XmlDocument ();
 						}
 						var data = prop.Serialize (ser.SerializationContext, ob, val);

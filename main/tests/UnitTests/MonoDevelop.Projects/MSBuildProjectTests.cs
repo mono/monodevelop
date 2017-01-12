@@ -643,6 +643,44 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (propertyGroup.HasAttribute ("xmlns"));
 			Assert.AreEqual ("PropertyGroup", propertyGroup.Name);
 		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToCustomCommand (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <PropertyGroup Condition=\" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' \">\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var propertyGroup = (MSBuildPropertyGroup)p.ChildNodes[1];
+			var customCommand = new CustomCommand {
+				Command = "Test"
+			};
+			var config = new ItemConfiguration ("Debug", "AnyCPU");
+			config.CustomCommands.Add (customCommand);
+			propertyGroup.WriteObjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var propertyGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var commandsElement = (XmlElement)propertyGroupElement.ChildNodes[0];
+			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+			Assert.AreEqual (1, propertyGroupElement.ChildNodes.Count);
+
+			commandsElement = (XmlElement)commandsElement.ChildNodes[0];
+			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+		}
 	}
 }
 
