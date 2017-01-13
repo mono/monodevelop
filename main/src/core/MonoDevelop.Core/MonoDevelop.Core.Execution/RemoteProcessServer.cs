@@ -173,6 +173,14 @@ namespace MonoDevelop.Core.Execution
 					}
 					break;
 				}
+				if (msg.Name == "Ping" && msg.Target == "Process") {
+					try {
+						WriteMessage (0, msg.CreateResponse ());
+					} catch {
+						// Ignore
+					}
+					continue;
+				}
 				messages.Add (msg);
 				if (type == MESSAGE_QUEUE_END) {
 					ProcessMessages (messages);
