@@ -185,7 +185,7 @@ namespace MonoDevelop.PackageManagement
 			bool matchVersion = true)
 		{
 			return project.Items.OfType<ProjectPackageReference> ()
-				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity));
+				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity, matchVersion));
 		}
 
 		public static FilePath GetNuGetAssetsFilePath (this DotNetProject project)
