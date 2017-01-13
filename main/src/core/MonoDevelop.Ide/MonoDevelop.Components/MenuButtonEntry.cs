@@ -190,5 +190,14 @@ namespace MonoDevelop.Components
 			//let GTK reposition the menu if it still doesn't fit on the screen
 			push_in = true;
 		}
+
+		protected override void OnDestroyed ()
+		{
+			if (manager != null) {
+				manager.Dispose ();
+				manager = null;
+			}
+			base.OnDestroyed ();
+		}
 	}
 }
