@@ -572,6 +572,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Test", itemElement.Name);
 			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
 			Assert.AreEqual (0, itemElement.ChildNodes.Count);
+			Assert.IsTrue (itemElement.IsEmpty);
 		}
 
 		[Test]
@@ -601,6 +602,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
 			Assert.AreEqual ("AnotherValue", itemElement.GetAttribute ("Another"));
 			Assert.AreEqual (0, itemElement.ChildNodes.Count);
+			Assert.IsTrue (itemElement.IsEmpty);
 		}
 
 		[Test]
