@@ -1175,6 +1175,7 @@ namespace Mono.Debugging.Win32
 		void Step (bool into)
 		{
 			try {
+				ObjectAdapter.CancelAsyncOperations ();
 				if (stepper != null) {
 					CorFrame frame = activeThread.ActiveFrame;
 					ISymbolReader reader = GetReaderForModule (frame.Function.Module);
@@ -1218,7 +1219,7 @@ namespace Mono.Debugging.Win32
 					process.Continue (false);
 				}
 			} catch (Exception e) {
-				OnDebuggerOutput (true, e.ToString ());
+				DebuggerLoggingService.LogError ("Exception on Step()", e);
 			}
 		}
 
