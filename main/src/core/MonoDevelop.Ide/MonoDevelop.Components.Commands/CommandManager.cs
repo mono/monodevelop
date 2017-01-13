@@ -725,10 +725,12 @@ namespace MonoDevelop.Components.Commands
 				bindings = null;
 			}
 
+#if MAC
 			if (keyMonitor != null) {
 				AppKit.NSEvent.RemoveMonitor (keyMonitor);
 				keyMonitor = null;
 			}
+#endif
 			lastFocused = null;
 		}
 		
