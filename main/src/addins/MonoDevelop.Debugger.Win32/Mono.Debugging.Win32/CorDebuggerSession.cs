@@ -39,7 +39,7 @@ namespace Mono.Debugging.Win32
 
 		static int evaluationTimestamp;
 
-		readonly SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = MtaThread.Run (() => new SymbolBinder ());
 		readonly object appDomainsLock = new object ();
 
 		Dictionary<int, AppDomainInfo> appDomains = new Dictionary<int, AppDomainInfo> ();
