@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public CompletionData SelectedItem {
 			get {
-				return completionDataList [SelectedItemIndex];
+				return SelectedItemIndex >= 0 ? completionDataList [SelectedItemIndex] : null;
 			}
 		}
 
@@ -493,7 +493,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 //				// AltGr
 //				return KeyActions.Process;
 			}
-			var data = DataProvider.GetCompletionData (SelectedItemIndex);
+			var data = SelectedItem;
 
 			if (descriptor.KeyChar == '\0')
 				return KeyActions.Process;
@@ -504,7 +504,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (char.IsDigit (descriptor.KeyChar) && string.IsNullOrEmpty (CurrentCompletionText))
 			    return KeyActions.CloseWindow | KeyActions.Process;
 
-			if (data.MuteCharacter (descriptor.KeyChar, PartialWord)) {
+			if (data != null && data.MuteCharacter (descriptor.KeyChar, PartialWord)) {
 				if (data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
 					return KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
 				} 
