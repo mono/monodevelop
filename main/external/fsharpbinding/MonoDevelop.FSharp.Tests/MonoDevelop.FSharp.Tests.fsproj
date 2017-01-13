@@ -9,7 +9,7 @@
     <RootNamespace>MonoDevelop.FSharp.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.FSharp.Tests</AssemblyName>
     <UsePartialTypes>False</UsePartialTypes>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <TestRunnerCommand>..\..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
@@ -66,9 +66,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="monodoc">
-      <HintPath>..\..\..\..\main\build\bin\monodoc.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
@@ -93,10 +90,6 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Reference Include="MonoDevelop.UnitTesting">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.dll</HintPath>
-    </Reference>
     <Reference Include="GuiUnit">
       <HintPath>..\..\guiunit\bin\net_4_5\GuiUnit.exe</HintPath>
     </Reference>
@@ -117,13 +110,6 @@
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharpBinding">
-      <HintPath>..\..\..\build\AddIns\BackendBindings\FSharpBinding.dll</HintPath>
-    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>
@@ -134,6 +120,21 @@
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
       <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
       <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
+      <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
+      <Name>MonoDevelop.FSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
