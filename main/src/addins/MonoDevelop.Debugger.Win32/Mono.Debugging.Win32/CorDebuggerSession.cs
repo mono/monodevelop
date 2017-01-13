@@ -1728,6 +1728,8 @@ namespace Mono.Debugging.Win32
 				}
 				try {
 					frame.SetIP (offset);
+					OnStopped ();
+					RaiseStopEvent ();
 				} catch {
 					throw new NotSupportedException ();
 				}
