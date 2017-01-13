@@ -28,6 +28,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.MSBuild;
 using System.Linq;
+using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 
 namespace MonoDevelop.Projects
@@ -549,6 +550,57 @@ namespace MonoDevelop.Projects
 
 			// get_Chars
 			Assert.AreEqual ("t;t;.", p.EvaluatedProperties.GetValue ("get_Chars"));
+		}
+
+		[Test]
+		public void AddKnownAttributeToMSBuildItem ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+
+			var item = p.AddNewItem ("Test", "Include");
+			item.Metadata.SetValue ("Known", "KnownAttributeValue");
+			item.AddKnownAttributes ("Known");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var itemElement = (XmlElement)itemGroupElement.ChildNodes[0];
+
+			Assert.AreEqual ("Test", itemElement.Name);
+			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
+			Assert.AreEqual (0, itemElement.ChildNodes.Count);
+		}
+
+		[Test]
+		public void AddKnownAttributeToMSBuildItemForExistingAttribute ()
+		{
+			var p = new MSBuildProject ();
+			string projectXml =
+				"<Project ToolsVersion=\"15.0\">\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Test Include=\"Include\" Known=\"KnownAttributeValue\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			p.LoadXml (projectXml);
+
+			var item = p.ItemGroups.Single ().Items.Single ();
+			item.AddKnownAttributes ("Known", "Another");
+			item.Metadata.SetValue ("Another", "AnotherValue");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var itemElement = (XmlElement)itemGroupElement.ChildNodes[0];
+
+			Assert.AreEqual ("Test", itemElement.Name);
+			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
+			Assert.AreEqual ("AnotherValue", itemElement.GetAttribute ("Another"));
+			Assert.AreEqual (0, itemElement.ChildNodes.Count);
 		}
 
 		[Test]

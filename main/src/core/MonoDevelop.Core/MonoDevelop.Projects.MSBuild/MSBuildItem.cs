@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.MSBuild
 		string exclude;
 		string remove;
 		string update;
+		List<string> customKnownAttributes;
 
 		public MSBuildItem ()
 		{
@@ -73,6 +74,16 @@ namespace MonoDevelop.Projects.MSBuild
 			return knownAttributes;
 		}
 
+		public void AddKnownAttributes (params string[] names)
+		{
+			AssertCanModify ();
+
+			if (customKnownAttributes == null)
+				customKnownAttributes = new List<string> ();
+
+			customKnownAttributes.AddRange (names);
+		}
+
 		internal override void ReadAttribute (string name, string value)
 		{
 			if (name == "Include")
@@ -102,8 +113,38 @@ namespace MonoDevelop.Projects.MSBuild
 				return remove;
 			else if (name == "Update")
 				return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (update) ? update : null;
-			else
-				return base.WriteAttribute (name);
+			else {
+				string result = base.WriteAttribute (name);
+				if (result != null)
+					return result;
+
+				if (IsCustomAttribute (name) && !ExistingPropertyAttribute (name))
+					return WritePropertyAsAttribute (name);
+
+				return null;
+			}
+		}
+
+		bool IsCustomAttribute (string attributeName)
+		{
+			if (customKnownAttributes != null)
+				return customKnownAttributes.Contains (attributeName);
+			return false;
+		}
+
+		bool ExistingPropertyAttribute (string propertyName)
+		{
+			return metadata.PropertiesAttributeOrder.Any (property => property.Name == propertyName);
+		}
+
+		string WritePropertyAsAttribute (string propertyName)
+		{
+			var prop = metadata.GetProperty (propertyName);
+			if (prop != null) {
+				prop.FromAttribute = true;
+				return prop.Value;
+			}
+			return null;
 		}
 
 		internal override void Read (MSBuildXmlReader reader)
@@ -128,7 +169,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (props.Count > 0) {
 				int propIndex = 0;
 				int knownIndex = 0;
-				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				var knownAtts = GetKnownAttributesForWrite ().ToArray ();
 				string lastAttr = null;
 				do {
 					if (propIndex < props.Count && (lastAttr == props [propIndex].AfterAttribute || props [propIndex].AfterAttribute == null)) {
@@ -145,7 +186,7 @@ namespace MonoDevelop.Projects.MSBuild
 						lastAttr = null;
 				} while (propIndex < props.Count || knownIndex < knownAtts.Length);
 			} else {
-				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				var knownAtts = GetKnownAttributesForWrite ().ToArray ();
 				for (int i = 0; i < knownAtts.Length; i++) {
 					var aname = knownAtts [i];
 					var val = WriteAttribute (aname);
@@ -163,6 +204,20 @@ namespace MonoDevelop.Projects.MSBuild
 				string id = context.ItemMap.Count.ToString ();
 				context.ItemMap [id] = this;
 			}
+		}
+
+		IEnumerable<string> GetKnownAttributesForWrite ()
+		{
+			if (attributeOrder != null && customKnownAttributes != null)
+				return attributeOrder.Union (customKnownAttributes);
+
+			if (attributeOrder != null)
+				return attributeOrder;
+
+			if (customKnownAttributes != null)
+				return GetKnownAttributes ().Union (customKnownAttributes);
+
+			return GetKnownAttributes ();
 		}
 
 		internal override string GetElementName ()
