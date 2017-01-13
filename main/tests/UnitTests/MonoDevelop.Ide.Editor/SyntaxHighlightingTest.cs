@@ -325,7 +325,7 @@ typedef struct
 				for (int i = 0; i < expectedSegments.Count; i++) {
 					var seg = expectedSegments [i];
 					if (seg.Item1.Line == line.LineNumber) {
-						var matchedSegment = coloredSegments.FirstOrDefault (s => s.Contains (seg.Item1.Column + line.Offset - 1));
+						var matchedSegment = coloredSegments.FirstOrDefault (s => s.Contains (seg.Item1.Column - 1));
 						Assert.NotNull (matchedSegment, "No segment found at : " + seg.Item1);
 						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries)) {
 							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
@@ -426,7 +426,10 @@ typedef struct
 			Assert.AreEqual ("(?<id>[A-Z_a-z]*)\\s*[A-Z_a-z]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
 		}
 
-
-
+		[Test]
+		public void TestGroupNameCorrection ()
+		{
+			Assert.AreEqual ("(?<id_id2>[A-Z_a-z]*)", Sublime3Format.CompileRegex ("(?<id-id2>[A-Z_a-z]*)"));
+		}
 	}
 }

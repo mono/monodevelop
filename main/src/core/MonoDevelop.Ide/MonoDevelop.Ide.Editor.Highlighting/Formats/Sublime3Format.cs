@@ -491,7 +491,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					result.Append ("\\p{");
 					result.Append (grp);
 					result.Append ("}");
-}
+				}
 				result.Append (']');
 				return result.ToString ();
 			}
@@ -688,8 +688,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				escape = false;
 			addChar:
-				if (recordGroupName && ch != '<') {
-					curGroupName.Append (ch);
+				if (recordGroupName) {
+					if (ch == '-')
+						ch = '_';
+					if (ch != '<') {
+						curGroupName.Append (ch);
+					}
 				}
 				if (replaceGroup)
 					continue;
