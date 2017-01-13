@@ -1,10 +1,10 @@
 ﻿//
-// TestableProjectPackageReference.cs
+// ProjectPackageReferenceTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Xml;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects.MSBuild;
+using NUnit.Framework;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement.Tests
 {
-	class TestableProjectPackageReference : ProjectPackageReference
+	[TestFixture]
+	public class ProjectPackageReferenceTests
 	{
-		public TestableProjectPackageReference (string id, string version)
+		[Test]
+		public void Write_Version_WrittenAsAttribute ()
 		{
-			Include = id;
-			Metadata.SetValue ("Version", version);
-		}
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
 
-		public void CallWrite (MSBuildItem buildItem)
-		{
-			base.Write (null, buildItem);
+			var item = p.AddNewItem ("PackageReference", "Test");
+			var packageReference = new TestableProjectPackageReference ("Test", "1.2.3");
+			packageReference.CallWrite (item);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var packageReferenceElement = (XmlElement)itemGroupElement.ChildNodes[0];
+
+			Assert.AreEqual ("PackageReference", packageReferenceElement.Name);
+			Assert.AreEqual ("1.2.3", packageReferenceElement.GetAttribute ("Version"));
+			Assert.AreEqual (0, packageReferenceElement.ChildNodes.Count);
+			Assert.IsTrue (packageReferenceElement.IsEmpty);
 		}
 	}
 }

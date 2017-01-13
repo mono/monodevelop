@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
@@ -88,6 +89,12 @@ namespace MonoDevelop.PackageManagement
 		public override string ToString ()
 		{
 			return string.Format ("[PackageReference: {0} {1}]", Include, Metadata.GetValue ("Version"));
+		}
+
+		protected override void Write (Project project, MSBuildItem buildItem)
+		{
+			buildItem.AddKnownAttributes ("Version");
+			base.Write (project, buildItem);
 		}
 	}
 }
