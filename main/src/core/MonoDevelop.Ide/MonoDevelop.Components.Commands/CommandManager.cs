@@ -82,6 +82,10 @@ namespace MonoDevelop.Components.Commands
 		internal bool handlerFoundInMulticast;
 		Gtk.Widget lastActiveWidget;
 
+#if MAC
+		Foundation.NSObject keyMonitor;
+#endif
+
 		Dictionary<Command, HashSet<Command>> conflicts;
 		internal Dictionary<Command, HashSet<Command>> Conflicts {
 			get {
@@ -103,10 +107,6 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
-
-			#if MAC
-			AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
-			#endif
 		}
 
 		/// <summary>
@@ -285,7 +285,7 @@ namespace MonoDevelop.Components.Commands
 					}
 				}
 			}
-			
+
 			isChord = false;
 			binding = null;
 			
@@ -294,7 +294,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 
-		#if MAC
+#if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
 			// If we have a native window that can handle this command, let it process
@@ -407,7 +407,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			return false;
 		}
-		#endif
+#endif
 
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
@@ -663,6 +663,12 @@ namespace MonoDevelop.Components.Commands
 			if (topLevelWindows.First != null && topLevelWindows.First.Value == win)
 				return;
 
+#if MAC
+			if (topLevelWindows.Count == 0) {
+				keyMonitor = AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
+			}
+#endif
+
 			// Ensure all events that were subscribed in StartWaitingForUserInteraction are unsubscribed
 			// before doing any change to the topLevelWindows list
 			EndWaitingForUserInteraction ();
@@ -687,17 +693,26 @@ namespace MonoDevelop.Components.Commands
 		{
 			RegisterUserInteraction ();
 		}
-		
+
 		void TopLevelDestroyed (object o, EventArgs args)
 		{
 			RegisterUserInteraction ();
 
-			Gtk.Window w = (Gtk.Window) o;
+			Gtk.Window w = (Gtk.Window)o;
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
 			w.KeyReleaseEvent -= OnKeyReleased;
 			w.ButtonPressEvent -= HandleButtonPressEvent;
 			topLevelWindows.Remove (w);
+#if MAC
+			if (topLevelWindows.Count == 0) {
+				if (keyMonitor != null) {
+					AppKit.NSEvent.RemoveMonitor (keyMonitor);
+					keyMonitor = null;
+				}
+			}
+#endif
+
 			if (w == lastFocused)
 				lastFocused = null;
 		}
@@ -705,7 +720,17 @@ namespace MonoDevelop.Components.Commands
 		public void Dispose ()
 		{
 			disposed = true;
-			bindings.Dispose ();
+			if (bindings != null) {
+				bindings.Dispose ();
+				bindings = null;
+			}
+
+#if MAC
+			if (keyMonitor != null) {
+				AppKit.NSEvent.RemoveMonitor (keyMonitor);
+				keyMonitor = null;
+			}
+#endif
 			lastFocused = null;
 		}
 		
