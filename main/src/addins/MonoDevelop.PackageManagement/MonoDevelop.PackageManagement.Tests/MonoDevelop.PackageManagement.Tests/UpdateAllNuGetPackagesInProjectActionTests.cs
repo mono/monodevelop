@@ -145,7 +145,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_ProjectHasPrereleasePackage_ActionsResolvedFromNuGetPackageManagerAllowingPrereleasePackages ()
+		public void Execute_ProjectHasPrereleasePackage_ActionsResolvedFromNuGetPackageManagerWithIncludePrereleaseSetToFalse ()
 		{
 			CreateAction ();
 			AddPackageToProject ("Test", "1.0.1-alpha");
@@ -153,7 +153,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			action.Execute ();
 
-			Assert.IsTrue (packageManager.PreviewUpdateResolutionContext.IncludePrerelease);
+			Assert.IsFalse (packageManager.PreviewUpdateResolutionContext.IncludePrerelease);
 		}
 
 		[Test]
