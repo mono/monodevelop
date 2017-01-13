@@ -158,6 +158,7 @@ namespace Mono.Debugging.Win32
 		void TerminateDebugger ()
 		{
 			helperOperationsCancellationTokenSource.Cancel();
+			Breakpoints.Clear ();
 			lock (terminateLock) {
 				if (terminated)
 					return;
