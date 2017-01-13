@@ -39,7 +39,7 @@ namespace Mono.Debugging.Win32
 
 		static int evaluationTimestamp;
 
-		readonly SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = MtaThread.Run (() => new SymbolBinder ());
 		readonly object appDomainsLock = new object ();
 
 		Dictionary<int, AppDomainInfo> appDomains = new Dictionary<int, AppDomainInfo> ();
@@ -1138,8 +1138,8 @@ namespace Mono.Debugging.Win32
 
 		private static void HandleBreakpointException (BreakEventInfo binfo, COMException e)
 		{
-			if (Enum.IsDefined (typeof(HResult), e.ErrorCode)) {
-				var code = (HResult) e.ErrorCode;
+			var code = e.ToHResult<HResult> ();
+			if (code != null) {
 				switch (code) {
 					case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
 						binfo.SetStatus (BreakEventStatus.Invalid, "Invalid breakpoint position");
@@ -1179,6 +1179,7 @@ namespace Mono.Debugging.Win32
 		void Step (bool into)
 		{
 			try {
+				ObjectAdapter.CancelAsyncOperations ();
 				if (stepper != null) {
 					CorFrame frame = activeThread.ActiveFrame;
 					ISymbolReader reader = GetReaderForModule (frame.Function.Module);
@@ -1222,7 +1223,7 @@ namespace Mono.Debugging.Win32
 					process.Continue (false);
 				}
 			} catch (Exception e) {
-				OnDebuggerOutput (true, e.ToString ());
+				DebuggerLoggingService.LogError ("Exception on Step()", e);
 			}
 		}
 
