@@ -27,7 +27,7 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
-	url = git://github.com/mrward/nuget-binary.git
+	url = git://github.com/mhutch/nuget-binary.git
 	branch = dotnetcore-nuget-4.0
 [submodule "main/external/xwt"]
 	path = main/external/xwt
