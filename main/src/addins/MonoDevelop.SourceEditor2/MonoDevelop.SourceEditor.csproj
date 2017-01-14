@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

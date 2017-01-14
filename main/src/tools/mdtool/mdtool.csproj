@@ -11,7 +11,7 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <RootNamespace>mdtool</RootNamespace>
     <AssemblyName>mdtool</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>

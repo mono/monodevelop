@@ -11,7 +11,7 @@
     <AssemblyName>MonoDevelop.Gettext</AssemblyName>
     <CodePage>65001</CodePage>
     <RootNamespace>MonoDevelop.Gettext</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

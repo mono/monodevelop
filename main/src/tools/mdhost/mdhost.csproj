@@ -11,7 +11,7 @@
     <AssemblyName>mdhost</AssemblyName>
     <RootNamespace>mdhost</RootNamespace>
     <OutputPath>..\..\..\build\bin\</OutputPath>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>

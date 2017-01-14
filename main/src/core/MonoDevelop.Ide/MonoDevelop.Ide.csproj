@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
     <RootNamespace>MonoDevelop.Ide</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

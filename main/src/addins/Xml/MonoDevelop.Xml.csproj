@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Xml</AssemblyName>
     <RootNamespace>MonoDevelop.Xml</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

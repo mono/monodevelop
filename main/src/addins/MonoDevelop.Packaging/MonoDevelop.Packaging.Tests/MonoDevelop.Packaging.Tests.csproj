@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Packaging.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.Packaging.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>

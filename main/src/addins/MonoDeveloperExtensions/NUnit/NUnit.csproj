@@ -9,7 +9,7 @@
     <ProjectGuid>{376889B5-6504-46A1-9D18-A9E4B4A50F49}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NUnit</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

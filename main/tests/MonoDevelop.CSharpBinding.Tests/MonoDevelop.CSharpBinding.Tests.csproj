@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.CSharpBinding.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.CSharpBinding.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
