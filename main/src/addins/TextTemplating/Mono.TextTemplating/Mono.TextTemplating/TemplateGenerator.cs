@@ -237,9 +237,9 @@ namespace Mono.TextTemplating
 				return path;
 			var dir = Path.GetDirectoryName (inputFile);
 			var test = Path.Combine (dir, path);
-			if (File.Exists (test))
+			if (File.Exists (test) || Directory.Exists (test))
 				return test;
-			return null;
+			return path;
 		}
 		
 		#endregion
@@ -262,7 +262,7 @@ namespace Mono.TextTemplating
 			content = "";
 			location = ResolvePath (requestFileName);
 			
-			if (location == null) {
+			if (location == null || !File.Exists (location)) {
 				foreach (string path in includePaths) {
 					string f = Path.Combine (path, requestFileName);
 					if (File.Exists (f)) {
