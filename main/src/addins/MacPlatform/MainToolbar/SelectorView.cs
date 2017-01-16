@@ -217,7 +217,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void RealignTexts ()
 			{
-				if (Window == null)
+				if (Window == null || Window.Screen == null)
 					return;
 
 				// fix the icon alignment, move it slightly up
