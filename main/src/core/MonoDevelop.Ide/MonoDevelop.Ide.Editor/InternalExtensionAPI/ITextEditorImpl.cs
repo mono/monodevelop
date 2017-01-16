@@ -218,6 +218,7 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IDocumentLine> VisibleLines { get; }
 
 		void GrabFocus ();
+		bool HasFocus { get; }
 
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;
