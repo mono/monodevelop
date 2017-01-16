@@ -631,6 +631,8 @@
     <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildTargetResult.cs">
       <Link>MonoDevelop.Projects.MSBuild\MSBuildTargetResult.cs</Link>
     </Compile>
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvent.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

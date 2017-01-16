@@ -64,25 +64,32 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return doneEvent; }
 		}
 
-		public class LogWriter: ILogWriter
+		public class LogWriter: IEngineLogWriter
 		{
 			int id;
 
-			public LogWriter (int loggerId)
+			public LogWriter (int loggerId, MSBuildEvent eventFilter)
 			{
 				this.id = loggerId;
+				RequiredEvents = eventFilter;
 			}
 
-			public void Write (string text)
+			public void Write (string text, LogEvent [] events)
 			{
-				server.SendMessage (new LogMessage { LoggerId = id, Text = text });
+				server.SendMessage (new LogMessage { LoggerId = id, LogText = text, Events = events });
 			}
+
+			public MSBuildEvent RequiredEvents { get; private set; }
 		}
 
-		public class NullLogWriter: ILogWriter
+		public class NullLogWriter: IEngineLogWriter
 		{
-			public void Write (string text)
+			public void Write (string text, LogEvent [] events)
 			{
+			}
+
+			public MSBuildEvent RequiredEvents {
+				get { return default (MSBuildEvent); }
 			}
 		}
 
@@ -238,7 +245,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var pb = GetProject (msg.ProjectId);
 			if (pb != null) {
-				var logger = msg.LogWriterId != -1 ? (ILogWriter) new LogWriter (msg.LogWriterId) : (ILogWriter) new NullLogWriter ();
+				var logger = msg.LogWriterId != -1 ? (IEngineLogWriter) new LogWriter (msg.LogWriterId, msg.EnabledLogEvents) : (IEngineLogWriter) new NullLogWriter ();
 				var res = pb.Run (msg.Configurations, logger, msg.Verbosity, msg.RunTargets, msg.EvaluateItems, msg.EvaluateProperties, msg.GlobalProperties, msg.TaskId);
 				return new RunProjectResponse { Result = res };
 			}
@@ -352,5 +359,11 @@ namespace MonoDevelop.Projects.MSBuild
 				workThread = null;
 			}
 		}
+	}
+
+	interface IEngineLogWriter
+	{
+		void Write (string text, LogEvent[] events);
+		MSBuildEvent RequiredEvents { get; }
 	}
 }

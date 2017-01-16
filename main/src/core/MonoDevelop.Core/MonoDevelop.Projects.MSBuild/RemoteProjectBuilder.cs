@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.MSBuild
 		int busy;
 
 		static int loggerIdCounter;
-		Dictionary<int, TextWriter> loggers = new Dictionary<int, TextWriter> ();
+		Dictionary<int, LoggerInfo> loggers = new Dictionary<int, LoggerInfo> ();
 
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
@@ -150,19 +150,30 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		void OnLogMessage (LogMessage msg)
 		{
-			TextWriter logger = null;
+			LoggerInfo logger = null;
 			lock (loggers) {
 				if (!loggers.TryGetValue (msg.LoggerId, out logger))
 					return;
 			}
-			logger.Write (msg.Text);
+			if (msg.LogText != null)
+				logger.Writer.Write (msg.LogText);
+			if (msg.Events != null && logger.Logger != null) {
+				foreach (var e in msg.Events)
+					logger.Logger.NotifyEvent (e);
+			}
 		}
 
-		public int RegisterLogger (TextWriter writer)
+		class LoggerInfo
+		{
+			public TextWriter Writer;
+			public MSBuildLogger Logger;
+		}
+
+		public int RegisterLogger (TextWriter writer, MSBuildLogger logger)
 		{
 			lock (loggers) {
 				var i = loggerIdCounter++;
-				loggers [i] = writer;
+				loggers [i] = new LoggerInfo { Writer = writer, Logger = logger };
 				return i;
 			}
 		}
@@ -217,12 +228,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return connection.SendMessage (new RefreshWithContentRequest { ProjectId = ProjectId, Content = projectContent });
 		}
 
-		public async Task<MSBuildResult> Run (ProjectConfigurationInfo [] configurations, int loggerId, MSBuildVerbosity verbosity, string [] runTargets, string [] evaluateItems, string [] evaluateProperties, Dictionary<string, string> globalProperties, int taskId)
+		public async Task<MSBuildResult> Run (ProjectConfigurationInfo [] configurations, int loggerId, MSBuildEvent enabledLogEvents, MSBuildVerbosity verbosity, string [] runTargets, string [] evaluateItems, string [] evaluateProperties, Dictionary<string, string> globalProperties, int taskId)
 		{
 			var msg = new RunProjectRequest {
 				ProjectId = ProjectId,
 				Configurations = configurations,
 				LogWriterId = loggerId,
+				EnabledLogEvents = enabledLogEvents,
 				Verbosity = verbosity,
 				RunTargets = runTargets,
 				EvaluateItems = evaluateItems,
@@ -289,6 +301,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task<MSBuildResult> Run (
 			ProjectConfigurationInfo[] configurations,
 			TextWriter logWriter,
+			MSBuildLogger logger,
 			MSBuildVerbosity verbosity,
 			string[] runTargets,
 			string[] evaluateItems,
@@ -300,11 +313,11 @@ namespace MonoDevelop.Projects.MSBuild
 			// Get an id for the task, and get ready to cancel it if the cancellation token is signalled
 			var taskId = Interlocked.Increment (ref lastTaskId);
 			var cr = RegisterCancellation (cancellationToken, taskId);
-			var loggerId = engine.RegisterLogger (logWriter);
+			var loggerId = engine.RegisterLogger (logWriter, logger);
 
 			try {
 				BeginOperation ();
-				var res = await builder.Run (configurations, loggerId, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
+				var res = await builder.Run (configurations, loggerId, logger.EnabledEvents, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
 				if (res == null && cancellationToken.IsCancellationRequested) {
 					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
 					return new MSBuildResult (new [] { err });
@@ -343,7 +356,7 @@ namespace MonoDevelop.Projects.MSBuild
 				try {
 					BeginOperation ();
 					result = await builder.Run (
-								configurations, -1, MSBuildVerbosity.Normal,
+								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Normal,
 								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
 							);
 				} catch (Exception ex) {

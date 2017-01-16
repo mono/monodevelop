@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public MSBuildResult Run (
-			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
+			ProjectConfigurationInfo[] configurations, IEngineLogWriter logWriter, MSBuildVerbosity verbosity,
 			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
 		{
 			if (runTargets == null || runTargets.Length == 0)
@@ -69,7 +69,8 @@ namespace MonoDevelop.Projects.MSBuild
 					var logger = new LocalLogger (file);
 					if (logWriter != null) {
 						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWrite, null, null);
-						loggers = new ILogger[] { logger, consoleLogger };
+						var eventLogger = new TargetLogger (logWriter.RequiredEvents, LogEvent);
+						loggers = new ILogger[] { logger, consoleLogger, eventLogger };
 					} else {
 						loggers = new ILogger[] { logger };
 					}

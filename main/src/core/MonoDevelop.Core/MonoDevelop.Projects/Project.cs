@@ -1131,7 +1131,7 @@ namespace MonoDevelop.Projects
 						targets = new string [] { target };
 					
 					try {
-						result = await builder.Run (configs, monitor.Log, MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, monitor.Log, new ProxyLogger (this, context.Loggers), MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();

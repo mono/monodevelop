@@ -1,10 +1,10 @@
 ﻿//
-// TargetEvaluationContext.cs
+// MSBuildEvent.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2017 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,44 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.MSBuild
 {
-	public class TargetEvaluationContext: ProjectOperationContext
+	[Flags]
+	public enum MSBuildEvent
 	{
-		List<MSBuildLogger> loggers = new List<MSBuildLogger> ();
-
-		public TargetEvaluationContext ()
-		{
-			PropertiesToEvaluate = new HashSet<string> ();
-			ItemsToEvaluate = new HashSet<string> ();
-		}
-
-		public TargetEvaluationContext (OperationContext other): this ()
-		{
-			if (other != null)
-				CopyFrom (other);
-		}
-
-		public HashSet<string> PropertiesToEvaluate { get; private set; }
-
-		public HashSet<string> ItemsToEvaluate { get; private set; }
-
-		public ICollection<MSBuildLogger> Loggers {
-			get { return loggers; }
-		}
-
-		public override void CopyFrom (OperationContext other)
-		{
-			base.CopyFrom (other);
-			var o = other as TargetEvaluationContext;
-			if (o != null) {
-				PropertiesToEvaluate = new HashSet<string> (o.PropertiesToEvaluate);
-				ItemsToEvaluate = new HashSet<string> (o.ItemsToEvaluate);
-				loggers = new List<MSBuildLogger> (o.Loggers);
-			}
-		}
+		None = 0,
+		BuildStarted = 1 << 0,
+		BuildFinished = 1 << 1,
+		ProjectStarted = 1 << 2,
+		ProjectFinished = 1 << 3,
+		TargetStarted = 1 << 4,
+		TargetFinished = 1 << 5,
+		TaskStarted = 1 << 6,
+		TaskFinished = 1 << 7,
+		ErrorRaised = 1 << 8,
+		WarningRaised = 1 << 9,
+		MessageRaised = 1 << 10,
+		CustomEventRaised = 1 << 11,
+		All = 0xffff
 	}
 }
-
