@@ -346,15 +346,26 @@ typedef struct
 		public void TestPOSIXBracketExpressions ()
 		{
 			Assert.AreEqual ("[\\w\\d]", Sublime3Format.CompileRegex ("[:alnum:]"));
-			Assert.AreEqual ("\\w", Sublime3Format.CompileRegex ("[:alpha:]"));
-			Assert.AreEqual ("[ \t]", Sublime3Format.CompileRegex ("[:blank:]"));
-			Assert.AreEqual ("\\d", Sublime3Format.CompileRegex ("[:digit:]"));
-			Assert.AreEqual ("\\S", Sublime3Format.CompileRegex ("[:graph:]"));
+			Assert.AreEqual ("[\\w]", Sublime3Format.CompileRegex ("[:alpha:]"));
+			Assert.AreEqual ("[\\t ]", Sublime3Format.CompileRegex ("[:blank:]"));
+			Assert.AreEqual ("[\\d]", Sublime3Format.CompileRegex ("[:digit:]"));
+			Assert.AreEqual ("[\\S]", Sublime3Format.CompileRegex ("[:graph:]"));
 			Assert.AreEqual ("[a-z]", Sublime3Format.CompileRegex ("[:lower:]"));
-			Assert.AreEqual ("[\\S\\ ]", Sublime3Format.CompileRegex ("[:print:]"));
-			Assert.AreEqual ("\\s", Sublime3Format.CompileRegex ("[:space:]"));
+			Assert.AreEqual ("[\\S ]", Sublime3Format.CompileRegex ("[:print:]"));
+			Assert.AreEqual ("[\\s]", Sublime3Format.CompileRegex ("[:space:]"));
 			Assert.AreEqual ("[A-Z]", Sublime3Format.CompileRegex ("[:upper:]"));
-			Assert.AreEqual ("[0-9a-fA-F]", Sublime3Format.CompileRegex ("[:xdigit:]"));
+			Assert.AreEqual ("[\\dA-Fa-f]", Sublime3Format.CompileRegex ("[:xdigit:]"));
+		}
+
+		[Test]
+		public void TestPosixBracketExpressionsInCharacterClass ()
+		{
+			Assert.AreEqual ("[\\w\\d_]", Sublime3Format.CompileRegex ("[_[:alnum:]]"));
+			Assert.AreEqual ("[\\w_]", Sublime3Format.CompileRegex ("[_[:alpha:]]"));
+			Assert.AreEqual ("[\\d_]", Sublime3Format.CompileRegex ("[_[:digit:]]"));
+			Assert.AreEqual ("[_a-z]", Sublime3Format.CompileRegex ("[_[:lower:]]"));
+			Assert.AreEqual ("[A-Z_]", Sublime3Format.CompileRegex ("[_[:upper:]]"));
+			Assert.AreEqual ("[\\dA-F_a-f]", Sublime3Format.CompileRegex ("[_[:xdigit:]]"));
 		}
 
 		[Test]
