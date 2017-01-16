@@ -29,6 +29,7 @@ using MonoDevelop.Components.AutoTest;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Commands;
 using System.Linq;
+using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
@@ -89,17 +90,24 @@ namespace UserInterfaceTests
 			return isBuildSuccessful;
 		}
 
-		public static bool Run (int timeoutSeconds = 20, int pollStepSecs = 5)
+		public static void Run ()
 		{
-			Session.ExecuteCommand (ProjectCommands.Run);
-			try {
-				Ide.WaitUntil (
-					() => !Session.Query (c => IdeQuery.RunButton (c).Property ("Icon", "Stop")).Any (),
-					timeout: timeoutSeconds * 1000, pollStep: pollStepSecs * 1000);
-				return false;
-			} catch (TimeoutException) {
-				return true;
-			}
+			Session.ExecuteCommand ("MonoDevelop.Ide.Commands.ProjectCommands.Run");
+		}
+
+		public static void Stop ()
+		{
+			Session.ExecuteCommand ("MonoDevelop.Ide.Commands.ProjectCommands.Stop");
+		}
+
+		public static void StartDebugging ()
+		{
+			Session.ExecuteCommand ("MonoDevelop.Debugger.DebugCommands.Debug");
+		}
+
+		public static void StopDebugging ()
+		{
+			Stop ();
 		}
 
 		public static void OpenWorkspace (string solutionPath, UITestBase testContext = null)
