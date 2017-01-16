@@ -39,6 +39,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var p = new MSBuildProject ();
 			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+			ProjectPackageReference.AddKnownItemAttributes (p);
 
 			var item = p.AddNewItem ("PackageReference", "Test");
 			var packageReference = new TestableProjectPackageReference ("Test", "1.2.3");

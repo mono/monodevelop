@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 		bool hadXmlDeclaration;
 		bool isShared;
 		ConditionedPropertyCollection conditionedProperties = new ConditionedPropertyCollection ();
+		Dictionary<string, string[]> knownItemAttributes;
 
 		MSBuildEngineManager engineManager;
 		bool engineManagerIsLocal;
@@ -965,6 +966,29 @@ namespace MonoDevelop.Projects.MSBuild
 						bestGroups.Remove (item.Name);
 				}
 			}
+		}
+
+		public void AddKnownItemAttribute (string itemName, params string[] attributes)
+		{
+			AssertCanModify ();
+
+			if (knownItemAttributes == null)
+				knownItemAttributes = new Dictionary<string, string[]> ();
+
+			var mergedAttributes = MSBuildItem.KnownAttributes.Union (attributes).ToArray ();
+			knownItemAttributes [itemName] = mergedAttributes;
+		}
+
+		internal string[] GetKnownItemAttributes (string itemName)
+		{
+			if (knownItemAttributes == null)
+				return MSBuildItem.KnownAttributes;
+
+			string[] attributes = null;
+			if (knownItemAttributes.TryGetValue (itemName, out attributes))
+				return attributes;
+
+			return MSBuildItem.KnownAttributes;
 		}
 	}
 

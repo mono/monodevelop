@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			var children = GetChildren ().Where (c => !c.SkipSerialization).ToArray ();
+			var children = GetChildren ().Where (c => !c.SkipSerialization);
 			var hasChildren = children.Any ();
 
 			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;

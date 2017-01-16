@@ -86,15 +86,20 @@ namespace MonoDevelop.PackageManagement
 			return packageReference;
 		}
 
+		internal static ProjectPackageReference Create (string packageId, string version)
+		{
+			var package = new PackageIdentity (packageId, new NuGetVersion (version));
+			return Create (package);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[PackageReference: {0} {1}]", Include, Metadata.GetValue ("Version"));
 		}
 
-		protected override void Write (Project project, MSBuildItem buildItem)
+		public static void AddKnownItemAttributes (MSBuildProject project)
 		{
-			buildItem.AddKnownAttributes ("Version");
-			base.Write (project, buildItem);
+			project.AddKnownItemAttribute ("PackageReference", "Version");
 		}
 	}
 }

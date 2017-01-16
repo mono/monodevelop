@@ -557,10 +557,10 @@ namespace MonoDevelop.Projects
 		{
 			var p = new MSBuildProject ();
 			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+			p.AddKnownItemAttribute ("Test", "Known");
 
 			var item = p.AddNewItem ("Test", "Include");
 			item.Metadata.SetValue ("Known", "KnownAttributeValue");
-			item.AddKnownAttributes ("Known");
 
 			string xml = p.SaveToString ();
 			var doc = new XmlDocument ();
@@ -587,8 +587,8 @@ namespace MonoDevelop.Projects
 				"</Project>";
 			p.LoadXml (projectXml);
 
+			p.AddKnownItemAttribute ("Test", "Known", "Another");
 			var item = p.ItemGroups.Single ().Items.Single ();
-			item.AddKnownAttributes ("Known", "Another");
 			item.Metadata.SetValue ("Another", "AnotherValue");
 
 			string xml = p.SaveToString ();

@@ -41,7 +41,6 @@ namespace MonoDevelop.Projects.MSBuild
 		string exclude;
 		string remove;
 		string update;
-		List<string> customKnownAttributes;
 
 		public MSBuildItem ()
 		{
@@ -67,21 +66,15 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return !string.IsNullOrEmpty (include); }
 		}
 
-		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove", "Update" };
+		internal static readonly string [] KnownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove", "Update" };
 
 		internal override string [] GetKnownAttributes ()
 		{
-			return knownAttributes;
-		}
+			var project = ParentProject;
+			if (project != null)
+				return project.GetKnownItemAttributes (name);
 
-		public void AddKnownAttributes (params string[] names)
-		{
-			AssertCanModify ();
-
-			if (customKnownAttributes == null)
-				customKnownAttributes = new List<string> ();
-
-			customKnownAttributes.AddRange (names);
+			return KnownAttributes;
 		}
 
 		internal override void ReadAttribute (string name, string value)
@@ -118,18 +111,11 @@ namespace MonoDevelop.Projects.MSBuild
 				if (result != null)
 					return result;
 
-				if (IsCustomAttribute (name) && !ExistingPropertyAttribute (name))
+				if (!ExistingPropertyAttribute (name))
 					return WritePropertyAsAttribute (name);
 
 				return null;
 			}
-		}
-
-		bool IsCustomAttribute (string attributeName)
-		{
-			if (customKnownAttributes != null)
-				return customKnownAttributes.Contains (attributeName);
-			return false;
 		}
 
 		bool ExistingPropertyAttribute (string propertyName)
@@ -169,7 +155,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (props.Count > 0) {
 				int propIndex = 0;
 				int knownIndex = 0;
-				var knownAtts = GetKnownAttributesForWrite ().ToArray ();
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
 				string lastAttr = null;
 				do {
 					if (propIndex < props.Count && (lastAttr == props [propIndex].AfterAttribute || props [propIndex].AfterAttribute == null)) {
@@ -186,7 +172,7 @@ namespace MonoDevelop.Projects.MSBuild
 						lastAttr = null;
 				} while (propIndex < props.Count || knownIndex < knownAtts.Length);
 			} else {
-				var knownAtts = GetKnownAttributesForWrite ().ToArray ();
+				var knownAtts = attributeOrder ?? GetKnownAttributes ();
 				for (int i = 0; i < knownAtts.Length; i++) {
 					var aname = knownAtts [i];
 					var val = WriteAttribute (aname);
@@ -204,20 +190,6 @@ namespace MonoDevelop.Projects.MSBuild
 				string id = context.ItemMap.Count.ToString ();
 				context.ItemMap [id] = this;
 			}
-		}
-
-		IEnumerable<string> GetKnownAttributesForWrite ()
-		{
-			if (attributeOrder != null && customKnownAttributes != null)
-				return attributeOrder.Union (customKnownAttributes);
-
-			if (attributeOrder != null)
-				return attributeOrder;
-
-			if (customKnownAttributes != null)
-				return GetKnownAttributes ().Union (customKnownAttributes);
-
-			return GetKnownAttributes ();
 		}
 
 		internal override string GetElementName ()
