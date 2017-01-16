@@ -263,7 +263,7 @@ namespace Mono.TextTemplating
 	{
 		public Directive (string name, Location start)
 		{
-			this.Name = name;
+			this.Name = name.ToLowerInvariant ();
 			this.Attributes = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 			this.StartLocation = start;
 		}
