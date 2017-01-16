@@ -74,7 +74,13 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <returns>An integer containing the sort order for the objects.</returns>
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			return (otherNode.DataItem is ProjectReferenceCollection) ? 1 : -1;
+			if (otherNode.DataItem is ProjectReferenceCollection ||
+				otherNode.DataItem is MonoDevelop.Ide.Gui.Pads.ProjectPad.GettingStartedNode)
+				return 1;
+			var itemType = otherNode.DataItem?.GetType ()?.FullName;
+			if (itemType == "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServiceFolderNode")
+				return 1;
+			return -1;
 		}
 	}
 }
