@@ -204,6 +204,9 @@ namespace Mono.TextTemplating
  				if (System.IO.File.Exists (path))
  					return path;
  			}
+
+			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.ToLowerInvariant ().EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
+				return assemblyReference + ".dll";
 			return assemblyReference;
 		}
 		
