@@ -26,6 +26,8 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
@@ -61,6 +63,33 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (globalPropertyGroup.HasProperty ("ProjectGuid"));
 			Assert.IsNull (project.MSBuildProject.DefaultTargets);
 			Assert.AreEqual ("15.0", project.MSBuildProject.ToolsVersion);
+		}
+
+		[Test]
+		public async Task SdkConsoleProject_AddPackageReference_VersionWrittenAsAttribute ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().Single ();
+			string projectFileName = project.FileName;
+
+			var packageReference = ProjectPackageReference.Create ("Test", "1.2.3");
+			project.Items.Add (packageReference);
+
+			await project.SaveAsync (Util.GetMonitor ());
+
+			// Reload project.
+			var doc = new XmlDocument ();
+			doc.Load (projectFileName);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var packageReferenceElement = (XmlElement)itemGroupElement.ChildNodes[1];
+
+			Assert.AreEqual ("PackageReference", packageReferenceElement.Name);
+			Assert.AreEqual ("Test", packageReferenceElement.GetAttribute ("Include"));
+			Assert.AreEqual ("1.2.3", packageReferenceElement.GetAttribute ("Version"));
+			Assert.AreEqual (0, packageReferenceElement.ChildNodes.Count);
+			Assert.IsTrue (packageReferenceElement.IsEmpty);
 		}
 	}
 }

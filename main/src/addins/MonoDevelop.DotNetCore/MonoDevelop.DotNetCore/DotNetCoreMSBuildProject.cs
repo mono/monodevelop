@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
@@ -86,6 +87,12 @@ namespace MonoDevelop.DotNetCore
 			if (HasSdk) {
 				project.RemoveInternalElements ();
 			}
+		}
+
+		public void AddKnownItemAttributes (MSBuildProject project)
+		{
+			if (HasSdk)
+				ProjectPackageReference.AddKnownItemAttributes (project);
 		}
 
 		public bool AddInternalSdkImports (MSBuildProject project, DotNetCoreSdkPaths sdkPaths)
