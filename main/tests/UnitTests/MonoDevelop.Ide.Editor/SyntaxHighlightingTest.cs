@@ -418,8 +418,8 @@ typedef struct
 		[Test]
 		public void TestCharacterClassBug ()
 		{
-			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([:A-Z_a-z][\\w-.:]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
-			Assert.AreEqual ("[\\w-]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
+			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([\\w:_][\\w\\d-.:_]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
+			Assert.AreEqual ("[\\w\\d-_]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
 			Assert.AreEqual ("\\[(\\\\]|[^\\]])*\\]", Sublime3Format.CompileRegex ("\\[(\\\\]|[^\\]])*\\]"));
 
 			Assert.AreEqual ("[\\p{Lu}]", Sublime3Format.CompileRegex ("[\\p{Lu}]"));
@@ -434,13 +434,13 @@ typedef struct
 		[Test]
 		public void TestGroupReplacement ()
 		{
-			Assert.AreEqual ("(?<id>[A-Z_a-z]*)\\s*[A-Z_a-z]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
+			Assert.AreEqual ("(?<id>[\\w_]*)\\s*[\\w_]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
 		}
 
 		[Test]
 		public void TestGroupNameCorrection ()
 		{
-			Assert.AreEqual ("(?<id_id2>[A-Z_a-z]*)", Sublime3Format.CompileRegex ("(?<id-id2>[A-Z_a-z]*)"));
+			Assert.AreEqual ("(?<id_id2>[\\w_]*)", Sublime3Format.CompileRegex ("(?<id-id2>[A-Z_a-z]*)"));
 		}
 	}
 }

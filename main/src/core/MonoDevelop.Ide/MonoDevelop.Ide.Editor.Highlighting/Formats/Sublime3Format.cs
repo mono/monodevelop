@@ -215,6 +215,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			int[] table = new int [256];
 			StringBuilder org = new StringBuilder ();
 			List<string> unicodeGroups = new List<string> ();
+			CharacterClass subClass;
 
 			public void Push (char ch)
 			{
@@ -225,9 +226,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						goto default;
 					if (first || lastPushedChar == '[') {
 						wordBuilder = new StringBuilder ();
+						subClass = new CharacterClass ();
+						subClass.Add (':');
 					} else {
-						ConvertUnicodeCategory (wordBuilder.ToString ());
-						wordBuilder = null;
+						if (wordBuilder != null) {
+							ConvertUnicodeCategory (wordBuilder.ToString ());
+							wordBuilder = null;
+							subClass = null;
+						} else
+							goto default;
 					}
 					break;
 				case '^':
@@ -258,12 +265,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						goto default;
 					break;
 				case '\\':
-					if (escape)
+					if (escape || wordBuilder != null)
 						goto default;
 					escape = true;
 					break;
 				case '-':
-					if (escape || first)
+					if (escape || first || wordBuilder != null)
 						goto default;
 					range = true;
 					break;
@@ -372,6 +379,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					if (wordBuilder != null) {
 						wordBuilder.Append (ch);
+						subClass.Push (ch);
 						break;
 					}
 
@@ -453,19 +461,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 
-			public string Generate ()
+			void PrepareGeneration ()
 			{
-				var result = new StringBuilder ();
-				result.Append ('[');
-				if (negativeGroup)
-					result.Append ('^');
 				PushLastChar ();
 
-				if (range) 
+				if (range)
 					table ['-'] = negativeGroup ? -1 : 1;
 				if (escape)
 					table ['\\'] = negativeGroup ? -1 : 1;
 
+			}
+			public string Generate ()
+			{
+				if (subClass != null) {
+					subClass.PrepareGeneration ();
+					for (int i = 0; i < table.Length; i++) {
+						if (subClass.table [i] != 0)
+							table [i] = subClass.table [i];
+					}
+				}
+				PrepareGeneration ();
+				var result = new StringBuilder ();
+				result.Append ('[');
+				if (negativeGroup)
+					result.Append ('^');
+				
 				bool hasAllPrintable = true;
 				for (int i = 0; i < table.Length; i++) {
 					var ch = (char)i;
