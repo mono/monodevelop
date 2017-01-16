@@ -1302,6 +1302,35 @@ namespace MonoDevelop.Ide.Gui
 					doc.ReparseDocument ();
 			}
 		}
+
+		System.Timers.Timer tabsChangedTimer = null;
+
+		void DisposeTimerAndSave (object o, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				tabsChangedTimer.Stop ();
+				tabsChangedTimer.Elapsed -= DisposeTimerAndSave;
+				tabsChangedTimer.Dispose ();
+				tabsChangedTimer = null;
+
+				IdeApp.Workspace.SavePreferences ();
+			});
+		}
+
+		void WorkbenchTabsChanged (object sender, EventArgs ev)
+		{
+			if (tabsChangedTimer != null) {
+				// Timer already started, and we want to allow it to complete
+				// so it can't be interrupted by triggering WorkbenchTabsChanged
+				// every few seconds.
+				return;
+			}
+
+			tabsChangedTimer = new System.Timers.Timer (10000);
+			tabsChangedTimer.AutoReset = false;
+			tabsChangedTimer.Elapsed += DisposeTimerAndSave;
+			tabsChangedTimer.Start ();
+		}
 	}
 	
 	public class FileSaveInformation
