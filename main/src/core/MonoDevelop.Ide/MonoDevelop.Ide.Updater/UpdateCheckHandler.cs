@@ -26,6 +26,7 @@
 
 
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide.Updater
@@ -48,6 +49,11 @@ namespace MonoDevelop.Ide.Updater
 		protected override void Run ()
 		{
 			UpdateService.CheckForUpdates ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = !PropertyService.Get<bool>("MonoDevelop.Ide.AddinUpdater.HideFromUI");
 		}
 	}
 }
