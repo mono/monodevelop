@@ -59,7 +59,7 @@
 			macShortcut = "Meta|V" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Delete"
 			_label = "_Delete"
-			_description = "Delete the selection"
+			_description = "Remove/Delete the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteHandler"
 			icon  = "gtk-delete"
 			macShortcut = "Meta+BackSpace" />
