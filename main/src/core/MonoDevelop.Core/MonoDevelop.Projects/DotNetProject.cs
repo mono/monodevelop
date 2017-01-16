@@ -1657,7 +1657,7 @@ namespace MonoDevelop.Projects
 			}
 
 			var console = externalConsole ? context.ExternalConsoleFactory.CreateConsole (!pauseConsole, monitor.CancellationToken)
-												   : context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+												   : context.ConsoleFactory.CreateConsole (OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (Name), monitor.CancellationToken);
 		
 			using (console) {
 				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);

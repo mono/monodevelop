@@ -141,14 +141,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (settingGlobalConfig)
 				return;
 
-			TrackStartupProject ();
-			configurationMergers = new Dictionary<SolutionItem, ConfigurationMerger> ();
-			foreach (var project in startupProjects) {
-				var configurationMerger = new ConfigurationMerger ();
-				configurationMerger.Load (currentSolution, project.Item1, project.Item2);
-				configurationMergers [project.Item1] = configurationMerger;
-			}
-
 			ignoreConfigurationChangedCount++;
 			try {
 				if (!IdeApp.Workspace.IsOpen) {
@@ -158,6 +150,18 @@ namespace MonoDevelop.Components.MainToolbar
 					ToolbarView.RunConfigurationVisible = false;
 					return;
 				}
+				if (currentSolution != null)
+					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc)).ToArray ();
+				else
+					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
+				SelectActiveRunConfiguration ();
+				TrackStartupProject ();
+				configurationMergers = new Dictionary<SolutionItem, ConfigurationMerger> ();
+				foreach (var project in startupProjects) {
+					var configurationMerger = new ConfigurationMerger ();
+					configurationMerger.Load (currentSolution, project.Item1, project.Item2);
+					configurationMergers [project.Item1] = configurationMerger;
+				}
 				if (configurationMergers.Count == 1)
 					ToolbarView.ConfigurationModel = configurationMergers.First ().Value.SolutionConfigurations
 						.Distinct ()
@@ -165,11 +169,6 @@ namespace MonoDevelop.Components.MainToolbar
 				else
 					ToolbarView.ConfigurationModel = currentSolution?.Configurations.OfType<SolutionConfiguration> ()
 						.Select (conf => new ConfigurationModel (conf.Id)) ?? new ConfigurationModel [0];
-
-				if (currentSolution != null)
-					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc)).ToArray ();
-				else
-					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
 				
 			} finally {
 				ignoreConfigurationChangedCount--;
@@ -177,7 +176,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			ToolbarView.RunConfigurationVisible = ToolbarView.RunConfigurationModel.Count () > 1;
 
-			SelectActiveRunConfiguration ();
 			FillRuntimes ();
 			SelectActiveConfiguration ();
 		}
@@ -267,6 +265,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (previous != null)
 						list.Add (new RuntimeModel (this, displayText: null));//Seperator
 
+					list.Add (new RuntimeModel (this, target, true, project));
 					foreach (var device in devices) {
 						if (device is ExecutionTargetGroup) {
 							var versions = (ExecutionTargetGroup)device;
@@ -385,30 +384,24 @@ namespace MonoDevelop.Components.MainToolbar
 		void SelectActiveRunConfiguration ()
 		{
 			var sconf = currentSolution?.StartupConfiguration;
+			var confs = ToolbarView.RunConfigurationModel.Cast<RunConfigurationModel> ().ToList ();
+			if (confs.Count > 0) {
+				bool selected = false;
 
-			ignoreConfigurationChangedCount++;
-			try {
-				var confs = ToolbarView.RunConfigurationModel.Cast<RunConfigurationModel> ().ToList ();
-				if (confs.Count > 0) {
-					bool selected = false;
-
-					foreach (var item in confs) {
-						if (item.RunConfiguration.Id == sconf?.Id) {
-							ToolbarView.ActiveRunConfiguration = item;
-							selected = true;
-							break;
-						}
-					}
-
-					if (!selected) {
-						var defaultConfig = confs.First ();
-						ToolbarView.ActiveRunConfiguration = defaultConfig;
-						if (currentSolution != null)
-							currentSolution.StartupConfiguration = defaultConfig.RunConfiguration;
+				foreach (var item in confs) {
+					if (item.RunConfiguration.Id == sconf?.Id) {
+						ToolbarView.ActiveRunConfiguration = item;
+						selected = true;
+						break;
 					}
 				}
-			} finally {
-				ignoreConfigurationChangedCount--;
+
+				if (!selected) {
+					var defaultConfig = confs.First ();
+					ToolbarView.ActiveRunConfiguration = defaultConfig;
+					if (currentSolution != null)
+						currentSolution.StartupConfiguration = defaultConfig.RunConfiguration;
+				}
 			}
 		}
 
@@ -587,9 +580,8 @@ namespace MonoDevelop.Components.MainToolbar
 				projects = new Tuple<SolutionItem, SolutionItemRunConfiguration> [0];
 			}
 			if (!startupProjects.SequenceEqual (projects)) {
-				foreach (var item in startupProjects) {
+				foreach (var item in startupProjects)
 					item.Item1.ExecutionTargetsChanged -= executionTargetsChanged;
-				}
 				foreach (var item in projects)
 					item.Item1.ExecutionTargetsChanged += executionTargetsChanged;
 				startupProjects = projects;

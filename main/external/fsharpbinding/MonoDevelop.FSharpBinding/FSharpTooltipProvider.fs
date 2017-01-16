@@ -61,22 +61,24 @@ type FSharpTooltipProvider() =
                 asyncChoice {
                     try
                         LoggingService.LogDebug "TooltipProvider: Getting tool tip"
-                        let projectFile = context.Project |> function null -> file | project -> project.FileName.ToString()
-                        let! parseAndCheckResults =
-                            languageService.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource)
-                            |> Choice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
-                        let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr) |> AsyncChoice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
-                        let! signature, xmldoc, footer = 
-                            SymbolTooltips.getTooltipFromSymbolUse symbol
-                            |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
-                        
-                        let highlightedTip = syntaxHighlight signature, xmldoc, footer
 
-                        //get the TextSegment the the symbols range occupies
-                        let textSeg = Symbols.getTextSegment editor symbol col lineStr
+                        let parseAndCheckResults = context.TryGetAst()
+                        match parseAndCheckResults with
+                        | Some ast ->
+                            let! symbol = ast.GetSymbolAtLocation(line, col, lineStr) |> AsyncChoice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
+                            let! signature, xmldoc, footer =
+                                SymbolTooltips.getTooltipFromSymbolUse symbol
+                                |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
 
-                        let tooltipItem = TooltipItem(highlightedTip, textSeg)
-                        return tooltipItem
+                            let highlightedTip = syntaxHighlight signature, xmldoc, footer
+
+                            //get the TextSegment the the symbols range occupies
+                            let textSeg = Symbols.getTextSegment editor symbol col lineStr
+
+                            let tooltipItem = TooltipItem(highlightedTip, textSeg)
+                            return tooltipItem
+                        | None ->
+                            return! AsyncChoice.error "TooltipProvider: ParseAndCheckResults not found"
 
                     with
                     | :? TimeoutException -> return! AsyncChoice.error "TooltipProvider: timeout"

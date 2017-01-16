@@ -657,6 +657,25 @@ namespace MonoDevelop.SourceEditor
 #endregion
 		
 #region Key bindings
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineStart)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharRight)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineUp)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineDown)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		protected void OnUpdateEditorCommand (CommandInfo info)
+		{
+			// ignore command if the editor has no focus
+			info.Bypass = HasFocus == false;
+		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
 		internal void OnLineEnd ()

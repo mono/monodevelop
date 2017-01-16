@@ -111,7 +111,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 		<SeparatorItem id = "ViewSeparator3" />
-		<ItemSet id = "Editor Columns">
+		<ItemSet id = "Editor Columns" _label = "Editor Columns">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
 		</ItemSet>
@@ -153,7 +153,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
 		
 		<SeparatorItem id = "SearchInFilesSeparator" />
-		<ItemSet id = "Bookmarks" >
+		<ItemSet id = "Bookmarks" _label = "Bookmarks">
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
 			<SeparatorItem id = "BookmarksNavigationSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
@@ -161,7 +161,7 @@
 			<SeparatorItem id = "BookmarksClearSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
 		</ItemSet>
-		<ItemSet id = "Go To" >
+		<ItemSet id = "Go To"  _label = "Go To">
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />

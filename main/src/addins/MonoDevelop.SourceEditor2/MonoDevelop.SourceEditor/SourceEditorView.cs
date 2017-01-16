@@ -3586,5 +3586,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			return TextEditor.GetLineHeight (line);
 		}
+
+		public bool HasFocus {
+			get {
+				return this.TextEditor.HasFocus;
+			}
+		}
+
 	}
 } 

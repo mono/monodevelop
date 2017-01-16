@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 using System.Text;
+using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Backend;
@@ -79,8 +80,12 @@ namespace Mono.Debugging.Win32
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
-			var val = (CorValRef)gval;
-			if (val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue)val.Val).IsNull))
+			if (gval == null)
+				return true;
+			var val = gval as CorValRef;
+			if (val == null)
+				return true;
+			if (val.Val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull))
 				return true;
 
 			var obj = GetRealObject (ctx, val);
@@ -116,6 +121,18 @@ namespace Mono.Debugging.Win32
 			return (((CorType)type).Type == CorElementType.ELEMENT_TYPE_GENERICINST) || base.IsGenericType (ctx, type);
 		}
 
+		public override bool NullableHasValue (EvaluationContext ctx, object type, object obj)
+		{
+			ValueReference hasValue = GetMember (ctx, type, obj, "hasValue");
+
+			return (bool) hasValue.ObjectValue;
+		}
+
+		public override ValueReference NullableGetValue (EvaluationContext ctx, object type, object obj)
+		{
+			return GetMember (ctx, type, obj, "value");
+		}
+
 		public override string GetTypeName (EvaluationContext ctx, object gtype)
 		{
 			CorType type = (CorType) gtype;
@@ -136,14 +153,20 @@ namespace Mono.Debugging.Win32
 				return type.GetTypeInfo (cctx.Session).FullName;
 			}
 			catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in GetTypeName()", ex);
 				return t.FullName;
 			}
 		}
 
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (ctx, val).ExactType;
+			if (val == null)
+				return GetType (ctx, "System.Object");
+
+			var realObject = GetRealObject (ctx, val);
+			if (realObject == null)
+				return GetType (ctx, "System.Object");;
+			return realObject.ExactType;
 		}
 		
 		public override object GetBaseType (EvaluationContext ctx, object type)
@@ -378,11 +401,8 @@ namespace Mono.Debugging.Win32
 			CorValRef arr = new CorValRef (delegate {
 				return ctx.Session.NewArray (ctx, (CorType)GetValueType (ctx, val), 1);
 			});
-			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, arr) as CorArrayValue;
-			
-			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
+			ArrayAdaptor realArr = new ArrayAdaptor (ctx, new CorValRef<CorArrayValue> (() => (CorArrayValue) GetRealObject (ctx, arr)));
 			realArr.SetElement (new [] { 0 }, val);
-			arr.IsValid = true;
 			CorType at = (CorType) GetType (ctx, "System.Array");
 			object[] argTypes = { GetType (ctx, "System.Int32") };
 			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
@@ -632,6 +652,10 @@ namespace Mono.Debugging.Win32
 
 		bool IsAssignableFrom (CorEvaluationContext ctx, Type baseType, CorType ctype)
 		{
+			// the type is method generic parameter, we have to check its constraints, but now we don't have the info about it
+			// and assume that any type is assignable to method generic type parameter
+			if (baseType is MethodGenericParameter)
+				return true;
 			string tname = baseType.FullName;
 			string ctypeName = GetTypeName (ctx, ctype);
 			if (tname == "System.Object")
@@ -812,7 +836,7 @@ namespace Mono.Debugging.Win32
 			CorValue val = CorObjectAdaptor.GetRealObject (ctx, arr);
 			
 			if (val is CorArrayValue)
-				return new ArrayAdaptor (ctx, (CorValRef)arr, (CorArrayValue)val);
+				return new ArrayAdaptor (ctx, new CorValRef<CorArrayValue> ((CorArrayValue) val, () => (CorArrayValue) GetRealObject (ctx, arr)));
 			return null;
 		}
 		
@@ -827,10 +851,16 @@ namespace Mono.Debugging.Win32
 
 		public static CorValue GetRealObject (EvaluationContext cctx, object objr)
 		{
-			if (objr == null || ((CorValRef)objr).Val == null)
+			if (objr == null)
 				return null;
 
-			return GetRealObject (cctx, ((CorValRef)objr).Val);
+			var corValue = objr as CorValue;
+			if (corValue != null)
+				return GetRealObject (cctx, corValue);
+			var valRef = objr as CorValRef;
+			if (valRef != null)
+				return GetRealObject (cctx, valRef.Val);
+			return null;
 		}
 
 		public static CorValue GetRealObject (EvaluationContext ctx, CorValue obj)
@@ -1126,6 +1156,19 @@ namespace Mono.Debugging.Win32
 		{
 			var cctx = ctx as CorEvaluationContext;
 			var type = t as CorType;
+
+			if (IsNullableType (ctx, t)) {
+				// 'Value' and 'HasValue' property evaluation gives wrong results when the nullable object is a property of class.
+				// Replace to direct field access to fix it. Actual cause of this problem is unknown
+				switch (name) {
+					case "Value":
+						name = "value";
+						break;
+					case "HasValue":
+						name = "hasValue";
+						break;
+				}
+			}
 
 			while (type != null) {
 				var tt = type.GetTypeInfo (cctx.Session);
@@ -1665,7 +1708,7 @@ namespace Mono.Debugging.Win32
 					}
 				}
 			} catch (Exception ex) {
-				ctx.WriteDebuggerError (ex);
+				DebuggerLoggingService.LogError ("Exception in OnGetTypeDisplayData()", ex);
 			}
 			if (hasTypeData)
 				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, isCompilerGenerated, memberData);

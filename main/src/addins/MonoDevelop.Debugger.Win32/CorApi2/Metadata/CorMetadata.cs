@@ -36,7 +36,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         // methods
         public MethodInfo GetMethodInfo(int methodToken)
         {
-            return new MetadataMethodInfo(m_importer,methodToken);
+            return new MetadataMethodInfo(m_importer,methodToken, Instantiation.Empty);
         }
 
         public Type GetType(int typeToken)
@@ -265,7 +265,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
     public sealed class MetadataMethodInfo : MethodInfo
     {
-        internal MetadataMethodInfo(IMetadataImport importer,int methodToken)
+        internal MetadataMethodInfo(IMetadataImport importer, int methodToken, Instantiation instantiation)
         {
             if(!importer.IsValidToken((uint)methodToken))
                 throw new ArgumentException();
@@ -304,7 +304,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 			// [Xamarin] Expression evaluator.
 			CorCallingConvention callingConv;
-			MetadataHelperFunctionsExtensions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
+            MetadataHelperFunctionsExtensions.ReadMethodSignature (importer, instantiation, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes, out m_sentinelIndex);
             m_name = szMethodName.ToString();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
@@ -456,15 +456,24 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return MetadataHelperFunctions.GetGenericArgumentNames(m_importer,m_methodToken);
         }
 
+        public int VarargStartIndex
+        {
+            get
+            {
+                return m_sentinelIndex;
+            }
+        }
+
         private IMetadataImport m_importer;
         private string m_name;
         private int m_classToken;
         private int m_methodToken;
         private MethodAttributes m_methodAttributes;
-		// [Xamarin] Expression evaluator.
-		private List<Type> m_argTypes;
-		private Type m_retType;
-		private object[] m_customAttributes;
+        // [Xamarin] Expression evaluator.
+        private List<Type> m_argTypes;
+        private Type m_retType;
+        private object[] m_customAttributes;
+        private int m_sentinelIndex;
     }
 
     public enum MetadataTokenType

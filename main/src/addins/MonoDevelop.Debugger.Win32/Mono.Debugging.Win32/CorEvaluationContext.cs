@@ -9,6 +9,7 @@ namespace Mono.Debugging.Win32
 	{
 		CorEval corEval;
 		CorFrame frame;
+		CorChain activeChain;
 		int frameIndex;
 		int evalTimestamp;
 		readonly CorBacktrace backtrace;
@@ -37,6 +38,7 @@ namespace Mono.Debugging.Win32
 				thread = null;
 				frame = null;
 				corEval = null;
+				activeChain = null;
 			}
 		}
 
@@ -50,6 +52,16 @@ namespace Mono.Debugging.Win32
 			set {
 				thread = value;
 				threadId = thread.Id;
+			}
+		}
+
+		public CorChain ActiveChain {
+			get {
+				CheckTimestamp ();
+				if (activeChain == null) {
+					activeChain = Thread.ActiveChain;
+				}
+				return activeChain;
 			}
 		}
 

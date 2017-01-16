@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
@@ -135,36 +136,53 @@ namespace Microsoft.Samples.Debugging.Extensions
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
 		}
 
-		internal static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
+		internal static void ReadMethodSignature (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes, out int sentinelIndex)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
 			uint numArgs = 0;
 			// FIXME: Use number of <T>s.
 			uint types = 0;
+			sentinelIndex = -1;
 			if ((cconv & CorCallingConvention.Generic) == CorCallingConvention.Generic)
 				types = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 
 			if (cconv != CorCallingConvention.Field)
 				numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 
-			retType = ReadType (importer, ref pData);
+			retType = ReadType (importer, instantiation, ref pData);
 			argTypes = new List<Type> ();
-			for (int n = 0; n < numArgs; n++)
-				argTypes.Add (ReadType (importer, ref pData));
+			for (int n = 0; n < numArgs; n++) {
+				CorElementType elemType;
+				unsafe {
+					var pByte = (byte*) pData;
+					var b = *pByte;
+					elemType = (CorElementType) b;
+
+					if (elemType == CorElementType.ELEMENT_TYPE_SENTINEL) {
+						// the case when SENTINEL is presented in a separate position, so we have to increment the pointer
+						sentinelIndex = n;
+						pData = (IntPtr) (pByte + 1);
+					}
+					else if ((elemType & CorElementType.ELEMENT_TYPE_SENTINEL) == CorElementType.ELEMENT_TYPE_SENTINEL) {
+						// SENTINEL is just a flag on element type, so we haven't to promote the pointer
+						sentinelIndex = n;
+					}
+				}
+				argTypes.Add (ReadType (importer, instantiation, ref pData));
+			}
 		}
 
-		class GenericType
-		{
-			// Used as marker for generic method args
-		}
-
-		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
+		static Type ReadType (IMetadataImport importer, Instantiation instantiation, ref IntPtr pData)
 		{
 			CorElementType et;
 			unsafe {
 				var pBytes = (byte*)pData;
 				et = (CorElementType) (*pBytes);
 				pData = (IntPtr) (pBytes + 1);
+			}
+
+			if ((et & CorElementType.ELEMENT_TYPE_SENTINEL) == CorElementType.ELEMENT_TYPE_SENTINEL) {
+				et ^= CorElementType.ELEMENT_TYPE_SENTINEL; // substract SENTINEL bits from element type to get clean ET
 			}
 
 			switch (et)
@@ -188,29 +206,36 @@ namespace Microsoft.Samples.Debugging.Extensions
 			case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
 			case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return typeof(TypedReference);
 
-			case CorElementType.ELEMENT_TYPE_VAR:
-			case CorElementType.ELEMENT_TYPE_MVAR:
-				// Generic args in methods not supported. Return a dummy type.
-				MetadataHelperFunctions.CorSigUncompressData (ref pData);
-				return typeof(GenericType);
+			case CorElementType.ELEMENT_TYPE_VAR: {
+					var index = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+					if (index < instantiation.TypeArgs.Count) {
+						return instantiation.TypeArgs[(int) index];
+					}
+					return new TypeGenericParameter((int) index);
+				}
+			case CorElementType.ELEMENT_TYPE_MVAR: {
+					// Generic args in methods not supported. Return a dummy type.
+					var index = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+					return new MethodGenericParameter((int) index);
+				}
 
 			case CorElementType.ELEMENT_TYPE_GENERICINST: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					var typeArgs = new List<Type> ();
 					uint num = MetadataHelperFunctions.CorSigUncompressData (ref pData);
 					for (int n=0; n<num; n++) {
-						typeArgs.Add (ReadType (importer, ref pData));
+						typeArgs.Add (ReadType (importer, instantiation, ref pData));
 					}
 					return MetadataExtensions.MakeGeneric (t, typeArgs);
 				}
 
 			case CorElementType.ELEMENT_TYPE_PTR: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakePointer (t);
 				}
 
 			case CorElementType.ELEMENT_TYPE_BYREF: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakeByRef(t);
 				}
 
@@ -222,7 +247,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				}
 
 			case CorElementType.ELEMENT_TYPE_ARRAY: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					int rank = (int)MetadataHelperFunctions.CorSigUncompressData (ref pData);
 					if (rank == 0)
 						return MetadataExtensions.MakeArray (t, null, null);
@@ -241,7 +266,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 				}
 
 			case CorElementType.ELEMENT_TYPE_SZARRAY: {
-					Type t = ReadType (importer, ref pData);
+					Type t = ReadType (importer, instantiation, ref pData);
 					return MetadataExtensions.MakeArray (t, null, null);
 				}
 
@@ -249,13 +274,26 @@ namespace Microsoft.Samples.Debugging.Extensions
 					CorCallingConvention cconv;
 					Type retType;
 					List<Type> argTypes;
-					ReadMethodSignature (importer, ref pData, out cconv, out retType, out argTypes);
+					int sentinelIndex;
+					ReadMethodSignature (importer, instantiation, ref pData, out cconv, out retType, out argTypes, out sentinelIndex);
 					return MetadataExtensions.MakeDelegate (retType, argTypes);
 				}
 
 			case CorElementType.ELEMENT_TYPE_CMOD_REQD:
-			case CorElementType.ELEMENT_TYPE_CMOD_OPT:
-				return ReadType (importer, ref pData);
+			case CorElementType.ELEMENT_TYPE_CMOD_OPT: {
+					uint token = MetadataHelperFunctions.CorSigUncompressToken (ref pData);
+					return new MetadataType (importer, (int) token);
+				}
+
+			case CorElementType.ELEMENT_TYPE_INTERNAL:
+				return typeof(object); // hack to avoid the exceptions. CLR spec says that this type should never occurs, but it occurs sometimes, mystics
+
+			case CorElementType.ELEMENT_TYPE_NATIVE_ARRAY_TEMPLATE_ZAPSIG:
+			case CorElementType.ELEMENT_TYPE_NATIVE_VALUETYPE_ZAPSIG:
+				return ReadType (importer, instantiation, ref pData);
+
+			case CorElementType.ELEMENT_TYPE_CANON_ZAPSIG:
+				return typeof(object); // this is representation of __Canon type, but it's inaccessible, using object instead
 			}
 			throw new NotSupportedException ("Unknown sig element type: " + et);
 		}

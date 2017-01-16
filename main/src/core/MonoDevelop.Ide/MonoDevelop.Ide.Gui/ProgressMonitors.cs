@@ -77,10 +77,15 @@ namespace MonoDevelop.Ide.Gui
 			mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad, true));
 			return mon;
 		}
-		
+
 		public OutputProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.PadExecute, false, true);
+			return GetRunProgressMonitor (null);
+		}
+		
+		public OutputProgressMonitor GetRunProgressMonitor (string titleSuffix)
+		{
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.PadExecute, false, true, titleSuffix);
 		}
 		
 		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
@@ -117,7 +122,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 			{
-				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true)).Console;
+				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true, titleSuffix:options.Title)).Console;
 			}
 		}
 
@@ -141,9 +146,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse, visible);
 		}
-		
+
 		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
 		{
+			return GetOutputProgressMonitor (id, title, icon, bringToFront, allowMonitorReuse, null, visible);
+		}
+		
+		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, string titleSuffix, bool visible = true)
+		{
+			if (!string.IsNullOrEmpty (titleSuffix)) {
+				title += " - " + titleSuffix;
+			}
 			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = visible;
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
@@ -176,44 +189,59 @@ namespace MonoDevelop.Ide.Gui
 			Pad pad = null;
 			if (icon == null)
 				icon = Stock.OutputIcon;
-			
+
+			string originalTitle = title;
 			if (id == null)
-				id = title;
+				id = originalTitle;
 
 			int instanceCount = -1;
+			int titleInstanceCount = 0;
 			if (allowMonitorReuse) {
+				var usedTitleIds = new List<int> ();
 				lock (outputMonitors) {
 					// Look for an available pad
 					for (int n=0; n<outputMonitors.Count; n++) {
-						Pad mpad = (Pad) outputMonitors [n];
+						var mpad = outputMonitors [n];
 						DefaultMonitorPad mon = (DefaultMonitorPad) mpad.Content;
 						if (mon.TypeTag == id) {
 							if (mon.InstanceNum > instanceCount)
 								instanceCount = mon.InstanceNum;
-							if (mon.AllowReuse) {
+							if (mon.Title == originalTitle && !mon.AllowReuse)
+								usedTitleIds.Add (mon.TitleInstanceNum);
+							if (mon.AllowReuse &&
+							   (pad == null ||
+							    mon.Title == originalTitle)) {//Prefer reusing output with same title(project)
 								pad = mpad;
-								break;
 							}
 						}
 					}
 				}
+				titleInstanceCount = usedTitleIds.Count;//Set pesimisticly to largest possible number
+				for (int i = 0; i < usedTitleIds.Count; i++) {
+					if (!usedTitleIds.Contains (i)) {
+						titleInstanceCount = i;//Find smallest free number
+						break;
+					}
+				}
+				if (titleInstanceCount > 0)
+					title = originalTitle + $" ({titleInstanceCount})";
+				else
+					title = originalTitle;
 				if (pad != null) {
 					if (bringToFront) pad.BringToFront ();
+					pad.Window.Title = title;
+					var mon = (DefaultMonitorPad)pad.Content;
+					mon.Title = originalTitle;
+					mon.TitleInstanceNum = titleInstanceCount;
 					return pad;
 				}
 			}
 
 			instanceCount++;
-			DefaultMonitorPad monitorPad = new DefaultMonitorPad (id, icon, instanceCount);
+			DefaultMonitorPad monitorPad = new DefaultMonitorPad (id, icon, instanceCount, originalTitle, titleInstanceCount);
 			
 			string newPadId = "OutputPad-" + id + "-" + instanceCount;
 			string basePadId = "OutputPad-" + id + "-0";
-			
-			if (instanceCount > 0) {
-				// Translate the title before adding the count
-				title = GettextCatalog.GetString (title);
-				title += " (" + (instanceCount+1) + ")";
-			}
 
 			if (show)
 				pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", DockItemStatus.AutoHide, icon);

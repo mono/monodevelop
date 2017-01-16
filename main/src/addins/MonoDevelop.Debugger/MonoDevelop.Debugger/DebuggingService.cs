@@ -595,7 +595,7 @@ namespace MonoDevelop.Debugger
 		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			var session = debugger.CreateSession ();
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger);
 			session.ExceptionHandler = ExceptionHandler;
 			SetupSession (sessionManager);
@@ -669,7 +669,7 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ().Console, factory);
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory);
 			else
 				sessionManager = new SessionManager (session, c, factory);
 			SetupSession (sessionManager);

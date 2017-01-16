@@ -150,6 +150,55 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual (3, val.GetAllChildrenSync ().Length);
 
 		}
+
+		[Test]
+		public void InvocationsCountDuringExpandingTest ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("8865cace-6b57-42cc-ad55-68a2c12dd3d7");
+			StartTest ("InvocationsCountDuringExpandingTest");
+			CheckPosition ("8865cace-6b57-42cc-ad55-68a2c12dd3d7");
+			var options = Session.EvaluationOptions.Clone ();
+			options.GroupPrivateMembers = false; // to access private fields (else there are in Private subgroup)
+			var value = Eval ("mutableFieldClass");
+			var sharedX = value.GetChildSync ("sharedX", options);
+			Assert.NotNull (sharedX);
+
+			var prop1 = value.GetChildSync("Prop1", options);
+			Assert.NotNull (prop1);
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.AdvancedEvaluation.MutableField", prop1.TypeName);
+			var prop1X = prop1.GetChildSync ("x", options);
+			Assert.NotNull (prop1X);
+			Assert.AreEqual ("0", prop1X.Value); // before CorValRef optimization this field evaluated to 2,
+			// because every value to the root object was recalculated - this was wrong behavior
+
+			var prop2 = value.GetChildSync ("Prop2", options);
+			Assert.NotNull (prop2);
+			var prop2X = prop2.GetChildSync("x", options);
+			Assert.NotNull (prop2X);
+			Assert.AreEqual ("1", prop2X.Value);
+
+			Assert.AreEqual ("2", sharedX.Value);
+		}
+
+		[Test]
+		public void MethodWithTypeGenericArgsEval ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("ba6350e5-7149-4cc2-a4cf-8a54c635eb38");
+			StartTest ("MethodWithTypeGenericArgsEval");
+			CheckPosition ("ba6350e5-7149-4cc2-a4cf-8a54c635eb38");
+
+			var baseMethodEval = Eval ("genericClass.BaseMethodWithClassTArg (wrappedA)");
+			Assert.NotNull (baseMethodEval);
+			Assert.AreEqual ("{Wrapper(wrappedA)}", baseMethodEval.Value);
+
+			var thisMethodEval = Eval ("genericClass.RetMethodWithClassTArg (a)");
+			Assert.NotNull (thisMethodEval);
+			Assert.AreEqual ("{Just A}", thisMethodEval.Value);
+		}
+
+
 	}
 }
 

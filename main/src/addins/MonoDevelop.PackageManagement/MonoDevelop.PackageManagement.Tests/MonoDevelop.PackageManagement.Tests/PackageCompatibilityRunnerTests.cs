@@ -44,6 +44,16 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
 		FakeProgressMonitor progressMonitor;
+		NetPortableProfileTable profileTable;
+
+		[TestFixtureSetUp]
+		public void SetUp ()
+		{
+			string appDataFolder = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
+			string dummyPath = Path.Combine (appDataFolder, "MonoDevelopPackageManagementTests");
+			Environment.SetEnvironmentVariable ("NuGetPortableReferenceAssemblyPath", dummyPath);
+			profileTable = NetPortableProfileTable.Instance;
+		}
 
 		void CreateRunner ()
 		{

@@ -180,8 +180,11 @@ namespace MonoDevelop.Core
 			if (startsWith && basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar) {
 				// If the last character isn't a path separator character, check whether the string we're searching in
 				// has more characters than the string we're looking for then check the character.
+				// Otherwise, if the path lengths are equal, we return false.
 				if (fileName.Length > basePath.fileName.Length)
 					startsWith &= fileName [basePath.fileName.Length] == Path.DirectorySeparatorChar;
+				else
+					startsWith = false;
 			}
 			return startsWith;
 		}

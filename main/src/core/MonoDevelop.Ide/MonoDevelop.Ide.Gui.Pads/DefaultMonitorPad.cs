@@ -59,10 +59,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int instanceNum;
 		string typeTag;
 
-		public DefaultMonitorPad (string typeTag, string icon, int instanceNum)
+		public DefaultMonitorPad (string typeTag, string icon, int instanceNum, string title, int titleInstanceNum)
 		{
 			this.instanceNum = instanceNum;
 			this.typeTag = typeTag;
+			this.Title = title;
+			this.TitleInstanceNum = titleInstanceNum;
 			
 			this.icon = icon;
 
@@ -209,6 +211,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return typeTag;
 			}
 		}
+
+		public string Title { get; set; }
+
+		public int TitleInstanceNum { get; set; }
 
 		public int InstanceNum {
 			get {
