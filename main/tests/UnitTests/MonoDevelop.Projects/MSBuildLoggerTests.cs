@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Core;
+using System.Text;
 
 namespace MonoDevelop.Projects
 {
@@ -105,13 +107,44 @@ namespace MonoDevelop.Projects
 				case MSBuildEvent.TaskFinished: taskFinished++; break;
 				}
 			};
-			await item.Build (Util.GetMonitor (), "Debug", ctx);
+			var mon = new StringMonitor ();
+			await item.Build (mon, "Debug", ctx);
+
 			Assert.AreEqual (1, buildStarted);
 			Assert.AreEqual (1, buildFinished);
 			Assert.AreEqual (1, projectStarted);
 			Assert.AreEqual (1, projectFinished);
 			Assert.AreEqual (taskStarted, taskFinished);
 			Assert.AreEqual (targetStarted, targetFinished);
+			Assert.AreNotEqual (string.Empty, mon.GetLogText ());
+		}
+
+		[Test]
+		public async Task NoLog ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			TargetEvaluationContext ctx = new TargetEvaluationContext ();
+			ctx.LogVerbosity = MSBuildVerbosity.Quiet;
+			var mon = new StringMonitor ();
+			await item.Build (mon, "Debug", ctx);
+			Assert.AreEqual (string.Empty, mon.GetLogText ());
+		}
+	}
+
+	class StringMonitor: ProgressMonitor
+	{
+		StringBuilder sb = new StringBuilder ();
+
+		protected override void OnWriteLog (string message)
+		{
+			sb.Append (message);
+		}
+
+		public string GetLogText ()
+		{
+			return sb.ToString ();
 		}
 	}
 }

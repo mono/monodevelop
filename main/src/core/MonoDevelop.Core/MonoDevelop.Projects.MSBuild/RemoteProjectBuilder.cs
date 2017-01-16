@@ -356,7 +356,7 @@ namespace MonoDevelop.Projects.MSBuild
 				try {
 					BeginOperation ();
 					result = await builder.Run (
-								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Normal,
+								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
 								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
 							);
 				} catch (Exception ex) {

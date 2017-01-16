@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -36,6 +37,7 @@ namespace MonoDevelop.Projects
 		{
 			PropertiesToEvaluate = new HashSet<string> ();
 			ItemsToEvaluate = new HashSet<string> ();
+			LogVerbosity = MSBuildProjectService.DefaultMSBuildVerbosity;
 		}
 
 		public TargetEvaluationContext (OperationContext other): this ()
@@ -47,6 +49,8 @@ namespace MonoDevelop.Projects
 		public HashSet<string> PropertiesToEvaluate { get; private set; }
 
 		public HashSet<string> ItemsToEvaluate { get; private set; }
+
+		public MSBuildVerbosity LogVerbosity { get; set; }
 
 		public ICollection<MSBuildLogger> Loggers {
 			get { return loggers; }
@@ -60,6 +64,7 @@ namespace MonoDevelop.Projects
 				PropertiesToEvaluate = new HashSet<string> (o.PropertiesToEvaluate);
 				ItemsToEvaluate = new HashSet<string> (o.ItemsToEvaluate);
 				loggers = new List<MSBuildLogger> (o.Loggers);
+				LogVerbosity = o.LogVerbosity;
 			}
 		}
 	}
