@@ -759,10 +759,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '>':
 					recordGroupName = false;
 					if (replaceGroup) {
+						bool foundGroup = false;
 						foreach (var g in groups) {
 							if (g.Id == curGroupName.ToString ()) {
 								result.Append (g.groupContent.ToString ());
+								foundGroup = true;
+								break;
 							}
+						}
+						if (!foundGroup) {
+							LoggingService.LogError ("Error can't find back trace group name : " + curGroupName + Environment.NewLine + "Note that it is not possible to backtrack groups inside the same group.");
+							result.Append ("ERROR");
 						}
 						replaceGroup = false;
 						curGroupName.Length = 0;
