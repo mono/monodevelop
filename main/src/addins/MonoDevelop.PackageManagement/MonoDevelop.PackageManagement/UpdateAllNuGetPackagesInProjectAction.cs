@@ -52,7 +52,6 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<NuGetProjectAction> actions;
 		List<SourceRepository> primarySources;
 		IEnumerable<PackageReference> packageReferences;
-		bool includePrerelease;
 		string projectName;
 
 		public UpdateAllNuGetPackagesInProjectAction (
@@ -102,8 +101,6 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			includePrerelease = await ProjectHasPrereleasePackages (cancellationToken);
-
 			await RestoreAnyMissingPackages (cancellationToken);
 
 			actions = await packageManager.PreviewUpdatePackagesAsync (
@@ -138,22 +135,24 @@ namespace MonoDevelop.PackageManagement
 			await OpenReadmeFiles (cancellationToken);
 		}
 
-		async Task<bool> ProjectHasPrereleasePackages (CancellationToken cancellationToken)
-		{
-			packageReferences = await project.GetInstalledPackagesAsync (cancellationToken);
-			return packageReferences.Any (packageReference => packageReference.PackageIdentity.Version.IsPrerelease);
-		}
-
 		public bool HasPackageScriptsToRun ()
 		{
 			return false;
 		}
 
+		/// <summary>
+		/// With NuGet v3 the IncludePrerelease flag does not need to be set to true on the
+		/// resolution context in order to update pre-release NuGet packages. NuGet v3 will
+		/// update pre-release NuGet packages to the latest pre-release version or latest
+		/// stable version if that is a higher version. The IncludePrerelease flag is only
+		/// required to allow a stable version to be updated to a pre-release version which
+		/// is not what we want to do when updating all NuGet packages in a project.
+		/// </summary>
 		ResolutionContext CreateResolutionContext ()
 		{
 			return new ResolutionContext (
 				DependencyBehavior.Lowest,
-				includePrerelease,
+				false,
 				false,
 				VersionConstraints.None
 			);
