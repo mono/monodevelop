@@ -144,6 +144,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 							Editor.SetFoldings (foldSegments);
 					});
 				}
+			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}

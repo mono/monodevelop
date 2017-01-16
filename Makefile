@@ -4,7 +4,7 @@ EXTRA_DIST = configure code_of_conduct.md
 SPACE := 
 SPACE +=  
 AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find main/build/* -type d))
-MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono --aot --debug
+MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono64 --aot --debug
 
 all: update_submodules all-recursive
 

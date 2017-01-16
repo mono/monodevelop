@@ -851,10 +851,16 @@ namespace Mono.Debugging.Win32
 
 		public static CorValue GetRealObject (EvaluationContext cctx, object objr)
 		{
-			if (objr == null || ((CorValRef)objr).Val == null)
+			if (objr == null)
 				return null;
 
-			return GetRealObject (cctx, ((CorValRef)objr).Val);
+			var corValue = objr as CorValue;
+			if (corValue != null)
+				return GetRealObject (cctx, corValue);
+			var valRef = objr as CorValRef;
+			if (valRef != null)
+				return GetRealObject (cctx, valRef.Val);
+			return null;
 		}
 
 		public static CorValue GetRealObject (EvaluationContext ctx, CorValue obj)

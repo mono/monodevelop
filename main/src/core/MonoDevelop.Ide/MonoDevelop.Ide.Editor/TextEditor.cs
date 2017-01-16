@@ -1523,5 +1523,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			return textEditorImpl.GetScopeStackAsync (offset, cancellationToken);
 		}
+
+		public new bool HasFocus {
+			get { return this.textEditorImpl.HasFocus; }
+		}
 	}
 }

@@ -3604,5 +3604,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			return TextEditor.GetLineHeight (line);
 		}
+
+		bool ITextEditorImpl.HasFocus {
+			get {
+				return this.TextEditor.HasFocus;
+			}
+		}
 	}
 } 
