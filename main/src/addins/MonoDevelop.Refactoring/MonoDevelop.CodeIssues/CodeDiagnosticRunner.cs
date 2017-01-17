@@ -113,7 +113,8 @@ namespace MonoDevelop.CodeIssues
 					
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
-				} catch (Exception) {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error creating analyzer compilation", ex);
 					return Enumerable.Empty<Result> ();
 				} finally {
 					#if DEBUG
