@@ -35,6 +35,8 @@ using System.IO;
 using MonoDevelop.Core.Execution;
 using System.Net.Configuration;
 using System.Diagnostics;
+using System.Reflection;
+using System.Linq;
 #pragma warning disable 618
 
 namespace MonoDevelop.Projects.MSBuild
@@ -49,7 +51,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static List<int> cancelledTasks = new List<int> ();
 		static int currentTaskId;
+		static int fatalErrorRetries = 4;
 		static int projectIdCounter;
+		static string msbuildBinDir;
 		Dictionary<int, ProjectBuilder> projects = new Dictionary<int, ProjectBuilder> ();
 
 		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
@@ -60,25 +64,32 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return doneEvent; }
 		}
 
-		public class LogWriter: ILogWriter
+		public class LogWriter: IEngineLogWriter
 		{
 			int id;
 
-			public LogWriter (int loggerId)
+			public LogWriter (int loggerId, MSBuildEvent eventFilter)
 			{
 				this.id = loggerId;
+				RequiredEvents = eventFilter;
 			}
 
-			public void Write (string text)
+			public void Write (string text, LogEvent [] events)
 			{
-				server.SendMessage (new LogMessage { LoggerId = id, Text = text });
+				server.SendMessage (new LogMessage { LoggerId = id, LogText = text, Events = events });
 			}
+
+			public MSBuildEvent RequiredEvents { get; private set; }
 		}
 
-		public class NullLogWriter: ILogWriter
+		public class NullLogWriter: IEngineLogWriter
 		{
-			public void Write (string text)
+			public void Write (string text, LogEvent [] events)
 			{
+			}
+
+			public MSBuildEvent RequiredEvents {
+				get { return default (MSBuildEvent); }
 			}
 		}
 
@@ -105,6 +116,29 @@ namespace MonoDevelop.Projects.MSBuild
 			t.Start ();
 		}
 
+		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
+		{
+			var msbuildAssemblies = new string [] {
+							"Microsoft.Build",
+							"Microsoft.Build.Engine",
+							"Microsoft.Build.Framework",
+							"Microsoft.Build.Tasks.Core",
+							"Microsoft.Build.Utilities.Core" };
+
+			var asmName = new AssemblyName (args.Name);
+			if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
+				return null;
+
+			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
+			if (File.Exists (fullPath)) {
+				// If the file exists under the msbuild bin dir, then we need
+				// to load it only from there. If that fails, then let that exception
+				// escape
+				return Assembly.LoadFrom (fullPath);
+			} else
+				return null;
+		}
+
 		public BuildEngine (RemoteProcessServer pserver)
 		{
 			server = pserver;
@@ -113,6 +147,8 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		public BinaryMessage Initialize (InitializeRequest msg)
 		{
+			msbuildBinDir = msg.BinDir;
+			AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
 			WatchProcess (msg.IdeProcessId);
 			SetCulture (CultureInfo.GetCultureInfo (msg.CultureName));
 			SetGlobalProperties (msg.GlobalProperties);
@@ -153,6 +189,8 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		public BinaryMessage Ping (PingRequest msg)
 		{
+			if (fatalErrorRetries <= 0)
+				throw new Exception ("Too many fatal exceptions");
 			return msg.CreateResponse ();
 		}
 
@@ -207,7 +245,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var pb = GetProject (msg.ProjectId);
 			if (pb != null) {
-				var logger = msg.LogWriterId != -1 ? (ILogWriter) new LogWriter (msg.LogWriterId) : (ILogWriter) new NullLogWriter ();
+				var logger = msg.LogWriterId != -1 ? (IEngineLogWriter) new LogWriter (msg.LogWriterId, msg.EnabledLogEvents) : (IEngineLogWriter) new NullLogWriter ();
 				var res = pb.Run (msg.Configurations, logger, msg.Verbosity, msg.RunTargets, msg.EvaluateItems, msg.EvaluateProperties, msg.GlobalProperties, msg.TaskId);
 				return new RunProjectResponse { Result = res };
 			}
@@ -293,8 +331,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 				ResetCurrentTask ();
 			}
-			if (workError != null)
+			if (workError != null) {
+				if (workError is OutOfMemoryException)
+					fatalErrorRetries = 0;
+				else
+					fatalErrorRetries--;
 				throw new Exception ("MSBuild operation failed", workError);
+			}
 		}
 
 		static readonly object threadLock = new object ();
@@ -316,5 +359,11 @@ namespace MonoDevelop.Projects.MSBuild
 				workThread = null;
 			}
 		}
+	}
+
+	interface IEngineLogWriter
+	{
+		void Write (string text, LogEvent[] events);
+		MSBuildEvent RequiredEvents { get; }
 	}
 }

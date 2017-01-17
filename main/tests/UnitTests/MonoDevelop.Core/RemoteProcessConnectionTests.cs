@@ -28,6 +28,7 @@ using NUnit.Framework;
 using MonoDevelop.Core.Execution;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
@@ -99,6 +100,124 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (new [] { new DateTime (2016, 2, 17), new DateTime (2016, 2, 18) }, m.GetArgument ("DateTime"));
 			Assert.AreEqual (new [] { TimeSpan.FromSeconds (44), TimeSpan.FromSeconds (45) }, m.GetArgument ("TimeSpan"));
 		}
+
+		[Test]
+		public void BinaryMessageMapSerialization ()
+		{
+			Dictionary<string, object> data1 = new Dictionary<string, object> ();
+			data1 ["one"] = 1;
+			data1 ["two"] = true;
+
+			Dictionary<string, string> data2 = new Dictionary<string, string> ();
+			data2 ["one"] = "uno";
+			data2 ["two"] = "dos";
+
+			Dictionary<int, double[]> data3 = new Dictionary<int, double[]> ();
+			data3 [1] = new double[] { 11, 111 };
+			data3 [2] = new double[] { 22, 222 };
+
+			var m = new BinaryMessage ("Test");
+			m.AddArgument ("map1", data1);
+			m.AddArgument ("map2", data2);
+			m.AddArgument ("map3", data3);
+
+			MemoryStream ms = new MemoryStream ();
+			m.Write (ms);
+			ms.Position = 0;
+
+			m = BinaryMessage.Read (ms);
+			Assert.AreEqual (3, m.Args.Count);
+			Assert.AreEqual (data1, m.GetArgument ("map1"));
+			Assert.AreEqual (data2, m.GetArgument ("map2"));
+			Assert.AreEqual (data3, m.GetArgument ("map3"));
+		}
+
+		[Test]
+		public void BinaryMessageCustomMapSerialization ()
+		{
+			var data = new Dictionary<string, CustomData[]> ();
+			data ["one"] = new CustomData [] { new CustomData { Data = "1" }, new CustomData { Data = "2" } };
+			data ["two"] = new CustomData [] { new CustomData { Data = "3" }, new CustomData { Data = "4" } };
+
+			var m = new BinaryMessage ("Test");
+			m.AddArgument ("map", data);
+
+			MemoryStream ms = new MemoryStream ();
+			m.Write (ms);
+			ms.Position = 0;
+
+			m = BinaryMessage.Read (ms);
+			Assert.AreEqual (1, m.Args.Count);
+
+			var dict = m.GetArgument<Dictionary<string, CustomData[]>> ("map");
+
+			Assert.AreEqual (2, dict.Count);
+			Assert.IsTrue (dict.ContainsKey ("one"));
+			Assert.IsTrue (dict.ContainsKey ("two"));
+
+			var ar = dict ["one"];
+			Assert.AreEqual (2, ar.Length);
+			Assert.AreEqual ("1", ar[0].Data);
+			Assert.AreEqual ("2", ar[1].Data);
+
+			ar = dict ["two"];
+			Assert.AreEqual (2, ar.Length);
+			Assert.AreEqual ("3", ar[0].Data);
+			Assert.AreEqual ("4", ar[1].Data);
+		}
+
+		[Test]
+		public void EmptyMessage ()
+		{
+			var m = new BinaryMessage ("MonoDevelop.Projects.MSBuild.PingRequest");
+			Assert.AreEqual (0, m.Args.Count);
+			Assert.AreEqual ("MonoDevelop.Projects.MSBuild.PingRequest", m.Name);
+			Assert.AreEqual ("", m.Target);
+
+			MemoryStream ms = new MemoryStream ();
+			m.Write (ms);
+			ms.Position = 0;
+
+			m = BinaryMessage.Read (ms);
+			Assert.AreEqual (0, m.Args.Count);
+			Assert.AreEqual ("MonoDevelop.Projects.MSBuild.PingRequest", m.Name);
+			Assert.AreEqual ("", m.Target);
+		}
+
+		[Test]
+		public void EmptyCustomMessage ()
+		{
+			var m = new PingRequest ();
+			m.ReadCustomData ();
+
+			Assert.AreEqual (0, m.Args.Count);
+			Assert.AreEqual ("MonoDevelop.Core.PingRequest", m.Name);
+			Assert.AreEqual (null, m.Target);
+
+			MemoryStream ms = new MemoryStream ();
+			m.Write (ms);
+			ms.Position = 0;
+
+			var rm = BinaryMessage.Read (ms);
+			m = new PingRequest ();
+			m.CopyFrom (rm);
+
+			Assert.AreEqual (0, m.Args.Count);
+			Assert.AreEqual ("MonoDevelop.Core.PingRequest", m.Name);
+			Assert.AreEqual ("", m.Target);
+		}
+	}
+
+	[MessageDataTypeAttribute]
+	class PingRequest: BinaryMessage
+	{
+	}
+
+	[MessageDataTypeAttribute]
+	class CustomData
+	{
+		[MessageDataProperty]
+		public string Data;
 	}
 }
 

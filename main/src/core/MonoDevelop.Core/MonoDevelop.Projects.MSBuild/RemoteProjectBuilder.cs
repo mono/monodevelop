@@ -34,27 +34,28 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	class RemoteBuildEngine: IBuildEngine
+	class RemoteBuildEngine
 	{
-		IBuildEngine engine;
-		Process proc;
+		RemoteProcessConnection connection;
 		bool alive = true;
 		static int count;
 		int busy;
 
+		static int loggerIdCounter;
+		Dictionary<int, LoggerInfo> loggers = new Dictionary<int, LoggerInfo> ();
+
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
-		public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim (1, 1);
-		
-		public RemoteBuildEngine (Process proc, IBuildEngine engine)
-		{
-			this.proc = proc;
-			this.engine = engine;
 
+		public RemoteBuildEngine (RemoteProcessConnection connection)
+		{
+			this.connection = connection;
 			Interlocked.Increment (ref count);
+			connection.AddListener (this);
 		}
 
 		public event EventHandler Disconnected;
@@ -65,68 +66,59 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public IProjectBuilder LoadProject (string projectFile)
+		public async Task<ProjectBuilder> LoadProject (string projectFile)
 		{
 			try {
-				return engine.LoadProject (projectFile);
+				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile})).ProjectId;
+				return new ProjectBuilder (connection, pid);
 			} catch {
-				CheckDisconnected ();
+				await CheckDisconnected ();
 				throw;
 			}
 		}
 		
-		public void UnloadProject (IProjectBuilder pb)
+		public async Task UnloadProject (ProjectBuilder builder)
 		{
 			try {
-				engine.UnloadProject (pb);
+				await connection.SendMessage (new UnloadProjectRequest { ProjectId = ((ProjectBuilder)builder).ProjectId});
 			} catch (Exception ex) {
 				LoggingService.LogError ("Project unloading failed", ex);
-				if (!CheckDisconnected ())
+				if (!await CheckDisconnected ())
 					throw;
 			}
 		}
 
-		public void CancelTask (int taskId)
+		public async Task CancelTask (int taskId)
 		{
 			try {
-				engine.CancelTask (taskId);
+				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId });
 			} catch {
-				CheckDisconnected ();
+				await CheckDisconnected ();
 				throw;
 			}
 		}
 
-		public void SetCulture (CultureInfo uiCulture)
+		public async Task SetGlobalProperties (Dictionary<string, string> properties)
 		{
 			try {
-				engine.SetCulture (uiCulture);
+				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties });
 			} catch {
-				CheckDisconnected ();
+				await CheckDisconnected ();
 				throw;
 			}
 		}
 
-		public void SetGlobalProperties (IDictionary<string, string> properties)
+		public async Task Ping ()
 		{
-			try {
-				engine.SetGlobalProperties (properties);
-			} catch {
-				CheckDisconnected ();
-				throw;
-			}
+			await connection.SendMessage (new PingRequest ());
 		}
 
-		void IBuildEngine.Ping ()
-		{
-			engine.Ping ();
-		}
-
-		bool CheckAlive ()
+		async Task<bool> CheckAlive ()
 		{
 			if (!alive)
 				return false;
 			try {
-				engine.Ping ();
+				await Ping ();
 				return true;
 			} catch {
 				alive = false;
@@ -134,9 +126,9 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal bool CheckDisconnected ()
+		internal async Task<bool> CheckDisconnected ()
 		{
-			if (!CheckAlive ()) {
+			if (!await CheckAlive ()) {
 				if (Disconnected != null)
 					Disconnected (this, EventArgs.Empty);
 				return true;
@@ -149,16 +141,47 @@ namespace MonoDevelop.Projects.MSBuild
 			Interlocked.Decrement (ref count);
 			try {
 				alive = false;
-				if (proc != null) {
-					try {
-						proc.Kill ();
-					} catch {
-					}
-				}
-				else
-					engine.Dispose ();
+				connection.SendMessage (new DisposeRequest ());
 			} catch {
 				// Ignore
+			}
+		}
+
+		[MessageHandler]
+		void OnLogMessage (LogMessage msg)
+		{
+			LoggerInfo logger = null;
+			lock (loggers) {
+				if (!loggers.TryGetValue (msg.LoggerId, out logger))
+					return;
+			}
+			if (msg.LogText != null)
+				logger.Writer.Write (msg.LogText);
+			if (msg.Events != null && logger.Logger != null) {
+				foreach (var e in msg.Events)
+					logger.Logger.NotifyEvent (e);
+			}
+		}
+
+		class LoggerInfo
+		{
+			public TextWriter Writer;
+			public MSBuildLogger Logger;
+		}
+
+		public int RegisterLogger (TextWriter writer, MSBuildLogger logger)
+		{
+			lock (loggers) {
+				var i = loggerIdCounter++;
+				loggers [i] = new LoggerInfo { Writer = writer, Logger = logger };
+				return i;
+			}
+		}
+
+		public void UnregisterLogger (int id)
+		{
+			lock (loggers) {
+				loggers.Remove (id);
 			}
 		}
 
@@ -178,11 +201,61 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 	}
-	
-	public class RemoteProjectBuilder: IDisposable
+
+	class ProjectBuilder
+	{
+		public int ProjectId;
+		RemoteProcessConnection connection;
+
+		public ProjectBuilder (RemoteProcessConnection connection, int projectId)
+		{
+			this.connection = connection;
+			this.ProjectId = projectId;
+		}
+
+		public void Dispose ()
+		{
+			connection.SendMessage (new DisposeProjectRequest { ProjectId = ProjectId });
+		}
+
+		public Task Refresh ()
+		{
+			return connection.SendMessage (new RefreshProjectRequest { ProjectId = ProjectId });
+		}
+
+		public Task RefreshWithContent (string projectContent)
+		{
+			return connection.SendMessage (new RefreshWithContentRequest { ProjectId = ProjectId, Content = projectContent });
+		}
+
+		public async Task<MSBuildResult> Run (ProjectConfigurationInfo [] configurations, int loggerId, MSBuildEvent enabledLogEvents, MSBuildVerbosity verbosity, string [] runTargets, string [] evaluateItems, string [] evaluateProperties, Dictionary<string, string> globalProperties, int taskId)
+		{
+			var msg = new RunProjectRequest {
+				ProjectId = ProjectId,
+				Configurations = configurations,
+				LogWriterId = loggerId,
+				EnabledLogEvents = enabledLogEvents,
+				Verbosity = verbosity,
+				RunTargets = runTargets,
+				EvaluateItems = evaluateItems,
+				EvaluateProperties = evaluateProperties,
+				GlobalProperties = globalProperties,
+				TaskId = taskId
+			};
+
+			var res = await connection.SendMessage (msg);
+
+			// Make sure we get all log messages
+			await connection.ProcessPendingMessages ();
+
+			return res.Result;
+		}
+	}
+
+	class RemoteProjectBuilder: IDisposable
 	{
 		RemoteBuildEngine engine;
-		IProjectBuilder builder;
+		ProjectBuilder builder;
 		Dictionary<string,AssemblyReference[]> referenceCache;
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
 		string file;
@@ -192,15 +265,19 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			this.file = file;
 			this.engine = engine;
-			builder = engine.LoadProject (file);
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
+		}
+
+		internal async Task Load ()
+		{
+			builder = await engine.LoadProject (file).ConfigureAwait (false);
 		}
 
 		public event EventHandler Disconnected;
 
-		void CheckDisconnected ()
+		async Task CheckDisconnected ()
 		{
-			if (engine != null && engine.CheckDisconnected ()) {
+			if (engine != null && await engine.CheckDisconnected ().ConfigureAwait (false)) {
 				if (Disconnected != null)
 					Disconnected (this, EventArgs.Empty);
 			}
@@ -208,10 +285,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		IDisposable RegisterCancellation (CancellationToken cancellationToken, int taskId)
 		{
-			return cancellationToken.Register (() => {
+			return cancellationToken.Register (async () => {
 				try {
 					BeginOperation ();
-					engine.CancelTask (taskId);
+					await engine.CancelTask (taskId);
 				} catch (Exception ex) {
 					// Ignore
 					LoggingService.LogError ("CancelTask failed", ex);
@@ -221,9 +298,10 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 		}
 
-		public Task<MSBuildResult> Run (
+		public async Task<MSBuildResult> Run (
 			ProjectConfigurationInfo[] configurations,
-			ILogWriter logWriter,
+			TextWriter logWriter,
+			MSBuildLogger logger,
 			MSBuildVerbosity verbosity,
 			string[] runTargets,
 			string[] evaluateItems,
@@ -235,33 +313,29 @@ namespace MonoDevelop.Projects.MSBuild
 			// Get an id for the task, and get ready to cancel it if the cancellation token is signalled
 			var taskId = Interlocked.Increment (ref lastTaskId);
 			var cr = RegisterCancellation (cancellationToken, taskId);
+			var loggerId = engine.RegisterLogger (logWriter, logger);
 
-			var t = Task.Run (() => {
-				try {
-					BeginOperation ();
-					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId);
-					if (res == null && cancellationToken.IsCancellationRequested) {
-						MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
-						return new MSBuildResult (new [] { err });
-					}
-					if (res == null)
-						throw new Exception ("Unknown failure");
-					return res;
-				} catch (Exception ex) {
-					CheckDisconnected ();
-					LoggingService.LogError ("RunTarget failed", ex);
-					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
-					MSBuildResult res = new MSBuildResult (new [] { err });
-					return res;
-				} finally {
-					EndOperation ();
+			try {
+				BeginOperation ();
+				var res = await builder.Run (configurations, loggerId, logger.EnabledEvents, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
+				if (res == null && cancellationToken.IsCancellationRequested) {
+					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
+					return new MSBuildResult (new [] { err });
 				}
-			});
-
-			// Dispose the cancel registration
-			t.ContinueWith (r => cr.Dispose ());
-
-			return t;
+				if (res == null)
+					throw new Exception ("Unknown failure");
+				return res;
+			} catch (Exception ex) {
+				await CheckDisconnected ();
+				LoggingService.LogError ("RunTarget failed", ex);
+				MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
+				MSBuildResult res = new MSBuildResult (new [] { err });
+				return res;
+			} finally {
+				engine.UnregisterLogger (loggerId);
+				EndOperation ();
+				cr.Dispose ();
+			}
 		}
 
 		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
@@ -269,106 +343,81 @@ namespace MonoDevelop.Projects.MSBuild
 			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
 
-			using (await referenceCacheLock.EnterAsync ()) {
+			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false)) {
 				// Check the cache before starting the task
 				if (referenceCache.TryGetValue (id, out refs))
 					return refs;
-			}
 
-			// Get an id for the task, it will be used later on to cancel the task if necessary
-			var taskId = Interlocked.Increment (ref lastTaskId);
-			IDisposable cr = null;
+				// Get an id for the task, it will be used later on to cancel the task if necessary
+				var taskId = Interlocked.Increment (ref lastTaskId);
+				IDisposable cr = RegisterCancellation (cancellationToken, taskId);
 
-			refs = await Task.Run (async () => {
-				using (await referenceCacheLock.EnterAsync ()) {
-					// Check again the cache, maybe the value was set while the task was starting
-					if (referenceCache.TryGetValue (id, out refs))
-						return refs;
-
-					// Get ready to cancel the task if the cancellation token is signalled
-					cr = RegisterCancellation (cancellationToken, taskId);
-
-					MSBuildResult result;
-					bool locked = false;
-					try {
-						BeginOperation ();
-						locked = await engine.Semaphore.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
-						// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
-						result = builder.Run (
-									configurations, null, MSBuildVerbosity.Normal,
-									new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
-								);
-					} catch (Exception ex) {
-						CheckDisconnected ();
-						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
-						return new AssemblyReference [0];
-					} finally {
-						if (locked)
-							engine.Semaphore.Release ();
-						EndOperation ();
-					}
-
-					List<MSBuildEvaluatedItem> items;
-					if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-						string aliases;
-						refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
-					} else
-						refs = new AssemblyReference [0];
-
-					referenceCache [id] = refs;
+				MSBuildResult result;
+				try {
+					BeginOperation ();
+					result = await builder.Run (
+								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
+								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+							);
+				} catch (Exception ex) {
+					await CheckDisconnected ();
+					LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
+					return new AssemblyReference [0];
+				} finally {
+					cr.Dispose ();
+					EndOperation ();
 				}
-				return refs;
-			});
 
-			// Dispose the cancel registration
-			if (cr != null)
-				cr.Dispose ();
-			
+				MSBuildEvaluatedItem[] items;
+				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
+					string aliases;
+					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
+				} else
+					refs = new AssemblyReference [0];
+
+				referenceCache [id] = refs;
+			}
 			return refs;
 		}
 
 		public async Task Refresh ()
 		{
-			using (await referenceCacheLock.EnterAsync ())
+			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
 				referenceCache.Clear ();
 
-			await Task.Run (() => {
-				try {
-					BeginOperation ();
-					builder.Refresh ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("MSBuild refresh failed", ex);
-					CheckDisconnected ();
-				} finally {
-					EndOperation ();
-				}
-			});
+			try {
+				BeginOperation ();
+				await builder.Refresh ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("MSBuild refresh failed", ex);
+				await CheckDisconnected ();
+			} finally {
+				EndOperation ();
+			}
 		}
 		
 		public async Task RefreshWithContent (string projectContent)
 		{
-			using (await referenceCacheLock.EnterAsync ())
+			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
 				referenceCache.Clear ();
 
-			await Task.Run (() => {
-				try {
-					BeginOperation ();
-					builder.RefreshWithContent (projectContent);
-				} catch (Exception ex) {
-					LoggingService.LogError ("MSBuild refresh failed", ex);
-					CheckDisconnected ();
-				} finally {
-					EndOperation ();
-				}
-			});
+			try {
+				BeginOperation ();
+				await builder.RefreshWithContent (projectContent);
+			} catch (Exception ex) {
+				LoggingService.LogError ("MSBuild refresh failed", ex);
+				await CheckDisconnected ();
+			} finally {
+				EndOperation ();
+			}
 		}
 
-		public void Dispose ()
+		public async void Dispose ()
 		{
 			if (!MSBuildProjectService.ShutDown && engine != null) {
 				try {
 					if (builder != null)
-						engine.UnloadProject (builder);
+						await engine.UnloadProject (builder).ConfigureAwait (false);
 					MSBuildProjectService.ReleaseProjectBuilder (engine);
 				} catch {
 					// Ignore
