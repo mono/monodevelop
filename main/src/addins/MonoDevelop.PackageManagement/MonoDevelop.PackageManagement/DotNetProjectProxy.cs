@@ -153,7 +153,12 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
 		{
-			return DotNetProject.Items.OfType<ProjectPackageReference> ();
+			foreach (var item in DotNetProject.MSBuildProject.GetEvaluatedPackageReferences ()) {
+				yield return item;
+			}
+			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
+				yield return item;
+			}
 		}
 	}
 }
