@@ -1248,8 +1248,7 @@ namespace MonoDevelop.Projects
 				"attribute-order.csproj",
 				"custom-namespace.csproj",
 				"multiple-prop-definition.csproj",
-				"env-vars-prop.csproj",
-				"transform.csproj"
+				"env-vars-prop.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
