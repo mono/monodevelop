@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.MSBuild
 						lastAttr = aname;
 						var val = WriteAttribute (aname);
 						if (val != null)
-							WriteEscapedAttribute (writer, aname, val);
+							writer.WriteAttributeString (aname, val);
 					} else
 						lastAttr = null;
 				} while (unknownIndex < unknownAttributes.Length || knownIndex < knownAtts.Length);
@@ -247,7 +247,7 @@ namespace MonoDevelop.Projects.MSBuild
 					var aname = knownAtts [i];
 					var val = WriteAttribute (aname);
 					if (val != null)
-						WriteEscapedAttribute (writer, aname, val);
+						writer.WriteAttributeString (aname, val);
 				}
 			}
 
@@ -256,20 +256,6 @@ namespace MonoDevelop.Projects.MSBuild
 			writer.WriteEndElement ();
 
 			MSBuildWhitespace.Write (EndWhitespace, writer);
-		}
-
-		static char [] escapeExceptions = new char [] { '<', '>' };
-
-		void WriteEscapedAttribute (XmlWriter writer, string name, string value)
-		{
-			if (value != null && value.IndexOfAny (escapeExceptions) != -1) {
-				value = value.Replace ("&", "&amp;").Replace ("\"", "&quot;");
-				writer.WriteStartAttribute (name);
-				writer.WriteRaw (value);
-				writer.WriteEndAttribute ();
-			}
-			else
-				writer.WriteAttributeString (name, value);
 		}
 
 		internal bool WasReadAsEmptyElement {
