@@ -65,15 +65,29 @@ namespace MonoDevelop.CodeIssues
 
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
+			//FIXME; this is a really hacky arbitrary heuristic
+			//we should be using proper MEF composition APIs as part of the addin scan
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
-				if (assemblyName == "MonoDevelop.AspNet" ||
-				    assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
-				    assemblyName.Contains ("FSharpBinding")  ||
-					assemblyName != "RefactoringEssentials" &&
-					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
+				switch (assemblyName) {
+				//whitelist
+				case "RefactoringEssentials":
+				case "Microsoft.CodeAnalysis.Features":
+				case "Microsoft.CodeAnalysis.VisualBasic.Features":
+				case "Microsoft.CodeAnalysis.CSharp.Features":
+					break;
+				//blacklist
+				case "FSharpBinding":
 					return;
+				//addin assemblies that reference roslyn
+				default:
+					var refAsm = asm.GetReferencedAssemblies ();
+					if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+						break;
+					return;
+				}
 			}
+
 			foreach (var type in asm.GetTypes ()) {
 				var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
 				if (notPortedYetAttribute!= null) {
