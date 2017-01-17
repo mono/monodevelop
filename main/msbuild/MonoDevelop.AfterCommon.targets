@@ -5,18 +5,4 @@
 	</PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)\GenerateInternalsVisibleTo.targets" />
-
-	<ItemGroup>
-		<SearchPathFiles Include="$(SolutionDir)\build\AddIns\**\*.dll"/>
-	</ItemGroup>
-
-	<Target Name="BeforeResolveReferences">
-		<RemoveDuplicates Inputs="@(SearchPathFiles->'%(RootDir)%(Directory)')">
-			<Output TaskParameter="Filtered" ItemName="SearchPath" />
-		</RemoveDuplicates>
-
-		<CreateProperty Value="@(SearchPath);$(SolutionDir)\build\bin;$(AssemblySearchPaths)">
-			<Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
-		</CreateProperty>
-	</Target>
 </Project>
