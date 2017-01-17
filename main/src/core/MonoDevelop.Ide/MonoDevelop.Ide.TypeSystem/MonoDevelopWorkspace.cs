@@ -70,8 +70,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static string[] mefHostServices = new [] {
 			"Microsoft.CodeAnalysis.Workspaces",
+			"Microsoft.CodeAnalysis.Features",
+			"Microsoft.CodeAnalysis.CSharp",
 			"Microsoft.CodeAnalysis.CSharp.Workspaces",
-			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
+			"Microsoft.CodeAnalysis.CSharp.Features",
+			"Microsoft.CodeAnalysis.VisualBasic",
+			"Microsoft.CodeAnalysis.VisualBasic.Workspaces",
+			"Microsoft.CodeAnalysis.VisualBasic.Features",
 		};
 
 		internal static HostServices HostServices {
@@ -106,7 +111,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				}
 			}
-			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
+			services = MefHostServices.Create (assemblies);
 		}
 
 		/// <summary>
