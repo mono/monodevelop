@@ -148,7 +148,9 @@ namespace MonoDevelop.Projects.MSBuild
 					Environment.CurrentDirectory = Path.GetDirectoryName (file);
 					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
 					projectRootElement.FullPath = file;
-					string toolsVersion = projectRootElement.ToolsVersion ?? engine.DefaultToolsVersion;
+					string toolsVersion = projectRootElement.ToolsVersion;
+					if (string.IsNullOrEmpty (toolsVersion))
+						toolsVersion = engine.DefaultToolsVersion;
 					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
 				}
 			}
