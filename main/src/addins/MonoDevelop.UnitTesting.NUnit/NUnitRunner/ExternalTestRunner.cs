@@ -70,7 +70,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 
 		public RemoteTestResult Run (string[] nameFilter, string path, string suiteName, string[] supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
 		{
-			NUnitTestRunner runner = GetRunner (path);
+			NUnitTestRunner runner = GetRunner (path, false);
 			EventListenerWrapper listenerWrapper = new EventListenerWrapper (server);
 			
 			UnhandledExceptionEventHandler exceptionHandler = (object sender, UnhandledExceptionEventArgs e) => {
@@ -90,19 +90,33 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		[MessageHandler]
 		public GetTestInfoResponse GetTestInfo (GetTestInfoRequest req)
 		{
-			NUnitTestRunner runner = GetRunner (req.Path);
+			NUnitTestRunner runner = GetRunner (req.Path, true);
 			var r = runner.GetTestInfo (req.Path, req.SupportAssemblies);
 			return new GetTestInfoResponse { Result = r };
 		}
 		
-		NUnitTestRunner GetRunner (string assemblyPath)
+		NUnitTestRunner GetRunner (string assemblyPath, bool forQuery)
 		{
 			string basePath = Path.GetDirectoryName (GetType ().Assembly.Location);
 
 			TestPackage package = new TestPackage (assemblyPath);
 			package.Settings ["ShadowCopyFiles"] = false;
-			package.BasePath = Path.GetDirectoryName(assemblyPath);
-			
+
+			// This is a workaround for what could be a Mono bug (hard to tell).
+			// For the test runner to be able to load the app.config file,
+			// the BasePath of the domain needs to be set to the location
+			// of the test assembly (see bug #41541 - App Config is not read in Unit Tests).
+			// However, when doing that, the test runner crashes in some cases
+			// (for example when loading the MD unit tests). It crashes because
+			// Mono gets confused and tries to load assemblies from two different
+			// locations. As a workaround, we set the test assebmly directory
+			// as base path only when running, which seems to work.
+
+			if (forQuery)
+				package.BasePath = basePath;
+			else
+				package.BasePath = Path.GetDirectoryName (assemblyPath);
+
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
 			string asm = Path.Combine (basePath, "NUnitRunner.exe");
 			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.UnitTesting.NUnit.External.NUnitTestRunner");
