@@ -155,10 +155,23 @@ namespace Mono.Debugging.Win32
 			helperOperationsQueue.Add (action);
 		}
 
+		void DeactivateBreakpoints ()
+		{
+			var breakpointsCopy = breakpoints.Keys.ToList ();
+			foreach (var corBreakpoint in breakpointsCopy) {
+				try {
+					corBreakpoint.Activate (false);
+				}
+				catch (Exception e) {
+					DebuggerLoggingService.LogMessage ("Exception in DeactivateBreakpoints(): {0}", e);
+				}
+			}
+		}
+
 		void TerminateDebugger ()
 		{
 			helperOperationsCancellationTokenSource.Cancel();
-			Breakpoints.Clear ();
+			DeactivateBreakpoints ();
 			lock (terminateLock) {
 				if (terminated)
 					return;
