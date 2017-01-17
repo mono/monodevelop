@@ -329,19 +329,10 @@
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\PredefinedCodeFixProviderNames.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\ExtractMethodCodeRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\DiagnosticCustomTags.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\CSharpRemoveUnnecessaryCastDiagnosticAnalyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\RemoveUnnecessaryImportsDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsDiagnosticAnalyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\SimplifyTypeNamesDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\CSharpSimplifyTypeNamesDiagnosticAnalyzer.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionEditRuleDialog.cs" />
@@ -510,12 +501,7 @@
     <Folder Include="MonoDevelop.JSon\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
     <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\" />
@@ -523,8 +509,5 @@
     <Folder Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
     <Folder Include="MonoDevelop.CSharp.Navigation\" />
-    <Folder Include="MonoDevelop.CSharp.Features\EncapsulateField\" />
-    <Folder Include="MonoDevelop.CSharp.Features\GenerateType\" />
-    <Folder Include="MonoDevelop.CSharp.Features\ImplementInterface\" />
   </ItemGroup>
 </Project>
