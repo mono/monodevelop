@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,15 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConsoleProject</RootNamespace>
     <AssemblyName>ConsoleProject</AssemblyName>
-    <TestProp>TestVal</TestProp>
-    <EvalProp>$(TestProp)</EvalProp>
-  	<Foo>support\file1.txt</Foo>
-  	<ExistsTest Condition="Exists('$(Foo)')">OK</ExistsTest>
-  	<CASE1>value1</CASE1>
-  	<Case1>value2</Case1>
-  	<Case2>$(CasE1)</Case2>
-  	<Case3>$(CASE1)</Case3>
-  	<TestRewrite>Val</TestRewrite>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -38,22 +30,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Foo Include="Foo.$(EvalProp)">
-    	<Meta1>$(Configuration)</Meta1>
-    </Foo>
+	<Test Include="@(DeployJar->'$(JavaOutputPath)%(Filename)%(Extension)')" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="*.txt">
-    	<Meta2>$(Configuration)</Meta2>
-    </None>
-    <None Include="*.txt">
-    	<Meta2>$(Configuration)</Meta2>
-    </None>
-    <Transformed Include="@(None -> WithMetadataValue('Meta2', 'Debug'))">
-        <Meta3>$(Configuration)</Meta3>
-    </Transformed>
-  </ItemGroup>
-  <Target Name="Conditioned" Condition="false"></Target>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="extra.csproj" />
 </Project>
