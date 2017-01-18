@@ -117,19 +117,9 @@
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\AnalysisOptionsPanel.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultMarker.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Fixes\RenameMemberFix.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisTypeExtensionNode.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\FixHandlerExtensionNode.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisRuleAddinNode.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisCommands.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\AnalysisExtensions.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisOptions.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
@@ -175,7 +165,6 @@
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.CodeIssues\" />
     <Folder Include="MonoDevelop.CodeActions\" />
-    <Folder Include="MonoDevelop.AnalysisCore\Rules\" />
     <Folder Include="MonoDevelop.CodeIssues\Pad\" />
   </ItemGroup>
   <ItemGroup>
@@ -320,8 +309,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="MonoDevelop.AnalysisCore\README.txt" />
-    <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
