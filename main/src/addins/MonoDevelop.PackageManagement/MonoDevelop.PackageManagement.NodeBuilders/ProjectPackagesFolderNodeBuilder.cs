@@ -65,6 +65,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				return 1;
 			if (otherNode.DataItem is Ide.Gui.Pads.ProjectPad.GettingStartedNode)
 				return 1;
+			
+			var itemType = otherNode.DataItem?.GetType ()?.FullName;
+			if (itemType == "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServiceFolderNode" ||
+				itemType == "MonoDevelop.ConnectedServices.Gui.SolutionPad.ComponentReferenceFolder")
+				return 1;
 			return -1;
 		}
 

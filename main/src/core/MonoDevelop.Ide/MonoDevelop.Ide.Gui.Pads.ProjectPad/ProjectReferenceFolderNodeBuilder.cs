@@ -100,6 +100,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			if (otherNode.DataItem is GettingStartedNode)
 				return 1;
+			var itemType = otherNode.DataItem?.GetType ()?.FullName;
+			if (itemType == "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServiceFolderNode")
+				return 1;
 			return -1;
 		}
 
