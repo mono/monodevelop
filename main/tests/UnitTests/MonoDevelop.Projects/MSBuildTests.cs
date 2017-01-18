@@ -38,6 +38,7 @@ using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Projects
 {
@@ -251,8 +252,8 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
 			CSharpCompilerParameters cparams = (CSharpCompilerParameters)conf.CompilationParameters;
-			Assert.AreEqual (LangVersion.Default, cparams.LangVersion);
-			cparams.LangVersion = LangVersion.Version5;
+			Assert.AreEqual (LanguageVersion.Default, cparams.LangVersion);
+			cparams.LangVersion = LanguageVersion.CSharp5;
 			Assert.IsTrue (cparams.UnsafeCode);
 			cparams.UnsafeCode = false;
 

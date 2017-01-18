@@ -204,8 +204,8 @@ namespace MonoDevelop.CSharp
 					sb.AppendLine ("/debug:" + debugType);
 			}
 
-			if (compilerParameters.LangVersion != LangVersion.Default) {
-				var langVersionString = CSharpCompilerParameters.TryLangVersionToString (compilerParameters.LangVersion);
+			if (compilerParameters.LangVersion != Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default) {
+				var langVersionString = CSharpCompilerParameters.LanguageVersionToString (compilerParameters.LangVersion);
 				if (langVersionString == null) {
 					string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
 					monitor.ReportError (message, null);

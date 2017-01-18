@@ -9,7 +9,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.dll" />
-    <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/CSharpBinding/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="428 473">
     <property name="MemberName" />
@@ -512,7 +512,6 @@ None</property>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget" design-size="471 438">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -620,7 +619,6 @@ None</property>
                     <child>
                       <widget class="MonoDevelop.Components.FileEntry" id="iconEntry">
                         <property name="MemberName" />
-                        <property name="DisplayAsRelativePath">False</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">2</property>
