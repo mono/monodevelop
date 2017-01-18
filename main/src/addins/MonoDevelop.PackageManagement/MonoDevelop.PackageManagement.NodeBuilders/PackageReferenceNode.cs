@@ -116,14 +116,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		string GetUpdatedVersionLabelText ()
 		{
-			return String.Format ("({0} {1})",
-				UpdatedVersion,
-				GettextCatalog.GetString ("available"));
+			return GettextCatalog.GetString ("({0} available)", UpdatedVersion);
 		}
 
 		string GetInstallingLabelText ()
 		{
-			return String.Format ("({0})", GettextCatalog.GetString ("installing"));
+			return GettextCatalog.GetString ("(installing)");
 		}
 
 		public IconId GetIconId ()

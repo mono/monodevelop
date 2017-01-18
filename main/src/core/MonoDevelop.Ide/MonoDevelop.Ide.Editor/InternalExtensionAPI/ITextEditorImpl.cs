@@ -225,6 +225,7 @@ namespace MonoDevelop.Ide.Editor
 		IReadOnlyList<Caret> Carets { get; }
 
 		void GrabFocus ();
+		bool HasFocus { get; }
 
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;

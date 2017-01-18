@@ -7,30 +7,78 @@
     <relPath>../../build/bin/locale/</relPath>
     <translations>
       <translations>
-        <Translation isoCode="ca" />
-        <Translation isoCode="cs" />
-        <Translation isoCode="da" />
-        <Translation isoCode="de" />
-        <Translation isoCode="es" />
-        <Translation isoCode="fr" />
-        <Translation isoCode="gl" />
-        <Translation isoCode="hu" />
-        <Translation isoCode="id" />
-        <Translation isoCode="it" />
-        <Translation isoCode="ja" />
-        <Translation isoCode="nl" />
-        <Translation isoCode="nb" />
-        <Translation isoCode="pl" />
-        <Translation isoCode="pt" />
-        <Translation isoCode="pt_BR" />
-        <Translation isoCode="ru" />
-        <Translation isoCode="sl" />
-        <Translation isoCode="sv" />
-        <Translation isoCode="tr" />
-        <Translation isoCode="uk" />
-        <Translation isoCode="zh_CN" />
-        <Translation isoCode="zh_TW" />
-        <Translation isoCode="ko" />
+        <Translation>
+          <isoCode>ca</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>cs</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>da</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>de</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>es</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>fr</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>gl</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>hu</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>id</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>it</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>ja</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>nl</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>nb</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>pl</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>pt</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>pt_BR</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>ru</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>sl</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>sv</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>tr</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>uk</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>zh_CN</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>zh_TW</isoCode>
+        </Translation>
+        <Translation>
+          <isoCode>ko</isoCode>
+        </Translation>
       </translations>
     </translations>
     <packageName>monodevelop</packageName>
@@ -38,6 +86,18 @@
     <ProjectGuid>{AC7D119C-980B-4712-8811-5368C14412D7}</ProjectGuid>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <projectInformations>
+      <projectInformations>
+        <TranslationProjectInformation>
+          <projectName>IKVM.Reflection</projectName>
+          <isIncluded>False</isIncluded>
+        </TranslationProjectInformation>
+        <TranslationProjectInformation>
+          <projectName>RefactoringEssentials</projectName>
+          <isIncluded>True</isIncluded>
+        </TranslationProjectInformation>
+      </projectInformations>
+    </projectInformations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

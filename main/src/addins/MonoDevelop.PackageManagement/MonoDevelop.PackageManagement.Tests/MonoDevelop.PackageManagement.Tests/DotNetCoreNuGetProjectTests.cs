@@ -165,6 +165,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public async Task InstallPackageAsync_PackageAlreadyInstalledWithDifferentVersion_OldPackageReferenceIsRemoved ()
+		{
+			CreateNuGetProject ("MyProject");
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+
+			bool result = await InstallPackageAsync ("NUnit", "3.6.0");
+
+			var packageReference = dotNetProject.Items.OfType<ProjectPackageReference> ()
+				.Single ()
+				.CreatePackageReference ();
+
+			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
+			Assert.AreEqual ("3.6.0", packageReference.PackageIdentity.Version.ToNormalizedString ());
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
 		public async Task GetAssetsFilePathAsync_BaseIntermediatePathNotSet_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
 			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");

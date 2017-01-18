@@ -144,10 +144,20 @@ namespace MonoDevelop.PackageManagement
 				return false;
 			}
 
+			RemoveExistingPackageReference (packageIdentity);
+
 			packageReference = ProjectPackageReference.Create (packageIdentity);
 			project.Items.Add (packageReference);
 
 			return true;
+		}
+
+		void RemoveExistingPackageReference (PackageIdentity packageIdentity)
+		{
+			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
+			if (packageReference != null) {
+				project.Items.Remove (packageReference);
+			}
 		}
 
 		public override async Task<bool> UninstallPackageAsync (
