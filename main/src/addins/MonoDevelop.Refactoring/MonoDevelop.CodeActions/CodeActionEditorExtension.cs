@@ -485,21 +485,7 @@ namespace MonoDevelop.CodeActions
 					addedSeparator = true;
 				}
 
-				var fix = fix_;
-				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
-				var thisInstanceMenuItem = new FixMenuEntry (label,async delegate {
-					await new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run ();
-					ConfirmUsage (fix.CodeAction.EquivalenceKey);
-				});
-
-				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
-					HidePreviewTooltip ();
-					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
-					currentPreviewWindow.RequestPopup (rect);
-				};
-
-				menu.Add (thisInstanceMenuItem);
-				items++;
+				AddFixMenuItem (menu, ref items, ref mnemonic, fix_.CodeAction);
 			}
 
 			bool first = true;
@@ -510,20 +496,7 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
-				var thisInstanceMenuItem = new FixMenuEntry (label, async delegate {
-					await new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run ();
-					ConfirmUsage (fix.CodeAction.EquivalenceKey);
-				});
-
-				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
-					HidePreviewTooltip ();
-					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
-					currentPreviewWindow.RequestPopup (rect);
-				};
-
-				menu.Add (thisInstanceMenuItem);
-				items++;
+				AddFixMenuItem (menu, ref items, ref mnemonic, fix.CodeAction);
 			}
 
 			first = false;
@@ -531,7 +504,7 @@ namespace MonoDevelop.CodeActions
 			var warningsAtCaret = (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result)
 				.GetDiagnostics (new TextSpan (Editor.CaretOffset, 0))
 				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
-			
+
 			foreach (var warning in warningsAtCaret) {
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
 				var subMenu = new FixMenuDescriptor (label);
@@ -541,9 +514,9 @@ namespace MonoDevelop.CodeActions
 				}
 				var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
 				 	async delegate {
-						var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
+						 var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
 					 	foreach (var f in fixes) {
-							CodeDiagnosticDescriptor.RunAction (DocumentContext, f.Action, default (CancellationToken));
+							 CodeDiagnosticDescriptor.RunAction (DocumentContext, f.Action, default (CancellationToken));
 					 	}
 				 	}
 				);
@@ -662,6 +635,41 @@ namespace MonoDevelop.CodeActions
 				menu.Add (subMenu);
 				items++;
 			}
+		}
+
+		void AddFixMenuItem (FixMenuDescriptor menu, ref int items, ref int mnemonic, CodeAction fix)
+		{
+			var nested = fix as CodeAction.CodeActionWithNestedActions;
+			if (nested != null) {
+				AddNestedFixMenu (menu, ref items, ref mnemonic, nested);
+				return;
+			}
+
+			var label = CreateLabel (fix.Title, ref mnemonic);
+			var thisInstanceMenuItem = new FixMenuEntry (label, async delegate {
+				await new ContextActionRunner (fix, Editor, DocumentContext).Run ();
+				ConfirmUsage (fix.EquivalenceKey);
+			});
+
+			thisInstanceMenuItem.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
+				HidePreviewTooltip ();
+				currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix);
+				currentPreviewWindow.RequestPopup (rect);
+			};
+
+			menu.Add (thisInstanceMenuItem);
+			items++;
+		}
+
+		void AddNestedFixMenu (FixMenuDescriptor menu, ref int items, ref int mnemonic, CodeAction.CodeActionWithNestedActions fixes)
+		{
+			int subItems = 0, subMnemonic = 0;
+			var subMenu = new FixMenuDescriptor (fixes.Title);
+			foreach (var fix in fixes.NestedCodeActions) {
+				AddFixMenuItem (subMenu, ref subItems, ref subMnemonic, fix);
+			}
+			menu.Add (subMenu);
+			items++;
 		}
 
 		internal class ContextActionRunner
