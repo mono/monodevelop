@@ -61,9 +61,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			}
 		}
 
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			return (otherNode.DataItem is Ide.Gui.Pads.ProjectPad.GettingStartedNode) ? 1 : -1;
+			return -1500;
 		}
 
 		public override void OnNodeAdded (object dataObject)

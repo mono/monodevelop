@@ -80,14 +80,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = "<span foreground='dimgrey'>" + nodeInfo.Label + "</span>";
 			}
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (otherNode.DataItem is ProjectFolder)
-				return 1;
-			else
-				return DefaultSort;
-		}
 	}
 	
 	class SystemFileNodeCommandHandler: NodeCommandHandler
