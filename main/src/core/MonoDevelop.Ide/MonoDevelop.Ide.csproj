@@ -157,9 +157,11 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -172,6 +174,10 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -9234,6 +9240,7 @@
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ScopeStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9351,9 +9358,9 @@
     <InternalsVisibleTo Include="Xamarin.Sketches" />
     <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
     <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
-    <InternalsVisibleTo Include="MonoDevelop.UnitTesting"/>
-    <InternalsVisibleTo Include="MonoDevelop.Packaging"/>
-    <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests"/>
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />

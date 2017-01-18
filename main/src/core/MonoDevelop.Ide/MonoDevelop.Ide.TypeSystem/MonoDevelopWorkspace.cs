@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			List<Assembly> assemblies = new List<Assembly> ();
+			assemblies.Add (typeof (MonoDevelopWorkspace).Assembly);
 			foreach (var asmName in mefHostServices) {
 				try {
 					var asm = Assembly.Load (asmName);
