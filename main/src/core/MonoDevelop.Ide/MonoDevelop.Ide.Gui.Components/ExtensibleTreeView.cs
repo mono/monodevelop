@@ -217,8 +217,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			store.SetSortColumnId (/* GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID */ -1, Gtk.SortType.Ascending);
 
 			tree.HeadersVisible = false;
-			tree.SearchColumn = 0;
-			tree.EnableSearch = true;
+			tree.EnableSearch = false;
 			complete_column = new Gtk.TreeViewColumn ();
 			complete_column.Title = "column";
 
@@ -2074,6 +2073,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				args.RetVal = true;
 				return;
 			}
+		}
+
+		[CommandHandler (SearchCommands.Find)]
+		void HandleSearchCommand ()
+		{
+			IdeApp.CommandService.DispatchCommand (MonoDevelop.Components.MainToolbar.Commands.NavigateTo);
 		}
 
 		void Expand (Gtk.TreeIter it)
