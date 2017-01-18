@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
+using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -81,18 +82,28 @@ namespace MonoDevelop.CodeIssues
 
 		void GetAllSeverities ()
 		{
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDecsriptorsAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
+			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
 				var root = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, null);
 				severities [root] = node.DiagnosticSeverity;
 				enableState [root] = node.IsEnabled;
-				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
-					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
+
+				var supportedDiagnostics = node.GetProvider ().SupportedDiagnostics
+					.Where (d => !DescriptorHasTag (d, WellKnownDiagnosticTags.NotConfigurable))
+					.ToList ();
+
+				if (supportedDiagnostics.Count > 1) {
+					foreach (var subIssue in supportedDiagnostics) {
 						var sub = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, subIssue);
 						severities [sub] = node.GetSeverity (subIssue);
 						enableState [sub] = node.GetIsEnabled (subIssue);
 					}
 				}
 			}
+		}
+
+		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
+		{
+			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
 		public void SelectCodeIssue (string idString)

@@ -50,6 +50,7 @@ using System.Reflection;
 using MonoDevelop.Ide.Gui;
 using Microsoft.CodeAnalysis.Diagnostics;
 using MonoDevelop.Core.Text;
+using System.Globalization;
 
 namespace MonoDevelop.CodeActions
 {
@@ -537,6 +538,12 @@ namespace MonoDevelop.CodeActions
 
 			foreach (var fix_ in GetCurrentFixes ().DiagnosticsAtCaret) {
 				var fix = fix_;
+				var notConfigurable = DescriptorHasTag (fix_.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
+
+				if (fix.Descriptor.DefaultSeverity == DiagnosticSeverity.Hidden && notConfigurable) {
+					continue;
+				};
+
 				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", fix.GetMessage ());
 				var subMenu = new FixMenuDescriptor (label);
 
@@ -577,17 +584,19 @@ namespace MonoDevelop.CodeActions
 						});
 					subMenu.Add (menuItem);
 				}
-				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
-					delegate {
-						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-							if (panel == null)
-								return;
-							panel.Widget.SelectCodeIssue (descriptor.IdString);
-						});
-					});
-				subMenu.Add (optionsMenuItem);
 
+				if (!notConfigurable) {
+					var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
+						delegate {
+							IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+								var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
+								if (panel == null)
+									return;
+								panel.Widget.SelectCodeIssue (descriptor.IdString);
+							});
+						});
+					subMenu.Add (optionsMenuItem);
+				}
 
 				foreach (var fix2 in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 
@@ -604,15 +613,17 @@ namespace MonoDevelop.CodeActions
 					var menuItem = new FixMenuEntry (
 						GettextCatalog.GetString ("In _Document"),
 						async delegate {
-							var fixAllDiagnosticProvider = new FixAllDiagnosticProvider (diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (), async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
+							var fixAllDiagnosticProvider = new FixAllDiagnosticProvider (
+								diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (),
+								async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
+									var model = await doc.GetSemanticModelAsync (token);
+									var compilationWithAnalyzer = model.Compilation.WithAnalyzers (new [] { diagnosticAnalyzer }.ToImmutableArray (), null, token);
 
-								var model = await doc.GetSemanticModelAsync (token);
-								var compilationWithAnalyzer = model.Compilation.WithAnalyzers (new [] { diagnosticAnalyzer }.ToImmutableArray (), null, token);
-
-								return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
-							}, (Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
-								return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
-							});
+									return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
+								},
+								(Project arg1, bool arg2, ImmutableHashSet<string> arg3, CancellationToken arg4) => {
+									return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
+								});
 							var ctx = new FixAllContext (
 								this.DocumentContext.AnalysisDocument,
 								fix2.Diagnostic.GetCodeFixProvider (),
@@ -635,6 +646,11 @@ namespace MonoDevelop.CodeActions
 				menu.Add (subMenu);
 				items++;
 			}
+		}
+
+		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
+		{
+			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
 		void AddFixMenuItem (FixMenuDescriptor menu, ref int items, ref int mnemonic, CodeAction fix)

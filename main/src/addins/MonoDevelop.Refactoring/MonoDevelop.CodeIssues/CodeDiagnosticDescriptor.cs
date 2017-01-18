@@ -23,17 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Microsoft.CodeAnalysis.Diagnostics;
-using MonoDevelop.Core;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using MonoDevelop.Ide.Editor;
-using System.Threading;
-using MonoDevelop.Ide.TypeSystem;
-using System.Reflection;
-using Microsoft.CodeAnalysis.CodeActions;
 using System.Collections.Immutable;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -142,14 +144,14 @@ namespace MonoDevelop.CodeIssues
 
 		}
 
-		internal CodeDiagnosticDescriptor (Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
+		internal CodeDiagnosticDescriptor (DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
 		{
 			if (descriptor == null)
-				throw new ArgumentNullException ("descriptor");
+				throw new ArgumentNullException (nameof (descriptor));
 			if (languages == null)
-				throw new ArgumentNullException ("languages");
+				throw new ArgumentNullException (nameof (languages));
 			if (codeIssueType == null)
-				throw new ArgumentNullException ("codeIssueType");
+				throw new ArgumentNullException (nameof (codeIssueType));
 			Name = descriptor.Title.ToString () ?? "unnamed";
 			Languages = languages;
 			this.descriptor = descriptor;
@@ -173,6 +175,8 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		public bool CanDisableWithPragma { get { return !string.IsNullOrEmpty (descriptor.Id); } }
+
+		public bool IsConfigurable => !descriptor.CustomTags.Contains (WellKnownDiagnosticTags.NotConfigurable);
 
 		const string analysisDisableTag = "Analysis ";
 		readonly static MethodInfo getCodeActionsMethod;
