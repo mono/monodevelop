@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -98,6 +99,10 @@ namespace MonoDevelop.CodeIssues
 					try {
 						var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
 						foreach (var diag in analyzer.SupportedDiagnostics) {
+							//filter out E&C analyzers as we don't support E&C
+							if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+								continue;
+							}
 							Analyzers.Add (new CodeDiagnosticDescriptor (diag, analyzerAttr.Languages, type));
 						}
 					} catch (Exception e) {
