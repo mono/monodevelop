@@ -1826,8 +1826,9 @@ namespace MonoDevelop.Components.Commands
 
 		void AddUpdater (List<CommandUpdaterInfo> methodUpdaters, MethodInfo method, CommandUpdateHandlerAttribute attr)
 		{
+			var attrCommandId = CommandManager.ToCommandId (attr.CommandId);
 			foreach (CommandUpdaterInfo ci in methodUpdaters) {
-				if (ci.CommandId.Equals (CommandManager.ToCommandId (attr.CommandId))) {
+				if (ci.CommandId.Equals (attrCommandId)) {
 					ci.Init (method, attr);
 					return;
 				}
