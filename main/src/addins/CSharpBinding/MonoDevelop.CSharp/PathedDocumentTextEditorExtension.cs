@@ -769,22 +769,23 @@ namespace MonoDevelop.CSharp
 					return;
 				}
 
+				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
-				var result = new List<PathEntry>();
+				Gtk.Application.Invoke (delegate {
+					var result = new List<PathEntry>();
 
-				if (curProject != null) {
-					// Current project if there is more than one 
-					result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
-				}
+					if (curProject != null) {
+						// Current project if there is more than one 
+						result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
+					}
 
-				if (curType == null) {
-					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
-						return;
-					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
-						return;
-					var prevPath = CurrentPath;
-					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
-					Gtk.Application.Invoke (delegate {
+					if (curType == null) {
+						if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
+							return;
+						if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
+							return;
+						var prevPath = CurrentPath;
+						result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
 						if (cancellationToken.IsCancellationRequested)
 							return;
 
@@ -797,12 +798,9 @@ namespace MonoDevelop.CSharp
 
 						lastProject = curProject;
 						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
-					});
-					return;
-				}
-				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
+						return;
+					}
 
-				Gtk.Application.Invoke(delegate {
 					if (curType != null) {
 						var type = curType;
 						var pos = result.Count;
