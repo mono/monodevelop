@@ -31,7 +31,7 @@
 	branch = dotnetcore-nuget-4.0
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git://github.com/mhutch/xwt
+	url = git://github.com/mono/xwt
 	branch = master
 [submodule "main/external/monomac"]
 	path = main/external/monomac
