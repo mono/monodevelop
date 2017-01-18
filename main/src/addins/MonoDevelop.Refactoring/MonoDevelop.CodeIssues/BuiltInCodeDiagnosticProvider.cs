@@ -53,7 +53,7 @@ namespace MonoDevelop.CodeIssues
 					try {
 						result.AddAssembly (asm);
 					} catch (Exception e) {
-						LoggingService.LogError ("error while loading diagnostics in " + asm.FullName, e);
+						LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
 					}
 				}
 				return result;
