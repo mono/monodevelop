@@ -33,14 +33,21 @@ namespace MonoDevelop.Core
 	[TestFixture]
 	public class MonoExecutionParametersTests
 	{
-		[Test]
-		public void CheckWeTrimString ()
+		[Test, TestCaseSource ("ExecutionParameters")]
+		public void CheckWeTrimString (MonoExecutionParameters par)
 		{
-			var par = new MonoExecutionParameters ();
 			string ops;
 			par.GenerateOptions (new Dictionary<string, string> (), out ops);
 
 			Assert.AreEqual (ops.Trim (), ops);
 		}
+
+		static MonoExecutionParameters [] ExecutionParameters = new[] {
+			new MonoExecutionParameters (),
+			new MonoExecutionParameters { MonoVerboseLevel = 3 },
+			new MonoExecutionParameters { MonoVerboseLevel = 3, MonoDebugMode = true, },
+			new MonoExecutionParameters { MonoDebugMode = true, MonoDebugCasts = true, },
+			new MonoExecutionParameters { MonoDebugMode = true, MonoDebugCasts = true, MonoVerifyAll = true, MonoConfigFile = "test.config" },
+		};
 	}
 }
