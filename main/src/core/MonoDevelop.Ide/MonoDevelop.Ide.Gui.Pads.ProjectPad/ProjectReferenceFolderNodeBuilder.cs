@@ -95,12 +95,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), true);
 			return p != null && p.IsPortableLibrary;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			if (otherNode.DataItem is GettingStartedNode)
-				return 1;
-			return -1;
+			return -1000;
 		}
 
 		void OnRemoveReference (object sender, ProjectReferenceEventArgs e)

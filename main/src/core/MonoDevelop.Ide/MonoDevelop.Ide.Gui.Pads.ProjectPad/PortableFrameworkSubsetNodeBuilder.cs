@@ -84,5 +84,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 									 .Where (asm => asm.Package.IsFrameworkPackage && asm.Name != "mscorlib")
 									 .Select (asm => new ImplicitFrameworkAssemblyReference (asm)));
 		}
+
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			return -1000;
+		}
 	}
 }

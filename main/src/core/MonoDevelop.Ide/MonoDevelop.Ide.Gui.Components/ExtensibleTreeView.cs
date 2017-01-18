@@ -1587,14 +1587,22 @@ namespace MonoDevelop.Ide.Gui.Components
 				NodeBuilder[] chain1 = (NodeBuilder[]) store.GetValue (a, BuilderChainColumn);
 				if (chain1 == null) return -1;
 
+				NodeBuilder [] chain2 = (NodeBuilder [])store.GetValue (b, BuilderChainColumn);
+				if (chain2 == null) return 1;
+
 				compareNode1.MoveToIter (a);
 				compareNode2.MoveToIter (b);
 
+				var i1 = GetSortIndex (chain1, compareNode1);
+				var i2 = GetSortIndex (chain2, compareNode2);
+
+				if (i1 < i2)
+					return -1;
+				else if (i1 > i2)
+					return 1;
+
 				int sort = CompareObjects (chain1, compareNode1, compareNode2);
 				if (sort != TypeNodeBuilder.DefaultSort) return sort;
-
-				NodeBuilder[] chain2 = (NodeBuilder[]) store.GetValue (b, BuilderChainColumn);
-				if (chain2 == null) return 1;
 
 				if (chain1 != chain2) {
 					sort = CompareObjects (chain2, compareNode2, compareNode1);
@@ -1618,6 +1626,17 @@ namespace MonoDevelop.Ide.Gui.Components
 			int result = NodeBuilder.DefaultSort;
 			for (int n=0; n<chain.Length; n++) {
 				int sort = chain[n].CompareObjects (thisNode, otherNode);
+				if (sort != NodeBuilder.DefaultSort)
+					result = sort;
+			}
+			return result;
+		}
+
+		int GetSortIndex (NodeBuilder [] chain, ITreeNavigator node)
+		{
+			int result = 0;
+			for (int n = 0; n < chain.Length; n++) {
+				int sort = chain [n].GetSortIndex (node);
 				if (sort != NodeBuilder.DefaultSort)
 					result = sort;
 			}
