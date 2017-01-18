@@ -101,7 +101,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			ids.Add ("navigation");
-
+			ids.Add ("tabNavigation");
+			
 			if (ButtonBarContainer != null) {
 				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
 				if (extraIds != null) {
@@ -153,6 +154,30 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var customGroupItem = NSGroupTouchBarItem.CreateGroupItem(identifier, items);
 
 				item = customGroupItem;
+
+				return item;
+				
+			case "tabNavigation": //navigation again, but this time for tabs. Lack of images is a work-in-progress
+
+				var customItemTabNavL = new NSCustomTouchBarItem ("tabNavigationLeft");
+				var lButton = NSButton.CreateButton ("tabL", () => { });
+				lButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevDocument);
+				};
+				customItemTabNavL.View = lButton;
+
+				var customItemTabNavR = new NSCustomTouchBarItem("tabNavigationRight");
+				var rButton = NSButton.CreateButton ("tabR", () => { });
+				rButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextDocument);
+				};
+				customItemTabNavR.View = rButton;
+
+				NSTouchBarItem [] tabNavItems = { customItemTabNavL, customItemTabNavR };
+
+				var customTabNavGroupItem = NSGroupTouchBarItem.CreateGroupItem (identifier, tabNavItems);
+
+				item = customTabNavGroupItem;
 
 				return item;
 
