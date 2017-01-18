@@ -1763,11 +1763,11 @@ namespace MonoDevelop.Components.Commands
 					ICommandArrayUpdateHandler customArrayHandlerChain = null;
 					ICommandTargetHandler customTargetHandlerChain = null;
 					ICommandArrayTargetHandler customArrayTargetHandlerChain = null;
-					List<CommandHandlerInfo> methodHandlers = new List<CommandHandlerInfo> ();
+					int handlersStart = handlers.Count;
 					
 					foreach (object attr in method.GetCustomAttributes (true)) {
 						if (attr is CommandHandlerAttribute)
-							methodHandlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
+							handlers.Add(new CommandHandlerInfo (method, (CommandHandlerAttribute)attr));
 						else if (attr is CommandUpdateHandlerAttribute)
 							AddUpdater (updaters, method, (CommandUpdateHandlerAttribute) attr);
 						else {
@@ -1785,21 +1785,20 @@ namespace MonoDevelop.Components.Commands
 						customArrayTargetHandlerChain = ChainHandler (customArrayTargetHandlerChain, attr);
 					}
 					
-					if (methodHandlers.Count > 0) {
+					if (handlers.Count > handlersStart) {
 						if (customHandlerChain != null || customArrayHandlerChain != null) {
 							// There are custom handlers. Create update handlers for all commands
 							// that the method handles so the custom update handlers can be chained
-							foreach (CommandHandlerInfo ci in methodHandlers) {
-								CommandUpdaterInfo c = AddUpdateHandler (updaters, ci.CommandId);
+							for (int i = handlersStart; i < handlers.Count; ++i) {
+								CommandUpdaterInfo c = AddUpdateHandler (updaters, handlers[i].CommandId);
 								c.AddCustomHandlers (customHandlerChain, customArrayHandlerChain);
 							}
 						}
 						if (customTargetHandlerChain != null || customArrayTargetHandlerChain != null) {
-							foreach (CommandHandlerInfo ci in methodHandlers)
-								ci.AddCustomHandlers (customTargetHandlerChain, customArrayTargetHandlerChain);
+							for (int i = handlersStart; i < handlers.Count; ++i)
+								handlers[i].AddCustomHandlers (customTargetHandlerChain, customArrayTargetHandlerChain);
 						}
 					}
-					handlers.AddRange (methodHandlers);
 				}
 				curType = curType.BaseType;
 			}
