@@ -98,7 +98,7 @@ namespace MonoDevelop.DotNetCore
 			dotNetCoreMSBuildProject.ReadProject (msproject);
 
 			if (!dotNetCoreMSBuildProject.IsOutputTypeDefined)
-				Project.CompileTarget = CompileTarget.Library;
+				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
 		}
@@ -288,6 +288,7 @@ namespace MonoDevelop.DotNetCore
 
 			if (dotNetCoreMSBuildProject.AddInternalSdkImports (project, sdkPaths)) {
 				project.Evaluate ();
+				dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 			}
 		}
 	}
