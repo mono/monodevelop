@@ -69,14 +69,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else
 				return file.Parent;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (otherNode.DataItem is SolutionFolderFileNode)
-				return DefaultSort;
-			else
-				return -1;
-		}
 	}
 	
 	class SolutionFolderFileNodeCommandHandler: NodeCommandHandler

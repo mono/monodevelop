@@ -1,10 +1,10 @@
-//
-// MSBuildEvaluatedItem.cs
+﻿//
+// MSBuildEvent.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2017 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-
 namespace MonoDevelop.Projects.MSBuild
 {
-
-	[Serializable]
-	public class MSBuildEvaluatedItem
+	[Flags]
+	public enum MSBuildEvent
 	{
-		public MSBuildEvaluatedItem (string name, string itemSpec)
-		{
-			Name = name;
-			ItemSpec = itemSpec;
-			Metadata = new Dictionary<string, string> ();
-		}
-
-		public Dictionary<string,string> Metadata { get; private set; }
-		public string ItemSpec { get; private set; }
-		public string Name { get; private set; }
+		None = 0,
+		BuildStarted = 1 << 0,
+		BuildFinished = 1 << 1,
+		ProjectStarted = 1 << 2,
+		ProjectFinished = 1 << 3,
+		TargetStarted = 1 << 4,
+		TargetFinished = 1 << 5,
+		TaskStarted = 1 << 6,
+		TaskFinished = 1 << 7,
+		ErrorRaised = 1 << 8,
+		WarningRaised = 1 << 9,
+		MessageRaised = 1 << 10,
+		CustomEventRaised = 1 << 11,
+		All = 0xffff
 	}
 }

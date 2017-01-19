@@ -86,7 +86,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			// handle when the service has finished being added
 			if (e.WasAdded) {
-				ExpandFirstOrUnconfiguredSection ();
+				InvokeAsync (ExpandFirstOrUnconfiguredSection);
 			}
 		}
 

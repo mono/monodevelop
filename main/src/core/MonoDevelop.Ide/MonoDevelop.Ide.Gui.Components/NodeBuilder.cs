@@ -135,6 +135,21 @@ namespace MonoDevelop.Ide.Gui.Components
 			return DefaultSort;
 		}
 
+		/// <summary>
+		/// Gets the sort index for this node
+		/// </summary>
+		/// <returns>The sort index.</returns>
+		/// <param name="node">A tree node.</param>
+		/// <remarks>
+		/// The sort index is used to determine the relative ordering of nodes. Nodes with a higher sort index are
+		/// placed after nodes with lower index. When the index of two nodes is the same, the CompareObjects
+		/// method is used to determine the ordering. The default value is 0.
+		/// </remarks>
+		public virtual int GetSortIndex (ITreeNavigator node)
+		{
+			return DefaultSort;
+		}
+
 		// Helper methods
 		
 		internal static bool HasAttribute (ITreeNavigator treeNavigator, NodeAttributes attr, NodeBuilder[] chain, object dataObject)
