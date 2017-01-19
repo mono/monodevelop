@@ -54,14 +54,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal readonly WorkspaceId Id;
 
 		CancellationTokenSource src = new CancellationTokenSource ();
-		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
+		bool disposed;
+		readonly MonoDevelop.Projects.Solution monoDevelopSolution;
 		object addLock = new object();
 		bool added;
 		bool internalChanges;
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
-				return currentMonoDevelopSolution;
+				return monoDevelopSolution;
 			}
 		}
 
@@ -88,10 +89,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
 
-		internal MonoDevelopWorkspace () : base (services, ServiceLayer.Desktop)
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, ServiceLayer.Desktop)
 		{
+			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
-			if (IdeApp.Workspace != null) {
+			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 		}
@@ -99,15 +101,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void Dispose (bool finalize)
 		{
 			base.Dispose (finalize);
+			if (disposed)
+				return;
+			disposed = true;
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-			if (currentMonoDevelopSolution != null) {
-				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ()) {
-					UnloadMonoProject (prj);
-				}
-				currentMonoDevelopSolution = null;
+			foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
+				UnloadMonoProject (prj);
 			}
 		}
 
@@ -163,14 +165,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			if (currentMonoDevelopSolution == null)
-				return;
 			ShowStatusIcon ();
 			CancelLoad ();
 			var token = src.Token;
 
 			try {
-				var si = await CreateSolutionInfo (currentMonoDevelopSolution, token).ConfigureAwait (false);
+				var si = await CreateSolutionInfo (monoDevelopSolution, token).ConfigureAwait (false);
 				if (si != null)
 					OnSolutionReloaded (si);
 			} catch (OperationCanceledException) {
@@ -225,10 +225,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		internal Task<SolutionInfo> TryLoadSolution (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default(CancellationToken))
+		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.currentMonoDevelopSolution = solution;
-			return CreateSolutionInfo (solution, cancellationToken);
+			return CreateSolutionInfo (monoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
 		internal void UnloadSolution ()
@@ -408,6 +407,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (fileName.IsNullOrEmpty)
 				fileName = new FilePath (p.Name + ".dll");
 
+			if (token.IsCancellationRequested)
+				return null;
 			var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
 
 			var info = ProjectInfo.Create (
