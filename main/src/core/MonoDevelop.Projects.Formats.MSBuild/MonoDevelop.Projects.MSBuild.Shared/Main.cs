@@ -44,7 +44,6 @@ namespace MonoDevelop.Projects.MSBuild
 			RemoteProcessServer server = new RemoteProcessServer ();
 			var builderEngine = new BuildEngine (server);
 			server.Connect (args, builderEngine);
-			builderEngine.WaitHandle.WaitOne ();
 		}
 	}
 }

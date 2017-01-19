@@ -26,6 +26,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace System
 {
@@ -110,6 +111,15 @@ namespace System
 			{
 				return new Dictionary<Key, Value> ();
 			}
+		}
+
+		/// <summary>
+		/// Use this method to explicitly indicate that you don't care
+		/// about the result of an async call
+		/// </summary>
+		/// <param name="task">The task to forget</param>
+		public static void Forget (this Task task)
+		{
 		}
 	}
 }

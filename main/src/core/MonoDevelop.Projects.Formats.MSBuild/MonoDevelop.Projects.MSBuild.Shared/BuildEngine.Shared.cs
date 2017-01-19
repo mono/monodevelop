@@ -56,13 +56,7 @@ namespace MonoDevelop.Projects.MSBuild
 		static string msbuildBinDir;
 		Dictionary<int, ProjectBuilder> projects = new Dictionary<int, ProjectBuilder> ();
 
-		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
-
 		static RemoteProcessServer server;
-
-		internal WaitHandle WaitHandle {
-			get { return doneEvent; }
-		}
 
 		public class LogWriter: IEngineLogWriter
 		{
@@ -110,7 +104,7 @@ namespace MonoDevelop.Projects.MSBuild
 						break;
 					}
 				}
-				doneEvent.Set ();
+				server.Shutdown ();
 			});
 			t.IsBackground = true;
 			t.Start ();
@@ -176,13 +170,6 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			if (pb != null)
 				UnloadProject (pb);
-			return msg.CreateResponse ();
-		}
-
-		[MessageHandler]
-		public BinaryMessage Dispose (DisposeRequest msg)
-		{
-			doneEvent.Set ();
 			return msg.CreateResponse ();
 		}
 

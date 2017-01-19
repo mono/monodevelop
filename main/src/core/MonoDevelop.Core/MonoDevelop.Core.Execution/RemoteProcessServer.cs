@@ -39,6 +39,7 @@ namespace MonoDevelop.Core.Execution
 		Stream outStream;
 		Stream inStream;
 		string messages = "";
+		bool shuttingDown;
 
 		Dictionary<string, MessageListenerHandler> listeners = new Dictionary<string, MessageListenerHandler> ();
 		Dictionary<string, Type> messageTypes = new Dictionary<string, Type> ();
@@ -104,6 +105,17 @@ namespace MonoDevelop.Core.Execution
 			return messages;
 		}
 
+		public void Shutdown ()
+		{
+			try {
+				shuttingDown = true;
+				inStream.Close ();
+				socket.Close ();
+			} catch {
+				// Ignore
+			}
+		}
+
 		void Start ()
 		{
 			var t = new Thread (Run);
@@ -148,7 +160,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			List<BinaryMessage> messages = new List<BinaryMessage> ();
 
-			while (true) {
+			while (!shuttingDown) {
 				BinaryMessage msg;
 				int type;
 				try {

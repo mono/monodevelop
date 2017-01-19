@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects.MSBuild
 			Interlocked.Decrement (ref count);
 			try {
 				alive = false;
-				connection.SendMessage (new DisposeRequest ());
+				connection.Disconnect ().Forget ();
 			} catch {
 				// Ignore
 			}
