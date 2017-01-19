@@ -44,11 +44,10 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				Console.WriteLine ("Error while loading pixbuf 'image-x-generic.png': " + e);
 			}
 		}
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			return -1;
+			return -100;
 		}
-
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{

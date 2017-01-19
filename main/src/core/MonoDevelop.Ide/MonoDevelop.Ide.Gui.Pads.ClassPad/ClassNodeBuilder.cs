@@ -127,14 +127,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			// info from the db, so we always return true here. After all 99% of classes will have members
 			return true;
 		}
-
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (thisNode.DataItem is ClassData)
-				return DefaultSort;
-			else
-				return 1;
-		}
 	}
 
 	public class ClassNodeCommandHandler : NodeCommandHandler

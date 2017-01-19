@@ -109,9 +109,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is ProjectFolder)
-				return 1;
-
 			if (!(thisNode.DataItem is ProjectFile))
 				return DefaultSort;
 			if (!(otherNode.DataItem is ProjectFile))
