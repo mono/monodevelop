@@ -88,5 +88,26 @@ namespace MonoDevelop.PackageManagement
 		{
 			return project.GetImport (importedProjectFile) != null;
 		}
+
+		public static IEnumerable<ProjectPackageReference> GetEvaluatedPackageReferences (this MSBuildProject project)
+		{
+			return project.GetEvaluatedPackageReferenceItems ()
+				.Select (ProjectPackageReference.Create);
+		}
+
+		static IEnumerable<IMSBuildItemEvaluated> GetEvaluatedPackageReferenceItems (this MSBuildProject project)
+		{
+			if (project.EvaluatedItems != null) {
+				return project.EvaluatedItems
+					.Where (item => item.Name == "PackageReference");
+			}
+
+			return Enumerable.Empty<IMSBuildItemEvaluated> ();
+		}
+
+		public static bool HasEvaluatedPackageReferences (this MSBuildProject project)
+		{
+			return project.GetEvaluatedPackageReferenceItems ().Any ();
+		}
 	}
 }

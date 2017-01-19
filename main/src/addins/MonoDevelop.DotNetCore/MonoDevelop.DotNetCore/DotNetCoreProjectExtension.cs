@@ -98,7 +98,7 @@ namespace MonoDevelop.DotNetCore
 			dotNetCoreMSBuildProject.ReadProject (msproject);
 
 			if (!dotNetCoreMSBuildProject.IsOutputTypeDefined)
-				Project.CompileTarget = CompileTarget.Library;
+				Project.CompileTarget = dotNetCoreMSBuildProject.DefaultCompileTarget;
 
 			Project.UseAdvancedGlobSupport = true;
 		}
@@ -288,7 +288,37 @@ namespace MonoDevelop.DotNetCore
 
 			if (dotNetCoreMSBuildProject.AddInternalSdkImports (project, sdkPaths)) {
 				project.Evaluate ();
+				dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 			}
+		}
+
+		/// <summary>
+		/// HACK: Remove any C# files found in the intermediate obj directory. This avoids
+		/// a type system error if a file in the obj directory is modified but the type
+		/// system does not have that file in the workspace. This can happen if the file
+		/// was not filtered out initially and added to the project by the wildcard import
+		/// and then later on after a re-evaluation of the project is filtered out from the
+		/// source files returned by Project.OnGetSourceFiles.
+		/// </summary>
+		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
+
+			return RemoveFilesFromIntermediateDirectory (sourceFiles);
+		}
+
+		ProjectFile[] RemoveFilesFromIntermediateDirectory (ProjectFile[] files)
+		{
+			var filteredFiles = new List<ProjectFile> ();
+			FilePath intermediateOutputPath = Project.BaseIntermediateOutputPath;
+
+			foreach (var file in files) {
+				if (!file.FilePath.IsChildPathOf (intermediateOutputPath)) {
+					filteredFiles.Add (file);
+				}
+			}
+
+			return filteredFiles.ToArray ();
 		}
 	}
 }

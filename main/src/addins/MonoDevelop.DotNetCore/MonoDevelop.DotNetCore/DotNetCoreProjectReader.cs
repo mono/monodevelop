@@ -67,10 +67,6 @@ namespace MonoDevelop.DotNetCore
 						if (string.IsNullOrEmpty (sdk))
 							return null;
 
-						string toolsVersion = tr.GetAttribute ("ToolsVersion");
-						if (toolsVersion != "15.0")
-							return null;
-
 						return sdk;
 					}
 				}
