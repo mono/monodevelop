@@ -16,6 +16,10 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeDiagnosticProvider" name = "Code Diagnostic Provider">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/SuppressionFixProvider" defaultInsertAfter = "MidStep">
+		<ExtensionNode name="Provider" />
+	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/FindReferencesProvider">
 		<ExtensionNode name="Class"/>

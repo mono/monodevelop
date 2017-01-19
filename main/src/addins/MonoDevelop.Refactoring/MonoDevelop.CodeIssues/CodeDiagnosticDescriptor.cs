@@ -174,34 +174,11 @@ namespace MonoDevelop.CodeIssues
 			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Languages);
 		}
 
-		public bool CanDisableWithPragma { get { return !string.IsNullOrEmpty (descriptor.Id); } }
-
 		public bool IsConfigurable => !descriptor.CustomTags.Contains (WellKnownDiagnosticTags.NotConfigurable);
 
 		const string analysisDisableTag = "Analysis ";
 		readonly static MethodInfo getCodeActionsMethod;
 		readonly static PropertyInfo hasCodeActionsProperty;
-
-		public async void DisableWithPragma (TextEditor editor, DocumentContext context, Diagnostic fix, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var line = editor.GetLineByOffset (fix.Location.SourceSpan.Start);
-			var span = new TextSpan (line.Offset, line.Length);
-			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken).ConfigureAwait (false);
-			foreach (var f in fixes) {
-				RunAction (context, f.Action, cancellationToken);
-			}
-		}
-
-		public async void DisableWithFile (TextEditor editor, DocumentContext context, Diagnostic fix, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var p = context.RoslynWorkspace.CurrentSolution.GetProject (TypeSystemService.GetProjectId (context.Project));
-
-			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (p, new [] { fix }, cancellationToken ).ConfigureAwait (false);
-
-			foreach (var f in fixes) {
-				RunAction (context, f.Action, cancellationToken);
-			}
-		}
 
 		internal static async void RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
 		{
@@ -214,7 +191,7 @@ namespace MonoDevelop.CodeIssues
 				try {
 					op.Apply (context.RoslynWorkspace, cancellationToken);
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while appyling operation : " + op, e);
+					LoggingService.LogError ("Error while applying operation : " + op, e);
 				}
 			}
 

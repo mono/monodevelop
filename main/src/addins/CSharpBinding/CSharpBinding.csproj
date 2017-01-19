@@ -462,6 +462,7 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\CSharpSuppressionCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -499,7 +500,6 @@
     <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
     <Folder Include="MonoDevelop.JSon\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
