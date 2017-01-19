@@ -136,10 +136,6 @@
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="MonoDevelop.DesignerSupport">
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Mono.Addins">
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Mono.Addins.dll</HintPath>
@@ -152,10 +148,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
@@ -167,10 +159,6 @@
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.UnitTesting">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
@@ -211,6 +199,18 @@
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
