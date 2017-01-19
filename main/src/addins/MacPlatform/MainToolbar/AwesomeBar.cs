@@ -38,6 +38,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
+		//Begin variables declared as static outside of scope to prevent garbage collection crash
+		private static NSSegmentedControl navSegments = null;
+		private static NSSegmentedControl tabNavSegments = null;
+		//End variables decl… *sigh*
+
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
 		internal StatusBar StatusBar { get; set; }
@@ -70,10 +75,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSTouchBar MakeTouchBar ()
 		{
-			var touchbar = new NSTouchBar ();
-			touchbar.Delegate = this;
-			touchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
-			return touchbar;
+			var aTouchbar = new NSTouchBar ();
+			aTouchbar.Delegate = this;
+			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
+			return aTouchbar;
 		}
 
 		public void UpdateTouchBar ()
@@ -101,6 +106,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			ids.Add ("navigation");
+			ids.Add (NSTouchBarItemIdentifier.FixedSpaceSmall.ToString());
 			ids.Add ("tabNavigation");
 			
 			if (ButtonBarContainer != null) {
@@ -133,51 +139,59 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			switch (identifier) {
 			case "navigation": //contains navigate back & forward buttons
 
-				var customItemForward = new NSCustomTouchBarItem ("navForward");
-				var fButton = NSButton.CreateButton ("", () => { });
-				fButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoForwardTemplate);
-				fButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
+				//NSSegmentedControl navSegments = null; //declared as static above due to GC bug
+
+				Action navSegmentsAction = () => {
+
+					if (navSegments != null) {
+						if (navSegments.SelectedSegment == 0) {
+							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
+						} else if (navSegments.SelectedSegment == 1) {
+							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
+						}
+					}
 				};
-				customItemForward.View = fButton;
-					
-				var customItemBackward = new NSCustomTouchBarItem ("navBackward");
-				var bButton = NSButton.CreateButton ("", () => { });
-				bButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoBackTemplate);
-				bButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
-				};
-				customItemBackward.View = bButton;
 
-				NSTouchBarItem[] items = { customItemBackward, customItemForward };
+				NSImage [] navIcons =
+					{
+						NSImage.ImageNamed (NSImageName.TouchBarGoBackTemplate),
+						NSImage.ImageNamed (NSImageName.TouchBarGoForwardTemplate)
+					};
 
-				var customGroupItem = NSGroupTouchBarItem.CreateGroupItem(identifier, items);
 
-				item = customGroupItem;
+				navSegments = NSSegmentedControl.FromImages (navIcons, NSSegmentSwitchTracking.Momentary, navSegmentsAction);
+				navSegments.SegmentStyle = NSSegmentStyle.Separated;
+
+				var customItemNavSegments = new NSCustomTouchBarItem ("navigation");
+				customItemNavSegments.View = navSegments;
+				item = customItemNavSegments;
 
 				return item;
 				
 			case "tabNavigation": //navigation again, but this time for tabs. Lack of images is a work-in-progress
 
-				var customItemTabNavL = new NSCustomTouchBarItem ("tabNavigationLeft");
-				var lButton = NSButton.CreateButton ("tabL", () => { });
-				lButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevDocument);
+				//NSSegmentedControl tabNavSegments = null; //declared as static above due to GC bug
+
+				Action tabNavSegmentsAction = () => {
+					
+					if (tabNavSegments != null) {
+						
+						if (tabNavSegments.SelectedSegment == 0) {
+							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevDocument);
+						} 
+						else if (tabNavSegments.SelectedSegment == 1) {
+							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextDocument);
+						}
+					}
+
 				};
-				customItemTabNavL.View = lButton;
 
-				var customItemTabNavR = new NSCustomTouchBarItem("tabNavigationRight");
-				var rButton = NSButton.CreateButton ("tabR", () => { });
-				rButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextDocument);
-				};
-				customItemTabNavR.View = rButton;
+				tabNavSegments = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavSegmentsAction);
+				tabNavSegments.SegmentStyle = NSSegmentStyle.Separated;
 
-				NSTouchBarItem [] tabNavItems = { customItemTabNavL, customItemTabNavR };
-
-				var customTabNavGroupItem = NSGroupTouchBarItem.CreateGroupItem (identifier, tabNavItems);
-
-				item = customTabNavGroupItem;
+				var customItemTabNavSegments = new NSCustomTouchBarItem ("tabNavigation");
+				customItemTabNavSegments.View = tabNavSegments;
+				item = customItemTabNavSegments;
 
 				return item;
 
