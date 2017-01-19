@@ -142,6 +142,7 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				alive = false;
 				connection.SendMessage (new DisposeRequest ());
+				connection.SendMessage (new BinaryMessage ("Stop", "Process"));
 			} catch {
 				// Ignore
 			}
