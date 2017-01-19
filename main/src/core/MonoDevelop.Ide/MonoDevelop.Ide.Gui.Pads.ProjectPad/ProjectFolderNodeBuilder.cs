@@ -112,6 +112,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				tb.UpdateChildren ();
 			}
 		}
+
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			// Before items, but after references and other collections
+			return -100;
+		}
 	
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
