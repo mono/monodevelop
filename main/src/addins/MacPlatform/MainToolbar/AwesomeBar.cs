@@ -34,10 +34,29 @@ using MonoDevelop.Core;
 using Xwt.Mac;
 using MonoDevelop.Ide;
 
+public enum TouchBarType
+{
+	WelcomePage,
+	TextEditor,
+	Debugger,
+	Preferences
+}
+
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
+		//Begin variables declared as static outside of scope to prevent garbage collection crash
+		private static NSSegmentedControl navSegments = null;
+		private static NSSegmentedControl tabNavSegments = null;
+		//End variables decl… *sigh*
+
+		internal TouchBarType barType = TouchBarType.TextEditor;
+		internal NSTouchBar touchbar = null;
+
+		//touch bar items that need to be dynamically updated
+		private NSButton touchBarRunButton;
+
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
 		internal StatusBar StatusBar { get; set; }
@@ -70,45 +89,86 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSTouchBar MakeTouchBar ()
 		{
-			var touchbar = new NSTouchBar ();
-			touchbar.Delegate = this;
-			touchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
-			return touchbar;
+			var aTouchbar = new NSTouchBar ();
+			this.touchbar = aTouchbar;
+			aTouchbar.Delegate = this;
+			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
+			return aTouchbar;
 		}
 
 		public void UpdateTouchBar ()
 		{
+			if (this.touchbar == null) {goto Rebuild;} //initialize on launch
+
+			if (MonoDevelop.Ide.WelcomePage.WelcomePageService.WelcomePageVisible) {
+				if (this.barType != TouchBarType.WelcomePage) {
+					this.barType = TouchBarType.WelcomePage;
+					goto Rebuild;
+				} else {
+					goto Update;
+				}
+			} 
+			else { //if welcomepage is not visible
+				   //TODO: code to determine whether to use preferences or debugging bar
+				if (this.barType == TouchBarType.WelcomePage) {
+					this.barType = TouchBarType.TextEditor;
+					goto Rebuild;
+				} else {
+					goto Update;
+				}
+			}
+		Rebuild: //switch current bar
 			NSApplication.SharedApplication.SetTouchBar (MakeTouchBar ());
+		Update: //operations that change bar items but not the bar itself, e.g. validation goes here
+			NSImage runImg = null;
+			string runLabel = null;
+			switch (RunButton.Icon) {
+			case Components.MainToolbar.OperationIcon.Build:
+				runImg = MultiResImage.CreateMultiResImage ("build", "");
+				runLabel = GettextCatalog.GetString ("Build");
+				break;
+			case Components.MainToolbar.OperationIcon.Run:
+				runImg = MultiResImage.CreateMultiResImage ("continue", "");
+				runLabel = GettextCatalog.GetString ("Run");
+				break;
+			case Components.MainToolbar.OperationIcon.Stop:
+				runImg = MultiResImage.CreateMultiResImage ("stop", "");
+				runLabel = GettextCatalog.GetString ("Stop");
+				break;
+			}
+			if (runImg != null && runLabel != null) {
+				if (touchBarRunButton != null) {
+					touchBarRunButton.Image = runImg;
+				}
+			}
+			               
+
+			return;
 		}
 
 		string [] GetItemIdentifiers ()
 		{
 			List<string> ids = new List<string> ();
+			if (this.barType == TouchBarType.WelcomePage) {
+				ids.Add ("recentItems");
+				goto Exit; // in the future it is probably best to split this method into different ones for each bar
+			}
+
 			if (RunButton.Enabled) {
-				switch (RunButton.Icon) {
-				case Components.MainToolbar.OperationIcon.Build:
-					ids.Add ("build");
-					break;
-
-				case Components.MainToolbar.OperationIcon.Run:
-					ids.Add ("continue");
-					break;
-
-				case Components.MainToolbar.OperationIcon.Stop:
-					ids.Add ("stop");
-					break;
-				}
+				ids.Add ("run");
 			}
 
 			ids.Add ("navigation");
-
+			ids.Add (NSTouchBarItemIdentifier.FixedSpaceSmall.ToString());
+			ids.Add ("tabNavigation");
+			
 			if (ButtonBarContainer != null) {
 				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
 				if (extraIds != null) {
 					ids.AddRange (extraIds);
 				}
 			}
-
+			Exit:
 			return ids.ToArray ();
 		}
 
@@ -130,35 +190,74 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			switch (identifier) {
+			case "recentItems":
+				var recentItemsLabel = NSTextField.CreateLabel("placeholder");
+				recentItemsLabel.StringValue = "placeholder for recent items";
+				var recentItemsCustomItem = new NSCustomTouchBarItem ("recentItems");
+				recentItemsCustomItem.View = recentItemsLabel;
+				item = recentItemsCustomItem;
+
+				return item;
 			case "navigation": //contains navigate back & forward buttons
 
-				var customItemForward = new NSCustomTouchBarItem ("navForward");
-				var fButton = NSButton.CreateButton ("", () => { });
-				fButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoForwardTemplate);
-				fButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
+				//NSSegmentedControl navSegments = null; //declared as static above due to GC bug
+
+				Action navSegmentsAction = () => {
+
+					if (navSegments != null) {
+						if (navSegments.SelectedSegment == 0) {
+							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
+						} else if (navSegments.SelectedSegment == 1) {
+							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
+						}
+					}
 				};
-				customItemForward.View = fButton;
+
+				NSImage [] navIcons =
+					{
+						NSImage.ImageNamed (NSImageName.TouchBarGoBackTemplate),
+						NSImage.ImageNamed (NSImageName.TouchBarGoForwardTemplate)
+					};
+
+
+				navSegments = NSSegmentedControl.FromImages (navIcons, NSSegmentSwitchTracking.Momentary, navSegmentsAction);
+				navSegments.SegmentStyle = NSSegmentStyle.Separated;
+
+				var customItemNavSegments = new NSCustomTouchBarItem ("navigation");
+				customItemNavSegments.View = navSegments;
+				item = customItemNavSegments;
+
+				return item;
+				
+			case "tabNavigation": //navigation again, but this time for tabs. Lack of images is a work-in-progress
+
+				//NSSegmentedControl tabNavSegments = null; //declared as static above due to GC bug
+
+				Action tabNavSegmentsAction = () => {
 					
-				var customItemBackward = new NSCustomTouchBarItem ("navBackward");
-				var bButton = NSButton.CreateButton ("", () => { });
-				bButton.Image = NSImage.ImageNamed (NSImageName.TouchBarGoBackTemplate);
-				bButton.Activated += (sender, e) => {
-					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
+					if (tabNavSegments != null) {
+						
+						if (tabNavSegments.SelectedSegment == 0) {
+							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevDocument);
+						} 
+						else if (tabNavSegments.SelectedSegment == 1) {
+							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextDocument);
+						}
+					}
+
 				};
-				customItemBackward.View = bButton;
 
-				NSTouchBarItem[] items = { customItemBackward, customItemForward };
+				tabNavSegments = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavSegmentsAction);
+				tabNavSegments.SegmentStyle = NSSegmentStyle.Separated;
 
-				var customGroupItem = NSGroupTouchBarItem.CreateGroupItem(identifier, items);
-
-				item = customGroupItem;
+				var customItemTabNavSegments = new NSCustomTouchBarItem ("tabNavigation");
+				customItemTabNavSegments.View = tabNavSegments;
+				item = customItemTabNavSegments;
 
 				return item;
 
-			case "continue":
-			case "stop":
-			case "build":
+		
+			case "run":
 				var customItem = new NSCustomTouchBarItem (identifier);
 
 #if WANT_TO_SEE_BIG_CRASH
@@ -169,8 +268,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RunButton.PerformClick (RunButton);
 				};
 #endif
+				this.touchBarRunButton = button;
+
 				customItem.View = button;
-				string label = string.Empty;
+				/*
 				switch (identifier) {
 				case "continue":
 					label = GettextCatalog.GetString ("Run");
@@ -184,8 +285,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					label = GettextCatalog.GetString ("Build");
 					break;
 				}
-				customItem.CustomizationLabel = label;
+				*/
 
+				customItem.CustomizationLabel = "run";
 				item = customItem;
 				break;
 			}
