@@ -244,8 +244,7 @@ namespace MonoDevelop.Core.Execution
 				var timeout = Task.Delay (ProcessInitializationTimeout, token).ContinueWith (t => {
 					if (t.IsCanceled)
 						return;
-					if (!processConnectedEvent.Task.IsCompleted)
-						processConnectedEvent.SetException (new Exception ("Could not start process"));
+					processConnectedEvent.TrySetException (new Exception ("Could not start process"));
 				});
 
 				await Task.WhenAny (timeout, processConnectedEvent.Task).ConfigureAwait (false);
@@ -599,7 +598,7 @@ namespace MonoDevelop.Core.Execution
 				LogMessage (MessageType.Message, msg);
 
 			if (msg.Name == "Connect") {
-				processConnectedEvent.SetResult (true);
+				processConnectedEvent.TrySetResult (true);
 				return;
 			}
 
