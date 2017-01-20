@@ -424,7 +424,7 @@ namespace MonoDevelop.Projects
 		/// Gets the target framework for new projects
 		/// </summary>
 		/// <returns>
-		/// The default target framework identifier.
+		/// The default target framework identifier or an alternative one if the default one is not supported
 		/// </returns>
 		public TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
@@ -433,6 +433,14 @@ namespace MonoDevelop.Projects
 
 		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()
 		{
+			// should find an alternative target framework if the language binding does not support
+			// the default one
+			if (!SupportsFramework(Services.ProjectService.DefaultTargetFramework)) {
+				foreach (var framework in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+					if (SupportsFramework (framework))
+						return framework.Id;
+				}
+			}
 			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
 
