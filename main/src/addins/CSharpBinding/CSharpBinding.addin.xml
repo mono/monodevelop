@@ -74,10 +74,6 @@
 		/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Refactoring/SuppressionFixProvider">
-		<Provider class="MonoDevelop.CSharp.Diagnostics.CSharpSuppressionCodeFixProvider" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Commands/CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 						_label = "_Go to Declaration" 

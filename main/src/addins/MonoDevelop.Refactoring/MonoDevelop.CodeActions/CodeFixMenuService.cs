@@ -38,6 +38,8 @@ using Microsoft.CodeAnalysis.CodeFixes.Suppression;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
@@ -162,13 +164,15 @@ namespace MonoDevelop.CodeActions
 					
 					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
 						continue;
-					
+
 					var subMenu2 = new CodeFixMenu (GettextCatalog.GetString ("Fix all"));
 
-					var diagnosticAnalyzer = fix.Diagnostic.GetCodeDiagnosticDescriptor (LanguageNames.CSharp).GetProvider ();
+					var language = editor.DocumentContext.AnalysisDocument.Project.Language;
+
+					var diagnosticAnalyzer = fix.Diagnostic.GetCodeDiagnosticDescriptor (language).GetProvider ();
 					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (diag.Descriptor))
 						continue;
-					
+
 					var menuItem = new CodeFixMenuEntry (
 						GettextCatalog.GetString ("In _Document"),
 						async delegate { await FixAll (editor, fix, provider, diagnosticAnalyzer); }
@@ -237,9 +241,15 @@ namespace MonoDevelop.CodeActions
 
 		static async Task AddSuppressionMenuItems (CodeFixMenu menu, TextEditor editor, Diagnostic diag, TextSpan span)
 		{
-			var suppressionProviders = Mono.Addins.AddinManager.GetExtensionObjects<ISuppressionFixProvider> ("/MonoDevelop/Refactoring/SuppressionFixProvider");
+			var workspace = editor.DocumentContext.AnalysisDocument.Project.Solution.Workspace;
+			var language = editor.DocumentContext.AnalysisDocument.Project.Language;
+			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 
-			foreach (var suppressionProvider in suppressionProviders) {
+			//TODO: cache this
+			var suppressionProviders = mefExporter.GetExports<ISuppressionFixProvider, CodeChangeProviderMetadata> ()
+				.ToPerLanguageMapWithMultipleLanguages();
+
+			foreach (var suppressionProvider in suppressionProviders[LanguageNames.CSharp].Select (lz => lz.Value)) {
 				if (!suppressionProvider.CanBeSuppressedOrUnsuppressed (diag)) {
 					continue;
 				}
