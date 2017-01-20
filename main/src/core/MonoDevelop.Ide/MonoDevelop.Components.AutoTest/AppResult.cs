@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract AppResult Selected ();
 		public abstract AppResult Text (string text, bool exact);
 		public abstract AppResult Model (string column);
-		public abstract AppResult Property (string propertyName, object value);
+		public abstract AppResult Property (string propertyName, object value, bool exact = false);
 		public abstract List<AppResult> NextSiblings ();
 
 		// Actions
@@ -186,13 +186,13 @@ namespace MonoDevelop.Components.AutoTest
 			return propertiesObject;
 		}
 
-		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
+		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value, bool exact = false)
 		{
 			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
 				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
 			}
 			if (objectToCompare != null && value != null &&
-				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				CheckForText (objectToCompare.ToString (), value.ToString (), exact)) {
 				return this;
 			}
 			return null;

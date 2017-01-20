@@ -149,9 +149,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			});
 		}
 
-		public override AppResult Property (string propertyName, object value)
+		public override AppResult Property (string propertyName, object value, bool exact = false)
 		{
-			return MatchProperty (propertyName, ResultObject, value);
+			return MatchProperty (propertyName, ResultObject, value, exact);
 		}
 
 		public override List<AppResult> NextSiblings ()

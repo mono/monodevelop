@@ -31,11 +31,13 @@ namespace MonoDevelop.Components.AutoTest.Operations
 	{
 		string PropertyName;
 		object DesiredValue;
+		bool Exact;
 
-		public PropertyOperation (string propertyName, object desiredValue)
+		public PropertyOperation (string propertyName, object desiredValue, bool exact = false)
 		{
 			PropertyName = propertyName;
 			DesiredValue = desiredValue;
+			Exact = exact;
 		}
 
 		public override List<AppResult> Execute (List<AppResult> resultSet)
@@ -43,7 +45,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
-				AppResult newResult = result.Property (PropertyName, DesiredValue);
+				AppResult newResult = result.Property (PropertyName, DesiredValue, Exact);
 				if (newResult != null) {
 					newResultSet.Add (newResult);
 				}
@@ -54,7 +56,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 		public override string ToString ()
 		{
-			return string.Format ("Property ({0}, {1})", PropertyName, DesiredValue);
+			return string.Format ("Property ({0}, {1}, {2})", PropertyName, DesiredValue, Exact);
 		}
 	}
 }

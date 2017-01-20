@@ -317,9 +317,9 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery Property (string propertyName, object desiredValue)
+		public AppQuery Property (string propertyName, object desiredValue, bool exact = false)
 		{
-			operations.Add (new PropertyOperation (propertyName, desiredValue));
+			operations.Add (new PropertyOperation (propertyName, desiredValue, exact));
 			return this;
 		}
 
