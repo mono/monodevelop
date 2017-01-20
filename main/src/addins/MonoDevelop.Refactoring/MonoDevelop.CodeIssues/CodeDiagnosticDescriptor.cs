@@ -27,15 +27,13 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -137,13 +135,6 @@ namespace MonoDevelop.CodeIssues
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
-		static CodeDiagnosticDescriptor ()
-		{
-			getCodeActionsMethod = typeof (CodeAction).GetMethod ("GetCodeActions", BindingFlags.Instance | BindingFlags.NonPublic);
-			hasCodeActionsProperty = typeof (CodeAction).GetProperty ("HasCodeActions", BindingFlags.Instance | BindingFlags.NonPublic);
-
-		}
-
 		internal CodeDiagnosticDescriptor (DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
 		{
 			if (descriptor == null)
@@ -176,15 +167,12 @@ namespace MonoDevelop.CodeIssues
 
 		public bool IsConfigurable => !descriptor.CustomTags.Contains (WellKnownDiagnosticTags.NotConfigurable);
 
-		const string analysisDisableTag = "Analysis ";
-		readonly static MethodInfo getCodeActionsMethod;
-		readonly static PropertyInfo hasCodeActionsProperty;
-
-		internal static async void RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
+		internal static async Task RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
 		{
 			var operations = await action.GetOperationsAsync (cancellationToken).ConfigureAwait (false);
 			if (operations == null)
 				return;
+
 			foreach (var op in operations) {
 				if (op == null)
 					continue;
@@ -195,11 +183,8 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 
-			if ((bool)hasCodeActionsProperty.GetValue (action)) {
-				var result = (ImmutableArray<CodeAction>)getCodeActionsMethod.Invoke (action, null);
-				foreach (var nested in result) {
-					RunAction (context, nested, cancellationToken);
-				}
+			foreach (var nested in action.NestedCodeActions) {
+				await RunAction (context, nested, cancellationToken).ConfigureAwait (false);
 			}
 		}
 	}
