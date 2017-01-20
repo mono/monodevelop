@@ -83,13 +83,14 @@ namespace MonoDevelop.CodeIssues
 		void GetAllSeverities ()
 		{
 			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
+				var supportedDiagnostics = node.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList ();
+				if (supportedDiagnostics.Count == 0) {
+					continue;
+				}
+
 				var root = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, null);
 				severities [root] = node.DiagnosticSeverity;
 				enableState [root] = node.IsEnabled;
-
-				var supportedDiagnostics = node.GetProvider ().SupportedDiagnostics
-					.Where (d => !DescriptorHasTag (d, WellKnownDiagnosticTags.NotConfigurable))
-					.ToList ();
 
 				if (supportedDiagnostics.Count > 1) {
 					foreach (var subIssue in supportedDiagnostics) {
@@ -99,6 +100,11 @@ namespace MonoDevelop.CodeIssues
 					}
 				}
 			}
+		}
+
+		static bool IsConfigurable (DiagnosticDescriptor desc)
+		{
+			return !DescriptorHasTag (desc, WellKnownDiagnosticTags.NotConfigurable);
 		}
 
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
@@ -171,7 +177,7 @@ namespace MonoDevelop.CodeIssues
 			treeStore.Clear ();
 			var grouped = severities.Keys
 				.Where (node => node.Item2 == null && (string.IsNullOrEmpty (filter) || node.Item1.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0))
-				.GroupBy (node => node.Item1.GetProvider ().SupportedDiagnostics.First ().Category)
+				.GroupBy (node => node.Item1.GetProvider ().SupportedDiagnostics.First (IsConfigurable).Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
@@ -182,8 +188,9 @@ namespace MonoDevelop.CodeIssues
 					var title = node.Item1.Name;
 					MarkupSearchResult (filter, ref title);
 					var nodeIter = treeStore.AppendValues (categoryIter, title, node, Ambience.EscapeText (node.Item1.Name));
-					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 1) {
-						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
+					var configurableDiagnostics = node.Item1.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList();
+					if (configurableDiagnostics.Count > 1) {
+						foreach (var subIssue in configurableDiagnostics) {
 							title = subIssue.Title.ToString ();
 							MarkupSearchResult (filter, ref title);
 							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>(node.Item1, subIssue), Ambience.EscapeText (node.Item1.Name));
