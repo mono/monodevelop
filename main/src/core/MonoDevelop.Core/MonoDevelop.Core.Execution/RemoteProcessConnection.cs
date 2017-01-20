@@ -126,7 +126,7 @@ namespace MonoDevelop.Core.Execution
 
 		public void Dispose ()
 		{
-			Disconnect ().Forget ();
+			Disconnect ().Ignore ();
 		}
 
 		public void AddListener (MessageListener listener)
@@ -154,7 +154,7 @@ namespace MonoDevelop.Core.Execution
 			if (waitUntilDone)
 				Disconnect ().Wait (TimeSpan.FromSeconds (7));
 			else
-				Disconnect ().Forget ();
+				Disconnect ().Ignore ();
 		}
 
 		public async Task Disconnect ()
@@ -521,7 +521,7 @@ namespace MonoDevelop.Core.Execution
 						lock (pendingMessageTasks) {
 							pendingMessageTasks.Remove (ta);
 						}
-					}).Forget ();
+					}).Ignore ();
 					pendingMessageTasks.Add (t);
 				}
 			}

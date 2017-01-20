@@ -27,6 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace System
 {
@@ -118,8 +119,12 @@ namespace System
 		/// about the result of an async call
 		/// </summary>
 		/// <param name="task">The task to forget</param>
-		public static void Forget (this Task task)
+		public static void Ignore (this Task task)
 		{
+			task.ContinueWith (t => {
+				if (t.IsFaulted)
+					LoggingService.LogError ("Async operation failed", t.Exception);
+			});
 		}
 	}
 }
