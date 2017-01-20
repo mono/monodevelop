@@ -198,9 +198,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return Array.IndexOf (attr.ColumnNames, column);
 		}
 
-		public override AppResult Property (string propertyName, object value)
+		public override AppResult Property (string propertyName, object value, bool exact = false)
 		{
-			return MatchProperty (propertyName, resultWidget, value);
+			return MatchProperty (propertyName, resultWidget, value, exact);
 		}
 
 		public override List<AppResult> NextSiblings ()

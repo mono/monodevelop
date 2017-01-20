@@ -73,7 +73,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		public override AppResult Property (string propertyName, object value)
+		public override AppResult Property (string propertyName, object value, bool exact = false)
 		{
 			return null;
 		}

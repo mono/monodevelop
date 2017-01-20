@@ -120,14 +120,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return resultIter.HasValue ? this : null;
 		}
 
-		public override AppResult Property (string propertyName, object value)
+		public override AppResult Property (string propertyName, object value, bool exact = false)
 		{
 			if (resultIter.HasValue) {
 				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
-				return MatchProperty (propertyName, objectToCompare, value);
+				return MatchProperty (propertyName, objectToCompare, value, exact);
 			}
 
-			return MatchProperty (propertyName, ParentWidget, value);
+			return MatchProperty (propertyName, ParentWidget, value, exact);
 		}
 
 		public override ObjectProperties Properties ()
