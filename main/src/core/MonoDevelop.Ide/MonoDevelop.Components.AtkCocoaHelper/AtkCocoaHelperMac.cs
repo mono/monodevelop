@@ -407,6 +407,16 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			nsa.AccessibilityChildren = newChildren;
 		}
+
+		public static void SetAccessibleChildren (this Atk.Object o, AccessibilityElementProxy [] children)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityChildren = children;
+		}
 	}
 
 	public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility, IAccessibilityElementProxy

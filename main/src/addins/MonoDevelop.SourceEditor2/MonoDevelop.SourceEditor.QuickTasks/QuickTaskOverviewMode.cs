@@ -40,6 +40,7 @@ using Microsoft.CodeAnalysis;
 using Mono.TextEditor;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -77,7 +78,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		Cairo.Color win81Slider;
 		Cairo.Color win81SliderPrelight;
-		int win81ScrollbarWidth; 
+		int win81ScrollbarWidth;
 
 		protected override void OnStyleSet (Style previous_style)
 		{
@@ -309,41 +310,55 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return isInsideBar;
 		}
 
-		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
+		internal void GetIndicatorStrings (out string label, out string description)
 		{
 			if (TextEditor.HighlightSearchPattern) {
-				if (IsOverIndicator (y)) {
-					var matches = TextEditor.TextViewMargin.SearchResultMatchCount;
-					tooltip.Text = GettextCatalog.GetPluralString ("{0} match", "{0} matches", matches, matches);
-					return true;
-				}
-				return false;
+				var matches = TextEditor.TextViewMargin.SearchResultMatchCount;
+				label = GettextCatalog.GetPluralString ("{0} match", "{0} matches", matches, matches);
+				description = null;
+				return;
 			}
 
+			int errors, warnings, hints, suggestions;
+			CountTasks (out errors, out warnings, out hints, out suggestions);
+
+			if (errors == 0 && warnings == 0) {
+				label = GettextCatalog.GetString ("No errors or warnings");
+			} else if (errors == 0) {
+				label = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings, warnings);
+			} else if (warnings == 0) {
+				label = GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors, errors);
+			} else {
+				label = GettextCatalog.GetString ("{0} errors and {1} warnings", errors, warnings);
+			}
+
+			if (errors > 0) {
+				description = GettextCatalog.GetString ("Click to navigate to the next error");
+			} else if (warnings > 0) {
+				description = GettextCatalog.GetString ("Click to navigate to the next warning");
+			} else if (warnings + hints > 0) {
+				description = GettextCatalog.GetString ("Click to navigate to the next message");
+			} else {
+				description = null;
+			}
+		}
+
+		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
+		{
 			if (IsOverIndicator (y)) {
-				int errors, warnings, hints, suggestions;
-				CountTasks (out errors, out warnings, out hints, out suggestions);
-				string text = null;
-				if (errors == 0 && warnings == 0) {
-					text = GettextCatalog.GetString ("No errors or warnings");
-				} else if (errors == 0) {
-					text = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings, warnings);
-				} else if (warnings == 0) {
-					text = GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors, errors);
+				string label, description, text;
+				GetIndicatorStrings (out label, out description);
+				if (!string.IsNullOrEmpty (description)) {
+					text = label + Environment.NewLine + description;
 				} else {
-					text = GettextCatalog.GetString ("{0} errors and {1} warnings", errors, warnings);
+					text = label;
 				}
-
-				if (errors > 0) {
-					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
-				} else if (warnings > 0) {
-					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
-				} else if (warnings + hints > 0) {
-					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
-				}
-
 				tooltip.Text = text;
 				return true;
+			}
+
+			if (TextEditor.HighlightSearchPattern) {
+				return false;
 			}
 
 			var hoverTask = GetHoverTask (y);
@@ -531,7 +546,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		protected virtual double IndicatorHeight {
+		internal virtual double IndicatorHeight {
 			get {
 				return MonoDevelop.Core.Platform.IsWindows ? Allocation.Width : 3 + 8 + 3;
 			}
@@ -692,7 +707,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		Dictionary<int, double> yPositionCache = new Dictionary<int, double> ();
 
-		double GetYPosition (int logicalLine)
+		internal double GetYPosition (int logicalLine)
 		{
 			double y;
 			if (!yPositionCache.TryGetValue (logicalLine, out y))
@@ -705,9 +720,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (allUsages.MoveNext ()) {
 				var usage = allUsages.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
-				if (lineCache[0].Contains (y))
+				if (lineCache [0].Contains (y))
 					return;
-				lineCache[0].Add (y);
+				lineCache [0].Add (y);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
@@ -735,8 +750,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			} else if (allTasks.MoveNext ()) {
 				var task = allTasks.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				if (!lineCache[1].Contains (y)) {
-					lineCache[1].Add (y);
+				if (!lineCache [1].Contains (y)) {
+					lineCache [1].Add (y);
 					cr.SetSourceColor (GetBarColor (task.Severity));
 					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
 					cr.Fill ();
@@ -864,9 +879,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr.Paint ();
 				} else {
 					CachedDraw (cr,
-					            ref backgroundSurface,
-					            allocation,
-					            draw: (c, o) => DrawBackground (c, allocation));
+								ref backgroundSurface,
+								allocation,
+								draw: (c, o) => DrawBackground (c, allocation));
 				}
 				if (TextEditor == null)
 					return true;
@@ -913,7 +928,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
 				}
 
-				searchResults = mode.TextEditor.TextViewMargin.SearchResults.ToList().GetEnumerator ();
+				searchResults = mode.TextEditor.TextViewMargin.SearchResults.ToList ().GetEnumerator ();
 				allUsages = mode.AllUsages.GetEnumerator ();
 				allTasks = mode.AllTasks.GetEnumerator ();
 				cr = new Cairo.Context (surface.Surface);
@@ -928,7 +943,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			bool RunHandler ()
 			{
-				tokenExit:
+			tokenExit:
 				if (token.IsCancellationRequested || mode.TextEditor.GetTextEditorData () == null) {
 					cr.Dispose ();
 					// if the surface was newly created dispose it otherwise it'll leak.
@@ -942,7 +957,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				bool nextStep = false;
 				switch (drawingStep) {
 				case 0:
-                	CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation));
+					CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation));
 					drawingStep++;
 					return true;
 				case 1:
@@ -985,7 +1000,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 		uint indicatorIdleTimout;
-		void DrawIndicatorSurface(uint timeout = 250)
+		void DrawIndicatorSurface (uint timeout = 250)
 		{
 			RemoveIndicatorIdleHandler ();
 			if (timeout == 0) {
@@ -1020,8 +1035,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		public static void CachedDraw (Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null, double? forceScale = null)
 		{
 			double displayScale = forceScale.HasValue ? forceScale.Value : QuartzSurface.GetRetinaScale (self);
-			int targetWidth = (int) (region.Width * displayScale);
-			int targetHeight = (int) (region.Height * displayScale);
+			int targetWidth = (int)(region.Width * displayScale);
+			int targetHeight = (int)(region.Height * displayScale);
 
 			bool redraw = false;
 			if (surface == null || surface.Width != targetWidth || surface.Height != targetHeight) {
@@ -1037,7 +1052,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (redraw) {
 				surface.Data = parameters;
 				using (var context = new Cairo.Context (surface.Surface)) {
-					draw(context, 1.0f);
+					draw (context, 1.0f);
 				}
 			}
 
@@ -1072,5 +1087,137 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			DrawIndicatorSurface (0);
 		}
+
+#region Accessibility
+		public AccessibilityElementProxy[] UpdateAccessibility ()
+		{
+			List<AccessibilityElementProxy> allyChildren = new List<AccessibilityElementProxy> ();
+			allyChildren.Add (new QuickTaskOverviewAccessible (parentStrip, this));
+
+			foreach (var t in AllTasks) {
+				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, t));
+			}
+
+			foreach (var u in AllUsages) {
+				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, u));
+			}
+
+			return allyChildren.ToArray ();
+		}
+
+
+		class QuickTaskOverviewAccessible : AccessibilityElementButtonProxy
+		{
+			QuickTaskStrip strip;
+			QuickTaskOverviewMode mode;
+
+			public QuickTaskOverviewAccessible (QuickTaskStrip parentStrip, QuickTaskOverviewMode parentMode)
+			{
+				// Set the accessibility parent as the strip to make the A11y tree easier.
+				strip = parentStrip;
+				SetRealParent (parentStrip);
+
+				mode = parentMode;
+
+				var frameInParent = new Gdk.Rectangle (0, 0, strip.Allocation.Width, (int)mode.IndicatorHeight);
+				SetFrameInRealParent (frameInParent);
+
+				// FIXME: Can we not do this in AccessibilityElementProxy?
+				SetFrameInParent (new Gdk.Rectangle (0, strip.Allocation.Height - (int)mode.IndicatorHeight, strip.Allocation.Width, (int)mode.IndicatorHeight));
+
+				AccessibilityIdentifier = "MainWindow.QuickTaskStrip.Indicator";
+				UpdateAccessibilityDetails ();
+			}
+
+			public override bool AccessibilityPerformPress ()
+			{
+				strip.GotoTask (strip.SearchNextTask (mode.GetHoverMode ()));
+				return true;
+			}
+
+			internal void UpdateAccessibilityDetails ()
+			{
+				string label, description;
+
+				mode.GetIndicatorStrings (out label, out description);
+				if (!string.IsNullOrEmpty (label)) {
+					SetAccessibilityLabel (label);
+				}
+
+				if (!string.IsNullOrEmpty (description)) {
+					SetAccessibilityHelp (description);
+				}
+			}
+		}
+
+		class QuickTaskAccessible : AccessibilityElementButtonProxy
+		{
+			QuickTaskStrip strip;
+			QuickTaskOverviewMode mode;
+			QuickTask task;
+			Usage usage;
+
+			QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode)
+			{
+				strip = parent;
+				SetRealParent (parent);
+
+				mode = parentMode;
+			}
+
+			public QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode, QuickTask t) : this (parent, parentMode)
+			{
+				task = t;
+				usage = null;
+
+				SetAccessibilityTitle (t.Description);
+				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location)));
+
+				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
+				var y = mode.LineToY (line);
+				var frameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2);
+				SetFrameInRealParent (frameInParent);
+
+				// FIXME: Can we not do this in AccessibilityElementProxy?
+				int halfParentHeight = strip.Allocation.Height / 2;
+				float dy = (float)y - halfParentHeight;
+
+				y = (int)(halfParentHeight - dy);
+				SetFrameInParent (new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2));
+			}
+
+			public QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode, Usage u) : this (parent, parentMode)
+			{
+				usage = u;
+				task = null;
+
+				SetAccessibilityTitle (u.UsageType.ToString ());
+				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset)));
+
+				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);
+				var y = mode.LineToY (line) - 3.0;
+				var frameInParent = new Gdk.Rectangle (0, (int)y, 5, 6);
+				SetFrameInRealParent (frameInParent);
+
+				// FIXME: Can we not do this in AccessibilityElementProxy?
+				int halfParentHeight = strip.Allocation.Height / 2;
+				float dy = (float)y - halfParentHeight;
+
+				y = (int)(halfParentHeight - dy);
+				SetFrameInParent (new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 6));
+
+			}
+
+			public override bool AccessibilityPerformPress ()
+			{
+				if (task != null) {
+					strip.GotoTask (task);
+				} else {
+					strip.GotoUsage (usage);
+				}
+				return true;
+			}
+		}
+#endregion
 	}
 }

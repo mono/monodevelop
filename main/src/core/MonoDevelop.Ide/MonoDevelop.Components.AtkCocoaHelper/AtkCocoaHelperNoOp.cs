@@ -137,6 +137,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public static void RemoveAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
 		{
 		}
+
+		public static void SetAccessibleChildren (this Atk.Object o, AccessibilityElementProxy [] children)
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
