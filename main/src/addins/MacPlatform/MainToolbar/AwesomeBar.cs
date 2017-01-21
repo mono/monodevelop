@@ -91,9 +91,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var aTouchbar = new NSTouchBar ();
 			this.touchbar = aTouchbar;
+
+
 			aTouchbar.Delegate = this;
-			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers ();
-			return aTouchbar;
+			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (true);
+
+			if (this.barType == TouchBarType.TextEditor) {
+				aTouchbar.CustomizationIdentifier = TouchBarType.TextEditor.ToString ();
+				NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled (true);
+				aTouchbar.CustomizationAllowedItemIdentifiers = GetItemIdentifiers ();
+			} else {
+				NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled (false);
+			}
+				return aTouchbar;
 		}
 
 		public void UpdateTouchBar ()
@@ -121,22 +131,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSApplication.SharedApplication.SetTouchBar (MakeTouchBar ());
 		Update: //operations that change bar items but not the bar itself, e.g. validation goes here
 			NSImage runImg = null;
-			string runLabel = null;
 			switch (RunButton.Icon) {
 			case Components.MainToolbar.OperationIcon.Build:
 				runImg = MultiResImage.CreateMultiResImage ("build", "");
-				runLabel = GettextCatalog.GetString ("Build");
 				break;
 			case Components.MainToolbar.OperationIcon.Run:
 				runImg = MultiResImage.CreateMultiResImage ("continue", "");
-				runLabel = GettextCatalog.GetString ("Run");
 				break;
 			case Components.MainToolbar.OperationIcon.Stop:
 				runImg = MultiResImage.CreateMultiResImage ("stop", "");
-				runLabel = GettextCatalog.GetString ("Stop");
 				break;
 			}
-			if (runImg != null && runLabel != null) {
+			if (runImg != null) {
 				if (touchBarRunButton != null) {
 					touchBarRunButton.Image = runImg;
 				}
@@ -146,31 +152,37 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return;
 		}
 
-		string [] GetItemIdentifiers ()
+		string [] GetItemIdentifiers () //convenience method. Always returns all relevant identifiers
 		{
-			List<string> ids = new List<string> ();
-			if (this.barType == TouchBarType.WelcomePage) {
-				ids.Add ("recentItems");
-				goto Exit; // in the future it is probably best to split this method into different ones for each bar
-			}
+			return GetItemIdentifiers (false);
 
-			if (RunButton.Enabled) {
-				ids.Add ("run");
-			}
-
-			ids.Add ("navigation");
-			ids.Add (NSTouchBarItemIdentifier.FixedSpaceSmall.ToString());
-			ids.Add ("tabNavigation");
-			
+			/*
 			if (ButtonBarContainer != null) {
 				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
 				if (extraIds != null) {
 					ids.AddRange (extraIds);
 				}
 			}
-			Exit:
-			return ids.ToArray ();
+			*/
 		}
+		string [] GetItemIdentifiers (bool defaultsOnly) //defaultsOnly means only identifiers for default layout are returned
+		{
+			List<string> ids = new List<string> ();
+			if (this.barType == TouchBarType.TextEditor) {
+				ids.Add ("run");
+				ids.Add ("navigation");
+				if (defaultsOnly) {return ids.ToArray ();}
+				ids.Add ("tabNavigation");
+				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
+				return ids.ToArray ();
+			} 
+			else if (this.barType == TouchBarType.WelcomePage) {
+				ids.Add("recentItems");
+				return ids.ToArray ();
+			} 
+			else {return ids.ToArray ();}
+		}
+
 
 		[Export ("touchBar:makeItemForIdentifier:")]
 		public NSTouchBarItem MakeItem (NSTouchBar touchbar, string identifier)
@@ -224,6 +236,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				navSegments.SegmentStyle = NSSegmentStyle.Separated;
 
 				var customItemNavSegments = new NSCustomTouchBarItem ("navigation");
+				customItemNavSegments.CustomizationLabel = "Navigation";
 				customItemNavSegments.View = navSegments;
 				item = customItemNavSegments;
 
@@ -251,6 +264,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				tabNavSegments.SegmentStyle = NSSegmentStyle.Separated;
 
 				var customItemTabNavSegments = new NSCustomTouchBarItem ("tabNavigation");
+				customItemTabNavSegments.CustomizationLabel = "Tab Controls";
 				customItemTabNavSegments.View = tabNavSegments;
 				item = customItemTabNavSegments;
 
@@ -271,23 +285,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				this.touchBarRunButton = button;
 
 				customItem.View = button;
-				/*
-				switch (identifier) {
-				case "continue":
-					label = GettextCatalog.GetString ("Run");
-					break;
-
-				case "stop":
-					label = GettextCatalog.GetString ("Stop");
-					break;
-
-				case "build":
-					label = GettextCatalog.GetString ("Build");
-					break;
-				}
-				*/
-
-				customItem.CustomizationLabel = "run";
+			
+				customItem.CustomizationLabel = "Run";
 				item = customItem;
 				break;
 			}
