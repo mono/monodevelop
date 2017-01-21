@@ -26,18 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
-using System.Linq;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CodeIssues;
-using System.Collections.Immutable;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {

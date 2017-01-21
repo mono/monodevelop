@@ -23,23 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using MonoDevelop.Ide.Gui.Dialogs;
-using Gtk;
-using MonoDevelop.Core;
-using System.Linq;
-using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using GLib;
-using MonoDevelop.Components;
-using Gdk;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.CodeActions;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.SourceEditor.QuickTasks;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide;
 using System.Globalization;
+using System.Linq;
+using Gdk;
+using GLib;
+using Gtk;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CodeActions;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -76,28 +75,17 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Bin
 	{
 		readonly string mimeType;
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>), typeof (string));
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>), typeof (string), typeof (string));
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
 		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> ();
 
 		void GetAllSeverities ()
 		{
 			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
-				var supportedDiagnostics = node.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList ();
-				if (supportedDiagnostics.Count == 0) {
-					continue;
-				}
-
-				var root = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, null);
-				severities [root] = node.DiagnosticSeverity;
-				enableState [root] = node.IsEnabled;
-
-				if (supportedDiagnostics.Count > 1) {
-					foreach (var subIssue in supportedDiagnostics) {
-						var sub = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, subIssue);
-						severities [sub] = node.GetSeverity (subIssue);
-						enableState [sub] = node.GetIsEnabled (subIssue);
-					}
+				foreach (var subIssue in node.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList ()) {
+					var sub = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, subIssue);
+					severities [sub] = node.GetSeverity (subIssue);
+					enableState [sub] = node.GetIsEnabled (subIssue);
 				}
 			}
 		}
@@ -176,26 +164,26 @@ namespace MonoDevelop.CodeIssues
 			categories.Clear ();
 			treeStore.Clear ();
 			var grouped = severities.Keys
-				.Where (node => node.Item2 == null && (string.IsNullOrEmpty (filter) || node.Item1.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0))
-				.GroupBy (node => node.Item1.GetProvider ().SupportedDiagnostics.First (IsConfigurable).Category)
+				.GroupBy (node => node.Item2.Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
-				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, null);
-				categories [g.Key] = categoryIter;
-
-				foreach (var node in g.OrderBy (n => n.Item1.Name, StringComparer.Ordinal)) {
-					var title = node.Item1.Name;
-					MarkupSearchResult (filter, ref title);
-					var nodeIter = treeStore.AppendValues (categoryIter, title, node, Ambience.EscapeText (node.Item1.Name));
-					var configurableDiagnostics = node.Item1.GetProvider ().SupportedDiagnostics.Where (IsConfigurable).ToList();
-					if (configurableDiagnostics.Count > 1) {
-						foreach (var subIssue in configurableDiagnostics) {
-							title = subIssue.Title.ToString ();
-							MarkupSearchResult (filter, ref title);
-							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>(node.Item1, subIssue), Ambience.EscapeText (node.Item1.Name));
-						}
+				foreach (var node in g.OrderBy (n => n.Item2.Title.ToString(), StringComparer.CurrentCulture)) {
+					var title = GettextCatalog.GetString ("{0} ({1})", node.Item2.Title, node.Item2.Id);
+					if (!string.IsNullOrEmpty (filter) && title.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase) < 0) {
+						continue;
 					}
+					TreeIter categoryIter;
+					if (!categories.TryGetValue (g.Key, out categoryIter)) {
+						categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, null, null);
+						categories [g.Key] = categoryIter;
+					}
+					var desc = node.Item2.Description.ToString ();
+					if (string.IsNullOrEmpty (desc)) {
+						desc = title;
+					}
+					MarkupSearchResult (filter, ref title);
+					var nodeIter = treeStore.AppendValues (categoryIter, title, node, Ambience.EscapeText (title), Ambience.EscapeText (desc));
 				}
 			}
 			treeviewInspections.ExpandAll ();
@@ -255,7 +243,7 @@ namespace MonoDevelop.CodeIssues
 					treeviewInspections.ScrollToCell (path, treeviewInspections.Columns[0], false, 0f, 0f);
 				}
 			};
-			treeviewInspections.TooltipColumn = 2;
+			treeviewInspections.TooltipColumn = 3;
 			treeviewInspections.HasTooltip = true;
 
 			var toggleRenderer = new CellRendererToggle ();

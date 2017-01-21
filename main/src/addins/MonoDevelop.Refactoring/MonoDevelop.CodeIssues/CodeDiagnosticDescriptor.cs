@@ -40,10 +40,8 @@ namespace MonoDevelop.CodeIssues
 	class CodeDiagnosticDescriptor
 	{
 		readonly Type diagnosticAnalyzerType;
-		readonly Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor;
 
 		DiagnosticAnalyzer instance;
-
 
 		/// <summary>
 		/// Gets the identifier string.
@@ -59,15 +57,6 @@ namespace MonoDevelop.CodeIssues
 				return diagnosticAnalyzerType;
 			}
 		}
-
-		/// <summary>
-		/// Gets the display name for this issue.
-		/// </summary>
-		public string Name { get; private set; }
-
-		/// <summary>
-		/// Gets the description of the issue provider (used in the option panel).
-		/// </summary>
 
 		/// <summary>
 		/// Gets the languages for this issue.
@@ -135,18 +124,14 @@ namespace MonoDevelop.CodeIssues
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
-		internal CodeDiagnosticDescriptor (DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
+		internal CodeDiagnosticDescriptor (string[] languages, Type codeIssueType)
 		{
-			if (descriptor == null)
-				throw new ArgumentNullException (nameof (descriptor));
 			if (languages == null)
 				throw new ArgumentNullException (nameof (languages));
 			if (codeIssueType == null)
 				throw new ArgumentNullException (nameof (codeIssueType));
-			Name = descriptor.Title.ToString () ?? "unnamed";
 			Languages = languages;
-			this.descriptor = descriptor;
-			this.diagnosticAnalyzerType = codeIssueType;
+			diagnosticAnalyzerType = codeIssueType;
 		}
 
 		/// <summary>
@@ -162,10 +147,8 @@ namespace MonoDevelop.CodeIssues
 
 		public override string ToString ()
 		{
-			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Languages);
+			return $"[CodeIssueDescriptor: IdString={IdString}, Language={Languages}]";
 		}
-
-		public bool IsConfigurable => !descriptor.CustomTags.Contains (WellKnownDiagnosticTags.NotConfigurable);
 
 		internal static async Task RunAction (DocumentContext context, CodeAction action, CancellationToken cancellationToken)
 		{

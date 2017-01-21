@@ -33,6 +33,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -73,15 +74,15 @@ namespace MonoDevelop.AnalysisCore
 					sw.WriteLine ("<h2>" + g.Key + "</h2>");
 					sw.WriteLine ("<table border='1'>");
 
-					foreach (var node in g.OrderBy (n => n.Name, StringComparer.Ordinal)) {
-						var title = node.Name;
-						var desc = node.GetProvider ().SupportedDiagnostics.First ().Description.ToString () != title ? node.GetProvider ().SupportedDiagnostics.First ().Description : "";
-						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.DiagnosticSeverity + "</td></tr>");
-						if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
-							foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
+					foreach (var node in g.Select (n => new { Descriptor = n, Provider = n.GetProvider ()}).OrderBy (n => n.Provider.GetAnalyzerId(), StringComparer.Ordinal)) {
+						var title = node.Provider.GetAnalyzerId ();
+						var desc = node.Provider.SupportedDiagnostics.First ().Description.ToString () != title ? node.Provider.SupportedDiagnostics.First ().Description : "";
+						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.Descriptor.DiagnosticSeverity + "</td></tr>");
+						if (node.Provider.SupportedDiagnostics.Length > 1) {
+							foreach (var subIssue in node.Provider.SupportedDiagnostics) {
 								title = subIssue.Description.ToString ();
 								desc = subIssue.Description.ToString () != title ? subIssue.Description : "";
-								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + node.GetSeverity (subIssue) + "</td></tr>");
+								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + node.Descriptor.GetSeverity (subIssue) + "</td></tr>");
 							}
 						}
 					}

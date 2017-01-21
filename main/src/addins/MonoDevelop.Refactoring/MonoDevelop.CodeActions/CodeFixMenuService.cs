@@ -143,14 +143,14 @@ namespace MonoDevelop.CodeActions
 
 				var descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (diag.Id);
 
-				if (descriptor != null && descriptor.IsConfigurable) {
+				if (descriptor != null && IsConfigurable (diag.Descriptor)) {
 					var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
 						delegate {
 							IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
 								var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
 								if (panel == null)
 									return;
-								panel.Widget.SelectCodeIssue (descriptor.IdString);
+								panel.Widget.SelectCodeIssue (diag.Descriptor.Id);
 							});
 						});
 					subMenu.Add (optionsMenuItem);
@@ -264,6 +264,11 @@ namespace MonoDevelop.CodeActions
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
+		}
+
+		static bool IsConfigurable (DiagnosticDescriptor desc)
+		{
+			return !DescriptorHasTag (desc, WellKnownDiagnosticTags.NotConfigurable);
 		}
 
 		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix)

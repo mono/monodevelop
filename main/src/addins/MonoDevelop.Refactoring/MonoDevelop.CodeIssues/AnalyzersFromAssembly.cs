@@ -98,12 +98,15 @@ namespace MonoDevelop.CodeIssues
 				if (analyzerAttr != null) {
 					try {
 						var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
+
+						if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
+							Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
+						}
 						foreach (var diag in analyzer.SupportedDiagnostics) {
 							//filter out E&C analyzers as we don't support E&C
 							if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
 								continue;
 							}
-							Analyzers.Add (new CodeDiagnosticDescriptor (diag, analyzerAttr.Languages, type));
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
@@ -124,6 +127,14 @@ namespace MonoDevelop.CodeIssues
 
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
-	}
+		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
+		{
+			//filter out E&C analyzers as we don't support E&C
+			if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+				return false;
+			}
 
+			return true;
+		}
+	}
 }
