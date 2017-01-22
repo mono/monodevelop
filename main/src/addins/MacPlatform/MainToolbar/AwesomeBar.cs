@@ -66,7 +66,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal NSTouchBar Touchbar = null;
 
 		//touch bar items that need to be dynamically updated
-		private NSButton TouchBarRunButton;
+		private NSButton touchBarRunButton;
+		private bool rebuildTouchbar = false;
 
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
@@ -124,7 +125,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void UpdateTouchBar ()
 		{
 			if (Touchbar == null) {goto Rebuild;} //initialize on launch
-
+			if (rebuildTouchbar)  {goto Rebuild;}
 			if (MonoDevelop.Ide.WelcomePage.WelcomePageService.WelcomePageVisible) {
 				if (BarType != TouchBarType.WelcomePage) {
 					BarType = TouchBarType.WelcomePage;
@@ -158,8 +159,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				break;
 			}
 			if (runImg != null) {
-				if (TouchBarRunButton != null) {
-					TouchBarRunButton.Image = runImg;
+				if (touchBarRunButton != null) {
+					touchBarRunButton.Image = runImg;
 				}
 			}
 			               
@@ -218,10 +219,40 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			switch (identifier) {
 			case Id.RecentItems:
-				var recentItemsLabel = NSTextField.CreateLabel("placeholder");
-				recentItemsLabel.StringValue = "placeholder for recent items";
+				var theItems = DesktopService.RecentFiles.GetProjects ();
+				NSScrollView scrollView = new NSScrollView (new CGRect (0, 0, 600, 30));
+				NSView documentView = new NSView (new CGRect (0, 0, 10000, 30)); //10000 is arbitrary value; changed later
+
+				nfloat offset = 0;
+				nfloat lastButtonWidth = 0;
+
+				var label = NSTextField.CreateLabel ("Recent::"); //last character is truncated for some reason so…
+				label.SetFrameOrigin (new CGPoint (0, 7)); //center vertically
+
+				documentView.AddSubview (label);
+				offset += label.Frame.Size.Width + 5;
+
+				foreach (Ide.Desktop.RecentFile project in theItems) {
+					
+					if (!System.IO.File.Exists (project.FileName)) { continue; } //this will suffice until proper validation is implemented
+					NSButton b = NSButton.CreateButton (project.DisplayName, () => {});
+					var link = "project://" + project.FileName;
+					b.Activated += (sender, e) => {
+						b.Enabled = System.IO.File.Exists (project.FileName);
+						MonoDevelop.Ide.WelcomePage.WelcomePageSection.DispatchLink (link);
+					};
+
+					b.SetFrameOrigin (new CGPoint (offset, 0));
+					b.SetFrameSize (new CGSize (b.Frame.Size.Width, 30)); //default height is just a wee bit too tall
+					lastButtonWidth = b.Frame.Size.Width;
+					offset += b.Frame.Size.Width + 5;
+					documentView.AddSubview (b);
+				}
+				documentView.SetFrameSize (new CGSize (offset + lastButtonWidth, 30)); //shorten the view's width to give it that nice elasticity
+				scrollView.DocumentView = documentView;
+
 				var recentItemsCustomItem = new NSCustomTouchBarItem (identifier);
-				recentItemsCustomItem.View = recentItemsLabel;
+				recentItemsCustomItem.View = scrollView;
 				item = recentItemsCustomItem;
 
 				return item;
@@ -297,7 +328,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RunButton.PerformClick (RunButton);
 				};
 #endif
-				TouchBarRunButton = button;
+				touchBarRunButton = button;
 
 				customItem.View = button;
 			
