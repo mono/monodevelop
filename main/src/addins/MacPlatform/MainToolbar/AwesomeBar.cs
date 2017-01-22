@@ -58,6 +58,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		private static NSSegmentedControl navControl = null;
 		private static NSSegmentedControl tabNavControl = null;
 		//End variables decl… *sigh*
+		internal NSImage buildImage;
+		internal NSImage continueImage;
+		internal NSImage stopImage;
 
 		internal TouchBarType BarType = TouchBarType.TextEditor;
 		internal NSTouchBar Touchbar = null;
@@ -73,6 +76,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public AwesomeBar ()
 		{
+			//create & cache images for the touchbar's run button
+			buildImage = MultiResImage.CreateMultiResImage ("build", "");
+			continueImage = MultiResImage.CreateMultiResImage ("continue", "");
+			stopImage = MultiResImage.CreateMultiResImage ("stop", "");
+
 			RunButton = new RunButton ();
 			AddSubview (RunButton);
 
@@ -99,7 +107,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var aTouchbar = new NSTouchBar ();
 			Touchbar = aTouchbar;
-
 
 			aTouchbar.Delegate = this;
 			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (true);
@@ -141,13 +148,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSImage runImg = null;
 			switch (RunButton.Icon) {
 			case Components.MainToolbar.OperationIcon.Build:
-				runImg = MultiResImage.CreateMultiResImage ("build", "");
+				runImg = buildImage;
 				break;
 			case Components.MainToolbar.OperationIcon.Run:
-				runImg = MultiResImage.CreateMultiResImage ("continue", "");
+				runImg = continueImage;
 				break;
 			case Components.MainToolbar.OperationIcon.Stop:
-				runImg = MultiResImage.CreateMultiResImage ("stop", "");
+				runImg = stopImage;
 				break;
 			}
 			if (runImg != null) {
@@ -208,7 +215,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
 				return item;
 			}
-			Console.WriteLine (identifier);
+
 			switch (identifier) {
 			case Id.RecentItems:
 				var recentItemsLabel = NSTextField.CreateLabel("placeholder");
