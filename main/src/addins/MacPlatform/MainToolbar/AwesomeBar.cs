@@ -34,16 +34,24 @@ using MonoDevelop.Core;
 using Xwt.Mac;
 using MonoDevelop.Ide;
 
-public enum TouchBarType
-{
-	WelcomePage,
-	TextEditor,
-	Debugger,
-	Preferences
-}
+
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
+	public enum TouchBarType
+	{
+		WelcomePage,
+		TextEditor,
+		Debugger,
+		Preferences
+	}
+	public static class Id //unique IDs for TouchBar items
+	{
+		public const string Run = "com.MonoDevelop.TouchBarIdentifiers.Run";
+		public const string Navigation = "com.MonoDevelop.TouchBarIdentifiers.Navigation";
+		public const string TabNavigation = "com.MonoDevelop.TouchBarIdentifiers.TabNavigation";
+		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
+	}
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
 		//Begin variables declared as static outside of scope to prevent garbage collection crash
@@ -169,15 +177,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			List<string> ids = new List<string> ();
 			if (BarType == TouchBarType.TextEditor) {
-				ids.Add ("run");
-				ids.Add ("navigation");
+				ids.Add (Id.Run);
+				ids.Add (Id.Navigation);
 				if (defaultsOnly) {return ids.ToArray ();}
-				ids.Add ("tabNavigation");
+				ids.Add (Id.TabNavigation);
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
 				return ids.ToArray ();
 			} 
 			else if (BarType == TouchBarType.WelcomePage) {
-				ids.Add("recentItems");
+				ids.Add(Id.RecentItems);
 				return ids.ToArray ();
 			} 
 			else {return ids.ToArray ();}
@@ -200,17 +208,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
 				return item;
 			}
-
+			Console.WriteLine (identifier);
 			switch (identifier) {
-			case "recentItems":
+			case Id.RecentItems:
 				var recentItemsLabel = NSTextField.CreateLabel("placeholder");
 				recentItemsLabel.StringValue = "placeholder for recent items";
-				var recentItemsCustomItem = new NSCustomTouchBarItem ("recentItems");
+				var recentItemsCustomItem = new NSCustomTouchBarItem (identifier);
 				recentItemsCustomItem.View = recentItemsLabel;
 				item = recentItemsCustomItem;
 
 				return item;
-			case "navigation": //contains navigate back & forward buttons
+			case Id.Navigation: //contains navigate back & forward buttons
 
 				//NSSegmentedControl navControl = null; //declared as static above due to GC bug
 
@@ -235,14 +243,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				navControl = NSSegmentedControl.FromImages (navIcons, NSSegmentSwitchTracking.Momentary, navControlAction);
 				navControl.SegmentStyle = NSSegmentStyle.Separated;
 
-				var customItemNavControl = new NSCustomTouchBarItem ("navigation");
+				var customItemNavControl = new NSCustomTouchBarItem (identifier);
 				customItemNavControl.CustomizationLabel = "Navigation";
 				customItemNavControl.View = navControl;
 				item = customItemNavControl;
 
 				return item;
 				
-			case "tabNavigation": //navigation again, but this time for tabs. Lack of images is a work-in-progress
+			case Id.TabNavigation: //navigation again, but this time for tabs. Lack of images is a work-in-progress
 
 				//NSSegmentedControl tabNavControl = null; //declared as static above due to GC bug
 
@@ -263,7 +271,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				tabNavControl = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavControlAction);
 				tabNavControl.SegmentStyle = NSSegmentStyle.Separated;
 
-				var customItemTabNavControl = new NSCustomTouchBarItem ("tabNavigation");
+				var customItemTabNavControl = new NSCustomTouchBarItem (identifier);
 				customItemTabNavControl.CustomizationLabel = "Tab Controls";
 				customItemTabNavControl.View = tabNavControl;
 				item = customItemTabNavControl;
@@ -271,7 +279,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return item;
 
 		
-			case "run":
+			case Id.Run:
 				var customItem = new NSCustomTouchBarItem (identifier);
 
 #if WANT_TO_SEE_BIG_CRASH
