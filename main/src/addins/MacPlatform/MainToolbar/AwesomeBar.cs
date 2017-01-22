@@ -115,13 +115,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				aTouchbar.PrincipalItemIdentifier = "com.microsoft.vsfm.buttonbar.debug";
 			}
 
-			/*
-			 * There is a nasty bug that occurs here where after the user dismisses the system's touchbar customization
+			/* There is a nasty bug that occurs here where after the user dismisses the system's touchbar customization
 			 * UI, there is a significant chance for all windows on the user's computer to become unresponsive until
 			 * MonoDevelop is killed. Until this bug is fixed, I've sealed off the customization functionality.
 			 * (if you can customize the touch bar, changing at least one item,
-			 * five times in a row without running into this bug then it is probably fixed)
-			 */
+			 * five times in a row without running into this bug then it is probably fixed) */
 
 #if CUSTOMIZATION_WINDOW_FREEZE_BUG_FIXED
 			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (true);
@@ -132,7 +130,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			} else {
 				NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled (false);
 			}
-#else 
+#else
+			NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled(false);
 			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (false); //without customization all items must be present, not just defaults
 #endif
 
@@ -154,10 +153,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			else { //if welcomepage is not visible
 				var bBarItems = ButtonBarContainer.GetButtonBarTouchBarItems ();
-				if (bBarItems.Length > 0) { 
+				if (bBarItems.Length > 0) {
 					/* Right now we are using the presence of buttons in the button bar to determine if we're in
 					 * debugging mode. This is probably less than ideal. If you can think of a better determinant, 
 					 * feel free to swap it in. */
+
 					if (BarType != TouchBarType.Debugger) {
 						BarType = TouchBarType.Debugger;
 						goto Rebuild;
@@ -178,7 +178,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		Rebuild: //switch current bar
 			NSApplication.SharedApplication.SetTouchBar (MakeTouchBar ());
-		Update: //operations that change bar items but not the bar itself, e.g. validation goes here
+			RebuildTouchBar = false;
+		Update: //operations that change bar items but not the bar itself
 			NSImage runImg = null;
 			switch (RunButton.Icon) {
 			case Components.MainToolbar.OperationIcon.Build:
@@ -203,15 +204,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		string [] GetItemIdentifiers () //convenience method. Always returns all relevant identifiers
 		{
 			return GetItemIdentifiers (false);
-
-			/*
-			if (ButtonBarContainer != null) {
-				var extraIds = ButtonBarContainer.GetButtonBarTouchBarItems ();
-				if (extraIds != null) {
-					ids.AddRange (extraIds);
-				}
-			}
-			*/
 		}
 		string [] GetItemIdentifiers (bool defaultsOnly) //defaultsOnly means only identifiers for default layout are returned
 		{
@@ -242,23 +234,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSTouchBarItem item = null;
 
 			if (identifier.StartsWith (ButtonBarContainer.ButtonBarIdPrefix)) {
-				Console.WriteLine ($"Getting items for {identifier}");
-
+				
 				var items = ButtonBarContainer.TouchBarItemsForIdentifier (identifier);
+
 				if (items == null) {
 					return null;
 				}
 
 				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
-				Console.WriteLine (identifier);
 				return item;
 			}
 
 			switch (identifier) {
 			case Id.RecentItems:
 				var theItems = DesktopService.RecentFiles.GetProjects ();
-				NSScrollView scrollView = new NSScrollView (new CGRect (0, 0, 600, 30));
-				NSView documentView = new NSView (new CGRect (0, 0, 10000, 30)); //10000 is arbitrary value; changed later
+				var scrollView = new NSScrollView (new CGRect (0, 0, 600, 30));
+				var documentView = new NSView (new CGRect (0, 0, 10000, 30)); //10000 is arbitrary value; changed later
 
 				nfloat offset = 0;
 				nfloat lastButtonWidth = 0;
@@ -272,7 +263,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				foreach (Ide.Desktop.RecentFile project in theItems) {
 					
 					if (!System.IO.File.Exists (project.FileName)) { continue; } //this will suffice until proper validation is implemented
-					NSButton b = NSButton.CreateButton (project.DisplayName, () => {});
+					var b = NSButton.CreateButton (project.DisplayName, () => {});
 					var link = "project://" + project.FileName;
 					b.Activated += (sender, e) => {
 						b.Enabled = System.IO.File.Exists (project.FileName);
