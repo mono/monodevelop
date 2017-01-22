@@ -67,7 +67,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		//touch bar items that need to be dynamically updated
 		private NSButton touchBarRunButton;
-		private bool rebuildTouchbar = false;
+
+		public bool RebuildTouchBar = false;
 
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
@@ -108,9 +109,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var aTouchbar = new NSTouchBar ();
 			Touchbar = aTouchbar;
-
 			aTouchbar.Delegate = this;
 
+			if (BarType == TouchBarType.Debugger) { //center debugging controls
+				aTouchbar.PrincipalItemIdentifier = "com.microsoft.vsfm.buttonbar.debug";
+			}
 
 			/*
 			 * There is a nasty bug that occurs here where after the user dismisses the system's touchbar customization
@@ -139,7 +142,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void UpdateTouchBar ()
 		{
 			if (Touchbar == null) {goto Rebuild;} //initialize on launch
-			if (rebuildTouchbar)  {goto Rebuild;}
+			if (RebuildTouchBar)  {goto Rebuild;}
+
 			if (MonoDevelop.Ide.WelcomePage.WelcomePageService.WelcomePageVisible) {
 				if (BarType != TouchBarType.WelcomePage) {
 					BarType = TouchBarType.WelcomePage;
@@ -147,14 +151,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else {
 					goto Update;
 				}
-			} 
+			}
 			else { //if welcomepage is not visible
-				   //TODO: code to determine whether to use preferences or debugging bar
-				if (BarType == TouchBarType.WelcomePage) {
-					BarType = TouchBarType.TextEditor;
-					goto Rebuild;
-				} else {
-					goto Update;
+				var bBarItems = ButtonBarContainer.GetButtonBarTouchBarItems ();
+				if (bBarItems.Length > 0) { 
+					/* Right now we are using the presence of buttons in the button bar to determine if we're in
+					 * debugging mode. This is probably less than ideal. If you can think of a better determinant, 
+					 * feel free to swap it in. */
+					if (BarType != TouchBarType.Debugger) {
+						BarType = TouchBarType.Debugger;
+						goto Rebuild;
+					} 
+					else {
+						goto Update;
+					}
+				} 
+				else {
+					if (BarType != TouchBarType.TextEditor) {
+						BarType = TouchBarType.TextEditor;
+						goto Rebuild;
+					}	
+					else {
+						goto Update;
+					}
 				}
 			}
 		Rebuild: //switch current bar
@@ -176,8 +195,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (touchBarRunButton != null) {
 					touchBarRunButton.Image = runImg;
 				}
-			}
-			               
+			}            
 
 			return;
 		}
@@ -201,18 +219,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (BarType == TouchBarType.TextEditor) {
 				ids.Add (Id.Run);
 				ids.Add (Id.Navigation);
-				if (defaultsOnly) {return ids.ToArray ();}
+				if (defaultsOnly) { return ids.ToArray (); }
 				ids.Add (Id.TabNavigation);
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
 				return ids.ToArray ();
 			} 
 			else if (BarType == TouchBarType.WelcomePage) {
-				ids.Add(Id.RecentItems);
+				ids.Add (Id.RecentItems);
 				return ids.ToArray ();
 			} 
+			else if (BarType == TouchBarType.Debugger) {
+				ids.Add (Id.Run);
+				ids.AddRange (ButtonBarContainer.GetButtonBarTouchBarItems ());
+				return ids.ToArray();
+			}
 			else {return ids.ToArray ();}
 		}
-
 
 		[Export ("touchBar:makeItemForIdentifier:")]
 		public NSTouchBarItem MakeItem (NSTouchBar touchbar, string identifier)
@@ -228,6 +250,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
+				Console.WriteLine (identifier);
 				return item;
 			}
 
@@ -342,6 +365,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RunButton.PerformClick (RunButton);
 				};
 #endif
+				button.Image = continueImage;
 				touchBarRunButton = button;
 
 				customItem.View = button;
