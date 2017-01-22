@@ -47,15 +47,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
 		//Begin variables declared as static outside of scope to prevent garbage collection crash
-		private static NSSegmentedControl navSegments = null;
-		private static NSSegmentedControl tabNavSegments = null;
+		private static NSSegmentedControl navControl = null;
+		private static NSSegmentedControl tabNavControl = null;
 		//End variables decl… *sigh*
 
-		internal TouchBarType barType = TouchBarType.TextEditor;
-		internal NSTouchBar touchbar = null;
+		internal TouchBarType BarType = TouchBarType.TextEditor;
+		internal NSTouchBar Touchbar = null;
 
 		//touch bar items that need to be dynamically updated
-		private NSButton touchBarRunButton;
+		private NSButton TouchBarRunButton;
 
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
@@ -90,13 +90,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSTouchBar MakeTouchBar ()
 		{
 			var aTouchbar = new NSTouchBar ();
-			this.touchbar = aTouchbar;
+			Touchbar = aTouchbar;
 
 
 			aTouchbar.Delegate = this;
 			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (true);
 
-			if (this.barType == TouchBarType.TextEditor) {
+			if (BarType == TouchBarType.TextEditor) {
 				aTouchbar.CustomizationIdentifier = TouchBarType.TextEditor.ToString ();
 				NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled (true);
 				aTouchbar.CustomizationAllowedItemIdentifiers = GetItemIdentifiers ();
@@ -108,11 +108,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void UpdateTouchBar ()
 		{
-			if (this.touchbar == null) {goto Rebuild;} //initialize on launch
+			if (Touchbar == null) {goto Rebuild;} //initialize on launch
 
 			if (MonoDevelop.Ide.WelcomePage.WelcomePageService.WelcomePageVisible) {
-				if (this.barType != TouchBarType.WelcomePage) {
-					this.barType = TouchBarType.WelcomePage;
+				if (BarType != TouchBarType.WelcomePage) {
+					BarType = TouchBarType.WelcomePage;
 					goto Rebuild;
 				} else {
 					goto Update;
@@ -120,8 +120,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			} 
 			else { //if welcomepage is not visible
 				   //TODO: code to determine whether to use preferences or debugging bar
-				if (this.barType == TouchBarType.WelcomePage) {
-					this.barType = TouchBarType.TextEditor;
+				if (BarType == TouchBarType.WelcomePage) {
+					BarType = TouchBarType.TextEditor;
 					goto Rebuild;
 				} else {
 					goto Update;
@@ -143,8 +143,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				break;
 			}
 			if (runImg != null) {
-				if (touchBarRunButton != null) {
-					touchBarRunButton.Image = runImg;
+				if (TouchBarRunButton != null) {
+					TouchBarRunButton.Image = runImg;
 				}
 			}
 			               
@@ -168,7 +168,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		string [] GetItemIdentifiers (bool defaultsOnly) //defaultsOnly means only identifiers for default layout are returned
 		{
 			List<string> ids = new List<string> ();
-			if (this.barType == TouchBarType.TextEditor) {
+			if (BarType == TouchBarType.TextEditor) {
 				ids.Add ("run");
 				ids.Add ("navigation");
 				if (defaultsOnly) {return ids.ToArray ();}
@@ -176,7 +176,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
 				return ids.ToArray ();
 			} 
-			else if (this.barType == TouchBarType.WelcomePage) {
+			else if (BarType == TouchBarType.WelcomePage) {
 				ids.Add("recentItems");
 				return ids.ToArray ();
 			} 
@@ -212,14 +212,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return item;
 			case "navigation": //contains navigate back & forward buttons
 
-				//NSSegmentedControl navSegments = null; //declared as static above due to GC bug
+				//NSSegmentedControl navControl = null; //declared as static above due to GC bug
 
-				Action navSegmentsAction = () => {
+				Action navControlAction = () => {
 
-					if (navSegments != null) {
-						if (navSegments.SelectedSegment == 0) {
+					if (navControl != null) {
+						if (navControl.SelectedSegment == 0) {
 							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack");
-						} else if (navSegments.SelectedSegment == 1) {
+						} else if (navControl.SelectedSegment == 1) {
 							IdeApp.CommandService.DispatchCommand ("MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward");
 						}
 					}
@@ -232,41 +232,41 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					};
 
 
-				navSegments = NSSegmentedControl.FromImages (navIcons, NSSegmentSwitchTracking.Momentary, navSegmentsAction);
-				navSegments.SegmentStyle = NSSegmentStyle.Separated;
+				navControl = NSSegmentedControl.FromImages (navIcons, NSSegmentSwitchTracking.Momentary, navControlAction);
+				navControl.SegmentStyle = NSSegmentStyle.Separated;
 
-				var customItemNavSegments = new NSCustomTouchBarItem ("navigation");
-				customItemNavSegments.CustomizationLabel = "Navigation";
-				customItemNavSegments.View = navSegments;
-				item = customItemNavSegments;
+				var customItemNavControl = new NSCustomTouchBarItem ("navigation");
+				customItemNavControl.CustomizationLabel = "Navigation";
+				customItemNavControl.View = navControl;
+				item = customItemNavControl;
 
 				return item;
 				
 			case "tabNavigation": //navigation again, but this time for tabs. Lack of images is a work-in-progress
 
-				//NSSegmentedControl tabNavSegments = null; //declared as static above due to GC bug
+				//NSSegmentedControl tabNavControl = null; //declared as static above due to GC bug
 
-				Action tabNavSegmentsAction = () => {
+				Action tabNavControlAction = () => {
 					
-					if (tabNavSegments != null) {
+					if (tabNavControl != null) {
 						
-						if (tabNavSegments.SelectedSegment == 0) {
+						if (tabNavControl.SelectedSegment == 0) {
 							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.PrevDocument);
 						} 
-						else if (tabNavSegments.SelectedSegment == 1) {
+						else if (tabNavControl.SelectedSegment == 1) {
 							IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.WindowCommands.NextDocument);
 						}
 					}
 
 				};
 
-				tabNavSegments = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavSegmentsAction);
-				tabNavSegments.SegmentStyle = NSSegmentStyle.Separated;
+				tabNavControl = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavControlAction);
+				tabNavControl.SegmentStyle = NSSegmentStyle.Separated;
 
-				var customItemTabNavSegments = new NSCustomTouchBarItem ("tabNavigation");
-				customItemTabNavSegments.CustomizationLabel = "Tab Controls";
-				customItemTabNavSegments.View = tabNavSegments;
-				item = customItemTabNavSegments;
+				var customItemTabNavControl = new NSCustomTouchBarItem ("tabNavigation");
+				customItemTabNavControl.CustomizationLabel = "Tab Controls";
+				customItemTabNavControl.View = tabNavControl;
+				item = customItemTabNavControl;
 
 				return item;
 
@@ -282,7 +282,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RunButton.PerformClick (RunButton);
 				};
 #endif
-				this.touchBarRunButton = button;
+				TouchBarRunButton = button;
 
 				customItem.View = button;
 			
