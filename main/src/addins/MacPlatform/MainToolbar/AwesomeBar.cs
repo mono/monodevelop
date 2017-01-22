@@ -240,6 +240,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (items == null) {
 					return null;
 				}
+				if (items.Length == 0) {
+					RebuildTouchBar = true;
+					//seems this method is called before buttonBar is init'd, so rebuild until it's ready
+				}
 
 				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
 				return item;
