@@ -929,7 +929,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			XmlUtil.Indent (format, value, false);
 			var xmlns = value.GetAttribute ("xmlns");
-			if (xmlns == Namespace)
+			if (xmlns == (Namespace ?? string.Empty))
 				value.RemoveAttribute ("xmlns");
 			SetProjectExtension (parent);
 			NotifyChanged ();

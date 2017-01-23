@@ -793,6 +793,51 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, monoDevelopElement.ChildNodes.Count);
 		}
 
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"",
+			"<ExtensionData>Value</ExtensionData>",
+			false)]
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"",
+			"<ExtensionData xmlns=\"\">Value</ExtensionData>",
+			false)]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"",
+			"<ExtensionData>Value</ExtensionData>",
+			true)] // xmlns=''
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"",
+			"<ExtensionData xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">Value</ExtensionData>",
+			false)]
+		public void SetMonoDevelopProjectExtension (
+			string projectElementAttributes,
+			string extensionXml,
+			bool expectedHasXmlAttribute)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var doc = new XmlDocument ();
+			doc.LoadXml (extensionXml);
+			var element = doc.DocumentElement;
+			p.SetMonoDevelopProjectExtension ("Test", element);
+
+			string xml = p.SaveToString ();
+			doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			var extensionDataElement = (XmlElement)propertiesElement.ChildNodes[0];
+
+			Assert.AreEqual (expectedHasXmlAttribute, extensionDataElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("ExtensionData", extensionDataElement.Name);
+		}
+
 		/// <summary>
 		/// This works without any changes to MSBuildProperty using the full
 		/// MSBuild xmlns value.
