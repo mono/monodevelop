@@ -166,7 +166,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 							completionTokenSrc.Cancel ();
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
-
 						task.ContinueWith (t => {
 							CompletionWindowManager.WindowClosed -= windowClosed;
 							if (token.IsCancellationRequested)
@@ -364,6 +363,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			completionList = await CodeCompletionCommand (CurrentCompletionContext);
+			if (completionList.TriggerWordStart >= 0)
+				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}
