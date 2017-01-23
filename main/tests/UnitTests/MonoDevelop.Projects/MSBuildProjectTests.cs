@@ -28,6 +28,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.MSBuild;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
@@ -920,6 +921,49 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+		}
+
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void PatchedImport (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1></Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <Import Project=\"Original.targets\" />\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var import = p.Imports.Single ();
+
+			var sw = new StringWriter ();
+			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
+				OmitXmlDeclaration = true,
+				NewLineChars = "\r\n",
+				NewLineHandling = NewLineHandling.Replace
+			});
+
+			xw.WriteStartElement (string.Empty, "Root", p.Namespace);
+			import.WritePatchedImport (xw, "Updated.targets");
+			xw.WriteEndElement ();
+			xw.Dispose ();
+
+			var doc = new XmlDocument ();
+			doc.LoadXml (sw.ToString ());
+
+			var import1 = (XmlElement)doc.DocumentElement.ChildNodes [0];
+			var import2 = (XmlElement)doc.DocumentElement.ChildNodes [1];
+
+			Assert.AreEqual ("Original.targets", import1.GetAttribute ("Project"));
+			Assert.AreEqual ("Exists('Original.targets')", import1.GetAttribute ("Condition"));
+			Assert.AreEqual ("Updated.targets", import2.GetAttribute ("Project"));
+			Assert.AreEqual ("!Exists('Original.targets')", import2.GetAttribute ("Condition"));
+			Assert.IsFalse (import1.HasAttribute ("xmlns"));
+			Assert.IsFalse (import2.HasAttribute ("xmlns"));
 		}
 	}
 }
