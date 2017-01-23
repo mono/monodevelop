@@ -1051,19 +1051,6 @@ namespace MonoDevelop.Projects.MSBuild
 			return res.ToString ();
 		}
 
-		public static void FormatElement (TextFormatInfo format, XmlElement elem)
-		{
-			// Remove duplicate namespace declarations
-			var nsa = elem.Attributes ["xmlns"];
-			if (nsa != null && nsa.Value == MSBuildProject.Schema)
-				elem.Attributes.Remove (nsa);
-
-			foreach (var e in elem.ChildNodes.OfType<XmlElement> ().ToArray ()) {
-				Indent (format, e, false);
-				FormatElement (format, e);
-			}
-		}
-
 		public static void Indent (TextFormatInfo format, XmlElement elem, bool closeInNewLine)
 		{
 			var prev = FindPreviousSibling (elem);
