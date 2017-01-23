@@ -442,16 +442,24 @@ namespace MonoDevelop.AspNet.Razor
 			return hiddenOff;
 		}
 
-		public override async System.Threading.Tasks.Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		public override async System.Threading.Tasks.Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, System.Threading.CancellationToken token)
 		{
+			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand) {
+				if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
+					&& !(Tracker.Engine.Nodes.Peek () is XElement)) {
+					InitializeCodeCompletion ();
+					return await completionBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, hiddenInfo);
+				}
+			}
 			char previousChar = defaultEditor.CaretOffset > 1 ? defaultEditor.GetCharAt (
 				defaultEditor.CaretOffset - 2) : ' ';
-
+			if (triggerInfo.CompletionTriggerReason != CompletionTriggerReason.CharTyped)
+				return null;
 			// Don't show completion window when directive's name is being typed
 			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
 			if (directive != null && !directive.FirstBracket.HasValue)
 				return null;
-
+			var completionChar = triggerInfo.TriggerCharacter.Value;
 			if (hiddenInfo != null && isInCSharpContext) {
 				var list = (CompletionDataList) await completionBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext,
 					hiddenInfo, completionChar, token);
@@ -472,7 +480,7 @@ namespace MonoDevelop.AspNet.Razor
 				return list;
 			}
 
-			return await base.HandleCodeCompletionAsync (completionContext, completionChar, token);
+			return await base.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
 		}
 
 		//recreating the list is over 2x as fast as using remove operations, saves typically 10ms
@@ -552,16 +560,6 @@ namespace MonoDevelop.AspNet.Razor
 			return list;
 		}
 
-		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
-		{
-			if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
-				&& !(Tracker.Engine.Nodes.Peek () is XElement)) {
-				InitializeCodeCompletion ();
-				return completionBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, hiddenInfo);
-			}
-
-			return base.CodeCompletionCommand (completionContext);
-		}
 		/*
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{

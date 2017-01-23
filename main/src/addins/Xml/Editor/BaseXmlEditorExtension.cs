@@ -260,22 +260,23 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Code completion
 
-		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
-		{
-			int pos = completionContext.TriggerOffset;
-			if (pos <= 0)
-				return null;
-			tracker.UpdateEngine ();
-			return HandleCodeCompletion (completionContext, true, default(CancellationToken));
-		}
 
-		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default(CancellationToken))
 		{
-			int pos = completionContext.TriggerOffset;
-			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
-			if (pos > 0 && ch == completionChar) {
+			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
+				int pos = completionContext.TriggerOffset;
+				char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
+				if (pos > 0 && ch == triggerInfo.TriggerCharacter.Value) {
+					tracker.UpdateEngine ();
+					return HandleCodeCompletion (completionContext, false, token);
+				}
+			} else if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand) {
+				int pos = completionContext.TriggerOffset;
+				if (pos <= 0)
+					return null;
 				tracker.UpdateEngine ();
-				return HandleCodeCompletion (completionContext, false, token);
+				return HandleCodeCompletion (completionContext, true, default (CancellationToken));
+
 			}
 			return null;
 		}

@@ -643,8 +643,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionContext.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionTriggerInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionTriggerReason.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\EditorBrowsableBehavior.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ICompletionDataFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CastCompletionContextHandler.cs" />

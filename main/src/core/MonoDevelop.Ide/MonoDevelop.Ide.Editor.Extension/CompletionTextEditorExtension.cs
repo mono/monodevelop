@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleCodeCompletionAsync (CurrentCompletionContext, descriptor.KeyChar, token);
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleBackspaceOrDeleteCodeCompletionAsync (CurrentCompletionContext, descriptor.SpecialKey, deleteOrBackspaceTriggerChar, token);
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, deleteOrBackspaceTriggerChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -362,9 +362,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
-			completionList = await CodeCompletionCommand (CurrentCompletionContext);
-			if (completionList.TriggerWordStart >= 0)
-				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
+			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand));
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}
@@ -467,15 +465,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static readonly ICompletionDataList emptyList = new CompletionDataList ();
 
-		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default(CancellationToken))
 		{
 			return Task.FromResult (emptyList);
 		}
 
-		public virtual Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
-		{
-			return Task.FromResult (emptyList);
-		}
 
 		public virtual Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
@@ -542,27 +536,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 				}
 			}
 			return list;
-		}
-
-		public virtual async Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
-		{
-			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
-			// the char at the cursor position. If it returns a provider, just return it.
-			
-			completionTokenSrc.Cancel ();
-			completionTokenSrc = new CancellationTokenSource ();
-			var ctoken = completionTokenSrc.Token;
-
-			int pos = completionContext.TriggerOffset;
-			if (pos > 0) {
-				char ch = Editor.GetCharAt (pos - 1);
-				try {
-					return await HandleCodeCompletionAsync (completionContext, ch, ctoken);
-				} catch (TaskCanceledException) {
-				} catch (AggregateException) {
-				}
-			}
-			return null;
 		}
 		
 		public virtual async Task<ParameterHintingResult> ParameterCompletionCommand (CodeCompletionContext completionContext)

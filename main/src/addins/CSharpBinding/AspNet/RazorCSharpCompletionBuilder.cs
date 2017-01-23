@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.CodeCompletionCommand (ccc);
+			return completion.HandleCodeCompletionAsync (ccc, CompletionTriggerInfo.CodeCompletionCommand);
 		}
 
 		public Task<ICompletionDataList> HandleCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.HandleCodeCompletionAsync (completionContext, currentChar, token);
+			return completion.HandleCodeCompletionAsync (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, currentChar), token);
 		}
 
 		public Task<ParameterHintingResult> HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,

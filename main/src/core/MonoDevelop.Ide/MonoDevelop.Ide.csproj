@@ -9209,6 +9209,8 @@
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ScopeStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
