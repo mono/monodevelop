@@ -792,6 +792,90 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("External", externalElement.Name);
 			Assert.AreEqual (1, monoDevelopElement.ChildNodes.Count);
 		}
+
+		/// <summary>
+		/// This works without any changes to MSBuildProperty using the full
+		/// MSBuild xmlns value.
+		/// </summary>
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void PropertyWithChildXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1>\r\n" +
+				"      <Test2>\r\n" +
+				"        <Test3></Test3>\r\n" +
+				"      </Test2>\r\n" +
+				"    </Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var properties = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var test1Element = (XmlElement)properties.ChildNodes[1];
+			var test2Element = (XmlElement)test1Element.ChildNodes[0];
+			var test3Element = test2Element.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1", test1Element.Name);
+			Assert.AreEqual ("Test2", test2Element.Name);
+			Assert.AreEqual ("Test3", test3Element.Name);
+			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+		}
+
+		/// <summary>
+		/// This works without any changes to MSBuildProperty using the full
+		/// MSBuild xmlns value.
+		/// </summary>
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void SetPropertyWithChildXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1></Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string propertyValue =
+				"<Test2 xmlns='" + p.Namespace + "'>\r\n" +
+				"  <Test3>Value</Test3>\r\n" +
+				"</Test2>";
+			var globalGroup = p.GetGlobalPropertyGroup ();
+			var test1Property = globalGroup.GetProperty ("Test1");
+			test1Property.SetValue (propertyValue);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var properties = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var test1Element = (XmlElement)properties.ChildNodes[1];
+			var test2Element = (XmlElement)test1Element.ChildNodes[0];
+			var test3Element = test2Element.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1", test1Element.Name);
+			Assert.AreEqual ("Test2", test2Element.Name);
+			Assert.AreEqual ("Test3", test3Element.Name);
+			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+		}
 	}
 }
 
