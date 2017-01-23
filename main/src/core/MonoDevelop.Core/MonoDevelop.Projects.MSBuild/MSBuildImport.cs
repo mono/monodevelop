@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!string.IsNullOrEmpty (Condition))
 				cond = "( " + Condition + " ) AND " + cond;
 			
-			writer.WriteStartElement ("Import", MSBuildProject.Schema);
+			writer.WriteStartElement ("Import", Namespace);
 			writer.WriteAttributeString ("Project", target);
 			writer.WriteAttributeString ("Condition", cond);
 			writer.WriteEndElement ();
@@ -111,7 +111,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!string.IsNullOrEmpty (Condition))
 				cond = "( " + Condition + " ) AND " + cond;
 
-			writer.WriteStartElement ("Import", MSBuildProject.Schema);
+			writer.WriteStartElement ("Import", Namespace);
 			writer.WriteAttributeString ("Project", MSBuildProjectService.ToMSBuildPath (null, newTarget));
 			writer.WriteAttributeString ("Condition", cond);
 			writer.WriteEndElement ();

@@ -923,6 +923,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
 		}
 
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
 		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
 		public void PatchedImport (string projectElementAttributes)
 		{
