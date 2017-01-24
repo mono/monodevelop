@@ -110,29 +110,6 @@ namespace MonoDevelop.Projects.MSBuild
 			t.Start ();
 		}
 
-		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
-		{
-			var msbuildAssemblies = new string [] {
-							"Microsoft.Build",
-							"Microsoft.Build.Engine",
-							"Microsoft.Build.Framework",
-							"Microsoft.Build.Tasks.Core",
-							"Microsoft.Build.Utilities.Core" };
-
-			var asmName = new AssemblyName (args.Name);
-			if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
-				return null;
-
-			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
-			if (File.Exists (fullPath)) {
-				// If the file exists under the msbuild bin dir, then we need
-				// to load it only from there. If that fails, then let that exception
-				// escape
-				return Assembly.LoadFrom (fullPath);
-			} else
-				return null;
-		}
-
 		public BuildEngine (RemoteProcessServer pserver)
 		{
 			server = pserver;
@@ -142,7 +119,6 @@ namespace MonoDevelop.Projects.MSBuild
 		public BinaryMessage Initialize (InitializeRequest msg)
 		{
 			msbuildBinDir = msg.BinDir;
-			AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
 			WatchProcess (msg.IdeProcessId);
 			SetCulture (CultureInfo.GetCultureInfo (msg.CultureName));
 			SetGlobalProperties (msg.GlobalProperties);
