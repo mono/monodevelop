@@ -51,13 +51,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
 		}
 
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			if (otherNode.DataItem is ProjectReferenceCollection)
-				return 1;
-			if (otherNode.DataItem is GettingStartedNode)
-				return 1;
-			return -1;
+			return -600;
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
