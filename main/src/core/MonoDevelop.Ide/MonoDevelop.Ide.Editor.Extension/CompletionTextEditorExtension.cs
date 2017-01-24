@@ -470,11 +470,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static readonly ICompletionDataList emptyList = new CompletionDataList ();
 
-		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default(CancellationToken))
+		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
 			return Task.FromResult (emptyList);
 		}
 
+		[Obsolete("Use HandleCodeCompletionAsync")]
+		public Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
+		{
+			return HandleCodeCompletionAsync (completionContext, CompletionTriggerInfo.CodeCompletionCommand);
+		}
 
 		public virtual Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
