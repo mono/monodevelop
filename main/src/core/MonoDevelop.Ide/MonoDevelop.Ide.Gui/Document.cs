@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide.Gui
 		Task RunAsyncOperation (Func<Task> action)
 		{
 			Runtime.AssertMainThread ();
-			return currentOperationTask = currentOperationTask.ContinueWith (t => action()).Unwrap ();
+			return currentOperationTask = currentOperationTask.ContinueWith (t => action(), Runtime.MainTaskScheduler).Unwrap ();
 		}
 
 		public Task Reload ()
