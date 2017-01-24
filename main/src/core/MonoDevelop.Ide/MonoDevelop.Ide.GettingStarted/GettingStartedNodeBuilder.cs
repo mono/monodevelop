@@ -25,6 +25,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return "GettingStarted";
 		}
 
+		public override object GetParentObject (object dataObject)
+		{
+			var node = dataObject as GettingStartedNode;
+			return node?.Project ?? base.GetParentObject (dataObject);
+		}
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = GettextCatalog.GetString ("Getting Started");
