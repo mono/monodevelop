@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return completionDataList; }
 			set {
 				completionDataList = value;
-				defaultComparer = null;
+				ListWidget.defaultComparer = null;
 			}
 		}
 
@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					((IDisposable)completionDataList).Dispose ();
 				CloseCompletionList ();
 				completionDataList = null;
-				defaultComparer = null;
+				ListWidget.defaultComparer = null;
 			}
 
 			HideDeclarationView ();
@@ -721,21 +721,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		class DataItemComparer : IComparer<CompletionData>
-		{
-			public int Compare (CompletionData a, CompletionData b)
-			{
-				if (a is IComparable && b is IComparable)
-					return ((IComparable)a).CompareTo (b);
-				return CompletionData.Compare (a, b);
-			}
-		}
 
-		IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
-		{
-			var concrete = dataList as CompletionDataList;
-			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
-		}
 		
 		bool FillList ()
 		{
@@ -743,12 +729,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return false;
 
 			Style = CompletionWidget.GtkStyle;
-			
+
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
-				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
+				completionDataList.Sort (ListWidget.GetComparerForCompletionList (completionDataList));
 
 			Reposition (true);
 			return true;
@@ -974,7 +960,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 
-		static readonly DataItemComparer overloadComparer = new DataItemComparer ();
 
 
 		async void DelayedTooltipShowAsync ()
@@ -999,7 +984,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var cs = new CancellationTokenSource ();
 				declarationViewCancelSource = cs;
 				var overloads = new List<CompletionData> (filteredOverloads);
-				overloads.Sort (overloadComparer);
+				overloads.Sort (ListWidget.overloadComparer);
 				foreach (var overload in overloads) {
 					await declarationviewwindow.AddOverload ((CompletionData)overload, cs.Token);
 				}
@@ -1089,13 +1074,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return completionDataList[n];
 		}
 
-		IComparer<CompletionData> defaultComparer;
 
 		internal int CompareTo (int n, int m)
 		{
-			var item1 = completionDataList [n];
-			var item2 = completionDataList [m];
-			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
+			return ListWidget.CompareTo (completionDataList, n, m);
 		}
 		
 		internal Xwt.Drawing.Image GetIcon (int n)
