@@ -43,7 +43,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (IdeApp.IsInitialized) {
 				PackageManagementServices.ProjectService.ProjectReloaded += ProjectReloaded;
-				FileService.FileChanged += FileChanged;
+				FileService.FileChanged += OnFileChanged;
 			}
 		}
 
@@ -77,6 +77,11 @@ namespace MonoDevelop.DotNetCore
 			var action = new RestoreNuGetPackagesInDotNetCoreProject (e.NewProject.DotNetProject);
 			var message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
 			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+		}
+
+		void OnFileChanged (object sender, FileEventArgs e)
+		{
+			Runtime.RunInMainThread (() => FileChanged (sender, e));
 		}
 
 		async void FileChanged (object sender, FileEventArgs e)
