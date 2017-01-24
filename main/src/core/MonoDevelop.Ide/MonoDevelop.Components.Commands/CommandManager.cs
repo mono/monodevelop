@@ -426,6 +426,8 @@ namespace MonoDevelop.Components.Commands
 				// incomplete accel
 				NotifyIncompleteKeyReleased (e.Event);
 			}
+
+			throttleLastEventTime = 0;
 		}
 
 #if MAC
