@@ -192,7 +192,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return;
 			wnd.PostProcessKeyEvent (descriptor);
-			wnd.EndOffset = wnd.CompletionWidget.CaretOffset;
+			if (wnd.CompletionWidget != null)
+				wnd.EndOffset = wnd.CompletionWidget.CaretOffset;
 		}
 
 		public static void RepositionWindow ()

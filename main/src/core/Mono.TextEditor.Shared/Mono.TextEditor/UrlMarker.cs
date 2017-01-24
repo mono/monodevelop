@@ -84,19 +84,22 @@ namespace Mono.TextEditor
 			this.style = style;
 			this.startColumn = startColumn;
 			this.endColumn = endColumn;
-			doc.LineChanged += HandleDocLineChanged;
 		}
-		
-		void HandleDocLineChanged (object sender, LineEventArgs e)
+
+
+		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			if (line == e.Line)
+			var lineSegment = line.Segment;
+			if (lineSegment.IsInside (e.Offset) || lineSegment.IsInside (e.Offset + e.RemovalLength) ||
+			    e.Offset <= lineSegment.Offset && lineSegment.Offset <= e.Offset + e.RemovalLength) {
 				doc.RemoveMarker (this);
+			}
 		}
-		
+
 		public void Dispose ()
 		{
 			if (doc != null) {
-				doc.LineChanged -= HandleDocLineChanged;
+				doc.TextChanging -= Doc_TextChanging;
 				doc = null;
 			}
 			line = null;

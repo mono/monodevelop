@@ -156,10 +156,5 @@ namespace Mono.TextEditor
 				yield return Get (i);
 		}
 
-		event EventHandler<LineEventArgs> ILineSplitter.LineChanged { add { /* unused */   } remove { /* unused */ } }
-
-		event EventHandler<LineEventArgs> ILineSplitter.LineInserted { add { /* unused */   } remove { /* unused */ } }
-
-		event EventHandler<LineEventArgs> ILineSplitter.LineRemoved { add { /* unused */   } remove { /* unused */ } }
 	}
 }
