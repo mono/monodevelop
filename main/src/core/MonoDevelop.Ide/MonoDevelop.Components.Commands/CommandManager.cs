@@ -1351,6 +1351,7 @@ namespace MonoDevelop.Components.Commands
 				CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
+				info.DataItem = dataItem;
 
 				while (cmdTarget != null)
 				{
