@@ -305,7 +305,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
-				case "xmlns": return Namespace;
+				case "xmlns": return string.IsNullOrEmpty (Namespace) ? null : Namespace;
 				case "Sdk": return sdk;
 			}
 			return base.WriteAttribute (name);
@@ -521,7 +521,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public override string Namespace {
 			get {
 				if (sdk != null)
-					return null;
+					return string.Empty;
 				return Schema;
 			}
 		}
@@ -886,7 +886,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return XmlNamespaceManager;
 
 			var namespaceManager = new XmlNamespaceManager (new NameTable ());
-			namespaceManager.AddNamespace ("tns", Namespace ?? string.Empty);
+			namespaceManager.AddNamespace ("tns", Namespace);
 			return namespaceManager;
 		}
 
@@ -914,7 +914,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			value = (XmlElement) elem.OwnerDocument.ImportNode (value, true);
 			var parent = elem;
-			elem = parent ["Properties", Namespace ?? string.Empty];
+			elem = parent ["Properties", Namespace];
 			if (elem == null) {
 				elem = parent.OwnerDocument.CreateElement (null, "Properties", Namespace);
 				parent.AppendChild (elem);
@@ -929,7 +929,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			XmlUtil.Indent (format, value, false);
 			var xmlns = value.GetAttribute ("xmlns");
-			if (xmlns == (Namespace ?? string.Empty))
+			if (xmlns == Namespace)
 				value.RemoveAttribute ("xmlns");
 			SetProjectExtension (parent);
 			NotifyChanged ();

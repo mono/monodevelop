@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects
 			}
 
 			if (msbuildProject != null)
-				return msbuildProject.Namespace ?? string.Empty;
+				return msbuildProject.Namespace;
 
 			return MSBuildProject.Schema;
 		}
