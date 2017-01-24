@@ -518,7 +518,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		string sdk;
 
-		internal override string Namespace {
+		public override string Namespace {
 			get {
 				if (sdk != null)
 					return null;

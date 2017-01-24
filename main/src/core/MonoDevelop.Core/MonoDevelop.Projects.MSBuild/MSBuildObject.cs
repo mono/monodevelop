@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal virtual string Namespace {
+		public virtual string Namespace {
 			get {
 				if (ParentObject != null)
 					return ParentObject.Namespace;
