@@ -91,6 +91,12 @@ namespace MonoDevelop.DotNetCore
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
 		}
 
+		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
+			base.OnReadProjectHeader (monitor, msproject);
+		}
+
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
@@ -319,6 +325,16 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			return filteredFiles.ToArray ();
+		}
+
+		protected override void OnSetFormat (MSBuildFileFormat format)
+		{
+			// Do not call base class since the solution's FileFormat will be used which is
+			// VS 2012 and this will set the ToolsVersion to "4.0" which we are preventing.
+			// Setting the ToolsVersion to "4.0" can cause the MSBuild tasks such as
+			// ResolveAssemblyReferences to fail for .NET Core projects when the project
+			// xml is generated in memory for the project builder at the same time as the
+			// project file is being saved.
 		}
 	}
 }

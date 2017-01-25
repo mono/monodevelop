@@ -52,13 +52,28 @@ namespace MonoDevelop.DotNetCore
 			get { return Sdk != null; }
 		}
 
+		public bool HasToolsVersion ()
+		{
+			return !string.IsNullOrEmpty (ToolsVersion);
+		}
+
 		public CompileTarget DefaultCompileTarget {
 			get { return defaultCompileTarget; }
 		}
 
-		public void ReadProject (MSBuildProject project)
+		/// <summary>
+		/// Ensure MSBuildProject has ToolsVersion set to 15.0 so the correct
+		/// MSBuild targets are imported.
+		/// </summary>
+		public void ReadProjectHeader (MSBuildProject project)
 		{
 			ToolsVersion = project.ToolsVersion;
+			if (!HasToolsVersion ())
+				project.ToolsVersion = "15.0";
+		}
+
+		public void ReadProject (MSBuildProject project)
+		{
 			IsOutputTypeDefined = project.IsOutputTypeDefined ();
 			targetFrameworks = project.GetTargetFrameworks ().ToList ();
 			hasRootNamespace = project.HasGlobalProperty ("RootNamespace");
@@ -87,7 +102,7 @@ namespace MonoDevelop.DotNetCore
 
 			project.DefaultTargets = null;
 
-			if (!string.IsNullOrEmpty (ToolsVersion))
+			if (HasToolsVersion ())
 				project.ToolsVersion = ToolsVersion;
 
 			if (HasSdk) {
