@@ -434,7 +434,7 @@ typedef struct
 		[Test]
 		public void TestGroupReplacement ()
 		{
-			Assert.AreEqual ("(?<id>[\\w_]*)\\s*[\\w_]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
+			Assert.AreEqual ("(?<id>[\\w_]*)\\s*\\k<id>", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
 		}
 
 		[Test]
@@ -442,5 +442,16 @@ typedef struct
 		{
 			Assert.AreEqual ("(?<id_id2>[\\w_]*)", Sublime3Format.CompileRegex ("(?<id-id2>[A-Z_a-z]*)"));
 		}
+
+
+
+		[Test]
+		public void TestGroupNameCorrection_Case2 ()
+		{
+			Assert.AreEqual ("(?<interface_name>\\k<type_name>\\s*\\.\\s*)?", Sublime3Format.CompileRegex ("(?<interface-name>\\g<type-name>\\s*\\.\\s*)?"));
+		}
+
+
+
 	}
 }
