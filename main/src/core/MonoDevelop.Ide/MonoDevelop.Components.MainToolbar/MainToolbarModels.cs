@@ -90,6 +90,12 @@ namespace MonoDevelop.Components.MainToolbar
 		string Image { get; }
 
 		/// <summary>
+		/// Gets the menu item's tooltip.
+		/// </summary>
+		/// <value>The tooltip text</value>
+		string Tooltip { get; }
+
+		/// <summary>
 		/// Gets the project to which this runtime belongs.
 		/// </summary>
 		/// <value>The project.</value>

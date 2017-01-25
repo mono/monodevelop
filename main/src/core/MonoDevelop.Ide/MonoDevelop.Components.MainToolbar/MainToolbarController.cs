@@ -983,6 +983,12 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 
+			public string Tooltip {
+				get {
+					return ExecutionTarget?.Tooltip;
+				}
+			}
+
 			public IRuntimeMutableModel GetMutableModel ()
 			{
 				if (Command != null)
