@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
@@ -42,12 +43,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static void Push (GitRepository repo)
 		{
-			bool hasCommits = false;
-			foreach (var commit in repo.RootRepository.Commits) {
-				hasCommits = true;
-				break;
-			}
-
+			bool hasCommits = repo.RootRepository.Commits.Any ();
 			if (!hasCommits) {
 				MessageService.ShowMessage (
 					GettextCatalog.GetString ("There are no changes to push."),
