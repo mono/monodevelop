@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using Roslyn.Utilities;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar

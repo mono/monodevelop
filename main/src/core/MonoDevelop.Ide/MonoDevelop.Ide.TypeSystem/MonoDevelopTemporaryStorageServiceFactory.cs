@@ -1,28 +1,5 @@
-﻿//
-// MonoDevelopTemporaryStorageServiceFactory.cs
-//
-// Author:
-//       Mike Krüger <mkrueger@xamarin.com>
-//
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
 using System;
 using System.Composition;
 using System.IO;
@@ -112,86 +89,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		/*
-		sealed class StreamStorage : ITemporaryStreamStorage
-		{
-			MemoryStream _stream;
-
-			public void Dispose ()
-			{
-				_stream?.Dispose ();
-				_stream = null;
-			}
-
-			public Stream ReadStream (CancellationToken cancellationToken = default(CancellationToken))
-			{
-				if (_stream == null) {
-					throw new InvalidOperationException ();
-				}
-
-				_stream.Position = 0;
-				return _stream;
-			}
-
-			public Task<Stream> ReadStreamAsync (CancellationToken cancellationToken = default(CancellationToken))
-			{
-				if (_stream == null) {
-					throw new InvalidOperationException ();
-				}
-
-				_stream.Position = 0;
-				return Task.FromResult ((Stream)_stream);
-			}
-
-			public void WriteStream (Stream stream, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				var newStream = new MemoryStream ();
-				stream.CopyTo (newStream);
-				_stream = newStream;
-			}
-
-			public async Task WriteStreamAsync (Stream stream, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				var newStream = new MemoryStream ();
-				await stream.CopyToAsync (newStream).ConfigureAwait (false);
-				_stream = newStream;
-			}
-		}
-
-		sealed class TemporaryTextStorage : ITemporaryTextStorage
-		{
-			SourceText _sourceText;
-
-			public void Dispose ()
-			{
-				_sourceText = null;
-			}
-
-			public SourceText ReadText (CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _sourceText;
-			}
-
-			public Task<SourceText> ReadTextAsync (CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return Task.FromResult (ReadText (cancellationToken));
-			}
-
-			public void WriteText (SourceText text, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				// This is a trivial implementation, indeed. Note, however, that we retain a strong
-				// reference to the source text, which defeats the intent of RecoverableTextAndVersion, but
-				// is appropriate for this trivial implementation.
-				_sourceText = text;
-			}
-
-			public Task WriteTextAsync (SourceText text, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				WriteText (text, cancellationToken);
-				return Task.FromResult (true);
-			}
-		}
-*/
 		class TemporaryTextStorage : ITemporaryTextStorage
 		{
 			string fileName;

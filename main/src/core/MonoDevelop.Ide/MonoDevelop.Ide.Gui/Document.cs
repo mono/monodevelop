@@ -60,6 +60,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.TextMate;
 using MonoDevelop.Core.Assemblies;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.Gui
 {
