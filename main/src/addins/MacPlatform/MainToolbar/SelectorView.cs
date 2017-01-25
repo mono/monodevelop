@@ -265,6 +265,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (!string.IsNullOrEmpty (runtime.Image)) {
 						menuItem.Image = ImageService.GetIcon (runtime.Image).ToNSImage ();
 					}
+					if (!string.IsNullOrEmpty (runtime.Tooltip)) {
+						menuItem.ToolTip = runtime.Tooltip;
+					}
 					if (ActiveRuntime == runtime || (ActiveRuntime?.Children.Contains (runtime) ?? false)) {
 						menuItem.State = NSCellStateValue.On;
 					}
