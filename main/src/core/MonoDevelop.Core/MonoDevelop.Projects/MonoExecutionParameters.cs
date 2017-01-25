@@ -202,6 +202,8 @@ namespace MonoDevelop.Projects
 				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
 					ops.AppendFormat (argAttr.Name, val).Append (' ');
 			}
+			if (ops.Length > 0)
+				ops.Remove (ops.Length - 1, 1);
 
 			foreach (var kvp in envVarAttributes) {
 				var prop = kvp.Key;
@@ -213,7 +215,7 @@ namespace MonoDevelop.Projects
 				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
 					envVars [envVar.Name] = val.ToString ();
 			}
-			options = ops.ToString ().Trim ();
+			options = ops.ToString ();
 		}
 		
 		object GetValue (object val)

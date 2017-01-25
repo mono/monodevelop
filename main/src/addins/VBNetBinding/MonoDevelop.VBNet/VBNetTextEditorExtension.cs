@@ -42,7 +42,7 @@ namespace MonoDevelop.VBNet
 {
 	class VBNetTextEditorExtension : TextEditorExtension
 	{
-		MonoDevelopWorkspace workspace = new MonoDevelopWorkspace ();
+		MonoDevelopWorkspace workspace = new MonoDevelopWorkspace (null);
 		Microsoft.CodeAnalysis.SyntaxTree parseTree;
 		internal static MetadataReference [] DefaultMetadataReferences;
 

@@ -70,11 +70,9 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWS (folder.Project));
 		}
 		
-		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>
-		/// <returns>An integer containing the sort order for the objects.</returns>
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			return (otherNode.DataItem is ProjectReferenceCollection) ? 1 : -1;
+			return -200;
 		}
 	}
 }

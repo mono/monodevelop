@@ -42,22 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\LocalLogger.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ConsoleLogger.cs" />
     <Compile Include="AssemblyInfo.v4.0.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTargetResult.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEvaluatedItem.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.Shared.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.Shared.cs" />
   </ItemGroup>
+  <Import Project="MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems" Label="Shared" Condition="Exists('MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.Formats.MSBuild\" />

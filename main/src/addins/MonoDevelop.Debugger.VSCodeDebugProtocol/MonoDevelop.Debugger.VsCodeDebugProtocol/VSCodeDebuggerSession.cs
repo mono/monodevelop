@@ -148,9 +148,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		Process debugAgentProcess;
 
+		protected virtual void OnDebugAdaptorRequestReceived (object sender, RequestReceivedEventArgs e)
+		{
+
+		}
+
 		void StartDebugAgent ()
 		{
-			var startInfo = new ProcessStartInfo (GetDebugAdapterPath ());
+			var startInfo = new ProcessStartInfo (GetDebugAdapterPath (), GetDebugAdapterArguments ());
 			startInfo.RedirectStandardOutput = true;
 			startInfo.RedirectStandardInput = true;
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
@@ -161,6 +166,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			debugAgentProcess = Process.Start (startInfo);
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
+			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 			protocolClient.Run ();
 			protocolClient.TraceCallback = (obj) => {
 				Debug.WriteLine (obj);
@@ -174,6 +180,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		protected abstract LaunchRequest CreateLaunchRequest (DebuggerStartInfo startInfo);
 		protected abstract AttachRequest CreateAttachRequest (long processId);
 		protected abstract string GetDebugAdapterPath ();
+
+		protected virtual string GetDebugAdapterArguments ()
+		{
+			return "";
+		}
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -339,6 +350,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			breakpoints [breakpoints.Single (b => b.Value == eventInfo).Key] = eventInfo;
 			UpdateBreakpoints ();
 			UpdateExceptions ();
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (protocolClient != null)
+				protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 		}
 	}
 }

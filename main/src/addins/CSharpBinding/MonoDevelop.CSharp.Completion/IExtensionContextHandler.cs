@@ -1,10 +1,10 @@
-//
-// MSBuildEvaluatedItem.cs
+﻿//
+// ProtocolMemberContextHandler.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
-namespace MonoDevelop.Projects.MSBuild
-{
-
-	[Serializable]
-	public class MSBuildEvaluatedItem
+namespace MonoDevelop.CSharp.Completion
+{	
+	interface IExtensionContextHandler
 	{
-		public MSBuildEvaluatedItem (string name, string itemSpec)
-		{
-			Name = name;
-			ItemSpec = itemSpec;
-			Metadata = new Dictionary<string, string> ();
-		}
-
-		public Dictionary<string,string> Metadata { get; private set; }
-		public string ItemSpec { get; private set; }
-		public string Name { get; private set; }
+		void Init (RoslynCodeCompletionFactory factory);
 	}
+
+
 }

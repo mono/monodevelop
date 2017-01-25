@@ -1141,7 +1141,6 @@ namespace MonoDevelop.Projects
 		async Task<TargetEvaluationResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (CheckUseMSBuildEngine (configuration)) {
-				LogWriter logWriter = new LogWriter (monitor.Log);
 				var configs = GetConfigurations (configuration);	
 
 				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
@@ -1185,7 +1184,7 @@ namespace MonoDevelop.Projects
 						targets = new string [] { target };
 					
 					try {
-						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, monitor.Log, new ProxyLogger (this, context.Loggers), context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();
@@ -1199,8 +1198,6 @@ namespace MonoDevelop.Projects
 						if (t2 != null)
 							t2.End ();
 					}
-
-					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 				});
 
 				var br = new BuildResult ();

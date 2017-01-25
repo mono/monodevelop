@@ -31,17 +31,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="Mono.Posix" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.0.2.1214.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
@@ -51,8 +40,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectExtension.cs" />
-    <Compile Include="MonoDevelop.DotnetCore.Debugger\DotNetCoreDebuggerEngine.cs" />
-    <Compile Include="MonoDevelop.DotnetCore.Debugger\DotNetCoreDebuggerSession.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionCommand.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
@@ -68,10 +55,10 @@
     <Compile Include="MonoDevelop.DotNetCore\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreMSBuildProject.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreCanReferenceProjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
-    <Folder Include="MonoDevelop.DotnetCore.Debugger\" />
     <Folder Include="Templates\" />
     <Folder Include="Templates\Projects\" />
     <Folder Include="Templates\Projects\Console\" />
@@ -122,7 +109,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Templates\Projects\Console\ConsoleProject.csproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

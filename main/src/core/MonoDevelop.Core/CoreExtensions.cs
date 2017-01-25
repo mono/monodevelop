@@ -26,6 +26,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace System
 {
@@ -110,6 +112,19 @@ namespace System
 			{
 				return new Dictionary<Key, Value> ();
 			}
+		}
+
+		/// <summary>
+		/// Use this method to explicitly indicate that you don't care
+		/// about the result of an async call
+		/// </summary>
+		/// <param name="task">The task to forget</param>
+		public static void Ignore (this Task task)
+		{
+			task.ContinueWith (t => {
+				if (t.IsFaulted)
+					LoggingService.LogError ("Async operation failed", t.Exception);
+			});
 		}
 	}
 }

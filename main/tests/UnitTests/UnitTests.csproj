@@ -303,6 +303,8 @@
     <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
+    <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

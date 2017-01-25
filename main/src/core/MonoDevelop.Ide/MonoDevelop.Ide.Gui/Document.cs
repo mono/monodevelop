@@ -351,9 +351,17 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.IsViewOnly; }
 		}
 
+		Task currentOperationTask = Task.FromResult (true);
+
+		Task RunAsyncOperation (Func<Task> action)
+		{
+			Runtime.AssertMainThread ();
+			return currentOperationTask = currentOperationTask.ContinueWith (t => action(), Runtime.MainTaskScheduler).Unwrap ();
+		}
+
 		public Task Reload ()
 		{
-			return ReloadTask ();
+			return RunAsyncOperation (ReloadTask);
 		}
 
 		async Task ReloadTask ()
@@ -372,7 +380,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task Save ()
 		{
-			return SaveTask ();
+			return RunAsyncOperation (SaveTask);
 		}
 
 		async Task SaveTask ()
@@ -445,7 +453,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task SaveAs (string filename)
 		{
-			return SaveAsTask (filename);
+			return RunAsyncOperation (() => SaveAsTask (filename));
 		}
 
 		async Task SaveAsTask (string filename)
