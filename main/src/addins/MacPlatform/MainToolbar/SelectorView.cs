@@ -262,6 +262,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Enabled = mutableModel.Enabled,
 						Hidden = !mutableModel.Visible,
 					};
+					if (!string.IsNullOrEmpty (runtime.Image)) {
+						menuItem.Image = ImageService.GetIcon (runtime.Image).ToNSImage ();
+					}
 					if (ActiveRuntime == runtime || (ActiveRuntime?.Children.Contains (runtime) ?? false)) {
 						menuItem.State = NSCellStateValue.On;
 					}
