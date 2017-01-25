@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void OnCompletionListClosed (EventArgs e);
 		event EventHandler CompletionListClosed;
 
-		Func<ICompletionDataList, List<int>, string, string, CompletionListFilterResult> CustomWordFilter { get; }
+		Func<CompletionListFilterInput, CompletionListFilterResult> CustomWordFilter { get; }
 	}
 	
 	
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		public bool CloseOnSquareBrackets { get; set; }
 
-		public Func<ICompletionDataList, List<int>, string, string, CompletionListFilterResult> CustomWordFilter { get; set; }
+		public Func<CompletionListFilterInput, CompletionListFilterResult> CustomWordFilter { get; set; }
 
 		
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();

@@ -2462,7 +2462,7 @@ namespace MonoDevelop.Debugger
 			if (handler != null)
 				handler (this, e);
 		}
-		public Func<ICompletionDataList, List<int>, string, string, CompletionListFilterResult> CustomWordFilter { get { return null; } }
+		public Func<CompletionListFilterInput, CompletionListFilterResult> CustomWordFilter { get { return null; } }
 
 		public event EventHandler CompletionListClosed;
 	}

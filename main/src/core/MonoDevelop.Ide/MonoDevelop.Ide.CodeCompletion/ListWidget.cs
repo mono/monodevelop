@@ -57,6 +57,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
+	public class CompletionListFilterInput
+	{
+		public ICompletionDataList DataList { get; }
+		public IReadOnlyList<int> FilteredItems { get; }
+		public string OldCompletionString { get; }
+		public string CompletionString { get; }
+
+		public CompletionListFilterInput (ICompletionDataList dataList, IReadOnlyList<int> filteredItems, string oldCompletionString, string completionString)
+		{
+			DataList = dataList;
+			FilteredItems = filteredItems;
+			OldCompletionString = oldCompletionString;
+			CompletionString = completionString;
+		}
+	}
+
 	public class CompletionListFilterResult 
 	{
 		public readonly List<CategorizedCompletionItems> CategorizedItems;
@@ -801,7 +817,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			CompletionListFilterResult result;
 			if (win.CompletionDataList.CustomWordFilter != null) {
-				result = win.CompletionDataList.CustomWordFilter (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
+				result = win.CompletionDataList.CustomWordFilter (new CompletionListFilterInput(win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
 			} else {
 				result = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
 			}
