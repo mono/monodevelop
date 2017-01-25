@@ -806,7 +806,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				result = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
 			}
 			filteredItems = result.FilteredItems;
-			categories = result.CategorizedItems;
+			if (result.CategorizedItems == null) {
+				categories.Clear ();
+			} else { 
+				categories = result.CategorizedItems;
+			}
 
 			//SelectFirstItemInCategory ();
 			CalcVisibleRows ();
