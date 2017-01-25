@@ -48,5 +48,13 @@ namespace MonoDevelop.PackageManagement
 			else // Assume compatible.
 				return true;
 		}
+
+		public static bool CanReferenceNetStandardProject (DotNetProject project, DotNetProject netStandardProject)
+		{
+			var netStandardFramework = NuGetFramework.Parse (netStandardProject.TargetFramework.Id.ToString ());
+			var projectFramework = NuGetFramework.Parse (project.TargetFramework.Id.ToString ());
+
+			return DefaultCompatibilityProvider.Instance.IsCompatible (projectFramework, netStandardFramework);
+		}
 	}
 }

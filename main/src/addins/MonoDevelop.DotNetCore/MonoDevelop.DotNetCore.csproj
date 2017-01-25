@@ -51,6 +51,7 @@
     <Compile Include="MonoDevelop.DotNetCore\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkPaths.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreMSBuildProject.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreCanReferenceProjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
