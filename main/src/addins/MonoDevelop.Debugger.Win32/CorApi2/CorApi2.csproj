@@ -130,6 +130,7 @@
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\DebuggerExtensions.cs" />
   </ItemGroup>
+  <Import Project="$(SolutionDir)\external\debugger-libs\Mono.Debugging.settings" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

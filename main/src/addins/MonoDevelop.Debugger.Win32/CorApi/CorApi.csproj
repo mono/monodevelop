@@ -63,5 +63,6 @@
     <Compile Include="RawAssemblyAttributes.cs" />
     <Compile Include="WindowsImports.cs" />
   </ItemGroup>
+  <Import Project="$(SolutionDir)\external\debugger-libs\Mono.Debugging.settings" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
