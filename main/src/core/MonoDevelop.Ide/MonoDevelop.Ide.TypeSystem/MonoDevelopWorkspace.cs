@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public class MonoDevelopWorkspace : Workspace
 	{
+		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
+
 		readonly static HostServices services;
 		internal readonly WorkspaceId Id;
 
@@ -70,6 +72,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static string[] mefHostServices = new [] {
 			"Microsoft.CodeAnalysis.Workspaces",
+			//FIXME: this does not load yet. We should provide alternate implementations of its services.
+			//"Microsoft.CodeAnalysis.Workspaces.Desktop",
 			"Microsoft.CodeAnalysis.Features",
 			"Microsoft.CodeAnalysis.CSharp",
 			"Microsoft.CodeAnalysis.CSharp.Workspaces",
@@ -124,7 +128,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace () : base (services, ServiceLayer.Desktop)
+		internal MonoDevelopWorkspace () : base (services, "MonoDevelop")
 		{
 			this.Id = WorkspaceId.Next ();
 			if (IdeApp.Workspace != null) {
