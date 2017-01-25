@@ -977,6 +977,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public SolutionItem Project { get; }
 
+			public string Image {
+				get {
+					return ExecutionTarget?.Image;
+				}
+			}
+
 			public IRuntimeMutableModel GetMutableModel ()
 			{
 				if (Command != null)

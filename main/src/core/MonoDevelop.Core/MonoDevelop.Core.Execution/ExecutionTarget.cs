@@ -82,6 +82,12 @@ namespace MonoDevelop.Core.Execution
 		public bool Greyed { get; set; }
 
 		/// <summary>
+		/// Gets or sets the image name that should be used for this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/>.
+		/// </summary>
+		/// <value>The name of the image.</value>
+		public string Image { get; set; }
+
+		/// <summary>
 		/// Target group on which this target is included
 		/// </summary>
 		public ExecutionTargetGroup ParentGroup { get; internal set; }

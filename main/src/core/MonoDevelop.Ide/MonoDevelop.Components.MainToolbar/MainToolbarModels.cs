@@ -84,6 +84,12 @@ namespace MonoDevelop.Components.MainToolbar
 		bool Notable { get; }
 
 		/// <summary>
+		/// Gets the menu item's image.
+		/// </summary>
+		/// <value>The image name.</value>
+		string Image { get; }
+
+		/// <summary>
 		/// Gets the project to which this runtime belongs.
 		/// </summary>
 		/// <value>The project.</value>
