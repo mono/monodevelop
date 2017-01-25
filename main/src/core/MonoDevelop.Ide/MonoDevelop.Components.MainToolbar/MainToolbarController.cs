@@ -336,9 +336,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateBuildConfiguration ()
 		{
 			var config = ToolbarView.ActiveConfiguration;
-			if (config == null || configurationMergers.Count == 0)
+			if (config == null)
 				return;
-			if (configurationMergers.Count > 1) {
+			if (configurationMergers.Count > 1 || configurationMergers.Count == 0) {
 				settingGlobalConfig = true;
 				try {
 					IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;
