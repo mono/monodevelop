@@ -55,7 +55,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void OnCompletionListClosed (EventArgs e);
 		event EventHandler CompletionListClosed;
 
-		Func<CompletionListFilterInput, CompletionListFilterResult> CustomWordFilter { get; }
+		/// <summary>
+		/// Gives the abilit to override the custom filtering
+		/// </summary>
+		/// <returns>The filtered completion list, or null if the default list should be taken.</returns>
+		/// <param name="input">Contains all information needed to filter the list.</param>
+		CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input);
 	}
 	
 	
@@ -86,9 +91,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		public bool CloseOnSquareBrackets { get; set; }
 
-		public Func<CompletionListFilterInput, CompletionListFilterResult> CustomWordFilter { get; set; }
+		public virtual CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input)
+		{
+			return null;
+		}
 
-		
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
 		public IEnumerable<ICompletionKeyHandler> KeyHandler {
 			get { return keyHandler; }

@@ -815,17 +815,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void FilterWords ()
 		{
-			CompletionListFilterResult result;
-			if (win.CompletionDataList.CustomWordFilter != null) {
-				result = win.CompletionDataList.CustomWordFilter (new CompletionListFilterInput(win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
-			} else {
-				result = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
-			}
-			filteredItems = result.FilteredItems;
-			if (result.CategorizedItems == null) {
+			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
+			if (filterResult == null)
+				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
+			
+			filteredItems = filterResult.FilteredItems;
+			if (filterResult.CategorizedItems == null) {
 				categories.Clear ();
 			} else { 
-				categories = result.CategorizedItems;
+				categories = filterResult.CategorizedItems;
 			}
 
 			//SelectFirstItemInCategory ();
