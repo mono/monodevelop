@@ -49,7 +49,10 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			if (!hasCommits) {
-				MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to push.", "Create an initial commit first."));
+				MessageService.ShowMessage (
+					GettextCatalog.GetString ("There are no changes to push."),
+					GettextCatalog.GetString ("Create an initial commit first.")
+				);
 				return;
 			}
 
