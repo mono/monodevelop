@@ -1006,7 +1006,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public RuntimeMutableModel (ExecutionTarget target, bool fullName)
 			{
-				Enabled = !(target is ExecutionTargetGroup);
+				Enabled = !(target is ExecutionTargetGroup) && !target.Greyed;
 				Visible = true;
 				if (target == null)
 					DisplayString = FullDisplayString = string.Empty;
