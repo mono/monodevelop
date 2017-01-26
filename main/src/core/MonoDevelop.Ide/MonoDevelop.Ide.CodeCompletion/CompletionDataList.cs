@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return idx;
 		}
 
-		public int [] GetHighlightedIndices (CompletionData completionData, string completionString)
+		public virtual int [] GetHighlightedIndices (CompletionData completionData, string completionString)
 		{
 			var matcher = CompletionMatcher.CreateCompletionMatcher (completionString);
 			return matcher.GetMatch (completionData.DisplayText);
