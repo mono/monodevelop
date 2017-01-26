@@ -173,5 +173,79 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-refresh-item-changed-saved")));
 		}
+
+		[Test]
+		public async Task ReevaluateExistingProjectReferencesAfterLoad ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			var library1Reference = p.References.First (r => r.Include == @"..\library1\library1.csproj");
+			var library2Reference = p.References.First (r => r.Include == @"..\library2\library2.csproj");
+
+			var library1Item = p.Items.OfType<ProjectReference> ().First (r => r.Include == @"..\library1\library1.csproj");
+			var library2Item = p.Items.OfType<ProjectReference> ().First (r => r.Include == @"..\library2\library2.csproj");
+
+			Assert.AreEqual (0, itemAdded);
+			Assert.AreEqual (0, itemRemoved);
+			Assert.AreEqual (p, library1Item.OwnerProject);
+			Assert.AreEqual (p, library2Item.OwnerProject);
+			Assert.AreSame (library1Reference, library1Item);
+			Assert.AreSame (library2Reference, library2Item);
+		}
+
+		[Test]
+		public async Task ReevaluateNewProjectReferencesAfterSave ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+
+			// Remove all existing project references and save.
+			var existingProjectReferences = p.References.Where (r => r.ReferenceType == ReferenceType.Project).ToArray ();
+			p.References.RemoveRange (existingProjectReferences);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			// Reload solution.
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = (DotNetProject)sol.Items [0];
+
+			Assert.IsFalse (p.References.Any (r => r.ReferenceType == ReferenceType.Project));
+
+			// Add reference to library1.
+			var library1Project = (DotNetProject)sol.Items.First (item => item.Name == "library1");
+			var projectReference = ProjectReference.CreateProjectReference (library1Project);
+			p.References.Add (projectReference);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			int itemAdded = 0;
+			int itemRemoved = 0;
+			p.ProjectItemAdded += (sender, e) => itemAdded += e.Count;
+			p.ProjectItemRemoved += (sender, e) => itemRemoved += e.Count;
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			var library1Reference = p.References.First (r => r.Include == @"..\library1\library1.csproj");
+
+			var library1Item = p.Items.OfType<ProjectReference> ().First (r => r.Include == @"..\library1\library1.csproj");
+
+			Assert.AreEqual (0, itemAdded); // Should the reference be re-added or the existing one found?
+			Assert.AreEqual (0, itemRemoved);
+			Assert.AreEqual (p, library1Item.OwnerProject);
+			//Assert.AreSame (library1Reference, library1Item); // Not the same object.
+			Assert.AreEqual (library1Reference, library1Item);
+		}
 	}
 }

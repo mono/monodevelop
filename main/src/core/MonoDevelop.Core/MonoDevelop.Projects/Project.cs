@@ -2645,10 +2645,26 @@ namespace MonoDevelop.Projects
 				if (loadedItems != null)
 					loadedItems.Add (buildItem.SourceItem);
 			}
-			if (IsReevaluating)
+			if (IsReevaluating) {
 				Items.SetItems (localItems);
-			else
+				SetProjectReferenceOwner (localItems);
+			} else
 				Items.AddRange (localItems);
+		}
+
+		/// <summary>
+		/// Re-evaluated project references do not have the OwnerProject set
+		/// because the Items.SetItems call in LoadItems does not trigger an items added
+		/// notification for new ProjectReferences that were added. The ProjectReference's
+		/// implementation of GetHashCode and Equals prevents the items added notification
+		/// from being fired.
+		/// </summary>
+		void SetProjectReferenceOwner (List<ProjectItem> reevaluatedItems)
+		{
+			foreach (var projectReference in reevaluatedItems.OfType<ProjectReference> ()) {
+				if (projectReference.OwnerProject == null)
+					projectReference.SetOwnerProject (this as DotNetProject);
+			}
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
