@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.state = state;
 			}
 
-			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (50);
+			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (200);
 
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int offset, int length)
 			{
