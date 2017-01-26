@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>Mono.Debugging.Win32</id>
-    <version>$Version$</version>
+    <version>$buildver$</version>
     <title>Mono.Debugging.Win32</title>
     <authors>MonoDevelop team</authors>
     <owners>MonoDevelop team</owners>
@@ -14,7 +14,7 @@
     <language>en-US</language>
     <tags>mono debug debugger cordebug</tags>
     <dependencies>
-      <dependency id="Mono.Debugging" version="$Version$" />
+      <dependency id="Mono.Debugging" version="$buildver$" />
     </dependencies>
   </metadata>
   <files>
