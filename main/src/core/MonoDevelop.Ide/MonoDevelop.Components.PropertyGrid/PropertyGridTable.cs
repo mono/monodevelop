@@ -628,7 +628,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			return GetAllRows (rows, onlyVisible);
 		}
 
-		IEnumerable<TableRow> GetAllRows (IEnumerable<TableRow> rows, bool onlyVisible)
+		IEnumerable<TableRow> GetAllRows (List<TableRow> rows, bool onlyVisible)
 		{
 			foreach (var r in rows) {
 				yield return r;
