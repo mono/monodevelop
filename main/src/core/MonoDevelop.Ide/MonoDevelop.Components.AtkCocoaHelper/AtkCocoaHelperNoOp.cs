@@ -141,6 +141,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public static void SetAccessibleChildren (this Atk.Object o, AccessibilityElementProxy [] children)
 		{
 		}
+
+		public static void AddAccessibleLinkedUIElement (this Atk.Object o, Atk.Object linked)
+		{
+		}
 	}
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy

@@ -417,6 +417,22 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			nsa.AccessibilityChildren = children;
 		}
+
+		public static void AddAccessibleLinkedUIElement (this Atk.Object o, Atk.Object linked)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			var linkedNSA = GetNSAccessibilityElement (linked);
+			if (nsa == null || linkedNSA == null) {
+				return;
+			}
+
+			int length = nsa.AccessibilityLinkedUIElements.Length;
+			var newLinkedElements = new NSObject[length + 1];
+			Array.Copy (nsa.AccessibilityLinkedUIElements, newLinkedElements, length);
+			newLinkedElements [length] = (NSObject) linkedNSA;
+
+			nsa.AccessibilityLinkedUIElements = newLinkedElements;
+		}
 	}
 
 	public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility, IAccessibilityElementProxy
