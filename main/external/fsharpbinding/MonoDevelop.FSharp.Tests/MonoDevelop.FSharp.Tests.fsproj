@@ -110,6 +110,13 @@
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Reference Include="MonoDevelop.SourceEditor" Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
+      <Private>False</Private>
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharpBinding">
+      <HintPath>..\..\..\build\AddIns\BackendBindings\FSharpBinding.dll</HintPath>
+    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>

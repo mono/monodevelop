@@ -346,5 +346,24 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsTrue (MSBuildProjectHasGlobalProperty ("AssemblyName"));
 			Assert.IsTrue (MSBuildProjectHasGlobalProperty ("RootNamespace"));
 		}
+
+		[Test]
+		public void WriteProject_SdkProjectHasToolsVersionSetAfterReading_ToolsVersionRemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+			msbuildProject.ToolsVersion = "4.0";
+
+			WriteProject ();
+
+			Assert.IsNull (msbuildProject.ToolsVersion);
+		}
 	}
 }

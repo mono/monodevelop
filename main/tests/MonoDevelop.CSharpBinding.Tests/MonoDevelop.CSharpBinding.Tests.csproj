@@ -120,7 +120,6 @@
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\CodeCompletion\NR6\RegexContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\ProtocolMemberContextHandlerTests.cs" />
     <Compile Include="Features\TestBase.cs" />
     <Compile Include="Features\Util.cs" />
   </ItemGroup>

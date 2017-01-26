@@ -3,15 +3,6 @@
 	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="DotNetCore" class="MonoDevelop.DotNetCore.DotNetCoreExecutionHandler" />
 	</Extension>
-
-	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
-		<DebuggerEngine insertbefore="Mono.Debugger.Soft"
-						id="NetCoreDebugger"
-						name=".Net Core Debugger"
-						features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly, Attaching"
-						type="MonoDevelop.DotnetCore.Debugger.DotNetCoreDebuggerEngine" />
-	</Extension>
-
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 		<Category id="netcore" name=".NET Core" icon="md-platform-other" insertbefore="other">
 			<Category id="app" name="App">

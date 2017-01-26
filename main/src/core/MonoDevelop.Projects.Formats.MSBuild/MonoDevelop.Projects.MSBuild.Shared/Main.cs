@@ -33,6 +33,9 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core.Execution;
+using System.Reflection;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -42,9 +45,66 @@ namespace MonoDevelop.Projects.MSBuild
 		public static void Main (string[] args)
 		{
 			RemoteProcessServer server = new RemoteProcessServer ();
-			var builderEngine = new BuildEngine (server);
-			server.Connect (args, builderEngine);
-			builderEngine.WaitHandle.WaitOne ();
+			server.Connect (args, new AssemblyResolver (server));
+		}
+
+		/// <summary>
+		/// Since BuildEngine class directly access MSBuild types it tries to load Microsoft.Build.dll assembly when
+		/// constructor is called so before Initialize is called which specifies msbuildBinDir and installs MSBuildAssemblyResolver.
+		/// To solve this problem we use AssemblyResolver class which we install as listener to RemoteProcessServer(implicitly in Connect call).
+		/// and after installing MSBuildAssemblyResolver we create BuildEngine and add it as Listener and remove AssemblyResolver
+		/// as if it was never there. 
+		/// </summary>
+		class AssemblyResolver
+		{
+			string msbuildBinDir;
+			RemoteProcessServer server;
+
+			public AssemblyResolver (RemoteProcessServer server)
+			{
+				this.server = server;
+			}
+
+			Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
+			{
+				var msbuildAssemblies = new string [] {
+							"Microsoft.Build",
+							"Microsoft.Build.Engine",
+							"Microsoft.Build.Framework",
+							"Microsoft.Build.Tasks.Core",
+							"Microsoft.Build.Utilities.Core" };
+
+				var asmName = new AssemblyName (args.Name);
+				if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					return null;
+
+				string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
+				if (File.Exists (fullPath)) {
+					// If the file exists under the msbuild bin dir, then we need
+					// to load it only from there. If that fails, then let that exception
+					// escape
+					return Assembly.LoadFrom (fullPath);
+				} else
+					return null;
+			}
+
+			[MessageHandler]
+			public BinaryMessage Initialize (InitializeRequest msg)
+			{
+				msbuildBinDir = msg.BinDir;
+				AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
+				return CreateBuildEngineAndRespondToInitialize(msg);
+			}
+
+			//Keep in seperate method so MSBuildAssemblyResolver is installed before BuildEngine is loaded
+			[MethodImpl (MethodImplOptions.NoInlining)]
+			BinaryMessage CreateBuildEngineAndRespondToInitialize (InitializeRequest msg)
+			{
+				var buildEngine = new BuildEngine (server);
+				server.AddListener (buildEngine);
+				server.RemoveListener (this);
+				return buildEngine.Initialize (msg);
+			}
 		}
 	}
 }

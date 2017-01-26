@@ -95,7 +95,6 @@
       <ProjectTemplate id="MonoDevelop.FSharp.TutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
     </ComplexCondition>
 
-    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
     
     <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" >
@@ -352,4 +351,14 @@
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
     </ComplexCondition>
   </Extension>
+	
+	<Module>
+		<!-- The GTK# template should only be available if the GTK add-in is enabled -->
+		<Dependencies>
+			<Addin id="GtkCore" version="$(Version)" />
+		</Dependencies>
+		<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
+		</Extension>
+	</Module>
 </ExtensionModel>

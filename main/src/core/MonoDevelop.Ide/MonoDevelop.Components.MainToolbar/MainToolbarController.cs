@@ -144,6 +144,7 @@ namespace MonoDevelop.Components.MainToolbar
 			ignoreConfigurationChangedCount++;
 			try {
 				if (!IdeApp.Workspace.IsOpen) {
+					configurationMergers.Clear ();
 					ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
 					ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
 					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();

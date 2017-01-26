@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
@@ -83,6 +84,20 @@ namespace MonoDevelop.PackageManagement
 			packageReference.Metadata.SetValue ("Version", packageIdentity.Version.ToNormalizedString ());
 
 			return packageReference;
+		}
+
+		internal static ProjectPackageReference Create (string packageId, string version)
+		{
+			var package = new PackageIdentity (packageId, new NuGetVersion (version));
+			return Create (package);
+		}
+
+		public static ProjectPackageReference Create (IMSBuildItemEvaluated evaluatedItem)
+		{
+			return Create (
+				evaluatedItem.Include,
+				evaluatedItem.Metadata.GetValue ("Version")
+			);
 		}
 
 		public override string ToString ()

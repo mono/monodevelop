@@ -176,7 +176,8 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackageReferences (this DotNetProject project)
 		{
-			return project.Items.OfType<ProjectPackageReference> ().Any ();
+			return project.Items.OfType<ProjectPackageReference> ().Any () ||
+				project.MSBuildProject.HasEvaluatedPackageReferences ();
 		}
 
 		public static ProjectPackageReference GetPackageReference (

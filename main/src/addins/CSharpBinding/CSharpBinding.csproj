@@ -298,7 +298,6 @@
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
@@ -309,9 +308,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs">
-      <DependentUpon>ProtocolMemberContextHandler.cs</DependentUpon>
-    </Compile>
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
@@ -319,7 +315,7 @@
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolMemberContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\IExtensionContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\AnonymousMethodCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ObjectCreationCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CastCompletionData.cs" />

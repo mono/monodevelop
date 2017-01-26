@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
@@ -36,6 +38,7 @@ namespace MonoDevelop.DotNetCore
 		bool hasRootNamespace;
 		bool hasAssemblyName;
 		bool hasDescription;
+		CompileTarget defaultCompileTarget = CompileTarget.Library;
 
 		public string ToolsVersion { get; private set; }
 		public bool IsOutputTypeDefined { get; private set; }
@@ -47,6 +50,10 @@ namespace MonoDevelop.DotNetCore
 
 		public bool HasSdk {
 			get { return Sdk != null; }
+		}
+
+		public CompileTarget DefaultCompileTarget {
+			get { return defaultCompileTarget; }
 		}
 
 		public void ReadProject (MSBuildProject project)
@@ -85,6 +92,7 @@ namespace MonoDevelop.DotNetCore
 
 			if (HasSdk) {
 				project.RemoveInternalElements ();
+				project.ToolsVersion = ToolsVersion;
 			}
 		}
 
@@ -114,6 +122,16 @@ namespace MonoDevelop.DotNetCore
 			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPath, propsImport);
 
 			return true;
+		}
+
+		public void ReadDefaultCompileTarget (MSBuildProject project)
+		{
+			string outputType = project.EvaluatedProperties.GetValue ("OutputType");
+			if (!string.IsNullOrEmpty (outputType)) {
+				if (!Enum.TryParse (outputType, out defaultCompileTarget)) {
+					defaultCompileTarget = CompileTarget.Library;
+				}
+			}
 		}
 	}
 }

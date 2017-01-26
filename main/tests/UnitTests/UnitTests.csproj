@@ -304,6 +304,8 @@
     <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
+    <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

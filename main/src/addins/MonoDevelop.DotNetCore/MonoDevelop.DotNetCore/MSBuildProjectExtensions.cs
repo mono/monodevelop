@@ -126,7 +126,15 @@ namespace MonoDevelop.DotNetCore
 			return project.GetImport (importedProjectFile) != null;
 		}
 
-		static string DefaultExcludes = @"$(BaseOutputPath)**;$(BaseIntermediateOutputPath)**;**\*.*proj.user;**\*.*proj;**\*.sln;.*;**\.*\**";
+		/// <summary>
+		/// Use IntermediateOutputPath instead of BaseIntermediateOutputPath since the latter
+		/// seems to have a full path so the exclude fails to match the include since these
+		/// are relative paths. IntermediateOutputPath is a relative path however it is not
+		/// as restrictive as BaseIntermediateOutputPath and will not exclude all files from
+		/// this directory. A separate filtering is done in DotNetCoreProjectExtension's
+		/// OnGetSourceFiles to remove files from the BaseIntermediateOutputPath.
+		/// </summary>
+		static string DefaultExcludes = @"$(BaseOutputPath)**;$(IntermediateOutputPath)**;**\*.*proj.user;**\*.*proj;**\*.sln;.*;**\.*\**";
 
 		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
 		// solution window shows no files.
