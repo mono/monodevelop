@@ -180,6 +180,12 @@ namespace MonoDevelop.Ide
 			icons.Add (iconId, icon);
 		}
 
+		public static bool HasIcon (string iconId)
+		{
+			return icons.ContainsKey (iconId);
+		}
+
+
 		public static Xwt.Drawing.Image GetIcon (string name)
 		{
 			return GetIcon (name, true);
