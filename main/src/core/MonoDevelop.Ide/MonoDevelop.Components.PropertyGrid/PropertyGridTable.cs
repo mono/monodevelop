@@ -182,7 +182,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			//make a best attempt using reference equality to match objects and the name to match their properties.
 			expandedStatus = new Dictionary<object,List<string>>(new ReferenceEqualityComparer<object> ());
 
-			foreach (var r in rows.Where (r => r.IsExpandable)) {
+			foreach (var r in rows) {
+				if (!r.IsExpandable)
+					continue;
+				
 				object key;
 				string val;
 				bool mark;
