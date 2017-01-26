@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
 				searchResultCallback.ReportResult (new SearchInSolutionSearchResult (pattern));
-			return SpecializedTasks.EmptyTask;
+			return Task.CompletedTask;
 		}
 
 		//public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)

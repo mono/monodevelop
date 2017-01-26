@@ -821,11 +821,11 @@ namespace MonoDevelop.Ide.Gui
 					doc = null;
 				}
 				if (doc != null)
-					return SpecializedTasks.EmptyTask;
+					return Task.CompletedTask;
 			}
 			if (Editor == null) {
 				UnsubscibeAnalysisdocument ();
-				return SpecializedTasks.EmptyTask;
+				return Task.CompletedTask;
 			}
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
 				UnsubscribeRoslynWorkspace ();
@@ -839,7 +839,7 @@ namespace MonoDevelop.Ide.Gui
 				lock (adhocProjectLock) {
 					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
-						return SpecializedTasks.EmptyTask;
+						return Task.CompletedTask;
 					}
 					if (Editor != null && Editor.MimeType == "text/x-csharp") {
 						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
@@ -874,7 +874,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
-			return SpecializedTasks.EmptyTask;
+			return Task.CompletedTask;
 		}
 
 		void UnsubscribeRoslynWorkspace ()
