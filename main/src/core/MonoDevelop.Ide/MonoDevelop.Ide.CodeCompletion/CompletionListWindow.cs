@@ -518,6 +518,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
+			if (this.CompletionDataList == null)
+				return;
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			if (CompletionDataList != null) {

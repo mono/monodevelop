@@ -335,6 +335,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
+			if (SelectedItemIndex < 0)
+				return KeyActions.Process;
 			var data = DataProvider.GetCompletionData (SelectedItemIndex);
 
 			if (data.IsCommitCharacter (keyChar, PartialWord)) {
