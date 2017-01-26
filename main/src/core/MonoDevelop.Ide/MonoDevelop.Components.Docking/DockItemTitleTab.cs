@@ -208,6 +208,8 @@ namespace MonoDevelop.Components.Docking
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
+				// Ignore the label because the title tab already contains its name
+				labelWidget.Accessible.SetAccessibilityShouldIgnore (true);
 				labelWidget.UseMarkup = true;
 				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
