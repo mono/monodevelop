@@ -814,6 +814,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void FilterWords ()
 		{
+			if (win.CompletionDataList == null)
+				return;
 			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
 			if (filterResult == null)
 				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);

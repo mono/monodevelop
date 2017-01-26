@@ -609,7 +609,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected int FindMatchedEntry (string partialWord)
 		{
-
+			if (completionDataList == null)
+				return -1;
 			return completionDataList.FindMatchedEntry (completionDataList, cache, partialWord, list.filteredItems);
 		}
 
