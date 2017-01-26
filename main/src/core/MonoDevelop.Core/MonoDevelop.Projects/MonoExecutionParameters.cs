@@ -224,7 +224,9 @@ namespace MonoDevelop.Projects
 			if (etype.IsEnum) {
 				long ival = Convert.ToInt64 (val);
 				bool isFlags = etype.IsDefined (typeof(FlagsAttribute), false);
-				StringBuilder flags = new StringBuilder ();
+				StringBuilder flags = null;
+				if (isFlags)
+					flags = new StringBuilder ();
 				IList names = Enum.GetNames (etype);
 				foreach (FieldInfo f in etype.GetFields ()) {
 					if (!names.Contains (f.Name))
