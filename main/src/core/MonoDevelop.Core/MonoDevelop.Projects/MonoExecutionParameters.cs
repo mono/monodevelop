@@ -262,8 +262,9 @@ namespace MonoDevelop.Projects
 					ops.Append (", ");
 				var nameAttr = localizedDisplayNameAttributes [prop];
 				ops.Append (nameAttr.DisplayName);
-				if (!(pval is bool))
-					ops.Append (": " + GetValue (pval));
+				if (!(pval is bool)) {
+					ops.Append (": ").Append (GetValue (pval));
+				}
 			}
 			return ops.ToString ();
 		}		
