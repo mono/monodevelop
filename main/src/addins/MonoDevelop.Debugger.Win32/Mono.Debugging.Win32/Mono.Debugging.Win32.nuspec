@@ -18,7 +18,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$Configuration$\CorApi.dll" target="lib/net40" />
-    <file src="bin\$Configuration$\CorApi2.dll" target="lib/net40" />
+    <file src="bin\$Configuration$\CorApi.dll" target="lib/net45" />
+    <file src="bin\$Configuration$\CorApi2.dll" target="lib/net45" />
   </files>
 </package>
