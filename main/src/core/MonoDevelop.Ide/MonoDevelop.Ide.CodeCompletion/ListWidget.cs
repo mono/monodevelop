@@ -506,7 +506,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return false;
 				}
 
-				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (CategorizedCompletionItems category, int ypos) {
 					if (ypos >= height)
 						return;
@@ -557,7 +556,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string text = win.DataProvider.GetText (item);
 
 				if (!string.IsNullOrEmpty (text)) {
-					int [] matchIndices = matcher.GetMatch (text);
+					int [] matchIndices = win.CompletionDataList.GetHighlightedIndices(win.CompletionDataList[item], CompletionString);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 						for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
