@@ -375,7 +375,7 @@ namespace Mono.TextEditor
 			
 			var curLine = TextEditorData.GetLine (newLocation.Line);
 			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.Length == 0) {
-				var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
+				var indentColumn = TextEditorData.GetVirtualIndentationColumn (newLocation);
 				if (column == indentColumn) {
 					newColumn = indentColumn;
 				}
