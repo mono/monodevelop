@@ -66,11 +66,15 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return !string.IsNullOrEmpty (include); }
 		}
 
-		static readonly string [] knownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove", "Update" };
+		internal static readonly string [] KnownAttributes = { "Include", "Exclude", "Condition", "Label", "Remove", "Update" };
 
 		internal override string [] GetKnownAttributes ()
 		{
-			return knownAttributes;
+			var project = ParentProject;
+			if (project != null)
+				return project.GetKnownItemAttributes (name);
+
+			return KnownAttributes;
 		}
 
 		internal override void ReadAttribute (string name, string value)
@@ -102,8 +106,31 @@ namespace MonoDevelop.Projects.MSBuild
 				return remove;
 			else if (name == "Update")
 				return string.IsNullOrEmpty (include) && !string.IsNullOrEmpty (update) ? update : null;
-			else
-				return base.WriteAttribute (name);
+			else {
+				string result = base.WriteAttribute (name);
+				if (result != null)
+					return result;
+
+				if (!ExistingPropertyAttribute (name))
+					return WritePropertyAsAttribute (name);
+
+				return null;
+			}
+		}
+
+		bool ExistingPropertyAttribute (string propertyName)
+		{
+			return metadata.PropertiesAttributeOrder.Any (property => property.Name == propertyName);
+		}
+
+		string WritePropertyAsAttribute (string propertyName)
+		{
+			var prop = metadata.GetProperty (propertyName);
+			if (prop != null) {
+				prop.FromAttribute = true;
+				return prop.Value;
+			}
+			return null;
 		}
 
 		internal override void Read (MSBuildXmlReader reader)

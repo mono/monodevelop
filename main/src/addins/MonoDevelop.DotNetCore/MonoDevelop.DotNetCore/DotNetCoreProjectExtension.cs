@@ -99,6 +99,8 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			dotNetCoreMSBuildProject.AddKnownItemAttributes (Project.MSBuildProject);
+
 			base.OnReadProject (monitor, msproject);
 
 			dotNetCoreMSBuildProject.ReadProject (msproject);

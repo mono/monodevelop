@@ -52,7 +52,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get {
 				return fromAttribute;
 			}
+			set {
+				fromAttribute = value;
+			}
 		}
+
 		internal string AfterAttribute {
 			get {
 				return afterAttribute;
