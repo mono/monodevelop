@@ -140,6 +140,7 @@
     </Reference>
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
