@@ -1393,9 +1393,6 @@ namespace Mono.Debugging.Win32
 
 		public CorValue RuntimeInvoke (CorEvaluationContext ctx, CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
 		{
-			if (!ctx.Thread.ActiveChain.IsManaged)
-				throw new EvaluatorException ("Cannot evaluate expression because the thread is stopped in native code.");
-
 			CorValue[] args;
 			if (thisObj == null)
 				args = arguments;
