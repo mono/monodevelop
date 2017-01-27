@@ -186,6 +186,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return "";
 		}
 
+		protected override void OnAttachToProcess (long processId)
+		{
+			Attach (processId);
+		}
+
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			Launch (startInfo);
