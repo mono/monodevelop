@@ -51,6 +51,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public const string Navigation = "com.MonoDevelop.TouchBarIdentifiers.Navigation";
 		public const string TabNavigation = "com.MonoDevelop.TouchBarIdentifiers.TabNavigation";
 		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
+		public const string Save = "com.MonoDevelop.TouchBarIdentifiers.Save";
+		public const string BuildOnly = "com.MonoDevelop.TouchBarIdentifiers.BuildOnly";
 	}
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
@@ -210,10 +212,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			List<string> ids = new List<string> ();
 			if (BarType == TouchBarType.TextEditor) {
 				ids.Add (Id.Run);
+				ids.Add ("NSTouchBarItemIdentifierFixedSpaceSmall");
+				ids.Add (Id.BuildOnly);
 				ids.Add (Id.Navigation);
 				if (defaultsOnly) { return ids.ToArray (); }
 				ids.Add (Id.TabNavigation);
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
+				ids.Add (Id.Save);
+
 				return ids.ToArray ();
 			} 
 			else if (BarType == TouchBarType.WelcomePage) {
@@ -231,6 +237,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		[Export ("touchBar:makeItemForIdentifier:")]
 		public NSTouchBarItem MakeItem (NSTouchBar touchbar, string identifier)
 		{
+			
 			NSTouchBarItem item = null;
 
 			if (identifier.StartsWith (ButtonBarContainer.ButtonBarIdPrefix)) {
@@ -348,7 +355,28 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				return item;
 
-		
+			case Id.Save:
+				var customSaveItem = new NSCustomTouchBarItem (identifier);
+
+				var saveButton = NSButton.CreateButton ("SAVE", () => { });
+				saveButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
+				};
+				customSaveItem.View = saveButton;
+				item = customSaveItem;
+				return item;
+
+			case Id.BuildOnly:
+				var customBuildItem = new NSCustomTouchBarItem (identifier);
+
+				var buildButton = NSButton.CreateButton ("BUILD", () => { });
+				buildButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Build);
+				};
+				customBuildItem.View = buildButton;
+				item = customBuildItem;
+				return item;
+			
 			case Id.Run:
 				var customItem = new NSCustomTouchBarItem (identifier);
 
@@ -360,6 +388,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RunButton.PerformClick (RunButton);
 				};
 #endif
+
 				button.Image = continueImage;
 				touchBarRunButton = button;
 
