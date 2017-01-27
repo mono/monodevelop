@@ -168,7 +168,8 @@
     <Reference Include="System.Threading.Thread">
       <HintPath>..\..\..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple">
+    <!-- NOTE:  On Mono this conflicts with the one in mscorlib -->
+    <Reference Include="System.ValueTuple" Condition="'$(OS) != 'Unix''">
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.ReaderWriter">
