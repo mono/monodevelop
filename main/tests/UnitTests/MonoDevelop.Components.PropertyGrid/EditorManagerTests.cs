@@ -33,6 +33,13 @@ namespace MonoDevelop.Components.PropertyGrid
 	{
 		class TestTypes
 		{
+			public class TypeHasIndexer
+			{
+				public TypeHasIndexer this [int x] {
+					get { return default(TypeHasIndexer); }
+				}
+			}
+
 			public class TypeHasPublicProperty
 			{
 				public TypeHasPublicProperty Item { get; set; }
@@ -49,7 +56,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
-		[TestCase (typeof (TestTypes.TypeHasPublicProperty), typeof (TestTypes.TypeHasPublicProperty))]
+		[TestCase (typeof (TestTypes.TypeHasIndexer), typeof(TestTypes.TypeHasIndexer))]
+		[TestCase (typeof (TestTypes.TypeHasPublicProperty), null)]
 		[TestCase (typeof (TestTypes.TypeHasPrivateProperty), null)]
 		[TestCase (typeof (TestTypes.TypeHasNoProperty), null)]
 		public void TestProbeForItemProperty(Type testType, Type expectedCollectionType)

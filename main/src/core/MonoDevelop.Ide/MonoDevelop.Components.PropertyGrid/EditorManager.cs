@@ -167,9 +167,11 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public static Type GetCollectionItemType (Type colType)
 		{
-			var member = colType.GetProperty ("Item");
-			if (member != null && member.PropertyType != typeof (object))
-				return member.PropertyType;
+			foreach (var member in colType.GetDefaultMembers ()) {
+				var prop = member as PropertyInfo;
+				if (prop != null && prop.Name == "Item" && prop.PropertyType != typeof (object))
+					return prop.PropertyType;
+			}
 			return null;
 		}
 	}
