@@ -103,8 +103,8 @@ namespace MonoDevelop.PackageManagement
 			ProjectTemplateSourceRepositoryProvider repositoryProvider,
 			ProjectTemplatePackageReference packageReference)
 		{
-			var primaryRepositories = repositoryProvider.GetRepositories (packageReference.IsLocalPackage);
-			var secondaryRepositories = GetSecondaryRepositories (primaryRepositories, packageReference.IsLocalPackage);
+			var primaryRepositories = repositoryProvider.GetRepositories (packageReference).ToList ();
+			var secondaryRepositories = GetSecondaryRepositories (primaryRepositories, packageReference);
 
 			return new InstallNuGetPackageAction (
 				primaryRepositories,
@@ -120,9 +120,9 @@ namespace MonoDevelop.PackageManagement
 		/// Returning null allows all enabled package sources to be used when resolving dependencies.
 		/// </summary>
 		static IEnumerable<SourceRepository> GetSecondaryRepositories (
-			IEnumerable<SourceRepository> primaryRepositories, bool local)
+			IEnumerable<SourceRepository> primaryRepositories, ProjectTemplatePackageReference packageReference)
 		{
-			if (local) {
+			if (packageReference.IsLocalPackage || packageReference.Directory.IsNotNull) {
 				return primaryRepositories;
 			}
 			return null;

@@ -211,7 +211,7 @@ namespace MonoDevelop.Projects
 			}
 
 			this.referenceType = referenceType;
-			this.reference = reference;
+			this.reference = reference.Trim ();
 			this.hintPath = hintPath;
 			this.projectGuid = projectGuid;
 			UpdatePackageReference ();

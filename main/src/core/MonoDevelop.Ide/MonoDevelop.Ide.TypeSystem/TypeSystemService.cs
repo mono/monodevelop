@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			initialLoad = false;
 
 			try {
-				emptyWorkspace = new MonoDevelopWorkspace ();
+				emptyWorkspace = new MonoDevelopWorkspace (null);
 			} catch (Exception e) {
 				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}

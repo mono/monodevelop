@@ -568,7 +568,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 				case "by":
 				case "ascending":
 				case "descending":
-				case "dynamic":
 					// Reset color of contextual keyword to default if it's used as an identifier.
 					// Note that this method does not get called when 'var' or 'dynamic' is used as a type,
 					// because types get highlighted with valueTypeColor/referenceTypeColor instead.

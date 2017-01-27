@@ -293,6 +293,8 @@ namespace MonoDevelop.Ide
 			IdeApp.Customizer.OnCoreShutdown ();
 
 			InstrumentationService.Stop ();
+
+			MonoDevelop.Components.GtkWorkarounds.Terminate ();
 			
 			return 0;
 		}

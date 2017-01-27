@@ -61,7 +61,8 @@ namespace MonoDevelop.Ide
 		static IdePreferences preferences;
 
 		public const int CurrentRevision = 5;
-		
+
+		static bool isMainRunning;
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
 		static int upgradedFromRevision;
@@ -383,10 +384,14 @@ namespace MonoDevelop.Ide
 		public static void Run ()
 		{
 			// finally run the workbench window ...
+			isMainRunning = true;
 			Gtk.Application.Run ();
 		}
-		
-		
+
+		public static bool IsRunning {
+			get { return isMainRunning; }
+		}
+
 		/// <summary>
 		/// Exits MonoDevelop. Returns false if the user cancels exiting.
 		/// </summary>
@@ -394,6 +399,7 @@ namespace MonoDevelop.Ide
 		{
 			if (workbench.Close ()) {
 				Gtk.Application.Quit ();
+				isMainRunning = false;
 				return true;
 			}
 			return false;

@@ -30,7 +30,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class FieldReference: ValueReference
 	{
@@ -117,8 +117,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (thisobj != null) {
 					CorObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as CorObjectValue;
 					if (cob != null && cob.IsValueClass)
-						thisobj.IsValid = false; // Required to make sure that thisobj returns an up-to-date value object
-
+						thisobj.Invalidate (); // Required to make sure that thisobj returns an up-to-date value object
 				}
 			}
 		}

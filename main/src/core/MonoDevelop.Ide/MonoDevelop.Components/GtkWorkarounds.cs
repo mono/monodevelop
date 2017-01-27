@@ -83,6 +83,9 @@ namespace MonoDevelop.Components
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect64 (out CGRect64 rect, IntPtr klass, IntPtr selector);
 
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern void objc_msgSend_NSInt64_NSInt32 (IntPtr klass, IntPtr selector, int arg);
+
 		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 
@@ -106,7 +109,7 @@ namespace MonoDevelop.Components
 
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-		sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow;
+		sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow, sel_terminate;
 		static IntPtr sharedApp;
 		static IntPtr cls_NSEvent;
 		static IntPtr sel_modifierFlags;
@@ -171,7 +174,19 @@ namespace MonoDevelop.Components
 			sel_modifierFlags = sel_registerName ("modifierFlags");
 			sel_setHasShadow = sel_registerName ("setHasShadow:");
 			sel_invalidateShadow = sel_registerName ("invalidateShadow");
+			sel_terminate = sel_registerName ("terminate:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
+		}
+
+		static void MacTerminate ()
+		{
+			objc_msgSend_NSInt64_NSInt32 (sharedApp, sel_terminate, 0);
+		}
+
+		public static void Terminate ()
+		{
+			if (Platform.IsMac)
+				MacTerminate ();
 		}
 
 		static Gdk.Rectangle MacGetUsableMonitorGeometry (Gdk.Screen screen, int monitor)

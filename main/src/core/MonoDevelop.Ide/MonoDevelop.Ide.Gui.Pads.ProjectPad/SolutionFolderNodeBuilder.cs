@@ -84,15 +84,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SolutionFolder sf = (SolutionFolder) dataObject;
 			return sf.IsRoot || sf.ParentFolder.IsRoot ? (object) sf.ParentSolution : (object) sf.ParentFolder;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (otherNode.DataItem is SolutionFolder)
-				return DefaultSort;
-			else
-				return -1;
-		}
 
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			return -1000;
+		}
+		
 		public override void OnNodeAdded (object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;

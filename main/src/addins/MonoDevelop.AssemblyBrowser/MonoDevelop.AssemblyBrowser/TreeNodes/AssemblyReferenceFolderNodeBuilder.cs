@@ -80,10 +80,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			return -1;
+			return -200;
 		}
 	}
 }

@@ -69,9 +69,6 @@ namespace MonoDevelop.Ide
 		static ImageService ()
 		{
 			iconFactory.AddDefault ();
-			IconId.IconNameRequestHandler = delegate (string stockId) {
-				EnsureStockIconIsLoaded (stockId);
-			};
 
 			AddinManager.AddExtensionNodeHandler (IconsExtensionPath, delegate (object sender, ExtensionNodeEventArgs args) {
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;

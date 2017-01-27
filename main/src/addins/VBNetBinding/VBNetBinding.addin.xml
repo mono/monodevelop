@@ -25,7 +25,6 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.VBNet.EmptyProject" resource = "EmptyVBProject.xpt.xml"/>
 		<ProjectTemplate id = "MonoDevelop.VBNet.ConsoleProject" resource = "VBConsoleApplicationProject.xpt.xml"/>
-		<ProjectTemplate id = "MonoDevelop.VBNet.GtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
@@ -72,5 +71,13 @@
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
 	</Extension>-->
-	
+	<Module>
+		<!-- The GTK# template should only be available if the GTK add-in is enabled -->
+		<Dependencies>
+			<Addin id="GtkCore" version="$(Version)" />
+		</Dependencies>
+		<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+			<ProjectTemplate id = "MonoDevelop.VBNet.GtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
+		</Extension>
+	</Module>
 </ExtensionModel>

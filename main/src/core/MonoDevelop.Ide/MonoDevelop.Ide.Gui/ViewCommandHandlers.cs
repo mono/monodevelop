@@ -338,25 +338,22 @@ namespace MonoDevelop.Ide.Gui
 
 		// Text editor commands
 		
-		[CommandUpdateHandler (TextEditorCommands.LineEnd)]
-		[CommandUpdateHandler (TextEditorCommands.LineStart)]
-		[CommandUpdateHandler (TextEditorCommands.DeleteLeftChar)]
-		[CommandUpdateHandler (TextEditorCommands.DeleteRightChar)]
 		[CommandUpdateHandler (TextEditorCommands.CharLeft)]
 		[CommandUpdateHandler (TextEditorCommands.CharRight)]
-		[CommandUpdateHandler (TextEditorCommands.LineUp)]
-		[CommandUpdateHandler (TextEditorCommands.LineDown)]
-		[CommandUpdateHandler (TextEditorCommands.DocumentStart)]
-		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteLeftChar)]
 		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
-		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
-		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]		
-		[CommandUpdateHandler (TextEditorCommands.GotoMatchingBrace)]		
+		[CommandUpdateHandler (TextEditorCommands.DeleteRightChar)]
+		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
+		[CommandUpdateHandler (TextEditorCommands.DocumentStart)]
+		[CommandUpdateHandler (TextEditorCommands.LineDown)]
+		[CommandUpdateHandler (TextEditorCommands.LineEnd)]
+		[CommandUpdateHandler (TextEditorCommands.LineStart)]
+		[CommandUpdateHandler (TextEditorCommands.LineUp)]
 		protected void OnUpdateLineEnd (CommandInfo info)
 		{
 			// If the current document is not an editor, just ignore the text
 			// editor commands.
-			info.Bypass = doc.Editor == null;
+			info.Bypass = doc.Editor?.HasFocus == false;
 		}
 		
 		[CommandHandler (TextEditorCommands.LineEnd)]

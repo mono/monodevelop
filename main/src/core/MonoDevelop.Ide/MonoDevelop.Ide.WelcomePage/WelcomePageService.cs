@@ -35,6 +35,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		static bool visible;
 		static WelcomePageFrame welcomePage;
 
+		public static event EventHandler WelcomePageShown;
+		public static event EventHandler WelcomePageHidden;
+
 		public static void Initialize ()
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
@@ -64,6 +67,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					var provider = AddinManager.GetExtensionObjects<IWelcomePageProvider> ().FirstOrDefault ();
 					welcomePage = new WelcomePageFrame (provider != null ? provider.CreateWidget () : new DefaultWelcomePage ());
 				}
+				WelcomePageShown?.Invoke (welcomePage, EventArgs.Empty);
 				welcomePage.UpdateProjectBar ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Visible = false;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.AddOverlayWidget (welcomePage, animate);
@@ -78,6 +82,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
 			}
+			WelcomePageHidden?.Invoke (welcomePage, EventArgs.Empty);
 		}
 	}
 }

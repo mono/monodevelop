@@ -28,7 +28,7 @@
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class VariableReference: ValueReference
 	{

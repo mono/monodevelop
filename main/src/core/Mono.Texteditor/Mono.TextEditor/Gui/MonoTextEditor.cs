@@ -115,6 +115,12 @@ namespace Mono.TextEditor
 			TextArea.GrabFocus ();
 		}
 
+		public new bool HasFocus {
+			get {
+				return TextArea.HasFocus;
+			}
+		}
+
 		protected override void OnDestroyed ()
 		{
 			UnregisterAdjustments ();

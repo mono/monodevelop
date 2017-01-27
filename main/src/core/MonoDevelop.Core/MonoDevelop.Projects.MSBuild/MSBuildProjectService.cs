@@ -43,6 +43,7 @@ using Cecil = Mono.Cecil;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -169,7 +170,7 @@ namespace MonoDevelop.Projects.MSBuild
 			using (await buildersLock.EnterAsync ()) {
 				var gpp = (IMSBuildGlobalPropertyProvider)sender;
 				foreach (var builder in builders.GetAllBuilders ())
-					builder.SetGlobalProperties (gpp.GetGlobalProperties ());
+					await builder.SetGlobalProperties (new Dictionary<string,string> (gpp.GetGlobalProperties ()));
 			}
 		}
 
@@ -812,56 +813,61 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			
 			// If we're on Windows, don't need to fix file casing.
-			if (Platform.IsWindows) {
+			//if (Platform.IsWindows) {
 				resultPath = FileService.GetFullPath (path);
 				return true;
-			}
-			
-			// If the path exists with the exact casing specified, then we're done
-			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
-				resultPath = Path.GetFullPath (path);
-				return true;
-			}
-			
-			// Not on Windows, file doesn't exist. That could mean the project was brought from Windows
-			// and the filename case in the project doesn't match the file on disk, because Windows is
-			// case-insensitive. Since we have an absolute path, search the directory for the file with
-			// the correct case.
-			string[] names = path.Substring (1).Split ('/');
-			string part = "/";
-			
-			for (int n=0; n<names.Length; n++) {
-				IEnumerable<string> entries;
+			//}
 
-				if (names [n] == ".."){
-					if (part == "/")
-						return false; // Can go further back. It's not an existing file
-					part = Path.GetFullPath (part + "/..");
-					continue;
-				}
-				
-				entries = Directory.EnumerateFileSystemEntries (part);
-				
-				string fpath = null;
-				foreach (string e in entries) {
-					if (string.Compare (Path.GetFileName (e), names [n], StringComparison.OrdinalIgnoreCase) == 0) {
-						fpath = e;
-						break;
-					}
-				}
-				if (fpath == null) {
-					// Part of the path does not exist. Can't do any more checking.
-					part = Path.GetFullPath (part);
-					if (n < names.Length)
-						part += "/" + string.Join ("/", names, n, names.Length - n);
-					resultPath = part;
-					return true;
-				}
+			// Code below and IF above are commented because after we replaced XBuild with MSBuild .targets files
+			// load time of Main.sln(as example) went from 30sec to 2.5min because MSBuild .targets have many more Before/After targets tries
+			// resulting in a lot of Directory.EnumerateFileSystemEntries fetching from hard drive resulting in slow load time.
+			// Since MSBuild.exe doesn't handle file name case mismatches on case-sensetive file system, it doesn't make sense to do this in IDE.
 
-				part = fpath;
-			}
-			resultPath = Path.GetFullPath (part);
-			return true;
+			//// If the path exists with the exact casing specified, then we're done
+			//if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
+			//	resultPath = Path.GetFullPath (path);
+			//	return true;
+			//}
+
+			//// Not on Windows, file doesn't exist. That could mean the project was brought from Windows
+			//// and the filename case in the project doesn't match the file on disk, because Windows is
+			//// case-insensitive. Since we have an absolute path, search the directory for the file with
+			//// the correct case.
+			//string[] names = path.Substring (1).Split ('/');
+			//string part = "/";
+			
+			//for (int n=0; n<names.Length; n++) {
+			//	IEnumerable<string> entries;
+
+			//	if (names [n] == ".."){
+			//		if (part == "/")
+			//			return false; // Can go further back. It's not an existing file
+			//		part = Path.GetFullPath (part + "/..");
+			//		continue;
+			//	}
+				
+			//	entries = Directory.EnumerateFileSystemEntries (part);
+				
+			//	string fpath = null;
+			//	foreach (string e in entries) {
+			//		if (string.Compare (Path.GetFileName (e), names [n], StringComparison.OrdinalIgnoreCase) == 0) {
+			//			fpath = e;
+			//			break;
+			//		}
+			//	}
+			//	if (fpath == null) {
+			//		// Part of the path does not exist. Can't do any more checking.
+			//		part = Path.GetFullPath (part);
+			//		if (n < names.Length)
+			//			part += "/" + string.Join ("/", names, n, names.Length - n);
+			//		resultPath = part;
+			//		return true;
+			//	}
+
+			//	part = fpath;
+			//}
+			//resultPath = Path.GetFullPath (part);
+			//return true;
 		}
 
 		//Given a filename like foo.it.resx, splits it into - foo, it, resx
@@ -904,11 +910,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static bool runLocal = false;
-
-		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, out string binDir)
+		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
-			var supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
+			string [] supportedToolsVersions;
+			if ((requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild) && !Platform.IsWindows)
+				supportedToolsVersions = new [] { "15.0"};
+			else
+				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
 
 			foreach (var toolsVersion in supportedToolsVersions) {
 				binDir = runtime.GetMSBuildBinPath (toolsVersion);
@@ -918,15 +926,19 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
-		
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool lockBuilder = false)
+
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
+			Version mtv = Version.Parse (minToolsVersion);
+			if (mtv >= new Version (15,0))
+				requiresMicrosoftBuild = true;
+
 			using (await buildersLock.EnterAsync ())
 			{
 				string binDir;
-				var toolsVersion = GetNewestInstalledToolsVersion (runtime, out binDir);
+				var toolsVersion = GetNewestInstalledToolsVersion (runtime, requiresMicrosoftBuild, out binDir);
 
-				Version tv, mtv;
+				Version tv;
 				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
 					throw new InvalidOperationException (string.Format (
 						"Project requires MSBuild ToolsVersion '{0}' which is not supported by runtime '{1}'",
@@ -935,7 +947,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				//one builder per solution
-				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId;
+				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId + " # " + requiresMicrosoftBuild;
 
 				RemoteBuildEngine builder = null;
 
@@ -952,75 +964,41 @@ namespace MonoDevelop.Projects.MSBuild
 				
 				if (builder != null) {
 					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, builder);
+					var pb = new RemoteProjectBuilder (file, builder);
+					await pb.Load ();
+					return pb;
 				}
 
 				return await Task.Run (async () => {
 					//always start the remote process explicitly, even if it's using the current runtime and fx
 					//else it won't pick up the assembly redirects from the builder exe
-					var exe = GetExeLocation (runtime, toolsVersion);
-
-					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-					var pinfo = new ProcessStartInfo (exe) {
-						WorkingDirectory = binDir,
-						UseShellExecute = false,
-						CreateNoWindow = true,
-						RedirectStandardError = true,
-						RedirectStandardInput = true,
-					};
-					runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
-
-					Process p = null;
+					var exe = GetExeLocation (runtime, toolsVersion, requiresMicrosoftBuild);
+					RemoteProcessConnection connection = null;
 
 					try {
-						IBuildEngine engine;
-						if (!runLocal) {
-							p = runtime.ExecuteAssembly (pinfo);
+							
+						connection = new RemoteProcessConnection (exe, runtime.GetExecutionHandler ());
+						await connection.Connect ();
 
-							// The builder app will write the build engine reference
-							// after reading the process id from the standard input
-							var processStartedSignal = new TaskCompletionSource<bool> ();
-							string responseKey = "[MonoDevelop]";
-							string sref = null;
-							p.ErrorDataReceived += (sender, e) => {
-								if (e.Data == null) {
-									if (string.IsNullOrEmpty (sref))
-										LoggingService.LogError ("The MSBuild builder exited before initializing");
-									return;
-								}
-
-								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
-									sref = e.Data.Substring (responseKey.Length);
-									processStartedSignal.SetResult (true);
-								} else
-									Console.WriteLine (e.Data);
-							};
-							p.BeginErrorReadLine ();
-
-							p.StandardInput.WriteLine (binDir);
-
-							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
-								throw new Exception ("MSBuild process could not be started");
-
-							byte [] data = Convert.FromBase64String (sref);
-							MemoryStream ms = new MemoryStream (data);
-							BinaryFormatter bf = new BinaryFormatter ();
-							engine = (IBuildEngine)bf.Deserialize (ms);
-						} else {
-							var asm = System.Reflection.Assembly.LoadFrom (exe);
-							var t = asm.GetType ("MonoDevelop.Projects.MSBuild.BuildEngine");
-							engine = (IBuildEngine)Activator.CreateInstance (t);
+						var props = GetCoreGlobalProperties (solutionFile);
+						foreach (var gpp in globalPropertyProviders) {
+							foreach (var e in gpp.GetGlobalProperties ())
+								props [e.Key] = e.Value;
 						}
-						engine.SetCulture (GettextCatalog.UICulture);
-						engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
-						foreach (var gpp in globalPropertyProviders)
-							engine.SetGlobalProperties (gpp.GetGlobalProperties ());
-						builder = new RemoteBuildEngine (p, engine);
+						
+						await connection.SendMessage (new InitializeRequest {
+							IdeProcessId = Process.GetCurrentProcess ().Id,
+							BinDir = binDir,
+							CultureName = GettextCatalog.UICulture.Name,
+							GlobalProperties = props
+						});
+
+						builder = new RemoteBuildEngine (connection);
+
 					} catch {
-						if (p != null) {
+						if (connection != null) {
 							try {
-								p.Kill ();
+								connection.Dispose ();
 							} catch {
 							}
 						}
@@ -1035,12 +1013,14 @@ namespace MonoDevelop.Projects.MSBuild
 					};
 					if (lockBuilder)
 						builder.Lock ();
-					return new RemoteProjectBuilder (file, builder);
+					var pb = new RemoteProjectBuilder (file, builder);
+					await pb.Load ();
+					return pb;
 				});
 			}
 		}
 
-		static IDictionary<string,string> GetCoreGlobalProperties (string slnFile)
+		static Dictionary<string,string> GetCoreGlobalProperties (string slnFile)
 		{
 			var dictionary = new Dictionary<string,string> ();
 
@@ -1063,12 +1043,13 @@ namespace MonoDevelop.Projects.MSBuild
 			return dictionary;;
 		}
 		
-		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
+		static string GetExeLocation (TargetRuntime runtime, string toolsVersion, bool requiresMicrosoftBuild)
 		{
 			var builderDir = new FilePath (typeof(MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
 
 			var version = Version.Parse (toolsVersion);
-			bool useMicrosoftBuild =
+			bool useMicrosoftBuild = 
+				requiresMicrosoftBuild ||
 				((version >= new Version (15, 0)) && Runtime.Preferences.BuildWithMSBuild) ||
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 

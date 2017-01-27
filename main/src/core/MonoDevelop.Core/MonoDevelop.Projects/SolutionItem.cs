@@ -1667,14 +1667,14 @@ namespace MonoDevelop.Projects
 	{
 		public override IEnumerable<StringTagDescription> GetTags ()
 		{
-			yield return new StringTagDescription ("ProjectName", "Project Name");
-			yield return new StringTagDescription ("ProjectDir", "Project Directory");
-			yield return new StringTagDescription ("AuthorName", "Project Author Name");
-			yield return new StringTagDescription ("AuthorEmail", "Project Author Email");
-			yield return new StringTagDescription ("AuthorCopyright", "Project Author Copyright");
-			yield return new StringTagDescription ("AuthorCompany", "Project Author Company");
-			yield return new StringTagDescription ("AuthorTrademark", "Project Trademark");
-			yield return new StringTagDescription ("ProjectFile", "Project File");
+			yield return new StringTagDescription ("ProjectName", GettextCatalog.GetString ("Project Name"));
+			yield return new StringTagDescription ("ProjectDir", GettextCatalog.GetString ("Project Directory"));
+			yield return new StringTagDescription ("AuthorName", GettextCatalog.GetString ("Project Author Name"));
+			yield return new StringTagDescription ("AuthorEmail", GettextCatalog.GetString ("Project Author Email"));
+			yield return new StringTagDescription ("AuthorCopyright", GettextCatalog.GetString ("Project Author Copyright"));
+			yield return new StringTagDescription ("AuthorCompany", GettextCatalog.GetString ("Project Author Company"));
+			yield return new StringTagDescription ("AuthorTrademark", GettextCatalog.GetString ("Project Trademark"));
+			yield return new StringTagDescription ("ProjectFile", GettextCatalog.GetString ("Project File"));
 		}
 
 		public override object GetTagValue (SolutionItem item, string tag)

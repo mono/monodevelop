@@ -32,7 +32,7 @@ using Microsoft.Build.Framework;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public class LocalLogger: Logger
+	class LocalLogger: Logger
 	{
 		IEventSource eventSource;
 		readonly List<MSBuildTargetResult> results = new List<MSBuildTargetResult> ();

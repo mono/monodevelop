@@ -142,8 +142,9 @@ type FSharpDebugScriptTextEditorExtension() =
 type DebugScriptNodeHandler() =
     inherit NodeCommandHandler()
     member x.IsVisible ()=
-        let filepath = (x.CurrentNode.DataItem :?> ProjectFile).FilePath |> string
-        FileSystem.IsAScript filepath
+        match x.CurrentNode.DataItem with
+        | :? ProjectFile as pf -> FileSystem.IsAScript (pf.FilePath |> string)
+        | _ -> false
 
     member x.StartDebugging consoleKind =
         let file = x.CurrentNode.DataItem :?> ProjectFile
