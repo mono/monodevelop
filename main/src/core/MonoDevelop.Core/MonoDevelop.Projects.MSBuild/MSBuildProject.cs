@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
 
-		static readonly string [] knownAttributes = { "DefaultTargets", "ToolsVersion", "xmlns" };
+		static readonly string [] knownAttributes = { "Sdk", "DefaultTargets", "ToolsVersion", "xmlns" };
 
 		public static XmlNamespaceManager XmlNamespaceManager
 		{
@@ -295,6 +295,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": defaultTargets = value; return;
 				case "ToolsVersion": toolsVersion = value; return;
+				case "Sdk": sdk = value; return;
 			}
 			base.ReadAttribute (name, value);
 		}
@@ -304,7 +305,8 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
-				case "xmlns": return Schema;
+				case "xmlns": return string.IsNullOrEmpty (Namespace) ? null : Namespace;
+				case "Sdk": return sdk;
 			}
 			return base.WriteAttribute (name);
 		}
@@ -511,6 +513,16 @@ namespace MonoDevelop.Projects.MSBuild
 				AssertCanModify ();
 				toolsVersion = value;
 				NotifyChanged ();
+			}
+		}
+
+		string sdk;
+
+		public override string Namespace {
+			get {
+				if (sdk != null)
+					return string.Empty;
+				return Schema;
 			}
 		}
 
@@ -863,9 +875,19 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var elem = GetProjectExtension ("MonoDevelop");
 			if (elem != null)
-				return elem.SelectSingleNode ("tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+				return elem.SelectSingleNode ("tns:Properties/tns:" + section, GetNamespaceManagerForProject ()) as XmlElement;
 			else
 				return null;
+		}
+
+		XmlNamespaceManager GetNamespaceManagerForProject ()
+		{
+			if (Namespace == Schema)
+				return XmlNamespaceManager;
+
+			var namespaceManager = new XmlNamespaceManager (new NameTable ());
+			namespaceManager.AddNamespace ("tns", Namespace);
+			return namespaceManager;
 		}
 
 		public void SetProjectExtension (XmlElement value)
@@ -888,13 +910,13 @@ namespace MonoDevelop.Projects.MSBuild
 			var elem = GetProjectExtension ("MonoDevelop");
 			if (elem == null) {
 				XmlDocument doc = new XmlDocument ();
-				elem = doc.CreateElement (null, "MonoDevelop", MSBuildProject.Schema);
+				elem = doc.CreateElement (null, "MonoDevelop", Namespace);
 			}
 			value = (XmlElement) elem.OwnerDocument.ImportNode (value, true);
 			var parent = elem;
-			elem = parent ["Properties", MSBuildProject.Schema];
+			elem = parent ["Properties", Namespace];
 			if (elem == null) {
-				elem = parent.OwnerDocument.CreateElement (null, "Properties", MSBuildProject.Schema);
+				elem = parent.OwnerDocument.CreateElement (null, "Properties", Namespace);
 				parent.AppendChild (elem);
 				XmlUtil.Indent (format, elem, true);
 			}
@@ -907,7 +929,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			XmlUtil.Indent (format, value, false);
 			var xmlns = value.GetAttribute ("xmlns");
-			if (xmlns == Schema)
+			if (xmlns == Namespace)
 				value.RemoveAttribute ("xmlns");
 			SetProjectExtension (parent);
 			NotifyChanged ();
@@ -930,7 +952,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var md = GetProjectExtension ("MonoDevelop");
 			if (md == null)
 				return;
-			XmlElement elem = md.SelectSingleNode ("tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+			XmlElement elem = md.SelectSingleNode ("tns:Properties/tns:" + section, GetNamespaceManagerForProject ()) as XmlElement;
 			if (elem != null) {
 				var parent = (XmlElement)elem.ParentNode;
 				XmlUtil.RemoveElementAndIndenting (elem);
@@ -1027,19 +1049,6 @@ namespace MonoDevelop.Projects.MSBuild
 				node = node.PreviousSibling;
 			}
 			return res.ToString ();
-		}
-
-		public static void FormatElement (TextFormatInfo format, XmlElement elem)
-		{
-			// Remove duplicate namespace declarations
-			var nsa = elem.Attributes ["xmlns"];
-			if (nsa != null && nsa.Value == MSBuildProject.Schema)
-				elem.Attributes.Remove (nsa);
-
-			foreach (var e in elem.ChildNodes.OfType<XmlElement> ().ToArray ()) {
-				Indent (format, e, false);
-				FormatElement (format, e);
-			}
 		}
 
 		public static void Indent (TextFormatInfo format, XmlElement elem, bool closeInNewLine)
