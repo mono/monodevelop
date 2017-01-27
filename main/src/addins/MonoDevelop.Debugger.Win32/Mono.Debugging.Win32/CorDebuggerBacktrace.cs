@@ -7,6 +7,7 @@ using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Mono.Debugging.Win32
 {
@@ -29,12 +30,27 @@ namespace Mono.Debugging.Win32
 
 		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
 		{
-			foreach (CorChain chain in thread.Chains) {
-                if (!chain.IsManaged)
-                    continue;
-                foreach (CorFrame frame in chain.Frames)
-                    yield return frame;
+			var corFrames = new List<CorFrame> ();
+			try {
+				foreach (CorChain chain in thread.Chains) {
+					if (!chain.IsManaged)
+						continue;
+					try {
+						var chainFrames = chain.Frames;
+
+						foreach (CorFrame frame in chainFrames)
+							corFrames.Add (frame);
+					}
+					catch (COMException e) {
+						DebuggerLoggingService.LogMessage ("Failed to enumerate frames of chain: {0}", e.Message);
+					}
+				}
+
 			}
+			catch (COMException e) {
+				DebuggerLoggingService.LogMessage ("Failed to enumerate chains of thread: {0}", e.Message);
+			}
+			return corFrames;
 		}
 
 		internal List<CorFrame> FrameList {
