@@ -187,7 +187,7 @@
       <Private>False</Private>
     </Reference>
     <!-- NOTE:  On Mono this conflicts with the one in mscorlib -->
-    <Reference Include="System.ValueTuple" Condition="'$(OS) != 'Unix''">
+    <Reference Include="System.ValueTuple" Condition="'$(OS)' != 'Unix'">
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Aliases>SystemValueTuple</Aliases>
     </Reference>
@@ -456,7 +456,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpPolicyOptionsProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
