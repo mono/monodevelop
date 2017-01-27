@@ -43,6 +43,7 @@ using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElement
 using Microsoft.Samples.Debugging.Extensions;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Mono.Debugging.Win32
 {
@@ -1369,7 +1370,8 @@ namespace Mono.Debugging.Win32
 				});
 				var type = (CorType) GetValueType (cx, vref);
 				return GetHoistedThisReference (cx, type, vref);
-			} catch (Exception) {
+			} catch (COMException e) {
+				DebuggerLoggingService.LogMessage ("Exception in GetHoistedThisReference(): {0}", e.Message);
 			}
 			return null;
 		}
@@ -1458,8 +1460,8 @@ namespace Mono.Debugging.Win32
 				});
 
 				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
-			} catch (Exception e) {
-				ctx.WriteDebuggerError (e);
+			} catch (COMException e) {
+				DebuggerLoggingService.LogMessage("Exception in GetThisReference(): {0}", e.Message);
 				return null;
 			}
 		}
