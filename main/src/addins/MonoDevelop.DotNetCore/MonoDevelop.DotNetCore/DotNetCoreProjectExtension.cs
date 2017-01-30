@@ -343,13 +343,17 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceAddedToProject (e);
-			RestoreNuGetPackages ();
+
+			if (!Project.Loading)
+				RestoreNuGetPackages ();
 		}
 
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceRemovedFromProject (e);
-			RestoreNuGetPackages ();
+
+			if (!Project.Loading)
+				RestoreNuGetPackages ();
 		}
 
 		void RestoreNuGetPackages ()
