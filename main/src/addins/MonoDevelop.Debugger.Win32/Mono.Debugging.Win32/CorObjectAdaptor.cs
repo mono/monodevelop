@@ -154,7 +154,7 @@ namespace Mono.Debugging.Win32
 			}
 			catch (Exception ex) {
 				DebuggerLoggingService.LogError ("Exception in GetTypeName()", ex);
-				return t.FullName;
+				return "[Unknown type]";
 			}
 		}
 

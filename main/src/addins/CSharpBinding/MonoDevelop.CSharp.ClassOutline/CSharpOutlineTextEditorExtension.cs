@@ -301,7 +301,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			Runtime.AssertMainThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
-			if (outlineTreeStore == null || !outlineTreeView.IsRealized) {
+			if (outlineTreeStore == null || outlineTreeView == null || !outlineTreeView.IsRealized) {
 				refillOutlineStoreId = 0;
 				return false;
 			}

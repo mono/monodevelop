@@ -216,12 +216,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				curHeight = Math.Max (Allocation.Height, (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount)));
 				if (GdkWindow == null || curWidth < 1 || curHeight < 1)
 					return;
-				backgroundPixbuf = new Pixmap (GdkWindow, curWidth, curHeight);
-				backgroundBuffer = new Pixmap (GdkWindow, curWidth, curHeight);
+				var displayScale = Platform.IsWindows ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
+				backgroundPixbuf = new Pixmap (GdkWindow, (int)(curWidth * displayScale), (int)(curHeight * displayScale));
+				backgroundBuffer = new Pixmap (GdkWindow, (int)(curWidth * displayScale), (int)(curHeight * displayScale));
 				
 				if (TextEditor.ColorStyle != null) {
 					using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
-						cr.Rectangle (0, 0, curWidth, curHeight);
+						cr.Rectangle (0, 0, curWidth * displayScale, curHeight * displayScale);
 						cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
 						cr.Fill ();
 					}
@@ -312,7 +313,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			int GetBufferYOffset ()
 			{
-				int h = backgroundPixbuf.ClipRegion.Clipbox.Height - Allocation.Height;
+				var displayScale = Platform.IsWindows ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
+				int h = (int)(backgroundPixbuf.ClipRegion.Clipbox.Height / displayScale) - Allocation.Height;
 				if (h < 0)
 					return 0;
 				return Math.Max (0, (int)(h * (vadjustment.Value) / (vadjustment.Upper - vadjustment.Lower - vadjustment.PageSize)));
