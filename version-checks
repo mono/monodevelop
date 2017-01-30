@@ -25,7 +25,7 @@ DEP[1]=heap-shot
 DEP_NAME[1]=HEAPSHOT
 DEP_PATH[1]=${top_srcdir}/../heap-shot
 DEP_MODULE[1]=git://github.com/mono/heap-shot.git
-DEP_NEEDED_VERSION[1]=a7597928f9f4bbd3d9f7750ec4ec8f2a9f565cfc
+DEP_NEEDED_VERSION[1]=6d3bcd38311b5b2e5f29e9d576566beb91a2c898
 DEP_BRANCH_AND_REMOTE[1]="master origin/master"
 
 # other dependencies
