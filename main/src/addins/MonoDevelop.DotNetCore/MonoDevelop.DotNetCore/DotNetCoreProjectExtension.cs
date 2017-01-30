@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -337,6 +338,24 @@ namespace MonoDevelop.DotNetCore
 			// ResolveAssemblyReferences to fail for .NET Core projects when the project
 			// xml is generated in memory for the project builder at the same time as the
 			// project file is being saved.
+		}
+
+		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceAddedToProject (e);
+			RestoreNuGetPackages ();
+		}
+
+		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceRemovedFromProject (e);
+			RestoreNuGetPackages ();
+		}
+
+		void RestoreNuGetPackages ()
+		{
+			Runtime.AssertMainThread ();
+			RestorePackagesInProjectHandler.Run (Project);
 		}
 	}
 }
