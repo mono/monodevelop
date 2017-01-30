@@ -241,10 +241,10 @@ namespace MonoDevelop.Projects
 
 			var library1Item = p.Items.OfType<ProjectReference> ().First (r => r.Include == @"..\library1\library1.csproj");
 
-			Assert.AreEqual (0, itemAdded); // Should the reference be re-added or the existing one found?
+			Assert.AreEqual (0, itemAdded);
 			Assert.AreEqual (0, itemRemoved);
 			Assert.AreEqual (p, library1Item.OwnerProject);
-			//Assert.AreSame (library1Reference, library1Item); // Not the same object.
+			Assert.AreSame (library1Reference, library1Item);
 			Assert.AreEqual (library1Reference, library1Item);
 		}
 	}
