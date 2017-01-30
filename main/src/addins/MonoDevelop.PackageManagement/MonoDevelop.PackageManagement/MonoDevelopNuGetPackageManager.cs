@@ -36,7 +36,6 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -87,7 +86,7 @@ namespace MonoDevelop.PackageManagement
 				token);
 		}
 
-		public Task<NuGetVersion> GetLatestVersionAsync (
+		public Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,
 			ResolutionContext resolutionContext,

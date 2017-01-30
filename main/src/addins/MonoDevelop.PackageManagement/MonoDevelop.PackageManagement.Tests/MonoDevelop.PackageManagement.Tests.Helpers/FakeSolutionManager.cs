@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -92,6 +93,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRemoved;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRenamed;
 		public event EventHandler<NuGetProjectEventArgs> AfterNuGetProjectRenamed;
+		public event EventHandler<NuGetProjectEventArgs> NuGetProjectUpdated;
 		public event EventHandler SolutionClosed;
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;
@@ -153,6 +155,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void ClearProjectCache ()
 		{
+		}
+
+		public Task<NuGetProject> UpdateNuGetProjectToPackageRef (NuGetProject oldProject)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

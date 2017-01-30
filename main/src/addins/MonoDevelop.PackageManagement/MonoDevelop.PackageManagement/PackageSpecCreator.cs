@@ -87,7 +87,7 @@ namespace MonoDevelop.PackageManagement
 		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project)
 		{
 			return new ProjectRestoreMetadata {
-				OutputType = RestoreOutputType.NETCore,
+				ProjectStyle = ProjectStyle.PackageReference,
 				ProjectPath = project.FileName,
 				ProjectName = packageSpec.Name,
 				ProjectUniqueName = project.FileName,

@@ -91,7 +91,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (expectedAssetsFilePath, spec.FilePath);
 			Assert.AreEqual ("MyProject", spec.Name);
 			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
-			Assert.AreEqual (RestoreOutputType.NETCore, spec.RestoreMetadata.OutputType);
+			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
 			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
 			Assert.AreEqual (project.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
 			Assert.AreEqual (project.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
@@ -111,7 +111,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var targetFramework = spec.TargetFrameworks.Single ();
 			var dependency = targetFramework.Dependencies.Single ();
 			Assert.AreEqual ("MyProject", spec.Name);
-			Assert.AreEqual (RestoreOutputType.NETCore, spec.RestoreMetadata.OutputType);
+			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
 			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
 			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
