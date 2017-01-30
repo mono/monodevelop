@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement
 		public static PackageSpec CreatePackageSpec (IDotNetProject project)
 		{
 			var packageSpec = new PackageSpec (GetTargetFrameworks (project));
-			packageSpec.FilePath = project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
+			packageSpec.FilePath = project.FileName;
 			packageSpec.Name = project.Name;
 			packageSpec.Version = GetVersion (project);
 

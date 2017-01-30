@@ -84,11 +84,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
 			project.BaseIntermediateOutputPath = @"d:\projects\MyProject\obj".ToNativePath ();
 			AddTargetFramework ("netcoreapp1.0");
-			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
+			string expectedFilePath = @"d:\projects\MyProject\MyProject.csproj".ToNativePath ();
 
 			CreatePackageSpec ();
 
-			Assert.AreEqual (expectedAssetsFilePath, spec.FilePath);
+			Assert.AreEqual (expectedFilePath, spec.FilePath);
 			Assert.AreEqual ("MyProject", spec.Name);
 			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
 			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
