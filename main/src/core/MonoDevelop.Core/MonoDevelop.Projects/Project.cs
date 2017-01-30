@@ -2645,9 +2645,9 @@ namespace MonoDevelop.Projects
 				if (loadedItems != null)
 					loadedItems.Add (buildItem.SourceItem);
 			}
-			if (IsReevaluating) {
+			if (IsReevaluating)
 				Items.SetItems (localItems);
-			} else
+			else
 				Items.AddRange (localItems);
 		}
 
