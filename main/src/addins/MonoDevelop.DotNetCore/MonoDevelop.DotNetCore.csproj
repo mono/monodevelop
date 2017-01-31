@@ -111,7 +111,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="MonoDevelop.Debugger" />
+    <InternalsVisibleTo Include="DotNetCore.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
   </ItemGroup>
   <ItemGroup>
