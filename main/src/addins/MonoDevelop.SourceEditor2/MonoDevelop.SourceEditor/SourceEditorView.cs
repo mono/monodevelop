@@ -1798,6 +1798,7 @@ namespace MonoDevelop.SourceEditor
 			var editor = widget.TextEditor;
 			if (editor == null)
 				return result;
+			result.Version = editor.Document.Version;
 			result.TriggerOffset = triggerOffset;
 			var loc = editor.Caret.Location;
 			result.TriggerLine = loc.Line;
@@ -1859,6 +1860,11 @@ namespace MonoDevelop.SourceEditor
 
 			int triggerOffset = ctx.TriggerOffset;
 			int length = String.IsNullOrEmpty (partialWord) ? 0 : partialWord.Length;
+
+			if (ctx.TriggerWordLength > 0 && ctx.Version != null) {
+				int translatedEndOffset = ctx.Version.MoveOffsetTo (data.Version, ctx.TriggerOffset + ctx.TriggerWordLength);
+				length = translatedEndOffset - triggerOffset;
+			}
 
 			// for named arguments invoke(arg:<Expr>);
 			if (completeWord.EndsWith (":", StringComparison.Ordinal)) {
