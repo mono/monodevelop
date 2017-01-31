@@ -108,7 +108,6 @@ namespace MonoDevelop.VBNet
 				null,
 				new [] { projectInfo }
 			);
-
 			workspace.OpenSolutionInfo (sInfo);
 
 			Editor.SyntaxHighlighting = new ClassificationSyntaxHighlighting (workspace, documentId);

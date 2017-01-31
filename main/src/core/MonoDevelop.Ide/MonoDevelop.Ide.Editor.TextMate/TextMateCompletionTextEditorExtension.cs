@@ -113,14 +113,16 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			});
 		}
 
-		public override async Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token)
+		public override async Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token)
 		{
 			if (inactive)
-				return await base.HandleCodeCompletionAsync (completionContext, completionChar, token);
+				return await base.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
 
-			if (!IdeApp.Preferences.EnableAutoCodeCompletion && char.IsLetter (completionChar))
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
 				return null;
-
+			if (triggerInfo.CompletionTriggerReason != CompletionTriggerReason.CharTyped)
+				return null;
+			char completionChar = triggerInfo.TriggerCharacter.Value;
 			int triggerWordLength = 0;
 			if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
 				if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))

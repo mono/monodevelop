@@ -73,12 +73,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		public bool CanParse (string mimeType, string buildAction)
 		{
 			if (mimeTypes == null)
-				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ())) : new HashSet<string> ();
-			if (!mimeTypes.Contains (mimeType, StringComparer.Ordinal))
+				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ()), StringComparer.Ordinal) : new HashSet<string> (StringComparer.Ordinal);
+			if (!mimeTypes.Contains (mimeType))
 				return false;
 
 			foreach (var action in buildActions) {
-				if (string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase))
+ 				if (string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase) || action == "*")
 					return true;
 			}
 			return false;

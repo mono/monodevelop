@@ -184,8 +184,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 			if (ext != null) {
 				if (list == null)
-					list = ext.CodeCompletionCommand (
-						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext).Result;
+					list = ext.HandleCodeCompletionAsync (
+						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext,
+						CompletionTriggerInfo.CodeCompletionCommand).Result;
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 					if (data.Symbol == null)

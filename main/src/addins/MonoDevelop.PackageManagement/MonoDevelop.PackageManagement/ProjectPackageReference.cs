@@ -104,5 +104,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			return string.Format ("[PackageReference: {0} {1}]", Include, Metadata.GetValue ("Version"));
 		}
+
+		public static void AddKnownItemAttributes (MSBuildProject project)
+		{
+			project.AddKnownItemAttribute ("PackageReference", "Version");
+		}
 	}
 }

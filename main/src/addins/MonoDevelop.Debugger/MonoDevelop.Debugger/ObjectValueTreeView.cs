@@ -2413,11 +2413,8 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
+	class DebugCompletionDataList: CompletionDataList
 	{
-		public int TriggerWordStart { get; set; }
-		public int TriggerWordLength { get; set; }
-		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
 		{
 			IsSorted = false;
@@ -2425,45 +2422,6 @@ namespace MonoDevelop.Debugger
 				Add (new DebugCompletionData (it));
 			AutoSelect =true;
 		}
-		public bool AutoSelect { get; set; }
-		public string DefaultCompletionString {
-			get {
-				return string.Empty;
-			}
-		}
-
-		public bool AutoCompleteUniqueMatch {
-			get { return false; }
-		}
-		
-		public bool AutoCompleteEmptyMatch {
-			get { return false; }
-		}
-		public bool AutoCompleteEmptyMatchOnCurlyBrace {
-			get { return false; }
-		}
-		public bool CloseOnSquareBrackets {
-			get {
-				return false;
-			}
-		}
-		
-		public CompletionSelectionMode CompletionSelectionMode {
-			get; set;
-		}
-
-		static readonly List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
-		public IEnumerable<ICompletionKeyHandler> KeyHandler { get { return keyHandler;} }
-
-		public void OnCompletionListClosed (EventArgs e)
-		{
-			var handler = CompletionListClosed;
-
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		public event EventHandler CompletionListClosed;
 	}
 	
 	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData

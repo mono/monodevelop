@@ -68,6 +68,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		void ReadProject ()
 		{
+			project.ReadProjectHeader (msbuildProject);
 			project.ReadProject (msbuildProject);
 		}
 

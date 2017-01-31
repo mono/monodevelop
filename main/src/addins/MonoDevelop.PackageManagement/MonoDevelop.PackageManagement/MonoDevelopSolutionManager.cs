@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
@@ -97,6 +98,7 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRemoved;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRenamed;
 		public event EventHandler<NuGetProjectEventArgs> AfterNuGetProjectRenamed;
+		public event EventHandler<NuGetProjectEventArgs> NuGetProjectUpdated;
 		public event EventHandler SolutionClosed;
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;
@@ -191,6 +193,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void EnsureSolutionIsLoaded ()
 		{
+		}
+
+		public Task<NuGetProject> UpdateNuGetProjectToPackageRef (NuGetProject oldProject)
+		{
+			return Task.FromResult (oldProject);
 		}
 	}
 }

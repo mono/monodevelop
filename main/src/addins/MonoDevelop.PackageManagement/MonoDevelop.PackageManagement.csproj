@@ -629,6 +629,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.DotNetCore" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Cmdlets" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Extensions" />
     <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Tests" />

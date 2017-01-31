@@ -59,27 +59,22 @@ namespace Mono.TextEditor
 		public HeightTree (TextEditorData editor)
 		{
 			this.editor = editor;
-			this.editor.Document.Splitter.LineRemoved += HandleLineRemoved;
-			this.editor.Document.Splitter.LineInserted += HandleLineInserted;
+			this.editor.Document.TextChanged += Document_TextChanged; ;
 			this.editor.Document.FoldTreeUpdated += HandleFoldTreeUpdated;
 		}
 
-		void HandleLineInserted (object sender, LineEventArgs e)
-		{
-			InsertLine (e.Line.LineNumber);
-		}
 
-		void HandleLineRemoved (object sender, LineEventArgs e)
+		void Document_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			Rebuild ();
-			OnLineUpdateFrom (new HeightChangedEventArgs (e.Line.LineNumber - 1));
-			//RemoveLine (e.Line.LineNumber);
+			var lineNumber = this.editor.OffsetToLineNumber (e.Offset);
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 		}
+
 
 		public void Dispose ()
 		{
-			this.editor.Document.Splitter.LineRemoved -= HandleLineRemoved;
-			this.editor.Document.Splitter.LineInserted -= HandleLineInserted;
+			this.editor.Document.TextChanged -= Document_TextChanged; ;
 			this.editor.Document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 		}
 
@@ -271,7 +266,7 @@ namespace Mono.TextEditor
 				return result;
 			}
 		}
-		
+
 		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
 			lock (tree) {

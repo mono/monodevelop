@@ -26,7 +26,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory6.CSharp.Completion
+namespace MonoDevelop.Ide.CodeCompletion
 {
 	public enum CompletionTriggerReason
 	{

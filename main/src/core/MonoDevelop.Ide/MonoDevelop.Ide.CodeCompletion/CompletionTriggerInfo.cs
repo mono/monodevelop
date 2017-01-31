@@ -26,13 +26,15 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory6.CSharp.Completion
+namespace MonoDevelop.Ide.CodeCompletion
 {
 	/// <summary>
 	/// Provides information about what triggered completion.
 	/// </summary>
 	public struct CompletionTriggerInfo
 	{
+		public static readonly CompletionTriggerInfo CodeCompletionCommand = new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand);
+
 		/// <summary>
 		/// Provides the reason that completion was triggered.
 		/// </summary>

@@ -137,7 +137,6 @@ namespace Mono.TextEditor
 			textEditor.Document.TextChanged += HandleTextReplaced;
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
-			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
 			defaultLayout = PangoUtil.CreateLayout (textEditor);
@@ -178,11 +177,6 @@ namespace Mono.TextEditor
 				this.selectedRegions = new List<ISegment> (this.selectedRegions.AdjustSegments (e));
 				RefreshSearchMarker ();
 			}
-		}
-
-		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
-		{
-			RemoveCachedLine (e.Line);
 		}
 
 		void HandleVAdjustmentValueChanged (object sender, EventArgs e)
@@ -470,7 +464,6 @@ namespace Mono.TextEditor
 			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
 
 			textEditor.Document.TextChanged -= HandleTextReplaced;
-			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
 			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;
 

@@ -199,6 +199,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSpecCreatorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMSBuildEvaluatedPropertyCollection.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackageReference.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackageReferenceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

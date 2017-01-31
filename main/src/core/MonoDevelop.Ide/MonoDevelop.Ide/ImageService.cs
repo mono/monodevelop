@@ -168,6 +168,21 @@ namespace MonoDevelop.Ide
 			return GetIcon (name).WithSize (size);
 		}
 
+		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
+		{
+			if (iconId == null)
+				throw new ArgumentNullException (nameof (iconId));
+			if (icon == null)
+				throw new ArgumentNullException (nameof (icon));
+			icons.Add (iconId, icon);
+		}
+
+		public static bool HasIcon (string iconId)
+		{
+			return icons.ContainsKey (iconId);
+		}
+
+
 		public static Xwt.Drawing.Image GetIcon (string name)
 		{
 			return GetIcon (name, true);

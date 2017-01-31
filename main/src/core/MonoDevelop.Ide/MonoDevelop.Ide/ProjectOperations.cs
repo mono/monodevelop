@@ -1190,7 +1190,9 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (isRebuilding) {
-				if (EndClean != null) {
+				if (res.HasErrors) {
+					CleanDone (monitor, res, entry, tt);
+				} else if (EndClean != null) {
 					OnEndClean (monitor, tt);
 				}
 			} else {
@@ -1198,22 +1200,6 @@ namespace MonoDevelop.Ide
 			}
 			return res;
 		}
-		
-		void CleanDone (ProgressMonitor monitor, IBuildTarget entry, ITimeTracker tt)
-		{
-			tt.Trace ("Begin reporting clean result");
-			try {
-				monitor.Log.WriteLine ();
-				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
-				tt.Trace ("Reporting result");			
-				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
-				OnEndClean (monitor, tt);
-			} finally {
-				monitor.Dispose ();
-				tt.End ();
-			}
-		}
-
 
 		void CleanDone (ProgressMonitor monitor, BuildResult result, IBuildTarget entry, ITimeTracker tt)
 		{
@@ -2498,7 +2484,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Workbench != null) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.FileName == filePath) {
+					if (doc.FileName == filePath && doc.Editor != null) {
 						isOpen = true;
 						return doc.Editor;
 					}

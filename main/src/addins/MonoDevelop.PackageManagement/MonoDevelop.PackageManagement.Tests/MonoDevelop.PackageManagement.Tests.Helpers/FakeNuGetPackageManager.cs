@@ -87,7 +87,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ILogger GetLatestVersionLogger;
 		public CancellationToken GetLatestVersionCancellationToken;
 
-		public Task<NuGetVersion> GetLatestVersionAsync (
+		public Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,
 			ResolutionContext resolutionContext,
@@ -102,7 +102,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			GetLatestVersionLogger = log;
 			GetLatestVersionCancellationToken = token;
 
-			return Task.FromResult (LatestVersion);
+			var resolvedPackage = new ResolvedPackage (LatestVersion, true);
+			return Task.FromResult (resolvedPackage);
 		}
 
 		public List<FakeNuGetProjectAction> InstallActions = new List<FakeNuGetProjectAction> ();

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
@@ -42,6 +43,15 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static void Push (GitRepository repo)
 		{
+			bool hasCommits = repo.RootRepository.Commits.Any ();
+			if (!hasCommits) {
+				MessageService.ShowMessage (
+					GettextCatalog.GetString ("There are no changes to push."),
+					GettextCatalog.GetString ("Create an initial commit first.")
+				);
+				return;
+			}
+
 			var dlg = new PushDialog (repo);
 			try {
 				if (MessageService.RunCustomDialog (dlg) != (int) Gtk.ResponseType.Ok)

@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Projects.MSBuild;
+
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class TestableProjectPackageReference : ProjectPackageReference
@@ -32,6 +34,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			Include = id;
 			Metadata.SetValue ("Version", version);
+		}
+
+		public void CallWrite (MSBuildItem buildItem)
+		{
+			base.Write (null, buildItem);
 		}
 	}
 }

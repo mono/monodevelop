@@ -188,9 +188,6 @@ namespace MonoDevelop.SourceEditor
 			widget = new SourceEditorWidget (this, doc);
 
 			widget.TextEditor.Document.TextChanged += HandleTextReplaced;
-			widget.TextEditor.Document.LineChanged += HandleLineChanged;
-			widget.TextEditor.Document.LineInserted += HandleLineChanged;
-			widget.TextEditor.Document.LineRemoved += HandleLineChanged;
 
 			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo += HandleEndUndo;
@@ -271,22 +268,6 @@ namespace MonoDevelop.SourceEditor
 			base.OnContentNameChanged ();
 		}
 
-		void HandleLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
-		{
-			UpdateBreakpoints ();
-			UpdateWidgetPositions ();
-			if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
-				MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
-				if (marker != null) {
-					widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line);
-					// ensure that the line cache is renewed
-					marker.GetLineHeight (widget.TextEditor);
-				}
-			}
-			var handler = LineChanged;
-			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
-		}
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs args)
 		{
@@ -301,6 +282,18 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			ResetRemoveMarker ();
+
+			UpdateBreakpoints ();
+			UpdateWidgetPositions ();
+			/*if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
+				MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
+				if (marker != null) {
+					widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line);
+					// ensure that the line cache is renewed
+					marker.GetLineHeight (widget.TextEditor);
+				}
+			}*/
+
 		}
 
 		void HandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
@@ -999,7 +992,6 @@ namespace MonoDevelop.SourceEditor
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
 			widget.TextEditor.Document.TextChanged -= HandleTextReplaced;
-			widget.TextEditor.Document.LineChanged -= HandleLineChanged;
 			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo -= HandleEndUndo;
 			widget.TextEditor.Caret.PositionChanged -= HandlePositionChanged; 
@@ -1824,6 +1816,7 @@ namespace MonoDevelop.SourceEditor
 			var editor = widget.TextEditor;
 			if (editor == null)
 				return result;
+			result.Version = editor.Document.Version;
 			result.TriggerOffset = triggerOffset;
 			var loc = editor.Caret.Location;
 			result.TriggerLine = loc.Line;
@@ -1885,6 +1878,11 @@ namespace MonoDevelop.SourceEditor
 
 			int triggerOffset = ctx.TriggerOffset;
 			int length = String.IsNullOrEmpty (partialWord) ? 0 : partialWord.Length;
+
+			if (ctx.TriggerWordLength > 0 && ctx.Version != null) {
+				int translatedEndOffset = ctx.Version.MoveOffsetTo (data.Version, ctx.TriggerOffset + ctx.TriggerWordLength);
+				length = translatedEndOffset - triggerOffset;
+			}
 
 			// for named arguments invoke(arg:<Expr>);
 			if (completeWord.EndsWith (":", StringComparison.Ordinal)) {
@@ -3168,26 +3166,6 @@ namespace MonoDevelop.SourceEditor
 			bracketMarkers.Clear ();
 		}
 
-		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineChanged;
-
-		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineInserted;
-
-		void HandleLineInserted (object sender, Mono.TextEditor.LineEventArgs e)
-		{
-			var handler = LineInserted;
-			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
-		}
-
-		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineRemoved;
-
-		void HandleLineRemoved (object sender, Mono.TextEditor.LineEventArgs e)
-		{
-			var handler = LineRemoved;
-			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
-		}
-
 		public double ZoomLevel {
 			get { return TextEditor != null && TextEditor.Options != null ? TextEditor.Options.Zoom : 1d; }
 			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; }
@@ -3605,7 +3583,7 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetLineHeight (line);
 		}
 
-		bool ITextEditorImpl.HasFocus {
+		public bool HasFocus {
 			get {
 				return this.TextEditor.HasFocus;
 			}

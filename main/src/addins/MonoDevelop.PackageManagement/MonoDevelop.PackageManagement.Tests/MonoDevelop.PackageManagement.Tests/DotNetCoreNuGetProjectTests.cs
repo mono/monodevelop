@@ -197,14 +197,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		public async Task GetPackageSpecsAsync_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
 			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
-			string expectedAssetsFilePath = @"d:\projects\MyProject\obj\project.assets.json".ToNativePath ();
 
 			PackageSpec spec = await GetPackageSpecsAsync ();
 
-			Assert.AreEqual (expectedAssetsFilePath, spec.FilePath);
+			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.FilePath);
 			Assert.AreEqual ("MyProject", spec.Name);
 			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
-			Assert.AreEqual (RestoreOutputType.NETCore, spec.RestoreMetadata.OutputType);
+			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
 			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
 			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
 			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
