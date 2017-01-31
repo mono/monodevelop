@@ -150,11 +150,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				return InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
+				//If we want BeginTiming to work correctly we need to `await`
+				return await InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
 			}
 		}
 
@@ -171,18 +172,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					var solution = item as MonoDevelop.Projects.Solution;
 					if (solution != null) {
-						var workspace = new MonoDevelopWorkspace ();
-						list.Add (workspace);
-						workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (solution, cancellationToken);
+						var workspace = new MonoDevelopWorkspace (solution);
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
+						list.Add (workspace);
+						workspace.ShowStatusIcon ();
+						await workspace.TryLoadSolution (cancellationToken);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
-						workspace.HideStatusIcon ();
-						TaskCompletionSource <MonoDevelopWorkspace> request;
+						TaskCompletionSource<MonoDevelopWorkspace> request;
 						if (workspaceRequests.TryGetValue (solution, out request))
 							request.TrySetResult (workspace);
+						workspace.HideStatusIcon ();
 					}
 				}
 			});

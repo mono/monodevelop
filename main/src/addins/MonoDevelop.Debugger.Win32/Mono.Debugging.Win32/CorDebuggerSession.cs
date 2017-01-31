@@ -155,10 +155,23 @@ namespace Mono.Debugging.Win32
 			helperOperationsQueue.Add (action);
 		}
 
+		void DeactivateBreakpoints ()
+		{
+			var breakpointsCopy = breakpoints.Keys.ToList ();
+			foreach (var corBreakpoint in breakpointsCopy) {
+				try {
+					corBreakpoint.Activate (false);
+				}
+				catch (Exception e) {
+					DebuggerLoggingService.LogMessage ("Exception in DeactivateBreakpoints(): {0}", e);
+				}
+			}
+		}
+
 		void TerminateDebugger ()
 		{
 			helperOperationsCancellationTokenSource.Cancel();
-			Breakpoints.Clear ();
+			DeactivateBreakpoints ();
 			lock (terminateLock) {
 				if (terminated)
 					return;
@@ -875,13 +888,15 @@ namespace Mono.Debugging.Win32
 		{
 			MtaThread.Run (delegate
 			{
-				CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
-				if (bp != null) {
-					try {
-						bp.Activate (enable);
-					}
-					catch (COMException e) {
-						HandleBreakpointException (binfo, e);
+				var bpList = binfo.Handle as List<CorFunctionBreakpoint>;
+				if (bpList != null) {
+					foreach (var bp in bpList) {
+						try {
+							bp.Activate (enable);
+						}
+						catch (COMException e) {
+							HandleBreakpointException (binfo, e);
+						}
 					}
 				}
 			});
@@ -1027,16 +1042,21 @@ namespace Mono.Debugging.Win32
 						// FIXME: implement breaking on function name
 						binfo.SetStatus (BreakEventStatus.Invalid, "Function breakpoint is not implemented");
 						return binfo;
-					} else {
-						DocInfo doc = null;
+					}
+					else {
+						var docInfos = new List<DocInfo> ();
 						lock (appDomainsLock) {
 							foreach (var appDomainInfo in appDomains) {
 								var documents = appDomainInfo.Value.Documents;
-								if (documents.TryGetValue (Path.GetFullPath (bp.FileName), out doc)) {
-									break;
+								DocInfo docInfo = null;
+								if (documents.TryGetValue (Path.GetFullPath (bp.FileName), out docInfo)) {
+									docInfos.Add (docInfo);
 								}
 							}
 						}
+
+						var doc = docInfos.FirstOrDefault (); //get info about source position using SymbolReader of first DocInfo
+
 						if (doc == null) {
 							binfo.SetStatus (BreakEventStatus.NotBound, string.Format("{0} is not found among the loaded symbol documents", bp.FileName));
 							return binfo;
@@ -1049,62 +1069,105 @@ namespace Mono.Debugging.Win32
 							binfo.SetStatus (BreakEventStatus.Invalid, string.Format("Invalid line {0}", bp.Line));
 							return binfo;
 						}
-						ISymbolMethod met = null;
+						ISymbolMethod[] methods = null;
 						if (doc.ModuleInfo.Reader is ISymbolReader2) {
-							var methods = ((ISymbolReader2)doc.ModuleInfo.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
-							if (methods != null && methods.Any ()) {
-								if (methods.Count () == 1) {
-									met = methods [0];
-								} else {
-									int deepest = -1;
-									foreach (var method in methods) {
-										var firstSequence = method.GetSequencePoints ().FirstOrDefault ((sp) => sp.StartLine != 0xfeefee);
-										if (firstSequence != null && firstSequence.StartLine >= deepest) {
-											deepest = firstSequence.StartLine;
-											met = method;
-										}
-									}
-								}
-							}
+							methods = ((ISymbolReader2)doc.ModuleInfo.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
 						}
-						if (met == null) {
-							met = doc.ModuleInfo.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+						if (methods == null || methods.Length == 0) {
+							var met = doc.ModuleInfo.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+							if (met != null)
+								methods = new ISymbolMethod[] {met};
 						}
-						if (met == null) {
+
+						if (methods == null || methods.Length == 0) {
 							binfo.SetStatus (BreakEventStatus.Invalid, "Unable to resolve method at position");
 							return binfo;
 						}
 
-						int offset = -1;
-						int firstSpInLine = -1;
-						foreach (SequencePoint sp in met.GetSequencePoints ()) {
-							if (sp.IsInside (doc.Document.URL, line, bp.Column)) {
-								offset = sp.Offset;
-								break;
-							} else if (firstSpInLine == -1
-									   && sp.StartLine == line
-									   && sp.Document.URL.Equals (doc.Document.URL, StringComparison.OrdinalIgnoreCase)) {
-								firstSpInLine = sp.Offset;
+						ISymbolMethod bestMethod = null;
+						ISymbolMethod bestLeftSideMethod = null;
+						ISymbolMethod bestRightSideMethod = null;
+
+						SequencePoint bestSp = null;
+						SequencePoint bestLeftSideSp = null;
+						SequencePoint bestRightSideSp = null;
+
+						foreach (var met in methods) {
+							foreach (SequencePoint sp in met.GetSequencePoints ()) {
+								if (sp.IsInside (doc.Document.URL, line, bp.Column)) {	//breakpoint is inside current sequence point
+									if (bestSp == null || bestSp.IsInside (doc.Document.URL, sp.StartLine, sp.StartColumn)) {	//and sp is inside of current candidate
+										bestSp = sp;
+										bestMethod = met;
+										break;
+									}
+								} else if (sp.StartLine == line
+								           && sp.Document.URL.Equals (doc.Document.URL, StringComparison.OrdinalIgnoreCase)
+								           && sp.StartColumn <= bp.Column) {	//breakpoint is on the same line and on the right side of sp
+									if (bestLeftSideSp == null
+									    || bestLeftSideSp.EndColumn < sp.EndColumn) {
+										bestLeftSideSp = sp;
+										bestLeftSideMethod = met;
+									}
+								} else if (sp.StartLine >= line
+								           && sp.Document.URL.Equals (doc.Document.URL, StringComparison.OrdinalIgnoreCase)) {	//sp is after bp
+									if (bestRightSideSp == null
+									    || bestRightSideSp.StartLine > sp.StartLine
+									    || (bestRightSideSp.StartLine == sp.StartLine && bestRightSideSp.StartColumn > sp.StartColumn)) { //and current candidate is on the right side of it
+										bestRightSideSp = sp;
+										bestRightSideMethod = met;
+									}
+								}
 							}
 						}
-						if (offset == -1) {//No exact match? Use first match in that line
-							offset = firstSpInLine;
+
+						SequencePoint bestSameLineSp;
+						ISymbolMethod bestSameLineMethod;
+
+						if (bestRightSideSp != null
+						    && (bestLeftSideSp == null
+						        || bestRightSideSp.StartLine > line)) {
+							bestSameLineSp = bestRightSideSp;
+							bestSameLineMethod = bestRightSideMethod;
 						}
-						if (offset == -1) {
+						else {
+							bestSameLineSp = bestLeftSideSp;
+							bestSameLineMethod = bestLeftSideMethod;
+						}
+
+						if (bestSameLineSp != null) {
+							if (bestSp == null) {
+								bestSp = bestSameLineSp;
+								bestMethod = bestSameLineMethod;
+							}
+							else {
+								if (bp.Line != bestSp.StartLine || bestSp.StartColumn != bp.Column) {
+									bestSp = bestSameLineSp;
+									bestMethod = bestSameLineMethod;
+								}
+							}
+						}
+
+						if (bestSp == null || bestMethod == null) {
 							binfo.SetStatus (BreakEventStatus.Invalid, "Unable to calculate an offset in IL code");
 							return binfo;
 						}
 
-						CorFunction func = doc.ModuleInfo.Module.GetFunctionFromToken (met.Token.GetToken ());
-						try {
-							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-							breakpoints[corBp] = binfo;
-							binfo.Handle = corBp;
-							corBp.Activate (bp.Enabled);
-							binfo.SetStatus (BreakEventStatus.Bound, null);
-						}
-						catch (COMException e) {
-							HandleBreakpointException (binfo, e);
+						foreach (var docInfo in docInfos) {
+							CorFunction func = docInfo.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
+
+							try {
+								CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
+								breakpoints[corBp] = binfo;
+
+								if (binfo.Handle == null)
+									binfo.Handle = new List<CorFunctionBreakpoint> ();
+								(binfo.Handle as List<CorFunctionBreakpoint>).Add (corBp);
+								corBp.Activate (bp.Enabled);
+								binfo.SetStatus (BreakEventStatus.Bound, null);
+							}
+							catch (COMException e) {
+								HandleBreakpointException (binfo, e);
+							}
 						}
 						return binfo;
 					}
@@ -1248,12 +1311,14 @@ namespace Mono.Debugging.Win32
 
 			MtaThread.Run (delegate
 			{
-				CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
-				try {
-					corBp.Activate (false);
-				}
-				catch (COMException e) {
-					HandleBreakpointException (bi, e);
+				var corBpList = (List<CorFunctionBreakpoint>)bi.Handle;
+				foreach (var corBp in corBpList) {
+					try {
+						corBp.Activate (false);
+					}
+					catch (COMException e) {
+						HandleBreakpointException (bi, e);
+					}
 				}
 			});
 		}

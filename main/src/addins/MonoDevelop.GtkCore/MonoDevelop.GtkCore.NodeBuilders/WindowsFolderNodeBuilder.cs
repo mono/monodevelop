@@ -84,15 +84,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			return true;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (otherNode.DataItem is ProjectReferenceCollection)
-				return 1;
-			else
-				return -1;
-		}
 
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			return -200;
+		}
+		
 		public override void OnNodeAdded (object dataObject)
 		{
 			WindowsFolder w = (WindowsFolder) dataObject;

@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp.Project
 			case DEBUG_FULL:
 				configuration.DebugSymbols = true;
 				if (!string.Equals (configuration.DebugType, "full", StringComparison.OrdinalIgnoreCase)) {
-					configuration.DebugType = "";
+					configuration.DebugType = "full";
 				}
 				break;
 			case DEBUG_PDB_ONLY:

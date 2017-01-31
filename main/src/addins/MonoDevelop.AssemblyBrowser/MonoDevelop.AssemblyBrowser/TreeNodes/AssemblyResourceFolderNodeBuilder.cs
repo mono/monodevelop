@@ -61,13 +61,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
-		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			if (otherNode.DataItem is AssemblyReferenceFolder)
-				return 1;
-			return -1;
+			return -100;
 		}
-		
+
 	}
 }

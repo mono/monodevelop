@@ -144,6 +144,7 @@ namespace MonoDevelop.Components.MainToolbar
 			ignoreConfigurationChangedCount++;
 			try {
 				if (!IdeApp.Workspace.IsOpen) {
+					configurationMergers.Clear ();
 					ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
 					ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
 					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
@@ -335,9 +336,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateBuildConfiguration ()
 		{
 			var config = ToolbarView.ActiveConfiguration;
-			if (config == null || configurationMergers.Count == 0)
+			if (config == null)
 				return;
-			if (configurationMergers.Count > 1) {
+			if (configurationMergers.Count > 1 || configurationMergers.Count == 0) {
 				settingGlobalConfig = true;
 				try {
 					IdeApp.Workspace.ActiveConfigurationId = config.OriginalId;

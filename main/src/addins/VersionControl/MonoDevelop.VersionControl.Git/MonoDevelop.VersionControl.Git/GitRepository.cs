@@ -619,13 +619,17 @@ namespace MonoDevelop.VersionControl.Git
 						func (credType);
 						GitCredentials.StoreCredentials (credType);
 						retry = false;
-					} catch (AuthenticationException) {
+					} catch (AuthenticationException e) {
 						GitCredentials.InvalidateCredentials (credType);
-						retry = true;
+						retry = AlertButton.Yes == MessageService.AskQuestion (
+							GettextCatalog.GetString ("Remote server error: {0}", e.Message),
+							GettextCatalog.GetString ("Retry authentication?"),
+							AlertButton.Yes, AlertButton.No);
+						if (!retry)
+							monitor?.ReportError (e.Message, null);
 					} catch (VersionControlException e) {
 						GitCredentials.InvalidateCredentials (credType);
-						if (monitor != null)
-							monitor.ReportError (e.Message, null);
+						monitor?.ReportError (e.Message, null);
 						retry = false;
 					} catch (UserCancelledException) {
 						GitCredentials.StoreCredentials (credType);
@@ -633,7 +637,7 @@ namespace MonoDevelop.VersionControl.Git
 					} catch (LibGit2SharpException e) {
 						GitCredentials.InvalidateCredentials (credType);
 
-						if (!tfsSession.Disposed) {
+						if (credType == GitCredentialsType.Tfs) {
 							retry = true;
 							tfsSession.Dispose ();
 							continue;

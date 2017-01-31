@@ -42,7 +42,7 @@ namespace MonoDevelop.VBNet
 {
 	class VBNetTextEditorExtension : TextEditorExtension
 	{
-		MonoDevelopWorkspace workspace = new MonoDevelopWorkspace ();
+		MonoDevelopWorkspace workspace;
 		Microsoft.CodeAnalysis.SyntaxTree parseTree;
 		internal static MetadataReference [] DefaultMetadataReferences;
 
@@ -108,7 +108,7 @@ namespace MonoDevelop.VBNet
 				null,
 				new [] { projectInfo }
 			);
-
+			workspace = new MonoDevelopWorkspace (DocumentContext?.Project.ParentSolution);
 			workspace.OpenSolutionInfo (sInfo);
 
 			Editor.SyntaxHighlighting = new ClassificationSyntaxHighlighting (workspace, documentId);

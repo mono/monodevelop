@@ -50,12 +50,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			nodeInfo.Icon = Context.GetIcon ("md-reference-package");
 		}
 
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			if (otherNode.NodeName == ".NET Portable Subset") {
-				return 1;
-			}
-			return -1;
+			return -500;
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

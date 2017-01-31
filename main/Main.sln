@@ -328,7 +328,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.ConnectedServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{AC7D119C-980B-4712-8811-5368C14412D7}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoDevelop.Projects.MSBuild.Shared", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.shproj", "{DB95FF74-275D-4488-84E9-1060527988BF}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{6EB4E15A-5750-441A-98C0-FFC5888354AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2178,6 +2180,15 @@ Global
 		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
 		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseWin32|Any CPU.Build.0 = ReleaseWin32|Any CPU
 		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2325,6 +2336,7 @@ Global
 		{3FDB97B5-916E-4817-8098-41659687A8FF} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{BF71E2BB-9838-4E0C-B0E7-80559E3909BB} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{74704C00-5861-4F86-920C-865148A175C5} = {8F47F5EC-2F57-4030-B658-7B1002DA90C2}
+		{DB95FF74-275D-4488-84E9-1060527988BF} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

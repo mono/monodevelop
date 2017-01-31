@@ -139,8 +139,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 
 		public void Dispose ()
 		{
-			connection.Disconnect (true);
-			connection.Dispose ();
+			connection.Disconnect ().Ignore ();
 		}
 	}
 

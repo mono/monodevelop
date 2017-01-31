@@ -1437,31 +1437,23 @@ namespace MonoDevelop.AssemblyBrowser
 			}, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
 		}
 		
-		public void SelectAssembly (string fileName)
+		internal void SelectAssembly (AssemblyLoader loader)
 		{
-			AssemblyDefinition cu = null;
-			foreach (var unit in definitions) {
-				if (unit.UnresolvedAssembly.AssemblyName == fileName || unit.UnresolvedAssembly.Location == fileName) {
-					cu = unit.CecilLoader.GetCecilObject (unit.UnresolvedAssembly);
-					unit.LoadingTask.ContinueWith (t => {
-						Application.Invoke (delegate {
-							ITreeNavigator nav = TreeView.GetRootNode ();
-							if (nav == null)
-								return;
-
-							do {
-								if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
-									nav.ExpandToNode ();
-									nav.Selected = true;
-									nav.ScrollToNode ();
-									return;
-								}
-							} while (nav.MoveNext ());
-						});
-					});
+			AssemblyDefinition cu = loader.CecilLoader.GetCecilObject (loader.UnresolvedAssembly);
+			Application.Invoke (delegate {
+				ITreeNavigator nav = TreeView.GetRootNode ();
+				if (nav == null)
 					return;
-				}
-			}
+
+				do {
+					if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
+						nav.ExpandToNode ();
+						nav.Selected = true;
+						nav.ScrollToNode ();
+						return;
+					}
+				} while (nav.MoveNext ());
+			});
 		}
 		
 		void Dispose (ITreeNavigator nav)

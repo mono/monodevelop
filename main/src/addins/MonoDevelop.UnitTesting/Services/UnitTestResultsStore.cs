@@ -28,6 +28,7 @@
 
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -35,41 +36,66 @@ namespace MonoDevelop.UnitTesting
 	{
 		UnitTest test;
 		IResultsStore store;
-		
+
 		internal UnitTestResultsStore (UnitTest test, IResultsStore store)
 		{
 			this.test = test;
 			this.store = store;
 		}
-		
+
 		public UnitTestResult GetLastResult (DateTime date)
 		{
-			if (store == null) return null;
-			return store.GetLastResult (test.ActiveConfiguration, test, date);
+			try {
+				if (store != null)
+					return store.GetLastResult (test.ActiveConfiguration, test, date);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Test store query failed. Test history data may be corrupt.", ex);
+			}
+			return null;
 		}
-		
+
 		public UnitTestResult GetNextResult (DateTime date)
 		{
-			if (store == null) return null;
-			return store.GetNextResult (test.ActiveConfiguration, test, date);
+			try {
+				if (store != null)
+					return store.GetNextResult (test.ActiveConfiguration, test, date);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Test store query failed. Test history data may be corrupt.", ex);
+			}
+			return null;
 		}
-		
+
 		public UnitTestResult GetPreviousResult (DateTime date)
 		{
-			if (store == null) return null;
-			return store.GetPreviousResult (test.ActiveConfiguration, test, date);
+			try {
+				if (store != null)
+					return store.GetPreviousResult (test.ActiveConfiguration, test, date);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Test store query failed. Test history data may be corrupt.", ex);
+			}
+			return null;
 		}
-		
-		public UnitTestResult[] GetResults (DateTime startDate, DateTime endDate)
+
+		public UnitTestResult [] GetResults (DateTime startDate, DateTime endDate)
 		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResults (test.ActiveConfiguration, test, startDate, endDate);
+			try {
+				if (store != null)
+					return store.GetResults (test.ActiveConfiguration, test, startDate, endDate);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Test store query failed. Test history data may be corrupt.", ex);
+			}
+			return new UnitTestResult [0];
 		}
-		
-		public UnitTestResult[] GetResultsToDate (DateTime endDate, int count)
+
+		public UnitTestResult [] GetResultsToDate (DateTime endDate, int count)
 		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResultsToDate (test.ActiveConfiguration, test, endDate, count);
+			try {
+				if (store != null)
+					return store.GetResultsToDate (test.ActiveConfiguration, test, endDate, count);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Test store query failed. Test history data may be corrupt.", ex);
+			}
+			return new UnitTestResult [0];
 		}
 	}
 }

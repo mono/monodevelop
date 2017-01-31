@@ -270,13 +270,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
-
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
-<!--	<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" /> -->
-		<Class class = "MonoDevelop.CodeGeneration.RequiredProtocolMemberGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.OptionalProtocolMemberGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PartialGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
