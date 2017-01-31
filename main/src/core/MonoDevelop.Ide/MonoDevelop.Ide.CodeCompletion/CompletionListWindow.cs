@@ -653,9 +653,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			CompletionWidget = completionWidget;
 			CodeCompletionContext = completionContext;
 
-			string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
-			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
-			StartOffset = CompletionWidget.CaretOffset - initialWordLength;
+			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : CodeCompletionContext.TriggerWordLength;
+			StartOffset = CodeCompletionContext.TriggerOffset;
 		}
 
 		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
