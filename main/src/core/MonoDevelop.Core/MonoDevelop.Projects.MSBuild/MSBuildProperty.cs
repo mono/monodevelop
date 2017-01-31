@@ -52,7 +52,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get {
 				return fromAttribute;
 			}
+			set {
+				fromAttribute = value;
+			}
 		}
+
 		internal string AfterAttribute {
 			get {
 				return afterAttribute;
@@ -197,7 +201,7 @@ namespace MonoDevelop.Projects.MSBuild
 						elem.Read (cr);
 					}
 					elem.ParentNode = this;
-					elem.SetNamespace (MSBuildProject.Schema);
+					elem.SetNamespace (Namespace);
 
 					elem.StartWhitespace = StartWhitespace;
 					elem.EndWhitespace = EndWhitespace;

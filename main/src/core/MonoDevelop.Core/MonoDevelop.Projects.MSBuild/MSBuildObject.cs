@@ -264,8 +264,10 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal virtual string Namespace {
+		public virtual string Namespace {
 			get {
+				if (ParentObject != null)
+					return ParentObject.Namespace;
 				return MSBuildProject.Schema;
 			}
 		}
@@ -286,7 +288,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			var children = GetChildren ();
+			var children = GetChildren ().Where (c => !c.SkipSerialization);
 			var hasChildren = children.Any ();
 
 			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
@@ -294,9 +296,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (hasChildren || emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknown && !PreferEmptyElement)) {
 				MSBuildWhitespace.Write (StartInnerWhitespace, writer);
 
-				foreach (var c in GetChildren ()) {
-					if (c.SkipSerialization)
-						continue;
+				foreach (var c in children) {
 					c.Write (writer, context);
 					hasContent = true;
 				}

@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 
@@ -110,6 +111,13 @@ namespace MonoDevelop.PackageManagement
 				nuGetProjectContext,
 				token
 			);
+		}
+
+		public IEnumerable<PackageRestoreData> GetPackagesRestoreData (
+			string solutionDirectory,
+			Dictionary<PackageReference, List<string>> packageReferencesDict)
+		{
+			return restoreManager.GetPackagesRestoreData (solutionDirectory, packageReferencesDict);
 		}
 	}
 

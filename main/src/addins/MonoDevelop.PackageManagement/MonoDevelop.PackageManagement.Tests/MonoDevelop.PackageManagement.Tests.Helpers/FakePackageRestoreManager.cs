@@ -137,6 +137,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public IEnumerable<PackageRestoreData> GetPackagesRestoreData (
+			string solutionDirectory,
+			Dictionary<PackageReference, List<string>> packageReferencesDict)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

@@ -76,13 +76,5 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents.OnPackagesRestored ();
 		}
-
-		static void RefreshProjectReferences (DotNetProject project)
-		{
-			Runtime.RunInMainThread (() => {
-				project.ReloadProjectBuilder ();
-				project.NotifyModified ("References");
-			});
-		}
 	}
 }

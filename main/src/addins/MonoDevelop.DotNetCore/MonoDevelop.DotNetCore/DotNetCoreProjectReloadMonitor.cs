@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
@@ -74,9 +75,8 @@ namespace MonoDevelop.DotNetCore
 
 		void OnDotNetCoreProjectReloaded (ProjectReloadedEventArgs e)
 		{
-			var action = new RestoreNuGetPackagesInDotNetCoreProject (e.NewProject.DotNetProject);
-			var message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			DotNetCoreProjectBuilderMaintainer.OnProjectReload (e);
+			RestorePackagesInProjectHandler.Run (e.NewProject.DotNetProject);
 		}
 
 		async void FileChanged (object sender, FileEventArgs e)
