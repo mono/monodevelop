@@ -51,13 +51,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		public void UpdateContent(string serviceId)
 		{
 			var binding = ((DotNetProject)this.Project).GetConnectedServicesBinding ();
-			if (string.IsNullOrEmpty (serviceId)) {
-				var services = binding.SupportedServices;
-				this.widget.ShowGallery (services, Project);
-			} else {
+			if (!string.IsNullOrEmpty (serviceId)) {
 				var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
-				this.widget.ShowServiceDetails (service);
+				if (service != null) {
+					this.widget.ShowServiceDetails (service);
+					return;
+				}
 			}
+
+			var services = binding.SupportedServices;
+			this.widget.ShowGallery (services, Project);
 		}
 
 		object currentNodeObject;
