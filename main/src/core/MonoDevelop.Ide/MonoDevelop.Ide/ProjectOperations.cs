@@ -2472,7 +2472,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Workbench != null) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.FileName == filePath) {
+					if (doc.FileName == filePath && doc.Editor != null) {
 						isOpen = true;
 						return doc.Editor;
 					}
