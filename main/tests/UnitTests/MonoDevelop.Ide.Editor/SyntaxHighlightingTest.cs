@@ -231,13 +231,13 @@ variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
 contexts:
   main:
-    - match: '\b{{ident}}\b'
-      scope: keyword.control
+    - match: '(\b{{ident}}\b)'
+      captures:
+        1: keyword.control
 ";
-			string test = @"
-test 45345ne
-      ^ source
- ^ keyword.control
+			string test = 
+@"test123
+^ keyword.control
 ";
 			RunSublimeHighlightingTest (highlighting, test);
 		}
@@ -325,14 +325,17 @@ typedef struct
 				for (int i = 0; i < expectedSegments.Count; i++) {
 					var seg = expectedSegments [i];
 					if (seg.Item1.Line == line.LineNumber) {
-						var matchedSegment = coloredSegments.FirstOrDefault (s => s.Contains (seg.Item1.Column + line.Offset - 1));
+						var matchedSegment = coloredSegments.FirstOrDefault (s => s.Contains (seg.Item1.Column - 1));
 						Assert.NotNull (matchedSegment, "No segment found at : " + seg.Item1);
 						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries)) {
 							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
+							Console.WriteLine (segi);
+							Console.WriteLine (string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 							string mk = null;
 							int d = 0;
 							var expr = StackMatchExpression.Parse (segi);
-							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (expr, new ScopeStack (ss), ref mk, ref d)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
+							var matchResult = expr.MatchesStack (matchedSegment.ScopeStack, ref mk);
+							Assert.IsTrue (matchResult.Item1, "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 						}
 						expectedSegments.RemoveAt (i);
 						i--;
@@ -346,15 +349,26 @@ typedef struct
 		public void TestPOSIXBracketExpressions ()
 		{
 			Assert.AreEqual ("[\\w\\d]", Sublime3Format.CompileRegex ("[:alnum:]"));
-			Assert.AreEqual ("\\w", Sublime3Format.CompileRegex ("[:alpha:]"));
-			Assert.AreEqual ("[ \t]", Sublime3Format.CompileRegex ("[:blank:]"));
-			Assert.AreEqual ("\\d", Sublime3Format.CompileRegex ("[:digit:]"));
-			Assert.AreEqual ("\\S", Sublime3Format.CompileRegex ("[:graph:]"));
+			Assert.AreEqual ("[\\w]", Sublime3Format.CompileRegex ("[:alpha:]"));
+			Assert.AreEqual ("[\\t ]", Sublime3Format.CompileRegex ("[:blank:]"));
+			Assert.AreEqual ("[\\d]", Sublime3Format.CompileRegex ("[:digit:]"));
+			Assert.AreEqual ("[\\S]", Sublime3Format.CompileRegex ("[:graph:]"));
 			Assert.AreEqual ("[a-z]", Sublime3Format.CompileRegex ("[:lower:]"));
-			Assert.AreEqual ("[\\S\\ ]", Sublime3Format.CompileRegex ("[:print:]"));
-			Assert.AreEqual ("\\s", Sublime3Format.CompileRegex ("[:space:]"));
+			Assert.AreEqual ("[\\S ]", Sublime3Format.CompileRegex ("[:print:]"));
+			Assert.AreEqual ("[\\s]", Sublime3Format.CompileRegex ("[:space:]"));
 			Assert.AreEqual ("[A-Z]", Sublime3Format.CompileRegex ("[:upper:]"));
-			Assert.AreEqual ("[0-9a-fA-F]", Sublime3Format.CompileRegex ("[:xdigit:]"));
+			Assert.AreEqual ("[\\dA-Fa-f]", Sublime3Format.CompileRegex ("[:xdigit:]"));
+		}
+
+		[Test]
+		public void TestPosixBracketExpressionsInCharacterClass ()
+		{
+			Assert.AreEqual ("[\\w\\d_]", Sublime3Format.CompileRegex ("[_[:alnum:]]"));
+			Assert.AreEqual ("[\\w_]", Sublime3Format.CompileRegex ("[_[:alpha:]]"));
+			Assert.AreEqual ("[\\d_]", Sublime3Format.CompileRegex ("[_[:digit:]]"));
+			Assert.AreEqual ("[_a-z]", Sublime3Format.CompileRegex ("[_[:lower:]]"));
+			Assert.AreEqual ("[A-Z_]", Sublime3Format.CompileRegex ("[_[:upper:]]"));
+			Assert.AreEqual ("[\\dA-F_a-f]", Sublime3Format.CompileRegex ("[_[:xdigit:]]"));
 		}
 
 		[Test]
@@ -407,8 +421,8 @@ typedef struct
 		[Test]
 		public void TestCharacterClassBug ()
 		{
-			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([:A-Z_a-z][\\w-.:]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
-			Assert.AreEqual ("[\\w-]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
+			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([\\w:_][\\w\\d-.:_]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
+			Assert.AreEqual ("[\\w\\d-_]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
 			Assert.AreEqual ("\\[(\\\\]|[^\\]])*\\]", Sublime3Format.CompileRegex ("\\[(\\\\]|[^\\]])*\\]"));
 
 			Assert.AreEqual ("[\\p{Lu}]", Sublime3Format.CompileRegex ("[\\p{Lu}]"));
@@ -423,10 +437,63 @@ typedef struct
 		[Test]
 		public void TestGroupReplacement ()
 		{
-			Assert.AreEqual ("(?<id>[A-Z_a-z]*)\\s*[A-Z_a-z]*", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
+			Assert.AreEqual ("(?<id>[\\w_]*)\\s*\\k<id>", Sublime3Format.CompileRegex ("(?<id>[A-Z_a-z]*)\\s*\\g<id>"));
+		}
+
+		[Test]
+		public void TestGroupNameCorrection ()
+		{
+			Assert.AreEqual ("(?<id_id2>[\\w_]*)", Sublime3Format.CompileRegex ("(?<id-id2>[A-Z_a-z]*)"));
 		}
 
 
 
+		[Test]
+		public void TestGroupNameCorrection_Case2 ()
+		{
+			Assert.AreEqual ("(?<interface_name>\\k<type_name>\\s*\\.\\s*)?", Sublime3Format.CompileRegex ("(?<interface-name>\\g<type-name>\\s*\\.\\s*)?"));
+		}
+
+		[Ignore("Fixme")]
+		[Test]
+		public void TestLookbehindBug ()
+		{
+			string highlighting = @"%YAML 1.2
+---
+name: Test
+file_extensions: [t]
+scope: source
+
+contexts:
+  main:
+    - match: '(?=\{)'
+      scope: outer.bracket
+      push:
+        - include: bracket
+        - match: '(?<=\>)'
+          pop: true
+  bracket:
+    - match: '\{'
+      push:
+        - include: bracket
+        - match: '\}'
+          pop: true
+";
+			string test = @"
+foo
+^ source
+{ 
+  {
+    foo  
+    ^ outer.bracket
+  } 
+}
+^ outer.bracket
+foo
+ ^ source
+";
+			RunSublimeHighlightingTest (highlighting, test);
+
+		}
 	}
 }

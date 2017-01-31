@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 					CheckLine ();
 					SetColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new DocumentLocationEventArgs (old));
+					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 					CheckColumn ();
 					SetDesiredColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new DocumentLocationEventArgs (old));
+					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 					CheckColumn ();
 					SetDesiredColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new DocumentLocationEventArgs (old));
+					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 				CheckLine ();
 				CheckColumn ();
 				SetDesiredColumn ();
-				OnPositionChanged (new DocumentLocationEventArgs (old));
+				OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 			}
 		}
 
@@ -159,8 +159,6 @@ namespace Mono.TextEditor
 			set {
 				if (value != autoScrollToCaret) {
 					autoScrollToCaret = value;
-					if (autoScrollToCaret)
-						OnPositionChanged (new DocumentLocationEventArgs (Location));
 				}
 			}
 		}
@@ -269,7 +267,7 @@ namespace Mono.TextEditor
 			}
 
 			UpdateCaretOffset ();
-			OnPositionChanged (new DocumentLocationEventArgs (old));
+			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 		}
 
 		void SetDesiredColumn ()
@@ -300,7 +298,7 @@ namespace Mono.TextEditor
 			var old = Location;
 			DesiredColumn = desiredColumn;
 			SetColumn ();
-			OnPositionChanged (new DocumentLocationEventArgs (old));
+			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
 		}
 		
 		public override string ToString ()
@@ -324,7 +322,7 @@ namespace Mono.TextEditor
 			Offset = offset;
 		}
 
-		protected override void OnPositionChanged (DocumentLocationEventArgs args)
+		protected override void OnPositionChanged (CaretLocationEventArgs args)
 		{
 			TextEditorData.Document.EnsureOffsetIsUnfolded (Offset);
 			base.OnPositionChanged (args);
@@ -375,7 +373,7 @@ namespace Mono.TextEditor
 			
 			var curLine = TextEditorData.GetLine (newLocation.Line);
 			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.Length == 0) {
-				var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
+				var indentColumn = TextEditorData.GetVirtualIndentationColumn (newLocation);
 				if (column == indentColumn) {
 					newColumn = indentColumn;
 				}
@@ -389,7 +387,7 @@ namespace Mono.TextEditor
 
 			SetDesiredColumn ();
 			UpdateCaretOffset ();
-			OnPositionChanged (new DocumentLocationEventArgs (old));
+			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.BufferChange));
 		}
 
 		public void SetDocument (TextDocument doc)

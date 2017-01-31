@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Editor
 				Editor = editor;
 			}
 
-			public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+			public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, System.Threading.CancellationToken token)
 			{
 				CompletionRun = true;
 				var list = new CompletionDataList ();

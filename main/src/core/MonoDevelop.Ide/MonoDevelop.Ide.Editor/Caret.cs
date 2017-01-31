@@ -57,12 +57,27 @@ namespace MonoDevelop.Ide.Editor
 			set;
 		}
 
-		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
+		protected virtual void OnPositionChanged (CaretLocationEventArgs args)
 		{
 			if (PositionChanged != null)
 				PositionChanged (this, args);
 		}
 
-		public event EventHandler<DocumentLocationEventArgs> PositionChanged;
+		public event EventHandler<CaretLocationEventArgs> PositionChanged;
+	}
+
+	public enum CaretChangeReason {
+		BufferChange,
+		Movement
+	}
+
+	public class CaretLocationEventArgs : DocumentLocationEventArgs
+	{
+		public CaretChangeReason CaretChangeReason { get; } 
+
+		public CaretLocationEventArgs (DocumentLocation location, CaretChangeReason reason) : base (location)
+		{
+			CaretChangeReason = reason;
+		}
 	}
 }

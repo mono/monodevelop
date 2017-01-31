@@ -7,6 +7,7 @@ using System.Text;
 using MonoDevelop.Core;
 using System.Diagnostics;
 using System.Xml;
+using System.Globalization;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -214,15 +215,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			int[] table = new int [256];
 			StringBuilder org = new StringBuilder ();
 			List<string> unicodeGroups = new List<string> ();
+			CharacterClass subClass;
 
 			public void Push (char ch)
 			{
 				org.Append (ch);
 				switch (ch) {
 				case ':':
-					if (first)
+					if (escape)
+						goto default;
+					if (first || lastPushedChar == '[') {
 						wordBuilder = new StringBuilder ();
-					goto default;
+						subClass = new CharacterClass ();
+						subClass.Add (':');
+					} else {
+						if (wordBuilder != null) {
+							ConvertUnicodeCategory (wordBuilder.ToString ());
+							wordBuilder = null;
+							subClass = null;
+						} else
+							goto default;
+					}
+					break;
 				case '^':
 					if (first) {
 						negativeGroup = true;
@@ -244,18 +258,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '[':
 					if (escape)
 						goto default;
+					PushLastChar ();
 					break;
 				case ']':
 					if (escape)
 						goto default;
 					break;
 				case '\\':
-					if (escape)
+					if (escape || wordBuilder != null)
 						goto default;
 					escape = true;
 					break;
 				case '-':
-					if (escape || first)
+					if (escape || first || wordBuilder != null)
 						goto default;
 					range = true;
 					break;
@@ -364,6 +379,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					if (wordBuilder != null) {
 						wordBuilder.Append (ch);
+						subClass.Push (ch);
+						break;
 					}
 
 					if (!hasLast) {
@@ -403,6 +420,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 
+			void Add (char ch)
+			{
+				table [ch] = negativeGroup ? -1 : 1;
+			}
+
+			void AddUnicodeCategory (params UnicodeCategory[] categories)
+			{
+				for (int i = 0; i < table.Length; i++) {
+					var cat = char.GetUnicodeCategory ((char)i);
+					if (categories.Contains (cat)) {
+						table [i] = negativeGroup ? -1 : 1;
+					}
+				}
+			}
+
 			bool HasRange (char fromC, char toC)
 			{
 				for (int i = fromC; i <= toC; i++) {
@@ -429,29 +461,60 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 
-			public string Generate ()
+			void PrepareGeneration ()
 			{
-				if (wordBuilder != null && lastPushedChar == ':') {
-					return ConvertUnicodeCategory (wordBuilder.ToString(1, wordBuilder.Length - 2), false);
-				}
-				var result = new StringBuilder ();
-				result.Append ('[');
-				if (negativeGroup)
-					result.Append ('^');
 				PushLastChar ();
 
-				if (range) 
+				if (range)
 					table ['-'] = negativeGroup ? -1 : 1;
 				if (escape)
 					table ['\\'] = negativeGroup ? -1 : 1;
 
-				if (HasRange ('a', 'z') && HasRange ('A', 'Z') && HasRange ('0', '9') &&  table ['_'] != 0) {
+			}
+			public string Generate ()
+			{
+				if (subClass != null) {
+					subClass.PrepareGeneration ();
+					for (int i = 0; i < table.Length; i++) {
+						if (subClass.table [i] != 0)
+							table [i] = subClass.table [i];
+					}
+				}
+				PrepareGeneration ();
+				var result = new StringBuilder ();
+				result.Append ('[');
+				if (negativeGroup)
+					result.Append ('^');
+				
+				bool hasAllPrintable = true;
+				for (int i = 0; i < table.Length; i++) {
+					var ch = (char)i;
+					if (ch == ' ' || ch == '\t')
+						continue;
+					var cat = char.GetUnicodeCategory (ch);
+					if (cat == UnicodeCategory.Control || cat == UnicodeCategory.LineSeparator)
+						continue;
+					if (table [i] == 0) {
+						hasAllPrintable = false;
+					}
+				}
 
+				if (hasAllPrintable) {
+					for (int i = 0; i < table.Length; i++) {
+						var ch = (char)i;
+						if (ch == ' ' || ch == '\t')
+							continue;
+						var cat = char.GetUnicodeCategory (ch);
+						if (cat == UnicodeCategory.Control || cat == UnicodeCategory.LineSeparator)
+							continue;
+						table [i] = 0;
+					}
+					result.Append ("\\S");
+				}
+
+				if (HasRange ('a', 'z') && HasRange ('A', 'Z')) {
 					RemoveRange ('a', 'z');
 					RemoveRange ('A', 'Z');
-					RemoveRange ('0', '9');
-					table ['_'] = 0;
-
 					result.Append ("\\w");
 				}
 
@@ -469,12 +532,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					table ['\f'] = 0;
 				}
 
-
 				for (int i = 0; i < table.Length; i++) {
 					int cur = table [i];
 					if (cur != 0) {
 						AddChar (result, (char)i);
-
 						int j = i + 1;
 						for (; j < table.Length; j++) {
 							if (table [j] == 0)
@@ -491,7 +552,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					result.Append ("\\p{");
 					result.Append (grp);
 					result.Append ("}");
-}
+				}
 				result.Append (']');
 				return result.ToString ();
 			}
@@ -527,6 +588,76 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				default:
 					result.Append (ch);
+					break;
+				}
+			}
+
+			void ConvertUnicodeCategory (string category)
+			{
+				switch (category) {
+				case "alnum": // Alphabetic and numeric character
+							  //return inCharacterClass ? "\\w\\d": "[\\w\\d]";
+					AddRange ('a', 'z');
+					AddRange ('A', 'Z');
+					AddRange ('0', '9');
+					break;
+				case "alpha": // Alphabetic character
+					AddRange ('a', 'z');
+					AddRange ('A', 'Z');
+					break;
+				case "blank": // Space or tab
+					Add (' ');
+					Add ('\t');
+					break;
+				case "cntrl": // Control character
+					AddUnicodeCategory (UnicodeCategory.Control);
+					break;
+				case "digit": // Digit
+					AddRange ('0', '9');
+					break;
+				case "graph": // Non - blank character (excludes spaces, control characters, and similar)
+					for (int i = 0; i < table.Length; i++) {
+						var ch = (char)i;
+						if (ch == ' ' || ch == '\t')
+							continue;
+						var cat = char.GetUnicodeCategory (ch);
+						if (cat == UnicodeCategory.Control || cat == UnicodeCategory.LineSeparator)
+							continue;
+						table [i] = negativeGroup ? -1 : 1;
+					}
+					break;
+				case "lower": // Lowercase alphabetical character
+					AddRange ('a', 'z');
+					break;
+				case "print": // Like [:graph:], but includes the space character
+					for (int i = 0; i < table.Length; i++) {
+						var ch = (char)i;
+						var cat = char.GetUnicodeCategory (ch);
+						if (cat == UnicodeCategory.Control || cat == UnicodeCategory.LineSeparator)
+							continue;
+						table [i] = negativeGroup ? -1 : 1;
+					}
+					break;
+				case "punct": // Punctuation character
+					AddUnicodeCategory (UnicodeCategory.OpenPunctuation, UnicodeCategory.ClosePunctuation, UnicodeCategory.DashPunctuation,
+										UnicodeCategory.OtherPunctuation, UnicodeCategory.ConnectorPunctuation, UnicodeCategory.FinalQuotePunctuation, UnicodeCategory.InitialQuotePunctuation);
+					break;
+				case "space": // Whitespace character ([:blank:], newline, carriage return, etc.)
+					Add (' ');
+					Add ('\t');
+					Add ('\r');
+					Add ('\n');
+					break;
+				case "upper": // Uppercase alphabetical
+					AddRange ('A', 'Z');
+					break;
+				case "xdigit": // Digit allowed in a hexadecimal number (i.e., 0 - 9a - fA - F)
+					AddRange ('a', 'f');
+					AddRange ('A', 'F');
+					AddRange ('0', '9');
+					break;
+				default:
+					LoggingService.LogWarning ("unknown unicode category : " + category);
 					break;
 				}
 			}
@@ -628,11 +759,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case '>':
 					recordGroupName = false;
 					if (replaceGroup) {
-						foreach (var g in groups) {
-							if (g.Id == curGroupName.ToString ()) {
-								result.Append (g.groupContent.ToString ());
-							}
-						}
+						bool foundGroup = false;
+							result.Append ("\\k<");
+							result.Append (curGroupName.ToString ());
+							result.Append (">");
+
 						replaceGroup = false;
 						curGroupName.Length = 0;
 						continue;
@@ -688,8 +819,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				escape = false;
 			addChar:
-				if (recordGroupName && ch != '<') {
-					curGroupName.Append (ch);
+				if (recordGroupName) {
+					if (ch == '-')
+						ch = '_';
+					if (ch != '<') {
+						curGroupName.Append (ch);
+					}
 				}
 				if (replaceGroup)
 					continue;
@@ -800,38 +935,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				// assume unicode character category (that's supported by C# regexes)
 				return "\\p{" + property + "}";
 			}
-		}
-
-		static string ConvertUnicodeCategory (string category, bool inCharacterClass)
-		{
-			switch (category) {
-			case "alnum": // Alphabetic and numeric character
-				return inCharacterClass ? "\\w\\d": "[\\w\\d]";
-			case "alpha": // Alphabetic character
-				return "\\w";
-			case "blank": // Space or tab
-				return inCharacterClass ? " \t" : "[ \t]";
-			case "cntrl": // Control character
-				return "\\W"; // TODO
-			case "digit": // Digit
-				return "\\d";
-			case "graph": // Non - blank character (excludes spaces, control characters, and similar)
-				return "\\S";
-			case "lower": // Lowercase alphabetical character
-				return inCharacterClass ? "a-z" : "[a-z]";
-			case "print": // Like [:graph:], but includes the space character
-				return inCharacterClass ? "\\S\\ " : "[\\S\\ ]";
-			case "punct": // Punctuation character
-				return "\\W"; // TODO
-			case "space": // Whitespace character ([:blank:], newline, carriage return, etc.)
-				return "\\s";
-			case "upper": // Uppercase alphabetical
-				return inCharacterClass ? "A-Z" : "[A-Z]";
-			case "xdigit": // Digit allowed in a hexadecimal number (i.e., 0 - 9a - fA - F)
-				return inCharacterClass ? "0-9a-fA-F" : "[0-9a-fA-F]";
-			}
-			LoggingService.LogWarning ("unknown unicode category : " + category);
-			return "";
 		}
 
 

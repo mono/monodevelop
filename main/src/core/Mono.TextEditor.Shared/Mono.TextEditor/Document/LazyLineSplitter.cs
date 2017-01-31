@@ -115,13 +115,6 @@ namespace Mono.TextEditor
 		}
 
 		#region ILineSplitter implementation
-
-		event EventHandler<LineEventArgs> ILineSplitter.LineChanged { add { /* unused */   } remove { /* unused */ } }
-
-		event EventHandler<LineEventArgs> ILineSplitter.LineInserted { add { /* unused */   } remove { /* unused */ } }
-
-		event EventHandler<LineEventArgs> ILineSplitter.LineRemoved { add { /* unused */   } remove { /* unused */ } }
-
 		public void Clear ()
 		{
 		}

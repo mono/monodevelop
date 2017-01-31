@@ -888,13 +888,15 @@ namespace Mono.Debugging.Win32
 		{
 			MtaThread.Run (delegate
 			{
-				CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
-				if (bp != null) {
-					try {
-						bp.Activate (enable);
-					}
-					catch (COMException e) {
-						HandleBreakpointException (binfo, e);
+				var bpList = binfo.Handle as List<CorFunctionBreakpoint>;
+				if (bpList != null) {
+					foreach (var bp in bpList) {
+						try {
+							bp.Activate (enable);
+						}
+						catch (COMException e) {
+							HandleBreakpointException (binfo, e);
+						}
 					}
 				}
 			});
@@ -1040,16 +1042,21 @@ namespace Mono.Debugging.Win32
 						// FIXME: implement breaking on function name
 						binfo.SetStatus (BreakEventStatus.Invalid, "Function breakpoint is not implemented");
 						return binfo;
-					} else {
-						DocInfo doc = null;
+					}
+					else {
+						var docInfos = new List<DocInfo> ();
 						lock (appDomainsLock) {
 							foreach (var appDomainInfo in appDomains) {
 								var documents = appDomainInfo.Value.Documents;
-								if (documents.TryGetValue (Path.GetFullPath (bp.FileName), out doc)) {
-									break;
+								DocInfo docInfo = null;
+								if (documents.TryGetValue (Path.GetFullPath (bp.FileName), out docInfo)) {
+									docInfos.Add (docInfo);
 								}
 							}
 						}
+
+						var doc = docInfos.FirstOrDefault (); //get info about source position using SymbolReader of first DocInfo
+
 						if (doc == null) {
 							binfo.SetStatus (BreakEventStatus.NotBound, string.Format("{0} is not found among the loaded symbol documents", bp.FileName));
 							return binfo;
@@ -1145,16 +1152,22 @@ namespace Mono.Debugging.Win32
 							return binfo;
 						}
 
-						CorFunction func = doc.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
-						try {
-							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
-							breakpoints[corBp] = binfo;
-							binfo.Handle = corBp;
-							corBp.Activate (bp.Enabled);
-							binfo.SetStatus (BreakEventStatus.Bound, null);
-						}
-						catch (COMException e) {
-							HandleBreakpointException (binfo, e);
+						foreach (var docInfo in docInfos) {
+							CorFunction func = docInfo.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
+
+							try {
+								CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
+								breakpoints[corBp] = binfo;
+
+								if (binfo.Handle == null)
+									binfo.Handle = new List<CorFunctionBreakpoint> ();
+								(binfo.Handle as List<CorFunctionBreakpoint>).Add (corBp);
+								corBp.Activate (bp.Enabled);
+								binfo.SetStatus (BreakEventStatus.Bound, null);
+							}
+							catch (COMException e) {
+								HandleBreakpointException (binfo, e);
+							}
 						}
 						return binfo;
 					}
@@ -1298,12 +1311,14 @@ namespace Mono.Debugging.Win32
 
 			MtaThread.Run (delegate
 			{
-				CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
-				try {
-					corBp.Activate (false);
-				}
-				catch (COMException e) {
-					HandleBreakpointException (bi, e);
+				var corBpList = (List<CorFunctionBreakpoint>)bi.Handle;
+				foreach (var corBp in corBpList) {
+					try {
+						corBp.Activate (false);
+					}
+					catch (COMException e) {
+						HandleBreakpointException (bi, e);
+					}
 				}
 			});
 		}

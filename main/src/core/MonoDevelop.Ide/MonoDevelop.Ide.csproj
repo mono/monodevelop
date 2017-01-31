@@ -8065,8 +8065,8 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\JavaScript.tmLanguage.json">
       <LogicalName>JavaScript.tmLanguage.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
-      <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\javascript\syntaxes\RegexJavaScript.tmLanguage">
+      <LogicalName>RegexJavaScript.tmLanguage</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\xml\syntaxes\xml.json">
       <LogicalName>xml.json</LogicalName>
@@ -8128,8 +8128,8 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\swift\syntaxes\swift.json">
       <LogicalName>swift.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\syntaxes\Batch File.tmLanguage">
-      <LogicalName>Batch File.tmLanguage</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\bat\syntaxes\BatchFile.tmLanguage">
+      <LogicalName>BatchFile.tmLanguage</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\syntaxes\Objective-C.tmLanguage">
       <LogicalName>Objective-C.tmLanguage</LogicalName>
@@ -9228,6 +9228,8 @@
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ScopeStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

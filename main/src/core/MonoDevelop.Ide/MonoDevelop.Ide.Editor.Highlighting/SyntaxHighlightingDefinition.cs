@@ -377,6 +377,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override IEnumerable<SyntaxContext> GetContexts (SyntaxContext context)
 		{
+			var localContext =context.GetContext (Name);
+			if (localContext != null) {
+				yield return localContext;
+				yield break;
+			}
+
 			foreach (var bundle in SyntaxHighlightingService.AllBundles) {
 				foreach (var highlighting in bundle.Highlightings) {
 					if (highlighting.Name == Name) {

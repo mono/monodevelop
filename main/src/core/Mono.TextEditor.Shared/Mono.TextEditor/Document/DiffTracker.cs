@@ -64,41 +64,37 @@ namespace Mono.TextEditor
 			trackDocument = document;
 		}
 
-		void HandleLineRemoved (object sender, LineEventArgs e)
+		void TrackDocument_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			if (lineStates == null) 
+			if (lineStates == null)
 				return;
+			var startLine = trackDocument.GetLineByOffset (e.Offset);
+			var endRemoveLine = trackDocument.GetLineByOffset (e.Offset + e.RemovalLength);
 			try {
-
-				lineStates.RemoveAt (e.LineNumber);
+				var lineNumber = startLine.LineNumber;
+				lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
 			} catch (Exception ex) {
-				Console.WriteLine ("error while DiffTracker.HandleLineRemoved:" + ex);
+				Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanging:" + ex);
 			}
 		}
 
-		void HandleLineInserted (object sender, LineEventArgs e)
+		void TrackDocument_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			if (lineStates == null) 
-				return;
+			var startLine = trackDocument.GetLineByOffset (e.Offset);
+			var endLine = trackDocument.GetLineByOffset (e.Offset + e.InsertionLength);
+			var lineNumber = startLine.LineNumber;
+			var insertedLines = endLine.LineNumber - lineNumber;
 			try {
-				lineStates.Insert(e.Line.LineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
-			} catch (Exception ex) {
-				Console.WriteLine ("error while DiffTracker.HandleLineInserted:" + ex);
-			}
-		}
-
-		void HandleLineChanged (object sender, LineEventArgs e)
-		{
-			var lineNumber = e.Line.LineNumber;
-			try {
-				if (lineStates [lineNumber].state == Mono.TextEditor.TextDocument.LineState.Dirty)
-					return;
 				lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
 				if (trackDocument != null)
-					trackDocument.CommitLineUpdate (lineNumber); 
+					trackDocument.CommitLineUpdate (lineNumber);
+				while (insertedLines-- > 0) {
+					lineStates.Insert (lineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+				}
 			} catch (Exception ex) {
-				Console.WriteLine ("error while DiffTracker.HandleLineChanged:" + ex);
+				Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
 			}
+
 		}
 
 		public void SetBaseDocument (TextDocument document)
@@ -111,10 +107,8 @@ namespace Mono.TextEditor
 			} else {
 				lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 				lineStates.InsertRange(0, document.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
-
-				trackDocument.Splitter.LineChanged += HandleLineChanged;
-				trackDocument.Splitter.LineInserted += HandleLineInserted;
-				trackDocument.Splitter.LineRemoved += HandleLineRemoved;
+				trackDocument.TextChanging += TrackDocument_TextChanging;
+				trackDocument.TextChanged += TrackDocument_TextChanged;
 			}
 		}
 

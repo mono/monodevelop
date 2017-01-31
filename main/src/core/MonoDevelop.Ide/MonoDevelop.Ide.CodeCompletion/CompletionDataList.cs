@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
@@ -54,6 +55,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void OnCompletionListClosed (EventArgs e);
 		event EventHandler CompletionListClosed;
+
+		/// <summary>
+		/// Gives the abilit to override the custom filtering
+		/// </summary>
+		/// <returns>The filtered completion list, or null if the default list should be taken.</returns>
+		/// <param name="input">Contains all information needed to filter the list.</param>
+		CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input);
+		int FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems);
+		int [] GetHighlightedIndices (CompletionData completionData, string completionString);
 	}
 	
 	
@@ -83,7 +93,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool AutoCompleteEmptyMatchOnCurlyBrace { get; set; }
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		public bool CloseOnSquareBrackets { get; set; }
-		
+
+		public virtual CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input)
+		{
+			return null;
+		}
+
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
 		public IEnumerable<ICompletionKeyHandler> KeyHandler {
 			get { return keyHandler; }
@@ -171,7 +186,78 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
+		public virtual int FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems)
+		{
+			                  // default - word with highest match rating in the list.
+			int idx = -1;
+
+			StringMatcher matcher = null;
+			if (!string.IsNullOrEmpty (partialWord)) {
+				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
+				string bestWord = null;
+				int bestRank = int.MinValue;
+				int bestIndex = 0;
+				int bestIndexPriority = int.MinValue;
+				for (int i = 0; i < filteredItems.Count; i++) {
+					int index = filteredItems [i];
+					var data = completionDataList [index];
+					if (bestIndexPriority > data.PriorityGroup)
+						continue;
+					string text = data.DisplayText;
+					int rank;
+					if (!matcher.CalcMatchRank (text, out rank))
+						continue;
+					if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
+						bestWord = text;
+						bestRank = rank;
+						bestIndex = i;
+						bestIndexPriority = data.PriorityGroup;
+					}
+				}
+
+				if (bestWord != null) {
+					idx = bestIndex;
+					// exact match found.
+					if (string.Compare (bestWord, partialWord ?? "", true) == 0)
+						return idx;
+				}
+			}
+
+			CompletionData currentData;
+			int bestMruIndex;
+			if (idx >= 0) {
+				currentData = completionDataList [filteredItems [idx]];
+				bestMruIndex = cache.GetIndex (currentData);
+			} else {
+				bestMruIndex = int.MaxValue;
+				currentData = null;
+			}
+			for (int i = 0; i < filteredItems.Count; i++) {
+				var mruData = completionDataList [filteredItems [i]];
+				int curMruIndex = cache.GetIndex (mruData);
+				if (curMruIndex == 1)
+					continue;
+				if (curMruIndex < bestMruIndex) {
+					int r1 = 0, r2 = 0;
+					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
+						if (r1 >= r2 || partialWord.Length == 0 || partialWord.Length == 1 && mruData.DisplayText [0] == partialWord [0]) {
+							bestMruIndex = curMruIndex;
+							idx = i;
+							currentData = mruData;
+						}
+					}
+				}
+			}
+			return idx;
+		}
+
+		public virtual int [] GetHighlightedIndices (CompletionData completionData, string completionString)
+		{
+			var matcher = CompletionMatcher.CreateCompletionMatcher (completionString);
+			return matcher.GetMatch (completionData.DisplayText);
+		}
+
 		public event EventHandler CompletionListClosed;
 	}
 }

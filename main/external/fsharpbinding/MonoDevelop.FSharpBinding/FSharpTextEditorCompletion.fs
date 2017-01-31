@@ -796,19 +796,17 @@ type FSharpTextEditorCompletion() =
         base.KeyPress (descriptor)
   
     // Run completion automatically when the user hits '.'
-    override x.HandleCodeCompletionAsync(context, completionChar, token) =
-        if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
-            let computation =
-                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
-                    
-            Async.StartAsTask (computation = computation, cancellationToken = token)
+    override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
+           if triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CharTyped && triggerInfo.TriggerCharacter.Value = '.' || triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand  then
+                let computation =
+                    Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
+                        
+                Async.StartAsTask (computation = computation, cancellationToken = token)
+            else
+                Task.FromResult null
         else
             Task.FromResult null
-
-    /// Completion was triggered explicitly using Ctrl+Space or by the function above
-    override x.CodeCompletionCommand(context) =
-        Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true)
-        |> Async.StartAsTask
 
 
     override x.GetCurrentParameterIndex (startOffset: int, token) =

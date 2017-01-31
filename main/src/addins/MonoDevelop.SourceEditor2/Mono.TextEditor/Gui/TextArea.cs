@@ -334,7 +334,6 @@ namespace Mono.TextEditor
 			textEditorData.RecenterEditor += TextEditorData_RecenterEditor; 
 			textEditorData.Document.TextChanged += OnDocumentStateChanged;
 			textEditorData.Document.TextSet += OnTextSet;
-			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
 			textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 			
@@ -798,7 +797,6 @@ namespace Mono.TextEditor
 			Document.HeightChanged -= TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.TextChanged -= OnDocumentStateChanged;
 			Document.TextSet -= OnTextSet;
-			Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
 			Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
 			Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
 
@@ -2955,6 +2953,15 @@ namespace Mono.TextEditor
 			var start = editor.Document.OffsetToLineNumber (args.Offset);
 			var end = editor.Document.OffsetToLineNumber (args.Offset + args.InsertionLength);
 			editor.Document.CommitMultipleLineUpdate (start, end);
+
+			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
+			//if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
+			//	return;
+			//if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
+			//	return;
+			//var line = e.Line.LineNumber;
+			//textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
+			//RedrawLine (line);
 		}
 		
 		void OnTextSet (object sender, EventArgs e)
@@ -3163,17 +3170,6 @@ namespace Mono.TextEditor
 		{
 			if (this.IsFocus)
 				requestResetCaretBlink = true;
-		}
-
-		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
-		{
-			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
-				return;
-			if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
-				return;
-			var line = e.Line.LineNumber;
-			textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
-			RedrawLine (line);
 		}
 
 		class SetCaret 

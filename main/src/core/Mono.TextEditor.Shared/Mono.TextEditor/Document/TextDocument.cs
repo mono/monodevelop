@@ -210,7 +210,7 @@ namespace Mono.TextEditor
 		{
 			this.buffer = buffer;
 			this.splitter = splitter;
-			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
+			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
 			textSegmentMarkerTree.InstallListener (this);
 			this.diffTracker.SetTrackDocument (this); 
@@ -238,21 +238,6 @@ namespace Mono.TextEditor
 				Text = text,
 				IsReadOnly = true
 			};
-		}
-
-		public event EventHandler<LineEventArgs> LineChanged {
-			add { splitter.LineChanged += value; }
-			remove { splitter.LineChanged -= value; }
-		}
-
-		public event EventHandler<LineEventArgs> LineInserted {
-			add { splitter.LineInserted += value; }
-			remove { splitter.LineInserted -= value; }
-		}
-
-		public event EventHandler<LineEventArgs> LineRemoved {
-			add { splitter.LineRemoved += value; }
-			remove { splitter.LineRemoved -= value; }
 		}
 
 		#region Buffer implementation
@@ -1566,17 +1551,24 @@ namespace Mono.TextEditor
 
 		#endregion
 
-		void HandleSplitterLineSegmentTreeLineRemoved (object sender, LineEventArgs e)
+		void HandleSplitterLineSegmentTreeLineRemoved (object sender, TextChangeEventArgs e)
 		{
-			foreach (TextLineMarker marker in e.Line.Markers) {
-				if (marker is IExtendingTextLineMarker) {
-					UnRegisterVirtualTextMarker ((IExtendingTextLineMarker)marker);
-					lock (extendingTextMarkers) {
-						extendingTextMarkers.Remove (marker);
-						OnHeightChanged (EventArgs.Empty);
+			var line = GetLineByOffset (e.Offset);
+			var endOffset = e.Offset + e.RemovalLength;
+			var offset = line.Offset;
+			do {
+				foreach (TextLineMarker marker in line.Markers) {
+					if (marker is IExtendingTextLineMarker) {
+						UnRegisterVirtualTextMarker ((IExtendingTextLineMarker)marker);
+						lock (extendingTextMarkers) {
+							extendingTextMarkers.Remove (marker);
+							OnHeightChanged (EventArgs.Empty);
+						}
 					}
 				}
-			}
+				offset += line.LengthIncludingDelimiter;
+				line = line.NextLine;
+			} while (line != null && offset < endOffset);
 		}
 		
 		public bool Contains (int offset)

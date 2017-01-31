@@ -305,6 +305,7 @@
     <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -331,5 +332,6 @@
     <Folder Include="MonoDevelop.Ide.Editor\" />
     <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
+    <Folder Include="MonoDevelop.Components.PropertyGrid\" />
   </ItemGroup>
 </Project>

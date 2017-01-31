@@ -39,9 +39,5 @@ namespace Mono.TextEditor
 		IEnumerable<DocumentLine> GetLinesBetween (int startLine, int endLine);
 		IEnumerable<DocumentLine> GetLinesStartingAt (int startLine);
 		IEnumerable<DocumentLine> GetLinesReverseStartingAt (int startLine);
-
-		event EventHandler<LineEventArgs> LineChanged;
-		event EventHandler<LineEventArgs> LineInserted;
-		event EventHandler<LineEventArgs> LineRemoved;
 	}
 }

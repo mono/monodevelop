@@ -633,12 +633,33 @@ class EmptyClass
 				var oldOffset = ext.Editor.CaretOffset;
 				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
 				var newOffset = ext.Editor.CaretOffset;
-				Console.WriteLine ("-----");
-				Console.WriteLine (ext.Editor.Text);
-				Console.WriteLine ("-----");
 				Assert.AreEqual (oldOffset, newOffset);
 			});
 
+		} 
+
+
+		/// <summary>
+		/// Bug 51549 - Format document changes position of caret
+		/// </summary>
+		[Test]
+		public async Task TestBug51549 ()
+		{
+			await Simulate (@"
+using System;
+
+class MyContext
+{
+	public static void Main()
+	{
+		Console.WriteLine   $   (""Hello world!"");
+	}
+}", (content, ext) => {
+				var oldOffset = ext.Editor.CaretOffset;
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
+				var newOffset = ext.Editor.CaretOffset;
+				Assert.AreEqual (oldOffset - 3, newOffset);
+			});
 		}
 
 	}

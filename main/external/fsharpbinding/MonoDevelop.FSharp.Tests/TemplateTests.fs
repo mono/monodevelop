@@ -32,7 +32,6 @@ type ``Template tests``() =
         workspace.SetValue(null, new RootWorkspace())
         let workbench = getField "workbench"
         workbench.SetValue(null, new MonoDevelop.Ide.Gui.Workbench())
-        IdeApp.Preferences.MSBuildVerbosity.Value <- MonoDevelop.Projects.MSBuild.MSBuildVerbosity.Minimal
 
     let templateService = TemplatingService()
     let templateMatch (template:SolutionTemplate) = 

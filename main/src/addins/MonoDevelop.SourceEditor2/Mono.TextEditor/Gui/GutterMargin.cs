@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -45,10 +46,11 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 
-			this.editor.Document.LineChanged += UpdateWidth;
+			this.editor.Document.TextChanged += UpdateWidth;
 			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
 		}
+
 
 		void HandleEditorDocumenthandleTextSet (object sender, EventArgs e)
 		{
@@ -84,7 +86,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void UpdateWidth (object sender, LineEventArgs args)
+		void UpdateWidth (object sender, TextChangeEventArgs args)
 		{
 			int currentLineCountLog10 = (int)System.Math.Log10 (LineCountMax);
 			if (oldLineCountLog10 != currentLineCountLog10) {
@@ -182,7 +184,7 @@ namespace Mono.TextEditor
 			
 			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
-			this.editor.Document.LineChanged -= UpdateWidth;
+			this.editor.Document.TextChanged -= UpdateWidth;
 //			layout = layout.Kill ();
 			base.Dispose ();
 		}

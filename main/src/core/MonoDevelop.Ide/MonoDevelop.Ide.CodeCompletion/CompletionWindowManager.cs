@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return false;
 			if (descriptor.KeyChar != '\0') {
-				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
+				wnd.EndOffset++;
 			}
 			return wnd.PreProcessKeyEvent (descriptor);
 		}
@@ -192,6 +192,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return;
 			wnd.PostProcessKeyEvent (descriptor);
+			if (wnd.CompletionWidget != null)
+				wnd.EndOffset = wnd.CompletionWidget.CaretOffset;
 		}
 
 		public static void RepositionWindow ()
