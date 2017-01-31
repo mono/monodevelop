@@ -1969,7 +1969,7 @@ namespace MonoDevelop.Debugger
 		void ShowPopup (Gdk.EventButton evt)
 		{
 			if (AllowPopupMenu)
-				IdeApp.CommandService.ShowContextMenu (this, evt, menuSet, this);
+				this.ShowContextMenu (evt, menuSet, this);
 		}
 
 		[CommandUpdateHandler (EditCommands.SelectAll)]
