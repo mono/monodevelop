@@ -50,6 +50,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			project = dependenciesNode.Project;
 		}
 
+		internal DotNetProject Project {
+			get { return project; }
+		}
+
 		public string GetLabel ()
 		{
 			return "NuGet";
@@ -165,7 +169,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
 		{
 			return project.Items.OfType<ProjectPackageReference> ()
-				.Select (PackageDependencyNode.Create);
+				.Select (reference => PackageDependencyNode.Create (this, reference));
 		}
 	}
 }

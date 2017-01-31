@@ -153,6 +153,14 @@
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
+	<ExtensionPoint path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
+		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.PackageManagement.NodeBuilders.PackageReferenceNodePropertyProvider" />
 	</Extension>
