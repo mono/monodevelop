@@ -20,7 +20,7 @@
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
 
-      <!-- <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" /> -->
+      <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
       <!-- <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />  -->
 
       <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ArgumentValidation.cs" />
