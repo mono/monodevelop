@@ -27,7 +27,6 @@
 using System;
 using MonoDevelop.Projects;
 using Gtk;
-using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -40,8 +39,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int TriggerYCoord { get; set; }
 		public int TriggerTextHeight { get; set; }
 		public int TriggerWordLength { get; set; }
-
-		public ITextSourceVersion Version { get; set; }
 
 		public override string ToString ()
 		{
