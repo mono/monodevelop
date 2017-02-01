@@ -503,14 +503,22 @@ namespace Mono.Debugging.Win32
 				return true;
 
 			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
-				string res = EvaluateExpression (thread, bp.ConditionExpression);
-				if (bp.BreakIfConditionChanges) {
-					if (res == bp.LastConditionValue)
-						return true;
-					bp.LastConditionValue = res;
-				} else {
-					if (res != null && res.ToLower () != "true")
-						return true;
+				try {
+					string res = EvaluateExpression (thread, bp.ConditionExpression);
+					if (bp.BreakIfConditionChanges) {
+						if (res == bp.LastConditionValue)
+							return true;
+						bp.LastConditionValue = res;
+					}
+					else {
+						if (res != null && res.ToLower () != "true")
+							return true;
+					}
+				}
+				catch (EvaluatorException e) {
+					OnDebuggerOutput (false, e.Message);
+					binfo.SetStatus (BreakEventStatus.Invalid, e.Message);
+					return true;
 				}
 			}
 
@@ -1713,7 +1721,13 @@ namespace Mono.Debugging.Win32
 				if (j == -1)
 					break;
 				string se = exp.Substring (i + 1, j - i - 1);
-				se = EvaluateExpression (thread, se);
+				try {
+					se = EvaluateExpression (thread, se);
+				}
+				catch (EvaluatorException e) {
+					OnDebuggerOutput (false, e.ToString ());
+					return String.Empty;
+				}
 				sb.Append (exp.Substring (last, i - last));
 				sb.Append (se);
 				last = j + 1;
@@ -1734,7 +1748,11 @@ namespace Mono.Debugging.Win32
 				ctx.Thread = thread;
 				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
 				return val.CreateObjectValue (false).Value;
-			} catch (Exception ex) {
+			}
+			catch (EvaluatorException e) {
+				throw;
+			}
+			catch (Exception ex) {
 				OnDebuggerOutput (true, ex.ToString ());
 				return string.Empty;
 			}
