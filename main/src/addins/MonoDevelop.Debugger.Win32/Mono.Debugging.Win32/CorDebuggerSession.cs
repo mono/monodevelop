@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Reflection;
@@ -1753,8 +1754,7 @@ namespace Mono.Debugging.Win32
 				throw;
 			}
 			catch (Exception ex) {
-				OnDebuggerOutput (true, ex.ToString ());
-				return string.Empty;
+				throw new EvaluatorException (ex.Message);
 			}
 		}
 
