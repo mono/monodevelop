@@ -2,6 +2,7 @@
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.Core
+open MonoDevelop.Core.ProgressMonitoring
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Components
@@ -9,9 +10,13 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.SharedAssetsProjects
 open System
 open System.IO
-
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 [<TestFixture>]
 type ProjectTests() =
+    let monitor = new ConsoleProgressMonitor()
+    let toTask computation : Task = Async.StartAsTask computation :> _
+    let (/) a b = Path.Combine (a, b)
 
     [<Test>]
     member this.Can_reorder_nodes() =
@@ -44,6 +49,35 @@ type ProjectTests() =
   </ItemGroup>
 </Project>"""
             newXml |> should equal expected
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    member this.``Orders and groups files correctly for Visual Studio``() =
+        toTask <| async {
+            if not MonoDevelop.Core.Platform.IsWindows then
+                let path = Path.GetTempPath()
+                let projectPath = path + Guid.NewGuid().ToString() + ".fsproj"
+                let project = Services.ProjectService.CreateDotNetProject ("F#")
+                project.FileName <- new FilePath(projectPath)
+
+                project.AddFile(path / "MainActivity.fs", "Compile") |> ignore
+                project.AddFile(path / "Properties" / "AssemblyInfo.fs", "Compile") |> ignore
+                project.AddFile(path / "Resources" / "AboutResources.txt", "None") |> ignore
+                project.AddFile(path / "Properties" / "AndroidManifest.xml", "None") |> ignore
+
+                do! project.SaveAsync(monitor) |> Async.AwaitTask
+                let groups = project.MSBuildProject.ItemGroups |> List.ofSeq
+                groups.Length |> should equal 1
+                let includes =
+                    groups.[0].Items
+                    |> Seq.map (fun item -> item.Include)
+                    |> List.ofSeq
+                includes |> should equal
+                    ["MainActivity.fs"
+                     "Properties\\AssemblyInfo.fs"
+                     "Properties\\AndroidManifest.xml"
+                     "Resources\\AboutResources.txt"]
+
+        }
 
     [<Test>]
     member this.``Adds desktop conditional FSharp targets``() =
