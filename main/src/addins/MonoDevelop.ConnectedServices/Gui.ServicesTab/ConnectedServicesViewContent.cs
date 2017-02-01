@@ -57,6 +57,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					this.widget.ShowServiceDetails (service);
 					return;
 				}
+				LoggingService.LogError ("Showing service details failed, service id {0} not found", serviceId);
 			}
 
 			var services = binding.SupportedServices;
