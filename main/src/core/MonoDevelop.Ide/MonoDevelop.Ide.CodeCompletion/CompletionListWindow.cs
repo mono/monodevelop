@@ -687,8 +687,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (completionContext.TriggerWordLength == 0) {
 					UpdateWordSelection ();
 					initialWordLength = 0;
+
 					//completionWidget.SelectedLength;
-					StartOffset = CompletionWidget.CaretOffset;
+					StartOffset = completionContext.TriggerOffset;
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();

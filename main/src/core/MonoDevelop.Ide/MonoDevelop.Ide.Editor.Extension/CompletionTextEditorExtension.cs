@@ -354,6 +354,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
 			}
+			Editor.EnsureCaretIsNotVirtual ();
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
