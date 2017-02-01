@@ -683,8 +683,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				AutoCompleteEmptyMatchOnCurlyBrace = list.AutoCompleteEmptyMatchOnCurlyBrace;
 				CloseOnSquareBrackets = list.CloseOnSquareBrackets;
 				// makes control-space in midle of words to work
+				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
-				if (completionContext.TriggerWordLength == 0) {
+				if (text.Length == 0) {
 					UpdateWordSelection ();
 					initialWordLength = 0;
 
@@ -703,8 +704,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				}
 
-				initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : completionContext.TriggerWordLength;
-				StartOffset = completionContext.TriggerOffset;
+				initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
+				StartOffset = CompletionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;
 				ResetSizes ();
 				UpdateWordSelection ();
@@ -817,7 +818,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				if (item.HasOverloads && declarationviewwindow != null && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
+				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
 					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (facade, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (facade, ref ka, descriptor);
