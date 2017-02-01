@@ -88,23 +88,23 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Displays the service details tab for the given service
 		/// </summary>
-		public static void OpenServicesTab (this IConnectedService service)
+		public static Task OpenServicesTab (this IConnectedService service)
 		{
 			if (service == null)
 				throw new ArgumentNullException (nameof (service));
 
-			Runtime.RunInMainThread (() => OpenServicesTab (service.Project, service.Id));
+			return Runtime.RunInMainThread (() => OpenServicesTab (service.Project, service.Id));
 		}
 
 		/// <summary>
 		/// Displays the services gallery tab for the given project
 		/// </summary>
-		public static void OpenServicesTab (this DotNetProject project)
+		public static Task OpenServicesTab (this DotNetProject project)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
 
-			Runtime.RunInMainThread (() => OpenServicesTab (project, null));
+			return Runtime.RunInMainThread (() => OpenServicesTab (project, null));
 		}
 
 		/// <summary>
