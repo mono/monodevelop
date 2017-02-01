@@ -1,0 +1,62 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Platform.Settings.targets" />
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
+  <PropertyGroup>
+    <AssemblyName>Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation</AssemblyName>
+    <OutputPath>$(BinariesDirectory)\bin\$(BuildArchitecture)</OutputPath>
+    <OutputType>Library</OutputType>
+    <SignAssemblyAttribute>true</SignAssemblyAttribute>
+    <UseVsVersion>true</UseVsVersion>
+    <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
+    <CreateMetaAssembly>false</CreateMetaAssembly>
+    <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
+    <NoWarn>649;436;$(NoWarn)</NoWarn>
+  </PropertyGroup>
+  <!-- IDE specific Information -->
+  <PropertyGroup>
+    <ProjectGuid>{BA2BA042-B747-432B-98F8-56612782B09D}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ClassificationTypeImpl.cs" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Data" />
+    <Compile Include="ClassificationTypeRegistryService.cs" />
+    <Compile Include="FxCopSuppressions.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Reference Include="System.ComponentModel.Composition" />
+    <ProjectReference Include="..\..\Def\TextData\TextData.csproj">
+      <Project>{80A00E91-51E5-471C-80BA-0D863987ECC7}</Project>
+      <Name>TextData %28Text\Def\TextData\TextData%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Def\TextLogic\TextLogic.csproj">
+      <Project>{26FAFDBB-9C63-4F92-A176-6E350178DB67}</Project>
+      <Name>TextLogic %28Text\Def\TextLogic\TextLogic%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Def\CoreUtility.csproj">
+      <Project>{BA3DD7EC-3F13-4400-A3A9-96AD425B3369}</Project>
+      <Name>CoreUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Util\TextDataUtil\TextDataUtil.csproj">
+      <Project>{0AE47F00-7C79-4581-A849-9C1E7B37CD56}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.targets" />
+  <PropertyGroup>
+    <CopyToSuiteBin>true</CopyToSuiteBin>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
