@@ -99,8 +99,8 @@ namespace MonoDevelop.Debugger
 			var icon = new ImageView (WarningIconPixbuf);
 			icon.Yalign = 0;
 
-			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true };
-			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true };
+			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
+			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
 			ExceptionMessageLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
 
@@ -389,11 +389,13 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			InnerExceptionTypeLabel.UseMarkup = true;
 			InnerExceptionTypeLabel.Xalign = 0;
 			InnerExceptionTypeLabel.Selectable = true;
+			InnerExceptionTypeLabel.CanFocus = false;
 			hbox.PackStart (InnerExceptionTypeLabel, false, true, 4);
 
 			InnerExceptionMessageLabel = new Label ();
 			InnerExceptionMessageLabel.Wrap = true;
 			InnerExceptionMessageLabel.Selectable = true;
+			InnerExceptionMessageLabel.CanFocus = false;
 			InnerExceptionMessageLabel.Xalign = 0;
 			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 			vboxAroundInnerExceptionMessage.PackStart (hbox, false, true, 0);
@@ -574,15 +576,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			ExceptionMessageLabel.Text = exception.Message ?? string.Empty;
 
 			UpdateSelectedException (exception);
-		}
-
-		protected override void OnShown ()
-		{
-			base.OnShown ();
-			//Deselect text(it's selected by default if .Selectable = true;
-			ExceptionTypeLabel.SelectRegion (0, 0);
-			//Switch focus to Close button, so ExceptionTypeLabel doesn't have cursor dispayed
-			close.GrabFocus ();
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)
@@ -933,17 +926,22 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			box.PackStart (vb, false, false, 0);
 			vb = new VBox (false, 6);
 			typeLabel = new Label {
-				Xalign = 0
+				Xalign = 0,
+				Selectable = true,
+				CanFocus = false
 			};
 			vb.PackStart (typeLabel);
 			messageLabel = new Label {
 				Xalign = 0,
-				NoShowAll = true
+				NoShowAll = true,
+				Selectable = true,
+				CanFocus = false
 			};
 			vb.PackStart (messageLabel);
 
 			var detailsBtn = new Xwt.LinkLabel (GettextCatalog.GetString ("Show Details"));
 			var hh = new HBox ();
+			detailsBtn.CanGetFocus = false;
 			detailsBtn.NavigateToUrl += (o, e) => dlg.ShowDialog ();
 			hh.PackStart (detailsBtn.ToGtkWidget (), false, false, 0);
 			vb.PackStart (hh, false, false, 0);
