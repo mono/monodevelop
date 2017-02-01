@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -111,6 +112,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public bool CanBeRemoved {
 			get { return IsTopLevel && !IsReadOnly; }
+		}
+
+		public bool IsReleaseVersion ()
+		{
+			NuGetVersion nugetVersion = null;
+			if (NuGetVersion.TryParse (version, out nugetVersion)) {
+				return !nugetVersion.IsPrerelease;
+			}
+
+			LoggingService.LogError ("Unable to parse NuGet package version '{0}'. Assuming release version.", version);
+			return true;
 		}
 
 		public bool HasDependencies ()

@@ -73,5 +73,32 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			return !MultipleSelectedNodes;
 		}
+
+		[CommandUpdateHandler (PackageReferenceNodeCommands.UpdatePackage)]
+		void CheckCanUpdatePackage (CommandInfo info)
+		{
+			var node = (PackageDependencyNode)CurrentNode.DataItem;
+			info.Enabled = node.CanBeRemoved;
+		}
+
+		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
+		public void UpdatePackage ()
+		{
+			var node = (PackageDependencyNode)CurrentNode.DataItem;
+			var project = new DotNetProjectProxy (node.Project);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (node.Name, project);
+
+			try {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (node.Project.ParentSolution);
+				var action = new UpdateNuGetPackageAction (solutionManager, project) {
+					PackageId = node.Name,
+					IncludePrerelease = !node.IsReleaseVersion ()
+				};
+
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			} catch (Exception ex) {
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
 	}
 }
