@@ -364,10 +364,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand));
-			if (completionList.TriggerWordStart >= 0)
+			if (completionList.TriggerWordStart >= 0) {
 				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
-			if (completionList.TriggerWordLength >= 0) 
 				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
+			}
+
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}
