@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 	public static class AtkCocoaMacExtensions
 	{
 		const string XamarinPrivateAtkCocoaNSAccessibilityKey = "xamarin-private-atkcocoa-nsaccessibility";
-		internal static INSAccessibility GetNSAccessibilityElement (Atk.Object o)
+		internal static INSAccessibility GetNSAccessibilityElement (GLib.Object o)
 		{
 			IntPtr handle = GtkWorkarounds.GetData (o, XamarinPrivateAtkCocoaNSAccessibilityKey);
 
@@ -88,6 +88,26 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			nsa.AccessibilityLabel = label;
+		}
+
+		public static void SetAccessibilityLabel (this Gtk.CellRenderer r, string label)
+		{
+			var nsa = GetNSAccessibilityElement (r);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityLabel = label;
+		}
+
+		public static void SetAccessibilityDescription (this Gtk.CellRenderer r, string description)
+		{
+			var nsa = GetNSAccessibilityElement (r);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityHelp = description;
 		}
 
 		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)

@@ -38,6 +38,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
+		public static void SetAccessibilityLabel (this Gtk.CellRenderer r, string label)
+		{
+		}
+
+		public static void SetAccessibilityDescription (this Gtk.CellRenderer r, string description)
+		{
+		}
+
 		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)
 		{
 		}
