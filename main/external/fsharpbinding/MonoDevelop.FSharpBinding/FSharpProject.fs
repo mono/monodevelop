@@ -7,6 +7,8 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open MonoDevelop.Ide
 open System.Xml
+open System.Xml.Linq
+open System.Xml.XPath
 open MonoDevelop.Core.Assemblies
 open ExtCore.Control
 
@@ -60,6 +62,33 @@ type FSharpProject() as self =
         |> Seq.tryFind (fun i -> i.UnevaluatedValue.Equals(".NETPortable"))
         |> Option.isSome
 
+    let fixProjectFormatForVisualStudio (project:MSBuildProject) =
+        // Merge ItemGroups into one group ordered by folder name
+        // so that VS for Windows can load it.
+        let directoryNameFromBuildItem (item:MSBuildItem) =
+            let itemInclude = item.Include.Replace('\\', Path.DirectorySeparatorChar)
+            Path.GetDirectoryName itemInclude
+
+        let groups = project.ItemGroups |> List.ofSeq
+        let itemGroups =
+            groups
+            |> Seq.collect (fun grp -> grp.Items)
+            |> Seq.filter  (fun item ->
+                                   item.Name = "None"
+                                || item.Name = "Compile"
+                                || item.Name = "AndroidResource" 
+                                || item.Name = "Folder")
+
+            |> Seq.groupBy directoryNameFromBuildItem
+            |> Seq.sortBy (fun (folder, _items) -> folder)
+
+        let newGroup = project.AddNewItemGroup()
+
+        for _folder, items in itemGroups do
+            for item in items do
+                project.RemoveItem(item, true)
+                newGroup.AddItem item
+
     [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
     member val TargetProfile = "mscorlib" with get, set
 
@@ -103,9 +132,9 @@ type FSharpProject() as self =
 
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
+        fixProjectFormatForVisualStudio msproject
         //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
-
         maybe {
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
