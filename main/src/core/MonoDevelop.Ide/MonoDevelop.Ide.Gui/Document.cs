@@ -351,6 +351,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.IsViewOnly; }
 		}
 
+		public override bool IsUntitled {
+			get {
+				return Window.ViewContent.IsUntitled;
+			}
+		}
+
 		Task currentOperationTask = Task.FromResult (true);
 
 		Task RunAsyncOperation (Func<Task> action)
