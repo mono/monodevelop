@@ -426,10 +426,16 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			int length = nsa.AccessibilityLinkedUIElements.Length;
-			var newLinkedElements = new NSObject[length + 1];
-			Array.Copy (nsa.AccessibilityLinkedUIElements, newLinkedElements, length);
-			newLinkedElements [length] = (NSObject) linkedNSA;
+			var current = nsa.AccessibilityLinkedUIElements;
+			NSObject [] newLinkedElements;
+			if (current != null) {
+				int length = nsa.AccessibilityLinkedUIElements.Length;
+				newLinkedElements = new NSObject [length + 1];
+				Array.Copy (nsa.AccessibilityLinkedUIElements, newLinkedElements, length);
+				newLinkedElements [length] = (NSObject)linkedNSA;
+			} else {
+				newLinkedElements = new NSObject[] { (NSObject)linkedNSA };
+			}
 
 			nsa.AccessibilityLinkedUIElements = newLinkedElements;
 		}
