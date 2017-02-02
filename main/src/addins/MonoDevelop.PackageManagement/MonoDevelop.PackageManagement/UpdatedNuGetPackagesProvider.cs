@@ -101,8 +101,11 @@ namespace MonoDevelop.PackageManagement
 					.Where (task => task.Exception == null)
 					.Select (task => task.Result)
 					.Where (package => package != null)
-					.OrderByDescending (package => package.Version)
-					.FirstOrDefault ();
+					.Aggregate ((left, right) => {
+						if (left.Version >= right.Version)
+							return left;
+						return right;
+					});
 
 				if (updatedPackage != null) {
 					updatedPackages.Add (updatedPackage);
