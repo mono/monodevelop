@@ -379,10 +379,5 @@
 	
 	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
-		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
-	</ExtensionPoint>
-
+	</ExtensionPoint>	
 </ExtensionModel>
