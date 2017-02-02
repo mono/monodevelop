@@ -57,12 +57,17 @@ type ProjectTests() =
                 let path = Path.GetTempPath()
                 let projectPath = path + Guid.NewGuid().ToString() + ".fsproj"
                 let project = Services.ProjectService.CreateDotNetProject ("F#")
-                project.FileName <- new FilePath(projectPath)
+                project.FileName <- FilePath(projectPath)
+                let files =
+                    [ path / "MainActivity.fs", "Compile"
+                      path / "Properties" / "AssemblyInfo.fs", "Compile"
+                      path / "Resources" / "AboutResources.txt", "None" 
+                      path / "Properties" / "AndroidManifest.xml", "None" ]
 
-                project.AddFile(path / "MainActivity.fs", "Compile") |> ignore
-                project.AddFile(path / "Properties" / "AssemblyInfo.fs", "Compile") |> ignore
-                project.AddFile(path / "Resources" / "AboutResources.txt", "None") |> ignore
-                project.AddFile(path / "Properties" / "AndroidManifest.xml", "None") |> ignore
+                files |> List.iter(fun (path, buildAction) ->
+                                        Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
+                                        File.Create(path).Dispose()
+                                        project.AddFile(path, buildAction) |> ignore)
 
                 do! project.SaveAsync(monitor) |> Async.AwaitTask
                 let groups = project.MSBuildProject.ItemGroups |> List.ofSeq

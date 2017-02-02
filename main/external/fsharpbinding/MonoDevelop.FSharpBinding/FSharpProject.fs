@@ -74,10 +74,8 @@ type FSharpProject() as self =
             groups
             |> Seq.collect (fun grp -> grp.Items)
             |> Seq.filter  (fun item ->
-                                   item.Name = "None"
-                                || item.Name = "Compile"
-                                || item.Name = "AndroidResource" 
-                                || item.Name = "Folder")
+                let absolutePath = MSBuildProjectService.FromMSBuildPath(project.FileName.ParentDirectory.ToString(), item.Include)
+                File.Exists absolutePath)
 
             |> Seq.groupBy directoryNameFromBuildItem
             |> Seq.sortBy (fun (folder, _items) -> folder)
