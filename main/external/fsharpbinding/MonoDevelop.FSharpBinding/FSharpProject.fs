@@ -73,7 +73,7 @@ type FSharpProject() as self =
         let msbuildItemExistsAsFile (item:MSBuildItem) =
            let projectPath = project.FileName.ParentDirectory |> string
            let itemPath = MSBuildProjectService.FromMSBuildPath(projectPath, item.Include)
-           File.Exists itemPath
+           item.Name <> "ProjectReference" && File.Exists itemPath
 
         let groups = project.ItemGroups |> List.ofSeq
         let itemGroups =
