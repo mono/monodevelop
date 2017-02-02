@@ -687,11 +687,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
-					UpdateWordSelection ();
 					initialWordLength = 0;
-
 					//completionWidget.SelectedLength;
 					StartOffset = completionContext.TriggerOffset;
+					UpdateWordSelection ();
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
