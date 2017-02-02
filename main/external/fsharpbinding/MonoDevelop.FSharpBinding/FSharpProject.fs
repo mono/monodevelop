@@ -69,21 +69,38 @@ type FSharpProject() as self =
             let itemInclude = item.Include.Replace('\\', Path.DirectorySeparatorChar)
             Path.GetDirectoryName itemInclude
 
+
+        let msbuildItemExistsAsFile (item:MSBuildItem) =
+           let projectPath = project.FileName.ParentDirectory |> string
+           let itemPath = MSBuildProjectService.FromMSBuildPath(projectPath, item.Include)
+           File.Exists itemPath
+
         let groups = project.ItemGroups |> List.ofSeq
         let itemGroups =
             groups
-            |> Seq.collect (fun grp -> grp.Items)
-            |> Seq.filter  (fun item ->
-                let absolutePath = MSBuildProjectService.FromMSBuildPath(project.FileName.ParentDirectory.ToString(), item.Include)
-                File.Exists absolutePath)
+            |> List.map  (fun group ->
+                group, group.Items
+                       |> Seq.filter msbuildItemExistsAsFile
+                       |> List.ofSeq)
+            |> List.filter (fun (_, items) -> items.Length > 0)
 
-            |> Seq.groupBy directoryNameFromBuildItem
-            |> Seq.sortBy (fun (folder, _items) -> folder)
+        let sortedItems =
+            itemGroups
+            |> List.collect (fun (_group, items) ->
+                items
+                |> List.groupBy directoryNameFromBuildItem
+                |> List.sortBy (fun (folder, _) -> folder)
+                |> List.collect (fun (_, items) -> items))
 
-        let newGroup = project.AddNewItemGroup()
+        let needsSort = 
+            match itemGroups with
+            | [_single, items] -> items <> sortedItems
+            | _ -> true
 
-        for _folder, items in itemGroups do
-            for item in items do
+        if needsSort then
+            let newGroup = project.AddNewItemGroup()
+
+            for item in sortedItems do
                 project.RemoveItem(item, true)
                 newGroup.AddItem item
 
