@@ -181,7 +181,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
+		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true" roslynName="C#">
 			<File pattern="*.cs" />
 		</MimeType>
 		<MimeType id="application/x-csproject" _description="C# project file" baseType="application/x-msbuild">
