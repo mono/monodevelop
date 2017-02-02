@@ -126,7 +126,12 @@ namespace MonoDevelop.PackageManagement
 
 			var package = packages
 				.Where (p => IsPackageVersionAllowed (p, packageReference))
-				.OrderByDescending (p => p.Identity.Version).FirstOrDefault ();
+				.Aggregate ((left, right) => {
+					if (left.Identity.Version >= right.Identity.Version)
+						return left;
+					return right;
+				});
+
 			if (package == null)
 				return null;
 
