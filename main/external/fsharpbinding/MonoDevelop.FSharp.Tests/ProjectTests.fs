@@ -61,8 +61,12 @@ type ProjectTests() =
                 let files =
                     [ path / "MainActivity.fs", "Compile"
                       path / "Properties" / "AssemblyInfo.fs", "Compile"
-                      path / "Resources" / "AboutResources.txt", "None" 
-                      path / "Properties" / "AndroidManifest.xml", "None" ]
+                      path / "Resources" / "AboutResources.txt", "None"
+                      path / "Properties" / "AndroidManifest.xml", "None"
+                      path / "Properties" / "9.txt", "None"
+                      path / "Properties" / "8.txt", "None"
+                      path / "Properties" / "7.txt", "None"
+                      ]
 
                 files |> List.iter(fun (path, buildAction) ->
                                         Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
@@ -80,6 +84,9 @@ type ProjectTests() =
                     ["MainActivity.fs"
                      "Properties\\AssemblyInfo.fs"
                      "Properties\\AndroidManifest.xml"
+                     "Properties\\9.txt"
+                     "Properties\\8.txt"
+                     "Properties\\7.txt"
                      "Resources\\AboutResources.txt"]
 
         }
