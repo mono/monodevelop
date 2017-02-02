@@ -9230,6 +9230,8 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\GlobalOptionPersister.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TextPolicyDocumentOptionsProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
