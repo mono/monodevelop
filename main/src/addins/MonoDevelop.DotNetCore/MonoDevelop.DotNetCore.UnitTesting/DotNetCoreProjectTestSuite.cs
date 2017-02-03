@@ -187,8 +187,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 			testPlatformAdapter.RunTests (testContext, testProvider, testAssemblyPath);
 			while (testPlatformAdapter.IsRunningTests) {
-				if (testContext.Monitor.CancellationToken.IsCancellationRequested)
+				if (testContext.Monitor.CancellationToken.IsCancellationRequested) {
+					testPlatformAdapter.CancelTestRun ();
 					break;
+				}
 
 					Thread.Sleep (100);
 			}

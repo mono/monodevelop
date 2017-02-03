@@ -68,6 +68,9 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		public void OnTestRunComplete (TestRunCompletePayload testRunComplete)
 		{
+			if (testRunComplete.TestRunCompleteArgs.IsAborted || testRunComplete.TestRunCompleteArgs.IsCanceled)
+				return;
+
 			if (testRunComplete.LastRunTests != null) {
 				OnTestRunChanged (testRunComplete.LastRunTests);
 			}

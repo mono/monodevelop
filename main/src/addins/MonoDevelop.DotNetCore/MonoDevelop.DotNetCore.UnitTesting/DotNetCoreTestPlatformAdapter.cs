@@ -323,5 +323,12 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			var eventArgs = dataSerializer.DeserializePayload<TestRunChangedEventArgs> (message);
 			testResultBuilder.OnTestRunChanged (eventArgs);
 		}
+
+		public void CancelTestRun ()
+		{
+			if (IsRunningTests) {
+				communicationManager.SendMessage (MessageType.CancelTestRun);
+			}
+		}
 	}
 }
