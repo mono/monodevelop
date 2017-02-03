@@ -167,6 +167,8 @@ namespace MonoDevelop.Core
 			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 14) },
 		};
 
+		readonly DateTimeWrapper [] defaultDateTimeSource = { };
+
 		class DateTimeComparer : IComparer<DateTime>
 		{
 			public int Compare (DateTime x, DateTime y)
@@ -180,6 +182,17 @@ namespace MonoDevelop.Core
 		{
 			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime));
 			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
+		}
+
+		[Test]
+		public void TestMaxOrDefaultExtension ()
+		{
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MaxValue (dtw => dtw.DateTime));
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MaxValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreEqual (null, defaultDateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreEqual (null, defaultDateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
 		}
 
 		[Test]
@@ -187,6 +200,17 @@ namespace MonoDevelop.Core
 		{
 			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime));
 			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
+		}
+
+		[Test]
+		public void TestMinOrDefaultExtension ()
+		{
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MinValue (dtw => dtw.DateTime));
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MinValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreEqual (null, defaultDateTimeSource.MinValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreEqual (null, defaultDateTimeSource.MinValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
 		}
 	}
 }
