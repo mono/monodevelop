@@ -102,7 +102,7 @@ namespace MonoDevelop.PackageManagement
 					.Where (task => task.Exception == null)
 					.Select (task => task.Result)
 					.Where (package => package != null)
-					.MaxValue (x => x.Version);
+					.MaxValueOrDefault (x => x.Version);
 
 				if (updatedPackage != null) {
 					updatedPackages.Add (updatedPackage);
@@ -126,7 +126,7 @@ namespace MonoDevelop.PackageManagement
 
 			var package = packages
 				.Where (p => IsPackageVersionAllowed (p, packageReference))
-				.MaxValue (x => x.Identity.Version);
+				.MaxValueOrDefault (x => x.Identity.Version);
 
 			if (package == null)
 				return null;

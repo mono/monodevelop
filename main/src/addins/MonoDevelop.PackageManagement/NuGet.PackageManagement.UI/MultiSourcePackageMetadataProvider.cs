@@ -126,7 +126,7 @@ namespace NuGet.PackageManagement.UI
 			var completed = (await Task.WhenAll(tasks))
 				.Where(m => m != null);
 
-			var highest = completed.MaxValue (e => e.Identity.Version, VersionComparer.VersionRelease);
+			var highest = completed.MaxValueOrDefault (e => e.Identity.Version, VersionComparer.VersionRelease);
 
 			return highest?.WithVersions(
 				asyncValueFactory: () => MergeVersionsAsync(identity, completed));
