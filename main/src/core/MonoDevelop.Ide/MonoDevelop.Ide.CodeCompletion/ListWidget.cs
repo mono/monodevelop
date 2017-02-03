@@ -78,6 +78,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public readonly List<CategorizedCompletionItems> CategorizedItems;
 		public readonly List<int> FilteredItems;
 
+		public bool? AutoSelect { get; set; }
+
 		public CompletionListFilterResult (List<int> filteredItems)
 		{
 			FilteredItems = filteredItems;
@@ -817,8 +819,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (win.CompletionDataList == null)
 				return;
 			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
-			if (filterResult == null)
+			if (filterResult == null) {
 				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
+			} else {
+				if (filterResult.AutoSelect.HasValue)
+					AutoSelect = filterResult.AutoSelect.Value;
+			}
 			
 			filteredItems = filterResult.FilteredItems;
 			if (filterResult.CategorizedItems == null) {
