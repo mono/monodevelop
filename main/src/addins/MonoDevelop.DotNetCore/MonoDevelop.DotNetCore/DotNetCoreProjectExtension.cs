@@ -126,9 +126,7 @@ namespace MonoDevelop.DotNetCore
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			FilePath outputDirectory = GetOutputDirectory (configuration);
-			FilePath outputFileName = outputDirectory.Combine (Project.Name + ".dll");
-
+			FilePath outputFileName = GetOutputFileName (configuration);
 			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
@@ -153,6 +151,22 @@ namespace MonoDevelop.DotNetCore
 				outputDirectory = Path.Combine ("bin", configuration.Name);
 
 			return Project.BaseDirectory.Combine (outputDirectory.ToString (), targetFramework);
+		}
+
+		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
+		{
+			var dotNetConfiguration = configuration.GetConfiguration (Project) as DotNetProjectConfiguration;
+			if (dotNetConfiguration != null)
+				return GetOutputFileName (dotNetConfiguration);
+
+			return FilePath.Null;
+		}
+
+		FilePath GetOutputFileName (DotNetProjectConfiguration configuration)
+		{
+			FilePath outputDirectory = GetOutputDirectory (configuration);
+			string assemblyName = Project.Name;
+			return outputDirectory.Combine (configuration.OutputAssembly + ".dll");
 		}
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
