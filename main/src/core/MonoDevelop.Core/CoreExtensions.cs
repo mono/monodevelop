@@ -60,13 +60,13 @@ namespace System
 			return found ? index : -1;
 		}
 
-		public static TSource MaxValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector) where TResult : IComparable<TResult>
+		public static TSource MaxValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
 		{
 			if (source == null)
 				throw new ArgumentNullException (nameof (source));
 
 			TSource result = default (TSource);
-			TResult value = default (TResult);
+			TCompare value = default (TCompare);
 			bool hasValue = false;
 			foreach (TSource item in source) {
 				var x = compareSelector (item);
@@ -86,13 +86,13 @@ namespace System
 			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
 		}
 
-		public static TSource MaxValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector, IComparer<TResult> comparer)
+		public static TSource MaxValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
 		{
 			if (source == null)
 				throw new ArgumentNullException (nameof (source));
 
 			TSource result = default (TSource);
-			TResult value = default (TResult);
+			TCompare value = default (TCompare);
 			bool hasValue = false;
 			foreach (TSource item in source) {
 				var x = compareSelector (item);
@@ -112,13 +112,13 @@ namespace System
 			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
 		}
 
-		public static TSource MinValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector) where TResult : IComparable<TResult>
+		public static TSource MinValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
 		{
 			if (source == null)
 				throw new ArgumentNullException (nameof (source));
 
 			TSource result = default (TSource);
-			TResult value = default (TResult);
+			TCompare value = default (TCompare);
 			bool hasValue = false;
 			foreach (TSource item in source) {
 				var x = compareSelector (item);
@@ -138,13 +138,13 @@ namespace System
 			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
 		}
 
-		public static TSource MinValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector, IComparer<TResult> comparer)
+		public static TSource MinValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
 		{
 			if (source == null)
 				throw new ArgumentNullException (nameof (source));
 
 			TSource result = default (TSource);
-			TResult value = default (TResult);
+			TCompare value = default (TCompare);
 			bool hasValue = false;
 			foreach (TSource item in source) {
 				var x = compareSelector (item);
