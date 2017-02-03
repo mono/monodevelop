@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
@@ -38,11 +37,13 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 	{
 		TestContext testContext;
 		IDotNetCoreTestProvider rootTest;
+		bool runningSingleTest;
 
 		public TestResultBuilder (TestContext testContext, IDotNetCoreTestProvider rootTest)
 		{
 			this.testContext = testContext;
 			this.rootTest = rootTest;
+			runningSingleTest = rootTest is DotNetCoreUnitTest;
 			TestResult = UnitTestResult.CreateSuccess ();
 		}
 
@@ -75,6 +76,12 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		void OnTestResult (TestResult result)
 		{
 			UnitTestResult convertedResult = AddTestResult (result);
+
+			if (runningSingleTest) {
+				// Ensure test error message is displayed in Test Results window.
+				TestResult = convertedResult;
+				return;
+			}
 
 			string testId = result.TestCase.Id.ToString ();
 			UnitTest currentTest = FindTest (rootTest as UnitTest, testId);
