@@ -2,6 +2,7 @@
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.Core
+open MonoDevelop.Core.ProgressMonitoring
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Components
@@ -9,9 +10,13 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.SharedAssetsProjects
 open System
 open System.IO
-
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 [<TestFixture>]
 type ProjectTests() =
+    let monitor = new ConsoleProgressMonitor()
+    let toTask computation : Task = Async.StartAsTask computation :> _
+    let (/) a b = Path.Combine (a, b)
 
     [<Test>]
     member this.Can_reorder_nodes() =
@@ -44,6 +49,81 @@ type ProjectTests() =
   </ItemGroup>
 </Project>"""
             newXml |> should equal expected
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    member this.``Orders and groups files correctly for Visual Studio``() =
+        toTask <| async {
+            if not MonoDevelop.Core.Platform.IsWindows then
+                let path = Path.GetTempPath()
+                let projectPath = path + Guid.NewGuid().ToString() + ".fsproj"
+                let project = Services.ProjectService.CreateDotNetProject ("F#")
+                project.FileName <- FilePath(projectPath)
+                let files =
+                    [ path / "MainActivity.fs", "Compile"
+                      path / "Properties" / "AssemblyInfo.fs", "Compile"
+                      path / "Resources" / "AboutResources.txt", "None"
+                      path / "Properties" / "AndroidManifest.xml", "None"
+                      path / "Properties" / "9.txt", "None"
+                      path / "Properties" / "8.txt", "None"
+                      path / "Properties" / "7.txt", "None" ]
+
+                files |> List.iter(fun (path, buildAction) ->
+                                        Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
+                                        File.Create(path).Dispose()
+                                        project.AddFile(path, buildAction) |> ignore)
+
+                do! project.SaveAsync(monitor) |> Async.AwaitTask
+                let groups = project.MSBuildProject.ItemGroups |> List.ofSeq
+                groups.Length |> should equal 1
+                let includes =
+                    groups.[0].Items
+                    |> Seq.map (fun item -> item.Include)
+                    |> List.ofSeq
+                let expected =
+                    ["MainActivity.fs"
+                     "Properties\\AssemblyInfo.fs"
+                     "Properties\\AndroidManifest.xml"
+                     "Properties\\9.txt"
+                     "Properties\\8.txt"
+                     "Properties\\7.txt"
+                     "Resources\\AboutResources.txt"]
+                Assert.AreEqual(expected, includes, sprintf "%A" includes)
+
+        }
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    member this.``Orders by folders first found``() =
+        toTask <| async {
+            if not MonoDevelop.Core.Platform.IsWindows then
+                let path = Path.GetTempPath()
+                let projectPath = path + Guid.NewGuid().ToString() + ".fsproj"
+                let project = Services.ProjectService.CreateDotNetProject ("F#")
+                project.FileName <- FilePath(projectPath)
+                let files =
+                    [ path / "Properties" / "AndroidManifest.xml", "None"
+                      path / "Services" / "Parser.fs", "Compile"
+                      path / "MainActivity.fs", "Compile"
+                      path / "Properties" / "AssemblyInfo.fs", "Compile" ]
+
+                files |> List.iter(fun (path, buildAction) ->
+                                        Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
+                                        File.Create(path).Dispose()
+                                        project.AddFile(path, buildAction) |> ignore)
+
+                do! project.SaveAsync(monitor) |> Async.AwaitTask
+                let groups = project.MSBuildProject.ItemGroups |> List.ofSeq
+                groups.Length |> should equal 1
+                let includes =
+                    groups.[0].Items
+                    |> Seq.map (fun item -> item.Include)
+                    |> List.ofSeq
+                let expected =
+                    ["Properties\\AndroidManifest.xml"
+                     "Properties\\AssemblyInfo.fs"
+                     "Services\\Parser.fs"
+                     "MainActivity.fs"]
+                Assert.AreEqual(expected, includes, sprintf "%A" includes)
+        }
 
     [<Test>]
     member this.``Adds desktop conditional FSharp targets``() =
