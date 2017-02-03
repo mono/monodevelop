@@ -79,8 +79,11 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			if (!testPlatformAdapter.IsDiscoveringTests) {
 				AddOldTests ();
-				Status = TestStatus.Loading;
-				testPlatformAdapter.StartDiscovery (GetAssemblyFileName ());
+				string assemblyFileName = GetAssemblyFileName ();
+				if (File.Exists (assemblyFileName)) {
+					Status = TestStatus.Loading;
+					testPlatformAdapter.StartDiscovery (assemblyFileName);
+				}
 			}
 		}
 
@@ -178,6 +181,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			IDotNetCoreTestProvider testProvider,
 			string testAssemblyPath)
 		{
+			if (!File.Exists (testAssemblyPath)) {
+				return HandleMissingAssemblyOnRun (testContext, testAssemblyPath);
+			}
+
 			testPlatformAdapter.RunTests (testContext, testProvider, testAssemblyPath);
 			while (testPlatformAdapter.IsRunningTests) {
 				if (testContext.Monitor.CancellationToken.IsCancellationRequested)
@@ -189,9 +196,20 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			return testPlatformAdapter.TestResult;
 		}
 
+		UnitTestResult HandleMissingAssemblyOnRun (TestContext testContext, string testAssemblyPath)
+		{
+			var exception = new FileNotFoundException (
+				GettextCatalog.GetString ("Unable to run tests. Assembly not found '{0}'", testAssemblyPath),
+				testAssemblyPath);
+
+			testContext.Monitor.ReportRuntimeError (exception.Message, exception);
+
+			return UnitTestResult.CreateFailure (exception);
+		}
+
 		public UnitTestResult RunTest (TestContext testContext, IDotNetCoreTestProvider testProvider)
 		{
-			return RunTest (testContext, testProvider, null);
+			return RunTest (testContext, testProvider, GetAssemblyFileName ());
 		}
 
 		public IEnumerable<TestCase> GetTests ()
