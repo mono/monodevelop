@@ -65,14 +65,16 @@ type FSharpProject() as self =
     let fixProjectFormatForVisualStudio (project:MSBuildProject) =
         // Merge ItemGroups into one group ordered by folder name
         // so that VS for Windows can load it.
+        let projectPath = project.FileName.ParentDirectory |> string
+
+        let absolutePath path = MSBuildProjectService.FromMSBuildPath(projectPath, path)
+
         let directoryNameFromBuildItem (item:MSBuildItem) =
             let itemInclude = item.Include.Replace('\\', Path.DirectorySeparatorChar)
             Path.GetDirectoryName itemInclude
 
-
         let msbuildItemExistsAsFile (item:MSBuildItem) =
-           let projectPath = project.FileName.ParentDirectory |> string
-           let itemPath = MSBuildProjectService.FromMSBuildPath(projectPath, item.Include)
+           let itemPath = absolutePath item.Include
            item.Name <> "ProjectReference" && File.Exists itemPath
 
         let groups = project.ItemGroups |> List.ofSeq
@@ -84,17 +86,41 @@ type FSharpProject() as self =
                        |> List.ofSeq)
             |> List.filter (fun (_, items) -> items.Length > 0)
 
-        let sortedItems =
-            itemGroups
-            |> List.collect (fun (_group, items) ->
-                items
-                |> List.groupBy directoryNameFromBuildItem
-                |> List.sortBy (fun (folder, _) -> folder)
-                |> List.collect (fun (_, items) -> items))
+        let isParentDirectory folderName fileName =
+            let absoluteFolder = DirectoryInfo (absolutePath folderName)
+            let absoluteFile = FileInfo (absolutePath fileName)
+            let rec isParentDirRec (dir:DirectoryInfo) =
+                match dir with
+                | null -> false
+                | dir when dir.FullName = absoluteFolder.FullName -> true
+                | _ -> isParentDirRec dir.Parent
+            isParentDirRec absoluteFile.Directory
 
+        let unsorted = itemGroups |> List.collect snd
+        let rec splitFilesByParent (items:MSBuildItem list) parentFolder list1 list2 =
+            match items with
+            | h :: t ->
+                if isParentDirectory parentFolder h.Include then
+                    splitFilesByParent t parentFolder (h::list1) list2
+                else
+                    splitFilesByParent t parentFolder list1 (h::list2)
+            | [] -> (list1 |> List.rev) @ (list2 |> List.rev)
+
+        let rec orderFiles items acc lastFolder =
+            match items with
+            | h :: t -> 
+                let newFolder = directoryNameFromBuildItem h
+                if newFolder = lastFolder then
+                    orderFiles t (h::acc) newFolder
+                else
+                    let childrenFirst = (splitFilesByParent t newFolder [] [])
+                    orderFiles childrenFirst (h::acc) newFolder
+            | [] -> acc |> List.rev
+
+        let sortedItems = orderFiles unsorted [] ""
         let needsSort = 
             match itemGroups with
-            | [_single, items] -> items <> sortedItems
+            | [_single, items] when items = sortedItems -> false
             | _ -> true
 
         if needsSort then
