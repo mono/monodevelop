@@ -639,7 +639,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
-				foreach (var dir in Directory.GetDirectories (basePath))
+				foreach (var dir in Directory.EnumerateDirectories (basePath))
 					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index));
 			}
 
@@ -651,7 +651,7 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
 				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
-				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => {
+				res = res.Concat (Directory.EnumerateFiles (basePath, path).Select (f => {
 					context.SetItemContext (f, recursiveDir);
 					var ev = baseDir + Path.GetFileName (f);
 					return CreateEvaluatedItem (context, pinfo, project, sourceItem, ev);
@@ -664,7 +664,7 @@ namespace MonoDevelop.Projects.MSBuild
 				// The recursive search is done below.
 
 				if (path.IndexOfAny (wildcards) != -1) {
-					foreach (var dir in Directory.GetDirectories (basePath, path))
+					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
 						res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1));
 				} else
 					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1));
