@@ -87,14 +87,17 @@ type FSharpProject() as self =
             |> List.filter (fun (_, items) -> items.Length > 0)
 
         let isParentDirectory folderName fileName =
-            let absoluteFolder = DirectoryInfo (absolutePath folderName)
-            let absoluteFile = FileInfo (absolutePath fileName)
-            let rec isParentDirRec (dir:DirectoryInfo) =
-                match dir with
-                | null -> false
-                | dir when dir.FullName = absoluteFolder.FullName -> true
-                | _ -> isParentDirRec dir.Parent
-            isParentDirRec absoluteFile.Directory
+            if String.isEmpty folderName then
+                true
+            else
+                let absoluteFolder = DirectoryInfo (absolutePath folderName)
+                let absoluteFile = FileInfo (absolutePath fileName)
+                let rec isParentDirRec (dir:DirectoryInfo) =
+                    match dir with
+                    | null -> false
+                    | dir when dir.FullName = absoluteFolder.FullName -> true
+                    | _ -> isParentDirRec dir.Parent
+                isParentDirRec absoluteFile.Directory
 
         let unsorted = itemGroups |> List.collect snd
         let rec splitFilesByParent (items:MSBuildItem list) parentFolder list1 list2 =
