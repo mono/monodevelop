@@ -152,6 +152,31 @@ namespace MonoDevelop.Core
 			obj1 = f2 (knownArg, knownArg);
 			Assert.AreEqual (4, memoTest3CallCount);
 		}
+
+		class DateTimeWrapper
+		{
+			public DateTime DateTime;
+		}
+
+		readonly DateTimeWrapper[] dateTimeSource = {
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 11) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 10) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 10) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 16) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 14) },
+		};
+
+		[Test]
+		public void TestMaxExtension ()
+		{
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime));
+		}
+
+		[Test]
+		public void TestMinExtension ()
+		{
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime));
+		}
 	}
 }
 

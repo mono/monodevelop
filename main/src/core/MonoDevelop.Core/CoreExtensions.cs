@@ -60,6 +60,58 @@ namespace System
 			return found ? index : -1;
 		}
 
+		public static TSource MaxValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector) where TResult : IComparable<TResult>
+		{
+			if (source == null)
+				throw new ArgumentNullException (nameof (source));
+
+			TSource result = default (TSource);
+			TResult value = default (TResult);
+			bool hasValue = false;
+			foreach (TSource item in source) {
+				var x = compareSelector (item);
+				if (hasValue) {
+					if (x.CompareTo (value) > 0) {
+						value = x;
+						result = item;
+					}
+				} else {
+					value = x;
+					result = item;
+					hasValue = true;
+				}
+			}
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
+		public static TSource MinValue<TSource, TResult> (this IEnumerable<TSource> source, Func<TSource, TResult> compareSelector) where TResult : IComparable<TResult>
+		{
+			if (source == null)
+				throw new ArgumentNullException (nameof (source));
+
+			TSource result = default (TSource);
+			TResult value = default (TResult);
+			bool hasValue = false;
+			foreach (TSource item in source) {
+				var x = compareSelector (item);
+				if (hasValue) {
+					if (x.CompareTo (value) < 0) {
+						value = x;
+						result = item;
+					}
+				} else {
+					value = x;
+					result = item;
+					hasValue = true;
+				}
+			}
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
 		public static Exception FlattenAggregate (this Exception ex)
 		{
 			return (ex as AggregateException)?.Flatten () ?? ex;
