@@ -164,9 +164,6 @@
 		            insertafter = "Xml"
 		           _label = "ASP.NET Files"
 		           extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master,*.asax,*.cshtml" />
-		<FileFilter id = "Html"
-		            _label = "HTML Files"
-		            extensions = "*.htm,*.html"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
@@ -195,7 +192,6 @@
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class = "MonoDevelop.AspNet.WebForms.WebFormsParser" mimeType="application/x-aspx, application/x-ascx, application/x-master-page" />
-		<Parser class = "MonoDevelop.AspNet.Html.HtmlParser" mimeType="text/html, application/x-spark" />
 		<Parser class = "MonoDevelop.AspNet.Razor.RazorCSharpParser" mimeType="text/x-cshtml" />
 	</Extension>
 
@@ -293,13 +289,6 @@
 		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-html-file-icon" isText="true">
 			<File pattern="*.less" />
 		</MimeType>
-		<MimeType id="text/html" _description="HTML document" icon="md-html-file-icon" isText="true">
-			<File pattern="*.html|*.htm" />
-		</MimeType>
-		<MimeType id="application/x-spark" _description="Spark View template" icon="md-html-file-icon" isText="true"
-			baseType="text/html">
-			<File pattern="*.spark" />
-		</MimeType>
 		<MimeType id="application/typescript" _description="Typescript source code" icon="md-html-file-icon" isText="true">
 			<File pattern="*.ts" />
 		</MimeType>
@@ -310,7 +299,6 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".aspx, .ascx, .master" class = "MonoDevelop.AspNet.WebForms.WebFormsEditorExtension" />
-		<Class fileExtensions=".html, .htm, .spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
 		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Razor.RazorCSharpEditorExtension" />
 	</Extension>
 
