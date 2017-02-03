@@ -57,6 +57,9 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		public void OnTestRunChanged (TestRunChangedEventArgs eventArgs)
 		{
 			if (eventArgs.ActiveTests != null) {
+				foreach (TestCase test in eventArgs.ActiveTests) {
+					OnActiveTest (test);
+				}
 			}
 
 			if (eventArgs.NewTestResults != null) {
@@ -243,6 +246,21 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				UpdateCounts (result, childResult);
 			}
 			return result;
+		}
+
+		void OnActiveTest (TestCase test)
+		{
+			if (runningSingleTest)
+				return;
+
+			string testId = test.Id.ToString ();
+
+			UnitTest currentTest = FindTest (rootTest as UnitTest, testId);
+			if (currentTest != null) {
+				testContext.Monitor.BeginTest (currentTest);
+				currentTest.Status = TestStatus.Running;
+				UpdateParentStatus (currentTest);
+			}
 		}
 	}
 }
