@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -166,16 +167,26 @@ namespace MonoDevelop.Core
 			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 14) },
 		};
 
+		class DateTimeComparer : IComparer<DateTime>
+		{
+			public int Compare (DateTime x, DateTime y)
+			{
+				return x.CompareTo (y);
+			}
+		}
+
 		[Test]
 		public void TestMaxExtension ()
 		{
 			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime, new DateTimeComparer ()));
 		}
 
 		[Test]
 		public void TestMinExtension ()
 		{
 			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime, new DateTimeComparer ()));
 		}
 	}
 }
