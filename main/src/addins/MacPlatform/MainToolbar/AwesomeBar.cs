@@ -60,6 +60,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		private static NSSegmentedControl navControl = null;
 		private static NSSegmentedControl tabNavControl = null;
 		//End variables decl… *sigh*
+		//private const string iconFolder = "src/addins/MacPlatform/icons/";
 		internal NSImage buildImage;
 		internal NSImage continueImage;
 		internal NSImage stopImage;
@@ -81,9 +82,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public AwesomeBar ()
 		{
 			//create & cache images for the touchbar's run button
-			buildImage = MultiResImage.CreateMultiResImage ("build", "");
-			continueImage = MultiResImage.CreateMultiResImage ("continue", "");
-			stopImage = MultiResImage.CreateMultiResImage ("stop", "");
 
 			RunButton = new RunButton ();
 			AddSubview (RunButton);
@@ -109,6 +107,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSTouchBar MakeTouchBar ()
 		{
+			
 			var aTouchbar = new NSTouchBar ();
 			Touchbar = aTouchbar;
 			aTouchbar.Delegate = this;
@@ -142,6 +141,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void UpdateTouchBar ()
 		{
+			if (buildImage == null) { //Pretty sure setting these values earlier results in a crash
+				buildImage = new NSImage ("src/addins/MacPlatform/icons/build-touchbar.png");
+				continueImage = new NSImage ("src/addins/MacPlatform/icons/continue-touchbar.png");
+				stopImage = buildImage = new NSImage ("src/addins/MacPlatform/icons/stop-touchbar.png");
+			}
+
 			if (Touchbar == null) {goto Rebuild;} //initialize on launch
 			if (RebuildTouchBar)  {goto Rebuild;}
 
@@ -195,6 +200,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				break;
 			}
 			if (runImg != null) {
+				runImg.Template = true;
 				if (touchBarRunButton != null) {
 					touchBarRunButton.Image = runImg;
 				}
@@ -251,8 +257,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					RebuildTouchBar = true;
 					//seems this method is called before buttonBar is init'd, so rebuild until it's ready
 				}
-
-				item = NSGroupTouchBarItem.CreateGroupItem (identifier, items);
 				return item;
 			}
 
@@ -345,8 +349,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				};
 
-				NSImage icoR = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/TabR.pdf");
-				NSImage icoL = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/TabL.pdf");
+				NSImage icoR = new NSImage ("src/addins/MacPlatform/icons/TabR.pdf");
+				NSImage icoL = new NSImage ("src/addins/MacPlatform/icons/TabL.pdf");
 				icoR.Template = true;
 				icoL.Template = true;
 
@@ -368,7 +372,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
 				};
 
-				var icoS = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/Save_File.pdf");
+				var icoS = new NSImage ("src/addins/MacPlatform/icons/Save_File.pdf");
 				icoS.Template = true;
 				saveButton.Image = icoS;
 
@@ -383,7 +387,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				buildButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Build);
 				};
-				var icoB = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/Build.pdf");
+				var icoB = new NSImage ("src/addins/MacPlatform/icons/Build.pdf");
 				icoB.Template = true;
 				buildButton.Image = icoB;
 
