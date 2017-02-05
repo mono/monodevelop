@@ -345,7 +345,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				};
 
-				tabNavControl = NSSegmentedControl.FromLabels (new string [] { "<-tab", "tab->" }, NSSegmentSwitchTracking.Momentary, tabNavControlAction);
+				NSImage icoR = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/TabR.pdf");
+				NSImage icoL = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/TabL.pdf");
+				icoR.Template = true;
+				icoL.Template = true;
+
+				tabNavControl = NSSegmentedControl.FromImages (new NSImage [] { icoL, icoR }, NSSegmentSwitchTracking.Momentary, tabNavControlAction);
 				tabNavControl.SegmentStyle = NSSegmentStyle.Separated;
 
 				var customItemTabNavControl = new NSCustomTouchBarItem (identifier);
@@ -358,10 +363,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			case Id.Save:
 				var customSaveItem = new NSCustomTouchBarItem (identifier);
 
-				var saveButton = NSButton.CreateButton ("SAVE", () => { });
+				var saveButton = NSButton.CreateButton ("", () => { });
 				saveButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
 				};
+
+				var icoS = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/Save_File.pdf");
+				icoS.Template = true;
+				saveButton.Image = icoS;
+
 				customSaveItem.View = saveButton;
 				item = customSaveItem;
 				return item;
@@ -373,6 +383,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				buildButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Build);
 				};
+				var icoB = new NSImage ("/Users/michaelsavich/GitHub/monodevelop/main/src/addins/MacPlatform/icons/Build.pdf");
+				icoB.Template = true;
+				buildButton.Image = icoB;
+
 				customBuildItem.View = buildButton;
 				item = customBuildItem;
 				return item;
