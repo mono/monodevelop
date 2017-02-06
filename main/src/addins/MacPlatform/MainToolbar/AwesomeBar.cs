@@ -48,11 +48,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	public static class Id //unique IDs for TouchBar items
 	{
 		public const string Run = "com.MonoDevelop.TouchBarIdentifiers.Run";
+		public const string Save = "com.MonoDevelop.TouchBarIdentifiers.Save";
+		public const string BuildOnly = "com.MonoDevelop.TouchBarIdentifiers.BuildOnly";
 		public const string Navigation = "com.MonoDevelop.TouchBarIdentifiers.Navigation";
 		public const string TabNavigation = "com.MonoDevelop.TouchBarIdentifiers.TabNavigation";
 		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
-		public const string Save = "com.MonoDevelop.TouchBarIdentifiers.Save";
-		public const string BuildOnly = "com.MonoDevelop.TouchBarIdentifiers.BuildOnly";
+		public const string NewProject = "com.MonoDevelop.TouchBarIdentifiers.NewProject";
 	}
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
@@ -229,6 +230,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return ids.ToArray ();
 			} 
 			else if (BarType == TouchBarType.WelcomePage) {
+				ids.Add (Id.NewProject);
+				ids.Add ("NSTouchBarItemIdentifierFixedSpaceSmall");
 				ids.Add (Id.RecentItems);
 				return ids.ToArray ();
 			} 
@@ -261,19 +264,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			switch (identifier) {
+			case Id.NewProject:
+				var newButton = NSButton.CreateButton (GettextCatalog.GetString("New..."), NSImage.ImageNamed(NSImageName.AddTemplate), () => { });
+				newButton.Activated += (sender, e) => {
+					MonoDevelop.Ide.WelcomePage.WelcomePageSection.DispatchLink ("monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
+				};
+				var customItemNewProj = new NSCustomTouchBarItem (identifier);
+				customItemNewProj.View = newButton;
+				item = customItemNewProj;
+				return item;
 			case Id.RecentItems:
+				var label = NSTextField.CreateLabel ("Recent:");
+				var customLabelItem = new NSCustomTouchBarItem (Id.RecentItems + ".label");
+				customLabelItem.View = label;
+
 				var theItems = DesktopService.RecentFiles.GetProjects ();
 				var scrollView = new NSScrollView (new CGRect (0, 0, 600, 30));
 				var documentView = new NSView (new CGRect (0, 0, 10000, 30)); //10000 is arbitrary value; changed later
 
 				nfloat offset = 0;
 				nfloat lastButtonWidth = 0;
-
-				var label = NSTextField.CreateLabel ("Recent::"); //last character is truncated for some reason so…
-				label.SetFrameOrigin (new CGPoint (0, 7)); //center vertically
-
-				documentView.AddSubview (label);
-				offset += label.Frame.Size.Width + 5;
 
 				foreach (Ide.Desktop.RecentFile project in theItems) {
 					
@@ -291,11 +301,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					offset += b.Frame.Size.Width + 5;
 					documentView.AddSubview (b);
 				}
-				documentView.SetFrameSize (new CGSize (offset + lastButtonWidth, 30)); //shorten the view's width to give it that nice elasticity
+				documentView.SetFrameSize (new CGSize (offset + 5, 30)); //shorten the view's width to give it that nice elasticity
 				scrollView.DocumentView = documentView;
+				var customScrollViewItem = new NSCustomTouchBarItem (Id.RecentItems + "scrollView");
+				customScrollViewItem.View = scrollView;
 
-				var recentItemsCustomItem = new NSCustomTouchBarItem (identifier);
-				recentItemsCustomItem.View = scrollView;
+				var recentItemsCustomItem = NSGroupTouchBarItem.CreateGroupItem(identifier, new NSCustomTouchBarItem[] {
+					customLabelItem, customScrollViewItem});
+				
 				item = recentItemsCustomItem;
 
 				return item;
