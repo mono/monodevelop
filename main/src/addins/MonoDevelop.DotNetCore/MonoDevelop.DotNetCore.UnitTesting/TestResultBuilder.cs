@@ -49,7 +49,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		public void CreateFailure (Exception ex)
 		{
-			UnitTestResult.CreateFailure (ex);
+			TestResult = UnitTestResult.CreateFailure (ex);
 		}
 
 		public UnitTestResult TestResult { get; private set; }

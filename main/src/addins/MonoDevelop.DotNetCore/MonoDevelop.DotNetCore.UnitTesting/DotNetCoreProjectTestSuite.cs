@@ -54,7 +54,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 			testPlatformAdapter = new DotNetCoreTestPlatformAdapter ();
 			testPlatformAdapter.DiscoveryCompleted += TestDiscoveryCompleted;
-			//testPlatformAdapter.DiscoveryFailed += TestDiscoveryFailed;
+			testPlatformAdapter.DiscoveryFailed += TestDiscoveryFailed;
 
 			IdeApp.ProjectOperations.EndBuild += AfterBuild;
 		}
@@ -105,7 +105,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			IdeApp.ProjectOperations.EndBuild -= AfterBuild;
 
-			//testPlatformAdapter.DiscoveryFailed -= TestDiscoveryFailed;
+			testPlatformAdapter.DiscoveryFailed -= TestDiscoveryFailed;
 			testPlatformAdapter.DiscoveryCompleted -= TestDiscoveryCompleted;
 			testPlatformAdapter.Stop ();
 			base.Dispose ();
@@ -181,6 +181,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			IDotNetCoreTestProvider testProvider,
 			string testAssemblyPath)
 		{
+			if (testPlatformAdapter.HasDiscoveryFailed) {
+				return ReportLoadError (testContext);
+			}
+
 			if (!File.Exists (testAssemblyPath)) {
 				return HandleMissingAssemblyOnRun (testContext, testAssemblyPath);
 			}
@@ -192,10 +196,18 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 					break;
 				}
 
-					Thread.Sleep (100);
+				Thread.Sleep (100);
 			}
 			Status = TestStatus.Ready;
 			return testPlatformAdapter.TestResult;
+		}
+
+		UnitTestResult ReportLoadError (TestContext testContext)
+		{
+			var exception = new UserException (
+				GettextCatalog.GetString ("Unable to run tests. Test discovery failed."));
+
+			return ReportRunFailure (testContext, exception);
 		}
 
 		UnitTestResult HandleMissingAssemblyOnRun (TestContext testContext, string testAssemblyPath)
@@ -204,8 +216,12 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				GettextCatalog.GetString ("Unable to run tests. Assembly not found '{0}'", testAssemblyPath),
 				testAssemblyPath);
 
-			testContext.Monitor.ReportRuntimeError (exception.Message, exception);
+			return ReportRunFailure (testContext, exception);
+		}
 
+		UnitTestResult ReportRunFailure (TestContext testContext, Exception exception)
+		{
+			testContext.Monitor.ReportRuntimeError (exception.Message, exception);
 			return UnitTestResult.CreateFailure (exception);
 		}
 
@@ -217,6 +233,13 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		public IEnumerable<TestCase> GetTests ()
 		{
 			return null;
+		}
+
+		void TestDiscoveryFailed (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				Status = TestStatus.LoadError;
+			});
 		}
 	}
 }

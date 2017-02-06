@@ -73,10 +73,20 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		void OnDiscoveryFailed ()
 		{
+			HasDiscoveryFailed = true;
 			DiscoveryFailed?.Invoke (this, new EventArgs ());
 		}
 
 		public void StartDiscovery (string testAssemblyPath)
+		{
+			try {
+				StartDiscoveryInternal (testAssemblyPath);
+			} catch (Exception ex) {
+				OnDiscoveryFailed (ex);
+			}
+		}
+
+		void StartDiscoveryInternal (string testAssemblyPath)
 		{
 			this.testAssemblyPath = testAssemblyPath;
 
@@ -84,6 +94,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			if (dotNetCorePath.IsMissing)
 				return;
 
+			HasDiscoveryFailed = false;
 			discoveredTests = new DiscoveredTests ();
 
 			if (communicationManager == null) {
@@ -97,8 +108,6 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			communicationManager = new SocketCommunicationManager ();
 			int port = communicationManager.HostServer ();
-			if (port < 0)
-				throw new ApplicationException (GettextCatalog.GetString ("Unable to start test host server."));
 
 			dotNetProcess = StartDotNetProcess (dotNetCorePath, port);
 
@@ -172,7 +181,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 					return;
 				}
 			} catch (Exception ex) {
-				OnError (ex);
+				OnDiscoveryFailed (ex);
 			}
 
 			while (!stopping) {
@@ -223,14 +232,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				case MessageType.ExecutionComplete:
 				OnTestRunComplete (message);
 				break;
-
-				default:
-				Console.WriteLine (message.MessageType);
-				break;
 			}
 		}
 
-		void OnError (Exception ex)
+		void OnDiscoveryFailed (Exception ex)
 		{
 			LoggingService.LogError ("TestPlatformCommunicationManager error", ex);
 			OnDiscoveryFailed ();
@@ -252,6 +257,8 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 			OnDiscoveryCompleted ();
 		}
+
+		public bool HasDiscoveryFailed { get; private set; }
 
 		public void RunTests (IEnumerable<TestCase> testCases)
 		{
@@ -288,7 +295,13 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				}
 
 			} catch (Exception ex) {
-				testResultBuilder.CreateFailure (ex);
+				testContext.Monitor.ReportRuntimeError (
+					GettextCatalog.GetString ("Failed to run tests."),
+					ex);
+
+				if (testResultBuilder != null)
+					testResultBuilder.CreateFailure (ex);
+
 				IsRunningTests = false;
 			}
 		}
