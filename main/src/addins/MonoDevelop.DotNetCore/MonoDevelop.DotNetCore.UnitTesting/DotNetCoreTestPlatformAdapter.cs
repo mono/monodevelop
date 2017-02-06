@@ -74,6 +74,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		void OnDiscoveryFailed ()
 		{
 			HasDiscoveryFailed = true;
+			IsDiscoveringTests = false;
+
+			Stop ();
+
 			DiscoveryFailed?.Invoke (this, new EventArgs ());
 		}
 
