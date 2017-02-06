@@ -101,6 +101,8 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			}
 
 			HasDiscoveryFailed = false;
+			IsDiscoveringTests = true;
+
 			discoveredTests = new DiscoveredTests ();
 
 			if (communicationManager == null) {
@@ -118,7 +120,6 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			dotNetProcess = StartDotNetProcess (port);
 
 			stopping = false;
-			IsDiscoveringTests = true;
 
 			messageProcessingThread = 
 				new Thread (ReceiveMessages) {
@@ -147,7 +148,11 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		void DotNetCoreProcessExited (object sender, EventArgs e)
 		{
-			Console.WriteLine ("Exited");
+			if (!IsDiscoveringTests && !IsRunningTests && !stopping) {
+				var process = (Process)sender;
+				LoggingService.LogError ("dotnet vstest exited. Exit code: {0}", process.ExitCode);
+				Stop ();
+			}
 		}
 
 		public void Stop ()
@@ -202,6 +207,14 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			}
 		}
 
+		void OnSessionConnected ()
+		{
+			if (testAssemblyPath == null)
+				return;
+
+			SendStartDiscoveryMessage ();
+		}
+
 		void SendStartDiscoveryMessage ()
 		{
 			var message = new DiscoveryRequestPayload {
@@ -216,7 +229,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			switch (message.MessageType) {
 				case MessageType.SessionConnected:
-				SendStartDiscoveryMessage ();
+				OnSessionConnected ();
 				break;
 
 				case MessageType.TestCasesFound:
@@ -266,7 +279,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		public bool HasDiscoveryFailed { get; set; }
 
-		public void RunTests (IEnumerable<TestCase> testCases)
+		void RunTests (IEnumerable<TestCase> testCases)
 		{
 			var message = new TestRunRequestPayload {
 				TestCases = testCases.ToList (),
@@ -275,7 +288,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			communicationManager.SendMessage (MessageType.TestRunSelectedTestCasesDefaultHost, message);
 		}
 
-		public void RunTests (IEnumerable<string> testAssemblies)
+		void RunTests (IEnumerable<string> testAssemblies)
 		{
 			var message = new TestRunRequestPayload {
 				Sources = testAssemblies.ToList (),
@@ -291,6 +304,9 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			try {
 				IsRunningTests = true;
+
+				EnsureStarted ();
+
 				testResultBuilder = new TestResultBuilder (testContext, testProvider);
 
 				var tests = testProvider.GetTests ();
@@ -347,6 +363,20 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			if (IsRunningTests) {
 				communicationManager.SendMessage (MessageType.CancelTestRun);
+			}
+		}
+
+		void EnsureStarted ()
+		{
+			if (communicationManager == null) {
+				testAssemblyPath = null;
+				Start ();
+
+				bool success = communicationManager.WaitForClientConnection (clientConnectionTimeOut);
+				if (!success) {
+					throw new ApplicationException (
+						GettextCatalog.GetString ("Timed out waiting for VSTest to connect."));
+				}
 			}
 		}
 	}
