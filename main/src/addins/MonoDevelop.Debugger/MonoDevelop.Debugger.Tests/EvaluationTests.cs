@@ -1385,6 +1385,10 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("2 + 2 == 4");
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("(2 * 1.5f) / 2");
+			Assert.AreEqual ("1.5", val.Value);
+			Assert.AreEqual ("float", val.TypeName);
 		}
 
 		[Test]
