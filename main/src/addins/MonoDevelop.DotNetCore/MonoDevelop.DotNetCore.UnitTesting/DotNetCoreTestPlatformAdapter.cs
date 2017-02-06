@@ -77,6 +77,8 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			DiscoveryFailed?.Invoke (this, new EventArgs ());
 		}
 
+		public DotNetCorePath DotNetCorePath { get; set; } = new DotNetCorePath ();
+
 		public void StartDiscovery (string testAssemblyPath)
 		{
 			try {
@@ -90,26 +92,26 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			this.testAssemblyPath = testAssemblyPath;
 
-			var dotNetCorePath = new DotNetCorePath ();
-			if (dotNetCorePath.IsMissing)
-				return;
+			if (DotNetCorePath.IsMissing) {
+				throw new ApplicationException (".NET Core is not installed.");
+			}
 
 			HasDiscoveryFailed = false;
 			discoveredTests = new DiscoveredTests ();
 
 			if (communicationManager == null) {
-				Start (dotNetCorePath);
+				Start ();
 			} else {
 				SendStartDiscoveryMessage ();
 			}
 		}
 
-		void Start (DotNetCorePath dotNetCorePath)
+		void Start ()
 		{
 			communicationManager = new SocketCommunicationManager ();
 			int port = communicationManager.HostServer ();
 
-			dotNetProcess = StartDotNetProcess (dotNetCorePath, port);
+			dotNetProcess = StartDotNetProcess (port);
 
 			stopping = false;
 			IsDiscoveringTests = true;
@@ -121,10 +123,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			messageProcessingThread.Start ();
 		}
 
-		ProcessWrapper StartDotNetProcess (DotNetCorePath dotNetCorePath, int port)
+		ProcessWrapper StartDotNetProcess (int port)
 		{
 			return Runtime.ProcessService.StartProcess (
-				dotNetCorePath.FileName,
+				DotNetCorePath.FileName,
 				GetVSTestArguments (port),
 				null,
 				DotNetCoreProcessExited);
@@ -258,7 +260,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			OnDiscoveryCompleted ();
 		}
 
-		public bool HasDiscoveryFailed { get; private set; }
+		public bool HasDiscoveryFailed { get; set; }
 
 		public void RunTests (IEnumerable<TestCase> testCases)
 		{
