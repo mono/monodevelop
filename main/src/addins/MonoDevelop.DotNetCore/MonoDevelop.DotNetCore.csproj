@@ -33,6 +33,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TestPlatform.CommunicationUtilities">
       <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.0.0-preview-20170201-02\lib\net46\Microsoft.TestPlatform.CommunicationUtilities.dll</HintPath>
