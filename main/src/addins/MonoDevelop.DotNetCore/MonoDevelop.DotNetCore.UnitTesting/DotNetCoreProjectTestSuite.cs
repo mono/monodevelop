@@ -70,9 +70,23 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			get { return true; }
 		}
 
+		public bool CanRunTests (IExecutionHandler executionContext)
+		{
+			return OnCanRun (executionContext);
+		}
+
 		protected override bool OnCanRun (IExecutionHandler executionContext)
 		{
-			return false;
+			FilePath assemblyFileName = GetAssemblyFileName ();
+			if (assemblyFileName.IsNull)
+				return false;
+
+			var command = new DotNetCoreExecutionCommand (
+				assemblyFileName.ParentDirectory,
+				assemblyFileName.FileName,
+				string.Empty);
+
+			return executionContext.CanExecute (command);
 		}
 
 		protected override void OnCreateTests ()
@@ -198,7 +212,11 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				return HandleMissingAssemblyOnRun (testContext, testAssemblyPath);
 			}
 
-			testPlatformAdapter.RunTests (testContext, testProvider, testAssemblyPath);
+			if (testContext.ExecutionContext.ExecutionHandler == null)
+				testPlatformAdapter.RunTests (testContext, testProvider, testAssemblyPath);
+			else
+				testPlatformAdapter.DebugTests (testContext, testProvider, testAssemblyPath);
+
 			while (testPlatformAdapter.IsRunningTests) {
 				if (testContext.Monitor.CancellationToken.IsCancellationRequested) {
 					testPlatformAdapter.CancelTestRun ();

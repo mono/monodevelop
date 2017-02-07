@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.DotNetCore.UnitTesting
 {
 	interface IDotNetCoreTestRunner
 	{
+		bool CanRunTests (IExecutionHandler executionContext);
 		UnitTestResult RunTest (TestContext testContext, IDotNetCoreTestProvider testProvider);
 	}
 }

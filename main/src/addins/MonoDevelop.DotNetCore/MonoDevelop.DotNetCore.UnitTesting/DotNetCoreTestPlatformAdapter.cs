@@ -54,6 +54,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		string testAssemblyPath;
 		TestContext testContext;
 		TestResultBuilder testResultBuilder;
+		ProcessAsyncOperation debugOperation;
 
 		public bool IsDiscoveringTests { get; private set; }
 
@@ -251,6 +252,10 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				case MessageType.ExecutionComplete:
 				OnTestRunComplete (message);
 				break;
+
+				case MessageType.CustomTestHostLaunch:
+				OnCustomTestLaunch (message);
+				break;
 			}
 		}
 
@@ -304,6 +309,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			try {
 				IsRunningTests = true;
+				this.testContext = testContext;
 
 				EnsureStarted ();
 
@@ -325,6 +331,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 					testResultBuilder.CreateFailure (ex);
 
 				IsRunningTests = false;
+				this.testContext = null;
 			}
 		}
 
@@ -362,7 +369,21 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		public void CancelTestRun ()
 		{
 			if (IsRunningTests) {
-				communicationManager.SendMessage (MessageType.CancelTestRun);
+				try {
+					communicationManager.SendMessage (MessageType.CancelTestRun);
+				} catch (Exception ex) {
+					LoggingService.LogError ("CancelTestRun error.", ex);
+				}
+
+				try {
+					if (debugOperation != null) {
+						if (!debugOperation.IsCompleted)
+							debugOperation.Cancel ();
+						debugOperation = null;
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("CancelTestRun error.", ex);
+				}
 			}
 		}
 
@@ -378,6 +399,103 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 						GettextCatalog.GetString ("Timed out waiting for VSTest to connect."));
 				}
 			}
+		}
+
+		public void DebugTests (
+			TestContext testContext,
+			IDotNetCoreTestProvider testProvider,
+			string testAssemblyPath)
+		{
+			try {
+				IsRunningTests = true;
+				this.testContext = testContext;
+
+				EnsureStarted ();
+
+				testResultBuilder = new TestResultBuilder (testContext, testProvider);
+
+				var tests = testProvider.GetTests ();
+				if (tests == null) {
+					GetProcessStartInfo (new [] { testAssemblyPath });
+				} else {
+					GetProcessStartInfo (tests);
+				}
+			} catch (Exception ex) {
+				this.testContext = null;
+
+				testContext.Monitor.ReportRuntimeError (
+					GettextCatalog.GetString ("Failed to start debug tests."),
+					ex);
+
+				if (testResultBuilder != null)
+					testResultBuilder.CreateFailure (ex);
+
+				IsRunningTests = false;
+			}
+		}
+
+		void GetProcessStartInfo (IEnumerable<TestCase> testCases)
+		{
+			var message = new TestRunRequestPayload {
+				TestCases = testCases.ToList (),
+				RunSettings = null
+			};
+			communicationManager.SendMessage (MessageType.GetTestRunnerProcessStartInfoForRunSelected, message);
+		}
+
+		void GetProcessStartInfo (IEnumerable<string> testAssemblies)
+		{
+			var message = new TestRunRequestPayload {
+				Sources = testAssemblies.ToList (),
+				RunSettings = null
+			};
+			communicationManager.SendMessage (MessageType.GetTestRunnerProcessStartInfoForRunAll, message);
+		}
+
+		void OnCustomTestLaunch (Message message)
+		{
+			var launchAckPayload = new CustomHostLaunchAckPayload {
+				HostProcessId = -1
+			};
+
+			TestContext currentTestContext = testContext;
+
+			try {
+				if (currentTestContext == null)
+					return;
+
+				var startInfo = dataSerializer.DeserializePayload<TestProcessStartInfo> (message);
+				launchAckPayload.HostProcessId = StartCustomTestHost (startInfo, currentTestContext);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to start custom test host.", ex);
+				launchAckPayload.ErrorMessage = ex.Message;
+				currentTestContext.Monitor.ReportRuntimeError (GettextCatalog.GetString ("Unable to start test host."), ex);
+			} finally {
+				communicationManager.SendMessage (MessageType.CustomTestHostLaunchCallback, launchAckPayload);
+			}
+		}
+
+		int StartCustomTestHost (TestProcessStartInfo startInfo, TestContext currentTestContext)
+		{
+			OperationConsole console = currentTestContext.ExecutionContext.ConsoleFactory.CreateConsole (
+				OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (GettextCatalog.GetString ("Unit Tests")));
+
+			var command = new DotNetCoreExecutionCommand (
+				startInfo.WorkingDirectory,
+				startInfo.FileName,
+				startInfo.Arguments
+			);
+			command.Command = startInfo.FileName;
+			command.EnvironmentVariables = startInfo.EnvironmentVariables;
+
+			debugOperation = currentTestContext.ExecutionContext.ExecutionHandler.Execute (command, console);
+
+			// Returns the IDE process id which is incorrect. This should be the
+			// custom test host process. The VSCodeDebuggerSession does not return
+			// the correct process id. If it did the process is not available
+			// immediately since it takes some time for it to start so a wait
+			// would be needed here.
+			return Process.GetCurrentProcess ().Id;
 		}
 	}
 }

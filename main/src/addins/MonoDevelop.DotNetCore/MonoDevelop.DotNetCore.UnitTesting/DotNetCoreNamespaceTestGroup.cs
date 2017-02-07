@@ -79,7 +79,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		protected override bool OnCanRun (IExecutionHandler executionContext)
 		{
-			return false;
+			return testRunner.CanRunTests (executionContext);
 		}
 
 		public override bool HasTests {
