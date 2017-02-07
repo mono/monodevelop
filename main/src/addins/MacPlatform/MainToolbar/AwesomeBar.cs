@@ -55,13 +55,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
 		public const string NewProject = "com.MonoDevelop.TouchBarIdentifiers.NewProject";
 	}
+
+	internal static class PDFLoader {
+		internal static NSImage LoadPDFImage(string name) {
+			var stream = System.Reflection.Assembly.GetCallingAssembly ().GetManifestResourceStream (name);
+				using (stream)
+				using (NSData data = NSData.FromStream (stream)) {
+					return new NSImage (data);
+			}
+		}
+	}
 	public class AwesomeBar : NSView, INSTouchBarDelegate
 	{
 		//Begin variables declared as static outside of scope to prevent garbage collection crash
 		private static NSSegmentedControl navControl = null;
 		private static NSSegmentedControl tabNavControl = null;
 		//End variables decl… *sigh*
-		//private const string iconFolder = "src/addins/MacPlatform/icons/";
 		internal NSImage buildImage;
 		internal NSImage continueImage;
 		internal NSImage stopImage;
@@ -86,6 +95,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			RunButton = new RunButton ();
 			AddSubview (RunButton);
+
+			buildImage = MultiResImage.CreateMultiResImage ("build", "");
+			continueImage = MultiResImage.CreateMultiResImage ("continue", "");
+			stopImage = MultiResImage.CreateMultiResImage ("stop", "");
 
 			SelectorView = new SelectorView ();
 			SelectorView.SizeChanged += (object sender, EventArgs e) => UpdateLayout ();
@@ -142,11 +155,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void UpdateTouchBar ()
 		{
-			if (buildImage == null) { //Pretty sure setting these values earlier results in a crash
-				buildImage = new NSImage ("src/addins/MacPlatform/icons/build-touchbar.png");
-				continueImage = new NSImage ("src/addins/MacPlatform/icons/continue-touchbar.png");
-				stopImage = buildImage = new NSImage ("src/addins/MacPlatform/icons/stop-touchbar.png");
-			}
 
 			if (Touchbar == null) {goto Rebuild;} //initialize on launch
 			if (RebuildTouchBar)  {goto Rebuild;}
@@ -362,8 +370,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				};
 
-				NSImage icoR = new NSImage ("src/addins/MacPlatform/icons/TabR.pdf");
-				NSImage icoL = new NSImage ("src/addins/MacPlatform/icons/TabL.pdf");
+				NSImage icoR = PDFLoader.LoadPDFImage ("TabR.pdf");
+				NSImage icoL = PDFLoader.LoadPDFImage ("TabL.pdf");
 				icoR.Template = true;
 				icoL.Template = true;
 
@@ -385,10 +393,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
 				};
 
-				var icoS = new NSImage ("src/addins/MacPlatform/icons/Save_File.pdf");
+				var icoS = PDFLoader.LoadPDFImage ("Save_File.pdf");
 				icoS.Template = true;
 				saveButton.Image = icoS;
-
 				customSaveItem.View = saveButton;
 				item = customSaveItem;
 				return item;
@@ -400,7 +407,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				buildButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Build);
 				};
-				var icoB = new NSImage ("src/addins/MacPlatform/icons/Build.pdf");
+				var icoB = PDFLoader.LoadPDFImage("Build.pdf");
 				icoB.Template = true;
 				buildButton.Image = icoB;
 

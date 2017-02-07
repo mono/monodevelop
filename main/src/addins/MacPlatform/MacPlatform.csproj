@@ -254,6 +254,18 @@
     <EmbeddedResource Include="icons\status-stop-16~hover%402x.png">
       <LogicalName>status-stop-16~hover@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\Save_File.pdf">
+      <LogicalName>Save_File.pdf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\Build.pdf">
+      <LogicalName>Build.pdf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\TabL.pdf">
+      <LogicalName>TabL.pdf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\TabR.pdf">
+      <LogicalName>TabR.pdf</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
