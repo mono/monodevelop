@@ -40,11 +40,14 @@ module highlightUnusedCode =
             else
                 None)
 
-    let entityNamespace (ent:FSharpEntity) =
-        if ent.IsFSharpModule then
-            [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
-        else
-            [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+    let entityNamespace (entOpt:FSharpEntity option) =
+        match entOpt with
+        | Some ent ->
+            if ent.IsFSharpModule then
+                [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
+            else
+                [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+        | None -> []
 
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
@@ -99,13 +102,15 @@ module highlightUnusedCode =
                 let isQualified = symbolIsFullyQualified editor sym
                 match sym with
                 | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
-                    getPartNamespace sym ent.TryFullName::entityNamespace ent
+                    getPartNamespace sym ent.TryFullName::entityNamespace (Some ent)
                 | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
-                    getPartNamespace sym (Some f.FullName)::entityNamespace f.DeclaringEntity
+                    getPartNamespace sym (Some f.FullName)::entityNamespace (Some f.DeclaringEntity)
                 | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
                     try
-                        getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntity
+                        getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntitySafe
                     with :? InvalidOperationException -> [None]
+                | SymbolUse.Operator op when not (isQualified (Some op.FullName)) ->
+                    getPartNamespace sym (Some op.FullName)::entityNamespace op.EnclosingEntitySafe
                 | _ -> [None]
 
             let namespacesInUse =
