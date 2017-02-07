@@ -669,7 +669,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
 			foreach (var w in workspaces) {
-				if (w.GetOpenDocumentIds ().Contains (analysisDocument) )
+				if (w.GetOpenDocumentIds (analysisDocument.ProjectId).Contains (analysisDocument) )
 					w.InformDocumentClose (analysisDocument, fileName); 
 
 			}
