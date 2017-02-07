@@ -32,6 +32,20 @@ module ``Highlight unused opens`` =
         assertUnusedOpens source []
 
     [<Test>]
+    let ``Operators``() =
+        let source =
+            """
+            namespace n
+            module Operators =
+                let (+) x y = x + y
+            namespace namespace1
+            open n.Operators
+            module module1 =
+                let x = 1 + 1
+            """
+        assertUnusedOpens source []
+
+    [<Test>]
     let ``Auto open namespace not needed for nested module``() =
         let source = 
             """
