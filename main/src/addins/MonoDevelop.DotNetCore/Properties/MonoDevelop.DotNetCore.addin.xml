@@ -12,6 +12,9 @@
 			<Category id="library" name="Library">
 				<Category id="general" name="General" />
 			</Category>
+			<Category id="test" name="Tests">
+				<Category id="general" name="General" />
+			</Category>
 		</Category>
 	</Extension>
 
@@ -25,6 +28,9 @@
 		<ProjectTemplate
 			id="DotNetCoreEmptyWebProject"
 			file="Templates/Projects/EmptyWeb/EmptyWebProject.xpt.xml" />
+		<ProjectTemplate
+			id="DotNetCoreEmptyWebProject"
+			file="Templates/Projects/XUnitTest/XUnitTestProject.xpt.xml" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
