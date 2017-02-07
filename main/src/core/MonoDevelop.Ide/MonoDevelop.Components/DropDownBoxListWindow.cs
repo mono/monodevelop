@@ -263,18 +263,18 @@ namespace MonoDevelop.Components
 			void CalcAccessibility ()
 			{
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
-				columnElement.SetRealParent (this);
+				columnElement.SetGtkParent (this);
 				columnElement.SetAccessibilityRole (AtkCocoa.Roles.AXColumn);
 				Accessible.AddAccessibleElement (columnElement);
 
 				for (int i = 0; i < win.DataProvider.IconCount; i++) {
 					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
-					rowElement.SetRealParent (this);
+					rowElement.SetGtkParent (this);
 					rowElement.SetAccessibilityRole (AtkCocoa.Roles.AXRow);
 					Accessible.AddAccessibleElement (rowElement);
 
 					var cellElement = new AtkCocoaHelper.AccessibilityElementProxy ();
-					cellElement.SetRealParent (this);
+					cellElement.SetGtkParent (this);
 					cellElement.SetAccessibilityRole (AtkCocoa.Roles.AXCell);
 					columnElement.AddAccessibleChild (cellElement);
 					rowElement.AddAccessibleChild (cellElement);
@@ -282,7 +282,7 @@ namespace MonoDevelop.Components
 					var textElement = new TextElement ();
 					textElement.RowIndex = i;
 					textElement.PerformPress += PerformPress;
-					textElement.SetRealParent (this);
+					textElement.SetGtkParent (this);
 					textElement.SetAccessibilityValue (win.DataProvider.GetMarkup (i));
 					cellElement.AddAccessibleChild (textElement);
 				}

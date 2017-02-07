@@ -205,11 +205,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public void SetFrameInRealParent (Rectangle frame)
+		public void SetFrameInGtkParent (Rectangle frame)
 		{
 		}
 
-		public void SetRealParent (Widget realParent)
+		public void SetGtkParent (Widget realParent)
 		{
 		}
 	}

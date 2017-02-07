@@ -278,7 +278,7 @@ namespace MonoDevelop.Components
 				allocation = value;
 
 				Gdk.Rectangle gdkRect = new Gdk.Rectangle ((int)allocation.X, (int)allocation.Y, (int)allocation.Width, (int)allocation.Height);
-				Accessible.SetFrameInRealParent (gdkRect);
+				Accessible.SetFrameInGtkParent (gdkRect);
 				// If Y != 0, then we need to flip the y axis
 
 				Accessible.SetFrameInParent (gdkRect);
@@ -320,7 +320,7 @@ namespace MonoDevelop.Components
 
 			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			Accessible.SetAccessibilityTitle (label);
-			Accessible.SetRealParent (parent);
+			Accessible.SetGtkParent (parent);
 			Accessible.PerformPress += OnTabPressed;
 		}
 		

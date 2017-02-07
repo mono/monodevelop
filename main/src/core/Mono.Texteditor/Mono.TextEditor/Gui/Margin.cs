@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 					return;
 				}
 
-				Accessible.SetFrameInRealParent (rectInParent);
+				Accessible.SetFrameInGtkParent (rectInParent);
 				// SetFrameInParent is in Cocoa coords, but because margins take up the whole vertical height
 				// we don't need to switch anything around and can just pass in the rectInParent
 				Accessible.SetFrameInParent (rectInParent);

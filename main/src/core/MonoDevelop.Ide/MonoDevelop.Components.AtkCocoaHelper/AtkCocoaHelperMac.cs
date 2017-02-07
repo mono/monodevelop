@@ -327,6 +327,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				oldElements.CopyTo (titleElements, 0);
 			}
 			titleElements [length] = (NSObject)nsa;
+
+			titleNsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
 		public static void AccessibilityRemoveElementFromTitle (this Atk.Object title, Atk.Object o)
@@ -481,14 +483,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		// The real parent is the Widget that ultimately this object will belong to
 		// It is used to convert the frame
-		public void SetRealParent (Gtk.Widget realParent)
+		public void SetGtkParent (Gtk.Widget realParent)
 		{
 			parent = realParent;
 			parentElement = AtkCocoaMacExtensions.GetNSAccessibilityElement (parent.Accessible);
 		}
 
 		// The frame inside the GtkWidget parent, in Gtk coordinate space
-		public void SetFrameInRealParent (Rectangle frame)
+		public void SetFrameInGtkParent (Rectangle frame)
 		{
 			realFrame = frame;
 		}

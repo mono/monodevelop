@@ -1115,12 +1115,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				// Set the accessibility parent as the strip to make the A11y tree easier.
 				strip = parentStrip;
-				SetRealParent (parentStrip);
+				SetGtkParent (parentStrip);
 
 				mode = parentMode;
 
 				var frameInParent = new Gdk.Rectangle (0, 0, strip.Allocation.Width, (int)mode.IndicatorHeight);
-				SetFrameInRealParent (frameInParent);
+				SetFrameInGtkParent (frameInParent);
 
 				// FIXME: Can we not do this in AccessibilityElementProxy?
 				SetFrameInParent (new Gdk.Rectangle (0, strip.Allocation.Height - (int)mode.IndicatorHeight, strip.Allocation.Width, (int)mode.IndicatorHeight));
@@ -1160,7 +1160,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode)
 			{
 				strip = parent;
-				SetRealParent (parent);
+				SetGtkParent (parent);
 
 				mode = parentMode;
 			}
@@ -1176,7 +1176,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
 				var y = mode.LineToY (line);
 				var frameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2);
-				SetFrameInRealParent (frameInParent);
+				SetFrameInGtkParent (frameInParent);
 
 				// FIXME: Can we not do this in AccessibilityElementProxy?
 				int halfParentHeight = strip.Allocation.Height / 2;
@@ -1197,7 +1197,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);
 				var y = mode.LineToY (line) - 3.0;
 				var frameInParent = new Gdk.Rectangle (0, (int)y, 5, 6);
-				SetFrameInRealParent (frameInParent);
+				SetFrameInGtkParent (frameInParent);
 
 				// FIXME: Can we not do this in AccessibilityElementProxy?
 				int halfParentHeight = strip.Allocation.Height / 2;

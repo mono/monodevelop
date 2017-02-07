@@ -229,8 +229,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		event EventHandler PerformShowDefaultUI;
 		event EventHandler PerformShowPopupMenu;
 
-		void SetRealParent (Gtk.Widget realParent);
-		void SetFrameInRealParent (Gdk.Rectangle frame);
+		void SetGtkParent (Gtk.Widget realParent);
+		void SetFrameInGtkParent (Gdk.Rectangle frame);
 		void AddAccessibleChild (IAccessibilityElementProxy child);
 		void SetAccessibilityRole (string role, string description = null);
 		void SetAccessibilityRole (AtkCocoa.Roles role, string description = null);

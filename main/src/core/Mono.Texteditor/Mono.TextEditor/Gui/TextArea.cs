@@ -345,27 +345,27 @@ namespace Mono.TextEditor
 			iconMargin = new IconMargin (editor);
 			iconMargin.Accessible.SetAccessibilityLabel ("Icon margin");
 			iconMargin.Accessible.SetAccessibilityIdentifier ("TextArea.IconMargin");
-			iconMargin.Accessible.SetRealParent (this);
+			iconMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (iconMargin.Accessible);
 
 			gutterMargin = new GutterMargin (editor);
 			gutterMargin.Accessible.SetAccessibilityIdentifier ("TextArea.GutterMargin");
-			gutterMargin.Accessible.SetRealParent (this);
+			gutterMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (gutterMargin.Accessible);
 
 			actionMargin = new ActionMargin (editor);
 			actionMargin.Accessible.SetAccessibilityIdentifier ("TextArea.ActionMargin");
-			actionMargin.Accessible.SetRealParent (this);
+			actionMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (actionMargin.Accessible);
 
 			foldMarkerMargin = new FoldMarkerMargin (editor);
 			foldMarkerMargin.Accessible.SetAccessibilityIdentifier ("TextArea.FoldMarkerMargin");
-			foldMarkerMargin.Accessible.SetRealParent (this);
+			foldMarkerMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
 
 			textViewMargin = new TextViewMargin (editor);
 			textViewMargin.Accessible.SetAccessibilityIdentifier ("TextArea.TextViewMargin");
-			textViewMargin.Accessible.SetRealParent (this);
+			textViewMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (textViewMargin.Accessible);
 
 			margins.Add (iconMargin);

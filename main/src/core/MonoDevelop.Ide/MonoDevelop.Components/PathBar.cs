@@ -214,13 +214,13 @@ namespace MonoDevelop.Components
 
 			foreach (var entry in leftPath) {
 				elements [idx] = entry.Accessible;
-				entry.Accessible.SetRealParent (this);
+				entry.Accessible.SetGtkParent (this);
 				entry.PerformShowMenu += PerformShowMenu;
 				idx++;
 			}
 			foreach (var entry in rightPath) {
 				elements [idx] = entry.Accessible;
-				entry.Accessible.SetRealParent (this);
+				entry.Accessible.SetGtkParent (this);
 				entry.PerformShowMenu += PerformShowMenu;
 				idx++;
 			}
@@ -299,7 +299,7 @@ namespace MonoDevelop.Components
 			int height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
 			Gdk.Rectangle rect = new Gdk.Rectangle (x, y, width, height);
 
-			entry.Accessible.SetFrameInRealParent (rect);
+			entry.Accessible.SetFrameInGtkParent (rect);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)

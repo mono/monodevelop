@@ -63,7 +63,7 @@ namespace MonoDevelop.Components.DockNotebook
 				cocoaFrame.Height = value.Height;
 
 				Accessible.SetFrameInParent (cocoaFrame);
-				Accessible.SetFrameInRealParent (value);
+				Accessible.SetFrameInGtkParent (value);
 				allocation = value;
 			}
 		}
@@ -87,7 +87,7 @@ namespace MonoDevelop.Components.DockNotebook
 				CloseButtonAccessible.SetFrameInParent (cocoaFrame);
 
 				Gdk.Rectangle realFrame = new Gdk.Rectangle ((int) value.X, (int) value.Y, (int) value.Width, (int) value.Height);
-				CloseButtonAccessible.SetFrameInRealParent (realFrame);
+				CloseButtonAccessible.SetFrameInGtkParent (realFrame);
 				closeButtonActiveArea = value;
 			}
 		}
@@ -215,7 +215,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible.PerformPress += OnPressTab;
 			// FIXME Should Role descriptions be translated?
 			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXRadioButton, "tab");
-			Accessible.SetRealParent (strip);
+			Accessible.SetGtkParent (strip);
 			Accessible.Actions = new string [] { "AXShowMenu" };
 			Accessible.PerformShowPopupMenu += OnShowMenu;
 			Accessible.SetAccessibilityIdentifier ("DockNotebook.Tab");
@@ -223,7 +223,7 @@ namespace MonoDevelop.Components.DockNotebook
 			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
 			CloseButtonAccessible.SetAccessibilityRole (AtkCocoa.Roles.AXButton);
-			CloseButtonAccessible.SetRealParent (strip);
+			CloseButtonAccessible.SetGtkParent (strip);
 			CloseButtonAccessible.Actions = new string [] { "AXShowMenu" };
 			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;
 			CloseButtonAccessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Close document"));
