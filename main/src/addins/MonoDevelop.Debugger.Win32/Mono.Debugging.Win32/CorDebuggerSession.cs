@@ -270,6 +270,7 @@ namespace Mono.Debugging.Win32
 			corProcess.OnEvalException += OnEvalException;
 			corProcess.OnLogMessage += OnLogMessage;
 			corProcess.OnException2 += OnException2;
+			corProcess.OnException += OnException;
 			corProcess.RegisterStdOutput (OnStdOutput);
 		}
 
@@ -819,6 +820,32 @@ namespace Mono.Debugging.Win32
 				args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 				OnTargetEvent (args);	
 			}
+		}
+
+		private void OnException (object sender, CorExceptionEventArgs e)
+		{
+			lock (debugLock) {
+				if (evaluating) {
+					e.Continue = true;
+					return;
+				}
+			}
+
+			TargetEventArgs args = new TargetEventArgs (
+				e.Unhandled? TargetEventType.UnhandledException: TargetEventType.ExceptionThrown);
+
+			OnStopped ();
+			e.Continue = false;
+			// If an exception is thrown while stepping, cancel the stepping operation
+			if (stepper != null && stepper.IsActive ())
+				stepper.Deactivate ();
+			autoStepInto = false;
+			SetActiveThread (e.Thread);
+
+			args.Process = GetProcess (process);
+			args.Thread = GetThread (e.Thread);
+			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
+			OnTargetEvent (args);
 		}
 
 		public bool IsExternalCode (string fileName)
