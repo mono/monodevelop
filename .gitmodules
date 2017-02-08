@@ -13,7 +13,7 @@
 	url = git://github.com/icsharpcode/NRefactory.git
 [submodule "main/external/mono-addins"]
 	path = main/external/mono-addins
-	url = git@github.com:xamarin/mono-addins.git
+	url = git://github.com/mono/mono-addins.git
 	branch = extension-rename
 [submodule "main/external/ikvm"]
 	path = main/external/ikvm
