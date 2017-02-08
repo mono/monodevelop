@@ -126,9 +126,7 @@ namespace NuGet.PackageManagement.UI
 			var completed = (await Task.WhenAll(tasks))
 				.Where(m => m != null);
 
-			var highest = completed
-				.OrderByDescending(e => e.Identity.Version, VersionComparer.VersionRelease)
-				.FirstOrDefault();
+			var highest = completed.MaxValueOrDefault (e => e.Identity.Version, VersionComparer.VersionRelease);
 
 			return highest?.WithVersions(
 				asyncValueFactory: () => MergeVersionsAsync(identity, completed));
@@ -195,7 +193,7 @@ namespace NuGet.PackageManagement.UI
 
 			return allVersions
 				.GroupBy(v => v.Version)
-				.Select(g => g.OrderBy(v => v.DownloadCount).First())
+				.Select(g => g.MinValue(v => v.DownloadCount ?? default(long)))
 				.ToArray();
 		}
 

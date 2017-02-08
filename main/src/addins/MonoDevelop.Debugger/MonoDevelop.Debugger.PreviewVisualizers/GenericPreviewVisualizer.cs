@@ -74,7 +74,8 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 					label.Text = value.Substring (0, trimmedLine.StartIndex).TrimEnd ('\r', '\n') + "\n…";
 				}
 			}
-
+			label.Selectable = true;
+			label.CanFocus = false;
 			label.Show ();
 
 			return label;

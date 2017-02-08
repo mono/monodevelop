@@ -92,6 +92,8 @@ namespace MonoDevelop.Components
 					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;
 				}
 
+				parent.TranslateCoordinates (parent.Toplevel, x, y, out x, out y);
+
 				if (selectFirstItem) {
 					var pt = new CoreGraphics.CGPoint (x, y);
 					lastOpenPositon = pt;
@@ -111,9 +113,12 @@ namespace MonoDevelop.Components
 
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
 		{
-			int x, y;
+			int x = 0, y = 0;
 
-			parent.TranslateCoordinates (parent.Toplevel, (int)evt.X, (int)evt.Y, out x, out y);
+			if (evt != null) {
+				x = (int)evt.X;
+				y = (int)evt.Y;
+			}
 
 			ShowContextMenu (parent, x, y, menu);
 		}

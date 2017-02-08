@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.DotNetCore.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>

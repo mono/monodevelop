@@ -194,7 +194,7 @@ namespace MonoDevelop.Debugger
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			IdeApp.CommandService.ShowContextMenu (tree, evt, menuSet, tree);
+			tree.ShowContextMenu (evt, menuSet, tree);
 		}
 		
 		[CommandHandler (LocalCommands.Properties)]
