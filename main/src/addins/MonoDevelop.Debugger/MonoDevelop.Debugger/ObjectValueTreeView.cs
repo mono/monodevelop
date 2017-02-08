@@ -41,6 +41,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
+using Mono.Debugging.Evaluation;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
@@ -1488,8 +1489,11 @@ namespace MonoDevelop.Debugger
 					MessageService.ShowError (GettextCatalog.GetString ("Unregognized escape sequence."));
 					return;
 				}
-*/				if (val.Value != newVal)
+*/
+				if (val.Value != newVal)
 					val.Value = newVal;
+			} catch (ValueModificationException e) {
+				MessageService.ShowError (e.Message);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
