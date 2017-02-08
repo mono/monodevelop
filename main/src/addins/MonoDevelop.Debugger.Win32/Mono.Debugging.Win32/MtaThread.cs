@@ -50,7 +50,7 @@ namespace Mono.Debugging.Win32
 				}
 			}
 			if (workError != null)
-				throw new Exception ("Debugger operation failed", workError);
+				throw workError;
 		}
 
 		static void MtaRunner ()
