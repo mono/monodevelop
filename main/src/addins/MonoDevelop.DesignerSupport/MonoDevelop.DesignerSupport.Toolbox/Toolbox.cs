@@ -183,9 +183,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return;
 			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
 			if (evt != null) {
-				IdeApp.CommandService.ShowContextMenu (this, evt, eset, this);
+				IdeApp.CommandService.ShowContextMenu (toolboxWidget, evt, eset, this);
 			} else {
-				IdeApp.CommandService.ShowContextMenu (this, Allocation.Left, Allocation.Top, eset, this);
+				IdeApp.CommandService.ShowContextMenu (toolboxWidget, Allocation.Left, Allocation.Top, eset, this);
 			}
 		}
 

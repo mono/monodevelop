@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -151,6 +152,65 @@ namespace MonoDevelop.Core
 			// Force this, we already test the general algorithm in memo1 and memo2.
 			obj1 = f2 (knownArg, knownArg);
 			Assert.AreEqual (4, memoTest3CallCount);
+		}
+
+		class DateTimeWrapper
+		{
+			public DateTime DateTime;
+		}
+
+		readonly DateTimeWrapper[] dateTimeSource = {
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 11) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 10) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 10) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 16) },
+			new DateTimeWrapper { DateTime = new DateTime (2016, 01, 14) },
+		};
+
+		readonly DateTimeWrapper [] defaultDateTimeSource = { };
+
+		class DateTimeComparer : IComparer<DateTime>
+		{
+			public int Compare (DateTime x, DateTime y)
+			{
+				return x.CompareTo (y);
+			}
+		}
+
+		[Test]
+		public void TestMaxExtension ()
+		{
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [3], dateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
+		}
+
+		[Test]
+		public void TestMaxOrDefaultExtension ()
+		{
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MaxValue (dtw => dtw.DateTime));
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MaxValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreEqual (null, defaultDateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreEqual (null, defaultDateTimeSource.MaxValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
+		}
+
+		[Test]
+		public void TestMinExtension ()
+		{
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreSame (dateTimeSource [1], dateTimeSource.MinValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
+		}
+
+		[Test]
+		public void TestMinOrDefaultExtension ()
+		{
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MinValue (dtw => dtw.DateTime));
+			Assert.Throws<InvalidOperationException> (() => defaultDateTimeSource.MinValue (dtw => dtw.DateTime, new DateTimeComparer ()));
+			Assert.AreEqual (null, defaultDateTimeSource.MinValueOrDefault (dtw => dtw.DateTime));
+			Assert.AreEqual (null, defaultDateTimeSource.MinValueOrDefault (dtw => dtw.DateTime, new DateTimeComparer ()));
 		}
 	}
 }

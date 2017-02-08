@@ -140,8 +140,7 @@ namespace NuGet.PackageManagement.UI
 			var updatedPackages = packages.Where(p => allowedVersions.Satisfies(p.Identity.Version));
 
 			var highest = updatedPackages
-				.OrderByDescending(e => e.Identity.Version, VersionComparer.VersionRelease)
-				.FirstOrDefault();
+				.MaxValueOrDefault (e => e.Identity.Version, VersionComparer.VersionRelease);
 
 			return highest?.WithVersions(ToVersionInfo(packages, includePrerelease));
 		}

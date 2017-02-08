@@ -682,7 +682,8 @@ namespace MonoDevelop.CSharp
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {
-				entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, GLib.Markup.EscapeText (reg.Name));
+				var pixbuf = await Runtime.RunInMainThread (() => CompilationUnitDataProvider.Pixbuf).ConfigureAwait (false);
+				entry = new PathEntry (pixbuf, GLib.Markup.EscapeText (reg.Name));
 			}
 			entry.Position = EntryPosition.Right;
 			return entry;
