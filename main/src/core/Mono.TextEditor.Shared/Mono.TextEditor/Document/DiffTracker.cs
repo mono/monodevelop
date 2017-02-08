@@ -70,6 +70,8 @@ namespace Mono.TextEditor
 				return;
 			var startLine = trackDocument.GetLineByOffset (e.Offset);
 			var endRemoveLine = trackDocument.GetLineByOffset (e.Offset + e.RemovalLength);
+			if (startLine == null || endRemoveLine == null)
+				return;
 			try {
 				var lineNumber = startLine.LineNumber;
 				lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
