@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{AAC93D68-A274-4D6D-A6BA-02D883D5B525}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+      <Compile Include="$(MSBuildThisFileDirectory)Core\ContentType\ContentTypeImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Core\ContentType\ContentTypeRegistryServiceImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Core\ContentType\FileExtensionRegistryServiceImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Core\ContentType\Strings.Designer.cs">
+          <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
+      <EmbeddedResource Include="$(MSBuildThisFileDirectory)Core\ContentType\Strings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+
+      <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
+      <!--<Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" /> -->
+
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ArgumentValidation.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\BufferTracker.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\DifferenceCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ExtensionSelector.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\FrugalList.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\GuardedOperations.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\IContentTypeMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\IEncodingDetectorMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\IOrderableContentTypeMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ListUtilities.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\MappingHelper.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\MappingPointSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\MappingSpanSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ProjectionSpanDiffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ProjectionSpanDifference.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\SnapshotTracker.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\TextModelOptions.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\TextUtilities.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\WeakReferenceForKey.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Utility\TextLogicUtil\ITaggerMetadata.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\ExtensionMethods.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\IObjectTracker.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\ITextBufferFactoryService2.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\LazyObservableCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\TrackingSpanTree.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextData\UnicodeWordExtent.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\IAccurateClassifier.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\IAccurateTagAggregator.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\IAccurateTagger.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\IElisionTag.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ILoggingServiceInternal.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\IPerformanceMarkerBlockProvider.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ITextModelOptionsSetter.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ITextSearchNavigator2.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ITextSearchResultTag.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ITextSearchTagger.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\ITextSearchTaggerFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Internal\TextLogic\TagAggregatorOptions2.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\BaseTextStorageLoader.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\CharStream.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\CompressedTextStorage.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\CompressedTextStorageLoader.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\Compressor.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\EncodedLineBreaks.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\ITextStorage.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\ITextStorageLoader.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\Page.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\PageManager.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\SimpleTextStorage.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Storage\SimpleTextStorageLoader.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\StringRebuilder\BaseStringRebuilder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\StringRebuilder\BinaryStringRebuilder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\StringRebuilder\IStringRebuilder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\StringRebuilder\LineSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\StringRebuilder\SimpleStringRebuilder.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\BaseBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\BaseSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\BufferFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\BufferGroup.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ChangeString.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\EncodedStreamReader.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ExtendedCharacterDetectionDecoder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ExtendedCharacterDetector.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\FallbackDetector.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ForwardFidelityCustomTrackingSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ForwardFidelityTrackingPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ForwardFidelityTrackingSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\FxCopSuppressions.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\HighFidelityTrackingPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\HighFidelityTrackingSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\IInternalTextBufferFactory.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ISubordinateTextEdit.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\LineBreakBoundaryConditions.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\MappingPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\MappingSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\NormalizedTextChangeCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\PersistentSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\PersistentSpanFactory.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ReadOnlyRegion.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ReadOnlySpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\ReadOnlySpanCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Strings.Designer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextChange.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextDocument.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextDocumentFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextModelUtilities.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextSnapshotLine.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TextVersion.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TrackingPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TrackingSpan.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\TrivialNormalizedTextChangeCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\VersionNumberPosition.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\BaseProjectionBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\BaseProjectionSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\BufferGraph.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\BufferGraphFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ElisionBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ElisionMap.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ElisionMapNode.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ElisionSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ProjectionBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ProjectionSnapshot.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ProjectionSnapshotDoppelganger.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ProjectionSpanToChangeConverter.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\ProjectionUtilities.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\TextModel\Projection\WeakEventHook.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\CharacterDecompositionList.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\DecompositionListMaker.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\DefaultTextDifferencingService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\DiffChangeCollectionHelper.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\FinessedDifferenceCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\HierarchicalDifferenceCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\LineDecompositionList.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\MaximalSubsequenceAlgorithm.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\SnapshotLineList.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\TextDifferencingSelectorService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\TokenizedStringList.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\WordDecompositionList.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\TFS\DiffFinder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Data\DifferenceAlgorithm\TFS\LCSDiff.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\TagAggregator\TagAggregator.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\TagAggregator\TagAggregatorFactoryService.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\ClassificationAggregator\ClassifierAggregator.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\ClassificationAggregator\ClassifierAggregatorService.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\ClassificationType\Strings.Designer.cs">
+          <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
+      <EmbeddedResource Include="$(MSBuildThisFileDirectory)Logic\ClassificationType\Strings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\ClassificationType\ClassificationTypeImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)Logic\ClassificationType\ClassificationTypeRegistryService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>

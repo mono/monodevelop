@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Platform.Settings.targets" />
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
+  <PropertyGroup>
+    <AssemblyName>Microsoft.VisualStudio.Text.Implementation</AssemblyName>
+    <OutputPath>$(BinariesDirectory)\bin\$(BuildArchitecture)</OutputPath>
+    <OutputType>Library</OutputType>
+    <SignAssemblyAttribute>true</SignAssemblyAttribute>
+    <UseVsVersion>true</UseVsVersion>
+    <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
+    <CreateMetaAssembly>false</CreateMetaAssembly>
+    <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
+    <NoWarn>649;436;618$(NoWarn)</NoWarn>
+  </PropertyGroup>
+  <!-- IDE specific Information -->
+  <PropertyGroup>
+    <ProjectGuid>{9C5627EB-7EDC-4956-819F-4471EBBF4E68}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BaseBuffer.cs" />
+    <Compile Include="BaseSnapshot.cs" />
+    <Compile Include="BufferFactoryService.cs" />
+    <Compile Include="BufferGroup.cs" />
+    <Compile Include="ChangeString.cs" />
+    <Compile Include="ExtendedCharacterDetector.cs" />
+    <Compile Include="ExtendedCharacterDetectionDecoder.cs" />
+    <Compile Include="EncodedStreamReader.cs" />
+    <Compile Include="FallbackDetector.cs" />
+    <Compile Include="ForwardFidelityCustomTrackingSpan.cs" />
+    <Compile Include="ForwardFidelityTrackingPoint.cs" />
+    <Compile Include="ForwardFidelityTrackingSpan.cs" />
+    <Compile Include="FxCopSuppressions.cs" />
+    <Compile Include="HighFidelityTrackingPoint.cs" />
+    <Compile Include="HighFidelityTrackingSpan.cs" />
+    <Compile Include="IInternalTextBufferFactory.cs" />
+    <Compile Include="ISubordinateTextEdit.cs" />
+    <Compile Include="LineBreakBoundaryConditions.cs" />
+    <Compile Include="MappingPoint.cs" />
+    <Compile Include="MappingSpan.cs" />
+    <Compile Include="NormalizedTextChangeCollection.cs" />
+    <Compile Include="PersistentSpan.cs" />
+    <Compile Include="PersistentSpanFactory.cs" />
+    <Compile Include="ReadOnlyRegion.cs" />
+    <Compile Include="ReadOnlySpan.cs" />
+    <Compile Include="ReadOnlySpanCollection.cs" />
+    <Compile Include="TextBuffer.cs" />
+    <Compile Include="TextChange.cs" />
+    <Compile Include="TextDocument.cs" />
+    <Compile Include="TextDocumentFactoryService.cs" />
+    <Compile Include="TrackingPoint.cs" />
+    <Compile Include="TextSnapshot.cs" />
+    <Compile Include="TextSnapshotLine.cs" />
+    <Compile Include="TrackingSpan.cs" />
+    <Compile Include="TextModelUtilities.cs" />
+    <Compile Include="TextVersion.cs" />
+    <Compile Include="TrivialNormalizedTextChangeCollection.cs" />
+    <Compile Include="VersionNumberPosition.cs" />
+    <Compile Include="Projection\BaseProjectionBuffer.cs" />
+    <Compile Include="Projection\BaseProjectionSnapshot.cs" />
+    <Compile Include="Projection\BufferGraph.cs" />
+    <Compile Include="Projection\BufferGraphFactoryService.cs" />
+    <Compile Include="Projection\ElisionBuffer.cs" />
+    <Compile Include="Projection\ElisionMap.cs" />
+    <Compile Include="Projection\ElisionMapNode.cs" />
+    <Compile Include="Projection\ElisionSnapshot.cs" />
+    <Compile Include="Projection\ProjectionBuffer.cs" />
+    <Compile Include="Projection\ProjectionSnapshot.cs" />
+    <Compile Include="Projection\ProjectionSnapshotDoppelganger.cs" />
+    <Compile Include="Projection\ProjectionSpanToChangeConverter.cs" />
+    <Compile Include="Projection\ProjectionUtilities.cs" />
+    <Compile Include="Projection\WeakEventHook.cs" />
+
+    <Compile Include="Storage\BaseTextStorageLoader.cs" />
+    <Compile Include="Storage\CharStream.cs" />
+    <Compile Include="Storage\CompressedTextStorage.cs" />
+    <Compile Include="Storage\CompressedTextStorageLoader.cs" />
+    <Compile Include="Storage\Compressor.cs" />
+    <Compile Include="Storage\EncodedLineBreaks.cs" />
+    <Compile Include="Storage\ITextStorage.cs" />
+    <Compile Include="Storage\ITextStorageLoader.cs" />
+    <Compile Include="Storage\Page.cs" />
+    <Compile Include="Storage\PageManager.cs" />
+    <Compile Include="Storage\SimpleTextStorage.cs" />
+    <Compile Include="Storage\SimpleTextStorageLoader.cs" />
+
+    <Compile Include="StringRebuilder\BaseStringRebuilder.cs" />
+    <Compile Include="StringRebuilder\BinaryStringRebuilder.cs" />
+    <Compile Include="StringRebuilder\IStringRebuilder.cs" />
+    <Compile Include="StringRebuilder\LineSpan.cs" />
+    <Compile Include="StringRebuilder\SimpleStringRebuilder.cs" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <EmbeddedResource Include="Strings.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <ProjectReference Include="..\..\..\Core\Def\CoreUtility.csproj">
+      <Project>{ba3dd7ec-3f13-4400-a3a9-96ad425b3369}</Project>
+      <Name>CoreUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Def\TextData\TextData.csproj">
+      <Project>{80A00E91-51E5-471C-80BA-0D863987ECC7}</Project>
+      <Name>TextData %28Text\Def\TextData\TextData%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Util\TextDataUtil\TextDataUtil.csproj">
+      <Project>{0AE47F00-7C79-4581-A849-9C1E7B37CD56}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Def\Internal\Internal.csproj">
+      <Project>{0F7763D3-41CF-4788-9454-52D6087CE68C}</Project>
+      <Name>TextData %28Text\Def\Internal\Internal%29</Name>
+    </ProjectReference>
+    <None Include="Diagrams\StringRebuilder.cd" />
+  </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.targets" />
+  <PropertyGroup>
+    <CopyToSuiteBin>true</CopyToSuiteBin>
+  </PropertyGroup>
+</Project>

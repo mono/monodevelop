@@ -1,0 +1,47 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Platform.Settings.targets" />
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
+  <PropertyGroup>
+    <AssemblyName>Microsoft.VisualStudio.Text.Logic.Utilities</AssemblyName>
+    <OutputPath>$(BinariesDirectory)\bin\$(BuildArchitecture)</OutputPath>
+    <OutputType>Library</OutputType>
+    <SignAssemblyAttribute>true</SignAssemblyAttribute>
+    <UseVsVersion>true</UseVsVersion>
+    <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
+    <CreateMetaAssembly>false</CreateMetaAssembly>
+    <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
+    <NoWarn>649;436;618$(NoWarn)</NoWarn>
+  </PropertyGroup>
+  <!-- IDE specific Information -->
+  <PropertyGroup>
+    <ProjectGuid>{C52697E5-9277-4A85-9B83-24D417E5A44B}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ITaggerMetadata.cs" />
+    <Compile Include="FxCopSuppressions.cs" />
+    <Compile Include="TextUndoPrimitive.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <ProjectReference Include="..\..\..\Core\Def\CoreUtility.csproj">
+      <Project>{ba3dd7ec-3f13-4400-a3a9-96ad425b3369}</Project>
+      <Name>CoreUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Def\TextData\TextData.csproj">
+      <Project>{80A00E91-51E5-471C-80BA-0D863987ECC7}</Project>
+      <Name>TextData %28Text\Def\TextData\TextData%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Def\TextLogic\TextLogic.csproj">
+      <Project>{26FAFDBB-9C63-4F92-A176-6E350178DB67}</Project>
+      <Name>TextLogic %28Text\Def\TextLogic\TextLogic%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.targets" />
+  <PropertyGroup>
+    <CopyToSuiteBin>true</CopyToSuiteBin>
+  </PropertyGroup>
+</Project>
