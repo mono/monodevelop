@@ -281,7 +281,7 @@ namespace MonoDevelop.CSharp.Completion
 			//				return null;
 			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
 				return null;
-			int triggerWordLength = -1;
+			int triggerWordLength = 0;
 			switch (triggerInfo.CompletionTriggerReason) {
 			case CompletionTriggerReason.CharTyped:
 				//	var timer = Counters.ResolveTime.BeginTiming ();

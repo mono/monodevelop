@@ -347,14 +347,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		ProjectData GetOrCreateProjectData (ProjectId id)
+		ProjectData CreateProjectData (ProjectId id)
 		{
 			lock (projectIdMap) {
-				ProjectData result;
-				if (!projectDataMap.TryGetValue (id, out result)) {
-					result = new ProjectData (id);
-					projectDataMap [id] = result;
-				}
+				var result = new ProjectData (id);
+				projectDataMap [id] = result;
 				return result;
 			}
 		}
@@ -435,7 +432,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var projectId = GetOrCreateProjectId (p);
-			var projectData = GetOrCreateProjectData (projectId);
+			var projectData = CreateProjectData (projectId);
 			var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 			if (token.IsCancellationRequested)
 				return null;
@@ -790,6 +787,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
+				var openDocument = this.openDocuments.FirstOrDefault (w => w.Id == analysisDocument);
+				if (openDocument != null) {
+					openDocument.Dispose ();
+					openDocuments.Remove (openDocument);
+				}
+
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
 					if (ad != null)
