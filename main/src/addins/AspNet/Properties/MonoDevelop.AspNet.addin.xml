@@ -310,7 +310,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".aspx, .ascx, .master" class = "MonoDevelop.AspNet.WebForms.WebFormsEditorExtension" />
-		<Class fileExtensions=".html, .htm, .spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
+		<Class mimeTypes="text/html,application/x-spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
 		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Razor.RazorCSharpEditorExtension" />
 	</Extension>
 
