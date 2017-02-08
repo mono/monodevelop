@@ -262,7 +262,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
 							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, TextSegment.FromBounds (start, end));
 							marker.Color = GetColor (editor, currentResult);
-							marker.IsVisible = currentResult.Underline;
+							marker.IsVisible = currentResult.Underline && currentResult.Level != DiagnosticSeverity.Hidden;
 							marker.Tag = currentResult;
 							editor.AddMarker (marker);
 							ext.markers.Enqueue (marker);

@@ -735,7 +735,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			} else if (allTasks.MoveNext ()) {
 				var task = allTasks.Current;
 				int y = (int)GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
-				if (!lineCache[1].Contains (y)) {
+				if (!lineCache[1].Contains (y) && task.Severity != DiagnosticSeverity.Hidden) {
 					lineCache[1].Add (y);
 					cr.SetSourceColor (GetBarColor (task.Severity));
 					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
