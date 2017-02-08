@@ -1554,6 +1554,8 @@ namespace Mono.TextEditor
 		void HandleSplitterLineSegmentTreeLineRemoved (object sender, TextChangeEventArgs e)
 		{
 			var line = GetLineByOffset (e.Offset);
+			if (line == null)
+				return;
 			var endOffset = e.Offset + e.RemovalLength;
 			var offset = line.Offset;
 			do {
