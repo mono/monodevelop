@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildWithMSBuildCheckBox = new global::Gtk.CheckButton();
 			this.buildWithMSBuildCheckBox.CanFocus = true;
 			this.buildWithMSBuildCheckBox.Name = "buildWithMSBuildCheckBox";
-			this.buildWithMSBuildCheckBox.Label = global::Mono.Unix.Catalog.GetString("Build with MSBuild instead of xbuild (EXPERIMENTAL)");
+			this.buildWithMSBuildCheckBox.Label = global::Mono.Unix.Catalog.GetString("Build with MSBuild instead of xbuild");
 			this.buildWithMSBuildCheckBox.DrawIndicator = true;
 			this.buildWithMSBuildCheckBox.UseUnderline = true;
 			this.vbox66.Add(this.buildWithMSBuildCheckBox);

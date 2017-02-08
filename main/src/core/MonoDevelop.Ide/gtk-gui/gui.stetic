@@ -976,7 +976,7 @@
           <widget class="Gtk.CheckButton" id="buildWithMSBuildCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Build with MSBuild instead of xbuild (EXPERIMENTAL)</property>
+            <property name="Label" translatable="yes">Build with MSBuild instead of xbuild</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
