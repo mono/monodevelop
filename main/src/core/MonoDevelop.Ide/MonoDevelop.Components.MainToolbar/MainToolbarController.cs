@@ -472,7 +472,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				var target = item.ExecutionTarget;
-				if (target == null || !target.Enabled || item.Project != project)
+				if (target == null || item.Project != project)
 					continue;
 
 				if (target is ExecutionTargetGroup)
@@ -1018,7 +1018,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public RuntimeMutableModel (ExecutionTarget target, bool fullName)
 			{
-				Enabled = !(target is ExecutionTargetGroup) && !target.Greyed;
+				Enabled = !(target is ExecutionTargetGroup) && target.Enabled;
 				Visible = true;
 				if (target == null)
 					DisplayString = FullDisplayString = string.Empty;

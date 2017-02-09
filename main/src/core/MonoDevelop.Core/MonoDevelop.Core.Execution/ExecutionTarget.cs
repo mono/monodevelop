@@ -72,16 +72,6 @@ namespace MonoDevelop.Core.Execution
 		public bool Notable { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="T:MonoDevelop.Core.Execution.ExecutionTarget"/> is greyed.
-		/// </summary>
-		/// <value><c>true</c> if greyed; otherwise, <c>false</c>.</value>
-		/// <remarks>
-		/// This is introduced to be able to gray out execution targets for whatever reason makes sense for the project. 
-		/// For example, the ios add-in uses this to indicate which simulators can't be interacted with.
-		/// </remarks>
-		public bool Greyed { get; set; }
-
-		/// <summary>
 		/// Gets or sets the image name that should be used for this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/>.
 		/// </summary>
 		/// <value>The name of the image.</value>
