@@ -105,10 +105,15 @@ namespace MonoDevelop.Components
 		{
 			if (filterStrings == null)
 				yield break;
+			var filterNames = new HashSet<string>();
 			foreach (string filterStr in filterStrings) {
-				var parts = filterStr.Split ('|');
-				var f = new SelectFileDialogFilter (parts[0], parts[1].Split (';'));
-				yield return f;
+				var parts = filterStr.Split('|');
+				var filterName = parts[0];
+				if (filterNames.Add(filterName))
+				{
+					var f = new SelectFileDialogFilter(filterName, parts[1].Split(';'));
+					yield return f;
+				}
 			}
 		}
 		
