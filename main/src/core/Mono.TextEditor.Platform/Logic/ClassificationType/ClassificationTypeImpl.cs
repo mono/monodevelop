@@ -1,6 +1,7 @@
 // Copyright (C) Microsoft Corporation.  All Rights Reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.Text.Utilities;
 
 namespace Microsoft.VisualStudio.Text.Classification.Implementation
@@ -15,21 +16,14 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
             this.name = name;
         }
 
-        private FrugalList<IClassificationType> BaseTypesList
-        {
-            get
-            {
-                if (this.baseTypes == null)
-                {
-                    this.baseTypes = new FrugalList<IClassificationType>();
-                }
-                return this.baseTypes;
-            }
-        }
-
         internal void AddBaseType(IClassificationType baseType)
         {
-            this.BaseTypesList.Add(baseType);
+            if (this.baseTypes == null)
+            {
+                this.baseTypes = new FrugalList<IClassificationType>();
+            }
+
+            this.baseTypes.Add(baseType);
         }
 
         public string Classification
@@ -41,9 +35,9 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
         {
             if (this.name == type)
                 return true;
-            else
+            else if (this.baseTypes != null)
             {
-                foreach (IClassificationType baseType in this.BaseTypesList)
+                foreach (IClassificationType baseType in this.baseTypes)
                 {
                     if ( baseType.IsOfType(type) )
                         return true;
@@ -55,7 +49,7 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
 
         public IEnumerable<IClassificationType> BaseTypes
         {
-            get { return BaseTypesList.AsReadOnly(); }
+            get { return (this.baseTypes != null) ? (IEnumerable<IClassificationType>)(this.baseTypes.AsReadOnly()) : Enumerable.Empty<IClassificationType>(); }
         }
 
         public override string ToString()

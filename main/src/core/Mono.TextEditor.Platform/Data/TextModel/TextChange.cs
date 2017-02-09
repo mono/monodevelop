@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
     /// Deletion:  oldText != "" and newText == ""
     /// Replace:   oldText != "" and newText != ""
     /// </summary>
-    internal partial class TextChange : ITextChange2
+    internal partial class TextChange : ITextChange3
     {
         #region Private Members
 
@@ -217,6 +217,48 @@ namespace Microsoft.VisualStudio.Text.Implementation
             internal set { _isOpaque = value; }
         }
         #endregion // Public Properties
+
+        #region Public Methods
+        public string GetOldText(Span span)
+        {
+            if (span.End > this.OldLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(span));
+            }
+
+            return _oldText.Substring(span);
+        }
+
+        public string GetNewText(Span span)
+        {
+            if (span.End > this.NewLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(span));
+            }
+
+            return _newText.Substring(span);
+        }
+
+        public char GetOldTextAt(int position)
+        {
+            if (position > this.OldLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            return _oldText[position];
+        }
+
+        public char GetNewTextAt(int position)
+        {
+            if (position > this.NewLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            return _newText[position];
+        }
+        #endregion
 
         #region Internal Properties
         internal LineBreakBoundaryConditions LineBreakBoundaryConditions

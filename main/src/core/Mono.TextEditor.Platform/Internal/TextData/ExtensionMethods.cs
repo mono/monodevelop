@@ -19,28 +19,14 @@ namespace Microsoft.VisualStudio.Text
                 throw new ArgumentOutOfRangeException("start");
             }
 
-            // start with a small chunk size since few lines will start with enormous amounts of white space.
-            int chunkSize = 32;
-            int next = startIndex;
-            int lineLength = line.Extent.Length;
-            while (next < lineLength)
+            // Take advantage of performant [] operators on the ITextSnapshot
+            ITextSnapshot snapshot = line.Snapshot;
+            int snapshotPos = line.Start.Position;
+            for (int i = startIndex; i < line.Length; i++)
             {
-                int length = Math.Min(chunkSize, line.Extent.End - (line.Extent.Start + next));
-                string text = line.Snapshot.GetText(line.Extent.Start + next, length);
-                for (int i = 0; i < length; ++i)
+                if (!char.IsWhiteSpace(snapshot[snapshotPos + i]))
                 {
-                    if (!char.IsWhiteSpace(text[i]))
-                    {
-                        return next + i;
-                    }
-                }
-                next += length;
-
-                // don't let the chunks get too big; the whole point of this
-                // method is to avoid giant string allocations. Use 2**14 as the threshold.
-                if (chunkSize < 16384)
-                {
-                    chunkSize *= 2;
+                    return i;
                 }
             }
 

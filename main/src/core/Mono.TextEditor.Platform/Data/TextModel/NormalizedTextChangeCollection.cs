@@ -311,8 +311,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 else
                 {
                     TextChange minimalChange = new TextChange(originalChange.OldPosition + leftDiffSpan.Start,
-                                                              oldText.Substring(leftDiffSpan.Start, leftDiffSpan.Length),
-                                                              newText.Substring(rightDiffSpan.Start, rightDiffSpan.Length),
+                                                              oldText.Substring(leftDiffSpan),
+                                                              newText.Substring(rightDiffSpan),
                                                               ComputeBoundaryConditions(originalChange, oldText, leftDiffSpan));
                     
                     minimalChange.NewPosition = originalChange.NewPosition + rightDiffSpan.Start;

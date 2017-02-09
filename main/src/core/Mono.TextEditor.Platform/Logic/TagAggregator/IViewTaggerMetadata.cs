@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.Text.Tagging
     /// <summary>
     /// The metadata interface for exporters and importers of metadata on <see cref="IViewTaggerProvider"/> factories.
     /// </summary>
-    public interface IViewTaggerMetadata : ITaggerMetadata
+    public interface IViewTaggerMetadata : INamedTaggerMetadata
     {
         /// <summary>
         /// Text view roles to which the tagger provider applies. Default value of null is provided for backward

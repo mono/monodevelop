@@ -12,11 +12,7 @@ namespace Microsoft.VisualStudio.Text.Tagging
     /// <summary>
     /// The metadata interface for exporters and importers of metadata on <see cref="ITaggerProvider"/> factories.
     /// </summary>
-    public interface ITaggerMetadata : IContentTypeMetadata
+    public interface INamedTaggerMetadata : ITaggerMetadata, INamedContentTypeMetadata
     {
-        /// <summary>
-        /// The set of <see cref="TagTypeAttribute"/> objects.
-        /// </summary>
-        IEnumerable<Type> TagTypes { get; }
     }
 }

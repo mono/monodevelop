@@ -38,6 +38,18 @@ namespace Microsoft.VisualStudio.Text.Tagging
         /// will cause the tagger to defer the creation until idle time tasks are done.</para>
         /// <para>If this option is set, a TagsChanged event will be raised after the taggers have been created.</para>
         /// </remarks>
-        DeferTaggerCreation = 0x02
+        DeferTaggerCreation = 0x02,
+
+        /// <summary>
+        /// Do not create taggers on child buffers.
+        /// </summary>
+        /// <remarks>
+        /// <para>A common reason to use this flag would for a tagger that is creating its own tag aggregator
+        /// (for example, to translate one tag into another type of tag). In that case, you can expect another
+        /// instance of your tagger to be created on the child buffers (which would create its own tag aggregators)
+        /// so you don't want to have your tag aggregator include those buffers/
+        /// </para>
+        /// </remarks>
+        NoProjection = 0x04
     }
 }

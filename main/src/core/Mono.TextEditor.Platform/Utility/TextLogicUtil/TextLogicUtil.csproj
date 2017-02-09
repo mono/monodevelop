@@ -1,4 +1,9 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="BuildProps">
+    <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
+  </PropertyGroup>
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
   <Import Project="..\Platform.Settings.targets" />
   <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
   <PropertyGroup>
@@ -8,7 +13,6 @@
     <SignAssemblyAttribute>true</SignAssemblyAttribute>
     <UseVsVersion>true</UseVsVersion>
     <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
-    <CreateMetaAssembly>false</CreateMetaAssembly>
     <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
     <NoWarn>649;436;618$(NoWarn)</NoWarn>
   </PropertyGroup>
@@ -19,6 +23,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ITaggerMetadata.cs" />
+    <Compile Include="INamedTaggerMetadata.cs" />
     <Compile Include="FxCopSuppressions.cs" />
     <Compile Include="TextUndoPrimitive.cs" />
   </ItemGroup>
@@ -37,6 +42,9 @@
     <ProjectReference Include="..\..\Def\TextLogic\TextLogic.csproj">
       <Project>{26FAFDBB-9C63-4F92-A176-6E350178DB67}</Project>
       <Name>TextLogic %28Text\Def\TextLogic\TextLogic%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TextDataUtil\TextDataUtil.csproj">
+      <Project>{0AE47F00-7C79-4581-A849-9C1E7B37CD56}</Project>
     </ProjectReference>
   </ItemGroup>
   <!--Import the targets-->

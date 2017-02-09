@@ -49,49 +49,49 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
 
             // Create a tag aggregator that maps by content type, so we don't map through projection buffers that aren't "projection" content type.
             _tagAggregator = bufferTagAggregatorFactory.CreateTagAggregator<IClassificationTag>(textBuffer, TagAggregatorOptions.MapByContentType | (TagAggregatorOptions)TagAggregatorOptions2.DeferTaggerCreation) as IAccurateTagAggregator<IClassificationTag>;
-            _tagAggregator.TagsChanged += OnTagsChanged;
+            _tagAggregator.BatchedTagsChanged += OnBatchedTagsChanged;
         }
 
-		//HACK internal ClassifierAggregator(ITextView textView,
-		//HACK                               IViewTagAggregatorFactoryService viewTagAggregatorFactory,
-		//HACK                               IClassificationTypeRegistryService classificationTypeRegistry)
-		//HACK {
-		//HACK     // Validate.
-		//HACK     if (textView == null)
-		//HACK     {
-		//HACK         throw new ArgumentNullException("textView");
-		//HACK     }
-		//HACK     if (viewTagAggregatorFactory == null)
-		//HACK     {
-		//HACK         throw new ArgumentNullException("viewTagAggregatorFactory");
-		//HACK     }
-		//HACK     if (classificationTypeRegistry == null)
-		//HACK     {
-		//HACK         throw new ArgumentNullException("classificationTypeRegistry");
-		//HACK     }
-		//HACK 
-		//HACK     _textBuffer = textView.TextBuffer;
-		//HACK     _classificationTypeRegistry = classificationTypeRegistry;
-		//HACK 
-		//HACK     // Create a tag aggregator that maps by content type, so we don't map through projection buffers that aren't "projection" content type.
-		//HACK     _tagAggregator = viewTagAggregatorFactory.CreateTagAggregator<IClassificationTag>(textView, TagAggregatorOptions.MapByContentType) as IAccurateTagAggregator<IClassificationTag>;
-		//HACK     _tagAggregator.TagsChanged += OnTagsChanged;
-		//HACK }
+        internal ClassifierAggregator(ITextView textView,
+                                      IViewTagAggregatorFactoryService viewTagAggregatorFactory,
+                                      IClassificationTypeRegistryService classificationTypeRegistry)
+        {
+            // Validate.
+            if (textView == null)
+            {
+                throw new ArgumentNullException("textView");
+            }
+            if (viewTagAggregatorFactory == null)
+            {
+                throw new ArgumentNullException("viewTagAggregatorFactory");
+            }
+            if (classificationTypeRegistry == null)
+            {
+                throw new ArgumentNullException("classificationTypeRegistry");
+            }
 
-		#endregion // Constructors
+            _textBuffer = textView.TextBuffer;
+            _classificationTypeRegistry = classificationTypeRegistry;
 
-		#region Exposed Methods
+            // Create a tag aggregator that maps by content type, so we don't map through projection buffers that aren't "projection" content type.
+            _tagAggregator = viewTagAggregatorFactory.CreateTagAggregator<IClassificationTag>(textView, TagAggregatorOptions.MapByContentType) as IAccurateTagAggregator<IClassificationTag>;
+            _tagAggregator.BatchedTagsChanged += OnBatchedTagsChanged;
+        }
 
-		/// <summary>
-		/// Gets all classification spans that overlap the given range of text
-		/// </summary>
-		/// <param name="span">
-		/// The span of text of interest
-		/// </param>
-		/// <returns>
-		/// A list of lists of ClassificationSpans that intersect with the given range
-		/// </returns>
-		public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
+        #endregion // Constructors
+
+        #region Exposed Methods
+
+        /// <summary>
+        /// Gets all classification spans that overlap the given range of text
+        /// </summary>
+        /// <param name="span">
+        /// The span of text of interest
+        /// </param>
+        /// <returns>
+        /// A list of lists of ClassificationSpans that intersect with the given range
+        /// </returns>
+        public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             return this.InternalGetClassificationSpans(span, _tagAggregator.GetTags(span));
         }
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
         {
             if (_tagAggregator != null)
             {
-                _tagAggregator.TagsChanged -= OnTagsChanged;
+                _tagAggregator.BatchedTagsChanged -= OnBatchedTagsChanged;
                 _tagAggregator.Dispose();
 
                 _tagAggregator = null;
@@ -127,13 +127,18 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
 
         #region Event Handlers
 
-        private void OnTagsChanged(object sender, TagsChangedEventArgs e)
+        private void OnBatchedTagsChanged(object sender, BatchedTagsChangedEventArgs e)
         {
-            foreach(var span in e.Span.GetSpans(_textBuffer))
+            var tempEvent = ClassificationChanged;
+            if (tempEvent != null)
             {
-                var tempEvent = ClassificationChanged;
-                if (tempEvent != null)
-                    tempEvent(this, new ClassificationChangedEventArgs(span));
+                foreach (var mappingSpan in e.Spans)
+                {
+                    foreach (var span in mappingSpan.GetSpans(_textBuffer))
+                    {
+                        tempEvent(this, new ClassificationChangedEventArgs(span));
+                    }
+                }
             }
         }
 
