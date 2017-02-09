@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (data.IsCommitCharacter (keyChar, PartialWord)) {
 				var curword = PartialWord;
-				int match = FindMatchedEntry (curword);
+				var match = FindMatchedEntry (curword).Index;
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
 					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
@@ -609,10 +609,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		protected int FindMatchedEntry (string partialWord)
+		protected CompletionSelectionStatus FindMatchedEntry (string partialWord)
 		{
 			if (completionDataList == null)
-				return -1;
+				return CompletionSelectionStatus.Empty;
 			return completionDataList.FindMatchedEntry (completionDataList, cache, partialWord, list.filteredItems);
 		}
 
@@ -633,11 +633,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.Selection = 0;
 				return;
 			}*/
-			
-			int matchedIndex = FindMatchedEntry (s);
-//			ResetSizes ();
-			SelectEntry (matchedIndex);
+
+			var match = FindMatchedEntry (s);
+			//			ResetSizes ();
+			List.SelectEntry (match);
 		}
+
+
 
 		void OnScrolled (object o, ScrollEventArgs args)
 		{
