@@ -124,8 +124,6 @@
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Imaging\ImageMoniker.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Imaging\Interop.ImageMoniker.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Adornments\AdornmentPositioningBehavior.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\RTF\IRtfBuilderService.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\BulkObservableCollection.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Completion.cs" />
@@ -199,6 +197,26 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\StandardGlyphItem.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\UIElementType.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\ValueChangedEventArgs.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedAction.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedAction2.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionCategory.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionCategoryRegistryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionCategorySet.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionsSource.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionsSourceProvider.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\ISuggestedActionWithFlavors.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\PredefinedSuggestedActionCategoryNames.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionCategoryDefinition.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionSet.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionSetPriority.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewConnectionListener.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewCreationListener.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Adornments\AdornmentPositioningBehavior.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Editor\ConnectionReason.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\RTF\IRtfBuilderService.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\ExtensionMethods.cs" />
       <!-- <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\IJoinableTaskFactoryHelper.cs" /> shell -->
