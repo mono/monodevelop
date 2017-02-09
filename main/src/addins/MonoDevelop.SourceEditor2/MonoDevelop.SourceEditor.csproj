@@ -58,7 +58,7 @@
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
@@ -91,7 +91,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.CoreUtility.15.0.25901-RC\lib\net45</HintPath>
+      <HintPath>..\..\packages\Microsoft.VisualStudio.CoreUtility.14.3.25407\lib\net45</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Data">

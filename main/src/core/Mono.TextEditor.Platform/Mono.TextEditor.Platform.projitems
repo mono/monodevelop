@@ -21,7 +21,7 @@
       </EmbeddedResource>
 
       <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
-      <!--<Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" /> -->
+      <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)Utility\TextDataUtil\BufferTracker.cs" />
