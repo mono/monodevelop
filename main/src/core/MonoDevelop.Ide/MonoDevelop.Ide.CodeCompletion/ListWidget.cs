@@ -78,8 +78,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public readonly List<CategorizedCompletionItems> CategorizedItems;
 		public readonly List<int> FilteredItems;
 
-		public bool? AutoSelect { get; set; }
-
 		public CompletionListFilterResult (List<int> filteredItems)
 		{
 			FilteredItems = filteredItems;
@@ -808,6 +806,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
 		}
 
+		internal void SelectEntry (CompletionSelectionStatus match)
+		{
+			if (match.IsSelected.HasValue)
+				AutoSelect = match.IsSelected.Value;
+			if (match.Index >= 0)
+				SelectionFilterIndex = match.Index;
+		}
+
 		internal static IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
 		{
 			var concrete = dataList as CompletionDataList;
@@ -821,11 +827,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
 			if (filterResult == null) {
 				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
-			} else {
-				if (filterResult.AutoSelect.HasValue)
-					AutoSelect = filterResult.AutoSelect.Value;
 			}
-			
+
 			filteredItems = filterResult.FilteredItems;
 			if (filterResult.CategorizedItems == null) {
 				categories.Clear ();

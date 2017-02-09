@@ -886,7 +886,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// no selection, try to find a selection
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
-				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString);
+				var match = FindMatchedEntry (List.CompletionString);
+				List.SelectEntry (match);
 			}
 			// no success, hide declaration view
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
