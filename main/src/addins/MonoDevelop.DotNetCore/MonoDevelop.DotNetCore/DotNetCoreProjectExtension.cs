@@ -276,18 +276,30 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			if (ProjectNeedsRestore ()) {
-				return Task.FromResult (CreateNuGetRestoreRequiredBuildResult ());
+			BuildResult result = CheckCanRunCleanOrBuild ();
+			if (result != null) {
+				return Task.FromResult (result);
 			}
 			return base.OnClean (monitor, configuration, operationContext);
 		}
 
 		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			if (ProjectNeedsRestore ()) {
-				return Task.FromResult (CreateNuGetRestoreRequiredBuildResult ());
+			BuildResult result = CheckCanRunCleanOrBuild ();
+			if (result != null) {
+				return Task.FromResult (result);
 			}
 			return base.OnBuild (monitor, configuration, operationContext);
+		}
+
+		BuildResult CheckCanRunCleanOrBuild ()
+		{
+			if (ProjectNeedsRestore ()) {
+				return CreateNuGetRestoreRequiredBuildResult ();
+			} else if (HasSdk && !sdkPaths.Exist) {
+				return CreateDotNetCoreSdkRequiredBuildResult ();
+			}
+			return null;
 		}
 
 		bool ProjectNeedsRestore ()
@@ -302,10 +314,20 @@ namespace MonoDevelop.DotNetCore
 
 		BuildResult CreateNuGetRestoreRequiredBuildResult ()
 		{
+			return CreateBuildError (GettextCatalog.GetString ("NuGet packages need to be restored before building. NuGet MSBuild targets are missing and are needed for building. The NuGet MSBuild targets are generated when the NuGet packages are restored."));
+		}
+
+		BuildResult CreateBuildError (string message)
+		{
 			var result = new BuildResult ();
 			result.SourceTarget = Project;
-			result.AddError (GettextCatalog.GetString ("NuGet packages need to be restored before building. NuGet MSBuild targets are missing and are needed for building. The NuGet MSBuild targets are generated when the NuGet packages are restored."));
+			result.AddError (message);
 			return result;
+		}
+
+		BuildResult CreateDotNetCoreSdkRequiredBuildResult ()
+		{
+			return CreateBuildError (GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. https://aka.ms/vs/mac/install-netcore"));
 		}
 
 		protected override void OnBeginLoad ()
