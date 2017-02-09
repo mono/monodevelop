@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="BuildProps">
+    <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
+  </PropertyGroup>
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
   <Import Project="..\Platform.Settings.targets" />
   <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
   <PropertyGroup>
@@ -9,7 +13,6 @@
     <SignAssemblyAttribute>true</SignAssemblyAttribute>
     <UseVsVersion>true</UseVsVersion>
     <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
-    <CreateMetaAssembly>false</CreateMetaAssembly>
     <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
     <NoWarn>649;436;618$(NoWarn)</NoWarn>
   </PropertyGroup>
@@ -71,7 +74,6 @@
     <Compile Include="Projection\ProjectionSpanToChangeConverter.cs" />
     <Compile Include="Projection\ProjectionUtilities.cs" />
     <Compile Include="Projection\WeakEventHook.cs" />
-
     <Compile Include="Storage\BaseTextStorageLoader.cs" />
     <Compile Include="Storage\CharStream.cs" />
     <Compile Include="Storage\CompressedTextStorage.cs" />
@@ -84,7 +86,6 @@
     <Compile Include="Storage\PageManager.cs" />
     <Compile Include="Storage\SimpleTextStorage.cs" />
     <Compile Include="Storage\SimpleTextStorageLoader.cs" />
-
     <Compile Include="StringRebuilder\BaseStringRebuilder.cs" />
     <Compile Include="StringRebuilder\BinaryStringRebuilder.cs" />
     <Compile Include="StringRebuilder\IStringRebuilder.cs" />

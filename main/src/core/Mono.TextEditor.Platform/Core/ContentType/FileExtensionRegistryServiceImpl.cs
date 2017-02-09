@@ -1,20 +1,17 @@
 // Copyright (C) Microsoft Corporation.  All Rights Reserved.
 
-using System;
-using System.Globalization;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-
 namespace Microsoft.VisualStudio.Utilities.Implementation
 {
-    public interface IFileExtensionToContentTypeMetadata
-    {
-        string FileExtension { get; }
-        IEnumerable<string> ContentTypes { get; }
-    }
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.Composition;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
 
     [Export(typeof(IFileExtensionRegistryService))]
-    internal sealed class FileExtensionRegistryImpl : IFileExtensionRegistryService
+    [Export(typeof(IFileExtensionRegistryService2))]
+    internal sealed class FileExtensionRegistryImpl : IFileExtensionRegistryService2
     {
         [Import]
         internal IContentTypeRegistryService ContentTypeRegistry { get; set; }
@@ -22,255 +19,218 @@ namespace Microsoft.VisualStudio.Utilities.Implementation
         [ImportMany]
         internal List<Lazy<FileExtensionToContentTypeDefinition, IFileExtensionToContentTypeMetadata>> ExtensionToContentTypeExtensionsProductions { get; set; }
 
+        [ImportMany]
+        internal List<Lazy<FileExtensionToContentTypeDefinition, IFileNameToContentTypeMetadata>> FileNameToContentTypeProductions { get; set; }
+
         // UNDONE: the usage of a simple lock causes all readers of the registry to be serialized.
         // Ideally the registry should be switched to some kind of reader-writer locking.
-        private object syncLock = new object();
+        private readonly object syncLock = new object();
 
-        // Map of extensions to their correspondent content types
-        private Dictionary<string, IContentType> extensionMap;
+        private StringToContentTypesMap extensionMap;
 
-        // Map of a content type to a set of extensions
-        // keyed by lowercase dotless form of extension
-        // value is case-preserved extension
-        private Dictionary<IContentType, Dictionary<string, string>> contentTypeMap;
+        private StringToContentTypesMap fileNameMap;
 
-        private Dictionary<string, IContentType> ExtensionMap
-        {
-            get
-            {
-                if (null == this.extensionMap)
-                {
-                    BuildExtensionMap();
-                }
-
-                return this.extensionMap;
-            }
-        }
-
-        private Dictionary<IContentType, Dictionary<string, string>> ContentTypeMap
-        {
-            get
-            {
-                if (this.contentTypeMap == null)
-                {
-                    BuildExtensionMap();
-                }
-
-                return this.contentTypeMap;
-            }
-        }
-
-        /// <summary>
-        /// Builds the map of available extensions to content types
-        /// Note: This function must be called after acquiring a lock on syncLock
-        /// </summary>
-        private void BuildExtensionMap()
-        {
-            if ( null == this.extensionMap )
-            {
-                this.extensionMap = new Dictionary<string, IContentType>();
-                this.contentTypeMap = new Dictionary<IContentType, Dictionary<string, string>>();
-
-                foreach (var fileExtensionToContentTypeProduction in ExtensionToContentTypeExtensionsProductions)
-                {
-                    // MEF ensures that there will be at least one content type in the metadata. We take the first one. 
-                    // We prefer this over defining a different attribute from ContentType[] for this purpose.
-                    IEnumerator<string> cts = fileExtensionToContentTypeProduction.Metadata.ContentTypes.GetEnumerator();
-                    cts.MoveNext();
-                    IContentType contentType = ContentTypeRegistry.GetContentType(cts.Current);
-                    if (contentType != null)
-                    {
-                        TryAddFileExtension(fileExtensionToContentTypeProduction.Metadata.FileExtension, contentType);
-                        // For now simply ignore the conflicting extension declarations.
-                        // Later the issues should probably be logged with some kind of composition error reporting services.
-                    }
-                }
-            }
-        }
+        #region IFileExtensionRegistryService Members
 
         public IContentType GetContentTypeForExtension(string extension)
         {
+            // Check here so that the argument name matches the expected.
             if (extension == null)
             {
-                throw new ArgumentNullException("extension");
+                throw new ArgumentNullException(nameof(extension));
             }
 
             lock (this.syncLock)
             {
-                IContentType contentType;
+                EnsureInitialized();
 
-                if (!this.ExtensionMap.TryGetValue(AsKey(extension), out contentType))
-                {
-                    return ContentTypeRegistry.UnknownContentType;
-                }
-
-                return contentType;
+                return this.extensionMap.GetContentTypeForString(RemoveExtensionDot(extension)) ?? ContentTypeRegistry.UnknownContentType;
             }
         }
 
         public IEnumerable<string> GetExtensionsForContentType(IContentType contentType)
         {
-            if (contentType == null)
-            {
-                throw new ArgumentNullException("contentType");
-            }
-
             lock (this.syncLock)
             {
-                Dictionary<string, string> extensions;
-                if (this.ContentTypeMap.TryGetValue(contentType, out extensions))
-                {
-                    return extensions.Values;
-                }
-                else
-                {
-                    return new string[0];
-                }
+                EnsureInitialized();
+
+                return this.extensionMap.GetStringsForContentType(contentType);
             }
         }
 
         public void AddFileExtension(string extension, IContentType contentType)
         {
-            if (extension == null)
+            if (string.IsNullOrWhiteSpace(extension))
             {
-                throw new ArgumentNullException("extension");
-            }
-
-            if (contentType == null)
-            {
-                throw new ArgumentNullException("contentType");
+                throw new ArgumentException();
             }
 
             lock (this.syncLock)
             {
-                if (this.extensionMap == null)
-                {
-                    BuildExtensionMap();
-                }
+                EnsureInitialized();
 
-                if (!TryAddFileExtension(extension, contentType))
-                {
-                    throw new InvalidOperationException
-                                (String.Format(System.Globalization.CultureInfo.CurrentUICulture,
-                                    Strings.FileExtension_NoMultipleContentTypes, extension));
-                }
+                this.extensionMap.AddMapping(RemoveExtensionDot(extension), contentType);
             }
         }
 
         public void RemoveFileExtension(string extension)
         {
+            // Check here so that the argument name matches the expected.
             if (extension == null)
             {
-                throw new ArgumentNullException("extension");
+                throw new ArgumentNullException(nameof(extension));
             }
-
-            string extensionAsKey = AsKey(extension);
 
             lock (this.syncLock)
             {
-                if (this.extensionMap == null)
-                {
-                    BuildExtensionMap();
-                }
+                EnsureInitialized();
 
-                IContentType contentType;
-                if (this.extensionMap.TryGetValue(extensionAsKey, out contentType))
-                {
-                    this.extensionMap.Remove(extensionAsKey);
-                }
-                else
-                {
-                    return;
-                }
-
-                Dictionary<string, string> extensions;
-                if (!this.contentTypeMap.TryGetValue(contentType, out extensions))
-                {
-                    extensions = new Dictionary<string, string>();
-                    this.contentTypeMap.Add(contentType, extensions);
-                }
-
-                if (extensions.ContainsKey(extensionAsKey))
-                {
-                    extensions.Remove(extensionAsKey);
-
-                    if (extensions.Count == 0)
-                    {
-                        this.contentTypeMap.Remove(contentType);
-                    }
-                }
+                this.extensionMap.RemoveMapping(RemoveExtensionDot(extension));
             }
         }
 
-        // Strips dot from extension but preserves case
-        private static string StripDot(string extension)
+        #endregion
+
+        #region IFileExtensionRegistryService2 Members
+
+        public IContentType GetContentTypeForFileName(string name)
         {
-            if (extension == null)
+            // Check here so that the argument name matches the expected.
+            if (name == null)
             {
-                throw new ArgumentNullException("extension");
+                throw new ArgumentNullException(nameof(name));
             }
 
-            return extension.TrimStart('.');
+            lock (this.syncLock)
+            {
+                EnsureInitialized();
+
+                return this.fileNameMap.GetContentTypeForString(name) ?? ContentTypeRegistry.UnknownContentType;
+            }
         }
 
-        // Strips dot from extension and guarantees case so can be used as key
-        private static string AsKey(string extension)
+        public IContentType GetContentTypeForFileNameOrExtension(string name)
         {
-            return StripDot(extension).ToLower(new CultureInfo(CultureInfo.InvariantCulture.LCID));
+            // No need to lock, we are calling locking public method.
+            var fileNameContentType = this.GetContentTypeForFileName(name);
+
+            // Attempt to use extension as fallback ContentType if file name isn't recognized.
+            if (fileNameContentType == ContentTypeRegistry.UnknownContentType)
+            {
+                var extension = Path.GetExtension(name);
+
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    // No need to lock, we are calling locking public method.
+                    return this.GetContentTypeForExtension(extension);
+                }
+            }
+
+            return fileNameContentType;
         }
 
-        // Attempts to add a new file extension to the. Returns false if an existing mapping for 
-        private bool TryAddFileExtension(string extension, IContentType contentType)
+        public IEnumerable<string> GetFileNamesForContentType(IContentType contentType)
         {
-            if (extension == null)
+            lock (this.syncLock)
             {
-                throw new ArgumentNullException("extension");
+                EnsureInitialized();
+
+                return this.fileNameMap.GetStringsForContentType(contentType);
+            }
+        }
+
+        public void AddFileName(string name, IContentType contentType)
+        {
+            // Disallow nonsense inputs.
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException();
             }
 
-            if (contentType == null)
+            lock (this.syncLock)
             {
-                throw new ArgumentNullException("contentType");
+                EnsureInitialized();
+
+                this.fileNameMap.AddMapping(name, contentType);
+            }
+        }
+
+        public void RemoveFileName(string name)
+        {
+            // Check here so that the argument name matches the expected.
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
             }
 
+            lock (this.syncLock)
+            {
+                EnsureInitialized();
+
+                this.fileNameMap.RemoveMapping(name);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Performs lazy initialization. Callers must first lock this.syncLock.
+        /// </summary>
+        private void EnsureInitialized()
+        {
             if (this.extensionMap == null)
             {
-                throw new InvalidOperationException("extensionMap is null");
+                this.extensionMap = new StringToContentTypesMap(GetExtensionToContentTypeMappings());
+                this.fileNameMap = new StringToContentTypesMap(GetFileNameToContentTypeMappings());
             }
+        }
 
-            string extensionWithoutDot = StripDot(extension);
-            string extensionAsKey = AsKey(extension);
-
-            // Check if the file extension is already registered
-            IContentType existingContentType;
-            if (this.extensionMap.TryGetValue(extensionAsKey, out existingContentType))
+        private IEnumerable<Tuple<string, IContentType>> GetExtensionToContentTypeMappings()
+        {
+            foreach (var fileExtensionToContentTypeProduction in ExtensionToContentTypeExtensionsProductions)
             {
-                if (contentType != existingContentType)
+                // MEF ensures that there will be at least one content type in the metadata. We take the first one. 
+                // We prefer this over defining a different attribute from ContentType[] for this purpose.
+                IEnumerator<string> cts = fileExtensionToContentTypeProduction.Metadata.ContentTypes.GetEnumerator();
+                cts.MoveNext();
+
+                IContentType contentType = ContentTypeRegistry.GetContentType(cts.Current);
+
+                if (contentType != null)
                 {
-                    // A conflicting declaration has been detected.
-                    return false;
+                    yield return Tuple.Create(RemoveExtensionDot(fileExtensionToContentTypeProduction.Metadata.FileExtension), contentType);
                 }
-                // Else: Nothing to do - the same file extension with the same content type have been registered before.
+            }
+        }
+
+        private IEnumerable<Tuple<string, IContentType>> GetFileNameToContentTypeMappings()
+        {
+            foreach (var fileNameToContentTypeProduction in FileNameToContentTypeProductions)
+            {
+                // MEF ensures that there will be at least one content type in the metadata. We take the first one. 
+                // We prefer this over defining a different attribute from ContentType[] for this purpose.
+                IEnumerator<string> cts = fileNameToContentTypeProduction.Metadata.ContentTypes.GetEnumerator();
+                cts.MoveNext();
+
+                IContentType contentType = ContentTypeRegistry.GetContentType(cts.Current);
+
+                if (contentType != null)
+                {
+                    yield return Tuple.Create(fileNameToContentTypeProduction.Metadata.FileName, contentType);
+                }
+            }
+        }
+
+        private static string RemoveExtensionDot(string extension)
+        {
+            if (extension.StartsWith("."))
+            {
+                return extension.TrimStart('.');
             }
             else
             {
-                // A new file extension - lets add it to the map
-                this.extensionMap.Add(extensionAsKey, contentType);
+                return extension;
             }
-
-            // Update content types map
-            Dictionary<string, string> extensions;
-            if (!this.contentTypeMap.TryGetValue(contentType, out extensions))
-            {
-                extensions = new Dictionary<string, string>();
-                this.contentTypeMap.Add(contentType, extensions);
-            }
-            if (!extensions.ContainsKey(extensionAsKey))
-            {
-                extensions.Add(extensionAsKey, extensionWithoutDot); // value preserves case
-            }
-
-            return true; // Success
         }
     }
 }
-

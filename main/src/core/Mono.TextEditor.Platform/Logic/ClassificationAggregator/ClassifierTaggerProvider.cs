@@ -14,16 +14,19 @@ namespace Microsoft.VisualStudio.Text.Classification.Implementation
     internal class ClassifierTaggerProvider : ITaggerProvider
     {
         [ImportMany(typeof(IClassifierProvider))]
-        internal List<Lazy<IClassifierProvider, IContentTypeMetadata>> _classifierProviders { get; set; }
+        internal List<Lazy<IClassifierProvider, INamedContentTypeMetadata>> _classifierProviders { get; set; }
 
         [Import]
         internal GuardedOperations _guardedOperations { get; set; }
 
+        [Import]
+        private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
+
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             var classifiers = 
-                _guardedOperations.InvokeMatchingFactories
-                    (_classifierProviders, (IClassifierProvider provider) => (provider.GetClassifier(buffer)), buffer.ContentType, this);
+                _guardedOperations.InvokeEligibleFactories
+                    (_classifierProviders, (IClassifierProvider provider) => (provider.GetClassifier(buffer)), buffer.ContentType, this.ContentTypeRegistryService, this);
 
             return classifiers.Count > 0
                     ? new ClassifierTagger(classifiers) as ITagger<T>

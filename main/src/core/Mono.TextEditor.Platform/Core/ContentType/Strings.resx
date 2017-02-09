@@ -112,13 +112,13 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FileExtension_NoMultipleContentTypes" xml:space="preserve">
-    <value>{0} file extension cannot be associated with multiple content types.</value>
+  <data name="FileExtensionRegistry_NoMultipleContentTypes" xml:space="preserve">
+    <value>{0} file name or extension cannot be associated with multiple content types.</value>
   </data>
   <data name="ContentTypeRegistry_UnknownTypeDisplayName" xml:space="preserve">
     <value>Unknown</value>

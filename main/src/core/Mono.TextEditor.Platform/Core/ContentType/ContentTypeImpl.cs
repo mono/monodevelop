@@ -23,7 +23,10 @@ namespace Microsoft.VisualStudio.Utilities.Implementation
         internal void AddBaseType(ContentTypeImpl baseType)
         {
             // TODO: should be part of ctor; this class should be invariant
-            this.BaseTypeList.Add(baseType);
+            if (!this.BaseTypeList.Contains(baseType))
+            {
+                this.BaseTypeList.Add(baseType);
+            }
         }
 
         public string TypeName

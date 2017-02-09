@@ -602,22 +602,13 @@ namespace Microsoft.VisualStudio.Text.Projection.Implementation
             {
                 // point is at the boundary of source spans (this includes being at the
                 // very beginning or end of the buffer, but that will work out OK).
-                FrugalList<SnapshotPoint> sourceInsertionPoints = new FrugalList<SnapshotPoint>();
+                var sourceInsertionPoints = new FrugalList<SnapshotPoint>();
 
                 // include the end point of the source span on the left
-                if (sourceSpan.Snapshot.TextBuffer != excludedBuffer || rover == this.sourceSpans.Count - 1)
+                var firstSnapshotPoint = new SnapshotPoint(sourceSpan.Snapshot, sourceSpan.End);
+                if (sourceSpan.Snapshot.TextBuffer != excludedBuffer)
                 {
-                    // The notion of excluding literal buffers here is flawed; if the point isn't on a span boundary
-                    // we are quite happy to return the literal buffer. Worse, if the point is on a seam where
-                    // all adjoining spans are literal, we have no points to choose from.
-                    // Unfortunately, changing behavior to return literal buffers is breaking and would likely
-                    // cause Venus issues in Dev11. So we'll patch the problem by returning the literal (excluded) buffer
-                    // only when we are at the end of the snapshot and the last span is literal, which does resolve
-                    // a Roslyn issue. In this case we would previously have returned nothing and this would have 
-                    // led to an exception and likely a crash. This change won't break Venus since it never puts a literal
-                    // buffer at the end of its projection buffer. This issue should be solved properly with the
-                    // introduction of the future projection buffer.
-                    sourceInsertionPoints.Add(new SnapshotPoint(sourceSpan.Snapshot, sourceSpan.End));
+                    sourceInsertionPoints.Add(firstSnapshotPoint);
                 }
 
                 // include all consecutive source spans of zero length (typically there are none of these)
@@ -638,6 +629,14 @@ namespace Microsoft.VisualStudio.Text.Projection.Implementation
                     {
                         sourceInsertionPoints.Add(new SnapshotPoint(sourceSpan.Snapshot, sourceSpan.Start));
                     }
+                }
+
+                if (sourceInsertionPoints.Count == 0)
+                {
+                    // Where position falls in the seam between two (or more if they are 0 length) spans from excludedBuffer and there
+                    // are no snapshot points from the "real" buffers. In this case, the best thing to do is simply return the span from
+                    // the excluded buffer (which is consistent with our behavior when position falls inside the middle of an excluded span).
+                    sourceInsertionPoints.Add(firstSnapshotPoint);
                 }
 
                 return new ReadOnlyCollection<SnapshotPoint>(sourceInsertionPoints);

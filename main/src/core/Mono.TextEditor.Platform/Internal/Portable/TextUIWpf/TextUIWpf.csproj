@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="BuildProps">
+    <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
+  </PropertyGroup>
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
+  <Import Project="..\Platform.Settings.targets" />
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
+  <PropertyGroup>
+    <AssemblyName>Microsoft.VisualStudio.Text.UI.Wpf</AssemblyName>
+    <OutputPath>$(BinariesDirectory)\bin\$(BuildArchitecture)</OutputPath>
+    <OutputType>Library</OutputType>
+    <SignAssemblyAttribute>true</SignAssemblyAttribute>
+    <UseVsVersion>true</UseVsVersion>
+    <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
+    <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
+    <NoWarn>649;436;8073;$(NoWarn)</NoWarn>
+    <GeneratedModuleId>Microsoft.VisualStudio.Text.UI.Wpf</GeneratedModuleId>
+    <GeneratedModuleVersion>$(VsAssemblyVersion)</GeneratedModuleVersion>
+    <BuildArchitecturesAllowed>$(BuildArchitecturesAllowed);amd64;arm</BuildArchitecturesAllowed>
+  </PropertyGroup>
+  <!-- IDE specific Information -->
+  <PropertyGroup>
+    <ProjectGuid>{140BB045-3A1F-44C3-AB67-56A5C1070BCD}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Adornments\AdornmentLayerDefinition.cs" />
+    <Compile Include="Adornments\AdornmentPositioningBehavior.cs" />
+    <Compile Include="Adornments\AdornmentRemovedCallback.cs" />
+    <Compile Include="Adornments\IAdornmentLayer.cs" />
+    <Compile Include="Adornments\IAdornmentLayerElement.cs" />
+    <Compile Include="Adornments\PredefinedAdornmentLayers.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Classification\ClassificationFormatDefinition.cs" />
+    <Compile Include="Classification\IEditorFormatMapService.cs" />
+    <Compile Include="Classification\IEditorFormatMap.cs" />
+    <Compile Include="Classification\IClassificationFormatMap.cs" />
+    <Compile Include="Classification\EditorFormatDefinition.cs" />
+    <Compile Include="Classification\IClassificationFormatMapService.cs" />
+    <Compile Include="Classification\EditorFormatItemsEventArgs.cs" />
+    <Compile Include="Classification\MarkerFormatDefinition.cs" />
+    <Compile Include="Classification\UserVisibleAttribute.cs" />
+    <Compile Include="Classification\Priority.cs" />
+    <Compile Include="DifferenceViewer\CreateTextViewHostCallback.cs" />
+    <Compile Include="DifferenceViewer\IDifferenceTextViewModel.cs" />
+    <Compile Include="DifferenceViewer\IWpfDifferenceViewerFactoryService.cs" />
+    <Compile Include="DragDrop\DragDropInfo.cs" />
+    <Compile Include="DragDrop\DragDropPointerEffects.cs" />
+    <Compile Include="DragDrop\DropFormatAttribute.cs" />
+    <Compile Include="DragDrop\IDropHandler.cs" />
+    <Compile Include="DragDrop\IDropHandlerProvider.cs" />
+    <Compile Include="DragDrop\DropHandlerBase.cs" />
+    <Compile Include="DifferenceViewer\IWpfDifferenceViewer.cs" />
+    <Compile Include="Editor\BackgroundBrushChangedEventArgs.cs" />
+    <Compile Include="Editor\GridCellLengthAttribute.cs" />
+    <Compile Include="Editor\GridUnitTypeAttribute.cs" />
+    <Compile Include="Editor\OutliningUI.cs" />
+    <Compile Include="Editor\ConnectionReason.cs" />
+    <Compile Include="Editor\EditorStyleNames.cs" />
+    <Compile Include="Editor\ImeTextComposition.cs" />
+    <Compile Include="Editor\IntraTextAdornment.cs" />
+    <Compile Include="Editor\IntraTextAdornmentTag.cs" />
+    <Compile Include="Editor\IOverviewTipManager.cs" />
+    <Compile Include="Editor\IOverviewTipManagerProvider.cs" />
+    <Compile Include="Editor\ISpaceReservationAgent.cs" />
+    <Compile Include="Editor\ISpaceReservationManager.cs" />
+    <Compile Include="Editor\ITextEditorFactoryService.cs" />
+    <Compile Include="Editor\IWpfTextViewMarginProvider.cs" />
+    <Compile Include="Editor\IWpfTextView.cs" />
+    <Compile Include="Editor\IWpfTextViewConnectionListener.cs" />
+    <Compile Include="Editor\IWpfTextViewCreationListener.cs" />
+    <Compile Include="Editor\IWpfTextViewHost.cs" />
+    <Compile Include="Editor\IWpfTextViewLineCollection.cs" />
+    <Compile Include="Editor\IWpfTextViewMargin.cs" />
+    <Compile Include="Editor\SpaceReservationAgentChangedEventArgs.cs" />
+    <Compile Include="Editor\SpaceReservationManagerDefinition.cs" />
+    <Compile Include="Editor\WpfTextViewKeyboardFilterName.cs" />
+    <Compile Include="EditorOptions\WpfViewOptionDefinition.cs" />
+    <Compile Include="EditorOptions\WpfViewOptions.cs" />
+    <Compile Include="Editor\ZoomLevelChangedEventArgs.cs" />
+    <Compile Include="Formatting\IFormattedLine.cs" />
+    <Compile Include="Formatting\IFormattedLineSource.cs" />
+    <Compile Include="Formatting\IFormattedTextSourceFactoryService.cs" />
+    <Compile Include="Formatting\ILineTransformSource.cs" />
+    <Compile Include="Formatting\ILineTransformSourceProvider.cs" />
+    <Compile Include="Formatting\ITextParagraphPropertiesFactoryService.cs" />
+    <Compile Include="Formatting\IWpfTextViewLine.cs" />
+    <Compile Include="Formatting\TextFormattingParagraphProperties.cs" />
+    <Compile Include="Formatting\TextFormattingRunProperties.cs" />
+    <Compile Include="FxCopSuppressions.cs" />
+    <Compile Include="GlyphMargin\IGlyphTag.cs" />
+    <Compile Include="GlyphMargin\IGlyphFactory.cs" />
+    <Compile Include="GlyphMargin\IGlyphMouseProcessorProvider.cs" />
+    <Compile Include="GlyphMargin\IGlyphFactoryProvider.cs" />
+    <Compile Include="Input\IKeyProcessorProvider.cs" />
+    <Compile Include="Input\IMouseProcessor.cs" />
+    <Compile Include="Input\IMouseProcessor2.cs" />
+    <Compile Include="Input\IMouseProcessorProvider.cs" />
+    <Compile Include="Input\KeyProcessor.cs" />
+    <Compile Include="Input\MouseProcessorBase.cs" />
+    <Compile Include="RTF\IRtfBuilderService.cs" />
+    <Compile Include="Zoom\ZoomControl.cs" />
+    <Compile Include="Zoom\ZoomLevelConverter.cs" />
+    <Page Include="themes\generic.xaml" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <CopyFile Include="Editor\Microsoft.VisualStudio.Text.View.Overview.mht">
+      <DestFolder>$(SuiteBinPath)\PlatformOverviews</DestFolder>
+      <Visible>false</Visible>
+    </CopyFile>
+    <ProjectReference Include="..\..\..\Core\Def\CoreUtility.csproj">
+      <Project>{BA3DD7EC-3F13-4400-A3A9-96AD425B3369}</Project>
+      <Name>CoreUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TextData\TextData.csproj">
+      <Project>{80A00E91-51E5-471C-80BA-0D863987ECC7}</Project>
+      <Name>TextData %28Text\Def\TextData\TextData%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TextLogic\TextLogic.csproj">
+      <Project>{26FAFDBB-9C63-4F92-A176-6E350178DB67}</Project>
+      <Name>TextLogic %28Text\Def\TextLogic\TextLogic%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TextUI\TextUI.csproj">
+      <Project>{9E66473A-ECFF-4834-8ACF-A22EC2CB5A36}</Project>
+      <Name>TextUI %28Text\Def\TextUI\TextUI%29</Name>
+    </ProjectReference>
+    <Nonte Include="Diagrams\*.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishPartLinked Include="$(OutputPath)\$(AssemblyName).dll">
+      <Visibility>Inter</Visibility>
+      <FileType>Reference</FileType>
+      <DoNotCopyPDB>true</DoNotCopyPDB>
+    </PublishPartLinked>
+  </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.targets" />
+  <PropertyGroup>
+    <CopyToSuiteBin>true</CopyToSuiteBin>
+  </PropertyGroup>
+</Project>

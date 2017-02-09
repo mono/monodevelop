@@ -7,6 +7,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Diagnostics;
+    using System.Linq;
     using Microsoft.VisualStudio.Utilities;
 
     /// <summary>
@@ -17,9 +18,13 @@ namespace Microsoft.VisualStudio.Text.Utilities
     internal sealed class GuardedOperations
     {
         [ImportMany]
-        public List<Lazy<IExtensionErrorHandler>> _errorHandlerExports { get; set; }
+        private List<Lazy<IExtensionErrorHandler>> _errorHandlerExports = null;
+
+        [ImportMany]
+        private List<Lazy<IExtensionPerformanceTracker>> _perTrackerExports = null;
 
         private List<IExtensionErrorHandler> _errorHandlers;
+        private FrugalList<IExtensionPerformanceTracker> _perfTrackers;
 
         public GuardedOperations()
         {
@@ -32,6 +37,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
         {
             _errorHandlers = new List<IExtensionErrorHandler>();
             _errorHandlers.Add(extensionErrorHandler);
+            _perfTrackers = new FrugalList<IExtensionPerformanceTracker>();
         }
 
         internal static bool ReThrowIfNoHandlers { get; set; } // For unit testing.
@@ -71,6 +77,41 @@ namespace Microsoft.VisualStudio.Text.Utilities
             }
         }
 
+        private FrugalList<IExtensionPerformanceTracker> PerfTrackers
+        {
+            get
+            {
+                if (_perfTrackers == null)
+                {
+                    _perfTrackers = new FrugalList<IExtensionPerformanceTracker>();
+                    if (_perTrackerExports != null)       // can be null during unit testing
+                    {
+                        foreach (var export in _perTrackerExports)
+                        {
+                            try
+                            {
+                                var perfTracker = export.Value;
+                                if (perfTracker != null)
+                                {
+                                    _perfTrackers.Add(perfTracker);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                Debug.Fail("Exception instantiating perf tracker");
+                            }
+                        }
+                    }
+                }
+                return _perfTrackers;
+            }
+            set
+            {
+                // for unit testing
+                _perfTrackers = value;
+            }
+        }
+
         public TExtensionInstance InvokeBestMatchingFactory<TExtensionFactory, TExtensionInstance, TMetadataView>
                 (IList<Lazy<TExtensionFactory, TMetadataView>> providerHandles,
                  IContentType dataContentType,
@@ -99,7 +140,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
                  object errorSource)
             where TMetadataView : IContentTypeMetadata
         {
-            var candidates = new List<Tuple<Lazy<TExtension, TMetadataView>, IContentType>>();
+            var candidates = new List<Lazy<TExtension, TMetadataView>>();
             foreach (var providerHandle in providerHandles)
             {
                 foreach (string contentTypeName in providerHandle.Metadata.ContentTypes)
@@ -115,39 +156,17 @@ namespace Microsoft.VisualStudio.Text.Utilities
                     }
                     else if (dataContentType.IsOfType(contentTypeName))
                     {
-                        candidates.Add(Tuple.Create(providerHandle, contentTypeRegistryService.GetContentType(contentTypeName)));
+                        candidates.Add(providerHandle);
+                        break;
                     }
                 }
             }
 
-            // sort the candidates by content type so that best match is first
-            candidates.Sort((left, right) =>
-                {
-                    if (left.Item2 == right.Item2)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        if (left.Item2.IsOfType(right.Item2.TypeName))
-                        {
-                            return -1;
-                        }
-                        else if (right.Item2.IsOfType(left.Item2.TypeName))
-                        {
-                            return +1;
-                        }
-                        else
-                        {
-                            // the content types are unrelated, use alpha order of their names
-                            return string.Compare(left.Item2.TypeName, right.Item2.TypeName, StringComparison.OrdinalIgnoreCase);
-                        }
-                    }
-                });
+            SortCandidates(candidates, dataContentType, contentTypeRegistryService);
 
             for (int c = 0; c < candidates.Count; ++c)
             {
-                TExtension factory = InstantiateExtension(errorSource, candidates[c].Item1);
+                TExtension factory = InstantiateExtension(errorSource, candidates[c]);
                 if (factory != null)
                 {
                     return factory;
@@ -158,18 +177,14 @@ namespace Microsoft.VisualStudio.Text.Utilities
             return default(TExtension);
         }
 
-        /// <summary>
-        /// Given a list of factory extensions that provide content types, filter the list, instantiate that
-        /// subset which matches the given content type, and invoke the factory method. Return the non-null results.
-        /// </summary>
         public List<TExtensionInstance> InvokeMatchingFactories<TExtensionInstance, TExtensionFactory, TMetadataView>
-                    (IEnumerable<Lazy<TExtensionFactory, TMetadataView>> lazyFactories,
-                     Func<TExtensionFactory, TExtensionInstance> getter,
-                     IContentType dataContentType,
-                     object errorSource)
-            where TMetadataView : IContentTypeMetadata          // content type is required
-            where TExtensionFactory : class
-            where TExtensionInstance : class
+            (IEnumerable<Lazy<TExtensionFactory, TMetadataView>> lazyFactories,
+             Func<TExtensionFactory, TExtensionInstance> getter,
+             IContentType dataContentType,
+             object errorSource)
+                where TMetadataView : IContentTypeMetadata          // content type is required
+                where TExtensionFactory : class
+                where TExtensionInstance : class
         {
             var result = new List<TExtensionInstance>();
             foreach (var lazyFactory in lazyFactories)
@@ -194,6 +209,113 @@ namespace Microsoft.VisualStudio.Text.Utilities
                     }
                 }
             }
+            return result;
+        }
+
+        // The algorithm here is that assets can have a Name attribute and one or more Replaces attribute.
+        // Assets without names are treated normally (they are always considered eligible).
+        // Named assets are considered ineligible if:
+        //  There is a "better" asset with the same name (better means a more specific content type).
+        //  There is another assert with a Replaces attribute that matches the name of the asset.
+        public IEnumerable<Lazy<TExtensionFactory, TMetadataView>> FindEligibleFactories<TExtensionFactory, TMetadataView>
+                                            (IEnumerable<Lazy<TExtensionFactory, TMetadataView>> lazyFactories,
+                                            IContentType dataContentType,
+                                            IContentTypeRegistryService contentTypeRegistryService)
+                                                where TMetadataView : INamedContentTypeMetadata          // content type is required
+                                                where TExtensionFactory : class
+        {
+            Dictionary<string, List<Lazy<TExtensionFactory, TMetadataView>>> namedFactories = null;
+            HashSet<string> replaced = null;
+            foreach (var lazyFactory in lazyFactories)
+            {
+                if (ExtensionSelector.ContentTypeMatch(dataContentType, lazyFactory.Metadata.ContentTypes))
+                {
+                    if (string.IsNullOrEmpty(lazyFactory.Metadata.Name))
+                    {
+                        yield return lazyFactory;
+                    }
+                    else
+                    {
+                        if (namedFactories == null)
+                        {
+                            namedFactories = new Dictionary<string, List<Lazy<TExtensionFactory, TMetadataView>>>(StringComparer.OrdinalIgnoreCase);
+                        }
+
+                        List<Lazy<TExtensionFactory, TMetadataView>> factories;
+                        if (!namedFactories.TryGetValue(lazyFactory.Metadata.Name, out factories))
+                        {
+                            factories = new List<Lazy<TExtensionFactory, TMetadataView>>();
+                            namedFactories.Add(lazyFactory.Metadata.Name, factories);
+                        }
+
+                        factories.Add(lazyFactory);
+
+                        if (lazyFactory.Metadata.Replaces != null)
+                        {
+                            if (replaced == null)
+                            {
+                                replaced = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                            }
+
+                            foreach (var s in lazyFactory.Metadata.Replaces)
+                            {
+                                replaced.Add(s);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (namedFactories != null)
+            {
+                foreach (var candidates in namedFactories.Values)
+                {
+                    var candidate = candidates[0];
+                    if ((replaced == null) || !replaced.Contains(candidate.Metadata.Name))
+                    {
+                        SortCandidates(candidates, dataContentType, contentTypeRegistryService);
+                        yield return candidates[0];
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Given a list of factory extensions that provide content types, filter the list, instantiate that
+        /// subset which matches the given content type, and invoke the factory method. Return the non-null results.
+        /// </summary>
+        public List<TExtensionInstance> InvokeEligibleFactories<TExtensionInstance, TExtensionFactory, TMetadataView>
+                    (IEnumerable<Lazy<TExtensionFactory, TMetadataView>> lazyFactories,
+                     Func<TExtensionFactory, TExtensionInstance> getter,
+                     IContentType dataContentType,
+                     IContentTypeRegistryService contentTypeRegistryService,
+                     object errorSource)
+            where TMetadataView : INamedContentTypeMetadata          // content type is required
+            where TExtensionFactory : class
+            where TExtensionInstance : class
+        {
+            var result = new List<TExtensionInstance>();
+            foreach (var lazyFactory in FindEligibleFactories(lazyFactories, dataContentType, contentTypeRegistryService))
+            {
+                try
+                {
+                    TExtensionFactory factory = lazyFactory.Value;
+                    if (factory != null)
+                    {
+                        TExtensionInstance instance = getter(factory);
+                        if (instance != null)
+                        {
+                            result.Add(instance);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    HandleException(errorSource, e);
+                }
+            }
+
             return result;
         }
 
@@ -253,6 +375,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
         {
             try
             {
+                BeforeCallingEventHandler(call);
                 return call();
             }
             catch (Exception e)
@@ -261,6 +384,10 @@ namespace Microsoft.VisualStudio.Text.Utilities
 
                 return valueOnThrow;
             }
+            finally
+            {
+                AfterCallingEventHandler(call);
+            }            
         }
 
         public void CallExtensionPoint(Action call)
@@ -286,11 +413,16 @@ namespace Microsoft.VisualStudio.Text.Utilities
             {
                 try
                 {
+                    BeforeCallingEventHandler(handler);
                     handler(sender, EventArgs.Empty);
                 }
                 catch (Exception e)
                 {
                     HandleException(sender, e);
+                }
+                finally
+                {
+                    AfterCallingEventHandler(handler);
                 }
             }
         }
@@ -307,11 +439,56 @@ namespace Microsoft.VisualStudio.Text.Utilities
             {
                 try
                 {
+                    BeforeCallingEventHandler(handler);
                     handler(sender, args);
                 }
                 catch (Exception e)
                 {
                     HandleException(sender, e);
+                }
+                finally
+                {
+                    AfterCallingEventHandler(handler);
+                }
+            }
+        }
+
+        private void AfterCallingEventHandler(Delegate handler)
+        {
+            if (PerfTrackers.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var perfTracker in PerfTrackers)
+            {
+                try
+                {
+                    perfTracker.AfterCallingEventHandler(handler);
+                }
+                catch (Exception e)
+                {
+                    HandleException(perfTracker, e);
+                }
+            }
+        }
+
+        private void BeforeCallingEventHandler(Delegate handler)
+        {
+            if (PerfTrackers.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var perfTracker in PerfTrackers)
+            {
+                try
+                {
+                    perfTracker.BeforeCallingEventHandler(handler);
+                }
+                catch (Exception e)
+                {
+                    HandleException(perfTracker, e);
                 }
             }
         }
@@ -342,5 +519,78 @@ namespace Microsoft.VisualStudio.Text.Utilities
             }
         }
 
+        private static void SortCandidates<TExtension, TMetadataView>(List<Lazy<TExtension, TMetadataView>> candidates, IContentType dataContentType, IContentTypeRegistryService contentTypeRegistryService)
+                        where TMetadataView : IContentTypeMetadata
+        {
+            if (candidates.Count > 1)
+            {
+                var contentTypes = new List<IContentType>();
+                foreach (var c in candidates)
+                {
+                    foreach (string contentTypeName in c.Metadata.ContentTypes)
+                    {
+                        if (dataContentType.IsOfType(contentTypeName))
+                        {
+                            var type = contentTypeRegistryService.GetContentType(contentTypeName);
+                            if (!contentTypes.Contains(type))
+                            {
+                                contentTypes.Add(type);
+                            }
+                        }
+                    }
+                }
+
+                contentTypes.Sort(CompareContentTypes);
+                candidates.Sort((left, right) =>
+                {
+                    int leftIndex = BestContentTypeScore(left.Metadata.ContentTypes, contentTypes); 
+                    int rightIndex = BestContentTypeScore(right.Metadata.ContentTypes, contentTypes);
+
+                    return leftIndex - rightIndex;  // Sort these in ascending order.
+                });
+            }
+        }
+
+        private static int BestContentTypeScore(IEnumerable<string> contentTypes, List<IContentType> sortedContentTypes)
+        {
+            return contentTypes.Min(s => ContentTypeScore(s, sortedContentTypes));
+        }
+
+        private static int ContentTypeScore(string contentTypeName, List<IContentType> sortedContentTypes)
+        {
+            for (int i = 0; (i < sortedContentTypes.Count); ++i)
+            {
+                if (string.Compare(sortedContentTypes[i].TypeName, contentTypeName, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return i;
+                }
+            }
+
+            return sortedContentTypes.Count;
+        }
+
+        private static int CompareContentTypes(IContentType left, IContentType right)
+        {
+            if (left == right)
+            {
+                return 0;
+            }
+            else
+            {
+                if (left.IsOfType(right.TypeName))
+                {
+                    return -1;
+                }
+                else if (right.IsOfType(left.TypeName))
+                {
+                    return +1;
+                }
+                else
+                {
+                    // the content types are unrelated, use alpha order of their names
+                    return string.Compare(left.TypeName, right.TypeName, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+        }
     }
 }

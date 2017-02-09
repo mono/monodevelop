@@ -342,7 +342,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 }
             }
 
-            NewFileUtilities.SaveSnapshot(_textBuffer.CurrentSnapshot, fileMode, _encoding, filePath);
+            FileUtilities.SaveSnapshot(_textBuffer.CurrentSnapshot, fileMode, _encoding, filePath);
         }
 
         private void UpdateSaveStatus(string filePath, bool renamed)
@@ -523,249 +523,249 @@ namespace Microsoft.VisualStudio.Text.Implementation
             get { return _isDisposed; }
         }
 
-        // This class is actually defined in Text.Dat
-        // HACK: move SaveSnapshot to a method on the ITextSnapshot2 & keep the implementation in Text\TextModel
-        internal class NewFileUtilities
-        {
-            public static void SaveSnapshot(ITextSnapshot snapshot,
-                                            FileMode fileMode,
-                                            Encoding encoding,
-                                            string filePath)
-            {
-                Debug.Assert((fileMode == FileMode.Create) || (fileMode == FileMode.CreateNew));
+		internal class FileUtilities
+		{
+			public static void SaveSnapshot(ITextSnapshot snapshot,
+											FileMode fileMode,
+											Encoding encoding,
+											string filePath)
+			{
+				Debug.Assert((fileMode == FileMode.Create) || (fileMode == FileMode.CreateNew));
 
-                //Save the contents of the text buffer to disk.
+				//Save the contents of the text buffer to disk.
 
-                string temporaryFilePath = null;
-                try
-                {
-                    FileStream originalFileStream = null;
-                    FileStream temporaryFileStream = NewFileUtilities.CreateFileStream(filePath, fileMode, out temporaryFilePath, out originalFileStream);
-                    if (originalFileStream == null)
-                    {
-                        //The "normal" scenario: save the snapshot directly to disk. Either:
-                        // there are no hard links to the target file so we can write the snapshot to the temporary and use File.Replace.
-                        // we're creating a new file (in which case, temporaryFileStream is a misnomer: it is the stream for the file we are creating).
-                        try
-                        {
-                            using (StreamWriter streamWriter = new StreamWriter(temporaryFileStream, encoding))
-                            {
-                                snapshot.Write(streamWriter);
-                            }
-                        }
-                        finally
-                        {
-                            //This is somewhat redundant: disposing of streamWriter had the side-effect of disposing of temporaryFileStream
-                            temporaryFileStream.Dispose();
-                            temporaryFileStream = null;
-                        }
+				string temporaryFilePath = null;
+				try
+				{
+					FileStream originalFileStream = null;
+					FileStream temporaryFileStream = FileUtilities.CreateFileStream(filePath, fileMode, out temporaryFilePath, out originalFileStream);
+					if (originalFileStream == null)
+					{
+						//The "normal" scenario: save the snapshot directly to disk. Either:
+						// there are no hard links to the target file so we can write the snapshot to the temporary and use File.Replace.
+						// we're creating a new file (in which case, temporaryFileStream is a misnomer: it is the stream for the file we are creating).
+						try
+						{
+							using (StreamWriter streamWriter = new StreamWriter(temporaryFileStream, encoding))
+							{
+								snapshot.Write(streamWriter);
+							}
+						}
+						finally
+						{
+							//This is somewhat redundant: disposing of streamWriter had the side-effect of disposing of temporaryFileStream
+							temporaryFileStream.Dispose();
+							temporaryFileStream = null;
+						}
 
-                        if (temporaryFilePath != null)
-                        {
-                            //We were saving to the original file and already have a copy of the file on disk.
-                            int remainingAttempts = 3;
-                            do
-                            {
-                                try
-                                {
-                                    //Replace the contents of filePath with the contents of the temporary using File.Replace to
-                                    //preserve the various attributes of the original file.
-                                    File.Replace(temporaryFilePath, filePath, null, true);
-                                    temporaryFilePath = null;
+						if (temporaryFilePath != null)
+						{
+							//We were saving to the original file and already have a copy of the file on disk.
+							int remainingAttempts = 3;
+							do
+							{
+								try
+								{
+									//Replace the contents of filePath with the contents of the temporary using File.Replace to
+									//preserve the various attributes of the original file.
+									File.Replace(temporaryFilePath, filePath, null, true);
+									temporaryFilePath = null;
 
-                                    return;
-                                }
-                                catch (FileNotFoundException)
-                                {
-                                    // The target file doesn't exist (someone deleted it after we detected it earlier).
-                                    // This is an acceptable condition so don't throw.
-                                    File.Move(temporaryFilePath, filePath);
-                                    temporaryFilePath = null;
+									return;
+								}
+								catch (FileNotFoundException)
+								{
+									// The target file doesn't exist (someone deleted it after we detected it earlier).
+									// This is an acceptable condition so don't throw.
+									File.Move(temporaryFilePath, filePath);
+									temporaryFilePath = null;
 
-                                    return;
-                                }
-                                catch (IOException)
-                                {
-                                    //There was some other exception when trying to replace the contents of the file
-                                    //(probably because some other process had the file locked).
-                                    //Wait a few ms and try again.
-                                    System.Threading.Thread.Sleep(5);
-                                }
-                            }
-                            while (--remainingAttempts > 0);
+									return;
+								}
+								catch (IOException)
+								{
+									//There was some other exception when trying to replace the contents of the file
+									//(probably because some other process had the file locked).
+									//Wait a few ms and try again.
+									System.Threading.Thread.Sleep(5);
+								}
+							}
+							while (--remainingAttempts > 0);
 
-                            //We're giving up on replacing the file. Try overwriting it directly (this is essentially the old Dev11 behavior).
-                            //Do not try approach we are using for hard links (copying the original & restoring it if there is a failure) since
-                            //getting here implies something strange is going on with the file system (Git or the like locking files) so we
-                            //want the simplest possible fallback.
+							//We're giving up on replacing the file. Try overwriting it directly (this is essentially the old Dev11 behavior).
+							//Do not try approach we are using for hard links (copying the original & restoring it if there is a failure) since
+							//getting here implies something strange is going on with the file system (Git or the like locking files) so we
+							//want the simplest possible fallback.
 
-                            //Failing here causes the exception to be passed to the calling code.
-                            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                            {
-                                using (StreamWriter streamWriter = new StreamWriter(stream, encoding))
-                                {
-                                    snapshot.Write(streamWriter);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //filePath has hard links so we need to use a different approach to save the file:
-                        // copy the original file to the temporary
-                        // write directly to the original
-                        // restore the original in the event of errors (which could be encoding errors and not disk issues) if there's a problem.
-                        try
-                        {
-                            // Copy the contents of the original file to the temporary.
-                            originalFileStream.CopyTo(temporaryFileStream);
+							//Failing here causes the exception to be passed to the calling code.
+							using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+							{
+								using (StreamWriter streamWriter = new StreamWriter(stream, encoding))
+								{
+									snapshot.Write(streamWriter);
+								}
+							}
+						}
+					}
+					else
+					{
+						//filePath has hard links so we need to use a different approach to save the file:
+						// copy the original file to the temporary
+						// write directly to the original
+						// restore the original in the event of errors (which could be encoding errors and not disk issues) if there's a problem.
+						try
+						{
+							// Copy the contents of the original file to the temporary.
+							originalFileStream.CopyTo(temporaryFileStream);
 
-                            //We've got a clean copy, try writing the snapshot directly to the original file
-                            try
-                            {
-                                originalFileStream.Seek(0, SeekOrigin.Begin);
-                                originalFileStream.SetLength(0);
+							//We've got a clean copy, try writing the snapshot directly to the original file
+							try
+							{
+								originalFileStream.Seek(0, SeekOrigin.Begin);
+								originalFileStream.SetLength(0);
 
-                                //Make sure the StreamWriter is flagged leaveOpen == true. Otherwise disposing of the StreamWriter will dispose of originalFileStream and we need to
-                                //leave originalFileStream open so we can use it to restore the original from the temporary copy we made.
-                                using (var streamWriter = new StreamWriter(originalFileStream, encoding, bufferSize: 1024, leaveOpen: true))        //1024 == the default buffer size for a StreamWriter.
-                                {
-                                    snapshot.Write(streamWriter);
-                                }
-                            }
-                            catch
-                            {
-                                //Restore the original from the temporary copy we made (but rethrow the original exception since we didn't save the file).
-                                temporaryFileStream.Seek(0, SeekOrigin.Begin);
+								//Make sure the StreamWriter is flagged leaveOpen == true. Otherwise disposing of the StreamWriter will dispose of originalFileStream and we need to
+								//leave originalFileStream open so we can use it to restore the original from the temporary copy we made.
+								using (var streamWriter = new StreamWriter(originalFileStream, encoding, bufferSize: 1024, leaveOpen: true))        //1024 == the default buffer size for a StreamWriter.
+								{
+									snapshot.Write(streamWriter);
+								}
+							}
+							catch
+							{
+								//Restore the original from the temporary copy we made (but rethrow the original exception since we didn't save the file).
+								temporaryFileStream.Seek(0, SeekOrigin.Begin);
 
-                                originalFileStream.Seek(0, SeekOrigin.Begin);
-                                originalFileStream.SetLength(0);
+								originalFileStream.Seek(0, SeekOrigin.Begin);
+								originalFileStream.SetLength(0);
 
-                                temporaryFileStream.CopyTo(originalFileStream);
+								temporaryFileStream.CopyTo(originalFileStream);
 
-                                throw;
-                            }
-                        }
-                        finally
-                        {
-                            originalFileStream.Dispose();
-                            originalFileStream = null;
+								throw;
+							}
+						}
+						finally
+						{
+							originalFileStream.Dispose();
+							originalFileStream = null;
 
-                            temporaryFileStream.Dispose();
-                            temporaryFileStream = null;
-                        }
-                    }
-                }
-                finally
-                {
-                    if (temporaryFilePath != null)
-                    {
-                        try
-                        {
-                            //We do not need the temporary any longer.
-                            if (File.Exists(temporaryFilePath))
-                            {
-                                File.Delete(temporaryFilePath);
-                            }
-                        }
-                        catch
-                        {
-                            //Failing to clean up the temporary is an ignorable exception.
-                        }
-                    }
-                }
-            }
+							temporaryFileStream.Dispose();
+							temporaryFileStream = null;
+						}
+					}
+				}
+				finally
+				{
+					if (temporaryFilePath != null)
+					{
+						try
+						{
+							//We do not need the temporary any longer.
+							if (File.Exists(temporaryFilePath))
+							{
+								File.Delete(temporaryFilePath);
+							}
+						}
+						catch
+						{
+							//Failing to clean up the temporary is an ignorable exception.
+						}
+					}
+				}
+			}
 
-            private static FileStream CreateFileStream(string filePath, FileMode fileMode, out string temporaryPath, out FileStream originalFileStream)
-            {
-                originalFileStream = null;
+			private static FileStream CreateFileStream(string filePath, FileMode fileMode, out string temporaryPath, out FileStream originalFileStream)
+			{
+				originalFileStream = null;
 
-                if (File.Exists(filePath))
-                {
-                    // We're writing to a file that already exists. This is an error if we're trying to do a CreateNew.
-                    if (fileMode == FileMode.CreateNew)
-                    {
-                        throw new IOException(filePath + " exists");
-                    }
+				if (File.Exists(filePath))
+				{
+					// We're writing to a file that already exists. This is an error if we're trying to do a CreateNew.
+					if (fileMode == FileMode.CreateNew)
+					{
+						throw new IOException(filePath + " exists");
+					}
 
-                    try
-                    {
-                        originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+#if false
+					try
+					{
+						originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 
-                        //Even thoug SafeFileHandle is an IDisposable, we don't dispose of it since that closes the strem.
-                        var safeHandle = originalFileStream.SafeFileHandle;
-                        if (!(safeHandle.IsClosed || safeHandle.IsInvalid))
-                        {
-                            //BY_HANDLE_FILE_INFORMATION fi;
-                            //if (GetFileInformationByHandle(safeHandle, out fi))
-                            {
-                                //if (fi.NumberOfLinks <= 1)
-                                {
-                                    // The file we're trying to write to doesn't have any hard links ... clear out the originalFileStream
-                                    // as a clue.
-                                    originalFileStream.Dispose();
-                                    originalFileStream = null;
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        if (originalFileStream != null)
-                        {
-                            originalFileStream.Dispose();
-                            originalFileStream = null;
-                        }
+						//Even thoug SafeFileHandle is an IDisposable, we don't dispose of it since that closes the strem.
+						var safeHandle = originalFileStream.SafeFileHandle;
+						if (!(safeHandle.IsClosed || safeHandle.IsInvalid))
+						{
+							BY_HANDLE_FILE_INFORMATION fi;
+							if (GetFileInformationByHandle(safeHandle, out fi))
+							{
+								if (fi.NumberOfLinks <= 1)
+								{
+									// The file we're trying to write to doesn't have any hard links ... clear out the originalFileStream
+									// as a clue.
+									originalFileStream.Dispose();
+									originalFileStream = null;
+								}
+							}
+						}
+					}
+					catch
+					{
+						if (originalFileStream != null)
+						{
+							originalFileStream.Dispose();
+							originalFileStream = null;
+						}
 
-                        //We were not able to determine whether or not the file had hard links so throw here (aborting the save)
-                        //since we don't know how to do it safely.
-                        throw;
-                    }
+						//We were not able to determine whether or not the file had hard links so throw here (aborting the save)
+						//since we don't know how to do it safely.
+						throw;
+					}
+#endif
 
-                    string root = Path.GetDirectoryName(filePath);
+					string root = Path.GetDirectoryName(filePath);
 
-                    int count = 0;
-                    while (++count < 20)
-                    {
-                        try
-                        {
-                            temporaryPath = Path.Combine(root, Path.GetRandomFileName() + "~");   //The ~ suffix hides the temporary file from GIT.
-                            return new FileStream(temporaryPath, FileMode.CreateNew, (originalFileStream != null) ? FileAccess.ReadWrite : FileAccess.Write, FileShare.None);
-                        }
-                        catch (IOException)
-                        {
-                            //Ignore IOExceptions ... GetRandomFileName() came up with a duplicate so we need to try again.
-                        }
-                    }
+					int count = 0;
+					while (++count < 20)
+					{
+						try
+						{
+							temporaryPath = Path.Combine(root, Path.GetRandomFileName() + "~");   //The ~ suffix hides the temporary file from GIT.
+							return new FileStream(temporaryPath, FileMode.CreateNew, (originalFileStream != null) ? FileAccess.ReadWrite : FileAccess.Write, FileShare.None);
+						}
+						catch (IOException)
+						{
+							//Ignore IOExceptions ... GetRandomFileName() came up with a duplicate so we need to try again.
+						}
+					}
 
-                    Debug.Fail("Unable to create a temporary file");
-                }
+					Debug.Fail("Unable to create a temporary file");
+				}
 
-                temporaryPath = null;
-                return new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
-            }
-            /*
-            [StructLayout(LayoutKind.Sequential)]
-            struct BY_HANDLE_FILE_INFORMATION
-            {
-                public uint FileAttributes;
-                public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
-                public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
-                public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
-                public uint VolumeSerialNumber;
-                public uint FileSizeHigh;
-                public uint FileSizeLow;
-                public uint NumberOfLinks;
-                public uint FileIndexHigh;
-                public uint FileIndexLow;
-            }
+				temporaryPath = null;
+				return new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
+			}
+#if false
+			[StructLayout(LayoutKind.Sequential)]
+			struct BY_HANDLE_FILE_INFORMATION
+			{
+				public uint FileAttributes;
+				public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
+				public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
+				public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
+				public uint VolumeSerialNumber;
+				public uint FileSizeHigh;
+				public uint FileSizeLow;
+				public uint NumberOfLinks;
+				public uint FileIndexHigh;
+				public uint FileIndexLow;
+			}
 
-            [DllImport("kernel32.dll", SetLastError = true)]
-            static extern bool GetFileInformationByHandle(
-                Microsoft.Win32.SafeHandles.SafeFileHandle hFile,
-                out BY_HANDLE_FILE_INFORMATION lpFileInformation
-            );
-            */
-        }
-    }
+			[DllImport("kernel32.dll", SetLastError = true)]
+			static extern bool GetFileInformationByHandle(
+				Microsoft.Win32.SafeHandles.SafeFileHandle hFile,
+				out BY_HANDLE_FILE_INFORMATION lpFileInformation
+			);
+#endif
+		}
+	}
 }

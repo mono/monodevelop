@@ -10,8 +10,6 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
     using System.Linq;
     using System.Threading;
 	//HACK using System.Windows.Threading;
-	using MonoDevelop.Core;	//HACK
-
 	using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Projection;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -33,44 +31,44 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
 
         List<Tuple<ITagger<T>, int>> uniqueTaggers;
 
-		//HACK internal ITextView textView;    // can be null
+        internal ITextView textView;    // can be null
 
-		//HACK internal Dispatcher dispatcher;
+        //HACK internal Dispatcher dispatcher;
 
-		internal MappingSpanLink acculumatedSpanLinks = null;
+        internal IList<IMappingSpan> acculumatedSpans = new List<IMappingSpan>();
 
         internal bool disposed;
         internal bool initialized;
 
         TagAggregatorOptions options;
 
-        public TagAggregator(TagAggregatorFactoryService factory, /*HACK ITextView textView,*/ IBufferGraph bufferGraph, TagAggregatorOptions options)
+        public TagAggregator(TagAggregatorFactoryService factory, ITextView textView, IBufferGraph bufferGraph, TagAggregatorOptions options)
         {
             this.TagAggregatorFactoryService = factory;
-			//HACK this.textView = textView;
-			this.BufferGraph = bufferGraph;
+            this.textView = textView;
+            this.BufferGraph = bufferGraph;
             this.options = options;
 
-			//HACK if (textView != null)
-			//HACK {
-			//HACK     textView.Closed += this.OnTextView_Closed;
-			//HACK }
+            if (textView != null)
+            {
+                textView.Closed += this.OnTextView_Closed;
+            }
 
-			//HACK this.dispatcher = Dispatcher.CurrentDispatcher;
+            //HACK this.dispatcher = Dispatcher.CurrentDispatcher;
 
-			taggers = new Dictionary<ITextBuffer, IList<ITagger<T>>>();
+            taggers = new Dictionary<ITextBuffer, IList<ITagger<T>>>();
             uniqueTaggers = new List<Tuple<ITagger<T>, int>>();
 
-			if (((TagAggregatorOptions2)options).HasFlag(TagAggregatorOptions2.DeferTaggerCreation))
-			{
-				MonoDevelop.Core.Runtime.RunInMainThread(() =>										//HACK
-										{										//HACK
-											this.EnsureInitialized();			//HACK
-										});                                     //HACK
+            if (((TagAggregatorOptions2)options).HasFlag(TagAggregatorOptions2.DeferTaggerCreation))
+            {
+				//HACK  this.dispatcher.BeginInvoke((Action)(() =>
+				//HACK                              {
+				//HACK                                  this.EnsureInitialized();
+				//HACK                              }), DispatcherPriority.Background);
 			}
 			else
-			{
-				this.Initialize();
+            {
+                this.Initialize();
             }
 
             this.BufferGraph.GraphBufferContentTypeChanged += new EventHandler<GraphBufferContentTypeChangedEventArgs>(BufferGraph_GraphBufferContentTypeChanged);
@@ -79,12 +77,19 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
 
         private void Initialize()
         {
-            //Construct our initial list of taggers by getting taggers for every textBuffer in the graph
-            this.BufferGraph.GetTextBuffers(delegate(ITextBuffer buffer)
+            if (((TagAggregatorOptions2)this.options).HasFlag(TagAggregatorOptions2.NoProjection))
             {
-                this.taggers[buffer] = GatherTaggers(buffer);
-                return false;
-            });
+                this.taggers[this.BufferGraph.TopBuffer] = GatherTaggers(this.BufferGraph.TopBuffer);
+            }
+            else
+            {
+                //Construct our initial list of taggers by getting taggers for every textBuffer in the graph
+                this.BufferGraph.GetTextBuffers(delegate (ITextBuffer buffer)
+                {
+                    this.taggers[buffer] = GatherTaggers(buffer);
+                    return false;
+                });
+            }
 
             this.initialized = true;
         }
@@ -227,10 +232,10 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
 
             try
             {
-				//HACK if (this.textView != null)
-				//HACK     this.textView.Closed -= this.OnTextView_Closed;
+                if (this.textView != null)
+                    this.textView.Closed -= this.OnTextView_Closed;
 
-				this.BufferGraph.GraphBufferContentTypeChanged -= BufferGraph_GraphBufferContentTypeChanged;
+                this.BufferGraph.GraphBufferContentTypeChanged -= BufferGraph_GraphBufferContentTypeChanged;
                 this.BufferGraph.GraphBuffersChanged -= BufferGraph_GraphBuffersChanged;
 
                 this.DisposeAllTaggers();
@@ -240,8 +245,8 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                 this.taggers = null;
                 this.TagAggregatorFactoryService = null;
                 this.BufferGraph = null;
-				//HACK this.textView = null;
-				this.uniqueTaggers = null;
+                this.textView = null;
+                this.uniqueTaggers = null;
 
                 disposed = true;
             }
@@ -269,42 +274,22 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
             EventHandler<TagsChangedEventArgs> tempEvent = TagsChanged;
             if (tempEvent != null)
             {
-                this.TagAggregatorFactoryService.guardedOperations.RaiseEvent(sender, tempEvent, new TagsChangedEventArgs(span));
+                this.TagAggregatorFactoryService.GuardedOperations.RaiseEvent(sender, tempEvent, new TagsChangedEventArgs(span));
             }
 
             if (this.BatchedTagsChanged != null)
             {
-				var oldHead = Volatile.Read(ref this.acculumatedSpanLinks);
-				while (true)
-				{
-					var newHead = new MappingSpanLink(oldHead, span);
-					var result = Interlocked.CompareExchange(ref this.acculumatedSpanLinks, newHead, oldHead);
-					if (result == oldHead)
-					{
-						if (oldHead == null)
-						{
-							MonoDevelop.Core.Runtime.RunInMainThread((Action)(this.RaiseBatchedTagsChanged));  //HACK
-						}
+                lock (this.acculumatedSpans)
+                {
+                    this.acculumatedSpans.Add(span);
 
-						break;
+                    if (acculumatedSpans.Count == 1)
+                    {
+						//HACK this.dispatcher.BeginInvoke(new Action(this.RaiseBatchedTagsChanged), DispatcherPriority.Normal, null);
 					}
-
-					oldHead = result;
 				}
             }
         }
-
-		internal class MappingSpanLink
-		{
-			public readonly MappingSpanLink Next;
-			public readonly IMappingSpan Span;
-
-			public MappingSpanLink(MappingSpanLink next, IMappingSpan span)
-			{
-				this.Next = next;
-				this.Span = span;
-			}
-		}
 
         private void RaiseBatchedTagsChanged()
         {
@@ -313,30 +298,47 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
             if (this.disposed)
                 return;
 
-			var oldHead = Volatile.Read(ref this.acculumatedSpanLinks);
-			while (true)
-			{
-				var result = Interlocked.CompareExchange(ref this.acculumatedSpanLinks, null, oldHead);
-				if (result == oldHead)
-				{
-					EventHandler<BatchedTagsChangedEventArgs> tempEvent = this.BatchedTagsChanged;
-					if (tempEvent != null)
-					{
-						var spans = new List<IMappingSpan>();
-						while (oldHead != null)
-						{
-							spans.Add(oldHead.Span);
-							oldHead = oldHead.Next;
-						}
+            EventHandler<BatchedTagsChangedEventArgs> tempEvent = this.BatchedTagsChanged;
+            if (tempEvent != null)
+            {
+                if (this.textView != null)
+                {
+                    if (this.textView.IsClosed)
+                    {
+                        // There's no need to actually raise the event (this probably won't happen since -- with a closed view -- there shouldn't be any listeners).
+                        lock (this.acculumatedSpans)
+                        {
+                            this.acculumatedSpans.Clear();
+                        }
+                        return;
+                    }
+                    else if (this.textView.InLayout)
+                    {
+						// The view is in the middle of a layout (because someone was pumping messages while handling a call from inside a layout).
+						// Many BatchTagsChanged handlers will not handle that situation gracefully so simply delay raising the event until
+						// we're no longer inside a layout.
+						//HACK this.dispatcher.BeginInvoke(new Action(this.RaiseBatchedTagsChanged), DispatcherPriority.Normal, null);
+						return;
+                    }
+                }
 
-						this.TagAggregatorFactoryService.guardedOperations.RaiseEvent(this, tempEvent, new BatchedTagsChangedEventArgs(spans));
-					}
+                BatchedTagsChangedEventArgs eventArgs;
+                lock (this.acculumatedSpans)
+                {
+                    eventArgs = new BatchedTagsChangedEventArgs(this.acculumatedSpans);
+                    this.acculumatedSpans.Clear();
+                }
 
-					break;
-				}
-
-				oldHead = result;
-			}
+                this.TagAggregatorFactoryService.GuardedOperations.RaiseEvent(this, tempEvent, eventArgs);
+            }
+            else
+            {
+                // No listeners for the event so we can clear out the accumulated events.
+                lock (this.acculumatedSpans)
+                {
+                    this.acculumatedSpans.Clear();
+                }
+            }
         }
 
         /// <summary>
@@ -346,7 +348,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
         /// </summary>
         void BufferGraph_GraphBuffersChanged(object sender, GraphBuffersChangedEventArgs e)
         {
-            if (this.disposed || !this.initialized)
+            if (this.disposed || (!this.initialized) || (((TagAggregatorOptions2)this.options).HasFlag(TagAggregatorOptions2.NoProjection)))
                 return;
 
             foreach (ITextBuffer buffer in e.RemovedBuffers)
@@ -368,7 +370,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
         /// </summary>
         void BufferGraph_GraphBufferContentTypeChanged(object sender, GraphBufferContentTypeChangedEventArgs e)
         {
-            if (this.disposed || ! this.initialized)
+            if (this.disposed || !this.initialized || (((TagAggregatorOptions2)this.options).HasFlag(TagAggregatorOptions2.NoProjection) && (e.TextBuffer != this.BufferGraph.TopBuffer)))
                 return;
 
             DisposeAllTaggersOverBuffer(e.TextBuffer);
@@ -383,14 +385,14 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
             this.RaiseEvents(this, span);
         }
 
-		//HACK private void OnTextView_Closed(object sender, EventArgs args)
-		//HACK {
-		//HACK     this.Dispose();
-		//HACK }
-		#endregion
+        private void OnTextView_Closed(object sender, EventArgs args)
+        {
+            this.Dispose();
+        }
+        #endregion
 
-		#region Helpers
-		private IEnumerable<IMappingTagSpan<T>> GetTagsForBuffer(KeyValuePair<ITextBuffer, IList<ITagger<T>>> bufferAndTaggers, 
+        #region Helpers
+        private IEnumerable<IMappingTagSpan<T>> GetTagsForBuffer(KeyValuePair<ITextBuffer, IList<ITagger<T>>> bufferAndTaggers, 
                                                                  NormalizedSnapshotSpanCollection snapshotSpans, 
                                                                  ITextSnapshot root, CancellationToken? cancel)
         {
@@ -433,7 +435,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                 }
                 catch (Exception e)
                 {
-                    this.TagAggregatorFactoryService.guardedOperations.HandleException(tagger, e);
+                    this.TagAggregatorFactoryService.GuardedOperations.HandleException(tagger, e);
                 }
 
                 if (tags != null)
@@ -450,7 +452,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                             }
                             catch (Exception e)
                             {
-                                this.TagAggregatorFactoryService.guardedOperations.HandleException(tagger, e);
+                                this.TagAggregatorFactoryService.GuardedOperations.HandleException(tagger, e);
                             }
 
                             if (tagSpan == null)
@@ -482,7 +484,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                         }
                         catch (Exception e)
                         {
-                            this.TagAggregatorFactoryService.guardedOperations.HandleException(tagger, e);
+                            this.TagAggregatorFactoryService.GuardedOperations.HandleException(tagger, e);
                         }
                     }
                 }
@@ -563,88 +565,57 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
         {
             List<ITagger<T>> newTaggers = new List<ITagger<T>>();
 
-            foreach (var taggerProviderExport in this.TagAggregatorFactoryService.BufferTaggerProviders)
+            var bufferTaggerFactories = this.TagAggregatorFactoryService.GuardedOperations.FindEligibleFactories(this.TagAggregatorFactoryService.GetBufferTaggersForType(textBuffer.ContentType, typeof(T)),
+                                                                                                                 textBuffer.ContentType,
+                                                                                                                 this.TagAggregatorFactoryService.ContentTypeRegistryService);
+
+            foreach (var factory in bufferTaggerFactories)
             {
-                if (Match(taggerProviderExport.Metadata, textBuffer.ContentType))
+                ITaggerProvider provider = null;
+                ITagger<T> tagger = null;
+
+                try
                 {
-                    ITaggerProvider provider = null;
+                    provider = factory.Value;
+                    tagger = provider.CreateTagger<T>(textBuffer);
+                }
+                catch (Exception e)
+                {
+                    object errorSource = (provider != null) ? (object)provider : factory;
+                    this.TagAggregatorFactoryService.GuardedOperations.HandleException(errorSource, e);
+                }
+
+                this.RegisterTagger(tagger, newTaggers);
+            }
+
+            if (this.textView != null)
+            {
+                var viewTaggerFactories = this.TagAggregatorFactoryService.GuardedOperations.FindEligibleFactories(this.TagAggregatorFactoryService.GetViewTaggersForType(textBuffer.ContentType, typeof(T)).Where(f =>
+                                                                                                                           (f.Metadata.TextViewRoles == null) || this.textView.Roles.ContainsAny(f.Metadata.TextViewRoles)),
+                                                                                                                   textBuffer.ContentType,
+                                                                                                                   this.TagAggregatorFactoryService.ContentTypeRegistryService);
+
+                foreach (var factory in viewTaggerFactories)
+                {
+                    IViewTaggerProvider provider = null;
                     ITagger<T> tagger = null;
+
                     try
                     {
-                        provider = taggerProviderExport.Value;
-                        tagger = provider.CreateTagger<T>(textBuffer);
+                        provider = factory.Value;
+                        tagger = provider.CreateTagger<T>(this.textView, textBuffer);
                     }
                     catch (Exception e)
                     {
-                        object errorSource = (provider != null) ? (object)provider : taggerProviderExport;
-                        this.TagAggregatorFactoryService.guardedOperations.HandleException(errorSource, e);
+                        object errorSource = (provider != null) ? (object)provider : factory;
+                        this.TagAggregatorFactoryService.GuardedOperations.HandleException(errorSource, e);
                     }
 
                     this.RegisterTagger(tagger, newTaggers);
                 }
             }
 
-			//HACK if (this.textView != null)
-			//HACK {
-			//HACK     foreach (var taggerProviderExport in this.TagAggregatorFactoryService.ViewTaggerProviders)
-			//HACK     {
-			//HACK         if (Match(taggerProviderExport.Metadata, textBuffer.ContentType))
-			//HACK         {
-			//HACK             IEnumerable<string> roles = taggerProviderExport.Metadata.TextViewRoles;
-			//HACK             if (roles != null && !this.textView.Roles.ContainsAny(roles))
-			//HACK             {
-			//HACK                 // role metadata (which is optional) didn't match
-			//HACK                 continue;
-			//HACK             }
-			//HACK 
-			//HACK             IViewTaggerProvider provider = null;
-			//HACK             ITagger<T> tagger = null;
-			//HACK             try
-			//HACK             {
-			//HACK                 provider = taggerProviderExport.Value;
-			//HACK                 tagger = provider.CreateTagger<T>(this.textView, textBuffer);
-			//HACK             }
-			//HACK             catch (Exception e)
-			//HACK             {
-			//HACK                 object errorSource = (provider != null) ? (object)provider : taggerProviderExport;
-			//HACK                 this.TagAggregatorFactoryService.guardedOperations.HandleException(errorSource, e);
-			//HACK             }
-			//HACK 
-			//HACK             this.RegisterTagger(tagger, newTaggers);
-			//HACK         }
-			//HACK     }
-			//HACK }
-
-			return newTaggers;
-        }
-
-        private static bool Match(ITaggerMetadata tagMetadata, IContentType bufferContentType)
-        {
-            bool contentTypeMatch = false;
-
-            foreach (string contentType in tagMetadata.ContentTypes)
-            {
-                if (bufferContentType.IsOfType(contentType))
-                {
-                    contentTypeMatch = true;
-                    break;
-                }
-            }
-
-            if (contentTypeMatch)
-            {
-                // Now find out if it can provide tags of the type we want
-                foreach (Type type in tagMetadata.TagTypes)
-                {
-                    // This producer is used if it claims to produce a tag
-                    // that this type is assignable from.
-                    if (typeof(T).IsAssignableFrom(type))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return newTaggers;
         }
 
         private void UnregisterTagger(ITagger<T> tagger)
@@ -676,7 +647,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
             IDisposable disposable = tagger as IDisposable;
             if (disposable != null)
             {
-                this.TagAggregatorFactoryService.guardedOperations.CallExtensionPoint(this, () => disposable.Dispose());
+                this.TagAggregatorFactoryService.GuardedOperations.CallExtensionPoint(this, () => disposable.Dispose());
             }
         }
 

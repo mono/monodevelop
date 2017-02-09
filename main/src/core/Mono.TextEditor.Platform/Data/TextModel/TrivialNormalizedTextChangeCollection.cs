@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
     /// insertion, deletion, or replacement of one character, with no effect on line counts. This object embodies both the
     /// collection and its single member.
     /// </summary>
-    internal partial class TrivialNormalizedTextChangeCollection : INormalizedTextChangeCollection, ITextChange
+    internal partial class TrivialNormalizedTextChangeCollection : INormalizedTextChangeCollection, ITextChange3
     {
         char data;
         bool isInsertion;
@@ -184,6 +184,49 @@ namespace Microsoft.VisualStudio.Text.Implementation
         {
             get { return 0; }
         }
+
+        public bool IsOpaque { get; internal set; }
+
+        public string GetOldText(Span span)
+        {
+            if (span.End > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(span));
+            }
+
+            return isInsertion ? "" : new string(data, span.Length);
+        }
+
+        public string GetNewText(Span span)
+        {
+            if (span.End > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(span));
+            }
+
+            return isInsertion ? new string(data, span.Length) : "";
+        }
+
+        public char GetOldTextAt(int position)
+        {
+            if (position > 0 || isInsertion)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            return data;
+        }
+
+        public char GetNewTextAt(int position)
+        {
+            if (position > 0 || !isInsertion)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            return data;
+        }
+
         #endregion
     }
 }

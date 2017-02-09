@@ -26,9 +26,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
                 return ((++start < end) && (source[start] == '\n')) ? 2 : 1;
             }
             else if ((c1 == '\n') || (c1 == '\u0085') ||
-                     (c1 == '\u000b') ||                            //HACK Normalize with VSEditor
-                     (c1 == '\u000c') ||                            //HACK Normalize with VSEditor
-					 (c1 == '\u2028' /*unicode line separator*/) ||
+                     (c1 == '\u2028' /*unicode line separator*/) ||
                      (c1 == '\u2029' /*unicode paragraph separator*/))
             {
                 return 1;
@@ -45,9 +43,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
                 return ((++start < end) && (source[start] == '\n')) ? 2 : 1;
             }
             else if ((c1 == '\n') || (c1 == '\u0085') ||
-                     (c1 == '\u000b') ||                            //HACK Normalize with VSEditor
-					 (c1 == '\u000c') ||                            //HACK Normalize with VSEditor
-					 (c1 == '\u2028' /*unicode line separator*/) ||
+                     (c1 == '\u2028' /*unicode line separator*/) ||
                      (c1 == '\u2029' /*unicode paragraph separator*/))
             {
                 return 1;

@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         public abstract int Length { get; }
         public abstract int ComputeLineBreakCount();
         public abstract char this[int position] { get; }
-        public abstract string Substring(int startIndex, int length);
+        public abstract string Substring(Span span);
 
         internal abstract IStringRebuilder Content { get; }
 
@@ -54,9 +54,9 @@ namespace Microsoft.VisualStudio.Text.Implementation
             get { return this.text[position]; }
         }
 
-        public override string Substring(int startIndex, int length)
+        public override string Substring(Span span)
         {
-            return this.text.Substring(startIndex, length);
+            return this.text.Substring(span.Start, span.Length);
         }
 
         public override int ComputeLineBreakCount()
@@ -183,9 +183,9 @@ namespace Microsoft.VisualStudio.Text.Implementation
             get { return this.builder[position]; }
         }
 
-        public override string Substring(int startIndex, int length)
+        public override string Substring(Span span)
         {
-            return this.builder.GetText(new Span(startIndex, length));
+            return this.builder.GetText(span);
         }
 
         public override int ComputeLineBreakCount()

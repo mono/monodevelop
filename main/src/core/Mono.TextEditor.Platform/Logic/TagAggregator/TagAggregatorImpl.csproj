@@ -1,4 +1,9 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="BuildProps">
+    <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
+  </PropertyGroup>
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
   <Import Project="..\Platform.Settings.targets" />
   <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
   <PropertyGroup>
@@ -8,7 +13,6 @@
     <SignAssemblyAttribute>true</SignAssemblyAttribute>
     <UseVsVersion>true</UseVsVersion>
     <AssemblyAttributeClsCompliant>true</AssemblyAttributeClsCompliant>
-    <CreateMetaAssembly>false</CreateMetaAssembly>
     <GenerateAssemblyRefs>true</GenerateAssemblyRefs>
     <NoWarn>649;436;$(NoWarn)</NoWarn>
   </PropertyGroup>
@@ -21,6 +25,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime" />
     <Reference Include="WindowsBase" />
     <Compile Include="FxCopSuppressions.cs" />
     <Compile Include="IViewTaggerMetadata.cs" />
@@ -53,6 +58,12 @@
     <ProjectReference Include="..\..\Util\TextLogicUtil\TextLogicUtil.csproj">
       <Project>{C52697E5-9277-4A85-9B83-24D417E5A44B}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsRazzleBuild)' == 'true'">
+    <Reference Include="$(ExternalApisPath)\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsRazzleBuild)' != 'true'">
+    <Reference Include="..\..\..\..\ExternalApis\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll" />
   </ItemGroup>
   <!--Import the targets-->
   <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.targets" />
