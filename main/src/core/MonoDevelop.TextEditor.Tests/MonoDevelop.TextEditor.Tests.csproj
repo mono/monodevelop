@@ -55,6 +55,10 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Language.StandardClassification.15.0.26201\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />

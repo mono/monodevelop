@@ -112,7 +112,7 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Data\TextModel\StringRebuilder\SimpleStringRebuilder.cs" />
       
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\ExtensionMethods.cs" />
-      <!-- <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\IJoinableTaskFactoryHelper.cs" /> -->
+      <!-- <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\IJoinableTaskFactoryHelper.cs" /> shell -->
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\IObjectTracker.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\ITextBufferFactoryService2.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\LazyObservableCollection.cs" />
@@ -131,7 +131,18 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextLogic\ITextSearchTaggerFactoryService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextLogic\PriorityAttribute.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextLogic\TagAggregatorOptions2.cs" />
-      
+
+      <!-- <Compile Include="$(MSBuildThisFileDirectory)\Language\StandardClassification\ClassificationFormatDefinitions.cs" /> wpf -->
+      <Compile Include="$(MSBuildThisFileDirectory)\Language\StandardClassification\StandardClassificationService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Language\StandardClassification\Strings.Designer.cs">
+          <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
+      <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Language\StandardClassification\Strings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <!-- <Compile Include="$(MSBuildThisFileDirectory)\Language\StandardClassification\TypeFaceHelper.cs" /> dead code -->
+
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\ClassificationAggregator\ClassifierAggregator.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\ClassificationAggregator\ClassifierAggregatorService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\ClassificationAggregator\ClassifierTagger.cs" />
