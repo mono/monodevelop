@@ -34,13 +34,17 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DotNetCore
 {
 	[ExportProjectModelExtension]
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
+		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
+
 		DotNetCoreMSBuildProject dotNetCoreMSBuildProject = new DotNetCoreMSBuildProject ();
+		DotNetCoreSdkPaths sdkPaths;
 
 		public DotNetCoreProjectExtension ()
 		{
@@ -187,10 +191,20 @@ namespace MonoDevelop.DotNetCore
 		Task ShowDotNetCoreNotInstalledDialog ()
 		{
 			return Runtime.RunInMainThread (() => {
+				if (ShownDotNetCoreSdkNotInstalledDialogForSolution ())
+					return;
+
+				Project.ParentSolution.ExtendedProperties [ShownDotNetCoreSdkInstalledExtendedPropertyName] = "true";
+
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.Show ();
 				}
 			});
+		}
+
+		bool ShownDotNetCoreSdkNotInstalledDialogForSolution ()
+		{
+			return Project.ParentSolution.ExtendedProperties.Contains (ShownDotNetCoreSdkInstalledExtendedPropertyName);
 		}
 
 		protected override async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
@@ -235,6 +249,13 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnItemReady ();
 			Project.Modified += OnProjectModified;
+
+			if (!IdeApp.IsInitialized)
+				return;
+
+			if (HasSdk && !sdkPaths.Exist) {
+				ShowDotNetCoreNotInstalledDialog ();
+			}
 		}
 
 		public override void Dispose ()
@@ -294,7 +315,7 @@ namespace MonoDevelop.DotNetCore
 			if (!HasSdk)
 				return;
 
-			var sdkPaths = new DotNetCoreSdkPaths ();
+			sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 			if (!sdkPaths.Exist)
 				return;
