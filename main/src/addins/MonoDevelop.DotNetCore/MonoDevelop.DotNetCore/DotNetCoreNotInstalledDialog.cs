@@ -71,5 +71,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			MessageService.GenericAlert (message);
 		}
+
+		public string Message {
+			get { return message.Text; }
+			set { message.Text = value; }
+		}
 	}
 }
