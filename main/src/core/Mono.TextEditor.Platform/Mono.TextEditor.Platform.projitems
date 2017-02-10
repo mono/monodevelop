@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
       <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Core\ContentType\ContentTypeImpl.cs" />
