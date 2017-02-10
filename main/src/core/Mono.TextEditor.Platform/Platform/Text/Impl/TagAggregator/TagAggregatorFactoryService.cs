@@ -34,6 +34,9 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
         internal IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
         [Import]
+        internal IThreadHelper ThreadHelper { get; set; }
+
+        [Import]
         internal GuardedOperations GuardedOperations { get; set; }
 
         internal ImmutableDictionary<ContentAndTypeData, IEnumerable<Lazy<ITaggerProvider, INamedTaggerMetadata>>> _bufferTaggerProviderMap = ImmutableDictionary<ContentAndTypeData, IEnumerable<Lazy<ITaggerProvider, INamedTaggerMetadata>>>.Empty;
