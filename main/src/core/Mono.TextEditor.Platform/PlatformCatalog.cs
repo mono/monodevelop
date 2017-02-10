@@ -68,6 +68,13 @@ namespace Microsoft.VisualStudio.Platform
 
             this.MimeToContentTypeRegistryService.LinkTypes("text/plain", this.ContentTypeRegistryService.GetContentType("text"));		  //HACK
             this.MimeToContentTypeRegistryService.LinkTypes("text/x-csharp", this.ContentTypeRegistryService.GetContentType("csharp"));   //HACK
+
+            if (null != this.ContentTypeRegistryService.GetContentType("css"))
+            {
+                this.MimeToContentTypeRegistryService.LinkTypes("text/x-css", this.ContentTypeRegistryService.GetContentType("css"));   //HACK
+                this.MimeToContentTypeRegistryService.LinkTypes("text/x-html", this.ContentTypeRegistryService.GetContentType("htmlx"));   //HACK
+                this.MimeToContentTypeRegistryService.LinkTypes("text/x-json", this.ContentTypeRegistryService.GetContentType("JSON"));   //HACK
+            }
         }
 
         private static CompositionContainer CreateContainer()
