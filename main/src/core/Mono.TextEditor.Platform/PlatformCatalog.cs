@@ -148,23 +148,27 @@ namespace Microsoft.VisualStudio.Platform
         internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
     }
 
-    public interface IThreadHelper
-    {
-        Task RunInMainThread(Action a);
-        Task<T> RunInMainThread<T>(Func<T> f);
-    }
-
-    [Export]
+    [Export(typeof(IThreadHelper))]
     public class PlatformThreadHelper : IThreadHelper
     {
-        public Task RunInMainThread(Action a)
+        public Task RunOnUIThread(Action action)
         {
-            return MonoDevelop.Core.Runtime.RunInMainThread(a);
+            return MonoDevelop.Core.Runtime.RunInMainThread(action);
         }
 
-        public Task<T> RunInMainThread<T>(Func<T> f)
+        public Task RunOnUIThread(UIThreadPriority priority, Action action)
         {
-            return MonoDevelop.Core.Runtime.RunInMainThread(f);
+            return MonoDevelop.Core.Runtime.RunInMainThread(action);
+        }
+
+        public Task<T> RunOnUIThread<T>(Func<T> function)
+        {
+            return MonoDevelop.Core.Runtime.RunInMainThread(function);
+        }
+
+        public Task<T> RunOnUIThread<T>(UIThreadPriority priority, Func<T> function)
+        {
+            return MonoDevelop.Core.Runtime.RunInMainThread(function);
         }
     }
 
