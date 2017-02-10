@@ -278,6 +278,16 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 
+		public static void WriteText (string fileName, ITextSource source, Encoding encoding, bool hadBom)
+		{
+			var tmpPath = WriteTextInit (fileName, "", encoding);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write))
+			using (var sw = new StreamWriter (stream)) {
+				source.WriteTextTo (sw);
+			}
+			WriteTextFinal (tmpPath, fileName);
+		}
+
 		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
 		{
 			var tmpPath = WriteTextInit (fileName, text, encoding);
