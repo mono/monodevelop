@@ -50,7 +50,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Platform
 {
-	public class PlatformCatalog
+    public class PlatformCatalog
     {
         public static PlatformCatalog Instance = new PlatformCatalog();
 
@@ -66,11 +66,11 @@ namespace Microsoft.VisualStudio.Platform
             this.CompositionContainer = container;
             this.TextBufferFactoryService = (ITextBufferFactoryService2)_textBufferFactoryService;
 
-			this.MimeToContentTypeRegistryService.LinkTypes("text/plain", this.ContentTypeRegistryService.GetContentType("text"));		  //HACK
-			this.MimeToContentTypeRegistryService.LinkTypes("text/x-csharp", this.ContentTypeRegistryService.GetContentType("csharp"));   //HACK
-		}
+            this.MimeToContentTypeRegistryService.LinkTypes("text/plain", this.ContentTypeRegistryService.GetContentType("text"));		  //HACK
+            this.MimeToContentTypeRegistryService.LinkTypes("text/x-csharp", this.ContentTypeRegistryService.GetContentType("csharp"));   //HACK
+        }
 
-		private static CompositionContainer CreateContainer()
+        private static CompositionContainer CreateContainer()
         {
             // TODO: Read these from manifest.addin.xml?
             AggregateCatalog catalog = new AggregateCatalog();
@@ -80,204 +80,205 @@ namespace Microsoft.VisualStudio.Platform
             // TODO: add some mechanism to allow these to be updated at runtime.
             string[] assemblyNames =
                 {
+                "Microsoft.VisualStudio.Text.Logic"
                 };
 
             foreach (string assemblyName in assemblyNames)
             {
-				try
-				{
-					var assembly = Assembly.Load(assemblyName);
-					catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-				}
-				catch (Exception e)
-				{
-					LoggingService.LogError("Workspace can't load assembly " + assemblyName + " to host mef services.", e);
-				}
-			}
+                try
+                {
+                    var assembly = Assembly.Load(assemblyName);
+                    catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+                }
+                catch (Exception e)
+                {
+                    LoggingService.LogError("Workspace can't load assembly " + assemblyName + " to host mef services.", e);
+                }
+            }
 
-			foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
-			{
-				var assemblyNode = node as AssemblyExtensionNode;
-				if (assemblyNode != null)
-				{
-					try
-					{
+            foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
+            {
+                var assemblyNode = node as AssemblyExtensionNode;
+                if (assemblyNode != null)
+                {
+                    try
+                    {
 
-						var assembly = Assembly.LoadFrom(assemblyNode.FileName);
-						catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-					}
-					catch (Exception e)
-					{
-						LoggingService.LogError("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
-					}
-				}
-			}
+                        var assembly = Assembly.LoadFrom(assemblyNode.FileName);
+                        catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+                    }
+                    catch (Exception e)
+                    {
+                        LoggingService.LogError("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
+                    }
+                }
+            }
 
-			//Create the CompositionContainer with the parts in the catalog
-			CompositionContainer container = new CompositionContainer(catalog);
+            //Create the CompositionContainer with the parts in the catalog
+            CompositionContainer container = new CompositionContainer(catalog);
 
             return container;
         }
 
-		[Export]                                        //HACK
-		[Name("csharp")]                                //HACK
-		[BaseDefinition("code")]                        //HACK
-		public ContentTypeDefinition codeContentType;   //HACK
+        [Export]                                        //HACK
+        [Name("csharp")]                                //HACK
+        [BaseDefinition("code")]                        //HACK
+        public ContentTypeDefinition codeContentType;   //HACK
 
-		[Import]
-		internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
+        [Import]
+        internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
 
-		[Import]
-		internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
+        [Import]
+        internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
 
-		[Import]
-		internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
+        [Import]
+        internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
 
-		[Import]
-		internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService { get; private set; }
+        [Import]
+        internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService { get; private set; }
 
-		[Import]
-		internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
-	}
+        [Import]
+        internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
+    }
 
-	public interface IThreadHelper
-	{
-		Task RunInMainThread(Action a);
-		Task<T> RunInMainThread<T>(Func<T> f);
-	}
+    public interface IThreadHelper
+    {
+        Task RunInMainThread(Action a);
+        Task<T> RunInMainThread<T>(Func<T> f);
+    }
 
-	[Export]
-	public class PlatformThreadHelper : IThreadHelper
-	{
-		public Task RunInMainThread(Action a)
-		{
-			return MonoDevelop.Core.Runtime.RunInMainThread(a);
-		}
+    [Export]
+    public class PlatformThreadHelper : IThreadHelper
+    {
+        public Task RunInMainThread(Action a)
+        {
+            return MonoDevelop.Core.Runtime.RunInMainThread(a);
+        }
 
-		public Task<T> RunInMainThread<T>(Func<T> f)
-		{
-			return MonoDevelop.Core.Runtime.RunInMainThread(f);
-		}
-	}
+        public Task<T> RunInMainThread<T>(Func<T> f)
+        {
+            return MonoDevelop.Core.Runtime.RunInMainThread(f);
+        }
+    }
 
-	public interface IMimeToContentTypeRegistryService
-	{
-		string GetMimeType(IContentType type);
-		IContentType GetContentType(string type);
+    public interface IMimeToContentTypeRegistryService
+    {
+        string GetMimeType(IContentType type);
+        IContentType GetContentType(string type);
 
-		void LinkTypes(string mimeType, IContentType contentType);
-	}
+        void LinkTypes(string mimeType, IContentType contentType);
+    }
 
-	[Export(typeof(IMimeToContentTypeRegistryService))]
-	public class MimeToContentTypeRegistryService : IMimeToContentTypeRegistryService
-	{
-		public string GetMimeType(IContentType type)
-		{
-			string mimeType;
-			if (this.maps.Item2.TryGetValue(type, out mimeType))
-			{
-				return mimeType;
-			}
+    [Export(typeof(IMimeToContentTypeRegistryService))]
+    public class MimeToContentTypeRegistryService : IMimeToContentTypeRegistryService
+    {
+        public string GetMimeType(IContentType type)
+        {
+            string mimeType;
+            if (this.maps.Item2.TryGetValue(type, out mimeType))
+            {
+                return mimeType;
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public IContentType GetContentType(string type)
-		{
-			IContentType contentType;
-			if (this.maps.Item1.TryGetValue(type, out contentType))
-			{
-				return contentType;
-			}
+        public IContentType GetContentType(string type)
+        {
+            IContentType contentType;
+            if (this.maps.Item1.TryGetValue(type, out contentType))
+            {
+                return contentType;
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public void LinkTypes(string mimeType, IContentType contentType)
-		{
-			var oldMap = Volatile.Read(ref this.maps);
-			while (true)
-			{
-				if (oldMap.Item1.ContainsKey(mimeType) || oldMap.Item2.ContainsKey(contentType))
-					break;
+        public void LinkTypes(string mimeType, IContentType contentType)
+        {
+            var oldMap = Volatile.Read(ref this.maps);
+            while (true)
+            {
+                if (oldMap.Item1.ContainsKey(mimeType) || oldMap.Item2.ContainsKey(contentType))
+                    break;
 
-				var newMap = Tuple.Create(oldMap.Item1.Add(mimeType, contentType), oldMap.Item2.Add(contentType, mimeType));
-				var result = Interlocked.CompareExchange(ref this.maps, newMap, oldMap);
-				if (result == oldMap)
-				{
-					break;
-				}
+                var newMap = Tuple.Create(oldMap.Item1.Add(mimeType, contentType), oldMap.Item2.Add(contentType, mimeType));
+                var result = Interlocked.CompareExchange(ref this.maps, newMap, oldMap);
+                if (result == oldMap)
+                {
+                    break;
+                }
 
-				oldMap = result;
-			}
+                oldMap = result;
+            }
 
-		}
+        }
 
-		private Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
-	}
+        private Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
+    }
 
 #if false
-	[Export(typeof(ITaggerProvider))]
-	[ContentType("text")]
-	[TagType(typeof(IClassificationTag))]
-	public class TestClassifierProvider : ITaggerProvider
-	{
-		[Import]
-		internal IClassificationTypeRegistryService ClassificationTypeRegistryService { get; private set; }
+    [Export(typeof(ITaggerProvider))]
+    [ContentType("text")]
+    [TagType(typeof(IClassificationTag))]
+    public class TestClassifierProvider : ITaggerProvider
+    {
+        [Import]
+        internal IClassificationTypeRegistryService ClassificationTypeRegistryService { get; private set; }
 
-		[Export]
-		[Name("keyword")]
-		public ClassificationTypeDefinition textClassificationType;
+        [Export]
+        [Name("keyword")]
+        public ClassificationTypeDefinition textClassificationType;
 
-		public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
-		{
-			return buffer.Properties.GetOrCreateSingletonProperty(typeof(TestClassifier), () => new TestClassifier(this)) as ITagger<T>;
-		}
-	}
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            return buffer.Properties.GetOrCreateSingletonProperty(typeof(TestClassifier), () => new TestClassifier(this)) as ITagger<T>;
+        }
+    }
 
-	public class TestClassifier : ITagger<IClassificationTag>
-	{
-		private ClassificationTag _keyword { get; }
+    public class TestClassifier : ITagger<IClassificationTag>
+    {
+        private ClassificationTag _keyword { get; }
 
-		public TestClassifier(TestClassifierProvider provider)
-		{
-			_keyword = new ClassificationTag(provider.ClassificationTypeRegistryService.GetClassificationType("keyword"));
-		}
+        public TestClassifier(TestClassifierProvider provider)
+        {
+            _keyword = new ClassificationTag(provider.ClassificationTypeRegistryService.GetClassificationType("keyword"));
+        }
 
-		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-		{
-			foreach (var span in spans)
-			{
-				int start = -1;
-				for (int i = span.Start; (i < span.End); ++i)
-				{
-					var c = span.Snapshot[i];
-					if ((c == 'a') || (c == 'A'))
-					{
-						if (start == -1)
-						{
-							start = i;
-						}
-					}
-					else if (start != -1)
-					{
-						yield return new TagSpan<ClassificationTag>(
-								new SnapshotSpan(span.Snapshot, start, i - start),
-								_keyword);
-						start = -1;
-					}
-				}
+        public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            foreach (var span in spans)
+            {
+                int start = -1;
+                for (int i = span.Start; (i < span.End); ++i)
+                {
+                    var c = span.Snapshot[i];
+                    if ((c == 'a') || (c == 'A'))
+                    {
+                        if (start == -1)
+                        {
+                            start = i;
+                        }
+                    }
+                    else if (start != -1)
+                    {
+                        yield return new TagSpan<ClassificationTag>(
+                                new SnapshotSpan(span.Snapshot, start, i - start),
+                                _keyword);
+                        start = -1;
+                    }
+                }
 
-				if (start != -1)
-				{
-					yield return new TagSpan<ClassificationTag>(
-							new SnapshotSpan(span.Snapshot, start, span.End - start),
-							_keyword);
-				}
-			}
-		}
+                if (start != -1)
+                {
+                    yield return new TagSpan<ClassificationTag>(
+                            new SnapshotSpan(span.Snapshot, start, span.End - start),
+                            _keyword);
+                }
+            }
+        }
 
-		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-	}
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+    }
 #endif
 }

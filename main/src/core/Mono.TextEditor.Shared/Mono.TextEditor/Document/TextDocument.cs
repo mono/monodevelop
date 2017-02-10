@@ -2067,7 +2067,11 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
-			return new DocumentLineFromTextSnapshotLine(this.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(number - 1));
+			int snapshotLineNumber = number - 1;
+			if (snapshotLineNumber >= this.TextBuffer.CurrentSnapshot.LineCount)
+				return null;
+
+			return new DocumentLineFromTextSnapshotLine(this.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 
 		internal sealed class DocumentLineFromTextSnapshotLine : DocumentLine

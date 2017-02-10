@@ -212,11 +212,12 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionSetPriority.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextEditorFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewConnectionListener.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewCreationListener.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Adornments\AdornmentPositioningBehavior.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Editor\ConnectionReason.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Editor\IWpfTextView.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Editor\IWpfTextViewConnectionListener.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\Editor\IWpfTextViewCreationListener.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUIWpf\RTF\IRtfBuilderService.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\TextData\ExtensionMethods.cs" />
@@ -341,6 +342,12 @@
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\UI\EditorPrimitives\ViewPrimitives.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\UI\Outlining\Collapsible.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\UI\Outlining\OutliningManager.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\UI\Outlining\OutliningManagerService.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\ConnectionManager.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\SmartIndentationService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\TextViewRoleSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\VacuousTextDataModel.cs" />
