@@ -33,6 +33,10 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
+		// TODO: This link needs to be changed.
+		// public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
+		public static readonly string DotNetCoreDownloadUrl = "https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md";
+
 		GenericMessage message;
 		AlertButton downloadButton;
 
@@ -59,7 +63,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				DesktopService.ShowUrl ("https://aka.ms/vs/mac/install-netcore");
+				DesktopService.ShowUrl (DotNetCoreDownloadUrl);
 		}
 
 		public void Dispose ()
