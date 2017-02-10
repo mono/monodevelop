@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using System.Collections.Generic;
     using System.Text;
 
-    internal class TextViewRoleSet : ITextViewRoleSet
+    public class TextViewRoleSet : ITextViewRoleSet
     {
         private List<string> roles;
 

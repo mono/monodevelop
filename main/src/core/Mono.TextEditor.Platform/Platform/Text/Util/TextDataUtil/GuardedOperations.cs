@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
     /// </summary>
     [Export]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    internal sealed class GuardedOperations
+    public sealed class GuardedOperations
     {
         [ImportMany]
         private List<Lazy<IExtensionErrorHandler>> _errorHandlerExports = null;

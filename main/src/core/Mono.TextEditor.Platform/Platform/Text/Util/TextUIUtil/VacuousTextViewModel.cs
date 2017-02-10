@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
     /// is the same as the edit buffer, which is in turn the same as the data buffer if no edit buffer is specified.
     /// This is the default if no view model provider is specified or if the specified one declines to build a model.
     /// </summary>
-    internal class VacuousTextViewModel : ITextViewModel
+    public class VacuousTextViewModel : ITextViewModel
     {
         private ITextDataModel dataModel;
         private ITextBuffer editBuffer;
