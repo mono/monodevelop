@@ -211,6 +211,7 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\Language\Intellisense\Suggestions\SuggestedActionSetPriority.cs" />
 
+      <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextEditorFactoryService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewConnectionListener.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Internal\Portable\TextUI\ITextViewCreationListener.cs" />
 
@@ -361,6 +362,11 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextLogicUtil\INamedTaggerMetadata.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextLogicUtil\ITaggerMetadata.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextLogicUtil\TextUndoPrimitive.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\IContentTypeAndTextViewRoleMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\IDeferrableContentTypeAndTextViewRoleMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\ITextViewRoleMetadata.cs" />
+
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
