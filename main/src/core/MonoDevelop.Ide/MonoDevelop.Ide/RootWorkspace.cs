@@ -454,7 +454,7 @@ namespace MonoDevelop.Ide
 			return OpenWorkspaceItem (file, closeCurrent, true);
 		}
 
-		public async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
+		public Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
 		{
 			if (openingItemCancellationSource != null && closeCurrent) {
 				openingItemCancellationSource.Cancel ();
@@ -465,12 +465,12 @@ namespace MonoDevelop.Ide
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
 				IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
-				return true;
+				return Task.FromResult (true);
 			}
 
 			if (closeCurrent) {
 				if (!Close ())
-					return false;
+					return Task.FromResult (false);
 			}
 
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
@@ -483,7 +483,7 @@ namespace MonoDevelop.Ide
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
 			try {
 				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, timer);
-				return await oper;
+				return oper;
 			} finally {
 				timer.End ();
 				monitor.Dispose ();

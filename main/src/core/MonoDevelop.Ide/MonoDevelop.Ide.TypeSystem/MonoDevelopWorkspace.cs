@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					});
 					allTasks.Add (tp);
 				}
-				await Task.WhenAll (allTasks.ToArray ());
+				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
 				var modifiedWhileLoading = modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
