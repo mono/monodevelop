@@ -296,9 +296,14 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\EditorOptions\TextModelEditorOptions.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\EditorOptions\TextModelOptionsSetter.cs" />
 
+      <Compile Include="$(MSBuildThisFileDirectory)\Logic\Navigation\DefaultTextNavigator.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Logic\Navigation\TextStructureNavigatorSelectorService.cs" />
+    
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\TagAggregator\IViewTaggerMetadata.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\TagAggregator\TagAggregator.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Logic\TagAggregator\TagAggregatorFactoryService.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Logic\TextSearch\TextSearchService.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\UI\EditorOperations\AfterTextBufferChangeUndoPrimitive.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UI\EditorOperations\BeforeTextBufferChangeUndoPrimitive.cs" />
