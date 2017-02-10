@@ -251,14 +251,24 @@ namespace MonoDevelop.Core.Text
 		#endregion
 
 		#region file methods
-		static string WriteTextInit (string fileName, string text, Encoding encoding)
+		static void ArgumentCheck (string fileName)
 		{
 			if (fileName == null)
-			throw new ArgumentNullException ("fileName");
+				throw new ArgumentNullException ("fileName");
+		}
+
+		static void ArgumentCheck (string fileName, string text, Encoding encoding)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
+		}
+
+		static string WriteTextInit (string fileName)
+		{
 			// atomic rename only works in the same directory on linux. The tmp files may be on another partition -> breaks save.
 			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
 			return tmpPath;
@@ -278,9 +288,10 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 
-		public static void WriteText (string fileName, ITextSource source, Encoding encoding, bool hadBom)
+		public static void WriteText (string fileName, ITextSource source)
 		{
-			var tmpPath = WriteTextInit (fileName, "", encoding);
+			ArgumentCheck (fileName);
+			var tmpPath = WriteTextInit (fileName);
 			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write))
 			using (var sw = new StreamWriter (stream)) {
 				source.WriteTextTo (sw);
@@ -290,7 +301,8 @@ namespace MonoDevelop.Core.Text
 
 		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
 		{
-			var tmpPath = WriteTextInit (fileName, text, encoding);
+			ArgumentCheck (fileName, text, encoding);
+			var tmpPath = WriteTextInit (fileName);
 			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
@@ -306,7 +318,8 @@ namespace MonoDevelop.Core.Text
 		const int DefaultBufferSize = 4096;
 		public static async Task WriteTextAsync (string fileName, string text, Encoding encoding, bool hadBom)
 		{
-			var tmpPath = WriteTextInit (fileName, text, encoding);
+			ArgumentCheck (fileName, text, encoding);
+			var tmpPath = WriteTextInit (fileName);
 			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write, bufferSize: DefaultBufferSize, options: FileOptions.Asynchronous)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
