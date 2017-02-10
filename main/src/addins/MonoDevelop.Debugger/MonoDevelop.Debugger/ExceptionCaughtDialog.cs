@@ -618,7 +618,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		internal static string GetHelpLinkMarkup (ExceptionInfo exception)
 		{
-			return GettextCatalog.GetString ("Help link: {0}", $"<a href=\"{System.Security.SecurityElement.Escape (exception.HelpLink)}\">{System.Security.SecurityElement.Escape (exception.HelpLink)}</a>");
+			return $"<a href=\"{System.Security.SecurityElement.Escape (exception.HelpLink)}\">{GettextCatalog.GetString ("More information")}</a>";
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)
@@ -940,7 +940,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		readonly ExceptionInfo exception;
 		Label messageLabel;
 		Label typeLabel;
-		Label helpLinkLabel;
 
 		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg, FilePath file, int line)
 		{
@@ -982,16 +981,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				CanFocus = false
 			};
 			vb.PackStart (messageLabel);
-
-			helpLinkLabel = new Label () {
-				Xalign = 0,
-				NoShowAll = true,
-				Selectable = true,
-				CanFocus = false,
-				LineWrapMode = Pango.WrapMode.Char
-			};
-			helpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
-			vb.PackStart (helpLinkLabel);
 
 			var detailsBtn = new Xwt.LinkLabel (GettextCatalog.GetString ("Show Details"));
 			var hh = new HBox ();
@@ -1040,16 +1029,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				}
 			} else {
 				messageLabel.Hide ();
-			}
-			if (!string.IsNullOrEmpty (exception.HelpLink)) {
-				helpLinkLabel.Show ();
-				helpLinkLabel.Markup = ExceptionCaughtDialog.GetHelpLinkMarkup (exception);
-				if (helpLinkLabel.SizeRequest ().Width > 400) {
-					helpLinkLabel.WidthRequest = 400;
-					helpLinkLabel.Wrap = true;
-				}
-			} else {
-				helpLinkLabel.Hide ();
 			}
 			if (!string.IsNullOrEmpty (exception.Type)) {
 				typeLabel.Show ();
