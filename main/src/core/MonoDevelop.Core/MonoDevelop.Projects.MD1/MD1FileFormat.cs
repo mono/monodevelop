@@ -123,13 +123,13 @@ namespace MonoDevelop.Projects.MD1
 			});
 		}
 
-		public Task<object> ReadFile (FilePath fileName, Type expectedType, ProgressMonitor monitor)
+		public async Task<object> ReadFile (FilePath fileName, Type expectedType, ProgressMonitor monitor)
 		{
 			string ext = Path.GetExtension (fileName).ToLower ();
 			if (ext != ".mdw")
 				throw new ArgumentException ();
 
-			return ReadWorkspaceItemFile (fileName, monitor);
+			return await ReadWorkspaceItemFile (fileName, monitor);
 		}
 
 		Task<object> ReadWorkspaceItemFile (FilePath fileName, ProgressMonitor monitor)

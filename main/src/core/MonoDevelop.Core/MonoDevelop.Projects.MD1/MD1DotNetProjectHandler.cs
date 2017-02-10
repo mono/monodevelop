@@ -49,16 +49,16 @@ namespace MonoDevelop.Projects.MD1
 			project = entry;
 		}
 		
-		public Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public async Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			switch (target)
 			{
 			case "Build":
-				return OnBuild (monitor, configuration);
+				return await OnBuild (monitor, configuration);
 			case "Clean":
-				return OnClean (monitor, configuration);
+				return await OnClean (monitor, configuration);
 			}
-			return Task.FromResult (new BuildResult (new CompilerResults (null), ""));
+			return new BuildResult (new CompilerResults (null), "");
 		}
 
 		async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)

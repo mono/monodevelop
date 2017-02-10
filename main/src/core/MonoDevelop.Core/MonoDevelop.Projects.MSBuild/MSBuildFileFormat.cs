@@ -171,19 +171,19 @@ namespace MonoDevelop.Projects.MSBuild
 			return null;
 		}
 
-		internal Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
+		internal async Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
-				return slnFileFormat.WriteFile (file, obj, true, monitor);
+				await slnFileFormat.WriteFile (file, obj, true, monitor);
 			} else {
 				throw new NotSupportedException ();
 			}
 		}
 
-		internal Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
+		internal async Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanReadFile (file, this))
-				return slnFileFormat.ReadFile (file, monitor);
+				return await slnFileFormat.ReadFile (file, monitor);
 			else
 				throw new NotSupportedException (); 
 		}
