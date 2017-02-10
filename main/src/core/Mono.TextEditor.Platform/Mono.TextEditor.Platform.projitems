@@ -341,6 +341,7 @@
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\UI\EditorPrimitives\ViewPrimitives.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\SmartIndentationService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\TextViewRoleSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\VacuousTextDataModel.cs" />
 

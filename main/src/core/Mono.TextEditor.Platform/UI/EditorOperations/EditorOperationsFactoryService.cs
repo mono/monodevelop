@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.Text.Operations.Implementation
         [Import]
         internal IEditorOptionsFactoryService EditorOptionsProvider { get; set; }
 
-        [Import]
+//        [Import]
         internal IRtfBuilderService RtfBuilderService { get; set; }
 
         [Import]
