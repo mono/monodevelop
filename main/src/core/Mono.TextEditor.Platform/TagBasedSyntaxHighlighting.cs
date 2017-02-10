@@ -51,17 +51,17 @@ namespace Microsoft.VisualStudio.Platform
 {
 	public sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
 	{
-		internal static ISyntaxHighlighting CreateSyntaxHighlighting(Mono.TextEditor.TextDocument document)
+		public static ISyntaxHighlighting CreateSyntaxHighlighting(ITextBuffer textBuffer)
 		{
-			return new TagBasedSyntaxHighlighting(document);
+			return new TagBasedSyntaxHighlighting(textBuffer);
 		}
 
-		private Mono.TextEditor.TextDocument document { get; }
+		private ITextBuffer textBuffer { get; }
 		private IClassifier classifier { get; set; }
 
-		internal TagBasedSyntaxHighlighting(Mono.TextEditor.TextDocument document)
+		internal TagBasedSyntaxHighlighting(ITextBuffer textBuffer)
 		{
-			this.document = document;
+			this.textBuffer = textBuffer;
 
 		}
 
@@ -125,7 +125,7 @@ namespace Microsoft.VisualStudio.Platform
 
 				if (this.classifier == null)
 				{
-					this.classifier = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(this.document.TextBuffer);
+					this.classifier = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(this.textBuffer);
 					this.classifier.ClassificationChanged += this.OnClassificationChanged;
 				}
 			}
