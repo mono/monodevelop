@@ -688,6 +688,10 @@ namespace Mono.Debugging.Win32
 		{
 			var ctype = (CorType) GetValueType (ctx, val);
             CorValue obj = GetRealObject(ctx, val);
+			var referenceValue = obj.CastToReferenceValue ();
+			if (referenceValue != null && referenceValue.IsNull)
+				return val;
+
             string tname = GetTypeName(ctx, type);
             string ctypeName = GetValueTypeName (ctx, val);
             if (tname == "System.Object")
