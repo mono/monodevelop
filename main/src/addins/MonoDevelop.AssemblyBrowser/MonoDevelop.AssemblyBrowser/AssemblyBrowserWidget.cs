@@ -1374,6 +1374,8 @@ namespace MonoDevelop.AssemblyBrowser
 					return;
 				}
 				var result = AddReferenceByFileName (fileName);
+				if (result == null)
+					return;
 				result.LoadingTask.ContinueWith (t2 => {
 					if (definitions == null) // disposed
 						return;
