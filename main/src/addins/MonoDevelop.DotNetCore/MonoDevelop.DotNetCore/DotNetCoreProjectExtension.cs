@@ -418,5 +418,14 @@ namespace MonoDevelop.DotNetCore
 			Runtime.AssertMainThread ();
 			RestorePackagesInProjectHandler.Run (Project);
 		}
+
+		public bool IsDotNetCoreSdkInstalled ()
+		{
+			if (sdkPaths != null) {
+				return sdkPaths.Exist;
+			}
+
+			return true;
+		}
 	}
 }
