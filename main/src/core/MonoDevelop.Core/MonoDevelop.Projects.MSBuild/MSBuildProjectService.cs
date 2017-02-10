@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.MSBuild
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (GlobalPropertyProvidersExtensionPath);
 
 			foreach (var gpp in globalPropertyProviders)
-				gpp.GlobalPropertiesChanged -= HandleGlobalPropertyProviderChanged;
+				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
 
 			// Get item type nodes
 
