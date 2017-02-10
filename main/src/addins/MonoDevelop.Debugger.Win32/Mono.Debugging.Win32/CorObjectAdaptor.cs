@@ -1484,8 +1484,10 @@ namespace Mono.Debugging.Win32
 						if (met.IsStatic)
 							pos--;
 
-						yield return CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, pos, pi.Name),
+						var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, pos, pi.Name),
 							string.Format ("Get parameter {0} of {1}", pi.Name, met.Name));
+						if (parameter != null)
+							yield return parameter;
 					}
 					yield break;
 				}
@@ -1494,8 +1496,10 @@ namespace Mono.Debugging.Win32
 			int count = CorDebugUtil.CallHandlingComExceptions (() => ctx.Frame.GetArgumentCount (), "GetArgumentCount()", 0);
 			for (int n = 0; n < count; n++) {
 				int locn = n;
-				yield return CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, locn, "arg_" + (locn + 1)),
+				var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, locn, "arg_" + (locn + 1)),
 					string.Format ("Get parameter {0}", n));
+				if (parameter != null)
+					yield return parameter;
 			}
 		}
 
@@ -1608,8 +1612,10 @@ namespace Mono.Debugging.Win32
 					int count = ctx.Frame.GetLocalVariablesCount ();
 					for (int n = 0; n < count; n++) {
 						int locn = n;
-						yield return CorDebugUtil.CallHandlingComExceptions (() => CreateLocalVariableReference (ctx, locn, "local_" + (locn + 1)),
+						var localVar = CorDebugUtil.CallHandlingComExceptions (() => CreateLocalVariableReference (ctx, locn, "local_" + (locn + 1)),
 							string.Format ("Get local variable {0}", locn));
+						if (localVar != null)
+							yield return localVar;
 					}
 					yield break;
 				}
