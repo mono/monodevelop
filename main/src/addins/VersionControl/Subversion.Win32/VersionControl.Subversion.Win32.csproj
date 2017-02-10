@@ -68,6 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="VersionControl.Subversion.Win32.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="SvnSharpClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />

@@ -145,6 +145,10 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.WindowsAPICodePack.ShellExtensions" />
+    <InternalsVisibleTo Include="WindowsPlatform" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Common\EnumUnknown.cs" />
     <Compile Include="Common\EventHandlerExtensionMethods.cs" />
     <Compile Include="Common\NativePoint.cs" />
