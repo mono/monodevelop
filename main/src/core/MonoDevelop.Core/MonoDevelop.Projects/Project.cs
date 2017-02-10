@@ -425,12 +425,12 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
-			return BindTask<TargetEvaluationResult> (cancelToken => {
+			return BindTask<TargetEvaluationResult> (async cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
+					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
 				}
 			});
 		}

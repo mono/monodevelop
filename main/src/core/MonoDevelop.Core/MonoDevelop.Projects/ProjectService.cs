@@ -105,10 +105,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file)
+		public async Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file)
 		{
 			using (var ctx = new SolutionLoadContext (null))
-				return ReadSolutionItem (monitor, file, null, null, null, ctx);
+				return await ReadSolutionItem (monitor, file, null, null, null, ctx);
 		}
 		
 		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
