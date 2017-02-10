@@ -336,6 +336,8 @@
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\UI\EditorPrimitives\ViewPrimitives.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\TextViewRoleSet.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\UIWpf\VacuousTextDataModel.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextDataUtil\BufferTracker.cs" />
@@ -366,6 +368,8 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\IContentTypeAndTextViewRoleMetadata.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\IDeferrableContentTypeAndTextViewRoleMetadata.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\ITextViewRoleMetadata.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\UIExtensionSelector.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Utility\TextUIUtil\VacuousTextViewModel.cs" />
 
   </ItemGroup>
   <ItemGroup>
