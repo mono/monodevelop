@@ -104,6 +104,14 @@ namespace MonoDevelop.Debugger
 			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
 			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
 			ExceptionHelpLinkLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false, UseMarkup = true, LineWrapMode = Pango.WrapMode.Char };
+			ExceptionHelpLinkLabel.Name = "exception_help_link_label";
+			Gtk.Rc.ParseString (@"style ""exception-help-link-label""
+{
+	GtkWidget::link-color = ""#ffffff""
+	GtkWidget::visited-link-color = ""#ffffff""
+}
+widget ""*.exception_help_link_label"" style ""exception-help-link-label""
+");
 			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, new Gdk.Color (119, 130, 140));
 
 			ExceptionHelpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
