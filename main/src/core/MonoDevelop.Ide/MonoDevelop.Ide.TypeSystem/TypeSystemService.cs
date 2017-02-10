@@ -643,7 +643,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
 			foreach (var w in workspaces) {
-				if (w.GetOpenDocumentIds ().Contains (analysisDocument) )
+				if (w.GetOpenDocumentIds (analysisDocument.ProjectId).Contains (analysisDocument) )
 					w.InformDocumentClose (analysisDocument, fileName); 
 
 			}
@@ -719,10 +719,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.DocumentId documentId)
 		{
 			foreach (var w in workspaces) {
-				foreach (var p in w.CurrentSolution.Projects) {
-					if (p.GetDocument (documentId) != null)
-						return GetMonoProject (p);
-				}
+				var doc = w.GetDocument (documentId);
+				if (doc == null)
+					continue;
+
+				var p = doc.Project;
+				if (p != null)
+					return GetMonoProject (p);
 			}
 			return null;
 		}

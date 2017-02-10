@@ -757,7 +757,7 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (!baseDir.EndsWith ("\\", StringComparison.Ordinal))
 					baseDir += '\\';
 				var recursiveDir = baseRecursiveDir.IsNullOrEmpty ? FilePath.Null : basePath.ToRelative (baseRecursiveDir);
-				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
+				res = res.Concat (Directory.EnumerateFiles (basePath, path).Select (f => func (f, baseDir + Path.GetFileName (f), recursiveDir)));
 			} else {
 				// Directory specifier
 				// Look for matching directories.
@@ -765,7 +765,7 @@ namespace MonoDevelop.Projects.MSBuild
 				// The recursive search is done below.
 
 				if (path.IndexOfAny (wildcards) != -1) {
-					foreach (var dir in Directory.GetDirectories (basePath, path))
+					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
 						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath, index + 1, func));
 				} else
 					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1, func));
@@ -773,7 +773,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
-				foreach (var dir in Directory.GetDirectories (basePath))
+				foreach (var dir in Directory.EnumerateDirectories (basePath))
 					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, index, func));
 			}
 
@@ -1194,7 +1194,7 @@ namespace MonoDevelop.Projects.MSBuild
 				// Last path component. It has to be a file specifier.
 				if (!file.IsChildPathOf (basePath))
 					return false;
-				if (Directory.GetFiles (basePath, path).Any (f => f == file))
+				if (Directory.EnumerateFiles (basePath, path).Any (f => f == file))
 					return true;
 			} else {
 				// Directory specifier
@@ -1203,7 +1203,7 @@ namespace MonoDevelop.Projects.MSBuild
 				// The recursive search is done below.
 
 				if (path.IndexOfAny (wildcards) != -1) {
-					foreach (var dir in Directory.GetDirectories (basePath, path)) {
+					foreach (var dir in Directory.EnumerateDirectories (basePath, path)) {
 						if (IsIncludedInGlob (dir, file, false, filePath, index + 1))
 							return true;
 					}
@@ -1213,7 +1213,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
-				foreach (var dir in Directory.GetDirectories (basePath))
+				foreach (var dir in Directory.EnumerateDirectories (basePath))
 					if (IsIncludedInGlob (dir, file, true, filePath, index))
 						return true;
 			}

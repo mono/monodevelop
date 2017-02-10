@@ -44,7 +44,7 @@ namespace MonoDevelop.DotNetCore
 		void Build ()
 		{
 			message = new GenericMessage {
-				Text = GettextCatalog.GetString (".NET Core is required to run this application."),
+				Text = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects."),
 				DefaultButton = 1,
 				Icon = Stock.Information
 			};
@@ -70,6 +70,11 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			MessageService.GenericAlert (message);
+		}
+
+		public string Message {
+			get { return message.Text; }
+			set { message.Text = value; }
 		}
 	}
 }

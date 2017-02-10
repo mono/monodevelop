@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -40,6 +41,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var node = (PackageDependencyNode)dataObject;
 			return node.Name;
+		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency"; }
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof(PackageDependencyNodeCommandHandler); }
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)

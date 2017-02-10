@@ -86,9 +86,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
 		{
-			if (dependency != null)
-				return PackageDependencyNode.GetDependencyNodes (dependenciesNode, dependency);
-
+			if (dependency != null) {
+				return PackageDependencyNode.GetDependencyNodes (
+					dependenciesNode,
+					dependency,
+					topLevel: true);
+			}
 			return new PackageDependencyNode[0];
 		}
 	}
