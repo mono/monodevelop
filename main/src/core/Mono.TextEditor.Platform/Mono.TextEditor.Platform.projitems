@@ -218,7 +218,7 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\RTF\IRtfBuilderService.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ExtensionMethods.cs" />
-      <!-- <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IJoinableTaskFactoryHelper.cs" /> shell -->
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IThreadHelper.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IObjectTracker.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ITextBufferFactoryService2.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\LazyObservableCollection.cs" />

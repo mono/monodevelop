@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-    //HACK using System.Windows.Threading;
+    using System.Threading.Tasks;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Projection;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -33,9 +33,7 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
 
         internal ITextView textView;    // can be null
 
-        //HACK internal Dispatcher dispatcher;
-
-        internal IList<IMappingSpan> acculumatedSpans = new List<IMappingSpan>();
+        internal MappingSpanLink acculumatedSpanLinks = null;
 
         internal bool disposed;
         internal bool initialized;
@@ -54,17 +52,12 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                 textView.Closed += this.OnTextView_Closed;
             }
 
-            //HACK this.dispatcher = Dispatcher.CurrentDispatcher;
-
             taggers = new Dictionary<ITextBuffer, IList<ITagger<T>>>();
             uniqueTaggers = new List<Tuple<ITagger<T>, int>>();
 
             if (((TagAggregatorOptions2)options).HasFlag(TagAggregatorOptions2.DeferTaggerCreation))
             {
-                //HACK  this.dispatcher.BeginInvoke((Action)(() =>
-                //HACK                              {
-                //HACK                                  this.EnsureInitialized();
-                //HACK                              }), DispatcherPriority.Background);
+                this.TagAggregatorFactoryService.ThreadHelper.RunOnUIThread(UIThreadPriority.Background, (Action)(this.EnsureInitialized));
             }
             else
             {
@@ -279,14 +272,22 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
 
             if (this.BatchedTagsChanged != null)
             {
-                lock (this.acculumatedSpans)
+                var oldHead = Volatile.Read(ref this.acculumatedSpanLinks);
+                while (true)
                 {
-                    this.acculumatedSpans.Add(span);
-
-                    if (acculumatedSpans.Count == 1)
+                    var newHead = new MappingSpanLink(oldHead, span);
+                    var result = Interlocked.CompareExchange(ref this.acculumatedSpanLinks, newHead, oldHead);
+                    if (result == oldHead)
                     {
-                        //HACK this.dispatcher.BeginInvoke(new Action(this.RaiseBatchedTagsChanged), DispatcherPriority.Normal, null);
+                        if (oldHead == null)
+                        {
+                            this.TagAggregatorFactoryService.ThreadHelper.RunOnUIThread((Action)(this.RaiseBatchedTagsChanged));
+                        }
+
+                        break;
                     }
+
+                    oldHead = result;
                 }
             }
         }
@@ -298,6 +299,8 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
             if (this.disposed)
                 return;
 
+            bool raiseEvent = true;
+
             EventHandler<BatchedTagsChangedEventArgs> tempEvent = this.BatchedTagsChanged;
             if (tempEvent != null)
             {
@@ -306,38 +309,60 @@ namespace Microsoft.VisualStudio.Text.Tagging.Implementation
                     if (this.textView.IsClosed)
                     {
                         // There's no need to actually raise the event (this probably won't happen since -- with a closed view -- there shouldn't be any listeners).
-                        lock (this.acculumatedSpans)
-                        {
-                            this.acculumatedSpans.Clear();
-                        }
-                        return;
+                        raiseEvent = false;
                     }
                     else if (this.textView.InLayout)
                     {
                         // The view is in the middle of a layout (because someone was pumping messages while handling a call from inside a layout).
                         // Many BatchTagsChanged handlers will not handle that situation gracefully so simply delay raising the event until
                         // we're no longer inside a layout.
-                        //HACK this.dispatcher.BeginInvoke(new Action(this.RaiseBatchedTagsChanged), DispatcherPriority.Normal, null);
+                        this.TagAggregatorFactoryService.ThreadHelper.RunOnUIThread((Action)(this.RaiseBatchedTagsChanged));
+
                         return;
                     }
                 }
-
-                BatchedTagsChangedEventArgs eventArgs;
-                lock (this.acculumatedSpans)
-                {
-                    eventArgs = new BatchedTagsChangedEventArgs(this.acculumatedSpans);
-                    this.acculumatedSpans.Clear();
-                }
-
-                this.TagAggregatorFactoryService.GuardedOperations.RaiseEvent(this, tempEvent, eventArgs);
             }
             else
             {
-                // No listeners for the event so we can clear out the accumulated events.
-                lock (this.acculumatedSpans)
+                raiseEvent = false;
+            }
+
+            var oldHead = Volatile.Read(ref this.acculumatedSpanLinks);
+            while (true)
+            {
+                var result = Interlocked.CompareExchange(ref this.acculumatedSpanLinks, null, oldHead);
+                if (result == oldHead)
                 {
-                    this.acculumatedSpans.Clear();
+                    if (raiseEvent)
+                    {
+                        var spans = new List<IMappingSpan>(oldHead.Count);
+                        do
+                        {
+                            spans.Add(oldHead.Span);
+                            oldHead = oldHead.Next;
+                        }
+                        while (oldHead != null);
+
+                        this.TagAggregatorFactoryService.GuardedOperations.RaiseEvent(this, tempEvent, new BatchedTagsChangedEventArgs(spans));
+                    }
+
+                    break;
                 }
+
+                oldHead = result;
+            }
+        }
+
+        internal class MappingSpanLink
+        {
+            public readonly MappingSpanLink Next;
+            public readonly IMappingSpan Span;
+            public int Count { get { return (this.Next == null) ? 1 : (this.Next.Count + 1); } }
+
+            public MappingSpanLink(MappingSpanLink next, IMappingSpan span)
+            {
+                this.Next = next;
+                this.Span = span;
             }
         }
 
