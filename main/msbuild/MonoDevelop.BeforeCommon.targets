@@ -5,7 +5,7 @@
 	</PropertyGroup>
 
 	<!-- force Roslyn compiler -->
-	<PropertyGroup Condition="'$(OS)'=='Unix'">
+	<PropertyGroup Condition="'$(OS)'=='Unix' And '$(MSBuildProjectExtension)'=='.csproj'">
 		<_MonoBinDir>$(MSBuildBinPath)\..\..\..\4.5\</_MonoBinDir>
 		<CscToolExe>csc.exe</CscToolExe>
 		<CscToolPath>$(_MonoBinDir)</CscToolPath>
@@ -17,7 +17,13 @@
 	<PropertyGroup>
 		<Deterministic>True</Deterministic>
 		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
-		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<!-- C# only -->
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+		<Deterministic>True</Deterministic>
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 </Project>

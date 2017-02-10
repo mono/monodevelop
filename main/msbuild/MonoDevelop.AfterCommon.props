@@ -4,8 +4,11 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
-	<!-- sign assemblies so they get IVT access to Roslyn -->
-	<PropertyGroup>
+	<!--
+	Sign assemblies so they get IVT access to Roslyn.
+	Disable for F# as its targets do not support public signing.
+	-->
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'!='.fsproj'">
 		<SignAssembly>true</SignAssembly>
 		<PublicSign>True</PublicSign>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
