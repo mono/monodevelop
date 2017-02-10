@@ -576,7 +576,7 @@ namespace MonoDevelop.Projects
 			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences, operationContext));
 		}
 
-		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
+		Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
 		{
 			if (!buildReferences) {
 				try {
@@ -585,7 +585,7 @@ namespace MonoDevelop.Projects
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 
 					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
-						return await InternalBuild (monitor, solutionConfiguration, operationContext);
+						return InternalBuild (monitor, solutionConfiguration, operationContext);
 					}
 
 				} finally {
@@ -608,7 +608,7 @@ namespace MonoDevelop.Projects
 				string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 				monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), sortedReferenced.Count);
 
-				return await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
+				return SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, solutionConfiguration, false, operationContext);
 				}, false);
 			} finally {

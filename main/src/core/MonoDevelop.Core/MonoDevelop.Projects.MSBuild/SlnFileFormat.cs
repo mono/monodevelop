@@ -72,12 +72,12 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
 		{
-			return Task.Run (async delegate {
+			return Task.Run (delegate {
 				Solution sol = (Solution)obj;
 
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
-					await WriteFileInternal (file, file, sol, saveProjects, monitor);
+					return WriteFileInternal (file, file, sol, saveProjects, monitor);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);

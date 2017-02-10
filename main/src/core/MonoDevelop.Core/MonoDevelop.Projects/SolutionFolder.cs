@@ -574,25 +574,25 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
-		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
 			if (ParentSolution == null)
-				return new BuildResult ();
+				return Task.FromResult (new BuildResult ());
 			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
-				return new BuildResult ();
+				return Task.FromResult (new BuildResult ());
 
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true, true);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
-				return new BuildResult ("", 1, 1);
+				return Task.FromResult (new BuildResult ("", 1, 1));
 			}
 
 			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 			try {
-				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+				return RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
 					return item.Clean (m, configuration, operationContext);
 				}, false);
 			}
@@ -608,7 +608,7 @@ namespace MonoDevelop.Projects
 			public BuildResult Result;
 		}
 
-		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
@@ -616,14 +616,14 @@ namespace MonoDevelop.Projects
 				allProjects = GetAllBuildableEntries (configuration, true, true);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
-				return new BuildResult ("", 1, 1);
+				return Task.FromResult (new BuildResult ("", 1, 1));
 			}
 
 			try {
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
-				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+				return RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, configuration, false, operationContext);
 				}, false);
 

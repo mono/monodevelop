@@ -54,10 +54,10 @@ namespace MonoDevelop.Projects
 
 		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			return Task.Run (async () => {
+			return Task.Run (() => {
 				foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
 					if (f.CanReadFile (fileName, typeof(WorkspaceItem)))
-						return (WorkspaceItem) await f.ReadFile (fileName, typeof(WorkspaceItem), monitor);
+						return f.ReadFile (fileName, typeof(WorkspaceItem), monitor).ContinueWith (t => (WorkspaceItem)t.Result);
 				}
 				throw new NotSupportedException ();
 			});

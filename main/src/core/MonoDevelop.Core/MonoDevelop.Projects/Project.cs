@@ -403,7 +403,7 @@ namespace MonoDevelop.Projects
 		{
 			return Task.Run (async delegate {
 				if (sourceProject == null || sourceProject.IsNewProject) {
-					sourceProject = await MSBuildProject.LoadAsync (FileName);
+					sourceProject = await MSBuildProject.LoadAsync (FileName).ConfigureAwait (false);
 					if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
 						sourceProject.UseMSBuildEngine = false;
 					sourceProject.Evaluate ();
@@ -425,12 +425,12 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public Task<TargetEvaluationResult> PerformGeneratorAsync (ConfigurationSelector configuration, string generatorTarget)
 		{
-			return BindTask<TargetEvaluationResult> (async cancelToken => {
+			return BindTask<TargetEvaluationResult> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
 				using (var monitor = new ProgressMonitor (cancelSource)) {
-					return await this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
+					return this.PerformGeneratorAsync (monitor, configuration, generatorTarget);
 				}
 			});
 		}
@@ -992,9 +992,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to run the target
 		/// </param>
-		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
+		public Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
+			return ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
 		}
 
 		public bool SupportsTarget (string target)
@@ -1115,11 +1115,11 @@ namespace MonoDevelop.Projects
 
 					bool newBuilderRequested = false;
 
-					RemoteProjectBuilder builder = await GetProjectBuilder ();
+					RemoteProjectBuilder builder = await GetProjectBuilder ().ConfigureAwait (false);
 					if (builder.IsBusy) {
 						builder.ReleaseReference ();
 						newBuilderRequested = true;
-						builder = await RequestLockedBuilder ();
+						builder = await RequestLockedBuilder ().ConfigureAwait (false);
 					}
 					else
 						builder.Lock ();
@@ -1131,7 +1131,7 @@ namespace MonoDevelop.Projects
 						targets = new string [] { target };
 					
 					try {
-						result = await builder.Run (configs, monitor.Log, new ProxyLogger (this, context.Loggers), context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, monitor.Log, new ProxyLogger (this, context.Loggers), context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();
