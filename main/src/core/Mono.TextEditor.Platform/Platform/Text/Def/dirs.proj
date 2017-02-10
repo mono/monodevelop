@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="TraverseProjects" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Import the settings-->
+  <PropertyGroup Label="BuildProps">
+    <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
+  </PropertyGroup>
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
+  <Import Project="..\Platform.Settings.targets" />
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Traverse.Selector.targets" />
+  <!--Leaf project Properties-->
+  <!--Leaf Project Items-->
+  <ItemGroup>
+    <ProjectFile Include="Internal\Internal.csproj" />
+    <ProjectFile Include="TextData\TextData.csproj" />
+    <ProjectFile Include="TextLogic\TextLogic.csproj" />
+    <ProjectFile Include="TextUI\TextUI.csproj" />
+    <ProjectFile Include="TextUIWpf\TextUIWpf.csproj" />
+  </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(PlatformPath)\Tools\Targets\Platform.Imports.Traverse.targets" />
+</Project>
