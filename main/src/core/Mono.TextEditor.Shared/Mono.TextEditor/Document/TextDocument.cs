@@ -522,7 +522,7 @@ namespace Mono.TextEditor
 			int position = startIndex;
 			while (position < startIndex + count)
 			{
-				var end = Math.Min(position + bufferSize + searchText.Length, startIndex + count);
+				var end = System.Math.Min(position + bufferSize + searchText.Length, startIndex + count);
 				var text = snapshot.GetText(position, end - position);
 				var index = text.IndexOf(searchText, 0, text.Length, comparisonType);
 				if (index >= 0)
@@ -631,7 +631,7 @@ namespace Mono.TextEditor
 		{
 			var snapshot = this.TextBuffer.CurrentSnapshot;
 
-			endLine = Math.Min(endLine, snapshot.LineCount);
+			endLine = System.Math.Min(endLine, snapshot.LineCount);
 			for (int i = startLine; (i <= endLine); ++i)
 			{
 				yield return this.Get(i);
