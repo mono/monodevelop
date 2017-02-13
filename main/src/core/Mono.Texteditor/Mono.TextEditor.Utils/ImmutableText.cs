@@ -293,10 +293,11 @@ namespace Mono.TextEditor.Utils
 			return new string (data);
 		}
 
-		public void WriteTo (TextWriter output, int index, int count)
+		public void WriteTo (TextWriter output, int start, int count)
 		{
-			while (index < index + count) {
-				output.Write (this [index]);
+			int index = 0;
+			while (index < count) {
+				output.Write (this [start + index]);
 				index++;
 			}
 		}
