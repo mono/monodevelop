@@ -519,7 +519,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (!Cells [ConfigurationIdx].Enabled)
 					configImage = projectImageDisabled;
 
-				if (!Cells [ConfigurationIdx].Enabled)
+				if (!Cells [RuntimeIdx].Enabled)
 					runtimeImage = deviceImageDisabled;
 
 				// HACK
