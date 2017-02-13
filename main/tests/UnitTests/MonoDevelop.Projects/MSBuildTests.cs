@@ -1171,6 +1171,28 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// Wildcard files added by imports should be added using the project's
+		/// base directory and not the directory of the import itself.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "Compile")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data\Data1.cs",
+				@"Content\Data\Data2.cs",
+				@"Content\Data3.cs",
+				"Program.cs"
+			}, files);
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{

@@ -696,7 +696,8 @@ namespace MonoDevelop.Projects.MSBuild
 				context.SetItemContext (file, recursiveDir);
 				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include);
 			};
-			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, 0, func);
+			MSBuildProject rootProject = context.GetRootProject ();
+			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func);
 		}
 
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path)
