@@ -103,17 +103,15 @@ namespace MonoDevelop.CSharp.Formatting
 					var caretOffset = editor.CaretOffset;
 
 					int delta = 0;
-					int changeDelta = 0;
 					foreach (var change in newTree.GetChanges (syntaxTree)) {
-						var newText = change.NewText;
-						changeDelta = changeDelta - change.Span.Length + newText.Length;
 						if (!exact && change.Span.Start >= caretOffset)
 							continue;
 						if (exact && !span.Contains (change.Span.Start))
 							continue;
+						var newText = change.NewText;
+						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
 						delta = delta - change.Span.Length + newText.Length;
 					}
-					editor.ReplaceText (span.Start, span.Length, newTree.ToString ().Substring(span.Start, span.Length + changeDelta));
 					if (startOffset < caretOffset) {
 						var caretEndOffset = caretOffset + delta;
 						if (0 <= caretEndOffset && caretEndOffset < editor.Length)
