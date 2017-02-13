@@ -907,6 +907,7 @@ namespace MonoDevelop.Projects.MSBuild
 						project.TargetsIgnoringCondition.Add (t);
 					}
 					project.ConditionedProperties.Append (p.ConditionedProperties);
+					project.GlobIncludes.AddRange (p.GlobIncludes);
 				}
 				return;
             }

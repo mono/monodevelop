@@ -1193,6 +1193,31 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// Checks the imported wildcard prevents the new .cs file from being
+		/// added to the project file when UseAdvancedGlobSupport is enabled.
+		/// </summary>
+		[Test]
+		public async Task AddCSharpFileToProjectWithImportedCSharpFilesWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			string newFile = Path.Combine (p.BaseDirectory, "Test.cs");
+			File.WriteAllText (newFile, "class Test { }");
+			mp.AddFile (newFile);
+			await mp.SaveAsync (Util.GetMonitor ());
+
+			mp = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
+			var itemGroup = mp.MSBuildProject.ItemGroups.FirstOrDefault ();
+			Assert.AreEqual (1, mp.MSBuildProject.ItemGroups.Count ());
+			Assert.IsFalse (itemGroup.Items.Any (item => item.Name != "Reference"));
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{
