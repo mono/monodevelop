@@ -10,7 +10,7 @@ module ``Highlight unused opens`` =
         let doc = TestHelpers.createDoc source "defined"
         let res = highlightUnusedCode.getUnusedCode doc doc.Editor
         let opens = res.Value |> List.map(fun range -> highlightUnusedCode.textFromRange doc.Editor range)
-        opens |> should equal expected
+        Assert.AreEqual(expected, opens, sprintf "%A" opens)
 
     [<Test>]
     let Simple() =
@@ -46,6 +46,26 @@ module ``Highlight unused opens`` =
         assertUnusedOpens source []
 
     [<Test>]
+    let ``Active Patterns``() =
+        let source =
+            """
+            namespace n
+            module ActivePattern =
+                let (|NotEmpty|_|) s =
+                    match s with
+                    | "" -> None
+                    | _ -> Some NotEmpty
+            namespace namespace1
+            open n.ActivePattern
+            module module1 =
+                let s = ""
+                match s with
+                | NotEmpty -> Some s
+                | _ -> None
+            """
+        assertUnusedOpens source []
+
+    [<Test>]
     let ``Auto open namespace not needed for nested module``() =
         let source = 
             """
@@ -59,7 +79,7 @@ module ``Highlight unused opens`` =
             module module3 =
                 let y = module2.x
             """
-        assertUnusedOpens source []
+        assertUnusedOpens source ["module1namespace"]
 
     [<Test>]
     let ``Duplicated open statements``() =
