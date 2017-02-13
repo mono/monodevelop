@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.Commands
 					commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
 			} else {
 				wasButtonActivation = false;
-				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget, GetMenuCommandSource (this));
+				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget, GetMenuCommandSource (this), lastCmdInfo);
 			}
 		}
 		
@@ -154,8 +154,10 @@ namespace MonoDevelop.Components.Commands
 
 		void Update (CommandInfo cmdInfo)
 		{
-			if (lastCmdInfo != null)
+			if (lastCmdInfo != null) {
+				lastCmdInfo.CancelAsyncUpdate ();
 				lastCmdInfo.Changed -= CommandInfoChanged;
+			}
 			lastCmdInfo = cmdInfo;
 			lastCmdInfo.Changed += CommandInfoChanged;
 
@@ -269,6 +271,7 @@ namespace MonoDevelop.Components.Commands
 			initialTarget = null;
 			arrayDataItem = null;
 			if (lastCmdInfo != null) {
+				lastCmdInfo.CancelAsyncUpdate ();
 				lastCmdInfo.Changed -= CommandInfoChanged;
 				lastCmdInfo = null;
 			}

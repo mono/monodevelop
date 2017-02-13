@@ -191,11 +191,40 @@ namespace MonoDevelop.Components.Mac
 				UpdateCommands ();
 		}
 
+		[Export ("menuWillOpen:")]
+		void MenuWillOpen (NSMenu menu)
+		{
+			StartBumpingGtkLoop ();
+		}
+
 		[Export ("menuDidClose:")]
 		void MenuDidClose (NSMenu menu)
 		{
+			EndBumpingGtkLoop ();
 			if (CloseHandler != null) {
 				CloseHandler (this, null);
+			}
+		}
+
+		static int bumperCount;
+		static NSTimer bumperTimer;
+
+		static void StartBumpingGtkLoop ()
+		{
+			if (bumperCount++ == 0) {
+				var runLoop = NSRunLoop.Current;
+				bumperTimer = NSTimer.CreateRepeatingTimer (0.1d, delegate {
+					Gtk.Application.RunIteration (false);
+				});
+				runLoop.AddTimer (bumperTimer, NSRunLoop.NSRunLoopCommonModes);
+			}
+		}
+
+		static void EndBumpingGtkLoop ()
+		{
+			if (--bumperCount == 0) {
+				bumperTimer.Invalidate ();
+				bumperTimer = null;
 			}
 		}
 
@@ -205,6 +234,11 @@ namespace MonoDevelop.Components.Mac
 				lastSeparator.Hidden = false;
 				lastSeparator = null;
 			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
 		}
 	}
 

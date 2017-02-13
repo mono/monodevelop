@@ -488,6 +488,8 @@ namespace MonoDevelop.Components.Commands
 
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
+				if (cinfo.IsUpdatingAsynchronously)
+					cinfo.UpdateTask.Wait (); // Not nice, but we need a synchronous result here
 				if (cinfo.Bypass) {
 					bypass = true;
 					continue;
@@ -1335,6 +1337,23 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
+			return DispatchCommand (commandId, dataItem, initialTarget, source, null);
+		}
+
+		internal bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, CommandInfo sourceUpdateInfo)
+		{
+			// (*) Before executing the command, DispatchCommand executes the command update handler to make sure the command is enabled in the given
+			// context. This is necessary because the status of the command may have changed since it was last checked (for example, since the menu
+			// was shown). In general this is not a problem because command update handlers are fast and cheap. However, it may be a problem
+			// for async command update handlers. The sourceUpdateInfo argument can be used in this case to provide the update info that was obtained
+			// when checking the status of the command before showing it to the user, so it doesn't need to be queried again.
+
+			// (**) The above special case works when the command is being executed from a menu, because the command update info has already been
+			// obtained to build the menu. However in other cases, such as execution through keyboard shortcuts or direct executions of
+			// the DispatchCommand method from code, sourceUpdateInfo may not be available. In those cases, if the command update handler is asynchronous,
+			// DispatchCommand will *not* wait for the update handler to end, it will use whatever value the handler sets before starting the
+			// async operation.
+
 			RegisterUserInteraction ();
 			
 			if (guiLock > 0)
@@ -1344,6 +1363,7 @@ namespace MonoDevelop.Components.Commands
 
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
+
 			try {
 				cmd = GetActionCommand (commandId);
 				if (cmd == null)
@@ -1362,11 +1382,16 @@ namespace MonoDevelop.Components.Commands
 					
 					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
 					if (cui != null) {
-						if (cmd.CommandArray) {
+						if (sourceUpdateInfo != null && cmdTarget == sourceUpdateInfo.SourceTarget && sourceUpdateInfo.IsUpdatingAsynchronously) {
+							// If the source update info was provided and it was part of an asynchronous command update, reuse it to avoid
+							// running the asynchronous update again. In other cases, the command update should be fast, so the check will be run again.
+							// See (*) above.
+							info = sourceUpdateInfo;
+						} else if (cmd.CommandArray) {
 							// Make sure that the option is still active
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
-							info.ArrayInfo.CancelAsyncUpdate ();
+							info.ArrayInfo.CancelAsyncUpdate (); // See (**) above
 							if (!info.ArrayInfo.Bypass) {
 								if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
 									return false;
@@ -1375,7 +1400,7 @@ namespace MonoDevelop.Components.Commands
 						} else {
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
-							info.CancelAsyncUpdate ();
+							info.CancelAsyncUpdate (); // See (**) above
 							bypass = info.Bypass;
 							
 							if (!bypass && (!info.Enabled || !info.Visible))

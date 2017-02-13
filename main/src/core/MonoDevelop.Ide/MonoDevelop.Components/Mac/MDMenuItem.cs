@@ -63,6 +63,11 @@ namespace MonoDevelop.Components.Mac
 			Action = ActionSel;
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+		}
+
 		public CommandEntry CommandEntry { get { return ce; } }
 
 		[Export (ActionSelName)]
@@ -72,9 +77,9 @@ namespace MonoDevelop.Components.Mac
 			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
 			GLib.Timeout.Add (1, () => {
 				if (a != null) {
-					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource);
+					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource, lastInfo);
 				} else {
-					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource);
+					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource, lastInfo);
 				}
 				return false;
 			});
@@ -100,6 +105,8 @@ namespace MonoDevelop.Components.Mac
 		{
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 			if (lastInfo != info) {
+				if (lastInfo != null)
+					lastInfo.CancelAsyncUpdate ();
 				lastInfo = info;
 				if (lastInfo.IsUpdatingAsynchronously) {
 					lastInfo.Changed += delegate {
