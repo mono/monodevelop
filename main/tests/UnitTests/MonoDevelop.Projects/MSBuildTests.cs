@@ -1279,6 +1279,32 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// Checks that the remove applies to items using the root project as the
+		/// starting point.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndItemUpdate ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data\text2-1.txt",
+				@"Content\Data\text2-2.txt",
+				@"Content\text1-1.txt",
+				@"Content\text1-2.txt"
+			}, files);
+
+			var copyToOutputDirectory = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
+				.Select (item => item.Metadata.GetValue ("CopyToOutputDirectory")).ToArray ();
+			Assert.IsTrue (copyToOutputDirectory.All (propertyValue => propertyValue == "PreserveNewest"));
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{

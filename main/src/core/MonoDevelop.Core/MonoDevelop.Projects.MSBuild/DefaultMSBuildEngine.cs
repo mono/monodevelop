@@ -274,10 +274,10 @@ namespace MonoDevelop.Projects.MSBuild
 					var it = CreateEvaluatedItem (context, project, project.Project, item, update);
 
 					if (update.IndexOf (';') == -1)
-						UpdateItem (project, item, update, trueCond, it);
+						UpdateItem (context, project, item, update, trueCond, it);
 					else {
 						foreach (var inc in update.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
-							UpdateItem (project, item, inc, trueCond, it);
+							UpdateItem (context, project, item, inc, trueCond, it);
 					}
 				} else if (!string.IsNullOrEmpty (item.Remove)) {
 					var remove = context.EvaluateString (item.Remove);
@@ -306,10 +306,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static void UpdateItem (ProjectInfo project, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
+		static void UpdateItem (MSBuildEvaluationContext context, ProjectInfo project, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (IsWildcardInclude (update)) {
-				foreach (var f in GetIncludesForWildcardFilePath (project.Project, update))
+				var rootProject = context.GetRootProject ();
+				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update))
 					UpdateEvaluatedItem (project, item, f, trueCond, it);
 			} else
 				UpdateEvaluatedItem (project, item, update, trueCond, it);
