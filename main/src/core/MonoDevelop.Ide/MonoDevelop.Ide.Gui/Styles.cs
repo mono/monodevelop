@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BorderColor { get; internal set; }
 		public static Color SecondaryTextColor { get; internal set; }
 		public static Color SecondarySelectionTextColor { get; internal set; }
+		public static Color ButtonBackgroundColor { get; internal set; }
+		public static Color ButtonTextColor { get; internal set; }
 
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
@@ -455,6 +457,8 @@ namespace MonoDevelop.Ide.Gui
 			DockBarPrelightColor = Color.FromName ("#eeeeee");
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
+			ButtonBackgroundColor = Color.FromName ("#ffffff");
+			ButtonTextColor = Color.FromName ("#232323");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
@@ -572,6 +576,8 @@ namespace MonoDevelop.Ide.Gui
 			DockBarPrelightColor = Color.FromName ("#666666");
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
+			ButtonBackgroundColor = Color.FromName ("#bbbbbb");
+			ButtonTextColor = Color.FromName ("#232323");
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
