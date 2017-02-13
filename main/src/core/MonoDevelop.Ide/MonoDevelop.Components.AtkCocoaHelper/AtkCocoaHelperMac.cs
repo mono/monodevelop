@@ -456,7 +456,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				Array.Copy (nsa.AccessibilityLinkedUIElements, newLinkedElements, length);
 				newLinkedElements [length] = (NSObject)linkedNSA;
 			} else {
-				newLinkedElements = new NSObject[] { (NSObject)linkedNSA };
+				newLinkedElements = new NSObject [] { (NSObject)linkedNSA };
 			}
 
 			nsa.AccessibilityLinkedUIElements = newLinkedElements;
@@ -543,6 +543,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AccessibilityHelp = help;
 		}
 
+		// The frame in the parent in Cocoa space.
+		// FIXME: Can this be calculated when setting GtkFrame?
 		public void SetFrameInParent (Rectangle rect)
 		{
 			AccessibilityFrameInParentSpace = new CGRect (rect.X, rect.Y, rect.Width, rect.Height);
@@ -927,5 +929,4 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 }
-
 #endif

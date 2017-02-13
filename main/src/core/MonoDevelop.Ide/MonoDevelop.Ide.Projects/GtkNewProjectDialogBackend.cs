@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
@@ -63,6 +64,13 @@ namespace MonoDevelop.Ide.Projects
 
 			nextButton.CanDefault = true;
 			nextButton.GrabDefault ();
+
+			// Setup the treeview to be able to have a context menu
+			var actionHandler = new ActionDelegate ();
+			actionHandler.PerformShowMenu += PerformShowMenu;
+			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXShowMenu };
+
+			templatesTreeView.Accessible.SetActionDelegate (actionHandler);
 		}
 
 		public void ShowDialog ()
@@ -107,6 +115,27 @@ namespace MonoDevelop.Ide.Projects
 			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
 		}
 
+		void HandlePopup (SolutionTemplate template, uint eventTime)
+		{
+			if (popupMenu == null) {
+				popupMenu = new Menu ();
+				popupMenu.AttachToWidget (this, null);
+			}
+			ClearPopupMenuItems ();
+			AddLanguageMenuItems (popupMenu, template);
+			popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToGdkColor ());
+			popupMenu.ShowAll ();
+
+			MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
+				Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
+				Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
+				x = screenRect.X;
+				y = screenRect.Bottom;
+				pushIn = false;
+			};
+			popupMenu.Popup (null, null, posFunc, 0, eventTime);
+		}
+
 		[GLib.ConnectBefore]
 		void TemplatesTreeViewButtonPressed (object o, ButtonPressEventArgs args)
 		{
@@ -116,23 +145,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			if (templateTextRenderer.IsLanguageButtonPressed (args.Event)) {
-				if (popupMenu == null) {
-					popupMenu = new Menu ();
-					popupMenu.AttachToWidget (this, null);
-				}
-				ClearPopupMenuItems ();
-				AddLanguageMenuItems (popupMenu, template);
-				popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToGdkColor ());
-				popupMenu.ShowAll ();
-
-				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
-					Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
-					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
-					x = screenRect.X;
-					y = screenRect.Bottom;
-					pushIn = false;
-				};
-				popupMenu.Popup (null, null, posFunc, 0, args.Event.Time);
+				HandlePopup (template, args.Event.Time);
 			}
 		}
 
@@ -141,6 +154,16 @@ namespace MonoDevelop.Ide.Projects
 			foreach (Widget widget in popupMenu.Children) {
 				widget.Destroy ();
 			}
+		}
+
+		void PerformShowMenu (object sender, EventArgs args)
+		{
+			SolutionTemplate template = GetSelectedTemplate ();
+			if ((template == null) || (template.AvailableLanguages.Count <= 1)) {
+				return;
+			}
+
+			HandlePopup (template, Gdk.EventHelper.GetTime (null));
 		}
 
 		void AddLanguageMenuItems (Menu menu, SolutionTemplate template)
