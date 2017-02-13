@@ -1172,6 +1172,45 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Tests that an include such as "Properties/**/*.txt" does not throw an ArgumentException
+		/// when the project is saved and UseAdvancedGlobSupport is enabled.
+		/// </summary>
+		[Test]
+		public async Task SaveAdvancedGlobSupportProjectWithForwardSlashWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			string newFile = Path.Combine (p.BaseDirectory, "Content", "newfile.txt");
+			File.WriteAllText (newFile, "text");
+			mp.AddFile (newFile, "Content");
+			await mp.SaveAsync (Util.GetMonitor ());
+
+			mp = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
+
+			var files = mp.Files
+				.Where (f => f.CopyToOutputDirectory == FileCopyMode.PreserveNewest)
+				.Select (f => f.FilePath.FileName)
+				.OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"newfile.txt",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+
+			var itemGroup = mp.MSBuildProject.ItemGroups.LastOrDefault ();
+			Assert.AreEqual (2, mp.MSBuildProject.ItemGroups.Count ());
+			Assert.IsFalse (itemGroup.Items.Any (item => item.Include == @"Content\newfile.txt"));
+			Assert.AreEqual (3, itemGroup.Items.Count ());
+		}
+
+		/// <summary>
 		/// Wildcard files added by imports should be added using the project's
 		/// base directory and not the directory of the import itself.
 		/// </summary>

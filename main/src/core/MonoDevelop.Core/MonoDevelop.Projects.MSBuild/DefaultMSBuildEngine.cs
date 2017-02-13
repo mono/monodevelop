@@ -1163,9 +1163,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		bool IsIncludedInGlob (string globInclude, string basePath, FilePath file)
 		{
-			if (globInclude == "**" || globInclude.EndsWith ("\\**", StringComparison.Ordinal))
-				globInclude = globInclude + "/*";
-			var subpath = globInclude.Split ('\\');
+			var subpath = SplitWildcardFilePath (globInclude);
 			return IsIncludedInGlob (basePath, file, false, subpath, 0);
 		}
 
