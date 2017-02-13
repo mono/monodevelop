@@ -87,6 +87,7 @@ namespace MonoDevelop.Components.Commands
 			if (info.Text == null) info.Text = defaultInfo.Text;
 			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Insert (index, info);
+			info.ParentCommandArrayInfo = this;
 			NotifyChanged ();
 		}
 
@@ -108,6 +109,7 @@ namespace MonoDevelop.Components.Commands
 			if (info.Text == null) info.Text = defaultInfo.Text;
 			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Add (info);
+			info.ParentCommandArrayInfo = this;
 			NotifyChanged ();
 		}
 

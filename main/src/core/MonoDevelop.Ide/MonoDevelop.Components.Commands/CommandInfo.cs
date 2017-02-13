@@ -181,10 +181,23 @@ namespace MonoDevelop.Components.Commands
 			updateTask = task;
 		}
 
+		internal Task UpdateTask {
+			get { return updateTask; }
+		}
+
 		internal void CancelAsyncUpdate ()
 		{
 			if (cancellationTokenSource != null)
 				cancellationTokenSource.Cancel ();
+		}
+
+		internal CommandArrayInfo ParentCommandArrayInfo { get; set; }
+
+		object sourceTarget;
+
+		internal object SourceTarget {
+			get { return sourceTarget ?? ParentCommandArrayInfo?.ParentCommandInfo?.SourceTarget; }
+			set { sourceTarget = value; }
 		}
 	}
 }
