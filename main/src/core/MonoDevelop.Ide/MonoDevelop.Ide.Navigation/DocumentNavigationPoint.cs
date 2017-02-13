@@ -83,11 +83,11 @@ namespace MonoDevelop.Ide.Navigation
 			return DoShow ();
 		}
 		
-		protected virtual Task<Document> DoShow ()
+		protected virtual async Task<Document> DoShow ()
 		{
 			if (doc != null) {
 				doc.Select ();
-				return Task.FromResult (doc);
+				return doc;
 			}
 			MonoDevelop.Projects.Project p = null;
 			foreach (var curP in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Navigation
 					break;
 				}
 			}
-			return IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
+			return await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
 		}
 		
 		public override string DisplayName {
