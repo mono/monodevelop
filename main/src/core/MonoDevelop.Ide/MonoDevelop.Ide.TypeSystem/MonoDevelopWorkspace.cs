@@ -100,7 +100,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (assemblyNode == null)
 					continue;
 				try {
-					var assembly = Assembly.LoadFrom (assemblyNode.FileName);
+					var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
+					var assembly = Assembly.LoadFrom(assemblyFilePath);
 					assemblies.Add (assembly);
 				} catch (Exception e) {
 					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);

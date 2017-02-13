@@ -110,8 +110,8 @@ namespace Microsoft.VisualStudio.Platform
                 {
                     try
                     {
-
-                        var assembly = Assembly.LoadFrom(assemblyNode.FileName);
+                        var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
+                        var assembly = Assembly.LoadFrom(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)
