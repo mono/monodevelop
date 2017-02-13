@@ -1105,9 +1105,10 @@ namespace MonoDevelop.Projects
 				await Task.Run (async delegate {
 
 					TimerCounter buildTimer = null;
+					bool requestLocked = false;
 					switch (target) {
-					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
-					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; requestLocked = true; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; requestLocked = true; break;
 					}
 
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
@@ -1115,11 +1116,16 @@ namespace MonoDevelop.Projects
 
 					bool newBuilderRequested = false;
 
-					RemoteProjectBuilder builder = await GetProjectBuilder ();
+					RemoteProjectBuilder builder = await GetProjectBuilder (requestLocked).ConfigureAwait (false);
 					if (builder.IsBusy) {
-						builder.ReleaseReference ();
-						newBuilderRequested = true;
-						builder = await RequestLockedBuilder ();
+						if (requestLocked) {
+							await builder.WaitForReady ();
+							builder.Lock ();
+						} else {
+							builder.ReleaseReference ();
+							newBuilderRequested = true;
+							builder = await RequestLockedBuilder ().ConfigureAwait (false);
+						}
 					}
 					else
 						builder.Lock ();
@@ -1253,7 +1259,7 @@ namespace MonoDevelop.Projects
 		string lastSlnFileName;
 		AsyncCriticalSection builderLock = new AsyncCriticalSection ();
 
-		internal async Task<RemoteProjectBuilder> GetProjectBuilder ()
+		internal async Task<RemoteProjectBuilder> GetProjectBuilder (bool requestLocked)
 		{
 			//FIXME: we can't really have per-project runtimes, has to be per-solution
 			TargetRuntime runtime = null;
@@ -1272,7 +1278,7 @@ namespace MonoDevelop.Projects
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, requestLocked);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
