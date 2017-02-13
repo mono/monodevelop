@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
-		Queue<TaskCompletionSource<object>> readyNotify = new Queue<TaskCompletionSource<object>> ();
+		Queue<TaskCompletionSource<bool>> readyNotify = new Queue<TaskCompletionSource<bool>> ();
 
 		public RemoteBuildEngine (RemoteProcessConnection connection)
 		{
@@ -142,6 +142,10 @@ namespace MonoDevelop.Projects.MSBuild
 			Interlocked.Decrement (ref count);
 			try {
 				alive = false;
+				lock (readyNotify) {
+					foreach (var tcs in readyNotify)
+						tcs.SetResult (false);
+				}
 				connection.Disconnect ().Ignore ();
 			} catch {
 				// Ignore
@@ -199,17 +203,17 @@ namespace MonoDevelop.Projects.MSBuild
 						return;
 
 					var tcs = readyNotify.Dequeue ();
-					tcs.SetResult (default (object));
+					tcs.SetResult (true);
 				}
 			}
 		}
 
-		public Task WaitForReady ()
+		public Task<bool> WaitForReady ()
 		{
 			if (Interlocked.CompareExchange (ref busy, busy, 0) == 0)
-				return Task.FromResult (default (object));
+				return Task.FromResult (true);
 			
-			var tcs = new TaskCompletionSource<object> ();
+			var tcs = new TaskCompletionSource<bool> ();
 			lock (readyNotify)
 				readyNotify.Enqueue (tcs);
 			return tcs.Task;
@@ -508,7 +512,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public Task WaitForReady ()
+		public Task<bool> WaitForReady ()
 		{
 			return engine.WaitForReady ();
 		}
