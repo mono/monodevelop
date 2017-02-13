@@ -524,11 +524,9 @@ namespace MonoDevelop.SourceEditor
 
 			if (Platform.IsMac) {
 				if (evt == null) {
-					int x, y;
 					var pt = LocationToPoint (this.Caret.Location);
-					TranslateCoordinates (Toplevel, pt.X, pt.Y, out x, out y);
 
-					IdeApp.CommandService.ShowContextMenu (this, x, y, cset, this);
+					IdeApp.CommandService.ShowContextMenu (this, pt.X, pt.Y, cset, this);
 				} else {
 					IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 				}

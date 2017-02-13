@@ -874,14 +874,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 				var allocation = Allocation;
+				var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
+				cr.Scale (1 / displayScale, 1 / displayScale);
 				if (indicatorSurface != null) {
 					cr.SetSourceSurface (indicatorSurface.Surface, 0, 0);
 					cr.Paint ();
 				} else {
 					CachedDraw (cr,
-								ref backgroundSurface,
-								allocation,
-								draw: (c, o) => DrawBackground (c, allocation));
+					            ref backgroundSurface,
+					            allocation,
+					            draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
 				}
 				if (TextEditor == null)
 					return true;
@@ -923,15 +925,17 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					}
 				}
 
+				var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
 				if (surface == null) {
 					using (var similiar = CairoHelper.Create (IdeApp.Workbench.RootWindow.GdkWindow))
-						surface = new SurfaceWrapper (similiar, allocation.Width, allocation.Height);
+						surface = new SurfaceWrapper (similiar, (int)(allocation.Width * displayScale), (int)(allocation.Height * displayScale));
 				}
 
 				searchResults = mode.TextEditor.TextViewMargin.SearchResults.ToList ().GetEnumerator ();
 				allUsages = mode.AllUsages.GetEnumerator ();
 				allTasks = mode.AllTasks.GetEnumerator ();
 				cr = new Cairo.Context (surface.Surface);
+				cr.Scale (displayScale, displayScale);
 				GLib.Idle.Add (RunHandler);
 			}
 
@@ -957,7 +961,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				bool nextStep = false;
 				switch (drawingStep) {
 				case 0:
-					CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation));
+					var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
+					CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation), forceScale: displayScale);
 					drawingStep++;
 					return true;
 				case 1:
@@ -1052,12 +1057,22 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (redraw) {
 				surface.Data = parameters;
 				using (var context = new Cairo.Context (surface.Surface)) {
+					context.Operator = Cairo.Operator.Clear;
+					context.Paint ();
+					context.Operator = Cairo.Operator.Over;
+					context.Save ();
+					context.Scale (displayScale, displayScale);
 					draw (context, 1.0f);
+					context.Restore ();
 				}
 			}
 
+			self.Save ();
+			self.Translate (region.X, region.Y);
+			self.Scale (1 / displayScale, 1 / displayScale);
 			self.SetSourceSurface (surface.Surface, 0, 0);
-			self.Paint ();
+			self.PaintWithAlpha (opacity);
+			self.Restore ();
 		}
 
 		void DrawBackground (Cairo.Context cr, Gdk.Rectangle allocation)

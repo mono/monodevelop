@@ -170,7 +170,7 @@ namespace MonoDevelop.Core.Text
 		{
 			if (source == null)
 				throw new ArgumentNullException ("source");
-			TextFileUtility.WriteText (fileName, source.Text, source.Encoding, source.UseBOM); 
+			TextFileUtility.WriteText (fileName, source);
 		}
 
 		/// <summary>

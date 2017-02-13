@@ -425,7 +425,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	class CancelButton : NSButton, INSAccessibilityButton
 	{
 		readonly NSImage stopIcon = MultiResImage.CreateMultiResImage ("status-stop-16", string.Empty);
-		readonly NSImage stopIconHover = MultiResImage.CreateMultiResImage ("status-stop-16", "hover");
 
 		public CancelButton ()
 		{
@@ -441,18 +440,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var nsa = (INSAccessibility) this;
 			nsa.AccessibilityIdentifier = "MainToolbar.StatusDisplay.Cancel";
-		}
-
-		public override void MouseEntered (NSEvent theEvent)
-		{
-			Image = stopIconHover;
-			base.MouseEntered (theEvent);
-		}
-
-		public override void MouseExited (NSEvent theEvent)
-		{
-			Image = stopIcon;
-			base.MouseExited (theEvent);
 		}
 
 		string INSAccessibilityButton.AccessibilityLabel {

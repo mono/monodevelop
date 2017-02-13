@@ -615,6 +615,7 @@ namespace MonoDevelop.Debugger
 			eval.EvaluationTimeout = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500);
 			eval.FlattenHierarchy = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", false);
 			eval.GroupPrivateMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", true);
+			eval.EllipsizedLength = 260; // Instead of random default(100), lets use 260 which should cover 99.9% of file path cases
 			eval.GroupStaticMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", true);
 			eval.MemberEvaluationTimeout = eval.EvaluationTimeout * 2;
 			return new DebuggerSessionOptions {
