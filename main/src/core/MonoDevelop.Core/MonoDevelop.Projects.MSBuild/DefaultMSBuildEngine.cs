@@ -785,6 +785,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static string ExcludeToRegex (string exclude)
 		{
+			exclude = exclude.Replace ('/', '\\');
 			var sb = new StringBuilder ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 				var ex = ep.Trim ();

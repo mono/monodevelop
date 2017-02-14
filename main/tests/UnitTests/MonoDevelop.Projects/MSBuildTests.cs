@@ -986,6 +986,24 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task LoadProjectWithWildcardsAndExcludesUsingForwardSlashInsteadOfBackslash ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-excludes.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Data2.cs",
+				"p1.txt",
+				"p4.txt",
+				"p5.txt",
+				"text3-1.txt",
+			}, files);
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
