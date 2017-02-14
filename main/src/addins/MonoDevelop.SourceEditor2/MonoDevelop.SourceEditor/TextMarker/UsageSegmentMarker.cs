@@ -66,12 +66,12 @@ namespace MonoDevelop.SourceEditor
 				uint curIndex = 0, byteIndex = 0;
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
 
-				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

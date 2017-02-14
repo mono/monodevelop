@@ -429,7 +429,7 @@ namespace MonoDevelop.SourceEditor
 
 			int lw, lh;
 			var tmpWrapper = widget.TextEditor.TextViewMargin.GetLayout (line);
-			tmpWrapper.Layout.GetPixelSize (out lw, out lh);
+			tmpWrapper.GetPixelSize (out lw, out lh);
 			if (tmpWrapper.IsUncached)
 				tmpWrapper.Dispose ();
 			lh = (int) TextEditor.TextViewMargin.GetLineHeight (widgetExtension.Line);
@@ -1197,7 +1197,7 @@ namespace MonoDevelop.SourceEditor
 				w.OffsetY = (int)widget.TextEditor.LineToY (w.Line);
 				int lw, lh;
 				var tmpWrapper = widget.TextEditor.TextViewMargin.GetLayout (line);
-				tmpWrapper.Layout.GetPixelSize (out lw, out lh);
+				tmpWrapper.GetPixelSize (out lw, out lh);
 				if (tmpWrapper.IsUncached)
 					tmpWrapper.Dispose ();
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
@@ -3125,12 +3125,12 @@ namespace MonoDevelop.SourceEditor
 				uint curIndex = 0, byteIndex = 0;
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (start - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
 
-				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				fromX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (end - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
-				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				toX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}
