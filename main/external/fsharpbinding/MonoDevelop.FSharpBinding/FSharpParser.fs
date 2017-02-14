@@ -22,9 +22,6 @@ module ParsedDocument =
         let endPos = Range.mkPos error.EndLineAlternate  error.EndColumn
         Range.mkRange error.FileName startPos endPos
 
-    let inline private isMoreThanNLines2 n (range:Range.range) =
-        range.EndLine - range.StartLine > n
-
     let inline private isMoreThanNLines n (range:Range.range) =
         range.EndLine - range.StartLine > n
 
