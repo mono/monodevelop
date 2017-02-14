@@ -166,7 +166,7 @@ type SignatureHelp() as x =
     override x.Initialize() =
         let displaySignatures dueMs observable =
             observable
-            |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, true))
+            |> Observable.filter(fun _ -> PropertyService.Get(Settings.showTypeSignatures, false))
             |> Observable.throttle (TimeSpan.FromMilliseconds dueMs)
             |> Observable.subscribe (fun _ -> signatureHelp.displaySignatures x.DocumentContext x.Editor)
 
