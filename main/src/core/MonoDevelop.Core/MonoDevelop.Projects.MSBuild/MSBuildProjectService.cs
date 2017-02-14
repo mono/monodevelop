@@ -927,7 +927,7 @@ namespace MonoDevelop.Projects.MSBuild
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
 
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false, bool requestUnlocked = false)
 		{
 			Version mtv = Version.Parse (minToolsVersion);
 			if (mtv >= new Version (15,0))
@@ -959,7 +959,9 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 						b.Unlock ();
 					}
-				} else
+				} else if (requestUnlocked)
+					builder = builders.GetBuilders (builderKey).FirstOrDefault (biter => !biter.IsBusy);
+				else
 					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
 				
 				if (builder != null) {
