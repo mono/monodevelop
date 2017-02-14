@@ -58,18 +58,10 @@ module signatureHelp =
 
     let extractSignature (FSharpToolTipText tips) =
         let getSignature (str: string) =
-            let nlpos = str.IndexOfAny([|'\r';'\n'|])
-            let firstLine =
-                if nlpos > 0 then str.[0..nlpos-1]
-                else str
-            let res = 
-                if firstLine.StartsWith("type ", StringComparison.Ordinal) then
-                    let index = firstLine.LastIndexOf("=", StringComparison.Ordinal)
-                    if index > 0 then firstLine.[0..index-1]
-                    else firstLine
-                else firstLine
-            let index = res.IndexOf ": "
-            res.[index+2..]
+            let nlpos = str.IndexOfAny [|'\r';'\n'|]
+            let nlpos = if nlpos > 0 then nlpos else str.Length
+            let index = str.IndexOf ": "
+            str.[index+2 .. nlpos-1]
 
         let firstResult x =
             match x with
