@@ -798,7 +798,7 @@ type FSharpTextEditorCompletion() =
     // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
-           if triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CharTyped && triggerInfo.TriggerCharacter.Value = '.' || triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand  then
+            if triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CharTyped || triggerInfo.TriggerCharacter.Value = '.' && triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand  then
                 let computation =
                     Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
                         
