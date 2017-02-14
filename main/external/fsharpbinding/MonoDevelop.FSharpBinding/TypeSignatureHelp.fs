@@ -99,9 +99,8 @@ module signatureHelp =
 
             let funs =
                 symbols
-                |> List.filter(fun s -> s.IsFromDefinition)
                 |> List.filter(fun s -> match s with 
-                                        | SymbolUse.MemberFunctionOrValue mfv -> mfv.FullType.IsFunctionType
+                                        | SymbolUse.MemberFunctionOrValue mfv when s.IsFromDefinition -> mfv.FullType.IsFunctionType
                                         | _ -> false)
                 |> List.map(fun f -> f.RangeAlternate.StartLine, f)
                 |> Map.ofList
