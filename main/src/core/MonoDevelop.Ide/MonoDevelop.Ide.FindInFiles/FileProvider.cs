@@ -114,10 +114,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		async Task<Document> SearchDocument ()
+		Task<Document> SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);
-			return await Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
+			return Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
 		}
 
 		Document document;

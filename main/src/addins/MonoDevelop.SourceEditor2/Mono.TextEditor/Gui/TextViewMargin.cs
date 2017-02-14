@@ -1983,10 +1983,10 @@ namespace Mono.TextEditor
 					// folding marker
 					int lineNr = args.LineNumber;
 					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
-						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-                            shownFolding.Item2.IsCollapsed = false;
-                            textEditor.Document.InformFoldChanged(new FoldSegmentEventArgs(shownFolding.Item2));
-                            return;
+						if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+							shownFolding.Value.IsCollapsed = false;
+							textEditor.Document.InformFoldChanged (new FoldSegmentEventArgs (shownFolding.Value));
+							return;
 						}
 					}
 					return;
@@ -2332,8 +2332,8 @@ namespace Mono.TextEditor
 				// folding marker
 				int lineNr = args.LineNumber;
 				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
-					if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Item2.Segment, shownFolding.Item1);
+					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
 						return;
 					}
 				}
@@ -2505,7 +2505,7 @@ namespace Mono.TextEditor
 			cr.Fill ();
 		}
 
-		IEnumerable<Tuple<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
+		IEnumerable<KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
 			if (lineNr < 0)
 				yield break;
@@ -2550,7 +2550,7 @@ namespace Mono.TextEditor
 						var pixelWidth = width / Pango.Scale.PangoScale + foldXMargin * 2;
 
 						var foldingRectangle = new Rectangle ((int)xPos, y, (int)pixelWidth, (int)LineHeight - 1);
-						yield return Tuple.Create (foldingRectangle, folding);
+						yield return new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding);
 						xPos += pixelWidth;
 						if (folding.GetEndLine (textEditor.Document) != line) {
 							line = folding.GetEndLine (textEditor.Document);

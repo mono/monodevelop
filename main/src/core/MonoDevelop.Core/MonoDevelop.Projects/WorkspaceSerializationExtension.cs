@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 		{
 			return Task.Run (async () => {
 				var workspaceItem = ReadWorkspaceItemFile (fileName, monitor);
-				await workspaceItem.LoadUserProperties ();
+				await workspaceItem.LoadUserProperties ().ConfigureAwait (false);
 				return workspaceItem;
 			});
 		}

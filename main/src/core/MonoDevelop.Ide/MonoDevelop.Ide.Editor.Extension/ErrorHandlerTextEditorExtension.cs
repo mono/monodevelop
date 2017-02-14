@@ -81,9 +81,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 					var ctx = DocumentContext;
 					if (ctx == null)
 						return;
-					await UpdateErrorUndelines (ctx, parsedDocument, token);
+					await UpdateErrorUndelines (ctx, parsedDocument, token).ConfigureAwait (false);
 					token.ThrowIfCancellationRequested ();
-					await UpdateQuickTasks (ctx, parsedDocument, token);
+					await UpdateQuickTasks (ctx, parsedDocument, token).ConfigureAwait (false);
 				} catch (OperationCanceledException) {
 					// ignore
 				}

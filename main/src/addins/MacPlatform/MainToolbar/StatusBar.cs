@@ -340,7 +340,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	class CancelButton : NSButton
 	{
 		readonly NSImage stopIcon = MultiResImage.CreateMultiResImage ("status-stop-16", string.Empty);
-		readonly NSImage stopIconHover = MultiResImage.CreateMultiResImage ("status-stop-16", "hover");
 
 		public CancelButton ()
 		{
@@ -350,18 +349,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			SetButtonType (NSButtonType.MomentaryChange);
 			AddTrackingArea (new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.InVisibleRect, this, null));
-		}
-
-		public override void MouseEntered (NSEvent theEvent)
-		{
-			Image = stopIconHover;
-			base.MouseEntered (theEvent);
-		}
-
-		public override void MouseExited (NSEvent theEvent)
-		{
-			Image = stopIcon;
-			base.MouseExited (theEvent);
 		}
 	}
 

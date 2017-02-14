@@ -191,13 +191,13 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			if (currentIndex == Pages.Count - 1)
 				throw new InvalidOperationException ();
 			else
-				return await Task.FromResult (pages [currentIndex + 1]);
+				return pages [currentIndex + 1];
 		}
 
-		protected override async Task<IWizardDialogPage> OnGoBack (CancellationToken token)
+		protected override Task<IWizardDialogPage> OnGoBack (CancellationToken token)
 		{
 			var currentIndex = Pages.IndexOf (CurrentPage);
-			return await Task.FromResult (pages [currentIndex - 1]);
+			return Task.FromResult (pages [currentIndex - 1]);
 		}
 	}
 }

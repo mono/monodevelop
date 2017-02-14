@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public async Task<bool> HasErrorsAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return (await GetErrorsAsync (cancellationToken)).Any (e => e.ErrorType == ErrorType.Error);
+			return (await GetErrorsAsync (cancellationToken).ConfigureAwait (false)).Any (e => e.ErrorType == ErrorType.Error);
 		}
 
 		[Obsolete ("Use the HasErrorsAsync method for cancellation and async support.")]
