@@ -102,7 +102,7 @@ module signatureHelp =
             let symbols = pd.AllSymbolsKeyed.Values |> List.ofSeq
             let topVisibleLine = data.HeightTree.YToLineNumber data.VAdjustment.Value
             let bottomVisibleLine = 
-                Math.Min(data.LineCount - 1,
+                Math.Min(data.LineCount,
                     data.HeightTree.YToLineNumber (data.VAdjustment.Value+data.VAdjustment.PageSize))
 
             let funs =
