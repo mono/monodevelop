@@ -89,6 +89,8 @@
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestRunner.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\TestResultBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

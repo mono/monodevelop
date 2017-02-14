@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var ws = item as MonoDevelop.Projects.Workspace;
 				if (ws != null) {
 					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor, cancellationToken);
+						await InternalLoad (list, it, progressMonitor, cancellationToken).ConfigureAwait (false);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							workspaces = workspaces.Add (workspace);
 						list.Add (workspace);
 						workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (cancellationToken);
+						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						TaskCompletionSource<MonoDevelopWorkspace> request;

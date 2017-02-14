@@ -337,7 +337,7 @@ namespace Mono.TextEditor
 				int l = 0, tmp;
 				if (lineAbove != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
-					wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out tmp);
+					wrapper.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out tmp);
 					aboveStart = tmp / Pango.Scale.PangoScale;
 					//aboveEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 					
@@ -346,7 +346,7 @@ namespace Mono.TextEditor
 				}
 				if (lineBelow != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
-					wrapper.Layout.IndexToLineX (lineBelow.GetIndentation (editor.Document).Length, true, out l, out tmp);
+					wrapper.IndexToLineX (lineBelow.GetIndentation (editor.Document).Length, true, out l, out tmp);
 
 					belowStart = tmp / Pango.Scale.PangoScale;
 					//belowEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;

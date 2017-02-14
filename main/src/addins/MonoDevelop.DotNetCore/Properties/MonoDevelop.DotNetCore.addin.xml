@@ -48,4 +48,8 @@
 	<Extension path="/MonoDevelop/UnitTesting/TestProviders">
 		<Class id="DnxTestProvider" class="MonoDevelop.DotNetCore.UnitTesting.DotNetCoreTestProvider" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.DotNetCore.DotNetCoreProjectNodeBuilderExtension" />
+	</Extension>
 </ExtensionModel>

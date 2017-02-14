@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			long result = 0;
 			foreach (var project in workspace.CurrentSolution.Projects) {
-				result += await GetProjectSizeAsync (project, cancellationToken);
+				result += await GetProjectSizeAsync (project, cancellationToken).ConfigureAwait (false);
 			}
 			return result;
 		}

@@ -198,7 +198,7 @@ namespace MonoDevelop.DotNetCore
 			});
 		}
 
-		Task ShowDotNetCoreNotInstalledDialog ()
+		Task ShowDotNetCoreNotInstalledDialog (bool unsupportedSdkVersion)
 		{
 			return Runtime.RunInMainThread (() => {
 				if (ShownDotNetCoreSdkNotInstalledDialogForSolution ())
@@ -207,6 +207,8 @@ namespace MonoDevelop.DotNetCore
 				Project.ParentSolution.ExtendedProperties [ShownDotNetCoreSdkInstalledExtendedPropertyName] = "true";
 
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
+					if (unsupportedSdkVersion)
+						dialog.Message = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
 					dialog.Show ();
 				}
 			});
@@ -264,7 +266,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			if (HasSdk && !sdkPaths.Exist) {
-				ShowDotNetCoreNotInstalledDialog ();
+				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
 		}
 
@@ -297,7 +299,7 @@ namespace MonoDevelop.DotNetCore
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
 			} else if (HasSdk && !sdkPaths.Exist) {
-				return CreateDotNetCoreSdkRequiredBuildResult ();
+				return CreateDotNetCoreSdkRequiredBuildResult (sdkPaths.IsUnsupportedSdkVersion);
 			}
 			return null;
 		}
@@ -325,9 +327,17 @@ namespace MonoDevelop.DotNetCore
 			return result;
 		}
 
-		BuildResult CreateDotNetCoreSdkRequiredBuildResult ()
+		BuildResult CreateDotNetCoreSdkRequiredBuildResult (bool isUnsupportedVersion)
 		{
-			return CreateBuildError (GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. https://aka.ms/vs/mac/install-netcore"));
+			return CreateBuildError (GetDotNetCoreSdkRequiredBuildErrorMessage (isUnsupportedVersion));
+		}
+
+		static string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion)
+		{
+			if (isUnsupportedVersion)
+				return GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
+
+			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}
 
 		protected override void OnBeginLoad ()
@@ -417,6 +427,20 @@ namespace MonoDevelop.DotNetCore
 		{
 			Runtime.AssertMainThread ();
 			RestorePackagesInProjectHandler.Run (Project);
+		}
+
+		public bool IsDotNetCoreSdkInstalled ()
+		{
+			if (sdkPaths != null)
+				return sdkPaths.Exist;
+			return true;
+		}
+
+		public bool IsUnsupportedDotNetCoreSdkInstalled ()
+		{
+			if (sdkPaths != null)
+				return sdkPaths.IsUnsupportedSdkVersion;
+			return false;
 		}
 	}
 }

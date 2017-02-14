@@ -59,7 +59,16 @@ namespace MonoDevelop.CSharp.Formatting
 				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
 			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				OnTheFlyFormatter.Format (indent.Editor, indent.DocumentContext, insertionOffset, insertionOffset + insertedChars);
+				int lineStartOffset = indent.Editor.GetLineByOffset (insertionOffset).Offset;
+				int formatCharsCount = insertedChars + (lineStartOffset - insertionOffset);
+				var newText = CSharpFormatter.FormatText (
+					indent.DocumentContext.GetFormattingPolicy (),
+					indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (),
+					indent.Editor.GetTextBetween (lineStartOffset, insertionOffset + insertedChars),
+					lineStartOffset,
+					formatCharsCount
+				);
+				indent.Editor.ReplaceText (lineStartOffset, formatCharsCount, newText);
 				return;
 			}
 			// Just correct the start line of the paste operation - the text is already indented.
