@@ -89,6 +89,7 @@ namespace MonoDevelop.AssemblyBrowser
 			loader = new CecilLoader (true);
 			loader.InterningProvider = new FastNonInterningProvider ();
 			loader.IncludeInternalMembers = true;
+			loader.LazyLoad = true;
 
 			assemblyLoaderTask = Task.Run ( () => {
 				try {
