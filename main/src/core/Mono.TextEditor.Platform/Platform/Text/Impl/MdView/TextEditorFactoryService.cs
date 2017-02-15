@@ -21,6 +21,7 @@ namespace WebToolingAddin
     using MonoDevelop.Ide.Editor;
     using Microsoft.VisualStudio.Text.Editor.Implementation;
     using Mono.TextEditor;
+    using Microsoft.VisualStudio.Platform;
 
     /// <summary>
     /// Provides a VisualStudio Service that aids in creation of Editor Views
@@ -77,21 +78,14 @@ namespace WebToolingAddin
 
         public event EventHandler<TextViewCreatedEventArgs> TextViewCreated;
 
-        public IWpfTextView CreateTextView(ITextBuffer textBuffer, ITextViewRoleSet roles, IEditorOptions parentOptions)
+        public IWpfTextView CreateTextView(MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
-            if (textBuffer == null)
+            if (textEditor == null)
             {
                 throw new ArgumentNullException("textBuffer");
             }
-            if (roles == null)
-            {
-                throw new ArgumentNullException("roles");
-            }
-            if (parentOptions == null)
-            {
-                throw new ArgumentNullException("parentOptions");
-            }
 
+            ITextBuffer textBuffer = textEditor.GetPlatformTextBuffer();
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
 
             ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
@@ -103,10 +97,8 @@ namespace WebToolingAddin
                              this.GuardedOperations,
                              this) ?? new VacuousTextViewModel(dataModel);
 
-            TextEditor textEditor;
-            textBuffer.Properties.TryGetProperty<TextEditor>(typeof(TextEditor), out textEditor);
-
-            TextView editor = new TextView(textEditor, viewModel, roles, parentOptions, this);
+            TextView editor = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+            editor.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
             this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(editor));
 

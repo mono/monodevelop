@@ -14,9 +14,9 @@ namespace Microsoft.VisualStudio.Text.Editor
     /// [Import]
     /// ITextEditorFactoryService factory = null;
     /// </remarks>
-    internal interface ITextEditorFactoryService
+    public interface ITextEditorFactoryService
     {
-        IWpfTextView CreateTextView(ITextBuffer textBuffer, ITextViewRoleSet roles, IEditorOptions parentOptions);
+        IWpfTextView CreateTextView(MonoDevelop.Ide.Editor.TextEditor editor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null);
 
         /// <summary>
         /// The empty ITextViewRoleSet.
