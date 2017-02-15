@@ -64,13 +64,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             FieldAttributes staticLiteralField = FieldAttributes.Static | FieldAttributes.HasDefault | FieldAttributes.Literal;
             if ((m_fieldAttributes & staticLiteralField) == staticLiteralField)
             {
-                m_value = ParseDefaultValue(declaringType,ppvSigBlob,ppvRawValue);
+                m_value = ParseDefaultValue(declaringType,ppvSigBlob,ppvRawValue, pcchValue);
             }
 			// [Xamarin] Expression evaluator.
 			MetadataHelperFunctionsExtensions.GetCustomAttribute (m_importer, m_fieldToken, typeof (DebuggerBrowsableAttribute));
         }
 
-        private static object ParseDefaultValue(MetadataType declaringType, IntPtr ppvSigBlob, IntPtr ppvRawValue)
+        private static object ParseDefaultValue(MetadataType declaringType, IntPtr ppvSigBlob, IntPtr ppvRawValue, int rawValueSize)
         {
                 IntPtr ppvSigTemp = ppvSigBlob;
                 CorCallingConvention callingConv = MetadataHelperFunctions.CorSigUncompressCallingConv(ref ppvSigTemp);
@@ -94,7 +94,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                             }                           
                         }
                 }
-                
+
                 switch (elementType)
                 {
                     case CorElementType.ELEMENT_TYPE_CHAR:
@@ -117,10 +117,21 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                         return (ulong)Marshal.ReadInt64(ppvRawValue);
                     case CorElementType.ELEMENT_TYPE_I:
                         return Marshal.ReadIntPtr(ppvRawValue);
-                    case CorElementType.ELEMENT_TYPE_U:
+                    case CorElementType.ELEMENT_TYPE_STRING:
+                        return Marshal.PtrToStringAuto (ppvRawValue, rawValueSize);
                     case CorElementType.ELEMENT_TYPE_R4:
+                        unsafe {
+                            return *(float*) ppvRawValue.ToPointer ();
+                        }
                     case CorElementType.ELEMENT_TYPE_R8:
-                    // Technically U and the floating-point ones are options in the CLI, but not in the CLS or C#, so these are NYI
+                        unsafe {
+                            return *(double*) ppvRawValue.ToPointer ();
+                        }
+                    case CorElementType.ELEMENT_TYPE_BOOLEAN:
+                        unsafe {
+                            return *(bool*) ppvRawValue.ToPointer ();
+                        }
+
                     default:
                         return null;
                 }
