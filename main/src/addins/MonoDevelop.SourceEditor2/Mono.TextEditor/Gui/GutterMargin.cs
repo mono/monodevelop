@@ -223,7 +223,7 @@ namespace Mono.TextEditor
 
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var extendingMarker = (IExtendingTextLineMarker)editor.Document.GetMarkers (lineSegment).FirstOrDefault (l => l is IExtendingTextLineMarker);
+			var extendingMarker = lineSegment != null ? (IExtendingTextLineMarker)editor.Document.GetMarkers (lineSegment).FirstOrDefault (l => l is IExtendingTextLineMarker) : null;
 			bool isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
 
 			var gutterMarker = lineSegment != null ? (MarginMarker)editor.Document.GetMarkers (lineSegment).FirstOrDefault (marker => marker is MarginMarker && ((MarginMarker)marker).CanDraw (this)) : null;

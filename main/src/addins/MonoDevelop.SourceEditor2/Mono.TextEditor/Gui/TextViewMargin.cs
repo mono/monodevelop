@@ -2687,7 +2687,7 @@ namespace Mono.TextEditor
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
-			var extendingMarker = (IExtendingTextLineMarker)textEditor.Document.GetMarkers (line).FirstOrDefault (l => l is IExtendingTextLineMarker);
+			var extendingMarker = line != null ? (IExtendingTextLineMarker)textEditor.Document.GetMarkers (line).FirstOrDefault (l => l is IExtendingTextLineMarker) : null;
 			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
 			spaceAbove = 0;
 			spaceBelow = 0;
