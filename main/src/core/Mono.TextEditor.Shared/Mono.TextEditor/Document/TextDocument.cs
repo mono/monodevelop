@@ -1507,11 +1507,54 @@ namespace Mono.TextEditor
 			AddMarker (line, marker, true);
 		}
 
+		class DocumentLineTextSegmentMarker : TextSegmentMarker
+		{
+			public TextLineMarker Marker { get; }
+
+			public DocumentLineTextSegmentMarker (DocumentLine line, TextLineMarker marker) : base (line.Offset, line.Length)
+			{
+				if (marker == null)
+					throw new ArgumentNullException (nameof (marker));
+				this.Marker = marker;
+			}
+		}
+
+		public bool IsBookmarked (DocumentLine line)
+		{
+			return GetMarkers (line).Any(m => m == BookmarkMarker.Instance);
+		}
+
+		public void SetIsBookmarked (DocumentLine line, bool isBookmarked)
+		{
+			if (IsBookmarked (line) != isBookmarked) {
+				if (isBookmarked) {
+					AddMarker (line, BookmarkMarker.Instance);
+				} else {
+					RemoveMarker (line, typeof (BookmarkMarker));
+				}
+				RequestUpdate (new LineUpdate (line.LineNumber));
+				CommitDocumentUpdate ();
+			}
+		}
+
+		public IEnumerable<TextLineMarker> GetMarkers (DocumentLine line)
+		{
+			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
+		}
+
+		public void ClearMarkers (DocumentLine line)
+		{
+			if (line == null)
+				return;
+			foreach (var marker in GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ())
+				RemoveMarker (marker); 
+		}
+
 		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate, int idx = -1)
 		{
 			if (line == null || marker == null)
 				return;
-			line.AddMarker (marker, idx);
+            AddMarker (new DocumentLineTextSegmentMarker (line, marker));
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (marker is IExtendingTextLineMarker) {
 				lock (extendingTextMarkers) {
@@ -1545,8 +1588,14 @@ namespace Mono.TextEditor
 				return;
 			if (marker is IDisposable)
 				((IDisposable)marker).Dispose ();
-			
-			line.RemoveMarker (marker);
+
+			foreach (var m in GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ()) {
+				if (m.Marker == marker) {
+					RemoveMarker (m);
+					break;
+				}
+			}
+
 			OnMarkerRemoved (new TextMarkerEvent (line, marker));
 			if (marker is IExtendingTextLineMarker) {
 				lock (extendingTextMarkers) {
@@ -1572,10 +1621,16 @@ namespace Mono.TextEditor
 		{
 			if (line == null || type == null)
 				return;
-			line.RemoveMarker (type);
+
+			foreach (var m in GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ()) {
+				if (m.Marker.GetType () == type) {
+					RemoveMarker (m);
+				}
+			}
+
 			if (typeof (IExtendingTextLineMarker).IsAssignableFrom (type)) {
 				lock (extendingTextMarkers) {
-					foreach (TextLineMarker marker in line.Markers.Where (marker => marker is IExtendingTextLineMarker)) {
+					foreach (TextLineMarker marker in GetMarkers (line).Where (marker => marker is IExtendingTextLineMarker)) {
 						extendingTextMarkers.Remove (marker);
 					}
 					OnHeightChanged (EventArgs.Empty);
@@ -1653,7 +1708,7 @@ namespace Mono.TextEditor
 			var endOffset = e.Offset + e.RemovalLength;
 			var offset = line.Offset;
 			do {
-				foreach (TextLineMarker marker in line.Markers) {
+				foreach (TextLineMarker marker in GetMarkers (line)) {
 					if (marker is IExtendingTextLineMarker) {
 						UnRegisterVirtualTextMarker ((IExtendingTextLineMarker)marker);
 						lock (extendingTextMarkers) {
@@ -2094,7 +2149,7 @@ namespace Mono.TextEditor
 					return this.Line.LineNumber + 1;
 				}
 			}
-
+			       
 			public override DocumentLine NextLine
 			{
 				get

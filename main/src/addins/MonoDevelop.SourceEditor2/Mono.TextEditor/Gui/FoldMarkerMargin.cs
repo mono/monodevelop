@@ -308,7 +308,7 @@ namespace Mono.TextEditor
 		{
 			MarginMarker marker = null;
 			if (lineSegment != null) {
-				foreach (var m in lineSegment.Markers) {
+				foreach (var m in editor.Document.GetMarkers (lineSegment)) {
 					var mm = m as MarginMarker;
 					if (mm != null && mm.CanDraw (this)) {
 						marker = mm;

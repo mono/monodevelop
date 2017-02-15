@@ -518,7 +518,7 @@ namespace MonoDevelop.SourceEditor
 			var lineSegment = doc.GetLine (task.Line);
 			if (lineSegment == null)
 				return;
-			var marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)doc.GetMarkers (lineSegment).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker == null)
 				return;
 			
@@ -594,7 +594,7 @@ namespace MonoDevelop.SourceEditor
 						var lineSegment = widget.Document.GetLine (marker.Task.Line);
 						if (lineSegment == null)
 							continue;
-						var oldMarker = lineSegment.Markers.OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
+						var oldMarker = widget.Document.GetMarkers (lineSegment).OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
 						if (oldMarker != null) {
 							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
 						} else {
@@ -1446,7 +1446,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			if (hoverDebugLineMarker == null && e.LineSegment != null && e.LineSegment.Markers.FirstOrDefault (m => m is DebugIconMarker) == null) {
+			if (hoverDebugLineMarker == null && e.LineSegment != null && e.Editor.Document.GetMarkers (e.LineSegment).FirstOrDefault (m => m is DebugIconMarker) == null) {
 				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
@@ -1663,18 +1663,14 @@ namespace MonoDevelop.SourceEditor
 		public void SetBookmarked (int position, bool mark)
 		{
 			var line = GetLine (position);
-			if (line != null && line.IsBookmarked != mark) {
-				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (line.Offset);
-				line.IsBookmarked = mark;
-				widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
-				widget.TextEditor.Document.CommitDocumentUpdate ();
-			}
+			if (line != null)
+				widget.TextEditor.Document.SetIsBookmarked (line, mark);
 		}
 		
 		public bool IsBookmarked (int position)
 		{
 			var line = GetLine (position);
-			return line != null && line.IsBookmarked;
+			return line != null && widget.TextEditor.Document.IsBookmarked (line);
 		}
 		
 		public void PrevBookmark ()
@@ -2741,7 +2737,7 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarkers (IDocumentLine line)
 		{
-			return ((DocumentLine)line).Markers.OfType<ITextLineMarker> ();
+			return Document.GetMarkers (((DocumentLine)line)).OfType<ITextLineMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)

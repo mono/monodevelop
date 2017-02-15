@@ -260,15 +260,13 @@ namespace Mono.TextEditor
 				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
 					DocumentLine line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
-					if (line.GetMarker (typeof(TextLinkMarker)) != null)
+					TextLinkMarker marker = (TextLinkMarker)Editor.Document.GetMarkers (line).OfType<TextLinkMarker> ().FirstOrDefault ();
+					if (marker != null)
 						continue;
-					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof(TextLinkMarker));
-					if (marker == null) {
-						marker = new TextLinkMarker (this);
-						marker.BaseOffset = baseOffset;
-						Editor.Document.AddMarker (line, marker);
-						textLinkMarkers.Add (marker);
-					}
+					marker = new TextLinkMarker (this);
+					marker.BaseOffset = baseOffset;
+					Editor.Document.AddMarker (line, marker);
+					textLinkMarkers.Add (marker);
 				}
 			}
 			

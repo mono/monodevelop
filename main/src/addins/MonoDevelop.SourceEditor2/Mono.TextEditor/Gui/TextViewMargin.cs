@@ -615,7 +615,7 @@ namespace Mono.TextEditor
 //				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
 				if (line != null) {
-					foreach (var marker in line.Markers) {
+					foreach (var marker in Document.GetMarkers (line)) {
 						var style = marker as StyleTextLineMarker;
 						if (style == null)
 							continue;
@@ -707,17 +707,18 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-
-			protected LineDescriptor (DocumentLine line, int offset, int length)
+			readonly TextDocument doc;
+			protected LineDescriptor (TextDocument doc, DocumentLine line, int offset, int length)
 			{
 				this.Offset = offset;
 				this.Length = length;
-				this.MarkerLength = line.MarkerCount;
+				this.doc = doc;
+                this.MarkerLength = doc.GetMarkers (line).Count ();
 			}
 
 			public bool Equals (DocumentLine line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount;
+				isInvalid = MarkerLength != doc.GetMarkers (line).Count ();
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -739,7 +740,7 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public LayoutDescriptor (DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
+			public LayoutDescriptor (TextDocument doc, DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(doc, line, offset, length)
 			{
 				this.Layout = layout;
 				if (selectionEnd >= 0) {
@@ -869,7 +870,7 @@ namespace Mono.TextEditor
 					}
 					var theme = textEditor.GetTextEditorData ().EditorTheme;
 					var chunkStyle = theme.GetChunkStyle(chunk.ScopeStack);
-					foreach (TextLineMarker marker in line.Markers)
+					foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line))
 						chunkStyle = marker.GetStyle (chunkStyle);
 
 					if (chunkStyle != null) {
@@ -999,7 +1000,7 @@ namespace Mono.TextEditor
 
 				selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 				selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
-				descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
+				descriptor = new LayoutDescriptor (textEditor.Document, line, offset, length, wrapper, selectionStart, selectionEnd);
 				if (!containsPreedit && cachedChunks.Item2) {
 					layoutDict [line] = descriptor;
 				}
@@ -1061,7 +1062,7 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public ChunkDescriptor (DocumentLine line, int offset, int length, List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunk) : base(line, offset, length)
+			public ChunkDescriptor (TextDocument doc, DocumentLine line, int offset, int length, List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunk) : base(doc, line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
@@ -1590,7 +1591,7 @@ namespace Mono.TextEditor
 				LineYRenderStartPosition = y
 			};
 
-			foreach (TextLineMarker marker in line.Markers) {
+			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 				if (!marker.IsVisible)
 					continue;
 
@@ -1789,7 +1790,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in line.Markers) {
+			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 				if (!marker.IsVisible)
 					continue;
 				
@@ -1940,7 +1941,7 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
-					foreach (TextLineMarker marker in line.Markers) {
+					foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -2079,7 +2080,7 @@ namespace Mono.TextEditor
 			DocumentLine line = Document.GetLine (clickLocation.Line);
 			bool isHandled = false;
 			if (line != null) {
-				foreach (TextLineMarker marker in line.Markers) {
+				foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 					if (marker is IActionTextLineMarker) {
 						isHandled |= ((IActionTextLineMarker)marker).MouseReleased(textEditor, args);
 						if (isHandled)
@@ -2296,7 +2297,7 @@ namespace Mono.TextEditor
 
 			if (line != null) {
 				newMarkers.Clear ();
-				newMarkers.AddRange (line.Markers.OfType<IActionTextLineMarker> ());
+				newMarkers.AddRange (textEditor.Document.GetMarkers (line).OfType<IActionTextLineMarker> ());
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
@@ -2686,7 +2687,7 @@ namespace Mono.TextEditor
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
-			var extendingMarker = (IExtendingTextLineMarker)line?.Markers.FirstOrDefault (l => l is IExtendingTextLineMarker);
+			var extendingMarker = (IExtendingTextLineMarker)textEditor.Document.GetMarkers (line).FirstOrDefault (l => l is IExtendingTextLineMarker);
 			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
 			spaceAbove = 0;
 			spaceBelow = 0;
@@ -2928,7 +2929,7 @@ namespace Mono.TextEditor
 					LineHeight = _lineHeight,
 					LineYRenderStartPosition = y
 				};
-				foreach (var marker in line.Markers) {
+				foreach (var marker in textEditor.Document.GetMarkers (line)) {
 					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
@@ -3213,7 +3214,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return LineHeight;
-			foreach (var marker in line.Markers) {
+			foreach (var marker in textEditor.Document.GetMarkers (line)) {
 				IExtendingTextLineMarker extendingTextMarker = marker as IExtendingTextLineMarker;
 				if (extendingTextMarker == null)
 					continue;

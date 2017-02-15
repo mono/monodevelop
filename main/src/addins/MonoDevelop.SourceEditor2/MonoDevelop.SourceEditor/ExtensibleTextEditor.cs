@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor
 			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-15.png");
 
 			BookmarkMarker.DrawBookmarkFunc = delegate(Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
-				if (!lineSegment.IsBookmarked)
+				if (!editor.Document.IsBookmarked (lineSegment))
 					return;
 				cr.DrawImage (
 					editor, 
