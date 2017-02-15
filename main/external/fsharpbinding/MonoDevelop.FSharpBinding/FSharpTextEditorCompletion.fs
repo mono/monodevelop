@@ -431,11 +431,12 @@ module Completion =
 
                             if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
                                 LoggingService.logDebug "Completion: got parse results from cache"
+                                return! document.TryGetAst()
                             else
                                 LoggingService.logDebug "Completion: syncing parse results"
                                 // force sync
                                 documentContext.ReparseDocument()
-                            return! document.TryGetAst()
+                                return! document.TryGetAst()
                         })
 
                 let result = CompletionDataList()
@@ -798,13 +799,10 @@ type FSharpTextEditorCompletion() =
     // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, triggerInfo, token) =
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
-            if triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CharTyped || triggerInfo.TriggerCharacter.Value = '.' && triggerInfo.CompletionTriggerReason = CompletionTriggerReason.CompletionCommand  then
-                let computation =
-                    Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
+            let computation =
+                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
                         
-                Async.StartAsTask (computation = computation, cancellationToken = token)
-            else
-                Task.FromResult null
+            Async.StartAsTask (computation = computation, cancellationToken = token)
         else
             Task.FromResult null
 
