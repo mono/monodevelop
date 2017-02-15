@@ -180,7 +180,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return exe;
 
 			foreach (var asm in Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblies ()) {
-				if (string.Equals (asm.Name, fullAssemblyName, StringComparison.InvariantCultureIgnoreCase))
+				if (string.Equals (asm.Name, fullAssemblyName, StringComparison.OrdinalIgnoreCase))
 					return asm.Location;
 			}
 
