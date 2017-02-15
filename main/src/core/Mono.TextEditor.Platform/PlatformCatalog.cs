@@ -232,7 +232,7 @@ namespace Microsoft.VisualStudio.Platform
         private Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
     }
 
-#if true
+#if false
     [Export(typeof(ITaggerProvider))]
     [ContentType("text")]
     [TagType(typeof(IClassificationTag))]
