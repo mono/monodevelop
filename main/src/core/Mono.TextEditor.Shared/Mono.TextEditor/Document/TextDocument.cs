@@ -175,7 +175,7 @@ namespace Mono.TextEditor
 				SyntaxMode = new SyntaxHighlighting (def, this);
 			} else {
 #if false
-				SyntaxMode = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(this);
+				SyntaxMode = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(this.TextBuffer);
 #else
 				SyntaxMode = DefaultSyntaxHighlighting.Instance;
 #endif
@@ -235,8 +235,8 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			var textChanged = this.TextChanged;
-			if (textChanged != null)
+			var textChanging = this.TextChanging;
+			if (textChanging != null)
 			{
 				if (args.Changes != null)
 				{
@@ -246,7 +246,7 @@ namespace Mono.TextEditor
 						var change = args.Changes[i];
 
 						var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
-						textChanged(this, textChange);
+						textChanging(this, textChange);
 					}
 				}
 			}
@@ -303,14 +303,13 @@ namespace Mono.TextEditor
 					value = "";
 				var args = new TextChangeEventArgs(0, Text, value);
 				textSegmentMarkerTree.Clear();
-				OnTextReplacing(args);
 				cachedText = null;
 				this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(0, this.TextBuffer.CurrentSnapshot.Length), value);
 
 				extendingTextMarkers = new List<TextLineMarker>();
 				//HACK splitter.Initalize(value, out longestLineAtTextSet);
 				ClearFoldSegments();
-				//HACK OnTextReplaced(args);
+				OnTextReplaced(args);
 				//HACK versionProvider = new TextSourceVersionProvider();
 				//HACK buffer.Version = Version;
 				OnTextSet(EventArgs.Empty);
@@ -379,7 +378,6 @@ namespace Mono.TextEditor
 			if (value.Length != 0)
 				EnsureSegmentIsUnfolded (offset, value.Length);
 			
-			OnTextReplacing (args);
 			//HACK what does this line to? value = args.InsertedText.Text;
 
 			cachedText = null;
@@ -392,7 +390,7 @@ namespace Mono.TextEditor
 			//HACK splitter.TextReplaced (this, args);
 			//HACK versionProvider.AppendChange (args);
 			//HACK buffer.Version = Version;
-			//HACK OnTextReplaced(args);
+			OnTextReplaced(args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
@@ -591,19 +589,13 @@ namespace Mono.TextEditor
 			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 #endif
-		//HACk protected virtual void OnTextReplaced (TextChangeEventArgs args)
-		//HACk {
-		//HACk 	if (TextChanged != null)
-		//HACk 		TextChanged (this, args);
-		//HACk }
+		protected virtual void OnTextReplaced (TextChangeEventArgs args)
+		{
+			if (TextChanged != null)
+				TextChanged (this, args);
+		}
 		
 		public event EventHandler<TextChangeEventArgs> TextChanged;
-
-		protected virtual void OnTextReplacing (TextChangeEventArgs args)
-		{
-			if (TextChanging != null)
-				TextChanging (this, args);
-		}
 		public event EventHandler<TextChangeEventArgs> TextChanging;
 		
 		protected virtual void OnTextSet (EventArgs e)
@@ -1388,7 +1380,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				yield break;
 			foreach (var fold in GetFoldingContaining (line))
-				if (fold.GetStartLine (this) == line)
+				if (fold.GetStartLine (this).Offset == line.Offset)
 					yield return fold;
 		}
 

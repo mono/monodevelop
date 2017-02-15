@@ -37,8 +37,10 @@ namespace Microsoft.VisualStudio.Text.Operations.Implementation
         [Import]
         internal IEditorOptionsFactoryService EditorOptionsProvider { get; set; }
 
-//        [Import]
+#if TARGET_VS
+        [Import]
         internal IRtfBuilderService RtfBuilderService { get; set; }
+#endif
 
         [Import]
         internal ISmartIndentationService SmartIndentationService { get; set; }

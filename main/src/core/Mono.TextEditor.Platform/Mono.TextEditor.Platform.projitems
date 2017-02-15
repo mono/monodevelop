@@ -210,12 +210,11 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\SuggestedActionSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\SuggestedActionSetPriority.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\Editor\ITextEditorFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\Editor\ConnectionReason.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\Editor\IWpfTextView.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\Editor\IWpfTextViewConnectionListener.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\Editor\IWpfTextViewCreationListener.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIWpf\RTF\IRtfBuilderService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextView.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewConnectionListener.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewCreationListener.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ExtensionMethods.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IThreadHelper.cs" />
@@ -337,10 +336,37 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\Outlining\OutliningManager.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\Outlining\OutliningManagerService.cs" />
 
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\AutoEnclose.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\CatchOperationsFromHistoryForDelegatedPrimitive.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\DelegatedUndoPrimitiveImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\DelegatedUndoPrimitiveState.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\NullMergeUndoTransactionPolicy.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\UndoableOperationCurried.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\UndoHistoryImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\UndoHistoryRegistryImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\UndoTransactionImpl.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\StandaloneUndo\WeakReferenceForDictionaryKey.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\Strings.Designer.cs">
+          <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
+      <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\Strings.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferChangeUndoPrimitive.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManager.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerProvider.cs" />
+
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\ConnectionManager.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\SmartIndentationService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\TextViewRoleSet.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\WpfView\VacuousTextDataModel.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextCaret.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextEditorFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextSelection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\MdView\TextView.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\ArgumentValidation.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextDataUtil\BufferTracker.cs" />
