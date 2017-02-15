@@ -1699,11 +1699,6 @@ namespace Mono.Debugging.Win32
 
 				foreach (MemberInfo m in mems) {
 					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
-					if (atts.Length == 0) {
-						atts = m.GetCustomAttributes (typeof (CompilerGeneratedAttribute), false);
-						if (atts.Length > 0)
-							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
-					}
 					if (atts.Length > 0) {
 						hasTypeData = true;
 						if (memberData == null)
