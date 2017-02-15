@@ -617,7 +617,8 @@ namespace MonoDevelop.AssemblyBrowser
 				return true;
 			return false;
 		}
-		
+
+		bool expandedMember = true;
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl, bool expandNode = true)
 		{
 			if (nav == null)
@@ -627,13 +628,11 @@ namespace MonoDevelop.AssemblyBrowser
 				if (IsMatch (nav, helpUrl, searchType)) {
 					inspectEditor.ClearSelection ();
 					nav.ExpandToNode ();
-					if (expandNode) {
-						nav.Selected = nav.Expanded = true;
-						nav.ScrollToNode ();
-					} else {
-						nav.Selected = true;
-						nav.ScrollToNode ();
-					}
+					if (expandNode)
+						nav.Expanded = true;
+					nav.Selected = true;
+					nav.ScrollToNode ();
+					expandedMember = true;
 					return nav;
 				}
 				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
@@ -1444,6 +1443,11 @@ namespace MonoDevelop.AssemblyBrowser
 				ITreeNavigator nav = TreeView.GetRootNode ();
 				if (nav == null)
 					return;
+
+				if (expandedMember) {
+					expandedMember = false;
+					return;
+				}
 
 				do {
 					if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
