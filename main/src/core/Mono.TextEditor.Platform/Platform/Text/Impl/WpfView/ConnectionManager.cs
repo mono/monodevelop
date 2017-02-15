@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Projection;
     using Microsoft.VisualStudio.Text.Utilities;
 
-    public class ConnectionManager
+    internal class ConnectionManager
     {
         private class Listener
         {
