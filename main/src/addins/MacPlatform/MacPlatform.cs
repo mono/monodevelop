@@ -253,6 +253,10 @@ namespace MonoDevelop.MacIntegration
 
 				// Need to update the menus when they're created rather than just when they're opened
 				// so that they'll have correct values for accessibility purposes
+				//
+				// In theory, it should be possible to do this when overriding the accessibilityLabel property
+				// and then forcing an update when the item is first accessed, but for some reason only known to Cocoa
+				// NSMenu/NSMenuItem didn't call the accessibility properties until macOS Sierra.
 				submenuitem.Update (null, ref lastSeparator, ref index);
 				rootMenu.AddItem (submenuitem);
 
