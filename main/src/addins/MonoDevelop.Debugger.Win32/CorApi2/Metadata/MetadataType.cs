@@ -113,7 +113,15 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-		// [Xamarin] Expression evaluator.
+        public override bool IsGenericType
+        {
+            get
+            {
+                return m_typeArgs != null && m_typeArgs.Count > 0;
+            }
+        }
+
+        // [Xamarin] Expression evaluator.
 		public override Type DeclaringType
 		{
 			get
