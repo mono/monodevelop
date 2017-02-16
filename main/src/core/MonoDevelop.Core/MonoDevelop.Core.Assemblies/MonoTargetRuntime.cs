@@ -129,6 +129,8 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetAssemblyDebugInfoFile (string assemblyPath)
 		{
+			if (monoRuntimeInfo.RuntimeVersion != null && monoRuntimeInfo.RuntimeVersion >= new Version (4,9,0))
+				return Path.ChangeExtension (assemblyPath, ".pdb");
 			return assemblyPath + ".mdb";
 		}
 		
