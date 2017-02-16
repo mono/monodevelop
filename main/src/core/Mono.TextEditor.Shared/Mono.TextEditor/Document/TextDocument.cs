@@ -1539,6 +1539,8 @@ namespace Mono.TextEditor
 
 		public IEnumerable<TextLineMarker> GetMarkers (DocumentLine line)
 		{
+			if (line == null)
+				return Enumerable.Empty<TextLineMarker> ();
 			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
 		}
 
@@ -2123,7 +2125,7 @@ namespace Mono.TextEditor
 		private DocumentLine Get(int number)
 		{
 			int snapshotLineNumber = number - 1;
-			if (snapshotLineNumber >= this.TextBuffer.CurrentSnapshot.LineCount)
+			if (snapshotLineNumber < 0 || snapshotLineNumber >= this.TextBuffer.CurrentSnapshot.LineCount)
 				return null;
 
 			return new DocumentLineFromTextSnapshotLine(this.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(snapshotLineNumber));
