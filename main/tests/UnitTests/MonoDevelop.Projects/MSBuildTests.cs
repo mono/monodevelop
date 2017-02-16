@@ -1316,6 +1316,26 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Checks that a remove item defined in another import will affect
+		/// items added by another import.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndSeparateItemRemove ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-separate-remove.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "Compile")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data3.cs",
+				"Program.cs"
+			}, files);
+		}
+
+		/// <summary>
 		/// Checks that the remove applies to items using the root project as the
 		/// starting point.
 		/// </summary>

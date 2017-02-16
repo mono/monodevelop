@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		class ProjectInfo
 		{
+			public ProjectInfo Parent;
 			public MSBuildProject Project;
 			public List<MSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			public List<MSBuildItemEvaluated> EvaluatedItems = new List<MSBuildItemEvaluated> ();
@@ -351,9 +352,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static void RemoveEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
 		{
-			if (trueCond)
-				project.EvaluatedItems.RemoveAll (it => it.Name == item.Name && it.Include == include);
-			project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
+			do {
+				if (trueCond)
+					project.EvaluatedItems.RemoveAll (it => it.Name == item.Name && it.Include == include);
+				project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
@@ -969,7 +973,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var pref = LoadProject (file);
 			project.ReferencedProjects.Add (pref);
 
-			var prefProject = new ProjectInfo { Project = pref };
+			var prefProject = new ProjectInfo { Project = pref, Parent = project };
 			AddImportedProject (project, import, prefProject);
 
 			var refCtx = new MSBuildEvaluationContext (context);
