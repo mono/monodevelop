@@ -394,7 +394,7 @@ namespace Mono.TextEditor
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
-		
+
 		public string GetTextBetween (int startOffset, int endOffset)
 		{
 			if (startOffset < 0)
@@ -594,10 +594,10 @@ namespace Mono.TextEditor
 			if (TextChanged != null)
 				TextChanged (this, args);
 		}
-		
+
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 		public event EventHandler<TextChangeEventArgs> TextChanging;
-		
+
 		protected virtual void OnTextSet (EventArgs e)
 		{
 			EventHandler handler = this.TextSet;
