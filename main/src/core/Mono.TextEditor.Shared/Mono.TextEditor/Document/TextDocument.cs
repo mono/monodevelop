@@ -235,19 +235,16 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			var textChanging = this.TextChanging;
-			if (textChanging != null)
+			if (args.Changes != null)
 			{
-				if (args.Changes != null)
+				// Report the changes backwards so that the positions are all accurate
+				for (int i = args.Changes.Count - 1; (i >= 0); --i)
 				{
-					// Report the changes backwards so that the positions are all accurate
-					for (int i = args.Changes.Count - 1; (i >= 0); --i)
-					{
-						var change = args.Changes[i];
+					var change = args.Changes[i];
 
-						var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
-						textChanging(this, textChange);
-					}
+					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+					foldSegmentTree.UpdateOnTextReplace(this, textChange);
+					TextChanging?.Invoke(this, textChange);
 				}
 			}
 		}
@@ -309,7 +306,6 @@ namespace Mono.TextEditor
 				extendingTextMarkers = new List<TextLineMarker>();
 				//HACK splitter.Initalize(value, out longestLineAtTextSet);
 				ClearFoldSegments();
-				OnTextReplaced(args);
 				//HACK versionProvider = new TextSourceVersionProvider();
 				//HACK buffer.Version = Version;
 				OnTextSet(EventArgs.Empty);
@@ -383,14 +379,13 @@ namespace Mono.TextEditor
 			cachedText = null;
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
 
-			//HACK buffer = buffer.RemoveText(offset, count);
-			//HACK if (!string.IsNullOrEmpty (value))
-			//HACK 	buffer = buffer.InsertText (offset, value);
-			foldSegmentTree.UpdateOnTextReplace (this, args);
-			//HACK splitter.TextReplaced (this, args);
-			//HACK versionProvider.AppendChange (args);
-			//HACK buffer.Version = Version;
-			OnTextReplaced(args);
+            //HACK buffer = buffer.RemoveText(offset, count);
+            //HACK if (!string.IsNullOrEmpty (value))
+            //HACK 	buffer = buffer.InsertText (offset, value);
+            //HACK splitter.TextReplaced (this, args);
+            //HACK versionProvider.AppendChange (args);
+            //HACK buffer.Version = Version;
+            OnTextReplaced(args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
@@ -1379,8 +1374,9 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				yield break;
+			var lineOffset = line.Offset;
 			foreach (var fold in GetFoldingContaining (line))
-				if (fold.GetStartLine (this).Offset == line.Offset)
+				if (fold.GetStartLine (this).Offset == lineOffset)
 					yield return fold;
 		}
 
@@ -1396,8 +1392,9 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<FoldSegment> GetEndFoldings (DocumentLine line)
 		{
+			var lineOffset = line.Offset;
 			foreach (FoldSegment segment in GetFoldingContaining (line)) {
-				if (segment.GetEndLine (this).Offset == line.Offset)
+				if (segment.GetEndLine (this).Offset == lineOffset)
 					yield return segment;
 			}
 		}
@@ -1531,6 +1528,8 @@ namespace Mono.TextEditor
 
 		public IEnumerable<TextLineMarker> GetMarkers (DocumentLine line)
 		{
+			if (line == null)
+				return Enumerable.Empty<TextLineMarker> ();
 			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
 		}
 
@@ -2115,7 +2114,7 @@ namespace Mono.TextEditor
 		private DocumentLine Get(int number)
 		{
 			int snapshotLineNumber = number - 1;
-			if (snapshotLineNumber >= this.TextBuffer.CurrentSnapshot.LineCount)
+			if (snapshotLineNumber < 0 || snapshotLineNumber >= this.TextBuffer.CurrentSnapshot.LineCount)
 				return null;
 
 			return new DocumentLineFromTextSnapshotLine(this.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(snapshotLineNumber));
@@ -2185,8 +2184,8 @@ namespace Mono.TextEditor
 					switch(line.Snapshot[line.End])
 					{
 						case '\u000A': return UnicodeNewline.LF;
-						case '\u000B': return UnicodeNewline.VT; // Not recognized by VS
-						case '\u000C': return UnicodeNewline.FF; // Not recognized by VS
+						//case '\u000B': return UnicodeNewline.VT; // Not recognized by VS
+						//case '\u000C': return UnicodeNewline.FF; // Not recognized by VS
 
 						case '\u000D': return UnicodeNewline.CR;
 						case '\u0085': return UnicodeNewline.NEL;
