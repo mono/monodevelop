@@ -752,9 +752,7 @@ namespace MonoDevelop.Gettext
 			if (RegexSearch)
 				return regex.IsMatch (text);
 		
-			if (!IsCaseSensitive)
-				text = text.ToUpper ();
-			int idx = text.IndexOf (filter);
+			int idx = text.IndexOf (filter, IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 			if (idx >= 0) {
 				if (IsWholeWordOnly) {
 					return (idx == 0 || char.IsWhiteSpace (text[idx - 1])) &&
@@ -804,8 +802,6 @@ namespace MonoDevelop.Gettext
 		void UpdateFromCatalog ()
 		{
 			filter = this.searchEntryFilter.Entry.Text;
-			if (!IsCaseSensitive && filter != null)
-				filter = filter.ToUpper ();
 			if (RegexSearch) {
 				try {
 					RegexOptions options = RegexOptions.Compiled;
