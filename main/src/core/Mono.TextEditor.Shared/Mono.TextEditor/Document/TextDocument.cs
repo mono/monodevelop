@@ -235,19 +235,16 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			var textChanged = this.TextChanged;
-			if (textChanged != null)
+			if (args.Changes != null)
 			{
-				if (args.Changes != null)
+				// Report the changes backwards so that the positions are all accurate
+				for (int i = args.Changes.Count - 1; (i >= 0); --i)
 				{
-					// Report the changes backwards so that the positions are all accurate
-					for (int i = args.Changes.Count - 1; (i >= 0); --i)
-					{
-						var change = args.Changes[i];
+					var change = args.Changes[i];
 
-						var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
-						textChanged(this, textChange);
-					}
+					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+		 			foldSegmentTree.UpdateOnTextReplace (this, textChange);           
+					TextChanged?.Invoke(this, textChange);
 				}
 			}
 		}
@@ -310,7 +307,6 @@ namespace Mono.TextEditor
 				extendingTextMarkers = new List<TextLineMarker>();
 				//HACK splitter.Initalize(value, out longestLineAtTextSet);
 				ClearFoldSegments();
-				OnTextReplaced(args);
 				//HACK versionProvider = new TextSourceVersionProvider();
 				//HACK buffer.Version = Version;
 				OnTextSet(EventArgs.Empty);
@@ -388,11 +384,10 @@ namespace Mono.TextEditor
 			//HACK buffer = buffer.RemoveText(offset, count);
 			//HACK if (!string.IsNullOrEmpty (value))
 			//HACK 	buffer = buffer.InsertText (offset, value);
-			foldSegmentTree.UpdateOnTextReplace (this, args);
 			//HACK splitter.TextReplaced (this, args);
 			//HACK versionProvider.AppendChange (args);
 			//HACK buffer.Version = Version;
-			OnTextReplaced(args);
+			//OnTextReplaced(args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
@@ -591,12 +586,7 @@ namespace Mono.TextEditor
 			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 #endif
-		protected virtual void OnTextReplaced (TextChangeEventArgs args)
-		{
-			if (TextChanged != null)
-				TextChanged (this, args);
-		}
-		
+
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 
 		protected virtual void OnTextReplacing (TextChangeEventArgs args)
