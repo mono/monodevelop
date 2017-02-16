@@ -1521,7 +1521,7 @@ namespace MonoDevelop.VBNetBinding
 		protected override string CreateEscapedIdentifier (string value)
 		{
 			for (int x = 0; x < Keywords.Length; x++)
-				if (value.ToLower().Equals (Keywords[x].ToLower()))
+				if (string.Equals (value, Keywords[x], StringComparison.OrdinalIgnoreCase))
 					return "[" + value + "]";
 			return value;
 		}
@@ -1529,7 +1529,7 @@ namespace MonoDevelop.VBNetBinding
 		protected override string CreateValidIdentifier (string value)
 		{
 			for (int x = 0; x < Keywords.Length; x++)
-				if (value.ToLower().Equals (Keywords[x].ToLower()))
+				if (string.Equals (value, Keywords [x], StringComparison.OrdinalIgnoreCase))
 					return "_" + value;
 			return value;
 		}
@@ -1615,7 +1615,7 @@ namespace MonoDevelop.VBNetBinding
 		protected override bool IsValidIdentifier (string identifier)
 		{
 			for (int x = 0; x < Keywords.Length; x++)
-				if (identifier.ToLower().Equals (Keywords[x].ToLower()))
+				if (string.Equals (identifier, Keywords [x], StringComparison.OrdinalIgnoreCase))
 					return false;
 			return true;
 		}

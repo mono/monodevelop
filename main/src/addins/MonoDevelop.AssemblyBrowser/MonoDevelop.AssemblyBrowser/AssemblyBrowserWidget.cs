@@ -791,7 +791,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var publicOnly = PublicApiOnly;
 			BackgroundWorker worker = sender as BackgroundWorker;
 			try {
-				string pattern = e.Argument.ToString ().ToUpper ();
+				string pattern = e.Argument.ToString ();
 				int types = 0, curType = 0;
 				foreach (var unit in this.definitions) {
 					types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
@@ -812,7 +812,7 @@ namespace MonoDevelop.AssemblyBrowser
 									return;
 								if (!member.IsPublic && publicOnly)
 									continue;
-								if (member.Name.ToUpper ().Contains (pattern)) {
+								if (member.Name.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) != -1) {
 									members.Add (member);
 								}
 							}
@@ -939,7 +939,7 @@ namespace MonoDevelop.AssemblyBrowser
 							if (!type.IsPublic && publicOnly)
 								continue;
 							var parent = type.FullName;
-							if (parent.ToUpper ().IndexOf (pattern, StringComparison.Ordinal) >= 0)
+							if (parent.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) >= 0)
 								typeList.Add (Tuple.Create ((IUnresolvedEntity)type, type.Namespace));
 							
 							foreach (var member in type.Members) {
@@ -947,7 +947,7 @@ namespace MonoDevelop.AssemblyBrowser
 									return;
 								if (!member.IsPublic && publicOnly)
 									continue;
-								if (member.Name.ToUpper ().Contains (pattern)) {
+								if (member.Name.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) != -1) {
 									typeList.Add (Tuple.Create ((IUnresolvedEntity)member, parent));
 								}
 							}
