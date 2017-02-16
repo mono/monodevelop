@@ -51,6 +51,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			BezelStyle = NSBezelStyle.TexturedRounded;
 
+			Enabled = false;
 			UpdateAccessibilityValues ();
 		}
 
