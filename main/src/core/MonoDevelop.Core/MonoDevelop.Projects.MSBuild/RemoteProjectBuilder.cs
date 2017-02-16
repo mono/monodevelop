@@ -329,7 +329,7 @@ namespace MonoDevelop.Projects.MSBuild
 					throw new Exception ("Unknown failure");
 				return res;
 			} catch (Exception ex) {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				LoggingService.LogError ("RunTarget failed", ex);
 				MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
 				MSBuildResult res = new MSBuildResult (new [] { err });
@@ -361,9 +361,9 @@ namespace MonoDevelop.Projects.MSBuild
 					result = await builder.Run (
 								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
 								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
-							);
+						).ConfigureAwait (false);
 				} catch (Exception ex) {
-					await CheckDisconnected ();
+					await CheckDisconnected ().ConfigureAwait (false);
 					LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
 					return new AssemblyReference [0];
 				} finally {
@@ -441,10 +441,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 			try {
 				BeginOperation ();
-				await builder.Refresh ();
+				await builder.Refresh ().ConfigureAwait (false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("MSBuild refresh failed", ex);
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 			} finally {
 				EndOperation ();
 			}
@@ -460,10 +460,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 			try {
 				BeginOperation ();
-				await builder.RefreshWithContent (projectContent);
+				await builder.RefreshWithContent (projectContent).ConfigureAwait (false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("MSBuild refresh failed", ex);
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 			} finally {
 				EndOperation ();
 			}

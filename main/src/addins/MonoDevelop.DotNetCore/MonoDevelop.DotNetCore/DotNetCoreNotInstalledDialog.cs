@@ -33,6 +33,10 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
+		// TODO: This link needs to be changed.
+		// public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
+		public static readonly string DotNetCoreDownloadUrl = "https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md";
+
 		GenericMessage message;
 		AlertButton downloadButton;
 
@@ -44,7 +48,7 @@ namespace MonoDevelop.DotNetCore
 		void Build ()
 		{
 			message = new GenericMessage {
-				Text = GettextCatalog.GetString (".NET Core is required to run this application."),
+				Text = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects."),
 				DefaultButton = 1,
 				Icon = Stock.Information
 			};
@@ -59,7 +63,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				DesktopService.ShowUrl ("https://aka.ms/vs/mac/install-netcore");
+				DesktopService.ShowUrl (DotNetCoreDownloadUrl);
 		}
 
 		public void Dispose ()
@@ -70,6 +74,11 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			MessageService.GenericAlert (message);
+		}
+
+		public string Message {
+			get { return message.Text; }
+			set { message.Text = value; }
 		}
 	}
 }

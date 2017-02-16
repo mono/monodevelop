@@ -15,10 +15,17 @@ namespace Application
 				// in a tarball, we have less depth in the directory hierarchy
 				pathVersionConfig = Path.Combine (dir, "..", "..", "..", "version.config");
 			}
+
 			var lines = File.ReadAllLines (pathVersionConfig);
+
+			var label = GetValue (lines, "Label");
+			var customLabel = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATEINFO_LABEL");
+			if (!string.IsNullOrEmpty (customLabel))
+				label = customLabel;
+
 			var txt = File.ReadAllText (Path.Combine (dir, "BuildVariables.cs.in"));
 			txt = txt.Replace ("@PACKAGE_VERSION@", GetValue (lines, "Version"));
-			txt = txt.Replace ("@PACKAGE_VERSION_LABEL@", GetValue (lines, "Label"));
+			txt = txt.Replace ("@PACKAGE_VERSION_LABEL@", label);
 			txt = txt.Replace ("@COMPAT_ADDIN_VERSION@", GetValue (lines, "CompatVersion"));
 			txt = txt.Replace ("@BUILD_LANE@", Environment.GetEnvironmentVariable ("BUILD_LANE"));
 			File.WriteAllText (Path.Combine (dir, "BuildVariables.cs"), txt);

@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.MSBuild
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (GlobalPropertyProvidersExtensionPath);
 
 			foreach (var gpp in globalPropertyProviders)
-				gpp.GlobalPropertiesChanged -= HandleGlobalPropertyProviderChanged;
+				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
 
 			// Get item type nodes
 
@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var node = GetItemTypeNodes ().FirstOrDefault (n => n.CanHandleFile (fileName, typeGuid));
 
 			if (node != null) {
-				item = await node.CreateSolutionItem (monitor, ctx, fileName);
+				item = await node.CreateSolutionItem (monitor, ctx, fileName).ConfigureAwait (false);
 				if (item == null)
 					return null;
 			}
@@ -251,7 +251,7 @@ namespace MonoDevelop.Projects.MSBuild
 				item.NotifyItemReady ();
 			};
 
-			await item.LoadAsync (monitor, fileName, expectedFormat, itemGuid);
+			await item.LoadAsync (monitor, fileName, expectedFormat, itemGuid).ConfigureAwait (false);
 			return item;
 		}
 
@@ -978,7 +978,7 @@ namespace MonoDevelop.Projects.MSBuild
 					try {
 							
 						connection = new RemoteProcessConnection (exe, runtime.GetExecutionHandler ());
-						await connection.Connect ();
+						await connection.Connect ().ConfigureAwait (false);
 
 						var props = GetCoreGlobalProperties (solutionFile);
 						foreach (var gpp in globalPropertyProviders) {
@@ -991,7 +991,7 @@ namespace MonoDevelop.Projects.MSBuild
 							BinDir = binDir,
 							CultureName = GettextCatalog.UICulture.Name,
 							GlobalProperties = props
-						});
+						}).ConfigureAwait (false);
 
 						builder = new RemoteBuildEngine (connection);
 
@@ -1008,13 +1008,13 @@ namespace MonoDevelop.Projects.MSBuild
 					builders.Add (builderKey, builder);
 					builder.ReferenceCount = 1;
 					builder.Disconnected += async delegate {
-						using (await buildersLock.EnterAsync ())
+						using (await buildersLock.EnterAsync ().ConfigureAwait (false))
 							builders.Remove (builder);
 					};
 					if (lockBuilder)
 						builder.Lock ();
 					var pb = new RemoteProjectBuilder (file, builder);
-					await pb.Load ();
+					await pb.Load ().ConfigureAwait (false);
 					return pb;
 				});
 			}
@@ -1066,7 +1066,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static async void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
-			using (await buildersLock.EnterAsync ()) {
+			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
 				if (--engine.ReferenceCount != 0)
 					return;
 				builders.Remove (engine);

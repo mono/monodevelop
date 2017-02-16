@@ -90,6 +90,9 @@ namespace MonoDevelop.Projects
 
 		internal void RemoveExtension (ChainedExtension ext)
 		{
+			if (extensions == null)
+				return;
+
 			extensions = extensions.Where (e => e != ext).ToArray ();
 			Rechain ();
 		}
@@ -108,7 +111,9 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
-			extensions[0].DisposeChain ();
+			var first = extensions [0];
+			extensions = null;
+			first.DisposeChain ();
 		}
 	}
 }

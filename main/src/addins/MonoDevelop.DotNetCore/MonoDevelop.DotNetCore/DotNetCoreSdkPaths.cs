@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -59,11 +60,40 @@ namespace MonoDevelop.DotNetCore
 			ProjectImportTargets = Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.targets");
 
 			Exist = File.Exists (ProjectImportProps) && File.Exists (ProjectImportTargets);
+
+			if (Exist) {
+				CheckIsSupportedSdkVersion (sdkDirectory);
+				Exist = !IsUnsupportedSdkVersion;
+			} else {
+				IsUnsupportedSdkVersion = true;
+			}
 		}
 
+		public bool IsUnsupportedSdkVersion { get; private set; }
 		public bool Exist { get; private set; }
 		public string ProjectImportProps { get; private set; }
 		public string ProjectImportTargets { get; private set; }
 		public string MSBuildSDKsPath { get; private set; }
+
+		/// <summary>
+		/// .NET Core SDK version needs to be at least 1.0.0-preview5-004460
+		/// </summary>
+		void CheckIsSupportedSdkVersion (string sdkDirectory)
+		{
+			try {
+				string sdkVersion = Path.GetFileName (sdkDirectory);
+				int buildVersion = -1;
+				if (DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion)) {
+					if (buildVersion < DotNetCoreSdkVersion.MinimumSupportedBuildVersion) {
+						IsUnsupportedSdkVersion = true;
+						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0-preview5-004460. '{1}'", sdkVersion, sdkDirectory);
+					}
+				} else {
+					LoggingService.LogWarning ("Unable to get version information for .NET Core SDK. '{0}'", sdkDirectory);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error checking sdk version.", ex);
+			}
+		}
 	}
 }

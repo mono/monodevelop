@@ -40,21 +40,37 @@ namespace MonoDevelop.PackageManagement
 	{
 		public PackageReference CreatePackageReference ()
 		{
-			var identity = GetPackageIdentity ();
-			var framework = GetFramework ();
-			return new PackageReference (identity, framework);
-		}
-
-		PackageIdentity GetPackageIdentity ()
-		{
 			var version = GetVersion ();
-			return new PackageIdentity (Include, version);
+			var identity = GetPackageIdentity (version);
+			var framework = GetFramework ();
+			return CreatePackageReference (identity, version, framework);
 		}
 
-		NuGetVersion GetVersion ()
+		PackageReference CreatePackageReference (
+			PackageIdentity identity,
+			VersionRange version,
+			NuGetFramework framework)
+		{
+			if (!version.IsFloating)
+				version = null;
+
+			return new PackageReference (
+				identity, framework,
+				userInstalled: true,
+				developmentDependency: false,
+				requireReinstallation: false,
+				allowedVersions: version);
+		}
+
+		PackageIdentity GetPackageIdentity (VersionRange version)
+		{
+			return new PackageIdentity (Include, version.MinVersion);
+		}
+
+		VersionRange GetVersion ()
 		{
 			string version = Metadata.GetValue ("Version");
-			return new NuGetVersion (version);
+			return VersionRange.Parse (version);
 		}
 
 		NuGetFramework GetFramework ()
@@ -68,7 +84,8 @@ namespace MonoDevelop.PackageManagement
 
 		public bool Equals (PackageIdentity packageIdentity, bool matchVersion = true)
 		{
-			var currentPackageIdentity = GetPackageIdentity ();
+			var packageReference = CreatePackageReference ();
+			var currentPackageIdentity = packageReference.PackageIdentity;
 			if (matchVersion)
 				return packageIdentity.Equals (currentPackageIdentity);
 
@@ -77,19 +94,18 @@ namespace MonoDevelop.PackageManagement
 
 		public static ProjectPackageReference Create (PackageIdentity packageIdentity)
 		{
-			var packageReference = new ProjectPackageReference {
-				Include = packageIdentity.Id
-			};
-
-			packageReference.Metadata.SetValue ("Version", packageIdentity.Version.ToNormalizedString ());
-
-			return packageReference;
+			return Create (packageIdentity.Id, packageIdentity.Version.ToNormalizedString ());
 		}
 
 		internal static ProjectPackageReference Create (string packageId, string version)
 		{
-			var package = new PackageIdentity (packageId, new NuGetVersion (version));
-			return Create (package);
+			var packageReference = new ProjectPackageReference {
+				Include = packageId
+			};
+
+			packageReference.Metadata.SetValue ("Version", version);
+
+			return packageReference;
 		}
 
 		public static ProjectPackageReference Create (IMSBuildItemEvaluated evaluatedItem)

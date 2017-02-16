@@ -239,8 +239,8 @@ namespace MonoDevelop.Ide.Desktop
 				// And we batch as many modifications as possible in a 1 second window.
 				if (recentSaveTask == null) {
 					recentSaveTask = Task.Run (async () => {
-						await Task.Delay (1000);
-						await SaveRecentFiles ();
+						await Task.Delay (1000).ConfigureAwait (false);
+						await SaveRecentFiles ().ConfigureAwait (false);
 					});
 				}
 			}
@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Desktop
 				recentSaveTask = null;
 			}
 
-			using (var fs = await AcquireFileExclusive (filePath)) {
+			using (var fs = await AcquireFileExclusive (filePath).ConfigureAwait (false)) {
 				var list = ReadStore (fs);
 				bool modified = false;
 

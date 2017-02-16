@@ -56,8 +56,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AddDotNetProjectPackageReference (string packageId, string version)
 		{
-			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (version));
-			var packageReference = ProjectPackageReference.Create (packageIdentity);
+			var packageReference = ProjectPackageReference.Create (packageId, version);
 
 			dotNetProject.Items.Add (packageReference);
 		}
@@ -180,6 +179,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("3.6.0", packageReference.PackageIdentity.Version.ToNormalizedString ());
 			Assert.IsTrue (result);
 			Assert.IsTrue (project.IsSaved);
+			Assert.IsFalse (packageReference.HasAllowedVersions);
+			Assert.IsNull (packageReference.AllowedVersions);
 		}
 
 		[Test]
@@ -226,6 +227,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageSpec spec = await GetPackageSpecsAsync (dependencyGraphCacheContext);
 
 			Assert.AreSame (cachedSpec, spec);
+		}
+
+		[Test]
+		public async Task GetInstalledPackagesAsync_FloatingVersion_ReturnsOnePackageReference ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.0-*");
+
+			var packageReferences = await project.GetInstalledPackagesAsync (CancellationToken.None);
+
+			var packageReference = packageReferences.Single ();
+			Assert.AreEqual ("NUnit", packageReference.PackageIdentity.Id);
+			Assert.IsTrue (packageReference.IsFloating ());
+			Assert.AreEqual ("2.6.0-*", packageReference.AllowedVersions.Float.ToString ());
 		}
 	}
 }

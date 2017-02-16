@@ -573,6 +573,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			guiSyncDispatcherFunc (func).Wait ();
 		}
+
+		public dynamic VSProject4 { get; private set; }
 	}
 }
 

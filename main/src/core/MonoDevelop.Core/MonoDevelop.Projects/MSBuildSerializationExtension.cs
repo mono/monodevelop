@@ -56,8 +56,8 @@ namespace MonoDevelop.Projects
 		{
 			return Task.Run (async () => {
 				foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-					if (f.CanReadFile (fileName, typeof(WorkspaceItem)))
-						return (WorkspaceItem) await f.ReadFile (fileName, typeof(WorkspaceItem), monitor);
+					if (f.CanReadFile (fileName, typeof (WorkspaceItem)))
+						return (WorkspaceItem)await f.ReadFile (fileName, typeof (WorkspaceItem), monitor).ConfigureAwait (false);
 				}
 				throw new NotSupportedException ();
 			});

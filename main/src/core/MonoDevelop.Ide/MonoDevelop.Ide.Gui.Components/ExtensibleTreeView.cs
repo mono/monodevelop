@@ -1946,16 +1946,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (entryset == null)
 				return;
 
-			if (evt == null) {
-				var paths = tree.Selection.GetSelectedRows ();
-				if (paths != null) {
-					var area = tree.GetCellArea (paths [0], tree.Columns [0]);
-
-					IdeApp.CommandService.ShowContextMenu (this, area.Left, area.Top, entryset, this);
-				}
-			} else {
-				IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
-			}
+			tree.ShowContextMenu (evt, entryset, this);
 		}
 
 		CommandEntrySet BuildEntrySet ()

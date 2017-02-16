@@ -99,6 +99,7 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRenamed;
 		public event EventHandler<NuGetProjectEventArgs> AfterNuGetProjectRenamed;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectUpdated;
+		public event EventHandler<NuGetEventArgs<string>> AfterNuGetCacheUpdated;
 		public event EventHandler SolutionClosed;
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;

@@ -13,7 +13,7 @@
 		<_Description>Creates a new ASP.NET Core web project.</_Description>
 		<DefaultFilename>WebApp</DefaultFilename>
 		<Wizard>MonoDevelop.DotNetCore.ProjectTemplateWizard</Wizard>
-		<DefaultParameters>Template=EmptyWebProject;CreateWebRoot=true;IsWebProject=true;OpenFile=Startup.cs;Files=Startup.cs|Program.cs</DefaultParameters>
+		<DefaultParameters>Template=EmptyWebProject;CreateWebRoot=true;OpenFile=Startup.cs;Files=Startup.cs|Program.cs</DefaultParameters>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">

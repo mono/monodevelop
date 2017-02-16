@@ -424,6 +424,7 @@
     <Compile Include="NuGet.Commands\MSBuildRestoreResult.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageDependencyNodeCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

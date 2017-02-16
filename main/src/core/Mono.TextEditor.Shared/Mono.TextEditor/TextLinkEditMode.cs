@@ -560,8 +560,8 @@ namespace Mono.TextEditor
 						int strOffset = BaseOffset + segment.Offset - metrics.TextStartOffset;
 						int strEndOffset = BaseOffset + segment.EndOffset - metrics.TextStartOffset;
 
-						int x_pos = metrics.Layout.Layout.IndexToPos (strOffset).X;
-						int x_pos2 = metrics.Layout.Layout.IndexToPos (strEndOffset).X;
+						int x_pos = metrics.Layout.IndexToPos (strOffset).X;
+						int x_pos2 = metrics.Layout.IndexToPos (strEndOffset).X;
 					
 						x_pos = (int)(x_pos / Pango.Scale.PangoScale);
 						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);

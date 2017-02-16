@@ -95,6 +95,8 @@
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
 			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
+			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.Restore" />
 		</Condition>
 	</Extension>
@@ -149,6 +151,15 @@
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
+		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<ExtensionPoint path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>

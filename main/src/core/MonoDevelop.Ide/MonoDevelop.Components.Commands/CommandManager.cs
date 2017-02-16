@@ -84,6 +84,7 @@ namespace MonoDevelop.Components.Commands
 
 #if MAC
 		Foundation.NSObject keyMonitor;
+		uint throttleLastEventTime = 0;
 #endif
 
 		Dictionary<Command, HashSet<Command>> conflicts;
@@ -493,7 +494,7 @@ namespace MonoDevelop.Components.Commands
 
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
-						dispatched = DispatchCommand (commands [i].Id, CommandSource.Keybinding);
+						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time);
 					conflict.Add (commands [i]);
 				} else
 					bypass = true; // allow Gtk to handle the event if the command is disabled
@@ -1333,10 +1334,49 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
+			return DispatchCommand (commandId, dataItem, initialTarget, source, null);
+		}
+
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
+		/// <param name='source'>
+		/// What is causing the command to be dispatched
+		/// </param>
+		/// <param name='time'>
+		/// The time of the event, if any, that triggered this command
+		/// </param>
+		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, uint? time)
+		{
 			RegisterUserInteraction ();
 			
 			if (guiLock > 0)
 				return false;
+
+#if MAC
+			if (time != null) {
+				nint timeVal = 0;
+
+				timeVal = Foundation.NSUserDefaults.StandardUserDefaults.IntForKey ("KeyRepeat") * 25;
+
+				if (time - throttleLastEventTime < timeVal)
+					return false;
+
+				throttleLastEventTime = (uint)time;
+			}
+#endif
 
 			commandId = CommandManager.ToCommandId (commandId);
 

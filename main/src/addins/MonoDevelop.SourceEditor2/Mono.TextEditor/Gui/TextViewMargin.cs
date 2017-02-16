@@ -58,6 +58,7 @@ namespace Mono.TextEditor
 		Pango.Rectangle[] eolMarkerLayoutRect;
 
 		internal double charWidth;
+		bool isMonospacedFont;
 
 		double LineHeight {
 			get {
@@ -399,7 +400,13 @@ namespace Mono.TextEditor
 				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
 			}
-
+			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == textEditor.Options.Font.Family);
+			if (family != null) {
+				isMonospacedFont = family.IsMonospace;
+			} else {
+				isMonospacedFont = false;
+			}
+			          
 			// Gutter font may be bigger
 			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.GutterFont, textEditor.PangoContext.Language)) {
 				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Max (this.textEditor.GetTextEditorData ().LineHeight, System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale));
@@ -802,7 +809,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-			var wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
+			var wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
 			if (logicalRulerColumn < 0)
 				logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
@@ -963,28 +970,47 @@ namespace Mono.TextEditor
 					atts.InsertOffsetList (textEditor.preeditAttrs, si, ei);
 				}
 				wrapper.LineChars = lineChars;
-				wrapper.Layout.SetText (lineText);
+				wrapper.Text = lineText;
 				wrapper.IndentSize = 0;
 				var tabSize = textEditor.Options != null ? textEditor.Options.TabSize : 4;
-				for (int i = 0; i < lineChars.Length; i++) {
+				int i = 0, lineWidth;
+				for (; i < lineChars.Length; i++) {
 					char ch = lineChars [i];
 					if (ch == ' ') {
 						wrapper.IndentSize++;
 					} else if (ch == '\t') {
-						wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize, tabSize);
+						wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize + 1, tabSize) - 1;
 					} else {
 						break;
 					}
+				}
+				lineWidth = wrapper.IndentSize;
+				bool isFastPathPossible = isMonospacedFont;
+				if (isFastPathPossible) {
+					for (; i < lineChars.Length; i++) {
+						char ch = lineChars [i];
+						if (ch == '\t') {
+							lineWidth = GetNextTabstop (textEditor.GetTextEditorData (), lineWidth + 1, tabSize) - 1;
+						} else {
+							if (ch > 255) {
+								// for non ASCII chars always fall back to pango.
+								isFastPathPossible = false;
+								break;
+							}
+							lineWidth++;
+						} 
+					}
+					isFastPathPossible &= ((int)wrapper.Width) == (int)(lineWidth * charWidth);
 				}
 
 				var nextLine = line.NextLine;
 				atts.AssignTo (wrapper.Layout);
 				atts.Dispose ();
 				int w, h;
-				wrapper.Layout.GetSize (out w, out h);
+				wrapper.GetSize (out w, out h);
 				wrapper.Width = System.Math.Floor (w / Pango.Scale.PangoScale);
 				wrapper.Height = System.Math.Floor (h / Pango.Scale.PangoScale);
-
+    			wrapper.FastPath = isFastPathPossible;
 				var lines = wrapper.Layout.LineCount;
 
 				if (lines == 1) {
@@ -1011,6 +1037,11 @@ namespace Mono.TextEditor
 				sw.Stop ();
 			}
 		}
+
+			internal void GetSize (out int w, out int h)
+			{
+				throw new NotImplementedException ();
+			}
 
 		void OnLineShown (DocumentLine line)
 		{
@@ -1199,6 +1230,8 @@ namespace Mono.TextEditor
 
 		public class LayoutWrapper : IDisposable
 		{
+			readonly TextViewMargin parent;
+
 			public int IndentSize {
 				get;
 				set;
@@ -1206,7 +1239,7 @@ namespace Mono.TextEditor
 
 			public LayoutCache.LayoutProxy Layout {
 				get;
-				private set;
+				set;
 			}
 
 			public bool IsUncached {
@@ -1222,6 +1255,15 @@ namespace Mono.TextEditor
 			internal List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> Chunks {
 				get;
 				set;
+			}
+
+			public string Text {
+				get {
+					return Layout.Text;
+				}
+				set {
+					Layout.SetText (value);
+				}
 			}
 
 			public char[] LineChars {
@@ -1261,8 +1303,9 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public LayoutWrapper (LayoutCache.LayoutProxy layout)
+			public LayoutWrapper (TextViewMargin parent, LayoutCache.LayoutProxy layout)
 			{
+				this.parent = parent;
 				this.Layout = layout;
 				this.IsUncached = false;
 			}
@@ -1307,6 +1350,48 @@ namespace Mono.TextEditor
 			public uint TranslateToUTF8Index (uint textIndex, ref uint curIndex, ref uint byteIndex)
 			{
 				return TextViewMargin.TranslateToUTF8Index (LineChars, textIndex, ref curIndex, ref byteIndex);
+			}
+
+			public bool FastPath { get; internal set; }
+
+			public Pango.Rectangle IndexToPos (int index)
+			{
+				return Layout.IndexToPos (index);
+			}
+
+			public void GetSize (out int width, out int height)
+			{
+				if (FastPath) {
+					width = (int)(Pango.Scale.PangoScale * LineChars.Length * parent.charWidth);
+					height = (int)(Pango.Scale.PangoScale * parent.LineHeight);
+					return;
+				}
+				Layout.GetSize (out width, out height);
+			}
+
+			public void GetPixelSize (out int width, out int height)
+			{
+				if (FastPath) {
+					width = (int)(LineChars.Length * parent.charWidth);
+					height = (int)(parent.LineHeight);
+					return;
+				}
+				Layout.GetPixelSize (out width, out height);
+			}
+
+			public void IndexToLineX (int index, bool trailing, out int line, out int xPos)
+			{
+				Layout.IndexToLineX (index, trailing, out line, out xPos);
+			}
+
+			public bool XyToIndex (int x, int y, out int index, out int trailing)
+			{
+				return Layout.XyToIndex (x, y, out index, out trailing);
+			}
+
+			public void GetCursorPos (int index, out Pango.Rectangle strong_pos, out Pango.Rectangle weak_pos)
+			{
+				Layout.GetCursorPos (index, out strong_pos, out weak_pos);
 			}
 		}
 
@@ -1359,7 +1444,7 @@ namespace Mono.TextEditor
 
 			//Get 1st visible character index from left based on HAdjustment
 			int index, trailing;
-			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
+			layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
 
 			double ypos;
 			if (spaceOrTab == ' ') {
@@ -1393,12 +1478,12 @@ namespace Mono.TextEditor
 				if (lastIndex == i) {
 					posX = lastPosX;
 				} else {
-					layout.Layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i, ref curIndex, ref byteIndex), false, out line, out posX);
+					layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i, ref curIndex, ref byteIndex), false, out line, out posX);
 				}
 				double xpos = x + posX / Pango.Scale.PangoScale;
 				if (xpos > textEditorWidth)
 					break;
-				layout.Layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i + 1, ref curIndex, ref byteIndex), false, out line, out posX);
+				layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i + 1, ref curIndex, ref byteIndex), false, out line, out posX);
 				lastPosX = posX;
 				lastIndex = i + 1;
 				double xpos2 = x + posX / Pango.Scale.PangoScale;
@@ -1528,13 +1613,13 @@ namespace Mono.TextEditor
 			// predit layout already contains virtual space.
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
-			LayoutWrapper wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
+			LayoutWrapper wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.LineChars = virtualSpace.ToCharArray ();
-			wrapper.Layout.SetText (virtualSpace);
+			wrapper.Text = virtualSpace;
 			wrapper.Layout.Tabs = tabArray;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
 			int vy, vx;
-			wrapper.Layout.GetSize (out vx, out vy);
+			wrapper.GetSize (out vx, out vy);
 			wrapper.Width = wrapper.LastLineWidth = vx / Pango.Scale.PangoScale;
 			return wrapper;
 		}
@@ -1563,8 +1648,8 @@ namespace Mono.TextEditor
 			if (BackgroundRenderer == null) {
 				foreach (var bg in layout.BackgroundColors) {
 					int x1, x2;
-					x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
-					x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
+					x1 = layout.IndexToPos (bg.FromIdx).X;
+					x2 = layout.IndexToPos (bg.ToIdx).X;
 					DrawRectangleWithRuler (
 						cr, xPos + textEditor.HAdjustment.Value - TextStartPosition,
 						new Cairo.Rectangle (x1 / Pango.Scale.PangoScale + position, y, (x2 - x1) / Pango.Scale.PangoScale + 1, _lineHeight),
@@ -1617,11 +1702,11 @@ namespace Mono.TextEditor
 				double endX;
 				int endY;
 				if (selectionStartOffset != offset + length) {
-					var start = layout.Layout.IndexToPos (layout.SelectionStartIndex);
+					var start = layout.IndexToPos (layout.SelectionStartIndex);
 					startX = System.Math.Floor (start.X / Pango.Scale.PangoScale);
 					startY = (int)(y + System.Math.Floor (start.Y / Pango.Scale.PangoScale));
 
-					var end = layout.Layout.IndexToPos (layout.SelectionEndIndex);
+					var end = layout.IndexToPos (layout.SelectionEndIndex);
 					endX = System.Math.Ceiling (end.X / Pango.Scale.PangoScale);
 					endY = (int)(y + System.Math.Ceiling (end.Y / Pango.Scale.PangoScale));
 				} else {
@@ -1685,8 +1770,8 @@ namespace Mono.TextEditor
 							uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
 							
 							int l, x1, x2;
-							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
-							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
+							layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
+							layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
 							int w = (int)System.Math.Ceiling ((x2 - x1) / Pango.Scale.PangoScale);
 							int s = (int)System.Math.Floor (x1 / Pango.Scale.PangoScale + x);
 							double corner = System.Math.Min (4, width) * textEditor.Options.Zoom;
@@ -1774,7 +1859,7 @@ namespace Mono.TextEditor
 						Pango.Rectangle strong_pos, weak_pos;
 						curIndex = byteIndex = 0;
 						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex);
-						layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
+						layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
 						var cx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
 						var cy = y + (strong_pos.Y / Pango.Scale.PangoScale);
 						if (textEditor.preeditCursorCharIndex == 0) {
@@ -1782,7 +1867,7 @@ namespace Mono.TextEditor
 						} else {
 							var preeditIndex = (uint)(index + textEditor.preeditCursorCharIndex);
 							utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, preeditIndex, ref curIndex, ref byteIndex);
-							layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
+							layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
 							var pcx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
 							var pcy = y + (strong_pos.Y / Pango.Scale.PangoScale);
 							SetVisibleCaretPosition (pcx, pcy, cx, cy);
@@ -1984,10 +2069,10 @@ namespace Mono.TextEditor
 					// folding marker
 					int lineNr = args.LineNumber;
 					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
-						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-                            shownFolding.Item2.IsCollapsed = false;
-                            textEditor.Document.InformFoldChanged(new FoldSegmentEventArgs(shownFolding.Item2));
-                            return;
+						if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+							shownFolding.Value.IsCollapsed = false;
+							textEditor.Document.InformFoldChanged (new FoldSegmentEventArgs (shownFolding.Value));
+							return;
 						}
 					}
 					return;
@@ -2333,8 +2418,8 @@ namespace Mono.TextEditor
 				// folding marker
 				int lineNr = args.LineNumber;
 				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
-					if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Item2.Segment, shownFolding.Item1);
+					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
 						return;
 					}
 				}
@@ -2506,7 +2591,7 @@ namespace Mono.TextEditor
 			cr.Fill ();
 		}
 
-		IEnumerable<Tuple<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
+		IEnumerable<KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
 			if (lineNr < 0)
 				yield break;
@@ -2551,7 +2636,7 @@ namespace Mono.TextEditor
 						var pixelWidth = width / Pango.Scale.PangoScale + foldXMargin * 2;
 
 						var foldingRectangle = new Rectangle ((int)xPos, y, (int)pixelWidth, (int)LineHeight - 1);
-						yield return Tuple.Create (foldingRectangle, folding);
+						yield return new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding);
 						xPos += pixelWidth;
 						if (folding.GetEndLine (textEditor.Document) != line) {
 							line = folding.GetEndLine (textEditor.Document);
@@ -2988,14 +3073,14 @@ namespace Mono.TextEditor
 			bool ConsumeLayout (LayoutWrapper layoutWrapper, int xp, int yp)
 			{
 				int trailing;
-				bool isInside = layoutWrapper.Layout.XyToIndex (xp, yp, out index, out trailing);
+				bool isInside = layoutWrapper.XyToIndex (xp, yp, out index, out trailing);
 
 				if (isInside) {
 					int lineNr;
 					int xp1, xp2;
-					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
-					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
-					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
+					layoutWrapper.IndexToLineX (index, false, out lineNr, out xp1);
+					layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
+					index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
 
 					if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
 						index++;
@@ -3047,7 +3132,7 @@ namespace Mono.TextEditor
 							done |= ConsumeLayout (layoutWrapper, (int)(xp - xPos), (int)(yp - yPos));
 							if (done)
 								break;
-							layoutWrapper.Layout.GetPixelSize (out width, out height);
+							layoutWrapper.GetPixelSize (out width, out height);
 						} finally {
 							if (layoutWrapper.IsUncached)
 								layoutWrapper.Dispose ();
@@ -3172,7 +3257,7 @@ namespace Mono.TextEditor
 			Pango.Rectangle pos;
 			try {
 				index = (int)TranslateToUTF8Index (wrapper.LineChars, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.LineChars.Length), ref curIndex, ref byteIndex);
-				pos = wrapper.Layout.IndexToPos (index);
+				pos = wrapper.IndexToPos (index);
 			} catch {
 				return 0;
 			} finally {

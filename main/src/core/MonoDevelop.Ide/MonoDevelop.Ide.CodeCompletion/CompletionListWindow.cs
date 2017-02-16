@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CodeCompletionContext CodeCompletionContext {
 			get { return window.CodeCompletionContext; }
 			set { window.CodeCompletionContext = value; }
-		}
+		} 
 
 		internal int StartOffset {
 			get { return window.StartOffset; }

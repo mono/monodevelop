@@ -39,7 +39,9 @@ namespace MonoDevelop.CSharp.Project
 	{
 		const int DEBUG_FULL = 0;
 		const int DEBUG_PDB_ONLY = 1;
-		const int DEBUG_NONE = 2;
+		const int DEBUG_PDB_PORTABLE = 2;
+		const int DEBUG_PDB_EMBEDDED = 3;
+		const int DEBUG_NONE = 4;
 
 		DotNetProjectConfiguration configuration;
 		CSharpCompilerParameters compilerParameters = null;
@@ -107,6 +109,10 @@ namespace MonoDevelop.CSharp.Project
 				comboDebug.Active = DEBUG_NONE;
 			} else if (string.Equals ("pdbonly", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
 				comboDebug.Active = DEBUG_PDB_ONLY;
+			} else if (string.Equals ("portable", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
+				comboDebug.Active = DEBUG_PDB_PORTABLE;
+			} else if (string.Equals ("embedded", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
+				comboDebug.Active = DEBUG_PDB_EMBEDDED;
 			} else {
 				comboDebug.Active = DEBUG_FULL;
 			}
@@ -141,7 +147,21 @@ namespace MonoDevelop.CSharp.Project
 				break;
 			case DEBUG_PDB_ONLY:
 				configuration.DebugSymbols = true;
-				configuration.DebugType = "pdbonly";
+				if (!string.Equals (configuration.DebugType, "pdbonly", StringComparison.OrdinalIgnoreCase)) {
+					configuration.DebugType = "pdbonly";
+				}
+				break;
+			case DEBUG_PDB_PORTABLE:
+				configuration.DebugSymbols = true;
+				if (!string.Equals (configuration.DebugType, "portable", StringComparison.OrdinalIgnoreCase)) {
+					configuration.DebugType = "portable";
+				}
+				break;
+			case DEBUG_PDB_EMBEDDED:
+				configuration.DebugSymbols = true;
+				if (!string.Equals (configuration.DebugType, "embedded", StringComparison.OrdinalIgnoreCase)) {
+					configuration.DebugType = "embedded";
+				}
 				break;
 			case DEBUG_NONE:
 				configuration.DebugSymbols = false;
