@@ -177,14 +177,6 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return project; }
 		}
 
-		internal MSBuildProject GetRootProject ()
-		{
-			if (parentContext != null)
-				return parentContext.GetRootProject ();
-
-			return Project;
-		}
-
 		static string extensionsPath;
 
 		internal static string DefaultExtensionsPath {
