@@ -1361,6 +1361,45 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (copyToOutputDirectory.All (propertyValue => propertyValue == "PreserveNewest"));
 		}
 
+		/// <summary>
+		/// Checks that an update item from a separate import affects items that
+		/// have already been included.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndSeparateItemUpdate ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-separate-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var textFileItems =  mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None").ToArray ();
+			var preserveNewestFiles = textFileItems
+				.Where (item => item.Metadata.GetValue ("CopyToOutputDirectory") == "PreserveNewest")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			var nonUpdatedTextFiles = textFileItems
+				.Where (item => item.Metadata.GetValue ("CopyToOutputDirectory") != "PreserveNewest")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+
+			Assert.AreEqual (new string [] {
+				@"Content\Data\text2-1.txt",
+				@"Content\Data\text2-2.txt",
+				@"Content\text1-1.txt",
+				@"Content\text1-2.txt"
+			}, preserveNewestFiles);
+
+			Assert.AreEqual (new string [] {
+				@"Extra\No\More\p3.txt",
+				@"Extra\No\p2.txt",
+				@"Extra\p1.txt",
+				@"Extra\Yes\More\p5.txt",
+				@"Extra\Yes\More\p6.txt",
+				@"Extra\Yes\p4.txt",
+				"text3-1.txt",
+				"text3-2.txt"
+			}, nonUpdatedTextFiles);
+		}
+
 		[Test]
 		public async Task VSFormatCompatibility ()
 		{

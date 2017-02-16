@@ -312,9 +312,17 @@ namespace MonoDevelop.Projects.MSBuild
 			if (IsWildcardInclude (update)) {
 				var rootProject = context.GetRootProject ();
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update))
-					UpdateEvaluatedItem (project, item, f, trueCond, it);
+					UpdateEvaluatedItemInAllProjects (project, item, f, trueCond, it);
 			} else
-				UpdateEvaluatedItem (project, item, update, trueCond, it);
+				UpdateEvaluatedItemInAllProjects (project, item, update, trueCond, it);
+		}
+
+		static void UpdateEvaluatedItemInAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
+		{
+			do {
+				UpdateEvaluatedItem (project, item, include, trueCond, it);
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void UpdateEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
