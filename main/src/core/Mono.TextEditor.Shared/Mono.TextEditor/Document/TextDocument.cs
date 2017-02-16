@@ -175,7 +175,7 @@ namespace Mono.TextEditor
 				SyntaxMode = new SyntaxHighlighting (def, this);
 			} else {
 #if false
-				SyntaxMode = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(this);
+				SyntaxMode = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(this.TextBuffer);
 #else
 				SyntaxMode = DefaultSyntaxHighlighting.Instance;
 #endif
@@ -243,8 +243,8 @@ namespace Mono.TextEditor
 					var change = args.Changes[i];
 
 					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
-		 			foldSegmentTree.UpdateOnTextReplace (this, textChange);           
-					TextChanged?.Invoke(this, textChange);
+					foldSegmentTree.UpdateOnTextReplace(this, textChange);
+					TextChanging?.Invoke(this, textChange);
 				}
 			}
 		}
@@ -300,7 +300,6 @@ namespace Mono.TextEditor
 					value = "";
 				var args = new TextChangeEventArgs(0, Text, value);
 				textSegmentMarkerTree.Clear();
-				OnTextReplacing(args);
 				cachedText = null;
 				this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(0, this.TextBuffer.CurrentSnapshot.Length), value);
 
@@ -375,7 +374,6 @@ namespace Mono.TextEditor
 			if (value.Length != 0)
 				EnsureSegmentIsUnfolded (offset, value.Length);
 			
-			OnTextReplacing (args);
 			//HACK what does this line to? value = args.InsertedText.Text;
 
 			cachedText = null;
@@ -387,11 +385,11 @@ namespace Mono.TextEditor
 			//HACK splitter.TextReplaced (this, args);
 			//HACK versionProvider.AppendChange (args);
 			//HACK buffer.Version = Version;
-			//OnTextReplaced(args);
+			OnTextReplaced(args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
-		
+
 		public string GetTextBetween (int startOffset, int endOffset)
 		{
 			if (startOffset < 0)
@@ -589,13 +587,14 @@ namespace Mono.TextEditor
 
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 
-		protected virtual void OnTextReplacing (TextChangeEventArgs args)
+		protected virtual void OnTextReplaced(TextChangeEventArgs args)
 		{
-			if (TextChanging != null)
-				TextChanging (this, args);
+			if (TextChanged != null)
+				TextChanged (this, args);
 		}
+
 		public event EventHandler<TextChangeEventArgs> TextChanging;
-		
+
 		protected virtual void OnTextSet (EventArgs e)
 		{
 			EventHandler handler = this.TextSet;
@@ -1395,8 +1394,9 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<FoldSegment> GetEndFoldings (DocumentLine line)
 		{
+			var lineOffset = line.Offset;
 			foreach (FoldSegment segment in GetFoldingContaining (line)) {
-				if (segment.GetEndLine (this).Offset == line.Offset)
+				if (segment.GetEndLine (this).Offset == lineOffset)
 					yield return segment;
 			}
 		}
