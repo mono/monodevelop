@@ -37,7 +37,7 @@
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
         <UnformattedFile name = "Program.fs" AddStandardHeader="True">
-        <![CDATA[// Learn more about F# at http://fsharp.net
+        <![CDATA[// Learn more about F# at http://fsharp.org
 // See the 'F# Tutorial' project for more help.
 
 [<EntryPoint>]

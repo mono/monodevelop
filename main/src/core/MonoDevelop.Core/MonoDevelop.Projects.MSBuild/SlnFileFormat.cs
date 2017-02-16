@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
-					await WriteFileInternal (file, file, sol, saveProjects, monitor);
+					await WriteFileInternal (file, file, sol, saveProjects, monitor).ConfigureAwait (false);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);

@@ -87,14 +87,14 @@ namespace MonoDevelop.Core
 				req.MakeCancelable (token);
 				prepareRequest (req);
 
-				return (HttpWebResponse) await req.GetResponseAsync ();
+				return (HttpWebResponse) await req.GetResponseAsync ().ConfigureAwait (false);
 			}
 
 			var handler = new RequestHelper (
 				createRequest, prepareRequest, proxyCache, CredentialStore.Instance, credentialProvider
 			);
 
-			return await handler.GetResponseAsync (token);
+			return await handler.GetResponseAsync (token).ConfigureAwait (false);
 		}
 
 		/// <summary>

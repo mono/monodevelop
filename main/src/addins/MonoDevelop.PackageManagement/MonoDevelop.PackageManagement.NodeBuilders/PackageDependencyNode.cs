@@ -24,10 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -38,32 +40,48 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		string name;
 		string version;
 
-		PackageDependencyNode (PackageDependenciesNode dependenciesNode, PackageDependency dependency)
+		PackageDependencyNode (
+			PackageDependenciesNode dependenciesNode,
+			PackageDependency dependency,
+			bool topLevel)
 		{
 			this.dependenciesNode = dependenciesNode;
 			this.dependency = dependency;
+			IsTopLevel = topLevel;
+
 			name = dependency.Name;
 			version = dependency.Version;
+
+			if (IsTopLevel)
+				IsReadOnly = !PackageReferenceExistsInProject ();
 		}
 
-		PackageDependencyNode (ProjectPackageReference packageReference)
+		PackageDependencyNode (PackageDependenciesNode dependenciesNode, ProjectPackageReference packageReference)
 		{
+			this.dependenciesNode = dependenciesNode;
+			IsTopLevel = true;
+
 			name = packageReference.Include;
 			version = packageReference.Metadata.GetValue ("Version", string.Empty);
 		}
 
-		public static PackageDependencyNode Create (PackageDependenciesNode dependenciesNode, string dependencyName)
+		public static PackageDependencyNode Create (
+			PackageDependenciesNode dependenciesNode,
+			string dependencyName,
+			bool topLevel)
 		{
 			PackageDependency dependency = dependenciesNode.GetDependency (dependencyName);
 			if (dependency != null)
-				return new PackageDependencyNode (dependenciesNode, dependency);
+				return new PackageDependencyNode (dependenciesNode, dependency, topLevel);
 
 			return null;
 		}
 
-		public static PackageDependencyNode Create (ProjectPackageReference packageReference)
+		public static PackageDependencyNode Create (
+			PackageDependenciesNode dependenciesNode,
+			ProjectPackageReference packageReference)
 		{
-			return new PackageDependencyNode (packageReference);
+			return new PackageDependencyNode (dependenciesNode, packageReference);
 		}
 
 		public string Name {
@@ -85,6 +103,28 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return new IconId ("md-package-dependency");
 		}
 
+		public DotNetProject Project {
+			get { return dependenciesNode.Project; }
+		}
+
+		public bool IsTopLevel { get; private set; }
+		public bool IsReadOnly { get; private set; }
+
+		public bool CanBeRemoved {
+			get { return IsTopLevel && !IsReadOnly; }
+		}
+
+		public bool IsReleaseVersion ()
+		{
+			NuGetVersion nugetVersion = null;
+			if (NuGetVersion.TryParse (version, out nugetVersion)) {
+				return !nugetVersion.IsPrerelease;
+			}
+
+			LoggingService.LogError ("Unable to parse NuGet package version '{0}'. Assuming release version.", version);
+			return true;
+		}
+
 		public bool HasDependencies ()
 		{
 			if (dependency != null)
@@ -103,11 +143,22 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public static IEnumerable<PackageDependencyNode> GetDependencyNodes (
 			PackageDependenciesNode dependenciesNode,
-			PackageDependency dependency)
+			PackageDependency dependency,
+			bool topLevel = false)
 		{
 			return dependency.Dependencies
-				.Select (item => PackageDependencyNode.Create (dependenciesNode, item))
+				.Select (item => PackageDependencyNode.Create (dependenciesNode, item, topLevel))
 				.Where (item => item != null);
+		}
+
+		bool PackageReferenceExistsInProject ()
+		{
+			return dependenciesNode.Project.Items.OfType<ProjectPackageReference> ().Any (IsMatch);
+		}
+
+		bool IsMatch (ProjectPackageReference packageReference)
+		{
+			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, name);
 		}
 	}
 }

@@ -60,16 +60,25 @@ namespace MonoDevelop.CodeActions
 		/// </summary>
 		public string Language { get { return attr.Languages.FirstOrDefault (); } }
 
+		string codeActionsProperty;
+		string CodeActionsProperty {
+			get {
+				if (codeActionsProperty == null) {
+					codeActionsProperty = "CodeActions." + Language + "." + IdString;
+				}
+				return codeActionsProperty;
+			}
+		}
 		/// <summary>
 		/// Gets or sets a value indicating whether this code action is enabled by the user.
 		/// </summary>
 		/// <value><c>true</c> if this code action is enabled; otherwise, <c>false</c>.</value>
 		public bool IsEnabled {
 			get {
-				return PropertyService.Get ("CodeActions." + Language + "." + IdString, true);
+				return PropertyService.Get (CodeActionsProperty, true);
 			}
 			set {
-				PropertyService.Set ("CodeActions." + Language + "." + IdString, value);
+				PropertyService.Set (CodeActionsProperty, value);
 			}
 		}
 

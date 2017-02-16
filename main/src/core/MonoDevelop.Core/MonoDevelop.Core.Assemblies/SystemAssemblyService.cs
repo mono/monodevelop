@@ -37,6 +37,7 @@ using Mono.Addins;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -420,35 +421,51 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		static ImmutableDictionary<string, bool> referenceDict = ImmutableDictionary<string, bool>.Empty;
-		static object referenceLock = new object ();
 
+		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
+		{
+			bool result;
+			if (referenceDict.TryGetValue (fileName, out result))
+				return result;
+
+			//const int cacheLimit = 4096;
+			//if (referenceDict.Count > cacheLimit)
+			//	referenceDict = ImmutableDictionary<string, bool>.Empty
+
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (fileName);
+				} catch {
+					return false;
+				}
+				foreach (var r in assembly.GetReferencedAssemblies ()) {
+					if (r.FullName.Equals ("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")) {
+						referenceDict = referenceDict.SetItem (fileName, true);
+						return true;
+					}
+				}
+			}
+			referenceDict = referenceDict.SetItem (fileName, false);
+			return false;
+		}
+
+		static object referenceLock = new object ();
 		public static bool ContainsReferenceToSystemRuntime (string fileName)
 		{
 			lock (referenceLock) {
-				bool result;
-				if (referenceDict.TryGetValue (fileName, out result))
-					return result;
+				return ContainsReferenceToSystemRuntimeInternal (fileName);
+			}
+		}
 
-				//const int cacheLimit = 4096;
-				//if (referenceDict.Count > cacheLimit)
-				//	referenceDict = ImmutableDictionary<string, bool>.Empty
-				                                                     
-				using (var universe = new IKVM.Reflection.Universe ()) {
-					IKVM.Reflection.Assembly assembly;
-					try {
-						assembly = universe.LoadFile (fileName);
-					} catch {
-						return false;
-					}
-					foreach (var r in assembly.GetReferencedAssemblies ()) {
-						if (r.FullName.Equals ("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")) {
-							referenceDict = referenceDict.SetItem (fileName, true);
-							return true;
-						}
-					}
-				}
-				referenceDict = referenceDict.SetItem (fileName, false);
-				return false;
+		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
+		{
+			try {
+				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
+				return ContainsReferenceToSystemRuntimeInternal (filename);
+			} finally {
+				referenceLockAsync.Release ();
 			}
 		}
 

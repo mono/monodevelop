@@ -164,9 +164,13 @@ namespace Mono.TextEditor
 		public int LineNumber {
 			get {
 				if (lineNumber == -2) {
-					lineNumber = Editor.YToLine (Editor.VAdjustment.Value + Y);
-					if (lineNumber > Editor.Document.LineCount)
+					try {
+						lineNumber = Editor.YToLine (Editor.VAdjustment.Value + Y);
+						if (lineNumber > Editor.Document.LineCount)
+							lineNumber = 0;
+					} catch (Exception) {
 						lineNumber = 0;
+					}
 				}
 				return lineNumber;
 			}
@@ -186,7 +190,6 @@ namespace Mono.TextEditor
 
 		public MonoTextEditor Editor {
 			get;
-			private set;
 		}
 		
 		public MarginMouseEventArgs (MonoTextEditor editor, Gdk.Event raw, uint button, double x, double y, Gdk.ModifierType modifierState)

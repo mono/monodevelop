@@ -127,7 +127,7 @@ namespace Mono.TextEditor
 				double rectangleWidth = 0, rectangleHeight = 0;
 				
 				lineLayout = textViewMargin.CreateLinePartLayout (segmentStartLine, segmentStartLine.Offset, segmentStartLine.Length, -1, -1);
-				var rectangleStart = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+				var rectangleStart = lineLayout.IndexToPos (GetFirstNonWsIdx (lineLayout.Text));
 				if (lineLayout.IsUncached)
 					lineLayout.Dispose ();
 				
@@ -135,7 +135,7 @@ namespace Mono.TextEditor
 
 				lineLayout = textViewMargin.CreateLinePartLayout (segmentEndLine, segmentEndLine.Offset, segmentEndLine.Length, -1, -1);
 				
-				var rectangleEnd = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+				var rectangleEnd = lineLayout.IndexToPos (GetFirstNonWsIdx (lineLayout.Text));
 				if (lineLayout.IsUncached)
 					lineLayout.Dispose ();
 				

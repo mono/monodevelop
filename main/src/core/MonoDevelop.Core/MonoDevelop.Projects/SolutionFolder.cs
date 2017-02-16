@@ -577,10 +577,10 @@ namespace MonoDevelop.Projects
 		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
 			if (ParentSolution == null)
-				return new BuildResult ();
+				return new BuildResult();
 			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
-				return new BuildResult ();
+				return new BuildResult();
 
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {

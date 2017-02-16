@@ -2620,14 +2620,14 @@ namespace Mono.TextEditor
 				int l, x1, x2;
 				int index = Result.Offset - line.Offset - 1;
 				if (index >= 0) {
-					lineLayout.Layout.IndexToLineX (index, true, out l, out x1);
+					lineLayout.IndexToLineX (index, true, out l, out x1);
 				} else {
 					l = x1 = 0;
 				}
 				
 				index = Result.Offset - line.Offset - 1 + Result.Length;
 				if (index >= 0) {
-					lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
+					lineLayout.IndexToLineX (index, true, out l, out x2);
 				} else {
 					x2 = 0;
 					Console.WriteLine ("Invalid end index :" + index);
