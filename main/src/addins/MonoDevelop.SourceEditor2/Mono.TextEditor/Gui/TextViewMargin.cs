@@ -370,14 +370,14 @@ namespace Mono.TextEditor
 				return 3;
 			case UnicodeNewline.NEL:
 				return 4;
-			case UnicodeNewline.VT:
-				return 5;
-			case UnicodeNewline.FF:
-				return 6;
+			//case UnicodeNewline.VT:
+			//	return 5;
+			//case UnicodeNewline.FF:
+			//	return 6;
 			case UnicodeNewline.LS:
-				return 7;
+				return 5;
 			case UnicodeNewline.PS:
-				return 8;
+				return 6;
 			}
 			return 0;
 		}

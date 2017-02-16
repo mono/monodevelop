@@ -279,10 +279,10 @@ namespace Mono.TextEditor
 						return new Delimiter ((int)(p - start), UnicodeNewline.LF);
 					case NewLine.NEL:
 						return new Delimiter ((int)(p - start), UnicodeNewline.NEL);
-					case NewLine.VT:
-						return new Delimiter ((int)(p - start), UnicodeNewline.VT);
-					case NewLine.FF:
-						return new Delimiter ((int)(p - start), UnicodeNewline.FF);
+					//case NewLine.VT:
+					//	return new Delimiter ((int)(p - start), UnicodeNewline.VT);
+					//case NewLine.FF:
+					//	return new Delimiter ((int)(p - start), UnicodeNewline.FF);
 					case NewLine.LS:
 						return new Delimiter ((int)(p - start), UnicodeNewline.LS);
 					case NewLine.PS:

@@ -306,10 +306,10 @@ namespace Mono.TextEditor
 						return "\u000D";
 					case UnicodeNewline.NEL:
 						return "\u0085";
-					case UnicodeNewline.VT:
-						return "\u000B";
-					case UnicodeNewline.FF:
-						return "\u000C";
+					//case UnicodeNewline.VT:
+					//	return "\u000B";
+					//case UnicodeNewline.FF:
+					//	return "\u000C";
 					case UnicodeNewline.LS:
 						return "\u2028";
 					case UnicodeNewline.PS:

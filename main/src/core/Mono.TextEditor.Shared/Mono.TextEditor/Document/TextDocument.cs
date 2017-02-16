@@ -2196,8 +2196,8 @@ namespace Mono.TextEditor
 					switch(line.Snapshot[line.End])
 					{
 						case '\u000A': return UnicodeNewline.LF;
-						case '\u000B': return UnicodeNewline.VT; // Not recognized by VS
-						case '\u000C': return UnicodeNewline.FF; // Not recognized by VS
+						//case '\u000B': return UnicodeNewline.VT; // Not recognized by VS
+						//case '\u000C': return UnicodeNewline.FF; // Not recognized by VS
 
 						case '\u000D': return UnicodeNewline.CR;
 						case '\u0085': return UnicodeNewline.NEL;
