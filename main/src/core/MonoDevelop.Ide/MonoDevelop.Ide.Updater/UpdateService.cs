@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Updater
 		}
 
 		public static bool TestModeEnabled {
-			get { return TestMode.Length > 0 && TestMode.ToLower () != "false"; }
+			get { return TestMode.Length > 0 && !string.Equals (TestMode, "false", StringComparison.OrdinalIgnoreCase); }
 		}
 
 		public static bool NotifyAddinUpdates { get; set; }
