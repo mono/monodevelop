@@ -310,7 +310,7 @@ namespace Mono.TextEditor
 				extendingTextMarkers = new List<TextLineMarker>();
 				//HACK splitter.Initalize(value, out longestLineAtTextSet);
 				ClearFoldSegments();
-				//HACK OnTextReplaced(args);
+				OnTextReplaced(args);
 				//HACK versionProvider = new TextSourceVersionProvider();
 				//HACK buffer.Version = Version;
 				OnTextSet(EventArgs.Empty);
@@ -392,7 +392,7 @@ namespace Mono.TextEditor
 			//HACK splitter.TextReplaced (this, args);
 			//HACK versionProvider.AppendChange (args);
 			//HACK buffer.Version = Version;
-			//HACK OnTextReplaced(args);
+			OnTextReplaced(args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
@@ -591,11 +591,11 @@ namespace Mono.TextEditor
 			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 #endif
-		//HACk protected virtual void OnTextReplaced (TextChangeEventArgs args)
-		//HACk {
-		//HACk 	if (TextChanged != null)
-		//HACk 		TextChanged (this, args);
-		//HACk }
+		protected virtual void OnTextReplaced (TextChangeEventArgs args)
+		{
+			if (TextChanged != null)
+				TextChanged (this, args);
+		}
 		
 		public event EventHandler<TextChangeEventArgs> TextChanged;
 
@@ -1387,8 +1387,9 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				yield break;
+			var lineOffset = line.Offset;
 			foreach (var fold in GetFoldingContaining (line))
-				if (fold.GetStartLine (this) == line)
+				if (fold.GetStartLine (this).Offset == lineOffset)
 					yield return fold;
 		}
 
