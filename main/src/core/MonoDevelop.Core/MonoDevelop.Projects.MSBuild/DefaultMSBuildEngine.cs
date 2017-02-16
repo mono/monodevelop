@@ -353,19 +353,24 @@ namespace MonoDevelop.Projects.MSBuild
 			if (IsWildcardInclude (remove)) {
 				var rootProject = context.GetRootProject ();
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove))
-					RemoveEvaluatedItem (project, item, f, trueCond);
+					RemoveEvaluatedItemFromAllProjects (project, item, f, trueCond);
 			} else
-				RemoveEvaluatedItem (project, item, remove, trueCond);
+				RemoveEvaluatedItemFromAllProjects (project, item, remove, trueCond);
+		}
+
+		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
+		{
+			do {
+				RemoveEvaluatedItem (project, item, include, trueCond);
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void RemoveEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
 		{
-			do {
-				if (trueCond)
-					project.EvaluatedItems.RemoveAll (it => it.Name == item.Name && it.Include == include);
-				project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
-				project = project.Parent;
-			} while (project != null);
+			if (trueCond)
+				project.EvaluatedItems.RemoveAll (it => it.Name == item.Name && it.Include == include);
+			project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
 		}
 
 		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
