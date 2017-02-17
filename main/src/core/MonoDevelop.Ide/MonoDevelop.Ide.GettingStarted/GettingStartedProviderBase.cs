@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.GettingStarted
 			}
 		}
 
-		public virtual void SupportedProjectCreated (Project project, ProcessedTemplateResult templateResult)
+		public virtual void SupportedProjectCreated (ProcessedTemplateResult templateResult)
 		{
 		}
 	}

@@ -810,7 +810,7 @@ namespace MonoDevelop.Ide.Projects
 				firstProject = templateResult.WorkspaceItems.OfType<Project> ().FirstOrDefault ();
 			if (firstProject != null) {
 				var gettingStartedProvider = GettingStarted.GettingStarted.GetGettingStartedProvider (firstProject);
-				gettingStartedProvider?.SupportedProjectCreated (firstProject, templateResult);
+				gettingStartedProvider?.SupportedProjectCreated (templateResult);
 			}
 		}
 
