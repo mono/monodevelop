@@ -343,7 +343,7 @@ namespace Mono.TextEditor
 			textEditorData.Parent = editor;
 
 			iconMargin = new IconMargin (editor);
-			iconMargin.Accessible.SetAccessibilityLabel ("Icon margin");
+			iconMargin.Accessible.SetLabel ("Icon margin");
 			iconMargin.Accessible.SetAccessibilityIdentifier ("TextArea.IconMargin");
 			iconMargin.Accessible.SetGtkParent (this);
 			Accessible.AddAccessibleElement (iconMargin.Accessible);

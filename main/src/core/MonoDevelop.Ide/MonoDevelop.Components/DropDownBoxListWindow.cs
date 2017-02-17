@@ -264,18 +264,18 @@ namespace MonoDevelop.Components
 			{
 				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 				columnElement.SetGtkParent (this);
-				columnElement.SetAccessibilityRole (AtkCocoa.Roles.AXColumn);
+				columnElement.SetRole (AtkCocoa.Roles.AXColumn);
 				Accessible.AddAccessibleElement (columnElement);
 
 				for (int i = 0; i < win.DataProvider.IconCount; i++) {
 					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					rowElement.SetGtkParent (this);
-					rowElement.SetAccessibilityRole (AtkCocoa.Roles.AXRow);
+					rowElement.SetRole (AtkCocoa.Roles.AXRow);
 					Accessible.AddAccessibleElement (rowElement);
 
 					var cellElement = new AtkCocoaHelper.AccessibilityElementProxy ();
 					cellElement.SetGtkParent (this);
-					cellElement.SetAccessibilityRole (AtkCocoa.Roles.AXCell);
+					cellElement.SetRole (AtkCocoa.Roles.AXCell);
 					columnElement.AddAccessibleChild (cellElement);
 					rowElement.AddAccessibleChild (cellElement);
 
@@ -283,7 +283,7 @@ namespace MonoDevelop.Components
 					textElement.RowIndex = i;
 					textElement.PerformPress += PerformPress;
 					textElement.SetGtkParent (this);
-					textElement.SetAccessibilityValue (win.DataProvider.GetMarkup (i));
+					textElement.SetValue (win.DataProvider.GetMarkup (i));
 					cellElement.AddAccessibleChild (textElement);
 				}
 			}

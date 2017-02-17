@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.CommandService.SetRootWindow (this);
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
 
-			Accessible.SetAccessibilityIsMainWindow (true);
+			Accessible.SetIsMainWindow (true);
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)
@@ -565,8 +565,8 @@ namespace MonoDevelop.Ide.Gui
 				filename = string.Empty;
 			}
 
-			Accessible.SetAccessibilityDocument (documentUrl);
-			Accessible.SetAccessibilityFilename (filename);
+			Accessible.SetDocument (documentUrl);
+			Accessible.SetFilename (filename);
 		}
 
 		void SetWorkbenchTitle ()
@@ -585,8 +585,8 @@ namespace MonoDevelop.Ide.Gui
 				SetAccessibilityDetails (window);
 			} catch (Exception) {
 				Title = GetDefaultTitle ();
-				Accessible.SetAccessibilityDocument ("");
-				Accessible.SetAccessibilityFilename ("");
+				Accessible.SetDocument ("");
+				Accessible.SetFilename ("");
 			}
 		}
 		
@@ -874,8 +874,8 @@ namespace MonoDevelop.Ide.Gui
 
 			fullViewVBox = new VBox (false, 0);
 			fullViewVBox.Accessible.Name = "MainWindow.Root";
-			fullViewVBox.Accessible.SetAccessibilityLabel ("Label");
-			fullViewVBox.Accessible.SetAccessibilityShouldIgnore (true);
+			fullViewVBox.Accessible.SetLabel ("Label");
+			fullViewVBox.Accessible.SetShouldIgnore (true);
 
 			rootWidget = fullViewVBox;
 			
@@ -886,7 +886,7 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 			toolbarFrame.Accessible.Name = "MainWindow.Root.ToolbarFrame";
-			toolbarFrame.Accessible.SetAccessibilityShouldIgnore (true);
+			toolbarFrame.Accessible.SetShouldIgnore (true);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
 

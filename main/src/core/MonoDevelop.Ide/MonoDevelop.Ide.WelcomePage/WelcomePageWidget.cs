@@ -78,21 +78,21 @@ namespace MonoDevelop.Ide.WelcomePage
 			LogoHeight = 90;
 
 			var background = new WelcomePageWidgetBackground ();
-			background.Accessible.SetAccessibilityShouldIgnore (true);
+			background.Accessible.SetShouldIgnore (true);
 			Background = background;
 			background.Owner = this;
 			var mainAlignment = new Gtk.Alignment (0f, 0f, 1f, 1f);
-			mainAlignment.Accessible.SetAccessibilityShouldIgnore (true);
+			mainAlignment.Accessible.SetShouldIgnore (true);
 			background.Add (mainAlignment);
 
 			BuildContent (mainAlignment);
 
 			if (ShowScrollbars) {
 				var scroller = new ScrolledWindow ();
-				scroller.Accessible.SetAccessibilityShouldIgnore (true);
+				scroller.Accessible.SetShouldIgnore (true);
 				scroller.AddWithViewport (background);
 				((Gtk.Viewport)scroller.Child).ShadowType = ShadowType.None;
-				scroller.Child.Accessible.SetAccessibilityShouldIgnore (true);
+				scroller.Child.Accessible.SetShouldIgnore (true);
 
 				scroller.ShadowType = ShadowType.None;
 				scroller.FocusChain = new Widget[] { background };

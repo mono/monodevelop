@@ -82,9 +82,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Role = Atk.Role.Link;
 
-			Accessible.SetAccessibilityTitle (title);
+			Accessible.SetTitle (title);
 			if (!string.IsNullOrEmpty (href)) {
-				Accessible.SetAccessibilityURL (href);
+				Accessible.SetUrl (href);
 			}
 			Accessible.Description = "Opens the link in a web browser";
 
@@ -98,15 +98,15 @@ namespace MonoDevelop.Ide.WelcomePage
 				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
 			label = CreateLabel ();
 			imageWidget = image.ToGtkWidget ();
 
-			label.Accessible.SetAccessibilityShouldIgnore (true);
-			imageWidget.Accessible.SetAccessibilityShouldIgnore (true);
+			label.Accessible.SetShouldIgnore (true);
+			imageWidget.Accessible.SetShouldIgnore (true);
 
 			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)

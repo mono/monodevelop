@@ -58,7 +58,7 @@ namespace MonoDevelop.Components
 
 			public CellRendererImageAccessible ()
 			{
-				Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXImage);
+				Accessible.SetRole (AtkCocoaHelper.Roles.AXImage);
 			}
 		}
 

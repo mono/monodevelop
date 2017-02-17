@@ -1156,7 +1156,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 				mode.GetIndicatorStrings (out label, out description);
 				if (!string.IsNullOrEmpty (label)) {
-					SetAccessibilityLabel (label);
+					SetLabel (label);
 				}
 
 				if (!string.IsNullOrEmpty (description)) {
@@ -1185,7 +1185,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				task = t;
 				usage = null;
 
-				SetAccessibilityTitle (t.Description);
+				SetTitle (t.Description);
 				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location)));
 
 				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
@@ -1206,7 +1206,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				usage = u;
 				task = null;
 
-				SetAccessibilityTitle (u.UsageType.ToString ());
+				SetTitle (u.UsageType.ToString ());
 				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset)));
 
 				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);

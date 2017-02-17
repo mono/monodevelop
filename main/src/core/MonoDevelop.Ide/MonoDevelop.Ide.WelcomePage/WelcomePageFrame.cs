@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			Accessible.Name = "WelcomePageFrame";
 
 			VBox box = new VBox ();
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			box.Show ();
 			projectBar = new WelcomePageProjectBar ();

@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Top banner of dialog.
 			var topLabelEventBox = new EventBox ();
-			topLabelEventBox.Accessible.SetAccessibilityShouldIgnore (true);
+			topLabelEventBox.Accessible.SetShouldIgnore (true);
 			topLabelEventBox.Name = "topLabelEventBox";
 			topLabelEventBox.HeightRequest = 52;
 			topLabelEventBox.ModifyBg (StateType.Normal, bannerBackgroundColor);
@@ -121,14 +121,14 @@ namespace MonoDevelop.Ide.Projects
 			topLabelEventBox.BorderWidth = 0;
 
 			var topBannerTopEdgeLineEventBox = new EventBox ();
-			topBannerTopEdgeLineEventBox.Accessible.SetAccessibilityShouldIgnore (true);
+			topBannerTopEdgeLineEventBox.Accessible.SetShouldIgnore (true);
 			topBannerTopEdgeLineEventBox.Name = "topBannerTopEdgeLineEventBox";
 			topBannerTopEdgeLineEventBox.HeightRequest = 1;
 			topBannerTopEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
 			topBannerTopEdgeLineEventBox.BorderWidth = 0;
 
 			var topBannerBottomEdgeLineEventBox = new EventBox ();
-			topBannerBottomEdgeLineEventBox.Accessible.SetAccessibilityShouldIgnore (true);
+			topBannerBottomEdgeLineEventBox.Accessible.SetShouldIgnore (true);
 			topBannerBottomEdgeLineEventBox.Name = "topBannerBottomEdgeLineEventBox";
 			topBannerBottomEdgeLineEventBox.HeightRequest = 1;
 			topBannerBottomEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Projects
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
 			var topLabelHBox = new HBox ();
-			topLabelHBox.Accessible.SetAccessibilityShouldIgnore (true);
+			topLabelHBox.Accessible.SetShouldIgnore (true);
 			topLabelHBox.Name = "topLabelHBox";
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
@@ -153,17 +153,17 @@ namespace MonoDevelop.Ide.Projects
 
 			// Main templates section.
 			centreVBox = new VBox ();
-			centreVBox.Accessible.SetAccessibilityShouldIgnore (true);
+			centreVBox.Accessible.SetShouldIgnore (true);
 			centreVBox.Name = "centreVBox";
 			VBox.PackStart (centreVBox, true, true, 0);
 			templatesHBox = new HBox ();
-			templatesHBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templatesHBox.Accessible.SetShouldIgnore (true);
 			templatesHBox.Name = "templatesHBox";
 			centreVBox.PackEnd (templatesHBox, true, true, 0);
 
 			// Template categories.
 			var templateCategoriesBgBox = new EventBox ();
-			templateCategoriesBgBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templateCategoriesBgBox.Accessible.SetShouldIgnore (true);
 			templateCategoriesBgBox.Name = "templateCategoriesVBox";
 			templateCategoriesBgBox.BorderWidth = 0;
 			templateCategoriesBgBox.ModifyBg (StateType.Normal, categoriesBackgroundColor);
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView = new TreeView ();
 			templateCategoriesTreeView.Name = "templateCategoriesTreeView";
 			templateCategoriesTreeView.Accessible.Name = "templateCategoriesTreeView";
-			templateCategoriesTreeView.Accessible.SetAccessibilityTitle (GettextCatalog.GetString ("Project Categories"));
+			templateCategoriesTreeView.Accessible.SetTitle (GettextCatalog.GetString ("Project Categories"));
 			templateCategoriesTreeView.Accessible.Description = GettextCatalog.GetString ("Select the project category to see all possible project templates");
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Templates.
 			var templatesBgBox = new EventBox ();
-			templatesBgBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templatesBgBox.Accessible.SetShouldIgnore (true);
 			templatesBgBox.ModifyBg (StateType.Normal, templateListBackgroundColor);
 			templatesBgBox.Name = "templatesVBox";
 			templatesBgBox.WidthRequest = 400;
@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView = new TreeView ();
 			templatesTreeView.Name = "templatesTreeView";
 			templatesTreeView.Accessible.Name = "templatesTreeView";
-			templatesTreeView.Accessible.SetAccessibilityTitle (GettextCatalog.GetString ("Project Templates"));
+			templatesTreeView.Accessible.SetTitle (GettextCatalog.GetString ("Project Templates"));
 			templatesTreeView.Accessible.Description = GettextCatalog.GetString ("Select the project template");
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
@@ -212,16 +212,16 @@ namespace MonoDevelop.Ide.Projects
 			templatesBgBox.Add (templatesScrolledWindow);
 
 			// Accessibilityy
-			templateCategoriesTreeView.Accessible.AddAccessibleLinkedUIElement (templatesTreeView.Accessible);
+			templateCategoriesTreeView.Accessible.AddLinkedUIElement (templatesTreeView.Accessible);
 
 			// Template
 			var templateEventBox = new EventBox ();
-			templateEventBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templateEventBox.Accessible.SetShouldIgnore (true);
 			templateEventBox.Name = "templateEventBox";
 			templateEventBox.ModifyBg (StateType.Normal, templateBackgroundColor);
 			templatesHBox.PackStart (templateEventBox, true, true, 0);
 			templateVBox = new VBox ();
-			templateVBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templateVBox.Accessible.SetShouldIgnore (true);
 			templateVBox.Visible = false;
 			templateVBox.BorderWidth = 20;
 			templateVBox.Spacing = 10;
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Template large image.
 			templateImage = new ImageView ();
-			templateImage.Accessible.SetAccessibilityShouldIgnore (true);
+			templateImage.Accessible.SetShouldIgnore (true);
 			templateImage.Name = "templateImage";
 			templateImage.HeightRequest = 140;
 			templateImage.WidthRequest = 240;
@@ -248,22 +248,22 @@ namespace MonoDevelop.Ide.Projects
 			templateDescriptionLabel = new Label ();
 			templateDescriptionLabel.Name = "templateDescriptionLabel";
 			templateDescriptionLabel.Accessible.Name = "templateDescriptionLabel";
-			templateDescriptionLabel.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("The description of the selected template"));
+			templateDescriptionLabel.Accessible.SetLabel (GettextCatalog.GetString ("The description of the selected template"));
 			templateDescriptionLabel.WidthRequest = 240;
 			templateDescriptionLabel.Wrap = true;
 			templateDescriptionLabel.Xalign = 0;
 			templateVBox.PackStart (templateDescriptionLabel, false, false, 0);
 
 			var tempLabel = new Label ();
-			tempLabel.Accessible.SetAccessibilityShouldIgnore (true);
+			tempLabel.Accessible.SetShouldIgnore (true);
 			templateVBox.PackStart (tempLabel, true, true, 0);
 
-			templatesTreeView.Accessible.AddAccessibleLinkedUIElement (templateNameLabel.Accessible);
-			templatesTreeView.Accessible.AddAccessibleLinkedUIElement (templateDescriptionLabel.Accessible);
+			templatesTreeView.Accessible.AddLinkedUIElement (templateNameLabel.Accessible);
+			templatesTreeView.Accessible.AddLinkedUIElement (templateDescriptionLabel.Accessible);
 
 			// Template - button separator.
 			var templateSectionSeparatorEventBox = new EventBox ();
-			templateSectionSeparatorEventBox.Accessible.SetAccessibilityShouldIgnore (true);
+			templateSectionSeparatorEventBox.Accessible.SetShouldIgnore (true);
 			templateSectionSeparatorEventBox.Name = "templateSectionSeparatorEventBox";
 			templateSectionSeparatorEventBox.HeightRequest = 1;
 			templateSectionSeparatorEventBox.ModifyBg (StateType.Normal, templateSectionSeparatorColor);
@@ -271,13 +271,13 @@ namespace MonoDevelop.Ide.Projects
 
 			// Buttons at bottom of dialog.
 			var bottomHBox = new HBox ();
-			bottomHBox.Accessible.SetAccessibilityShouldIgnore (true);
+			bottomHBox.Accessible.SetShouldIgnore (true);
 			bottomHBox.Name = "bottomHBox";
 			VBox.PackStart (bottomHBox, false, false, 0);
 
 			// Cancel button - bottom left.
 			var cancelButtonBox = new HButtonBox ();
-			cancelButtonBox.Accessible.SetAccessibilityShouldIgnore (true);
+			cancelButtonBox.Accessible.SetShouldIgnore (true);
 			cancelButtonBox.Name = "cancelButtonBox";
 			cancelButtonBox.BorderWidth = 16;
 			cancelButton = new Button ();
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Previous button - bottom right.
 			var previousNextButtonBox = new HButtonBox ();
-			previousNextButtonBox.Accessible.SetAccessibilityShouldIgnore (true);
+			previousNextButtonBox.Accessible.SetShouldIgnore (true);
 			previousNextButtonBox.Name = "previousNextButtonBox";
 			previousNextButtonBox.BorderWidth = 16;
 			previousNextButtonBox.Spacing = 9;

@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				currentTip = -1;
 
 			Gtk.VBox box = new Gtk.VBox (false, 12);
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			label = new Gtk.Label ();
 
@@ -86,13 +86,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			};
 
 			var al = new Gtk.Alignment (0, 0, 0, 0);
-			al.Accessible.SetAccessibilityShouldIgnore (true);
+			al.Accessible.SetShouldIgnore (true);
 			al.Add (next);
 			box.PackStart (al, false, false, 0);
 			SetContent (box);
 
-			SetAccessibilityTitledWidget (label);
-			SetAccessibilityTitledWidget (next);
+			SetTitledWidget (label);
+			SetTitledWidget (next);
 		}
 	}
 }

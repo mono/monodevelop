@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public WelcomePageColumn ()
 		{
-			Accessible.SetAccessibilityShouldIgnore (true);
+			Accessible.SetShouldIgnore (true);
 
 			Spacing = Styles.WelcomeScreen.Spacing;
 			MinWidth = -1;

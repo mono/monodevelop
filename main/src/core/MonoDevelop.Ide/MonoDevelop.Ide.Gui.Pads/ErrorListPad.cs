@@ -125,13 +125,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleButton MakeButton (string image, string name, bool active, out Label label)
 		{
 			var btnBox = new HBox (false, 2);
-			btnBox.Accessible.SetAccessibilityShouldIgnore (true);
+			btnBox.Accessible.SetShouldIgnore (true);
 			var imageView = new ImageView (image, Gtk.IconSize.Menu);
-			imageView.Accessible.SetAccessibilityShouldIgnore (true);
+			imageView.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (imageView);
 
 			label = new Label ();
-			label.Accessible.SetAccessibilityShouldIgnore (true);
+			label.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (label);
 
 			var btn = new ToggleButton { Name = name };
@@ -147,8 +147,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Accessible.Name = "ErrorPad.Toolbar";
-			toolbar.Accessible.SetAccessibilityLabel ("Error Pad Toolbar");
-			toolbar.Accessible.SetAccessibilityRole ("AXToolbar", "Pad toolbar");
+			toolbar.Accessible.SetLabel ("Error Pad Toolbar");
+			toolbar.Accessible.SetRole ("AXToolbar", "Pad toolbar");
 			toolbar.Accessible.Description = GettextCatalog.GetString ("The Error pad toolbar");
 
 			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Add (msgBtn);
 
 			var sep = new SeparatorToolItem ();
-			sep.Accessible.SetAccessibilityShouldIgnore (true);
+			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
 			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
@@ -186,18 +186,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
 
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
-			logBtn.Accessible.SetAccessibilityTitle (logBtnLbl.Text);
+			logBtn.Accessible.SetTitle (logBtnLbl.Text);
 
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
 			var spacer = new HBox ();
-			spacer.Accessible.SetAccessibilityShouldIgnore (true);
+			spacer.Accessible.SetShouldIgnore (true);
 			toolbar.Add (spacer, true);
 
 			searchEntry = new SearchEntry ();
-			searchEntry.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Search"));
+			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
 			searchEntry.Accessible.Name = "ErrorPad.Search";
 			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the error data");
 			searchEntry.Entry.Changed += searchPatternChanged;
@@ -928,19 +928,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdateErrorsNum () 
 		{
 			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
-			errorBtn.Accessible.SetAccessibilityTitle (errorBtnLbl.Text);
+			errorBtn.Accessible.SetTitle (errorBtnLbl.Text);
 		}
 
 		void UpdateWarningsNum ()
 		{
 			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
-			warnBtn.Accessible.SetAccessibilityTitle (warnBtnLbl.Text);
+			warnBtn.Accessible.SetTitle (warnBtnLbl.Text);
 		}
 
 		void UpdateMessagesNum ()
 		{
 			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
-			msgBtn.Accessible.SetAccessibilityTitle (msgBtnLbl.Text);
+			msgBtn.Accessible.SetTitle (msgBtnLbl.Text);
 		}
 
 		void UpdatePadIcon ()

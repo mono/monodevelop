@@ -237,7 +237,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 
 			// Overwrite the default margin role
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTextArea);
+			Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
 			((TextViewMarginAccessibilityProxy)Accessible).Margin = this;
 
 			this.textEditor = textEditor;

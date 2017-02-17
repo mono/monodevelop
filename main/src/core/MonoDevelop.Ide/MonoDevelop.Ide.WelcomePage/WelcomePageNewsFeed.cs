@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			Accessible.Description = "A list of new items";
 
 			box = new VBox (false, spacing);
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			box.PackStart (newsItem, true, false, 0);
 
-			SetAccessibilityTitledWidget (newsItem);
+			SetTitledWidget (newsItem);
 		}
 
 		void LoadNews ()
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 
 				var spacerLabel = new Label ();
-				spacerLabel.Accessible.SetAccessibilityShouldIgnore (true);
+				spacerLabel.Accessible.SetShouldIgnore (true);
 				box.PackStart (spacerLabel, true, false, 4);
 
 			} catch (Exception ex) {

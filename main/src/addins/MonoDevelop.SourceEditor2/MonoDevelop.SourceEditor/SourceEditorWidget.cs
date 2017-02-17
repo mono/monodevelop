@@ -234,10 +234,10 @@ namespace MonoDevelop.SourceEditor
 				this.strip = new QuickTaskStrip ();
 
 				scrolledBackground = new EventBox ();
-				scrolledBackground.Accessible.SetAccessibilityShouldIgnore (true);
+				scrolledBackground.Accessible.SetShouldIgnore (true);
 				scrolledWindow = new CompactScrolledWindow ();
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
-				scrolledWindow.Accessible.SetAccessibilityShouldIgnore (true);
+				scrolledWindow.Accessible.SetShouldIgnore (true);
 				scrolledBackground.Add (scrolledWindow);
 				PackStart (scrolledBackground, true, true, 0);
 				strip.VAdjustment = scrolledWindow.Vadjustment;
@@ -393,7 +393,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
-			vbox.Accessible.SetAccessibilityShouldIgnore (true);
+			vbox.Accessible.SetShouldIgnore (true);
 
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			this.textEditor.TextArea.FocusInEvent += (o, s) => {
@@ -407,7 +407,7 @@ namespace MonoDevelop.SourceEditor
 			if (IdeApp.CommandService != null)
 				IdeApp.FocusOut += IdeApp_FocusOut;
 			mainsw = new DecoratedScrolledWindow (this);
-			mainsw.Accessible.SetAccessibilityShouldIgnore (true);
+			mainsw.Accessible.SetShouldIgnore (true);
 			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);

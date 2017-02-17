@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
 			
 			box = new VBox ();
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			viewContents.Add (content);
 

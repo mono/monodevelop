@@ -148,7 +148,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
+			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
 			TabWidth = 125;
 			TargetWidth = 125;
@@ -156,7 +156,7 @@ namespace MonoDevelop.Components.DockNotebook
 			GtkWorkarounds.FixContainerLeak (this);
 
 			innerBox = new HBox (false, 0);
-			innerBox.Accessible.SetAccessibilityShouldIgnore (true);
+			innerBox.Accessible.SetShouldIgnore (true);
 			Add (innerBox);
 
 			this.notebook = notebook;
@@ -173,7 +173,7 @@ namespace MonoDevelop.Components.DockNotebook
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 			PreviousButton.Accessible.Name = "DockNotebook.Tabstrip.PreviousButton";
-			PreviousButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Previous document"));
+			PreviousButton.Accessible.SetTitle (Core.GettextCatalog.GetString ("Previous document"));
 			PreviousButton.Accessible.Description = Core.GettextCatalog.GetString ("Switch to previous document");
 
 			arr = new Xwt.ImageView (tabbarNextImage);
@@ -186,7 +186,7 @@ namespace MonoDevelop.Components.DockNotebook
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 			NextButton.Accessible.Name = "DockNotebook.Tabstrip.NextButton";
-			NextButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Next document"));
+			NextButton.Accessible.SetTitle (Core.GettextCatalog.GetString ("Next document"));
 			NextButton.Accessible.Description = Core.GettextCatalog.GetString ("Switch to next document");
 
 			DropDownButton = new MenuButton ();
@@ -194,7 +194,7 @@ namespace MonoDevelop.Components.DockNotebook
 			DropDownButton.Relief = ReliefStyle.None;
 			DropDownButton.CanDefault = DropDownButton.CanFocus = false;
 			DropDownButton.Accessible.Name = "DockNotebook.Tabstrip.DocumentListButton";
-			DropDownButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Document list"));
+			DropDownButton.Accessible.SetTitle (Core.GettextCatalog.GetString ("Document list"));
 			DropDownButton.Accessible.Description = Core.GettextCatalog.GetString ("Display the document list menu");
 
 			PreviousButton.ShowAll ();
@@ -294,7 +294,7 @@ namespace MonoDevelop.Components.DockNotebook
 				idx++;
 			}
 
-			Accessible.SetAccessibilityTabs (tabs);
+			Accessible.SetTabs (tabs);
 		}
 
 		void IAnimatable.BatchBegin ()

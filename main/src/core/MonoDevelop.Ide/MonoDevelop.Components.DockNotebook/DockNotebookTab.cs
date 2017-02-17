@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.DockNotebook
 				} else {
 					accTitle = Text ?? Markup;
 				}
-				Accessible.SetAccessibilityTitle (accTitle);
+				Accessible.SetTitle (accTitle);
 			}
 		}
 
@@ -149,8 +149,8 @@ namespace MonoDevelop.Components.DockNotebook
 					accTitle = value;
 				}
 
-				Accessible.SetAccessibilityTitle (accTitle);
-				CloseButtonAccessible.SetAccessibilityTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+				Accessible.SetTitle (accTitle);
+				CloseButtonAccessible.SetTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
 
 				strip.Update ();
 			}
@@ -172,8 +172,8 @@ namespace MonoDevelop.Components.DockNotebook
 					accTitle = value;
 				}
 
-				Accessible.SetAccessibilityTitle (accTitle);
-				CloseButtonAccessible.SetAccessibilityTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+				Accessible.SetTitle (accTitle);
+				CloseButtonAccessible.SetTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
 
 				strip.Update ();
 			}
@@ -214,7 +214,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			Accessible.PerformPress += OnPressTab;
 			// FIXME Should Role descriptions be translated?
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXRadioButton, "tab");
+			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
 			Accessible.SetGtkParent (strip);
 			Accessible.Actions = new string [] { "AXShowMenu" };
 			Accessible.PerformShowPopupMenu += OnShowMenu;
@@ -222,11 +222,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
-			CloseButtonAccessible.SetAccessibilityRole (AtkCocoa.Roles.AXButton);
+			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
 			CloseButtonAccessible.SetGtkParent (strip);
 			CloseButtonAccessible.Actions = new string [] { "AXShowMenu" };
 			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;
-			CloseButtonAccessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Close document"));
+			CloseButtonAccessible.SetTitle (Core.GettextCatalog.GetString ("Close document"));
 			CloseButtonAccessible.SetAccessibilityIdentifier ("DockNotebook.Tab.CloseButton");
 			Accessible.AddAccessibleChild (CloseButtonAccessible);
 

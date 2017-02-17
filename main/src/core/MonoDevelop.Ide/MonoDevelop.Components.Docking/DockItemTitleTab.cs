@@ -102,8 +102,8 @@ namespace MonoDevelop.Components.Docking
 			actionHandler.PerformShowMenu += HandleShowMenu;
 
 			Accessible.SetActionDelegate (actionHandler);
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXGroup, "pad header");
-			Accessible.SetAccessibilitySubRole ("XAPadHeader");
+			Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
+			Accessible.SetSubRole ("XAPadHeader");
 
 			this.item = item;
 			this.frame = frame;
@@ -190,30 +190,30 @@ namespace MonoDevelop.Components.Docking
 			if (label != null) {
 				Accessible.Name = $"DockTab.{labelNoSpaces}";
 				Accessible.Description = GettextCatalog.GetString ("Switch to the {0} tab", label);
-				Accessible.SetAccessibilityTitle (label);
-				Accessible.SetAccessibilityLabel (label);
+				Accessible.SetTitle (label);
+				Accessible.SetLabel (label);
 			}
 
 			Gtk.HBox box = new HBox ();
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 			box.Spacing = -2;
 			
 			if (icon == null)
 				icon = ImageService.GetIcon ("md-empty");
 
 			tabIcon = new ImageView (icon);
-			tabIcon.Accessible.SetAccessibilityShouldIgnore (true);
+			tabIcon.Accessible.SetShouldIgnore (true);
 			tabIcon.Show ();
 			box.PackStart (tabIcon, false, false, 3);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				// Ignore the label because the title tab already contains its name
-				labelWidget.Accessible.SetAccessibilityShouldIgnore (true);
+				labelWidget.Accessible.SetShouldIgnore (true);
 				labelWidget.UseMarkup = true;
 				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
-				alignLabel.Accessible.SetAccessibilityShouldIgnore (true);
+				alignLabel.Accessible.SetShouldIgnore (true);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
@@ -252,13 +252,13 @@ namespace MonoDevelop.Components.Docking
 				realLabel = GettextCatalog.GetString ("Close {0}", label);
 				realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
 			}
-			btnClose.Accessible.SetAccessibilityLabel (realLabel);
+			btnClose.Accessible.SetLabel (realLabel);
 			btnClose.Accessible.Description = realHelp;
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
-			al.Accessible.SetAccessibilityShouldIgnore (true);
+			al.Accessible.SetShouldIgnore (true);
 			HBox btnBox = new HBox (false, 0);
-			btnBox.Accessible.SetAccessibilityShouldIgnore (true);
+			btnBox.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
@@ -300,7 +300,7 @@ namespace MonoDevelop.Components.Docking
 					realHelp = GettextCatalog.GetString ("Automatically hide the {0} pad when it loses focus", label);
 				}
 			}
-			btnDock.Accessible.SetAccessibilityLabel (realLabel);
+			btnDock.Accessible.SetLabel (realLabel);
 			btnDock.Accessible.Description = realHelp;
 		}
 

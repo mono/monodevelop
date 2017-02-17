@@ -74,7 +74,7 @@ namespace MonoDevelop.Components
 		
 		public Tabstrip ()
 		{
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
+			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		
@@ -125,7 +125,7 @@ namespace MonoDevelop.Components
 				i++;
 			}
 
-			Accessible.SetAccessibilityTabs (proxies);
+			Accessible.SetTabs (proxies);
 		}
 
 		Cairo.Rectangle GetBounds (Tab tab)
@@ -319,7 +319,7 @@ namespace MonoDevelop.Components
 			this.TabPosition = tabPosition;
 
 			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
-			Accessible.SetAccessibilityTitle (label);
+			Accessible.SetTitle (label);
 			Accessible.SetGtkParent (parent);
 			Accessible.PerformPress += OnTabPressed;
 		}

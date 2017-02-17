@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Hashtable projectIters = new Hashtable ();
 
 			tvFiles.Accessible.Name = "Dialog.DirtyFiles.FileList";
-			tvFiles.Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Dirty Files"));
+			tvFiles.Accessible.SetLabel (GettextCatalog.GetString ("Dirty Files"));
 			tvFiles.Accessible.Description = GettextCatalog.GetString ("The list of files which have changes and need saving");
 			foreach (Document doc in docs) {
 				if (!doc.IsDirty)
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tvFiles.ExpandAll ();
 
 			ScrolledWindow sc = new ScrolledWindow ();
-			sc.Accessible.SetAccessibilityShouldIgnore (true);
+			sc.Accessible.SetShouldIgnore (true);
 			sc.Add (tvFiles);
 			sc.ShadowType = ShadowType.In;
 

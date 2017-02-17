@@ -225,7 +225,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			mainBox = new Alignment (0,0,1,1);
-			mainBox.Accessible.SetAccessibilityShouldIgnore (true);
+			mainBox.Accessible.SetShouldIgnore (true);
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
 				if (bar.AlignToEnd)
@@ -240,19 +240,19 @@ namespace MonoDevelop.Components.Docking
 				else
 					mainBox.SetPadding (9, 11, 5, 5);
 			}
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			if (it.Icon != null) {
 				var desat = it.Icon.WithAlpha (0.5);
 				crossfade = new CrossfadeIcon (desat, it.Icon);
-				crossfade.Accessible.SetAccessibilityShouldIgnore (true);
+				crossfade.Accessible.SetShouldIgnore (true);
 				box.PackStart (crossfade, false, false, 0);
 				desat.Dispose ();
 			}
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Label (it.Label);
-				label.Accessible.SetAccessibilityShouldIgnore (true);
+				label.Accessible.SetShouldIgnore (true);
 				label.UseMarkup = true;
 				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
 
@@ -273,8 +273,8 @@ namespace MonoDevelop.Components.Docking
 
 				box.PackStart (label, true, true, 0);
 
-				Accessible.SetAccessibilityLabel (it.Label);
-				Accessible.SetAccessibilityTitle (it.Label);
+				Accessible.SetLabel (it.Label);
+				Accessible.SetTitle (it.Label);
 				Accessible.Description = GettextCatalog.GetString ("Show the {0} pad", it.Label);
 			} else
 				label = null;

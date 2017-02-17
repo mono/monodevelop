@@ -92,13 +92,13 @@ namespace MonoDevelop.Components.Docking
 			container.Accessible.Name = "DockFrame.Main";
 
 			HBox hbox = new HBox ();
-			hbox.Accessible.SetAccessibilityShouldIgnore (true);
+			hbox.Accessible.SetShouldIgnore (true);
 
 			hbox.PackStart (dockBarLeft, false, false, 0);
 			hbox.PackStart (container, true, true, 0);
 			hbox.PackStart (dockBarRight, false, false, 0);
 			mainBox = new VBox ();
-			mainBox.Accessible.SetAccessibilityShouldIgnore (true);
+			mainBox.Accessible.SetShouldIgnore (true);
 
 			mainBox.PackStart (dockBarTop, false, false, 0);
 			mainBox.PackStart (hbox, true, true, 0);

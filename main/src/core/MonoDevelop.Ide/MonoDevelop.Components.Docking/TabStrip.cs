@@ -48,12 +48,12 @@ namespace MonoDevelop.Components.Docking
 
 		public TabStrip (DockFrame frame)
 		{
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXTabGroup);
+			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
 			VBox vbox = new VBox ();
-			vbox.Accessible.SetAccessibilityShouldIgnore (true);
+			vbox.Accessible.SetShouldIgnore (true);
 			box = new TabStripBox () { TabStrip = this };
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 			vbox.PackStart (box, false, false, 0);
 		//	vbox.PackStart (bottomFiller, false, false, 0);
 			Add (vbox);
@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.Docking
 				i++;
 			}
 
-			Accessible.SetAccessibilityTabs (tabs);
+			Accessible.SetTabs (tabs);
 		}
 		
 		public void UpdateStyle (DockItem item)

@@ -162,27 +162,27 @@ namespace MonoDevelop.Ide.WelcomePage
 			VisibleWindow = false;
 
 			box = new VBox ();
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			titleLabel = new Label () { Xalign = 0 };
-			titleLabel.Accessible.SetAccessibilityShouldIgnore (true);
+			titleLabel.Accessible.SetShouldIgnore (true);
 			titleLabel.Wrap = false;
 			titleLabel.Ellipsize = Pango.EllipsizeMode.End;
 			titleLabel.LineWrapMode = Pango.WrapMode.Word;
 			box.PackStart (titleLabel, false, false, 0);
 
 			subtitleLabel = new Label () { Xalign = 0 };
-			subtitleLabel.Accessible.SetAccessibilityShouldIgnore (true);
+			subtitleLabel.Accessible.SetShouldIgnore (true);
 			var align = new Gtk.Alignment (0, 0, 1f, 1f) { 
 				TopPadding = Styles.WelcomeScreen.Pad.MediumTitleMarginBottom,
 				BottomPadding = Styles.WelcomeScreen.Pad.SummaryParagraphMarginTop
 			};
 			align.Add (subtitleLabel);
-			align.Accessible.SetAccessibilityShouldIgnore (true);
+			align.Accessible.SetShouldIgnore (true);
 			box.PackStart (align, false, false, 0);
 
 			summaryLabel = new Label () { Xalign = 0 };
-			summaryLabel.Accessible.SetAccessibilityShouldIgnore (true);
+			summaryLabel.Accessible.SetShouldIgnore (true);
 			summaryLabel.Wrap = true;
 			box.PackStart (summaryLabel, true, true, 0);
 
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 			private set {
 				linkUrl = value;
-				Accessible.SetAccessibilityURL (value);
+				Accessible.SetUrl (value);
 			}
 		}
 		
@@ -303,8 +303,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			subtitleLabel.Markup = string.Format (subtitleFormat, GLib.Markup.EscapeText (subtitle ?? ""));
 			summaryLabel.Markup = string.Format (descFormat, SummaryHtmlToPango(desc ?? ""));
 
-			Accessible.SetAccessibilityTitle (text);
-			Accessible.SetAccessibilityValue (subtitle + " " + desc);
+			Accessible.SetTitle (text);
+			Accessible.SetValue (subtitle + " " + desc);
 		}
 
 		public static string SummaryHtmlToPango(string summaryHtml)

@@ -108,7 +108,7 @@ namespace Mono.TextEditor
 
 		protected Margin ()
 		{
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXRuler);
+			Accessible.SetRole (AtkCocoa.Roles.AXRuler);
 			IsVisible = true;
 		}
 		

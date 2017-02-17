@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Role = Atk.Role.PushButton;
-			Accessible.SetAccessibilityTitle (title);
+			Accessible.SetTitle (title);
 
 			if (!actionUrl.StartsWith ("monodevelop://")) {
 				Accessible.Description = string.Format ("Opens {0}", title);
@@ -166,9 +166,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				pinned = value;
 
 				if (pinned) {
-					Accessible.SetAccessibilityTitle (string.Format ("{0}. This item is pinned", title));
+					Accessible.SetTitle (string.Format ("{0}. This item is pinned", title));
 				} else {
-					Accessible.SetAccessibilityTitle (title);
+					Accessible.SetTitle (title);
 				}
 
 				if (AllowPinning && mouseOver) {
@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			GdkWindow.Cursor = hand_cursor;
 			mouseOver = true;
 			if (AllowPinning) {
-				Accessible.SetAccessibilityAlternateUIVisible (true);
+				Accessible.SetAlternateUIVisible (true);
 			}
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			GdkWindow.Cursor = null;
 			mouseOver = false;
-			Accessible.SetAccessibilityAlternateUIVisible (false);
+			Accessible.SetAlternateUIVisible (false);
 			QueueDraw ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		void HandleShowAlternateUI (object sender, EventArgs args)
 		{
 			mouseOver = true;
-			Accessible.SetAccessibilityAlternateUIVisible (true);
+			Accessible.SetAlternateUIVisible (true);
 			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.Ordinal)) {
 				UpdatePinnedHelp ();
 			}
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		void HandleShowDefaultUI (object sender, EventArgs args)
 		{
 			mouseOver = false;
-			Accessible.SetAccessibilityAlternateUIVisible (false);
+			Accessible.SetAlternateUIVisible (false);
 			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.Ordinal)) {
 				Accessible.Description = string.Format ("Open {0}", title);
 			}

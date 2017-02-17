@@ -34,11 +34,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 {
 	public static class AtkCocoaNoopExtensions
 	{
-		public static void SetAccessibilityLabel (this Atk.Object o, string label)
+		public static void SetLabel (this Atk.Object o, string label)
 		{
 		}
 
-		public static void SetAccessibilityLabel (this Gtk.CellRenderer r, string label)
+		public static void SetLabel (this Gtk.CellRenderer r, string label)
 		{
 		}
 
@@ -46,11 +46,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)
+		public static void SetShouldIgnore (this Atk.Object o, bool ignore)
 		{
 		}
 
-		public static void SetAccessibilityTitle (this Atk.Object o, string title)
+		public static void SetTitle (this Atk.Object o, string title)
 		{
 		}
 
@@ -70,59 +70,59 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetAccessibilityValue (this Atk.Object o, string stringValue)
+		public static void SetValue (this Atk.Object o, string stringValue)
 		{
 		}
 
-		public static void SetAccessibilityURL (this Atk.Object o, string url)
+		public static void SetUrl (this Atk.Object o, string url)
 		{
 		}
 
-		public static void SetAccessibilityRole (this Atk.Object o, string role, string description = null)
+		public static void SetRole (this Atk.Object o, string role, string description = null)
 		{
 		}
 
-		public static void SetAccessibilityRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
+		public static void SetRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
 		{
 		}
 
-		public static void SetAccessibilitySubRole (this Atk.Object o, string subrole)
+		public static void SetSubRole (this Atk.Object o, string subrole)
 		{
 		}
 
-		public static void SetAccessibilityTitleUIElement (this Atk.Object o, Atk.Object title)
+		public static void SetTitleUIElement (this Atk.Object o, Atk.Object title)
 		{
 		}
 
-		public static void SetAccessibilityAlternateUIVisible (this Atk.Object o, bool visible)
+		public static void SetAlternateUIVisible (this Atk.Object o, bool visible)
 		{
 		}
 
-		public static void SetAccessibilityOrientation (this Atk.Object o, Gtk.Orientation orientation)
+		public static void SetOrientation (this Atk.Object o, Gtk.Orientation orientation)
 		{
 		}
 
-		public static void SetAccessibilityTitleFor (this Atk.Object o, params Atk.Object [] objects)
+		public static void SetTitleFor (this Atk.Object o, params Atk.Object [] objects)
 		{
 		}
 
-		public static void SetAccessibilityTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		public static void SetTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
 		{
 		}
 
-		public static void SetAccessibilityTabs (this Atk.Object o, Atk.Object [] tabs)
+		public static void SetTabs (this Atk.Object o, Atk.Object [] tabs)
 		{
 		}
 
-		public static void AccessibilityAddElementToTitle (this Atk.Object title, Atk.Object o)
+		public static void AddElementToTitle (this Atk.Object title, Atk.Object o)
 		{
 		}
 
-		public static void AccessibilityRemoveElementFromTitle (this Atk.Object title, Atk.Object o)
+		public static void RemoveElementFromTitle (this Atk.Object title, Atk.Object o)
 		{
 		}
 
-		public static void AccessibilityReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
+		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
 		{
 		}
 
@@ -181,23 +181,23 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public void SetAccessibilityLabel (string label)
+		public void SetLabel (string label)
 		{
 		}
 
-		public void SetAccessibilityRole (AtkCocoa.Roles role, string description = null)
+		public void SetRole (AtkCocoa.Roles role, string description = null)
 		{
 		}
 
-		public void SetAccessibilityRole (string role, string description = null)
+		public void SetRole (string role, string description = null)
 		{
 		}
 
-		public void SetAccessibilityTitle (string title)
+		public void SetTitle (string title)
 		{
 		}
 
-		public void SetAccessibilityValue (string value)
+		public void SetValue (string value)
 		{
 		}
 

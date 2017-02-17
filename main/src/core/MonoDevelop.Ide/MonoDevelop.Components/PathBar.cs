@@ -181,7 +181,7 @@ namespace MonoDevelop.Components
 		public PathBar (Func<int, Control> createMenuForItem)
 		{
 			Accessible.Name = "PathBar";
-			Accessible.SetAccessibilityLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
+			Accessible.SetLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
 			Accessible.Description = GettextCatalog.GetString ("Jump to definitions in the current file");
 
 			this.Events =  EventMask.ExposureMask | 
@@ -225,7 +225,7 @@ namespace MonoDevelop.Components
 				idx++;
 			}
 
-			Accessible.AccessibilityReplaceAccessibilityElements (elements);
+			Accessible.ReplaceAccessibilityElements (elements);
 		}
 
 		public void SetPath (PathEntry[] path)

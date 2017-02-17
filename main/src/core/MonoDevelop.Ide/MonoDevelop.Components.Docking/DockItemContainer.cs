@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.Docking
 			this.item = item;
 
 			mainBox = new VBox ();
-			mainBox.Accessible.SetAccessibilityShouldIgnore (true);
+			mainBox.Accessible.SetShouldIgnore (true);
 			Add (mainBox);
 
 			mainBox.ResizeMode = Gtk.ResizeMode.Queue;
@@ -60,12 +60,12 @@ namespace MonoDevelop.Components.Docking
 			mainBox.PackStart (item.GetToolbar (DockPositionType.Top).Container, false, false, 0);
 			
 			HBox hbox = new HBox ();
-			hbox.Accessible.SetAccessibilityShouldIgnore (true);
+			hbox.Accessible.SetShouldIgnore (true);
 			hbox.Show ();
 			hbox.PackStart (item.GetToolbar (DockPositionType.Left).Container, false, false, 0);
 			
 			contentBox = new HBox ();
-			contentBox.Accessible.SetAccessibilityShouldIgnore (true);
+			contentBox.Accessible.SetShouldIgnore (true);
 			contentBox.Show ();
 			hbox.PackStart (contentBox, true, true, 0);
 			

@@ -1,4 +1,4 @@
-﻿//
+//
 // AtkCocoaHelperMac.cs
 //
 // Author:
@@ -80,7 +80,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public static void SetAccessibilityLabel (this Atk.Object o, string label)
+		public static void SetLabel (this Atk.Object o, string label)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -90,7 +90,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityLabel = label;
 		}
 
-		public static void SetAccessibilityLabel (this Gtk.CellRenderer r, string label)
+		public static void SetLabel (this Gtk.CellRenderer r, string label)
 		{
 			var nsa = GetNSAccessibilityElement (r);
 			if (nsa == null) {
@@ -100,7 +100,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityLabel = label;
 		}
 
-		public static void SetAccessibilityDescription (this Gtk.CellRenderer r, string description)
+		public static void SetDescription (this Gtk.CellRenderer r, string description)
 		{
 			var nsa = GetNSAccessibilityElement (r);
 			if (nsa == null) {
@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityHelp = description;
 		}
 
-		public static void SetAccessibilityShouldIgnore (this Atk.Object o, bool ignore)
+		public static void SetShouldIgnore (this Atk.Object o, bool ignore)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -120,7 +120,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityElement = !ignore;
 		}
 
-		public static void SetAccessibilityTitle (this Atk.Object o, string title)
+		public static void SetTitle (this Atk.Object o, string title)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -130,7 +130,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityTitle = title;
 		}
 
-		public static void SetAccessibilityDocument (this Atk.Object o, string documentUrl)
+		public static void SetDocument (this Atk.Object o, string documentUrl)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -140,7 +140,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityDocument = documentUrl;
 		}
 
-		public static void SetAccessibilityFilename (this Atk.Object o, string filename)
+		public static void SetFilename (this Atk.Object o, string filename)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -150,7 +150,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityFilename = filename;
 		}
 
-		public static void SetAccessibilityIsMainWindow (this Atk.Object o, bool isMainWindow)
+		public static void SetIsMainWindow (this Atk.Object o, bool isMainWindow)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityMain = isMainWindow;
 		}
 
-		public static void SetAccessibilityMainWindow (this Atk.Object o, Atk.Object mainWindow)
+		public static void SetMainWindow (this Atk.Object o, Atk.Object mainWindow)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -175,7 +175,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityMainWindow = (NSObject)windowAccessible;
 		}
 
-		public static void SetAccessibilityValue (this Atk.Object o, string stringValue)
+		public static void SetValue (this Atk.Object o, string stringValue)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -185,7 +185,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityValue = new NSString (stringValue);
 		}
 
-		public static void SetAccessibilityURL (this Atk.Object o, string url)
+		public static void SetUrl (this Atk.Object o, string url)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -195,7 +195,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityUrl = new NSUrl (url);
 		}
 
-		public static void SetAccessibilityRole (this Atk.Object o, string role, string description = null)
+		public static void SetRole (this Atk.Object o, string role, string description = null)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -209,12 +209,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public static void SetAccessibilityRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
+		public static void SetRole (this Atk.Object o, AtkCocoa.Roles role, string description = null)
 		{
-			o.SetAccessibilityRole (role.ToString (), description);
+			o.SetRole (role.ToString (), description);
 		}
 
-		public static void SetAccessibilitySubRole (this Atk.Object o, string subrole)
+		public static void SetSubRole (this Atk.Object o, string subrole)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -224,7 +224,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilitySubrole = subrole;
 		}
 
-		public static void SetAccessibilityTitleUIElement (this Atk.Object o, Atk.Object title)
+		public static void SetTitleUIElement (this Atk.Object o, Atk.Object title)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			var titleNsa = GetNSAccessibilityElement (title);
@@ -236,7 +236,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityTitleUIElement = (NSObject)titleNsa;
 		}
 
-		public static void SetAccessibilityAlternateUIVisible (this Atk.Object o, bool visible)
+		public static void SetAlternateUIVisible (this Atk.Object o, bool visible)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -246,7 +246,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityAlternateUIVisible = visible;
 		}
 
-		public static void SetAccessibilityOrientation (this Atk.Object o, Gtk.Orientation orientation)
+		public static void SetOrientation (this Atk.Object o, Gtk.Orientation orientation)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -256,7 +256,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityOrientation = orientation == Gtk.Orientation.Vertical ? NSAccessibilityOrientation.Vertical : NSAccessibilityOrientation.Horizontal;
 		}
 
-		public static void SetAccessibilityTitleFor (this Atk.Object o, params Atk.Object [] objects)
+		public static void SetTitleFor (this Atk.Object o, params Atk.Object [] objects)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -279,7 +279,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
-		public static void SetAccessibilityTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		public static void SetTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -289,7 +289,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityTabs = tabs;
 		}
 
-		public static void SetAccessibilityTabs (this Atk.Object o, Atk.Object [] tabs)
+		public static void SetTabs (this Atk.Object o, Atk.Object [] tabs)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -306,7 +306,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityTabs = realTabs;
 		}
 
-		public static void AccessibilityAddElementToTitle (this Atk.Object title, Atk.Object o)
+		public static void AddElementToTitle (this Atk.Object title, Atk.Object o)
 		{
 			var titleNsa = GetNSAccessibilityElement (title);
 			var nsa = GetNSAccessibilityElement (o);
@@ -331,7 +331,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			titleNsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
-		public static void AccessibilityRemoveElementFromTitle (this Atk.Object title, Atk.Object o)
+		public static void RemoveElementFromTitle (this Atk.Object title, Atk.Object o)
 		{
 			var titleNsa = GetNSAccessibilityElement (title);
 			var nsa = GetNSAccessibilityElement (o);
@@ -350,7 +350,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
 		}
 
-		public static void AccessibilityReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
+		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
 
@@ -361,7 +361,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityChildren = children;
 		}
 
-		public static void SetAccessibilityColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
+		public static void SetColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
 
@@ -372,7 +372,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityColumns = columns;
 		}
 
-		public static void SetAccessibilityRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
+		public static void SetRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
 
@@ -440,7 +440,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityChildren = children;
 		}
 
-		public static void AddAccessibleLinkedUIElement (this Atk.Object o, Atk.Object linked)
+		public static void AddLinkedUIElement (this Atk.Object o, Atk.Object linked)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			var linkedNSA = GetNSAccessibilityElement (linked);
@@ -505,7 +505,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AccessibilityAddChildElement (realChild);
 		}
 
-		public void SetAccessibilityRole (string role, string description = null)
+		public void SetRole (string role, string description = null)
 		{
 			AccessibilityRole = role;
 			if (!string.IsNullOrEmpty (description)) {
@@ -513,22 +513,22 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public void SetAccessibilityRole (AtkCocoa.Roles role, string description = null)
+		public void SetRole (AtkCocoa.Roles role, string description = null)
 		{
-			SetAccessibilityRole (role.ToString (), description);
+			SetRole (role.ToString (), description);
 		}
 
-		public void SetAccessibilityValue (string value)
+		public void SetValue (string value)
 		{
 			AccessibilityValue = new NSString (value);
 		}
 
-		public void SetAccessibilityTitle (string title)
+		public void SetTitle (string title)
 		{
 			AccessibilityTitle = title;
 		}
 
-		public void SetAccessibilityLabel (string label)
+		public void SetLabel (string label)
 		{
 			AccessibilityLabel = label;
 		}

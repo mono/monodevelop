@@ -1,4 +1,4 @@
-﻿//
+//
 // AtkCocoaHelper.cs
 //
 // Author:
@@ -232,11 +232,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void SetGtkParent (Gtk.Widget realParent);
 		void SetFrameInGtkParent (Gdk.Rectangle frame);
 		void AddAccessibleChild (IAccessibilityElementProxy child);
-		void SetAccessibilityRole (string role, string description = null);
-		void SetAccessibilityRole (AtkCocoa.Roles role, string description = null);
-		void SetAccessibilityValue (string value);
-		void SetAccessibilityTitle (string title);
-		void SetAccessibilityLabel (string label);
+		void SetRole (string role, string description = null);
+		void SetRole (AtkCocoa.Roles role, string description = null);
+		void SetValue (string value);
+		void SetTitle (string title);
+		void SetLabel (string label);
 		void SetAccessibilityIdentifier (string identifier);
 		void SetAccessibilityHelp (string help);
 		void SetFrameInParent (Gdk.Rectangle rect);

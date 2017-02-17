@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.Commands
 
 		public CommandRouterContainer (Control child, object target, bool continueToParent) : this (continueToParent)
 		{
-			Accessible.SetAccessibilityShouldIgnore (true);
+			Accessible.SetShouldIgnore (true);
 			if (child != null) {
 				PackStart (child, true, true, 0);
 				child = null;

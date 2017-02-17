@@ -58,12 +58,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		public WelcomePageSection (string title = null)
 		{
 			if (!string.IsNullOrEmpty (title)) {
-				Accessible.SetAccessibilityTitle (title);
+				Accessible.SetTitle (title);
 			}
 
 			this.title = title;
 			VisibleWindow = false;
-			root.Accessible.SetAccessibilityShouldIgnore (true);
+			root.Accessible.SetShouldIgnore (true);
 			Add (root);
 
 			root.Show ();
@@ -72,13 +72,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			root.SetPadding (p, p, p, p);
 
 			TitleAlignment = new Alignment (0f, 0f, 1f, 1f);
-			TitleAlignment.Accessible.SetAccessibilityShouldIgnore (true);
+			TitleAlignment.Accessible.SetShouldIgnore (true);
 			p = Styles.WelcomeScreen.Pad.Padding;
 			TitleAlignment.SetPadding (p, Styles.WelcomeScreen.Pad.LargeTitleMarginBottom, p, p);
 
 			ContentAlignment = new Alignment (0f, 0f, 1f, 1f);
 			ContentAlignment.SetPadding (0, p, p, p);
-			ContentAlignment.Accessible.SetAccessibilityShouldIgnore (true);
+			ContentAlignment.Accessible.SetShouldIgnore (true);
 
 			Gui.Styles.Changed += UpdateStyle;
 		}
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			var box = new VBox ();
-			box.Accessible.SetAccessibilityShouldIgnore (true);
+			box.Accessible.SetShouldIgnore (true);
 
 			label = new Label () { Markup = string.Format (headerFormat, title), Xalign = (uint) 0 };
 			TitleAlignment.Add (label);
@@ -190,14 +190,14 @@ namespace MonoDevelop.Ide.WelcomePage
 		// by accessibility
 		//
 		// This must be called after setContent, otherwise label will be null
-		protected void SetAccessibilityTitledWidget (Widget widget)
+		protected void SetTitledWidget (Widget widget)
 		{
 			if (label == null) {
 				return;
 			}
 
-			widget.Accessible.SetAccessibilityTitleUIElement (label.Accessible);
-			label.Accessible.AccessibilityAddElementToTitle (widget.Accessible);
+			widget.Accessible.SetTitleUIElement (label.Accessible);
+			label.Accessible.AddElementToTitle (widget.Accessible);
 		}
 
 		protected void RemoveAccessibiltyTitledWidget (Widget widget)
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				return;
 			}
 
-			label.Accessible.AccessibilityRemoveElementFromTitle (widget.Accessible);
+			label.Accessible.RemoveElementFromTitle (widget.Accessible);
 		}
 	}
 }

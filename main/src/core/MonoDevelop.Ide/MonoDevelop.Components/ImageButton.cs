@@ -50,7 +50,7 @@ namespace MonoDevelop.Components
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
 			VisibleWindow = false;
 			imageWidget = new ImageView ();
-			imageWidget.Accessible.SetAccessibilityShouldIgnore (true);
+			imageWidget.Accessible.SetShouldIgnore (true);
 			imageWidget.Show ();
 			Add (imageWidget);
 		}

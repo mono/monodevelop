@@ -61,15 +61,15 @@ namespace MonoDevelop.Components
 			actionHandler.Actions = new [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += OnPerformPress;
 
-			Accessible.SetAccessibilityRole (AtkCocoa.Roles.AXButton);
+			Accessible.SetRole (AtkCocoa.Roles.AXButton);
 
 			Gtk.Alignment al = new Alignment (0.5f, 0.5f, 0f, 0f);
-			al.Accessible.SetAccessibilityShouldIgnore (true);
+			al.Accessible.SetShouldIgnore (true);
 			al.Show ();
             CanFocus = true;
 			VisibleWindow = false;
 			image = new ImageView();
-			image.Accessible.SetAccessibilityShouldIgnore (true);
+			image.Accessible.SetShouldIgnore (true);
             image.Show();
 			al.Add (image);
             Add(al);

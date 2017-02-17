@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			Gtk.HBox hbox = new HBox ();
-			hbox.Accessible.SetAccessibilityShouldIgnore (true);
+			hbox.Accessible.SetShouldIgnore (true);
 
 			var btn = new WelcomePageListButton (GettextCatalog.GetString ("New..."), null, newProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
 			btn.Accessible.Description = "Create a new solution";
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			btn.LeftTextPadding = 24;
 			hbox.PackStart (btn, false, false, 0);
 
-			SetAccessibilityTitledWidget (btn);
+			SetTitledWidget (btn);
 
 			btn = new WelcomePageListButton (GettextCatalog.GetString ("Open..."), null, openProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile");
 			btn.Accessible.Description = "Open an existing solution";
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			btn.LeftTextPadding = 24;
 			hbox.PackStart (btn, false, false, 0);
 
-			SetAccessibilityTitledWidget (btn);
+			SetTitledWidget (btn);
 
 			box.PackStart (hbox, false, false, 0);
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				var pixbuf = ImageService.GetIcon (GetIcon (filename), IconSize.Dnd);
 				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
 
-				button.Accessible.SetAccessibilityURL ("file://" + filename);
+				button.Accessible.SetUrl ("file://" + filename);
 				button.Accessible.Name = string.Format ("WelcomePage.RecentSolutions.RecentFile{0}", idx);
 				idx++;
 
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				var pinClickHandler = new PinClickHandler (filename);
 				pinClickHandler.Register (button);
 
-				SetAccessibilityTitledWidget (button);
+				SetTitledWidget (button);
 			}
 
 			this.ShowAll ();
