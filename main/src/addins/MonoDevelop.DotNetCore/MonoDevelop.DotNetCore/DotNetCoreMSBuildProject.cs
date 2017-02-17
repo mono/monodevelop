@@ -141,7 +141,7 @@ namespace MonoDevelop.DotNetCore
 				// HACK: Add wildcard items to the project since they are not currently evaluated
 				// properly which results in no files being displayed in the solution window.
 				project.AddWebProjectWildcardItems ();
-			} else {
+			} else if (!Sdk.Contains ("FSharp")) {
 				project.AddProjectWildcardItems ();
 			}
 
