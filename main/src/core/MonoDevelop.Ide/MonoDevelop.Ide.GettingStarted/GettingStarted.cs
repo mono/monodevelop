@@ -29,10 +29,11 @@ namespace MonoDevelop.Ide.GettingStarted
 
 		public static IGettingStartedProvider GetGettingStartedProvider (this Project project)
 		{
-			foreach (var provider in providers) {
-				if (provider.SupportsProject (project))
-					return provider;
-			}
+			if (project != null)
+				foreach (var provider in providers) {
+					if (provider.SupportsProject (project))
+						return provider;
+				}
 
 			return null;
 		}

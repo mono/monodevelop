@@ -1,5 +1,6 @@
 ﻿using System;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.GettingStarted
@@ -26,6 +27,10 @@ namespace MonoDevelop.Ide.GettingStarted
 				var vc = new GettingStartedViewContent (project, provider);
 				IdeApp.Workbench.OpenDocument (vc, true);
 			}
+		}
+
+		public virtual void SupportedProjectCreated (Project project, ProcessedTemplateResult templateResult)
+		{
 		}
 	}
 }
