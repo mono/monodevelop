@@ -104,10 +104,7 @@ namespace UnitTests
 		
 		public static string GetMdb (string file)
 		{
-			if (Runtime.SystemAssemblyService.DefaultRuntime is MonoTargetRuntime)
-				return file + ".mdb";
-			else
-				return Path.ChangeExtension (file, ".pdb");
+			return Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyDebugInfoFile (file);
 		}
 	}
 }
