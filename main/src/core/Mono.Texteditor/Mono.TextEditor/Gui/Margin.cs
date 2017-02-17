@@ -96,7 +96,6 @@ namespace Mono.TextEditor
 				rectInParent = value;
 
 				if (Accessible == null) {
-					Console.WriteLine ("No accessible");
 					return;
 				}
 
