@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
@@ -33,6 +34,9 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkPaths
 	{
+		List<string> projectImportProps = new List<string> ();
+		List<string> projectImportTargets = new List<string> ();
+
 		public void FindSdkPaths (string sdk)
 		{
 			var dotNetCorePath = new DotNetCorePath ();
@@ -55,14 +59,18 @@ namespace MonoDevelop.DotNetCore
 			// SDK files when building and running targets.
 			Environment.SetEnvironmentVariable ("MSBuildSDKsPath", MSBuildSDKsPath + Path.DirectorySeparatorChar);
 
-			string sdkMSBuildTargetsDirectory = Path.Combine (MSBuildSDKsPath, sdk, "Sdk");
-			ProjectImportProps = Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.props");
-			ProjectImportTargets = Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.targets");
+			if (sdk.Contains (';')) {
+				foreach (string sdkItem in SplitSdks (sdk)) {
+					AddSdkImports (sdkItem);
+				}
+			} else {
+				AddSdkImports (sdk);
+			}
 
-			Exist = File.Exists (ProjectImportProps) && File.Exists (ProjectImportTargets);
+			Exist = CheckImportsExist ();
 
 			if (Exist) {
-				CheckIsSupportedSdkVersion (sdkDirectory);
+				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (sdkDirectory);
 				Exist = !IsUnsupportedSdkVersion;
 			} else {
 				IsUnsupportedSdkVersion = true;
@@ -71,22 +79,59 @@ namespace MonoDevelop.DotNetCore
 
 		public bool IsUnsupportedSdkVersion { get; private set; }
 		public bool Exist { get; private set; }
-		public string ProjectImportProps { get; private set; }
-		public string ProjectImportTargets { get; private set; }
 		public string MSBuildSDKsPath { get; private set; }
+
+		public IEnumerable<string> ProjectImportProps {
+			get { return projectImportProps; }
+		}
+
+		public IEnumerable<string> ProjectImportTargets {
+			get { return projectImportTargets; }
+		}
+
+		static IEnumerable<string> SplitSdks (string sdk)
+		{
+			return sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+		}
+
+		void AddSdkImports (string sdk)
+		{
+			string sdkMSBuildTargetsDirectory = Path.Combine (MSBuildSDKsPath, sdk, "Sdk");
+			projectImportProps.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.props"));
+			projectImportTargets.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.targets"));
+		}
+
+		bool CheckImportsExist ()
+		{
+			foreach (string prop in ProjectImportProps) {
+				if (!File.Exists (prop)) {
+					LoggingService.LogError ("Sdk.props not found. '{0}'", prop);
+					return false;
+				}
+			}
+
+			foreach (string target in ProjectImportTargets) {
+				if (!File.Exists (target)) {
+					LoggingService.LogError ("Sdk.targets not found. '{0}'", target);
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		/// <summary>
 		/// .NET Core SDK version needs to be at least 1.0.0-preview5-004460
 		/// </summary>
-		void CheckIsSupportedSdkVersion (string sdkDirectory)
+		bool CheckIsSupportedSdkVersion (string sdkDirectory)
 		{
 			try {
 				string sdkVersion = Path.GetFileName (sdkDirectory);
 				int buildVersion = -1;
 				if (DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion)) {
 					if (buildVersion < DotNetCoreSdkVersion.MinimumSupportedBuildVersion) {
-						IsUnsupportedSdkVersion = true;
 						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0-preview5-004460. '{1}'", sdkVersion, sdkDirectory);
+						return false;
 					}
 				} else {
 					LoggingService.LogWarning ("Unable to get version information for .NET Core SDK. '{0}'", sdkDirectory);
@@ -94,6 +139,7 @@ namespace MonoDevelop.DotNetCore
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error checking sdk version.", ex);
 			}
+			return true;
 		}
 	}
 }
