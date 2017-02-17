@@ -9012,8 +9012,7 @@
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProjectExtension.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProviderBase.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProvider.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedHeaderBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialogController.cs" />

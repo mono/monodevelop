@@ -5,7 +5,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.GettingStarted
 {
-	public abstract class GettingStartedProviderBase : IGettingStartedProvider
+	public abstract class GettingStartedProvider
 	{
 		public abstract bool SupportsProject (Project project);
 
