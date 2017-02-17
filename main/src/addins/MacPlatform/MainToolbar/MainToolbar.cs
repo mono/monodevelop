@@ -190,30 +190,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		[Obsolete ("Use RebuildToolbar (IEnumerable<IButtonBarGroup> groups) instead")]
-		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
-		{
-			var groups = new List<ButtonBarGroup> ();
-			int gCount = 1;
-
-			// We can't set a good title here.
-			var group = new ButtonBarGroup (GettextCatalog.GetString ("Group {0}", gCount));
-			gCount++;
-
-			foreach (var b in buttons) {
-				if (b.IsSeparator) {
-					groups.Add (group);
-
-					group = new ButtonBarGroup (GettextCatalog.GetString ("Group {0}", gCount));
-					gCount++;
-				} else {
-					group.Buttons.Add (b);
-				}
-			}
-
-			RebuildToolbar (groups);
-		}
-
 		public void RebuildToolbar (IEnumerable<ButtonBarGroup> groups)
 		{
 			var buttonBars = new List<ButtonBar> ();

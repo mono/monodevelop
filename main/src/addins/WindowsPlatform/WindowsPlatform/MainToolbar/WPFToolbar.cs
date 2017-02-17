@@ -253,39 +253,6 @@ namespace WindowsPlatform.MainToolbar
 			toolbar.SearchBar.SearchBar.Focus ();
 		}
 
-		public void RebuidToolbar (IEnumerable<IButtonBarButton> buttons)
-		{
-            foreach (var item in toolbar.ButtonBarPanel.Children.OfType<IDisposable> ())
-				item.Dispose ();
-
-			toolbar.ButtonBarPanel.Children.Clear ();
-			if (!buttons.Any ())
-				return;
-
-			var sepStyle = toolbar.FindResource (System.Windows.Controls.ToolBar.SeparatorStyleKey) as System.Windows.Style;
-
-			bool needsSeparator = true;
-
-			foreach (var button in buttons) {
-				if (button.IsSeparator) {
-					needsSeparator = true;
-					continue;
-				}
-
-				if (needsSeparator)
-					toolbar.ButtonBarPanel.Children.Add (new DottedSeparator {
-						Margin = new System.Windows.Thickness {
-							Left = 3,
-							Right = 3,
-						},
-						UseLayoutRounding = true,
-					});
-
-				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
-				needsSeparator = false;
-			}
-		}
-
 		public void RebuildToolbar (IEnumerable<ButtonBarGroup> groups)
 		{
 			foreach (var item in toolbar.ButtonBarPanel.Children.OfType<IDisposable> ())
