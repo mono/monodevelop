@@ -149,6 +149,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nsa.AccessibilityLabel = title;
 		}
 
+		// This method override is required so that Cocoa will pick up that our button subclass
+		// has a PerformPress action.
 		public override bool AccessibilityPerformPress ()
 		{
 			return base.AccessibilityPerformPress ();
