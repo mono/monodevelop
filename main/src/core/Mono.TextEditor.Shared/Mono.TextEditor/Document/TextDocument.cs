@@ -225,9 +225,9 @@ namespace Mono.TextEditor
 
 			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
 
-			this.TextBuffer.Changed += this.OnTextBufferChanged;
+            this.TextBuffer.Changed += this.OnTextBufferChanged;
 
-			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
+            TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			textSegmentMarkerTree.InstallListener (this);
 			this.diffTracker.SetTrackDocument (this);
@@ -236,20 +236,73 @@ namespace Mono.TextEditor
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
 			if (args.Changes != null)
-			{
-				// Report the changes backwards so that the positions are all accurate
-				for (int i = args.Changes.Count - 1; (i >= 0); --i)
-				{
-					var change = args.Changes[i];
+            {
+                cachedText = null;
 
-					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
-					foldSegmentTree.UpdateOnTextReplace(this, textChange);
+                // Report the changes backwards so that the positions are all accurate
+                for (int i = args.Changes.Count - 1; (i >= 0); --i)
+				{
+                    var change = args.Changes[i];
+
+                    bool isTextSet = (args.Changes.Count == 1) && (change.OldPosition == 0) && (change.OldLength == args.Before.Length);
+                    bool endUndo = false;
+                    UndoOperation operation = null;
+                    var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+
+                    if (isTextSet)
+                    {
+                        textSegmentMarkerTree.Clear();
+                    }
+                    else
+                    {
+                        InterruptFoldWorker();
+
+                        if (!isInUndo)
+                        {
+                            operation = new UndoOperation(textChange);
+                            if (currentAtomicOperation != null)
+                            {
+                                currentAtomicOperation.Add(operation);
+                            }
+                            else
+                            {
+                                OnBeginUndo();
+                                undoStack.Push(operation);
+                                endUndo = true;
+                            }
+
+                            redoStack.Clear();
+                        }
+
+                        if (change.NewLength != 0)
+                            EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
+
+                        foldSegmentTree.UpdateOnTextReplace(this, textChange);
+                    }
+
 					TextChanging?.Invoke(this, textChange);
-				}
-			}
+
+                    if (isTextSet)
+                    {
+                        extendingTextMarkers = new List<TextLineMarker>();
+                        ClearFoldSegments();
+
+                        TextSet?.Invoke(this, EventArgs.Empty);
+                        CommitUpdateAll();
+                        ClearUndoBuffer();
+                    }
+                    else
+                    {
+                        TextChanged?.Invoke(this, textChange);
+
+                        if (endUndo)
+                            OnEndUndo(new UndoOperationEventArgs(operation));
+                    }
+                }
+            }
 		}
 
-		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
+        void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsCollapsed)
 				foldedSegments.Remove (e.Node);
@@ -296,21 +349,7 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
-				if (value == null)
-					value = "";
-				var args = new TextChangeEventArgs(0, Text, value);
-				textSegmentMarkerTree.Clear();
-				cachedText = null;
-				this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(0, this.TextBuffer.CurrentSnapshot.Length), value);
-
-				extendingTextMarkers = new List<TextLineMarker>();
-				//HACK splitter.Initalize(value, out longestLineAtTextSet);
-				ClearFoldSegments();
-				//HACK versionProvider = new TextSourceVersionProvider();
-				//HACK buffer.Version = Version;
-				OnTextSet(EventArgs.Empty);
-				CommitUpdateAll();
-				ClearUndoBuffer();
+                this.ReplaceText(0, this.TextBuffer.CurrentSnapshot.Length, value);
 			}
 		}
 
@@ -353,41 +392,7 @@ namespace Mono.TextEditor
 			if (value == null)
 				value = string.Empty;
 
-			InterruptFoldWorker ();
-
-			var args = new TextChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
-
-			UndoOperation operation = null;
-			bool endUndo = false;
-			if (!isInUndo) {
-				operation = new UndoOperation (args);
-				if (currentAtomicOperation != null) {
-					currentAtomicOperation.Add (operation);
-				} else {
-					OnBeginUndo ();
-					undoStack.Push (operation);
-					endUndo = true;
-				}
-				redoStack.Clear ();
-			}
-
-			if (value.Length != 0)
-				EnsureSegmentIsUnfolded (offset, value.Length);
-			
-			//HACK what does this line to? value = args.InsertedText.Text;
-
-			cachedText = null;
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
-
-			//HACK buffer = buffer.RemoveText(offset, count);
-			//HACK if (!string.IsNullOrEmpty (value))
-			//HACK 	buffer = buffer.InsertText (offset, value);
-			//HACK splitter.TextReplaced (this, args);
-			//HACK versionProvider.AppendChange (args);
-			//HACK buffer.Version = Version;
-			OnTextReplaced(args);
-			if (endUndo)
-				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
 
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -586,21 +591,8 @@ namespace Mono.TextEditor
 #endif
 
 		public event EventHandler<TextChangeEventArgs> TextChanged;
-
-		protected virtual void OnTextReplaced(TextChangeEventArgs args)
-		{
-			if (TextChanged != null)
-				TextChanged (this, args);
-		}
-
 		public event EventHandler<TextChangeEventArgs> TextChanging;
 
-		protected virtual void OnTextSet (EventArgs e)
-		{
-			EventHandler handler = this.TextSet;
-			if (handler != null)
-				handler (this, e);
-		}
 		public event EventHandler TextSet;
 		#endregion
 
