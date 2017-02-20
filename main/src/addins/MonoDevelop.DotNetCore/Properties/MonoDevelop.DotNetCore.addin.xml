@@ -60,6 +60,11 @@
 				replaces="RuntimeOptionsPanel"
 				_label="Runtime Options"
 				class="MonoDevelop.DotNetCore.DotNetCoreRuntimeOptionsPanel" />
+			<Panel
+				id="DotNetCoreRuntimeOptionsPanel"
+				replaces="MSBuildOptionsPanel"
+				_label="Build"
+				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
 		</Condition>
 	</Extension>
 </ExtensionModel>
