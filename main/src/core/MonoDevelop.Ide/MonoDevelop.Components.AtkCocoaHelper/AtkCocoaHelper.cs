@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXIncrement,
 			AXPick,
 			AXPress,
-			AXRelease,
+			AXRaise,
 			AXShowAlternateUI,
 			AXShowDefaultUI,
 			AXShowMenu
@@ -86,7 +86,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class ActionDelegate
 	{
-		public AtkCocoa.Actions [] Actions { get; set; }
+		HashSet<AtkCocoa.Actions> actions = new HashSet<AtkCocoa.Actions> ();
 
 		Atk.Object owner;
 		internal Atk.Object Owner {
@@ -128,90 +128,211 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void RequestActionsHandler (object sender, GLib.SignalArgs args)
 		{
 			// +1 so we can add a NULL to terminate the array
-			int actionCount = Actions.Length + 1;
+			int actionCount = actions.Count + 1;
 			IntPtr intPtr = Marshal.AllocHGlobal (actionCount * Marshal.SizeOf<IntPtr> ());
-			IntPtr [] actions = new IntPtr [actionCount];
+			IntPtr [] actionsPtr = new IntPtr [actionCount];
 
 			int i = 0;
-			foreach (var action in Actions) {
-				actions [i] = Marshal.StringToHGlobalAnsi (action.ToString ());
+			foreach (var action in actions) {
+				actionsPtr [i] = Marshal.StringToHGlobalAnsi (action.ToString ());
 				i++;
 			}
 
 			// Terminator
-			actions [i] = IntPtr.Zero;
+			actionsPtr [i] = IntPtr.Zero;
 
-			Marshal.Copy (actions, 0, intPtr, actionCount);
+			Marshal.Copy (actionsPtr, 0, intPtr, actionCount);
 
 			args.RetVal = intPtr;
 		}
 
 		void PerformCancelHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformCancel?.Invoke (this, args);
+			performCancel?.Invoke (this, args);
 		}
 
 		void PerformConfirmHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformConfirm?.Invoke (this, args);
+			performConfirm?.Invoke (this, args);
 		}
 
 		void PerformDecrementHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformDecrement?.Invoke (this, args);
+			performDecrement?.Invoke (this, args);
 		}
 
 		void PerformDeleteHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformDelete?.Invoke (this, args);
+			performDelete?.Invoke (this, args);
 		}
 
 		void PerformIncrementHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformIncrement?.Invoke (this, args);
+			performIncrement?.Invoke (this, args);
 		}
 
 		void PerformPickHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformPick?.Invoke (this, args);
+			performPick?.Invoke (this, args);
 		}
 
 		void PerformPressHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformPress?.Invoke (this, args);
+			performPress?.Invoke (this, args);
 		}
 
 		void PerformRaiseHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformRaise?.Invoke (this, args);
+			performRaise?.Invoke (this, args);
 		}
 
 		void PerformShowAlternateUIHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformShowAlternateUI?.Invoke (this, args);
+			performShowAlternateUI?.Invoke (this, args);
 		}
 
 		void PerformShowDefaultUIHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformShowDefaultUI?.Invoke (this, args);
+			performShowDefaultUI?.Invoke (this, args);
 		}
 
 		void PerformShowMenuHandler (object sender, GLib.SignalArgs args)
 		{
-			PerformShowMenu?.Invoke (this, args);
+			performShowMenu?.Invoke (this, args);
 		}
 
-		public event EventHandler PerformCancel;
-		public event EventHandler PerformConfirm;
-		public event EventHandler PerformDecrement;
-		public event EventHandler PerformDelete;
-		public event EventHandler PerformIncrement;
-		public event EventHandler PerformPick;
-		public event EventHandler PerformPress;
-		public event EventHandler PerformRaise;
-		public event EventHandler PerformShowAlternateUI;
-		public event EventHandler PerformShowDefaultUI;
-		public event EventHandler PerformShowMenu;
+		void AddAction (AtkCocoa.Actions action)
+		{
+			actions.Add (action);
+		}
+
+		void RemoveAction (AtkCocoa.Actions action)
+		{
+			actions.Remove (action);
+		}
+
+		event EventHandler performCancel;
+		public event EventHandler PerformCancel {
+			add {
+				performCancel += value;
+				AddAction (AtkCocoa.Actions.AXCancel);
+			}
+			remove {
+				performCancel -= value;
+				RemoveAction (AtkCocoa.Actions.AXCancel);
+			}
+		}
+
+		event EventHandler performConfirm;
+		public event EventHandler PerformConfirm {
+			add {
+				performConfirm += value;
+				AddAction (AtkCocoa.Actions.AXConfirm);
+			}
+			remove {
+				performConfirm -= value;
+				RemoveAction (AtkCocoa.Actions.AXConfirm);
+			}
+		}
+		event EventHandler performDecrement;
+		public event EventHandler PerformDecrement {
+			add {
+				performDecrement += value;
+				AddAction (AtkCocoa.Actions.AXDecrement);
+			}
+			remove {
+				performDecrement -= value;
+				RemoveAction (AtkCocoa.Actions.AXDecrement);
+			}
+		}
+		event EventHandler performDelete;
+		public event EventHandler PerformDelete {
+			add {
+				performDelete += value;
+				AddAction (AtkCocoa.Actions.AXDelete);
+			}
+			remove {
+				performDelete -= value;
+				RemoveAction (AtkCocoa.Actions.AXDelete);
+			}
+		}
+		event EventHandler performIncrement;
+		public event EventHandler PerformIncrement {
+			add {
+				performIncrement += value;
+				AddAction (AtkCocoa.Actions.AXIncrement);
+			}
+			remove {
+				performIncrement -= value;
+				RemoveAction (AtkCocoa.Actions.AXIncrement);
+			}
+		}
+		event EventHandler performPick;
+		public event EventHandler PerformPick {
+			add {
+				performPick += value;
+				AddAction (AtkCocoa.Actions.AXPick);
+			}
+			remove {
+				performPick -= value;
+				RemoveAction (AtkCocoa.Actions.AXPick);
+			}
+		}
+		event EventHandler performPress;
+		public event EventHandler PerformPress {
+			add {
+				performPress += value;
+				AddAction (AtkCocoa.Actions.AXPress);
+			}
+			remove {
+				performPress -= value;
+				AddAction (AtkCocoa.Actions.AXPress);
+			}
+		}
+		event EventHandler performRaise;
+		public event EventHandler PerformRaise {
+			add {
+				performRaise += value;
+				AddAction (AtkCocoa.Actions.AXRaise);
+			}
+			remove {
+				performRaise -= value;
+				RemoveAction (AtkCocoa.Actions.AXRaise);
+			}
+		}
+		event EventHandler performShowAlternateUI;
+		public event EventHandler PerformShowAlternateUI {
+			add {
+				performShowAlternateUI += value;
+				AddAction (AtkCocoa.Actions.AXShowAlternateUI);
+			}
+			remove {
+				performShowAlternateUI -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowAlternateUI);
+			}
+		}
+		event EventHandler performShowDefaultUI;
+		public event EventHandler PerformShowDefaultUI {
+			add {
+				performShowDefaultUI += value;
+				AddAction (AtkCocoa.Actions.AXShowDefaultUI);
+			}
+			remove {
+				performShowDefaultUI -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowDefaultUI);
+			}
+		}
+		event EventHandler performShowMenu;
+		public event EventHandler PerformShowMenu {
+			add {
+				performShowMenu += value;
+				AddAction (AtkCocoa.Actions.AXShowMenu);
+			}
+			remove {
+				performShowMenu -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowMenu);
+			}
+		}
 	}
 
 	// On anything other than Mac this is just a dummy class to prevent needing to have #ifdefs all over the main code

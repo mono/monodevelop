@@ -58,7 +58,6 @@ namespace MonoDevelop.Components
         {
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
 			Accessible.SetActionDelegate (actionHandler);
-			actionHandler.Actions = new [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += OnPerformPress;
 
 			Accessible.SetRole (AtkCocoa.Roles.AXButton);

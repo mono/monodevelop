@@ -135,7 +135,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Accessible.Description = GettextCatalog.GetString ("An overview of the current file's messages, warnings and errors");
 
 			var handler = new ActionDelegate ();
-			handler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXShowMenu };
 			handler.PerformShowMenu += PerformShowMenu;
 			Accessible.SetActionDelegate (handler);
 		}

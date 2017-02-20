@@ -38,7 +38,6 @@ namespace MonoDevelop.Components
 		{
 			ActionHandler = new AtkCocoaHelper.ActionDelegate ();
 			ActionHandler.PerformShowMenu += PerformShowMenu;
-			ActionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXShowMenu };
 
 			Accessible.SetActionDelegate (ActionHandler);
 		}

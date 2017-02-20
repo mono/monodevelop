@@ -76,7 +76,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
 			var actionHandler = new ActionDelegate ();
-			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += HandlePress;
 
 			Accessible.SetActionDelegate (actionHandler);

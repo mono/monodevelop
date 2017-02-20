@@ -136,7 +136,6 @@ namespace MonoDevelop.Components.Docking
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += OnPerformPress;
 
 			Accessible.SetActionDelegate (actionHandler);

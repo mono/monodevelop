@@ -86,9 +86,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			actionHandler = new ActionDelegate ();
 			actionHandler.PerformPress += HandlePress;
-			actionHandler.PerformShowAlternateUI += HandleShowAlternateUI;
-			actionHandler.PerformShowDefaultUI += HandleShowDefaultUI;
-
 			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Role = Atk.Role.PushButton;
 			Accessible.SetTitle (title);
@@ -118,14 +115,15 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		void UpdateActions ()
 		{
-			var actions = new List<AtkCocoa.Actions> ();
-			actions.Add (AtkCocoa.Actions.AXPress);
-
+			// FIXME: Should the pinning star just be handled by an internal accessible element
+			// rather than an alternate UI?
 			if (AllowPinning) {
-				actions.Add (AtkCocoa.Actions.AXShowAlternateUI);
-				actions.Add (AtkCocoa.Actions.AXShowDefaultUI);
+				actionHandler.PerformShowAlternateUI += HandleShowAlternateUI;
+				actionHandler.PerformShowDefaultUI += HandleShowDefaultUI;
+			} else {
+				actionHandler.PerformShowAlternateUI -= HandleShowAlternateUI;
+				actionHandler.PerformShowDefaultUI -= HandleShowDefaultUI;
 			}
-			actionHandler.Actions = actions.ToArray ();
 		}
 
 		void UpdateStyle (object sender = null, EventArgs e = null)

@@ -68,7 +68,6 @@ namespace MonoDevelop.Ide.Projects
 			// Setup the treeview to be able to have a context menu
 			var actionHandler = new ActionDelegate ();
 			actionHandler.PerformShowMenu += PerformShowMenu;
-			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXShowMenu };
 
 			templatesTreeView.Accessible.SetActionDelegate (actionHandler);
 		}

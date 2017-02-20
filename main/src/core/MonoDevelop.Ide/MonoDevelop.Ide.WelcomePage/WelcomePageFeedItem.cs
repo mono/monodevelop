@@ -152,7 +152,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		public WelcomePageFeedItem ()
 		{
 			var actionDelegate = new ActionDelegate ();
-			actionDelegate.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionDelegate.PerformPress += PerformPress;
 
 			Accessible.SetActionDelegate (actionDelegate);

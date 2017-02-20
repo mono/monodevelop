@@ -246,11 +246,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			// Add an extra action handler to the tree to handle Press actions
 			var actionHandler = tree.ActionHandler;
-			var actions = new AtkCocoa.Actions [actionHandler.Actions.Length + 1];
-			Array.Copy (actionHandler.Actions, actions, actionHandler.Actions.Length);
-			actions [actionHandler.Actions.Length] = AtkCocoa.Actions.AXPress;
-			actionHandler.Actions = actions;
-
 			actionHandler.PerformPress += OnPerformPress;
 
 			workNode = new TreeNodeNavigator (this);

@@ -41,7 +41,6 @@ namespace MonoDevelop.Components
 		public ImageButton ()
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress };
 			actionHandler.PerformPress += HandlePress;
 
 			Accessible.SetActionDelegate (actionHandler);

@@ -97,7 +97,6 @@ namespace MonoDevelop.Components.Docking
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
 			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
-			actionHandler.Actions = new AtkCocoa.Actions [] { AtkCocoa.Actions.AXPress, AtkCocoa.Actions.AXShowMenu };
 			actionHandler.PerformPress += HandlePress;
 			actionHandler.PerformShowMenu += HandleShowMenu;
 
