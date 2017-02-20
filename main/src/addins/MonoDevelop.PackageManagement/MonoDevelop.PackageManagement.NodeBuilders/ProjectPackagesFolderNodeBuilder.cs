@@ -125,10 +125,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (builder != null) {
 				builder.UpdateAll ();
 				builder.MoveToParent ();
-			}
 
-			if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
-				builder.UpdateAll ();
+				if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
+					builder.UpdateAll ();
+				}
 			}
 		}
 	}
