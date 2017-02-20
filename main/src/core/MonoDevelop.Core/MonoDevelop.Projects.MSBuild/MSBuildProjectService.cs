@@ -47,6 +47,13 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
+	public enum BuilderStatus
+	{
+		Locked,
+		Unlocked,
+		Any
+	}
+
 	public static class MSBuildProjectService
 	{
 		internal const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
@@ -927,7 +934,7 @@ namespace MonoDevelop.Projects.MSBuild
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
 
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, BuilderStatus status = BuilderStatus.Any)
 		{
 			Version mtv = Version.Parse (minToolsVersion);
 			if (mtv >= new Version (15,0))
@@ -951,7 +958,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 				RemoteBuildEngine builder = null;
 
-				if (lockBuilder) {
+				if (status == BuilderStatus.Locked) {
 					foreach (var b in builders.GetBuilders (builderKey)) {
 						if (b.Lock ()) {
 							builder = b;
@@ -959,7 +966,9 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 						b.Unlock ();
 					}
-				} else
+				} else if (status == BuilderStatus.Unlocked)
+					builder = builders.GetBuilders (builderKey).FirstOrDefault (biter => !biter.IsBusy);
+				else
 					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
 				
 				if (builder != null) {
@@ -1011,7 +1020,7 @@ namespace MonoDevelop.Projects.MSBuild
 						using (await buildersLock.EnterAsync ().ConfigureAwait (false))
 							builders.Remove (builder);
 					};
-					if (lockBuilder)
+					if (status == BuilderStatus.Locked)
 						builder.Lock ();
 					var pb = new RemoteProjectBuilder (file, builder);
 					await pb.Load ().ConfigureAwait (false);
