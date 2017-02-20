@@ -1114,14 +1114,8 @@ namespace MonoDevelop.Projects
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
-					bool newBuilderRequested = false;
-
-					RemoteProjectBuilder builder = await GetProjectBuilder (isFastOperation).ConfigureAwait (false);
-					if (builder.IsBusy) {
-						builder.ReleaseReference ();
-						newBuilderRequested = true;
-						builder = await RequestLockedBuilder ().ConfigureAwait (false);
-					} else if (!isFastOperation)
+					RemoteProjectBuilder builder = await GetProjectBuilder (isFastOperation ? BuilderStatus.Unlocked : BuilderStatus.Locked).ConfigureAwait (false);
+					if (!isFastOperation)
 						builder.Lock ();
 
 					string [] targets;
@@ -1136,7 +1130,7 @@ namespace MonoDevelop.Projects
 						if (!isFastOperation)
 							builder.Unlock ();
 						builder.ReleaseReference ();
-						if (newBuilderRequested) {
+						if (!isFastOperation) {
 							// Dispose the builder after a while, so that it can be reused
 							#pragma warning disable 4014
 							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
@@ -1254,7 +1248,7 @@ namespace MonoDevelop.Projects
 		string lastSlnFileName;
 		AsyncCriticalSection builderLock = new AsyncCriticalSection ();
 
-		internal async Task<RemoteProjectBuilder> GetProjectBuilder (bool isFastOperation)
+		internal async Task<RemoteProjectBuilder> GetProjectBuilder (BuilderStatus status)
 		{
 			//FIXME: we can't really have per-project runtimes, has to be per-solution
 			TargetRuntime runtime = null;
@@ -1270,11 +1264,11 @@ namespace MonoDevelop.Projects
 				bool refAdded = false;
 				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
 					if (projectBuilder != null && refAdded) {
-						if (!isFastOperation)
+						if (status == BuilderStatus.Locked)
 							projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, lockBuilder: !isFastOperation, requestUnlocked: isFastOperation);
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, status);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1317,7 +1311,7 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, lockBuilder: true);
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, BuilderStatus.Locked);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
