@@ -103,6 +103,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectSupportedTargetFrameworks.cs" />
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DummyMSBuildOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

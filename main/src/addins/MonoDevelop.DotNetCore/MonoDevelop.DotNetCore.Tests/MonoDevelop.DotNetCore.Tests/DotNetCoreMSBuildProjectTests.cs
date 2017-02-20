@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
-using System;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -72,9 +73,10 @@ namespace MonoDevelop.DotNetCore.Tests
 			project.ReadProject (msbuildProject);
 		}
 
-		void WriteProject ()
+		void WriteProject (string framework = ".NETCoreApp", string version = "1.0")
 		{
-			project.WriteProject (msbuildProject);
+			var moniker = new TargetFrameworkMoniker (framework, version);
+			project.WriteProject (msbuildProject, moniker);
 		}
 
 		[Test]
@@ -421,6 +423,48 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Name"));
 			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Project"));
 			Assert.AreEqual (@"Lib\Lib.csproj", projectReferenceSaved.Include);
+		}
+
+		[Test]
+		public void WriteProject_TargetFrameworkVersionChanged_TargetFrameworkUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETCoreApp", "1.1");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual ("netcoreapp1.1", savedFramework);
+		}
+
+		[Test]
+		public void WriteProject_ProjectDefinesMultipleTargetFrameworksAndTargetFrameworkVersionChanged_TargetFrameworksUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFrameworks>netcoreapp1.0;net45</TargetFrameworks>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETCoreApp", "1.1");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				 .GetValue ("TargetFrameworks");
+			Assert.AreEqual ("netcoreapp1.1;net45", savedFramework);
 		}
 	}
 }

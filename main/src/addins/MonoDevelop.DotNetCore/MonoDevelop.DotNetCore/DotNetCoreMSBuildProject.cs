@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
@@ -82,7 +83,7 @@ namespace MonoDevelop.DotNetCore
 			hasDescription = project.HasGlobalProperty ("Description");
 		}
 
-		public void WriteProject (MSBuildProject project)
+		public void WriteProject (MSBuildProject project, TargetFrameworkMoniker framework)
 		{
 			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
@@ -105,6 +106,8 @@ namespace MonoDevelop.DotNetCore
 
 			project.RemoveExtraProjectReferenceMetadata ();
 
+			UpdateTargetFramework (project, framework);
+
 			if (HasToolsVersion ())
 				project.ToolsVersion = ToolsVersion;
 
@@ -112,6 +115,21 @@ namespace MonoDevelop.DotNetCore
 				project.RemoveInternalElements ();
 				project.ToolsVersion = ToolsVersion;
 			}
+		}
+
+		void UpdateTargetFramework (MSBuildProject project, TargetFrameworkMoniker framework)
+		{
+			string shortFrameworkName = framework.GetShortFrameworkName ();
+			string existingFramework = targetFrameworks.FirstOrDefault ();
+			if (existingFramework == shortFrameworkName)
+				return;
+
+			if (targetFrameworks.Count == 0)
+				targetFrameworks.Add (shortFrameworkName);
+			else
+				targetFrameworks[0] = shortFrameworkName;
+
+			project.UpdateTargetFrameworks (targetFrameworks);
 		}
 
 		public void AddKnownItemAttributes (MSBuildProject project)

@@ -121,6 +121,17 @@ namespace MonoDevelop.DotNetCore
 			return new string[0];
 		}
 
+		public static void UpdateTargetFrameworks (this MSBuildProject project, IEnumerable<string> targetFrameworks)
+		{
+			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
+			if (targetFrameworks.Count () > 1) {
+				string value = string.Join (";", targetFrameworks);
+				globalPropertyGroup.SetValue ("TargetFrameworks", value);
+			} else {
+				globalPropertyGroup.SetValue ("TargetFramework", targetFrameworks.FirstOrDefault ());
+			}
+		}
+
 		public static bool ImportExists (this MSBuildProject project, string importedProjectFile)
 		{
 			return project.GetImport (importedProjectFile) != null;

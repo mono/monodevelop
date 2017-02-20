@@ -121,7 +121,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			dotNetCoreMSBuildProject.WriteProject (msproject);
+			dotNetCoreMSBuildProject.WriteProject (msproject, Project.TargetFramework.Id);
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
