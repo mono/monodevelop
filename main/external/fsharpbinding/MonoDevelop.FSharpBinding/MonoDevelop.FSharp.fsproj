@@ -66,63 +66,6 @@
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
-    <Compile Include="Services\Extensions.fs" />
-    <Compile Include="Services\CompilerLocationUtils.fs" />
-    <Compile Include="Services\Lexer.fs" />
-    <Compile Include="Services\Parser.fs" />
-    <Compile Include="Services\OrderAssemblyReferences.fs" />
-    <Compile Include="Services\Parameters.fs" />
-    <Compile Include="Services\TooltipHelpers.fs" />
-    <Compile Include="Services\FileService.fs" />
-    <Compile Include="Services\CompilerArguments.fs" />
-    <Compile Include="Services\LanguageService.fs" />
-    <Compile Include="Services\MDLanguageService.fs" />
-    <Compile Include="Services\CompilerService.fs" />
-    <Compile Include="Services\FSharpConsoleView.fs" />
-    <Compile Include="Services\InteractiveSession.fs" />
-    <Compile Include="Services\NRefactory.fs" />
-    <Compile Include="FSharpParsedDocument.fs" />
-    <Compile Include="FSharpTokens.fs" />
-    <Compile Include="PortableFSharpProjectFlavor.fs" />
-    <Compile Include="FSharpSymbolHelper.fs" />
-    <Compile Include="ProjectSearchCategory.fs" />
-    <Compile Include="FSharpInteractivePad.fs" />
-    <Compile Include="FSharpOptionsPanels.fs" />
-    <Compile Include="FSharpProject.fs" />
-    <Compile Include="FSharpFoldingParser.fs" />
-    <Compile Include="FSharpParser.fs" />
-    <Compile Include="FSharpOutlineTextEditorExtension.fs" />
-    <Compile Include="FSharpIndentationTracker.fs" />
-    <Compile Include="FSharpTextEditorCompletion.fs" />
-    <Compile Include="FSharpPathExtension.fs" />
-    <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
-    <Compile Include="FSharpProjectFileNodeExtension.fs" />
-    <Compile Include="FSharpTooltipProvider.fs" />
-    <Compile Include="FSharpResolverProvider.fs" />
-    <Compile Include="RefactoringOperationsHandler.fs" />
-    <Compile Include="FSharpFormattingPolicy.fs" />
-    <Compile Include="FSharpFormatter.fs" />
-    <Compile Include="FSharpFormattingPanelWidget.fs" />
-    <Compile Include="FSharpFormattingPolicyPanel.fs" />
-    <Compile Include="FSharpSyntaxMode.fs" />
-    <Compile Include="FSharpHighlightUsagesExtension.fs" />
-    <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
-    <Compile Include="FakeSearchCategory.fs" />
-    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
-    <Compile Include="FSharpBraceMatcher.fs" />
-    <Compile Include="FSharpDebuggerExpressionResolver.fs" />
-    <Compile Include="FSharpSelection.fs" />
-    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
-    <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
-    <EmbeddedResource Include="FSharpStylePolicy.xml" />
-    <EmbeddedResource Include="FSharpBinding.addin.xml" />
-    <None Include="paket.references" />
-    <Compile Include="Properties\AddinInfo.fs" />
-    <Compile Include="HighlightUnusedCode.fs" />
-    <Compile Include="ScriptDebugging.fs" />
-    <Compile Include="AddMissingOpens.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="pango-sharp" />
     <Reference Include="atk-sharp" />
     <Reference Include="gdk-sharp" />
@@ -212,9 +155,76 @@
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="CodeFix\" />
+    <Folder Include="vs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Services\Extensions.fs" />
+    <Compile Include="Services\CompilerLocationUtils.fs" />
+    <Compile Include="Services\Lexer.fs" />
+    <Compile Include="Services\Parser.fs" />
+    <Compile Include="Services\OrderAssemblyReferences.fs" />
+    <Compile Include="Services\Parameters.fs" />
+    <Compile Include="Services\TooltipHelpers.fs" />
+    <Compile Include="Services\FileService.fs" />
+    <Compile Include="Services\CompilerArguments.fs" />
+    <Compile Include="Services\LanguageService.fs" />
+    <Compile Include="Services\MDLanguageService.fs" />
+    <Compile Include="Services\CompilerService.fs" />
+    <Compile Include="Services\FSharpConsoleView.fs" />
+    <Compile Include="Services\InteractiveSession.fs" />
+    <Compile Include="Services\NRefactory.fs" />
+    <Compile Include="FSharpParsedDocument.fs" />
+    <Compile Include="FSharpTokens.fs" />
+    <Compile Include="PortableFSharpProjectFlavor.fs" />
+    <Compile Include="FSharpSymbolHelper.fs" />
+    <Compile Include="ProjectSearchCategory.fs" />
+    <Compile Include="FSharpInteractivePad.fs" />
+    <Compile Include="FSharpOptionsPanels.fs" />
+    <Compile Include="FSharpProject.fs" />
+    <Compile Include="FSharpFoldingParser.fs" />
+    <Compile Include="FSharpParser.fs" />
+    <Compile Include="FSharpOutlineTextEditorExtension.fs" />
+    <Compile Include="FSharpIndentationTracker.fs" />
+    <Compile Include="FSharpTextEditorCompletion.fs" />
+    <Compile Include="FSharpPathExtension.fs" />
+    <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
+    <Compile Include="FSharpProjectFileNodeExtension.fs" />
+    <Compile Include="FSharpTooltipProvider.fs" />
+    <Compile Include="FSharpResolverProvider.fs" />
+    <Compile Include="RefactoringOperationsHandler.fs" />
+    <Compile Include="FSharpFormattingPolicy.fs" />
+    <Compile Include="FSharpFormatter.fs" />
+    <Compile Include="FSharpFormattingPanelWidget.fs" />
+    <Compile Include="FSharpFormattingPolicyPanel.fs" />
+    <Compile Include="FSharpSyntaxMode.fs" />
+    <Compile Include="FSharpHighlightUsagesExtension.fs" />
+    <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
+    <Compile Include="FakeSearchCategory.fs" />
+    <Compile Include="FSharpNavigationTextEditorExtension.fs" />
+    <Compile Include="FSharpBraceMatcher.fs" />
+    <Compile Include="FSharpDebuggerExpressionResolver.fs" />
+    <Compile Include="FSharpSelection.fs" />
+    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
+    <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
+    <EmbeddedResource Include="FSharpStylePolicy.xml" />
+    <EmbeddedResource Include="FSharpBinding.addin.xml" />
+    <None Include="paket.references" />
+    <Compile Include="Properties\AddinInfo.fs" />
+    <Compile Include="HighlightUnusedCode.fs" />
+    <Compile Include="ScriptDebugging.fs" />
+    <Compile Include="vs\IncrementalBuild.fs" />
+    <Compile Include="vs\ServiceNavigation.fs" />
+    <Compile Include="vs\ServiceUntypedParse.fsi" />
+    <Compile Include="vs\ServiceUntypedParse.fs" />
+    <Compile Include="vs\ServiceAssemblyContent.fs" />
+    <Compile Include="CodeFix\AddOpenCodeFixProvider.fs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
