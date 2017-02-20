@@ -225,9 +225,9 @@ namespace Mono.TextEditor
 
 			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
 
-            this.TextBuffer.Changed += this.OnTextBufferChanged;
+			this.TextBuffer.Changed += this.OnTextBufferChanged;
 
-            TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
+			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			textSegmentMarkerTree.InstallListener (this);
 			this.diffTracker.SetTrackDocument (this);
@@ -236,73 +236,92 @@ namespace Mono.TextEditor
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
 			if (args.Changes != null)
-            {
-                cachedText = null;
+			{
+				cachedText = null;
 
-                // Report the changes backwards so that the positions are all accurate
-                for (int i = args.Changes.Count - 1; (i >= 0); --i)
+				// Temporary fix to merge multi-part edits into a single edit. There is only a single
+				//    VS snapshot at this point, and sending out MD notifications with intermediary position 
+				//    information that operate against that snapshot will not work. David/Mike should investigate.
+				var changes = args.Changes;
+				if (args.Changes.Count > 1)
 				{
-                    var change = args.Changes[i];
+					var firstChange = args.Changes[0];
+					var lastChange = args.Changes[args.Changes.Count - 1];
 
-                    bool isTextSet = (args.Changes.Count == 1) && (change.OldPosition == 0) && (change.OldLength == args.Before.Length);
-                    bool endUndo = false;
-                    UndoOperation operation = null;
-                    var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+					int oldStart = firstChange.OldPosition;
 
-                    if (isTextSet)
-                    {
-                        textSegmentMarkerTree.Clear();
-                    }
-                    else
-                    {
-                        InterruptFoldWorker();
+					var oldChangeString = Microsoft.VisualStudio.Text.Implementation.ReferenceChangeString.CreateChangeString(
+						args.Before, Microsoft.VisualStudio.Text.Span.FromBounds(oldStart, lastChange.OldEnd));
+					var newChangeString = Microsoft.VisualStudio.Text.Implementation.ReferenceChangeString.CreateChangeString(
+						args.After, Microsoft.VisualStudio.Text.Span.FromBounds(oldStart, lastChange.NewEnd));
+					var newTextChange = new Microsoft.VisualStudio.Text.Implementation.TextChange(oldStart, oldChangeString, newChangeString, args.Before);
+					changes = Microsoft.VisualStudio.Text.Implementation.NormalizedTextChangeCollection.Create(new[] { newTextChange });
+				}
 
-                        if (!isInUndo)
-                        {
-                            operation = new UndoOperation(textChange);
-                            if (currentAtomicOperation != null)
-                            {
-                                currentAtomicOperation.Add(operation);
-                            }
-                            else
-                            {
-                                OnBeginUndo();
-                                undoStack.Push(operation);
-                                endUndo = true;
-                            }
+				// Report the changes backwards so that the positions are all accurate
+				for (int i = changes.Count - 1; (i >= 0); --i)
+				{
+					var change = changes[i];
 
-                            redoStack.Clear();
-                        }
+					bool isTextSet = (args.Changes.Count == 1) && (change.OldPosition == 0) && (change.OldLength == args.Before.Length);
+					bool endUndo = false;
+					UndoOperation operation = null;
+					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
 
-                        if (change.NewLength != 0)
-                            EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
+					if (isTextSet)
+					{
+						textSegmentMarkerTree.Clear();
+					}
+					else
+					{
+						InterruptFoldWorker();
 
-                        foldSegmentTree.UpdateOnTextReplace(this, textChange);
-                    }
+						if (!isInUndo)
+						{
+							operation = new UndoOperation(textChange);
+							if (currentAtomicOperation != null)
+							{
+								currentAtomicOperation.Add(operation);
+							}
+							else
+							{
+								OnBeginUndo();
+								undoStack.Push(operation);
+								endUndo = true;
+							}
+
+							redoStack.Clear();
+						}
+
+						if (change.NewLength != 0)
+							EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
+
+						foldSegmentTree.UpdateOnTextReplace(this, textChange);
+					}
 
 					TextChanging?.Invoke(this, textChange);
 
-                    if (isTextSet)
-                    {
-                        extendingTextMarkers = new List<TextLineMarker>();
-                        ClearFoldSegments();
+					if (isTextSet)
+					{
+						extendingTextMarkers = new List<TextLineMarker>();
+						ClearFoldSegments();
 
-                        TextSet?.Invoke(this, EventArgs.Empty);
-                        CommitUpdateAll();
-                        ClearUndoBuffer();
-                    }
-                    else
-                    {
-                        TextChanged?.Invoke(this, textChange);
+						TextSet?.Invoke(this, EventArgs.Empty);
+						CommitUpdateAll();
+						ClearUndoBuffer();
+					}
+					else
+					{
+						TextChanged?.Invoke(this, textChange);
 
-                        if (endUndo)
-                            OnEndUndo(new UndoOperationEventArgs(operation));
-                    }
-                }
-            }
+						if (endUndo)
+							OnEndUndo(new UndoOperationEventArgs(operation));
+					}
+				}
+			}
 		}
 
-        void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
+		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsCollapsed)
 				foldedSegments.Remove (e.Node);
@@ -349,7 +368,7 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
-                this.ReplaceText(0, this.TextBuffer.CurrentSnapshot.Length, value);
+				this.ReplaceText(0, this.TextBuffer.CurrentSnapshot.Length, value);
 			}
 		}
 
@@ -1539,7 +1558,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null || marker == null)
 				return;
-            AddMarker (new DocumentLineTextSegmentMarker (line, marker));
+			AddMarker (new DocumentLineTextSegmentMarker (line, marker));
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (marker is IExtendingTextLineMarker) {
 				lock (extendingTextMarkers) {
@@ -2136,7 +2155,7 @@ namespace Mono.TextEditor
 					return this.Line.LineNumber + 1;
 				}
 			}
-			       
+				   
 			public override DocumentLine NextLine
 			{
 				get
