@@ -244,7 +244,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								} else {
 									CompletionWindowManager.Wnd.StartOffset = CurrentCompletionContext.TriggerOffset;
-									CompletionWindowManager.Wnd.EndOffset = Editor.CaretOffset;
 								}
 							} else {
 								CompletionWindowManager.HideWindow ();
@@ -373,7 +372,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
 			}
-
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}

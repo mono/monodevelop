@@ -125,22 +125,38 @@ namespace MonoDevelop.DotNetCore
 
 		public bool AddInternalSdkImports (MSBuildProject project, string sdkPath, string sdkProps, string sdkTargets)
 		{
-			if (project.ImportExists (sdkProps))
+			return AddInternalSdkImports (project, sdkPath, new [] { sdkProps }, new [] { sdkTargets });
+		}
+
+		public bool AddInternalSdkImports (
+			MSBuildProject project,
+			string sdkPath,
+			IEnumerable<string> sdkProps,
+			IEnumerable<string> sdkTargets)
+		{
+			if (project.ImportExists (sdkProps.First ()))
 				return false;
 
 			if (Sdk == "Microsoft.NET.Sdk.Web") {
 				// HACK: Add wildcard items to the project since they are not currently evaluated
 				// properly which results in no files being displayed in the solution window.
 				project.AddWebProjectWildcardItems ();
-			} else {
+			} else if (!Sdk.Contains ("FSharp")) {
 				project.AddProjectWildcardItems ();
 			}
 
 			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
 			// other files to import. So we define this in a property group at the top of the
 			// project before the Sdk.props is imported so these other files can be found.
-			MSBuildImport propsImport = project.AddInternalImport (sdkProps, importAtTop: true);
-			project.AddInternalImport (sdkTargets);
+			MSBuildImport propsImport = null;
+			foreach (string props in sdkProps.Reverse ()) {
+				propsImport = project.AddInternalImport (props, importAtTop: true);
+			}
+
+			foreach (string targets in sdkTargets) {
+				project.AddInternalImport (targets);
+			}
+
 			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPath, propsImport);
 
 			return true;

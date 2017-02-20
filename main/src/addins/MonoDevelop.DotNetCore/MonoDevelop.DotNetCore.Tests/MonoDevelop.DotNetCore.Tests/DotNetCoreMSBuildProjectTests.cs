@@ -194,6 +194,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
 
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 
@@ -244,12 +245,41 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
 
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 
 			Assert.AreEqual (2, msbuildProject.Imports.Count ());
 			Assert.AreEqual (2, msbuildProject.PropertyGroups.Count ());
+		}
+
+		[Test]
+		public void AddSdkImports_MultipleSdkImportsAdded ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk1;Microsoft.NET.Sdk2\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk1;Microsoft.NET.Sdk2";
+
+			var props = new [] { "Sdk1.props", "Sdk2.props" };
+			var targets = new [] { "Sdk1.targets", "Sdk2.targets" };
+			project.AddInternalSdkImports (msbuildProject, "SdkPath", props, targets);
+
+			var firstPropertyGroup = msbuildProject.PropertyGroups.First ();
+			Assert.AreEqual ("'$(MSBuildSdksPath)' == ''", firstPropertyGroup.Condition);
+
+			var sdkPathProperty = firstPropertyGroup.GetProperty ("MSBuildSdksPath");
+			Assert.AreEqual ("SdkPath", sdkPathProperty.Value);
+
+			var createdImports = msbuildProject.Imports.Select (import => import.Project).ToArray ();
+			var expectedImports = new [] { "Sdk1.props", "Sdk2.props", "Sdk1.targets", "Sdk2.targets" };
+			Assert.AreEqual (expectedImports, createdImports);
 		}
 
 		[Test]
