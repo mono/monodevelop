@@ -56,6 +56,10 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +95,13 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreRuntimeOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreRuntimeOptionsPanelWidget.Gui.cs">
+      <DependentUpon>DotNetCoreRuntimeOptionsPanelWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectSupportedTargetFrameworks.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

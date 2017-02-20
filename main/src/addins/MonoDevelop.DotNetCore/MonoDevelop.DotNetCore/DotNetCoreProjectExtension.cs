@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Commands;
@@ -62,10 +63,10 @@ namespace MonoDevelop.DotNetCore
 			base.Initialize ();
 		}
 
-		protected override bool OnGetSupportsFramework (Core.Assemblies.TargetFramework framework)
+		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
-			if (framework.Id.Identifier == ".NETCoreApp" ||
-			    framework.Id.Identifier == ".NETStandard")
+			if (framework.IsNetCoreApp () ||
+				framework.IsNetStandard ())
 				return true;
 			return base.OnGetSupportsFramework (framework);
 		}
@@ -87,10 +88,10 @@ namespace MonoDevelop.DotNetCore
 
 		bool CanReferenceProject (DotNetProject targetProject)
 		{
-			if (targetProject.TargetFramework.Id.Identifier != ".NETStandard")
+			if (!targetProject.TargetFramework.IsNetStandard ())
 				return false;
 
-			if (Project.TargetFramework.Id.Identifier != ".NETCoreApp")
+			if (!Project.TargetFramework.IsNetCoreApp ())
 				return false;
 
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
@@ -469,6 +470,12 @@ namespace MonoDevelop.DotNetCore
 		{
 			string path = Path.GetFullPath (Path.Combine (sdkPaths.MSBuildSDKsPath, ".."));
 			context.GlobalProperties.SetValue ("MSBuildExtensionsPath", path);
+		}
+
+		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
+		{
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			return supportedTargetFrameworks.GetFrameworks ();
 		}
 	}
 }
