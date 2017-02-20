@@ -36,6 +36,7 @@ namespace MonoDevelop.DotNetCore.Gui
 	{
 		readonly List<TargetFramework> frameworks;
 		readonly DotNetProject project;
+		readonly DotNetCoreProjectExtension dotNetCoreProject;
 
 		public DotNetCoreRuntimeOptionsPanelWidget (DotNetProject project)
 		{
@@ -47,7 +48,7 @@ namespace MonoDevelop.DotNetCore.Gui
 				return;
 			}
 
-			var dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
+			dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
 			frameworks = dotNetCoreProject.GetSupportedTargetFrameworks ().ToList ();
 
 			if (!frameworks.Any (fx => fx.Id == project.TargetFramework.Id)) {
@@ -79,7 +80,13 @@ namespace MonoDevelop.DotNetCore.Gui
 		{
 			if (project == null || runtimeVersionCombo.Active == -1)
 				return;
-			project.TargetFramework = frameworks [runtimeVersionCombo.Active];
+
+			TargetFramework framework = frameworks [runtimeVersionCombo.Active];
+
+			if (framework != project.TargetFramework) {
+				project.TargetFramework = frameworks [runtimeVersionCombo.Active];
+				dotNetCoreProject.RestoreAfterSave = true;
+			}
 		}
 	}
 }
