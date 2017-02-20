@@ -136,10 +136,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var ctx = DocumentContext;
 			var snapshot = Editor.CreateDocumentSnapshot ();
 			Task.Run (async delegate() {
-				BraceMatchingResult? result;
+				BraceMatchingResult? result = null;
 				try {
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
-					if (result == null && caretOffset > 0)
+					if (caretOffset > 0)
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+					if (result == null)
 						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
