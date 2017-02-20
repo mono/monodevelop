@@ -235,21 +235,22 @@ namespace Mono.TextEditor
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
-			if (args.Changes != null)
+			if ((args.Changes != null) && (args.Changes.Count > 0))
             {
                 cachedText = null;
+
+                bool isSetText = object.ReferenceEquals(args.EditTag, TextDocument.setTextEditTag);
 
                 // Report the changes backwards so that the positions are all accurate
                 for (int i = args.Changes.Count - 1; (i >= 0); --i)
 				{
                     var change = args.Changes[i];
 
-                    bool isTextSet = (args.Changes.Count == 1) && (change.OldPosition == 0) && (change.OldLength == args.Before.Length);
                     bool endUndo = false;
                     UndoOperation operation = null;
                     var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
 
-                    if (isTextSet)
+                    if (isSetText)
                     {
                         textSegmentMarkerTree.Clear();
                     }
@@ -282,7 +283,7 @@ namespace Mono.TextEditor
 
 					TextChanging?.Invoke(this, textChange);
 
-                    if (isTextSet)
+                    if (isSetText)
                     {
                         extendingTextMarkers = new List<TextLineMarker>();
                         ClearFoldSegments();
@@ -349,7 +350,7 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
-                this.ReplaceText(0, this.TextBuffer.CurrentSnapshot.Length, value);
+				this.ReplaceText (0, this.TextBuffer.CurrentSnapshot.Length, value, isSetText: true);
 			}
 		}
 
@@ -378,9 +379,17 @@ namespace Mono.TextEditor
 			ReplaceText (offset, count, value?.Text);
 		}
 
-		public void ReplaceText (int offset, int count, string value)
-		{
-			if (offset < 0)
+        public void ReplaceText(int offset, int count, string value)
+        {
+            ReplaceText(offset, count, value, isSetText: false);
+        }
+
+        private static readonly object setTextEditTag = new object();
+
+        private void ReplaceText(int offset, int count, string value, bool isSetText)
+        {
+
+            if (offset < 0)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
 			if (offset > Length)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + Length +"), was: " + offset);
@@ -392,7 +401,12 @@ namespace Mono.TextEditor
 			if (value == null)
 				value = string.Empty;
 
-			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
+            using (var edit = this.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, reiteratedVersionNumber:null, editTag: isSetText ? TextDocument.setTextEditTag : null))
+            {
+                edit.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
+                edit.Apply();
+            }
+
 		}
 
 		public string GetTextBetween (int startOffset, int endOffset)
