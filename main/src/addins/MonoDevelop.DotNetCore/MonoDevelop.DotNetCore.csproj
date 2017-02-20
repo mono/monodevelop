@@ -90,6 +90,7 @@
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\TestResultBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
