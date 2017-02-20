@@ -1401,8 +1401,14 @@ namespace Microsoft.VisualStudio.Text.Operations.Implementation
                 // Indent unless the caret is at column 0 or the current line is empty. 
                 // This appears to be added as a fix for Venus; which combined with our implementation of 
                 // PositionCaretWithSmartIndent does not indent correctly on NewLine when Caret is at column 0.
+#if TARGET_VS
                 bool doIndent = caret.IsInVirtualSpace || (caret.Position != _textView.Caret.ContainingTextViewLine.Start)
                     || (_textView.Caret.ContainingTextViewLine.Extent.Length == 0);
+#else
+                // TextCaret.ContainingTextViewLine isn't implemented in the MD host
+                bool doIndent = caret.IsInVirtualSpace || (caret.Position != line.Start)
+                    || (line.Length == 0);
+#endif
 
                 try
                 {

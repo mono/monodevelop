@@ -24,6 +24,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.CoreUtilityImplementation.ContentType.Strings.resources</LogicalName>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\StringToContentTypesMap.cs" />
 
@@ -73,6 +74,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.Text.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\TextBuffer.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\TextChange.cs" />
@@ -262,6 +264,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Language\Impl\StandardClassification\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.Language.StandardClassification.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
       <!-- <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Impl\StandardClassification\TypeFaceHelper.cs" /> dead code -->
 
@@ -279,6 +282,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\ClassificationType\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorOptions\EditorOptions.cs" />
@@ -306,6 +310,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorOperations\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorOperations\TextEditAction.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorOperations\TextTransactionMergePolicy.cs" />	  
@@ -329,6 +334,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorPrimitives\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\EditorPrimitives\ViewPrimitives.cs" />
 
@@ -353,6 +359,7 @@
       <EmbeddedResource Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\Strings.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+          <LogicalName>Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.Strings.resources</LogicalName>
       </EmbeddedResource>
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferChangeUndoPrimitive.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextBufferUndoManager\TextBufferUndoManager.cs" />
