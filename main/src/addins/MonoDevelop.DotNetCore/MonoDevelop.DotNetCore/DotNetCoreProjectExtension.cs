@@ -442,5 +442,33 @@ namespace MonoDevelop.DotNetCore
 				return sdkPaths.IsUnsupportedSdkVersion;
 			return false;
 		}
+
+		// HACK: The FSharp.NET.Core.Sdk.targets defines the path to dotnet using:
+		// <_DotNetHostExecutableDirectory>$(MSBuildExtensionsPath)/../..</_DotNetHostExecutableDirectory>
+		// MSBuildExtensionsPath points to MSBuild supplied with Mono so building FSharp
+		// projects fails using this path since dotnet does not ship with Mono. The
+		// _DotNetHostExecutableDirectory cannot be overridden so as a workaround for
+		// F# projects the MSBuildExtensionsPath is redefined to point to the .NET Core
+		// SDK folder.
+		protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			if (target == ProjectService.BuildTarget) {
+				if (IsFSharpSdkProject ()) {
+					OverrideMSBuildExtensionsPathToFixBuild (context);
+				}
+			}
+			return base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		bool IsFSharpSdkProject ()
+		{
+			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
+		}
+
+		void OverrideMSBuildExtensionsPathToFixBuild (TargetEvaluationContext context)
+		{
+			string path = Path.GetFullPath (Path.Combine (sdkPaths.MSBuildSDKsPath, ".."));
+			context.GlobalProperties.SetValue ("MSBuildExtensionsPath", path);
+		}
 	}
 }

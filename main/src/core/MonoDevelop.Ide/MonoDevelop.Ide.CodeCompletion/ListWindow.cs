@@ -257,13 +257,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			set {
 				startOffset = value;
-				EndOffset = value + 1;
 			}
 		}
 
 		public int EndOffset {
-			get;
-			set;
+			get {
+				return startOffset + PartialWord.Length;
+			}
 		}
 
 		public ICompletionWidget CompletionWidget {

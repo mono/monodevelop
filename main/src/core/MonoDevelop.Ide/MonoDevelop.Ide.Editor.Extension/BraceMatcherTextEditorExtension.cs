@@ -33,6 +33,7 @@ using Gtk;
 using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -47,12 +48,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 		static BraceMatcherTextEditorExtension()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/BraceMatcher", delegate(object sender, ExtensionNodeEventArgs args) {
+				var node = (MimeTypeExtensionNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					braceMatcher.Add ((AbstractBraceMatcher)args.ExtensionObject);
+					var matcher = (AbstractBraceMatcher)node.CreateInstance ();
+					matcher.MimeType = node.MimeType;
+					braceMatcher.Add (matcher);
 					break;
 				case ExtensionChange.Remove:
-					braceMatcher.Remove ((AbstractBraceMatcher)args.ExtensionObject);
+					var toRemove = braceMatcher.FirstOrDefault (m => m.MimeType == node.MimeType);
+					if (toRemove != null)
+						braceMatcher.Remove (toRemove);
 					break;
 				}
 			});
@@ -130,10 +136,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var ctx = DocumentContext;
 			var snapshot = Editor.CreateDocumentSnapshot ();
 			Task.Run (async delegate() {
-				BraceMatchingResult? result;
+				BraceMatchingResult? result = null;
 				try {
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
-					if (result == null && caretOffset > 0)
+					if (caretOffset > 0)
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+					if (result == null)
 						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
