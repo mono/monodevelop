@@ -31,8 +31,7 @@ namespace MonoDevelop.Core.Execution
 	{
 		public ProcessExecutionCommand CreateCommand (string file)
 		{
-			string f = file.ToLower ();
-			if (f.EndsWith (".exe") || f.EndsWith (".dll"))
+			if (file.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".dll", StringComparison.OrdinalIgnoreCase))
 				return new DotNetExecutionCommand (file);
 			else
 				return null;

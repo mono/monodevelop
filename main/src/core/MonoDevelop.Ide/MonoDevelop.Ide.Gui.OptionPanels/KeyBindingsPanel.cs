@@ -132,8 +132,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			searchEntry.Ready = true;
 			searchEntry.Visible = true;
 			searchEntry.Changed += delegate {
-				processedFilterTerms = searchEntry.Entry.Text.Split (new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-					.Select (s => s.ToLower ()).ToArray ();;
+				processedFilterTerms = searchEntry.Entry.Text.ToLower ().Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				filterChanged = true;
 				if (!filterTimeoutRunning) {
 					filterTimeoutRunning = true;

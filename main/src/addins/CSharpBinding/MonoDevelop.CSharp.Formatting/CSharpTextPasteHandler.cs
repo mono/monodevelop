@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 					indent.DocumentContext.GetFormattingPolicy (),
 					indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (),
 					indent.Editor.GetTextBetween (lineStartOffset, insertionOffset + insertedChars),
-					lineStartOffset,
+					0,
 					formatCharsCount
 				);
 				indent.Editor.ReplaceText (lineStartOffset, formatCharsCount, newText);
