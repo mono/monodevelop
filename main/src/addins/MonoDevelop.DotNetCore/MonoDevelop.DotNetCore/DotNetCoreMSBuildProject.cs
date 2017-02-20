@@ -103,6 +103,8 @@ namespace MonoDevelop.DotNetCore
 
 			project.DefaultTargets = null;
 
+			project.RemoveExtraProjectReferenceMetadata ();
+
 			if (HasToolsVersion ())
 				project.ToolsVersion = ToolsVersion;
 

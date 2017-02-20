@@ -396,5 +396,31 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.IsNull (msbuildProject.ToolsVersion);
 		}
+
+		[Test]
+		public void WriteProject_NewProjectReferenceAddedWithNameAndProjectMetadata_ProjectReferenceSavedWithJustIncludeNotNameAndProject ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+			var projectReferenceItem = msbuildProject.AddNewItem ("ProjectReference", @"Lib\Lib.csproj");
+			projectReferenceItem.Metadata.SetValue ("Name", "Lib");
+			projectReferenceItem.Metadata.SetValue ("Project", "{F109E7DF-F561-4CD6-A46E-CFB27A8B6F2C}");
+
+			WriteProject ();
+
+			var projectReferenceSaved = msbuildProject.GetAllItems ()
+				.FirstOrDefault (item => item.Name == "ProjectReference");
+
+			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Name"));
+			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Project"));
+			Assert.AreEqual (@"Lib\Lib.csproj", projectReferenceSaved.Include);
+		}
 	}
 }

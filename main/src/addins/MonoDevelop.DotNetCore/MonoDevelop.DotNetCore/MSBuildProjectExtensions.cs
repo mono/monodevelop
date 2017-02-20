@@ -175,5 +175,18 @@ namespace MonoDevelop.DotNetCore
 			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
 			item.Exclude = DefaultExcludes;
 		}
+
+		/// <summary>
+		/// Remove Name and Project from project references.
+		/// </summary>
+		public static void RemoveExtraProjectReferenceMetadata (this MSBuildProject project)
+		{
+			foreach (MSBuildItem item in project.GetAllItems ()) {
+				if (item.Name == "ProjectReference") {
+					item.Metadata.RemoveProperty ("Name");
+					item.Metadata.RemoveProperty ("Project");
+				}
+			}
+		}
 	}
 }
