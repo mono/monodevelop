@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using AppKit;
@@ -465,21 +466,149 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility, IAccessibilityElementProxy
 	{
-		public event EventHandler PerformCancel;
-		public event EventHandler PerformConfirm;
-		public event EventHandler PerformDecrement;
-		public event EventHandler PerformDelete;
-		public event EventHandler PerformIncrement;
-		public event EventHandler PerformPick;
-		public event EventHandler PerformPress;
-		public event EventHandler PerformRaise;
-		public event EventHandler PerformShowAlternateUI;
-		public event EventHandler PerformShowDefaultUI;
-		public event EventHandler PerformShowPopupMenu;
+		event EventHandler performCancel;
+		public event EventHandler PerformCancel {
+			add {
+				performCancel += value;
+				AddAction (AtkCocoa.Actions.AXCancel);
+			}
+			remove {
+				performCancel -= value;
+				RemoveAction (AtkCocoa.Actions.AXCancel);
+			}
+		}
+
+		event EventHandler performConfirm;
+		public event EventHandler PerformConfirm {
+			add {
+				performConfirm += value;
+				AddAction (AtkCocoa.Actions.AXConfirm);
+			}
+			remove {
+				performConfirm -= value;
+				RemoveAction (AtkCocoa.Actions.AXConfirm);
+			}
+		}
+		event EventHandler performDecrement;
+		public event EventHandler PerformDecrement {
+			add {
+				performDecrement += value;
+				AddAction (AtkCocoa.Actions.AXDecrement);
+			}
+			remove {
+				performDecrement -= value;
+				RemoveAction (AtkCocoa.Actions.AXDecrement);
+			}
+		}
+		event EventHandler performDelete;
+		public event EventHandler PerformDelete {
+			add {
+				performDelete += value;
+				AddAction (AtkCocoa.Actions.AXDelete);
+			}
+			remove {
+				performDelete -= value;
+				RemoveAction (AtkCocoa.Actions.AXDelete);
+			}
+		}
+		event EventHandler performIncrement;
+		public event EventHandler PerformIncrement {
+			add {
+				performIncrement += value;
+				AddAction (AtkCocoa.Actions.AXIncrement);
+			}
+			remove {
+				performIncrement -= value;
+				RemoveAction (AtkCocoa.Actions.AXIncrement);
+			}
+		}
+		event EventHandler performPick;
+		public event EventHandler PerformPick {
+			add {
+				performPick += value;
+				AddAction (AtkCocoa.Actions.AXPick);
+			}
+			remove {
+				performPick -= value;
+				RemoveAction (AtkCocoa.Actions.AXPick);
+			}
+		}
+		event EventHandler performPress;
+		public event EventHandler PerformPress {
+			add {
+				performPress += value;
+				AddAction (AtkCocoa.Actions.AXPress);
+			}
+			remove {
+				performPress -= value;
+				RemoveAction (AtkCocoa.Actions.AXPress);
+			}
+		}
+		event EventHandler performRaise;
+		public event EventHandler PerformRaise {
+			add {
+				performRaise += value;
+				AddAction (AtkCocoa.Actions.AXRaise);
+			}
+			remove {
+				performRaise -= value;
+				RemoveAction (AtkCocoa.Actions.AXRaise);
+			}
+		}
+		event EventHandler performShowAlternateUI;
+		public event EventHandler PerformShowAlternateUI {
+			add {
+				performShowAlternateUI += value;
+				AddAction (AtkCocoa.Actions.AXShowAlternateUI);
+			}
+			remove {
+				performShowAlternateUI -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowAlternateUI);
+			}
+		}
+		event EventHandler performShowDefaultUI;
+		public event EventHandler PerformShowDefaultUI {
+			add {
+				performShowDefaultUI += value;
+				AddAction (AtkCocoa.Actions.AXShowDefaultUI);
+			}
+			remove {
+				performShowDefaultUI -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowDefaultUI);
+			}
+		}
+		event EventHandler performShowPopupMenu;
+		public event EventHandler PerformShowPopupMenu {
+			add {
+				performShowPopupMenu += value;
+				AddAction (AtkCocoa.Actions.AXShowMenu);
+			}
+			remove {
+				performShowPopupMenu -= value;
+				RemoveAction (AtkCocoa.Actions.AXShowMenu);
+			}
+		}
 
 		protected Gtk.Widget parent;
 		INSAccessibility parentElement;
 		Rectangle realFrame;
+
+		void UpdateActions ()
+		{
+			actions = realActions.Select (arg => arg.ToString ()).ToArray ();
+		}
+
+		void AddAction (AtkCocoa.Actions action)
+		{
+			realActions.Add (action);
+			UpdateActions ();
+		}
+
+		void RemoveAction (AtkCocoa.Actions action)
+		{
+			realActions.Remove (action);
+			UpdateActions ();
+		}
 
 		// The real parent is the Widget that ultimately this object will belong to
 		// It is used to convert the frame
@@ -661,8 +790,14 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			return this;
 		}
 
+		HashSet<AtkCocoa.Actions> realActions = new HashSet<AtkCocoa.Actions> ();
+		string [] actions;
 		[Export ("accessibilityActionNames")]
-		public string [] Actions { get; set; }
+		public string [] Actions {
+			get {
+				return actions;
+			}
+		}
 
 		[Export ("accessibilityPerformAction:")]
 		public void performAction (string actionName)
@@ -728,67 +863,67 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		protected bool OnPerformCancel ()
 		{
-			PerformCancel?.Invoke (this, EventArgs.Empty);
+			performCancel?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformConfirm ()
 		{
-			PerformConfirm?.Invoke (this, EventArgs.Empty);
+			performConfirm?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformDecrement ()
 		{
-			PerformDecrement?.Invoke (this, EventArgs.Empty);
+			performDecrement?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformDelete ()
 		{
-			PerformDelete?.Invoke (this, EventArgs.Empty);
+			performDelete?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformIncrement ()
 		{
-			PerformIncrement?.Invoke (this, EventArgs.Empty);
+			performIncrement?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformPick ()
 		{
-			PerformPick?.Invoke (this, EventArgs.Empty);
+			performPick?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformPress ()
 		{
-			PerformPress?.Invoke (this, EventArgs.Empty);
+			performPress?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformRaise ()
 		{
-			PerformRaise?.Invoke (this, EventArgs.Empty);
+			performRaise?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformShowAlternateUI ()
 		{
-			PerformShowAlternateUI?.Invoke (this, EventArgs.Empty);
+			performShowAlternateUI?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformShowDefaultUI ()
 		{
-			PerformShowDefaultUI?.Invoke (this, EventArgs.Empty);
+			performShowDefaultUI?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 
 		protected bool OnPerformShowPopupMenu ()
 		{
-			PerformShowPopupMenu?.Invoke (this, EventArgs.Empty);
+			performShowPopupMenu?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 	}

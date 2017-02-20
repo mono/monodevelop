@@ -216,7 +216,6 @@ namespace MonoDevelop.Components.DockNotebook
 			// FIXME Should Role descriptions be translated?
 			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
 			Accessible.SetGtkParent (strip);
-			Accessible.Actions = new string [] { "AXShowMenu" };
 			Accessible.PerformShowPopupMenu += OnShowMenu;
 			Accessible.SetAccessibilityIdentifier ("DockNotebook.Tab");
 
@@ -224,7 +223,6 @@ namespace MonoDevelop.Components.DockNotebook
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
 			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
 			CloseButtonAccessible.SetGtkParent (strip);
-			CloseButtonAccessible.Actions = new string [] { "AXShowMenu" };
 			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;
 			CloseButtonAccessible.SetTitle (Core.GettextCatalog.GetString ("Close document"));
 			CloseButtonAccessible.SetAccessibilityIdentifier ("DockNotebook.Tab.CloseButton");

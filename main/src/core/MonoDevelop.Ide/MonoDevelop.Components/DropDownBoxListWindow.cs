@@ -256,7 +256,6 @@ namespace MonoDevelop.Components
 				public int RowIndex { get; set; }
 				internal TextElement ()
 				{
-					Actions = new string [] { AtkCocoa.Actions.AXPress.ToString () };
 				}
 			}
 
