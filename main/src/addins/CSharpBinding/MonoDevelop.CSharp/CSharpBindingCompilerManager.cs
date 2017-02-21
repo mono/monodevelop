@@ -243,7 +243,7 @@ namespace MonoDevelop.CSharp
 			if (compilerParameters.NoStdLib) 
 				sb.AppendLine ("-nostdlib");
 			
-			if (!string.IsNullOrEmpty (compilerParameters.PlatformTarget) && compilerParameters.PlatformTarget.ToLower () != "anycpu") {
+			if (!string.IsNullOrEmpty (compilerParameters.PlatformTarget) && !string.Equals (compilerParameters.PlatformTarget, "anycpu", StringComparison.OrdinalIgnoreCase)) {
 				//HACK: to ignore the platform flag for Mono <= 2.4, because gmcs didn't support it
 				if (runtime.RuntimeId == "Mono" && runtime.AssemblyContext.GetAssemblyLocation ("Mono.Debugger.Soft", null) == null) {
 					LoggingService.LogWarning ("Mono runtime '" + runtime.DisplayName + 

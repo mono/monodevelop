@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		AssemblyName aname;
 
-		public string FullName { get; internal set; }
+		public string FullName { get; private set; }
 		public string Location { get; private set; }
 
 		public AssemblyName AssemblyName {
@@ -70,27 +70,35 @@ namespace MonoDevelop.Core.Assemblies
 			string fn = ainfo.Name + ", Version=" + ainfo.Version +", Culture=neutral" + token;
 			return new SystemAssembly (file, fn);
 		}
-		
+
+		string name;
 		public string Name {
 			get {
-				int i = FullName.IndexOf (',');
-				if (i != -1)
-					return FullName.Substring (0, i).Trim ();
-				else
-					return FullName;
+				if (name == null) {
+					int i = FullName.IndexOf (',');
+					if (i != -1)
+						name = FullName.Substring (0, i).Trim ();
+					else
+						name = FullName;
+				}
+				return name;
 			}
 		}
-		
+
+		string version;
 		public string Version {
 			get {
-				int i = FullName.IndexOf ("Version=");
-				if (i == -1)
-					return string.Empty;
-				i += 8;
-				int j = FullName.IndexOf (',', i);
-				if (j == -1)
-					j = FullName.Length;
-				return FullName.Substring (i, j - i);
+				if (version == null) {
+					int i = FullName.IndexOf ("Version=", StringComparison.Ordinal);
+					if (i == -1)
+						version = string.Empty;
+					i += "Version=".Length;
+					int j = FullName.IndexOf (',', i);
+					if (j == -1)
+						j = FullName.Length;
+					version = FullName.Substring (i, j - i);
+				}
+				return version;
 			}
 		}
 		

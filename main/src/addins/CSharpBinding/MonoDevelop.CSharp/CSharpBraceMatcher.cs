@@ -49,11 +49,6 @@ namespace MonoDevelop.CSharp
 			SyntaxKind.OpenParenToken, SyntaxKind.CloseParenToken
 		};
 
-		public override bool CanHandle (TextEditor editor)
-		{
-			return editor.MimeType == CSharpFormatter.MimeType;
-		}
-
 		public override async Task<BraceMatchingResult?> GetMatchingBracesAsync (IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (context.ParsedDocument == null)

@@ -257,13 +257,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			set {
 				startOffset = value;
-				EndOffset = value + 1;
 			}
 		}
 
 		public int EndOffset {
-			get;
-			set;
+			get {
+				return startOffset + PartialWord.Length;
+			}
 		}
 
 		public ICompletionWidget CompletionWidget {
@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int match = FindMatchedEntry (curword);
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
-					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
+					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
 				}    
 				if (match >= 0 && keyChar != '<' && keyChar != ' ') {

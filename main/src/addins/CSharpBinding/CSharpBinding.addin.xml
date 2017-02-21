@@ -325,7 +325,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
-		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
+		<Matcher class="MonoDevelop.CSharp.CSharpBraceMatcher" mimeType="text/x-csharp"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">

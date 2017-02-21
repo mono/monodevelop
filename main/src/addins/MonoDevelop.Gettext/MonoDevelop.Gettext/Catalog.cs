@@ -395,7 +395,7 @@ namespace MonoDevelop.Gettext
 		{
 			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
 				try {
-					if (info.Name.ToLower () == charset.ToLower ())
+					if (string.Equals (info.Name, charset, StringComparison.OrdinalIgnoreCase))
 						return true;
 				} catch (Exception) {
 					// info.Name may fail.
@@ -429,7 +429,7 @@ namespace MonoDevelop.Gettext
 		{
 			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
 				try {
-					if (info.Name.ToLower () == charset.ToLower ())
+					if (string.Equals (info.Name, charset, StringComparison.OrdinalIgnoreCase))
 						return info.GetEncoding ();
 				} catch (Exception) {
 					// info.Name may fail.
