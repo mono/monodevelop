@@ -38,9 +38,10 @@ namespace MonoDevelop.DotNetCore.Tests
 		DotNetCoreMSBuildProject project;
 		MSBuildProject msbuildProject;
 
-		void CreateMSBuildProject (string xml)
+		void CreateMSBuildProject (string xml, string fileName = @"MyProject.csproj")
 		{
 			msbuildProject = new MSBuildProject ();
+			msbuildProject.FileName = fileName;
 			msbuildProject.LoadXml (xml);
 
 			project = new DotNetCoreMSBuildProject ();
@@ -341,7 +342,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		public void WriteProject_AssemblyNameAndRootNamespaceAdded_RemovedOnWriting ()
+		public void WriteProject_AssemblyNameAndRootNamespaceAddedButSameAsProjectName_RemovedOnWriting ()
 		{
 			CreateMSBuildProject (
 				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
@@ -349,7 +350,9 @@ namespace MonoDevelop.DotNetCore.Tests
 				"      <OutputType>Exe</OutputType>\r\n" +
 				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
 				"  </PropertyGroup>\r\n" +
-				"</Project>");
+				"</Project>",
+				"Test.csproj"
+			);
 			ReadProject ();
 			AddGlobalPropertyToMSBuildProject ("AssemblyName", "Test");
 			AddGlobalPropertyToMSBuildProject ("RootNamespace", "Test");
@@ -465,6 +468,27 @@ namespace MonoDevelop.DotNetCore.Tests
 			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
 				 .GetValue ("TargetFrameworks");
 			Assert.AreEqual ("netcoreapp1.1;net45", savedFramework);
+		}
+
+		[Test]
+		public void WriteProject_AssemblyNameAndRootNamespaceAddedDifferentToProjectName_AssemblyNameAndRootNamespaceSaved ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>",
+			"MyProject.csproj");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("AssemblyName", "NewAssemblyName");
+			AddGlobalPropertyToMSBuildProject ("RootNamespace", "NewRootNamespace");
+
+			WriteProject ();
+
+			Assert.AreEqual ("NewAssemblyName", GetPropertyValueFromMSBuildProject ("AssemblyName"));
+			Assert.AreEqual ("NewRootNamespace", GetPropertyValueFromMSBuildProject ("RootNamespace"));
 		}
 	}
 }

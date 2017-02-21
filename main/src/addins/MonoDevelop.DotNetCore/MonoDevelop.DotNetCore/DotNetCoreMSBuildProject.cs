@@ -93,11 +93,7 @@ namespace MonoDevelop.DotNetCore
 			if (!IsOutputTypeDefined)
 				globalPropertyGroup.RemoveProperty ("OutputType");
 
-			if (!hasAssemblyName)
-				globalPropertyGroup.RemoveProperty ("AssemblyName");
-
-			if (!hasRootNamespace)
-				globalPropertyGroup.RemoveProperty ("RootNamespace");
+			RemoveMSBuildProjectNameDerivedProperties (globalPropertyGroup);
 
 			if (!hasDescription)
 				globalPropertyGroup.RemoveProperty ("Description");
@@ -115,6 +111,17 @@ namespace MonoDevelop.DotNetCore
 				project.RemoveInternalElements ();
 				project.ToolsVersion = ToolsVersion;
 			}
+		}
+
+		void RemoveMSBuildProjectNameDerivedProperties (MSBuildPropertyGroup globalPropertyGroup)
+		{
+			string msbuildProjectName = globalPropertyGroup.ParentProject.FileName.FileNameWithoutExtension;
+
+			if (!hasAssemblyName)
+				globalPropertyGroup.RemovePropertyIfEqual ("AssemblyName", msbuildProjectName);
+
+			if (!hasRootNamespace)
+				globalPropertyGroup.RemovePropertyIfEqual ("RootNamespace", msbuildProjectName);
 		}
 
 		void UpdateTargetFramework (MSBuildProject project, TargetFrameworkMoniker framework)
