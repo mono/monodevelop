@@ -1509,15 +1509,24 @@ namespace Mono.TextEditor
 			AddMarker (line, marker, true);
 		}
 
-		class DocumentLineTextSegmentMarker : TextSegmentMarker
+		internal class DocumentLineTextSegmentMarker : TextSegmentMarker
 		{
+			readonly TextDocument doc;
 			public TextLineMarker Marker { get; }
 
-			public DocumentLineTextSegmentMarker (DocumentLine line, TextLineMarker marker) : base (line.Offset, line.Length)
+			internal DocumentLine LineSegment {
+				get {
+					return doc.GetLineByOffset (Offset);
+				}
+			}
+
+			public DocumentLineTextSegmentMarker (TextDocument doc, DocumentLine line, TextLineMarker marker) : base (line.Offset, line.Length)
 			{
 				if (marker == null)
 					throw new ArgumentNullException (nameof (marker));
+				this.doc = doc;
 				this.Marker = marker;
+				this.Marker.parent = this;
 			}
 		}
 
@@ -1558,7 +1567,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null || marker == null)
 				return;
-			AddMarker (new DocumentLineTextSegmentMarker (line, marker));
+			AddMarker (new DocumentLineTextSegmentMarker (this, line, marker));
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (marker is IExtendingTextLineMarker) {
 				lock (extendingTextMarkers) {
@@ -1625,7 +1634,6 @@ namespace Mono.TextEditor
 		{
 			if (line == null || type == null)
 				return;
-
 			foreach (var m in GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ()) {
 				if (m.Marker.GetType () == type) {
 					RemoveMarker (m);
