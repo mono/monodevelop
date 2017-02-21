@@ -365,6 +365,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("2", p.EvaluatedProperties.GetValue ("SplitLength"));
 			Assert.AreEqual ("abcdefg", p.EvaluatedProperties.GetValue ("NewString"));
 			Assert.AreEqual ("100", p.EvaluatedProperties.GetValue ("CharConvert"));
+			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("StringAtIndex0"));
+			Assert.AreEqual ("b", p.EvaluatedProperties.GetValue ("StringAtIndex1"));
 
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (p.FileName), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
