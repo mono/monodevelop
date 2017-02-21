@@ -790,7 +790,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} else
 				flags |= BindingFlags.NonPublic;
 			
-			return type.GetMember (memberName, flags | BindingFlags.Public);
+			return type.GetMember (memberName, flags | BindingFlags.Public | BindingFlags.IgnoreCase);
 		}
 
 		static Tuple<Type, string []> [] supportedTypeMembers = {

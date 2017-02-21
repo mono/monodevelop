@@ -341,6 +341,7 @@ namespace MonoDevelop.Projects
 			var p = LoadAndEvaluate ("msbuild-tests", "functions.csproj");
 
 			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("SubstringIgnoreCase"));
 			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
 			Assert.AreEqual ("abc", p.EvaluatedProperties.GetValue ("MethodWithParams2"));
 			Assert.AreEqual ("abcd", p.EvaluatedProperties.GetValue ("MethodWithParams3"));
