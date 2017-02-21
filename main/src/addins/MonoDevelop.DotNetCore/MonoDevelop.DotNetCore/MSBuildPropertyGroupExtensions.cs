@@ -30,7 +30,7 @@ namespace MonoDevelop.DotNetCore
 {
 	static class MSBuildPropertyGroupExtensions
 	{
-		public static void RemovePropertyIfEqual (
+		public static void RemovePropertyIfHasDefaultValue (
 			this MSBuildPropertyGroup propertyGroup,
 			string propertyName,
 			string defaultPropertyValue)

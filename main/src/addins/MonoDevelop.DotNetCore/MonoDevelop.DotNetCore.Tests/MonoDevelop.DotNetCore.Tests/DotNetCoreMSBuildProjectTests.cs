@@ -322,6 +322,24 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void WriteProject_DescriptionNotInOriginalProjectFileAndNonDefaultValueUsed_NotRemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("Description", "Test", string.Empty);
+
+			WriteProject ();
+
+			Assert.AreEqual ("Test", GetPropertyValueFromMSBuildProject ("Description"));
+		}
+
+		[Test]
 		public void WriteProject_TargetFrameworkInformationAdded_RemovedOnWriting ()
 		{
 			CreateMSBuildProject (
