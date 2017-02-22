@@ -67,4 +67,10 @@
 				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
 		</Condition>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreDependenciesNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreAssemblyDependenciesNodeBuilder" />
+	</Extension>
 </ExtensionModel>

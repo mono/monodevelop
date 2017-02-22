@@ -106,6 +106,12 @@
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\FilePathExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildPropertyGroupExtensions.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreDependenciesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\ProjectReferenceExtensions.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
@@ -156,6 +162,11 @@
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
