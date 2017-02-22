@@ -462,7 +462,7 @@ namespace MonoDevelop.Core.Assemblies
 			Culture = aname.CultureInfo.Name;
 			string fn = aname.ToString ();
 			string key = "publickeytoken=";
-			int i = fn.ToLower().IndexOf (key) + key.Length;
+			int i = fn.IndexOf (key, StringComparison.OrdinalIgnoreCase) + key.Length;
 			int j = fn.IndexOf (',', i);
 			if (j == -1) j = fn.Length;
 			PublicKeyToken = fn.Substring (i, j - i);

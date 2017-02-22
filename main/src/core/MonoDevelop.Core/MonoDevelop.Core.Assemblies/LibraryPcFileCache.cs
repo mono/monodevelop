@@ -145,8 +145,7 @@ namespace Mono.PkgConfig
 			
 			value = file.GetVariable ("GacPackage");
 			if (value != null) {
-				value = value.ToLower ();
-				pinfo.IsGacPackage = value == "yes" || value == "true";
+				pinfo.IsGacPackage = string.Equals (value, "yes", StringComparison.OrdinalIgnoreCase) || string.Equals (value, "true", StringComparison.OrdinalIgnoreCase);
 				gacPackageSet = true;
 			}
 	
@@ -191,10 +190,11 @@ namespace Mono.PkgConfig
 			List<string> libdirs = new List<string> ();
 			List<string> retval = new List<string> ();
 			foreach (string piece in line.Split (' ')) {
-				if (piece.ToLower ().Trim ().StartsWith ("/r:") || piece.ToLower ().Trim ().StartsWith ("-r:")) {
-					references.Add (piece.Substring (3).Trim ());
-				} else if (piece.ToLower ().Trim ().StartsWith ("/lib:") || piece.ToLower ().Trim ().StartsWith ("-lib:")) {
-					libdirs.Add (piece.Substring (5).Trim ());
+				var trimmed = piece.Trim ();
+				if (trimmed.StartsWith ("/r:", StringComparison.OrdinalIgnoreCase) || piece.StartsWith ("-r:", StringComparison.OrdinalIgnoreCase)) {
+					references.Add (trimmed.Substring (3).Trim ());
+				} else if (trimmed.StartsWith ("/lib:", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith ("-lib:", StringComparison.Ordinal)) {
+					libdirs.Add (trimmed.Substring (5).Trim ());
 				}
 			}
 	
@@ -223,8 +223,9 @@ namespace Mono.PkgConfig
 		{
 			List<string> references = new List<string> ();
 			foreach (string reference in line.Split (' ')) {
-				if (reference.ToLower ().Trim ().StartsWith ("/r:") || reference.ToLower ().Trim ().StartsWith ("-r:")) {
-					string final_ref = reference.Substring (3).Trim ();
+				var trimmed = reference.Trim ();
+				if (reference.StartsWith ("/r:", StringComparison.OrdinalIgnoreCase) || reference.StartsWith ("-r:", StringComparison.OrdinalIgnoreCase)) {
+					string final_ref = trimmed.Substring (3).Trim ();
 					references.Add (final_ref);
 				}
 			}
@@ -233,10 +234,10 @@ namespace Mono.PkgConfig
 		
 		public static string NormalizeAsmName (string name)
 		{
-			int i = name.ToLower ().IndexOf (", publickeytoken=null");
+			int i = name.IndexOf (", publickeytoken=null", StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
-			i = name.ToLower ().IndexOf (", processorarchitecture=");
+			i = name.IndexOf (", processorarchitecture=", StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
 			return name;
@@ -304,7 +305,7 @@ namespace Mono.PkgConfig
 			}
 			string fn = aname.ToString ();
 			string key = "publickeytoken=";
-			int i = fn.ToLower().IndexOf (key) + key.Length;
+			int i = fn.IndexOf (key, StringComparison.OrdinalIgnoreCase) + key.Length;
 			int j = fn.IndexOf (',', i);
 			if (j == -1) j = fn.Length;
 			PublicKeyToken = fn.Substring (i, j - i);

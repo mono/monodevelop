@@ -438,8 +438,6 @@ namespace MonoDevelop.Debugger
 			session.OutputWriter = null;
 			session.LogWriter = null;
 
-			sessionManager.Dispose ();
-
 			Runtime.RunInMainThread (delegate {
 				if (cleaningCurrentSession)
 					HideExceptionCaughtDialog ();
@@ -455,8 +453,9 @@ namespace MonoDevelop.Debugger
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
+			}).ContinueWith ((t) => {
+				sessionManager.Dispose ();
 			});
-
 		}
 
 		static string oldLayout;

@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var match = FindMatchedEntry (curword).Index;
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
-					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
+					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
 				}    
 				if (match >= 0 && keyChar != '<' && keyChar != ' ') {

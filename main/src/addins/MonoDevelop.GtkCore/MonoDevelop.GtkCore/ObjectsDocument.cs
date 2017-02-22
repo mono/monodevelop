@@ -76,7 +76,7 @@ namespace MonoDevelop.GtkCore
 		SyncState AttrSyncState {
 			get {
 				if (DocumentElement.HasAttribute ("attr-sync")) {
-					if (DocumentElement.GetAttribute ("attr-sync").ToLower () == "off")
+					if (string.Equals (DocumentElement.GetAttribute ("attr-sync"), "off", StringComparison.OrdinalIgnoreCase))
 						return SyncState.Off;
 					else
 						return SyncState.On;

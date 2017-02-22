@@ -41,7 +41,7 @@ namespace MonoDevelop.DotNetCore
 			if (!expectedType.IsAssignableFrom (typeof(SolutionItem)))
 				return false;
 
-			if (file.HasExtension (".csproj") || file.HasExtension (".fsproj"))
+			if (file.HasSupportedDotNetCoreProjectFileExtension ())
 				return IsDotNetCoreProjectFile (file);
 
 			return false;

@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Templates
 			string showAutogen = filenode.GetAttribute ("ShowAutogenerationNotice");
 			if ((showAutogen != null) && (showAutogen.Length > 0)) {
 				try {
-					showAutogenerationNotice = bool.Parse (showAutogen.ToLower());
+					showAutogenerationNotice = bool.Parse (showAutogen);
 				} catch (FormatException) {
 					throw new InvalidOperationException ("Invalid value for ShowAutogenerationNotice in template.");
 				}

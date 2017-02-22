@@ -498,7 +498,13 @@ namespace MonoDevelop.Projects.MSBuild
 				i += 3;
 				return EvaluateMember (type, null, prop, i, out val);
 			}
-			int n = prop.IndexOf ('.');
+
+			int n = prop.IndexOf ('[');
+			if (n > 0) {
+				return EvaluateStringAtIndex (prop, n, out val);
+			}
+
+			n = prop.IndexOf ('.');
 			if (n == -1) {
 				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop));
 				val = GetPropertyValue (prop) ?? string.Empty;
@@ -790,7 +796,32 @@ namespace MonoDevelop.Projects.MSBuild
 			} else
 				flags |= BindingFlags.NonPublic;
 			
-			return type.GetMember (memberName, flags | BindingFlags.Public);
+			return type.GetMember (memberName, flags | BindingFlags.Public | BindingFlags.IgnoreCase);
+		}
+
+		bool EvaluateStringAtIndex (string prop, int i, out object val)
+		{
+			val = null;
+
+			int j = prop.IndexOf (']');
+			if (j == -1)
+				return false;
+
+			if (j < prop.Length - 1 || j - i < 2)
+				return false;
+
+			string indexText = prop.Substring (i + 1, j - (i + 1));
+			int index = -1;
+			if (!int.TryParse (indexText, out index))
+				return false;
+
+			prop = prop.Substring (0, i);
+			string propertyValue = GetPropertyValue (prop) ?? string.Empty;
+			if (propertyValue.Length <= index)
+				return false;
+
+			val = propertyValue.Substring (index, 1);
+			return true;
 		}
 
 		static Tuple<Type, string []> [] supportedTypeMembers = {

@@ -54,6 +54,7 @@ namespace MonoDevelop.PackageManagement
 			RestorePackagesConfigProjects = true;
 
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
+			solutionManager.ClearProjectCache ();
 
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 

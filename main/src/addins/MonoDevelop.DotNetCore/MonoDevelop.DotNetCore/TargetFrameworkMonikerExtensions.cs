@@ -1,10 +1,10 @@
-//
-// DotNetCommandFactory.cs
+﻿//
+// TargetFrameworkMonikerExtensions.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc.
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace MonoDevelop.Core.Execution
+using MonoDevelop.Core.Assemblies;
+
+namespace MonoDevelop.DotNetCore
 {
-	class DotNetCommandFactory: ICommandFactory
+	static class TargetFrameworkMonikerExtensions
 	{
-		public ProcessExecutionCommand CreateCommand (string file)
+		public static string GetShortFrameworkName (this TargetFrameworkMoniker framework)
 		{
-			if (file.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".dll", StringComparison.OrdinalIgnoreCase))
-				return new DotNetExecutionCommand (file);
-			else
-				return null;
+			string identifier = GetShortFrameworkIdentifier (framework);
+			return identifier + framework.Version;
+		}
+
+		public static string GetShortFrameworkIdentifier (this TargetFrameworkMoniker framework)
+		{
+			if (string.IsNullOrEmpty (framework.Identifier))
+				return string.Empty;
+
+			string shortFrameworkIdentifier = framework.Identifier;
+
+			if (shortFrameworkIdentifier[0] == '.')
+				shortFrameworkIdentifier = shortFrameworkIdentifier.Substring (1);
+
+			return shortFrameworkIdentifier.ToLower ();
 		}
 	}
 }
-
