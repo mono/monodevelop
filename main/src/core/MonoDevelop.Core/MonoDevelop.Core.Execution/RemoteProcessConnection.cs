@@ -530,7 +530,8 @@ namespace MonoDevelop.Core.Execution
 
 		public Task ProcessPendingMessages ()
 		{
-			return Task.WhenAll (pendingMessageTasks.ToArray ());
+			lock (pendingMessageTasks)
+				return Task.WhenAll (pendingMessageTasks.ToArray ());
 		}
 
 		BinaryMessage LoadMessageData (BinaryMessage msg)
