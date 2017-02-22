@@ -35,6 +35,7 @@ obj/
 /scripts/configure.exe
 /main/packages
 /main/.nuget/
+pull-package.exe
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
