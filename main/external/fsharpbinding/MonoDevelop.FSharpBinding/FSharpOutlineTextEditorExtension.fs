@@ -79,22 +79,23 @@ type FSharpOutlineTextEditorExtension() as x =
                 let setCellIcon _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let pixRenderer = cellRenderer :?> CellRendererImage
                     treeModel.GetValue(iter, 0)
-                    |> Option.tryCast<FSharpNavigationDeclarationItem>
+                    |> Option.tryCast<FSharpNavigationDeclarationItem[]>
                     |> Option.iter(fun item ->
-                        pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item, Gtk.IconSize.Menu))
+                        pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item.[0], Gtk.IconSize.Menu))
 
                 let setCellText _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let renderer = cellRenderer :?> CellRendererText
                     treeModel.GetValue(iter, 0)
-                    |> Option.tryCast<FSharpNavigationDeclarationItem>
-                    |> Option.iter(fun item -> renderer.Text <- item.Name)
+                    |> Option.tryCast<FSharpNavigationDeclarationItem[]>
+                    |> Option.iter(fun item -> renderer.Text <- item.[0].Name)
 
                 let jumpToDeclaration focus =
                     let iter : TreeIter ref = ref Unchecked.defaultof<_>
                     if padTreeView.Selection.GetSelected(iter) then
                         padTreeView.Model.GetValue(!iter, 0)
-                        |> Option.tryCast<FSharpNavigationDeclarationItem>
-                        |> Option.iter(fun node ->
+                        |> Option.tryCast<FSharpNavigationDeclarationItem[]>
+                        |> Option.iter(fun item ->
+                            let node = item.[0]
                             let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
                             IdeApp.Workbench.OpenDocument (x.Editor.FileName, null, max 1 sline, max 1 scol) |> ignore)
 
