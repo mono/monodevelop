@@ -52,4 +52,19 @@
 	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class="MonoDevelop.DotNetCore.DotNetCoreProjectNodeBuilderExtension" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
+		<Condition id="FlavorType" value="MonoDevelop.DotNetCore.DotNetCoreProjectExtension">
+			<Panel
+				id="DotNetCoreRuntimeOptionsPanel"
+				replaces="RuntimeOptionsPanel"
+				_label="Runtime Options"
+				class="MonoDevelop.DotNetCore.DotNetCoreRuntimeOptionsPanel" />
+			<Panel
+				id="DotNetCoreRuntimeOptionsPanel"
+				replaces="MSBuildOptionsPanel"
+				_label="Build"
+				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
+		</Condition>
+	</Extension>
 </ExtensionModel>

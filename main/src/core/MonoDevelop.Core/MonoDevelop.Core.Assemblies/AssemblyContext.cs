@@ -285,10 +285,10 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public static string NormalizeAsmName (string name)
 		{
-			int i = name.ToLower ().IndexOf (", publickeytoken=null", StringComparison.Ordinal);
+			int i = name.IndexOf (", publickeytoken=null", StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
-			i = name.ToLower ().IndexOf (", processorarchitecture=", StringComparison.Ordinal);
+			i = name.IndexOf (", processorarchitecture=", StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
 			return name;

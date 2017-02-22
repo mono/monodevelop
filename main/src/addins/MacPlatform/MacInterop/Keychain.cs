@@ -313,14 +313,14 @@ namespace MonoDevelop.MacInterop
 
 			string auth = "default";
 			foreach (var pair in query.Substring (1).Split (new char[] { '&' })) {
-				var kvp = pair.ToLowerInvariant ().Split (new char[] { '=' });
-				if (kvp[0] == "auth" && kvp.Length == 2) {
-					auth = kvp[1];
+				var kvp = pair.Split (new char[] { '=' });
+				if (string.Equals (kvp[0], "auth", StringComparison.InvariantCultureIgnoreCase) && kvp.Length == 2) {
+					auth = kvp[1].ToLowerInvariant ();
 					break;
 				}
 			}
 
-			switch (auth.ToLowerInvariant ()) {
+			switch (auth) {
 			case "ntlm": return SecAuthenticationType.NTLM;
 			case "msn": return SecAuthenticationType.MSN;
 			case "dpa": return SecAuthenticationType.DPA;

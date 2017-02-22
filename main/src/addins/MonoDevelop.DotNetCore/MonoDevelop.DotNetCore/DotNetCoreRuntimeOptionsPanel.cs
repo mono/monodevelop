@@ -1,10 +1,10 @@
-//
-// DotNetCommandFactory.cs
+﻿//
+// DotNetCoreRuntimeOptionsPanel.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc.
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace MonoDevelop.Core.Execution
+using MonoDevelop.Components;
+using MonoDevelop.DotNetCore.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
+
+namespace MonoDevelop.DotNetCore
 {
-	class DotNetCommandFactory: ICommandFactory
+	class DotNetCoreRuntimeOptionsPanel : ItemOptionsPanel
 	{
-		public ProcessExecutionCommand CreateCommand (string file)
+		DotNetCoreRuntimeOptionsPanelWidget widget;
+
+		public override Control CreatePanelWidget ()
 		{
-			if (file.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".dll", StringComparison.OrdinalIgnoreCase))
-				return new DotNetExecutionCommand (file);
-			else
-				return null;
+			widget = new DotNetCoreRuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject);
+			return widget;
+		}
+
+		public override void ApplyChanges()
+		{
+			widget.Store ();
 		}
 	}
 }
-

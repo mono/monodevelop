@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects
 
 			AssertOutputFiles (sol, "ConsoleProject", "Debug", new string[] {
 				"ConsoleProject.exe",
-				"ConsoleProject" + exeDebug,
+				p.TargetRuntime.GetAssemblyDebugInfoFile ("ConsoleProject.exe"),
 				"System.Data.dll",
 				"gtk-sharp.dll"
 			});

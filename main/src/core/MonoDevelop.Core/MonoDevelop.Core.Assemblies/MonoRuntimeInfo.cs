@@ -44,6 +44,7 @@ namespace MonoDevelop.Core.Assemblies
 		Dictionary<string,string> envVars = new Dictionary<string, string> ();
 		bool initialized;
 		bool isValidRuntime;
+		Version runtimeVersion;
 		
 		internal MonoRuntimeInfo ()
 		{
@@ -66,6 +67,16 @@ namespace MonoDevelop.Core.Assemblies
 			get {
 				Initialize ();
 				return monoVersion;
+			}
+		}
+		
+		/// <summary>
+		/// Runtime version reported by Mono
+		/// </summary>
+		public Version RuntimeVersion {
+			get {
+				Initialize ();
+				return runtimeVersion;
 			}
 		}
 		
@@ -129,6 +140,8 @@ namespace MonoDevelop.Core.Assemblies
 				return false;
 
 			monoVersion = ver.Substring (i, j - i);
+			if (!Version.TryParse (monoVersion, out runtimeVersion))
+				runtimeVersion = new Version (1, 0, 0, 0);
 
 			i = ver.IndexOf ('(');
 			if (i != -1) {
@@ -189,6 +202,9 @@ namespace MonoDevelop.Core.Assemblies
 				else
 					rt.monoVersion = ver.Substring (i+1);
 			}
+
+			if (!Version.TryParse (rt.monoVersion, out rt.runtimeVersion))
+				rt.runtimeVersion = new Version (1, 0, 0, 0);
 
 			//Pull up assemblies from the installed mono system.
 			rt.prefix = PathUp (typeof (int).Assembly.Location, 4);

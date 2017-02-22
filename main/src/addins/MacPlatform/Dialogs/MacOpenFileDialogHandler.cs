@@ -244,7 +244,7 @@ namespace MonoDevelop.MacIntegration
 
 		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
 		{
-			return filename.Extension.ToLower () == ".exe" || filename.Extension.ToLower () == ".dll";
+			return string.Equals (filename.Extension, ".exe", StringComparison.OrdinalIgnoreCase) || string.Equals (filename.Extension, ".dll", StringComparison.OrdinalIgnoreCase);
 		}
 
 		static void CenterAccessoryView (MDBox box)
