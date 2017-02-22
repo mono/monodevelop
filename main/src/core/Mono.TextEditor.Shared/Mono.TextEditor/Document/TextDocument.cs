@@ -696,7 +696,7 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges.Reverse ()) {
+				foreach (var change in args.TextChanges) {
 					doc.ReplaceText (change.Offset, change.InsertionLength, change.RemovedText.Text);
 				}
 				if (fireEvent)
@@ -705,7 +705,7 @@ namespace Mono.TextEditor
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges) {
+				foreach (var change in args.TextChanges.Reverse()) {
 					doc.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText.Text);
 				}
 				if (fireEvent)
