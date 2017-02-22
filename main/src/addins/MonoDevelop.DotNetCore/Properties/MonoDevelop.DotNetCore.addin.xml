@@ -92,5 +92,6 @@
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreDependenciesNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectDependenciesNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreAssemblyDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectReferencesNodeBuilderExtension" />
 	</Extension>
 </ExtensionModel>
