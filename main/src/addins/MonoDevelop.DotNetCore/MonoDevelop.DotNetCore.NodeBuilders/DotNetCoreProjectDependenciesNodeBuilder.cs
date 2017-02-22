@@ -35,6 +35,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return typeof(DotNetCoreProjectDependenciesNode); }
 		}
 
+		public override Type CommandHandlerType {
+			get { return typeof(DotNetProjectOrAssemblyDependenciesCommandHandler); }
+		}
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return DotNetCoreProjectDependenciesNode.NodeName;

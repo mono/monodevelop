@@ -112,6 +112,7 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetProjectOrAssemblyDependenciesCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

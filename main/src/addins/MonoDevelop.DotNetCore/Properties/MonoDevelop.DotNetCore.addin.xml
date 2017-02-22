@@ -68,6 +68,26 @@
 		</Condition>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition
+			id="ItemType"
+			value="MonoDevelop.PackageManagement.NodeBuilders.DependenciesNode">
+			<CommandItem
+				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+			<SeparatorItem
+				id="DependenciesEditReferenceSeparator"
+				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+		</Condition>
+		<Condition
+			id="ItemType"
+			value="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreAssemblyDependenciesNode|MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectDependenciesNode">
+			<CommandItem
+				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+		</Condition>
+	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreDependenciesNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectDependenciesNodeBuilder" />

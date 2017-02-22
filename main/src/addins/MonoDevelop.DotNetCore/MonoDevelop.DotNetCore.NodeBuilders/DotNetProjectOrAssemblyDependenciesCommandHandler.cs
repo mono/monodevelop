@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreAssemblyDependenciesNodeBuilder.cs
+// DotNetProjectOrAssemblyDependenciesCommandHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,44 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreAssemblyDependenciesNodeBuilder : TypeNodeBuilder
+	class DotNetProjectOrAssemblyDependenciesCommandHandler : NodeCommandHandler
 	{
-		public override Type NodeDataType {
-			get { return typeof(DotNetCoreAssemblyDependenciesNode); }
-		}
-
-		public override Type CommandHandlerType {
-			get { return typeof(DotNetProjectOrAssemblyDependenciesCommandHandler); }
-		}
-
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		public override void ActivateItem ()
 		{
-			return DotNetCoreAssemblyDependenciesNode.NodeName;
-		}
-
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
-		{
-			var node = (DotNetCoreAssemblyDependenciesNode)dataObject;
-			nodeInfo.Label = node.GetLabel ();
-			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
-			nodeInfo.Icon = Context.GetIcon (node.Icon);
-			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
-		}
-
-		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			return true;
-		}
-
-		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
-		{
-			var node = (DotNetCoreAssemblyDependenciesNode)dataObject;
-			treeBuilder.AddChildren (node.GetChildNodes ());
+			IdeApp.CommandService.DispatchCommand (ProjectCommands.AddReference);
 		}
 	}
 }
