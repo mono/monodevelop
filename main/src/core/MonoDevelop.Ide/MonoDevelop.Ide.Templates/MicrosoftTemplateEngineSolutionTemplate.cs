@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Templates
 		//TemplateExtensionNode template;
 
 		internal MicrosoftTemplateEngineSolutionTemplate (TemplateExtensionNode template, ITemplateInfo templateInfo)
-			: base (templateInfo.Identity, templateInfo.Name, template.Icon)
+			: base (templateInfo.Identity, template.OverrideName ?? templateInfo.Name, template.Icon)
 		{
 			this.templateInfo = templateInfo;
 			Description = templateInfo.Description;

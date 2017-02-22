@@ -68,5 +68,13 @@ namespace MonoDevelop.Ide.Codons
 				return imageId;
 			}
 		}
+
+		[NodeAttribute ("overrideName", "If template.json is outside AddIn creator control use this to change name.")]
+		string overrideName;
+		public string OverrideName {
+			get {
+				return overrideName;
+			}
+		}
 	}
 }
