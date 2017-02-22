@@ -167,13 +167,15 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
-			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
-			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
-				int delta = e.ChangeDelta;
-				mouseWordStart += delta;
-				mouseWordEnd += delta;
+			foreach (var change in e.TextChanges) {
+				RemoveCachedLine (Document.GetLineByOffset (change.Offset));
+				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
+					int delta = change.ChangeDelta;
+					mouseWordStart += delta;
+					mouseWordEnd += delta;
+				}
 			}
-			
+
 			if (selectedRegions.Count > 0) {
 				this.selectedRegions = new List<ISegment> (this.selectedRegions.AdjustSegments (e));
 				RefreshSearchMarker ();

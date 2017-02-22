@@ -38,16 +38,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
-			var ln = Document.OffsetToLineNumber (e.Offset);
-			if (ln >= stateCache.Count)
-				return;
-			var line = Document.GetLineByOffset (e.Offset);
-			var lastState = GetState (line); 
+			foreach (var change in e.TextChanges) {
+				var ln = Document.OffsetToLineNumber (change.Offset);
+				if (ln >= stateCache.Count)
+					continue;
+				var line = Document.GetLineByOffset (change.Offset);
+				var lastState = GetState (line);
 
-			var high = new Highlighter (this, lastState);
-			await high.GetColoredSegments (Document, line.Offset, line.LengthIncludingDelimiter);
-			OnHighlightingStateChanged (new LineEventArgs (line));
-			stateCache.RemoveRange (ln - 1, stateCache.Count - ln + 1);
+				var high = new Highlighter (this, lastState);
+				await high.GetColoredSegments (Document, line.Offset, line.LengthIncludingDelimiter);
+				OnHighlightingStateChanged (new LineEventArgs (line));
+				stateCache.RemoveRange (ln - 1, stateCache.Count - ln + 1);
+			}
 		}
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)

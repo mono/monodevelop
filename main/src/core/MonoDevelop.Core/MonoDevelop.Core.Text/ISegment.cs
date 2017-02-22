@@ -414,11 +414,9 @@ namespace MonoDevelop.Core.Text
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			if (args.Offset < segment.Offset)
-				return new TextSegment (segment.Offset + args.InsertionLength - args.RemovalLength, segment.Length);
-			if (args.Offset <= segment.EndOffset)
-				return new TextSegment (segment.Offset, segment.Length);
-			return segment;
+			var newStartOffset = args.GetNewOffset (segment.Offset);
+			var newEndOffset = args.GetNewOffset (segment.EndOffset);
+			return new TextSegment (newStartOffset, newEndOffset - newStartOffset);
 		}
 
 		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, TextChangeEventArgs args)

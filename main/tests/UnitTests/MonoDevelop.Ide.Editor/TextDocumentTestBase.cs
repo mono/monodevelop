@@ -28,6 +28,7 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.Core.Text;
 using System.Text;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -131,11 +132,12 @@ namespace MonoDevelop.Ide.Editor
 			textDoc.ReplaceText (2, 2, "Hello");
 			Assert.AreEqual (textDoc.Text, "12Hello5");
 			Assert.AreEqual (text, "12345");
-			Assert.AreEqual (changeArgs.Offset, 2);
-			Assert.AreEqual (changeArgs.RemovalLength, 2);
-			Assert.AreEqual (changeArgs.RemovedText.Text, "34");
-			Assert.AreEqual (changeArgs.InsertionLength, "Hello".Length);
-			Assert.AreEqual (changeArgs.InsertedText.Text, "Hello");
+			var ca = changeArgs.TextChanges.First ();
+			Assert.AreEqual (ca.Offset, 2);
+			Assert.AreEqual (ca.RemovalLength, 2);
+			Assert.AreEqual (ca.RemovedText.Text, "34");
+			Assert.AreEqual (ca.InsertionLength, "Hello".Length);
+			Assert.AreEqual (ca.InsertedText.Text, "Hello");
 		}
 
 		[Test]
@@ -151,11 +153,12 @@ namespace MonoDevelop.Ide.Editor
 			textDoc.ReplaceText (2, 2, "Hello");
 			Assert.AreEqual (textDoc.Text, "12Hello5");
 			Assert.AreEqual (text, "12Hello5");
-			Assert.AreEqual (changeArgs.Offset, 2);
-			Assert.AreEqual (changeArgs.RemovalLength, 2);
-			Assert.AreEqual (changeArgs.RemovedText.Text, "34");
-			Assert.AreEqual (changeArgs.InsertionLength, "Hello".Length);
-			Assert.AreEqual (changeArgs.InsertedText.Text, "Hello");
+			var ca = changeArgs.TextChanges.First ();
+			Assert.AreEqual (ca.Offset, 2);
+			Assert.AreEqual (ca.RemovalLength, 2);
+			Assert.AreEqual (ca.RemovedText.Text, "34");
+			Assert.AreEqual (ca.InsertionLength, "Hello".Length);
+			Assert.AreEqual (ca.InsertedText.Text, "Hello");
 		}
 
 //		[Test]

@@ -777,8 +777,10 @@ namespace MonoDevelop.CodeActions
 										//If user cancel renaming revert changes
 										if (!arg.Success) {
 											var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
-											foreach (var v in textChanges) {
-												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											foreach (var change in textChanges) {
+												foreach (var v in change.TextChanges.Reverse ()) {
+													editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+												}
 											}
 										}
 									}));
