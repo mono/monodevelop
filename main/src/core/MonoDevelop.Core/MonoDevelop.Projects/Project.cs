@@ -1104,10 +1104,11 @@ namespace MonoDevelop.Projects
 				MSBuildResult result = null;
 				await Task.Run (async delegate {
 
+					bool operationRequiresExclusiveLock = false;
 					TimerCounter buildTimer = null;
 					switch (target) {
-					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
-					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; operationRequiresExclusiveLock = true; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; operationRequiresExclusiveLock = true; break;
 					}
 
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
@@ -1116,7 +1117,11 @@ namespace MonoDevelop.Projects
 					bool newBuilderRequested = false;
 
 					RemoteProjectBuilder builder = await GetProjectBuilder ().ConfigureAwait (false);
-					if (builder.IsBusy) {
+
+					// If the builder requires an exclusive lock and it is busy, create a new locked builder.
+					// Fast operations that don't require an exclusive lock can use any builder, either locked or not
+
+					if (builder.IsBusy && operationRequiresExclusiveLock) {
 						builder.ReleaseReference ();
 						newBuilderRequested = true;
 						builder = await RequestLockedBuilder ().ConfigureAwait (false);
