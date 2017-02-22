@@ -88,7 +88,6 @@ namespace Mono.TextEditor
 		
 		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
-			Console.WriteLine ("UPDATE ON TEXT REPLACE !!!!");
 			IsDirty = true;
 			foreach (var change in e.TextChanges) {
 				if (change.RemovalLength == 0) {
