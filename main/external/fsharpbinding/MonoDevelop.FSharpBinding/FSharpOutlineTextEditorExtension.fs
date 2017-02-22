@@ -34,7 +34,7 @@ type FSharpOutlineTextEditorExtension() as x =
                                    |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
 
                     for item in toplevel do
-                        let iter = treeStore.AppendValues(item.Declaration)
+                        let iter = treeStore.AppendValues([| item.Declaration |])
                         let children = item.Nested
                                        |> Array.sortBy(fun xs -> xs.Range.StartLine)
 
