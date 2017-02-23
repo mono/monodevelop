@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 			} else {
 				//TODO: Remove this code once https://github.com/dotnet/templating/pull/342 is released in NuGet feed and we bump NuGet version of templating engine
-				foreach (var path in Directory.GetFiles (config.SolutionLocation, "*.*proj", SearchOption.AllDirectories)) {
+				foreach (var path in Directory.GetFiles (config.ProjectLocation, "*.*proj", SearchOption.AllDirectories)) {
 					if (path.EndsWith (".csproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith (".fsproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith (".vbproj", StringComparison.OrdinalIgnoreCase))
 						workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), path));
 				}
