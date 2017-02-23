@@ -296,19 +296,19 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
-		List<Source> existingSourcesWithBreakpoints = new List<Source> ();
+		List<string> pathsWithBreakpoints = new List<string> ();
 
 		void UpdateBreakpoints ()
 		{
-			//First clear all old breakpoints
-			foreach (var source in existingSourcesWithBreakpoints)
-				protocolClient.SendRequest (new SetBreakpointsRequest (source, new List<SourceBreakpoint> ()), null);
-			existingSourcesWithBreakpoints.Clear ();
+			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled).GroupBy (b => b.FileName).ToArray ();
+			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
+			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
-			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().GroupBy (b => b.FileName).ToArray ();
+			foreach (var path in filesForRemoval)
+				protocolClient.SendRequest (new SetBreakpointsRequest (new Source (Path.GetFileName (path), path), new List<SourceBreakpoint> ()), null);
+
 			foreach (var sourceFile in bks) {
 				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
-				existingSourcesWithBreakpoints.Add (source);
 				protocolClient.SendRequest (new SetBreakpointsRequest (
 					source,
 					sourceFile.Select (b => new SourceBreakpoint {
