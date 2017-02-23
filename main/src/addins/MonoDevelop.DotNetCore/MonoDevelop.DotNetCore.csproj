@@ -10,6 +10,9 @@
     <RootNamespace>MonoDevelop.DotNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
+    <NuGetUrl>https://dotnet.myget.org/F/templating/api/v2/package/</NuGetUrl>
+    <TemplatesVersion>1.0.0-beta1-20170216-123</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -117,12 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
-    <Folder Include="Templates\" />
-    <Folder Include="Templates\Projects\" />
-    <Folder Include="Templates\Projects\Console\" />
     <Folder Include="MonoDevelop.DotNetCore.Templating\" />
-    <Folder Include="Templates\Projects\Library\" />
-    <Folder Include="Templates\Projects\EmptyWeb\" />
     <Folder Include="MonoDevelop.DotNetCore.UnitTesting\" />
   </ItemGroup>
   <ItemGroup>
@@ -178,61 +176,40 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\Projects\Console\ConsoleProject.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Console\ConsoleProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Console\ConsoleProject.Program.cs.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Console\ConsoleProject.Program.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Library\LibraryProject.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Library\LibraryProject.MyClass.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Library\LibraryProject.MyClass.cs.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Library\LibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.Program.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.Program.cs.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.Startup.cs.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\EmptyWeb\EmptyWebProject.Startup.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
-    <None Include="Templates\Projects\XUnitTest\XUnitTestProject.Test.cs.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\XUnitTest\XUnitTestProject.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\XUnitTest\XUnitTestProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\XUnitTest\XUnitTestProject.Test.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="pull-package.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="CompilePullPackage" Inputs="pull-package.cs" Outputs="pull-package.exe">
+    <Csc Sources="pull-package.cs" OutputAssembly="pull-package.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
+  </Target>
+  <Target Name="DownloadTemplates" BeforeTargets="Build" DependsOnTargets="CompilePullPackage">
+    <ItemGroup>
+      <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.1.x">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Common.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Common.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+      <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.0">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Common.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Common.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+      <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.1.x">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Test.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Test.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+      <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Test.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Test.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+      <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Web.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Web.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+      <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
+        <Url>$(NuGetUrl)Microsoft.DotNet.Web.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
+        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Web.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
+      </NuGetPackage>
+    </ItemGroup>
+    <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\pull-package.exe %(NuGetPackage.Url) %(NuGetPackage.OutputPackage)" Condition="!Exists('%(NuGetPackage.OutputPackage)')" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
 </Project>
