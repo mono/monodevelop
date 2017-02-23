@@ -69,11 +69,20 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 
-		[NodeAttribute ("overrideName", "If template.json is outside AddIn creator control use this to change name.")]
+		[NodeAttribute ("overrideName", "If template.json is outside AddIn creator control use this to change name.", Localizable = true)]
 		string overrideName;
 		public string OverrideName {
 			get {
 				return overrideName;
+			}
+		}
+		
+
+		[NodeAttribute ("overrideDescription", "If template.json is outside AddIn creator control use this to change description.", Localizable = true)]
+		string overrideDescription;
+		public string OverrideDescription {
+			get {
+				return overrideDescription;
 			}
 		}
 	}

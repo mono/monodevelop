@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Templates
 			: base (templateInfo.Identity, template.OverrideName ?? templateInfo.Name, template.Icon)
 		{
 			this.templateInfo = templateInfo;
-			Description = templateInfo.Description;
+			Description = template.OverrideDescription ?? templateInfo.Description;
 			Category = template.Category;
 			string language;
 			if (templateInfo.Tags.TryGetValue ("Language", out language))
