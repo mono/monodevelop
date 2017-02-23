@@ -21,29 +21,29 @@
 	<Extension path="/MonoDevelop/Ide/Templates">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
-			overrideDescription="Creates a new .NET Core console project."
+			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-console-project"
 			imageId="md-console-project"
 			category="netcore/app/general"/>
 		<Template
 			id="Microsoft.Common.Console.FSharp"
-			overrideDescription="Creates a new .NET Core console project."
+			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-console-project"
 			imageId="md-console-project"
 			category="netcore/app/general"/>
 		<Template
-			overrideName=".NET Standard Library"
-			overrideDescription="Creates a new .NET Standard class library project."
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
 		<Template
-			overrideName=".NET Standard Library"
-			overrideDescription="Creates a new .NET Standard class library project."
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-library-project"
@@ -51,42 +51,42 @@
 			category="multiplat/library/general" />
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
-			overrideDescription="Creates a new xUnit test project."
+			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-test-project"
 			imageId="md-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Test.xUnit.FSharp"
-			overrideDescription="Creates a new xUnit test project."
+			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-test-project"
 			imageId="md-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Web.Empty.CSharp"
-			overrideDescription="Creates a new ASP.NET Core web project."
+			_overrideDescription="Creates a new ASP.NET Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-aspnet-empty-project"
 			imageId="md-aspnet-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.CSharp"
-			overrideDescription="Creates a new ASP.NET MVC Core web project."
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-aspnet-empty-project"
 			imageId="md-aspnet-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.FSharp"
-			overrideDescription="Creates a new ASP.NET MVC Core web project."
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-aspnet-empty-project"
 			imageId="md-aspnet-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
-			overrideDescription="Creates a new ASP.NET Web API Core web project."
+			_overrideDescription="Creates a new ASP.NET Web API Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170216-123.nupkg"
 			icon="md-aspnet-empty-project"
 			imageId="md-aspnet-empty-project"
