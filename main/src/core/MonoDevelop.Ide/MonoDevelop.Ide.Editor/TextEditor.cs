@@ -555,12 +555,22 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.StartInsertionMode (insertionModeOptions);
 		}
 
+		TextLinkModeOptions textLinkModeOptions;
 		public void StartTextLinkMode (TextLinkModeOptions textLinkModeOptions)
 		{
 			if (textLinkModeOptions == null)
 				throw new ArgumentNullException (nameof (textLinkModeOptions));
 			Runtime.AssertMainThread ();
 			textEditorImpl.StartTextLinkMode (textLinkModeOptions);
+			this.textLinkModeOptions = textLinkModeOptions;
+		}
+
+		internal TextLinkPurpose TextLinkPurpose {
+			get {
+				if (EditMode != EditMode.TextLink || textLinkModeOptions == null)
+					return TextLinkPurpose.Unknown;
+				return textLinkModeOptions.TextLinkPurpose;
+			}
 		}
 
 		public void InsertAtCaret (string text)
