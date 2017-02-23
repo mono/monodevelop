@@ -27,11 +27,13 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.DotNetCore.NodeBuilders;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.DotNetCore.Commands
 {
 	class PackageDependencyNodeCommandHandler : NodeCommandHandler
 	{
@@ -49,16 +51,8 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageDependencyNode node, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageAction action = CreateUninstallPackageAction (node);
+			IPackageAction action = PackageReferenceNodeCommandHandler.CreateUninstallPackageAction (node.Project, node.Name);
 			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-		}
-
-		IPackageAction CreateUninstallPackageAction (PackageDependencyNode node)
-		{
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (node.Project.ParentSolution);
-			return new UninstallNuGetPackageAction (solutionManager, new DotNetProjectProxy (node.Project)) {
-				PackageId = node.Name
-			};
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -86,19 +80,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
 			var project = new DotNetProjectProxy (node.Project);
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (node.Name, project);
 
-			try {
-				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (node.Project.ParentSolution);
-				var action = new UpdateNuGetPackageAction (solutionManager, project) {
-					PackageId = node.Name,
-					IncludePrerelease = !node.IsReleaseVersion ()
-				};
-
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			} catch (Exception ex) {
-				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
-			}
+			PackageReferenceNodeCommandHandler.UpdatePackage (
+				project,
+				node.Name,
+				!node.IsReleaseVersion ());
 		}
 	}
 }

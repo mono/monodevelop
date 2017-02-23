@@ -1,5 +1,5 @@
 ﻿//
-// DependenciesNodeBuilder.cs
+// PackageDependencyNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,48 +25,55 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using MonoDevelop.Projects;
+using MonoDevelop.DotNetCore.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	public class DependenciesNodeBuilder : TypeNodeBuilder
+	class PackageDependencyNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(DependenciesNode); }
+			get { return typeof(PackageDependencyNode); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return DependenciesNode.NodeName;
+			var node = (PackageDependencyNode)dataObject;
+			return node.Name;
+		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency"; }
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof(PackageDependencyNodeCommandHandler); }
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var node = (DependenciesNode)dataObject;
+			var node = (PackageDependencyNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
-			nodeInfo.Icon = Context.GetIcon (node.Icon);
-			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
-		}
-
-		public override int GetSortIndex (ITreeNavigator node)
-		{
-			return -600;
+			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			var node = (PackageDependencyNode)dataObject;
+			return node.HasDependencies ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var node = (DependenciesNode)dataObject;
-			var folderNode = new PackageDependenciesNode (node);
-			folderNode.Refresh ();
-			treeBuilder.AddChild (folderNode);
+			treeBuilder.AddChildren (GetPackageDependencyNodes (dataObject));
+		}
+
+		IEnumerable<PackageDependencyNode> GetPackageDependencyNodes (object dataObject)
+		{
+			var node = (PackageDependencyNode)dataObject;
+			return node.GetDependencyNodes ();
 		}
 	}
 }

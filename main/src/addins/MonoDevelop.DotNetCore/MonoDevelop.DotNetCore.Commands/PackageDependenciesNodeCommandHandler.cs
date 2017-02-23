@@ -1,5 +1,5 @@
 ﻿//
-// DependenciesNode.cs
+// PackageDependenciesNodeCommandHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,39 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.Commands
 {
-	class DependenciesNode
+	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
 	{
-		public static readonly string NodeName = "Dependencies";
-
-		public DependenciesNode (DotNetProject project)
+		public override void ActivateItem ()
 		{
-			Project = project;
-		}
-
-		internal DotNetProject Project { get; private set; }
-
-		public string GetLabel ()
-		{
-			return GettextCatalog.GetString ("Dependencies");
-		}
-
-		public string GetSecondaryLabel ()
-		{
-			return string.Empty;
-		}
-
-		public IconId Icon {
-			get { return Stock.OpenReferenceFolder; }
-		}
-
-		public IconId ClosedIcon {
-			get { return Stock.ClosedReferenceFolder; }
+			var runner = new AddPackagesDialogRunner ();
+			runner.Run ();
 		}
 	}
 }

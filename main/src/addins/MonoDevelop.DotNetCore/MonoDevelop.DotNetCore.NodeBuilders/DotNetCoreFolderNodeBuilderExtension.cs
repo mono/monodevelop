@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class DotNetCoreFolderNodeBuilderExtension : NodeBuilderExtension
 	{

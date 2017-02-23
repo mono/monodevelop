@@ -29,7 +29,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class TargetFrameworkNode
 	{

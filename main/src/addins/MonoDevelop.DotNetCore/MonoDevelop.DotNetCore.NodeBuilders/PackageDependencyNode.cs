@@ -28,10 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet.Versioning;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class PackageDependencyNode
 	{

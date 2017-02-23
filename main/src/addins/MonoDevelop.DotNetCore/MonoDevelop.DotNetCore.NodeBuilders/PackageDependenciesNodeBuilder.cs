@@ -27,11 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Core;
+using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class PackageDependenciesNodeBuilder : TypeNodeBuilder
 	{

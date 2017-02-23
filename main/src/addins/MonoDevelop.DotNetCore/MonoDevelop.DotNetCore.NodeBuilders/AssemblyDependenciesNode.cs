@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreAssemblyDependenciesNode.cs
+// AssemblyDependenciesNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -32,11 +32,11 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreAssemblyDependenciesNode
+	class AssemblyDependenciesNode
 	{
-		public static readonly string NodeName = "DotNetCoreAssemblyDependencies";
+		public static readonly string NodeName = "AssemblyDependencies";
 
-		public DotNetCoreAssemblyDependenciesNode (DotNetProject project)
+		public AssemblyDependenciesNode (DotNetProject project)
 		{
 			Project = project;
 		}

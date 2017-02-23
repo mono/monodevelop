@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreProjectDependenciesNodeBuilder.cs
+// DependenciesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,28 +29,29 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreProjectDependenciesNodeBuilder : TypeNodeBuilder
+	public class DependenciesNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(DotNetCoreProjectDependenciesNode); }
-		}
-
-		public override Type CommandHandlerType {
-			get { return typeof(DotNetProjectOrAssemblyDependenciesCommandHandler); }
+			get { return typeof(DependenciesNode); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return DotNetCoreProjectDependenciesNode.NodeName;
+			return DependenciesNode.NodeName;
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var node = (DotNetCoreProjectDependenciesNode)dataObject;
+			var node = (DependenciesNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.Icon);
 			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
+		}
+
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			return -600;
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -60,8 +61,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var node = (DotNetCoreProjectDependenciesNode)dataObject;
-			treeBuilder.AddChildren (node.GetChildNodes ());
+			var node = (DependenciesNode)dataObject;
+			var folderNode = new PackageDependenciesNode (node);
+			folderNode.Refresh ();
+			treeBuilder.AddChild (folderNode);
+
+			var assembliesNode = new AssemblyDependenciesNode (node.Project);
+			if (assembliesNode.HasChildNodes ())
+				treeBuilder.AddChild (assembliesNode);
+
+			var projectsNode = new ProjectDependenciesNode (node.Project);
+			if (projectsNode.HasChildNodes ())
+				treeBuilder.AddChild (projectsNode);
 		}
 	}
 }

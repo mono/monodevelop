@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreProjectNodeBuilderExtension.cs
+// AssemblyDependenciesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,42 +25,44 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
+using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreProjectNodeBuilderExtension : NodeBuilderExtension
+	class AssemblyDependenciesNodeBuilder : TypeNodeBuilder
 	{
-		public override bool CanBuildNode (Type dataType)
+		public override Type NodeDataType {
+			get { return typeof(AssemblyDependenciesNode); }
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof(ProjectOrAssemblyDependenciesCommandHandler); }
+		}
+
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return typeof (DotNetProject).IsAssignableFrom (dataType);
+			return AssemblyDependenciesNode.NodeName;
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var project = dataObject as DotNetProject;
-			if (project == null)
-				return;
-
-			var dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
-			if (dotNetCoreProject == null)
-				return;
-
-			if (dotNetCoreProject.HasSdk && !dotNetCoreProject.IsDotNetCoreSdkInstalled ()) {
-				nodeInfo.StatusSeverity = TaskSeverity.Error;
-				nodeInfo.StatusMessage = GetMessage (dotNetCoreProject);
-			}
+			var node = (AssemblyDependenciesNode)dataObject;
+			nodeInfo.Label = node.GetLabel ();
+			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
+			nodeInfo.Icon = Context.GetIcon (node.Icon);
+			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
 		}
 
-		string GetMessage (DotNetCoreProjectExtension dotNetCoreProject)
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (dotNetCoreProject.IsUnsupportedDotNetCoreSdkInstalled ())
-				return GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
+			return true;
+		}
 
-			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
+		{
+			var node = (AssemblyDependenciesNode)dataObject;
+			treeBuilder.AddChildren (node.GetChildNodes ());
 		}
 	}
 }

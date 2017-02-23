@@ -63,6 +63,10 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,7 +80,6 @@
     <Compile Include="MonoDevelop.DotNetCore.Templating\EmptyDirectoryRemover.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\FileTemplateProcessor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreFolderNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectFileRenamedHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReloadMonitor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReader.cs" />
@@ -95,7 +98,6 @@
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestRunner.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\TestResultBuilder.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeOptionsPanel.cs" />
@@ -109,14 +111,26 @@
     <Compile Include="MonoDevelop.DotNetCore\TargetFrameworkMonikerExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\FilePathExtensions.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildPropertyGroupExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreDependenciesNodeBuilderExtension.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore\ProjectReferenceExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectDependenciesNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreAssemblyDependenciesNode.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetProjectOrAssemblyDependenciesCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\ProjectDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectReferencesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\TargetFrameworkNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\TargetFrameworkNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Commands\ProjectOrAssemblyDependenciesCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Commands\PackageDependenciesNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Commands\PackageDependencyNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreFolderNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectNodeBuilderExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

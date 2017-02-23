@@ -1,10 +1,10 @@
 ﻿//
-// DotNetProjectOrAssemblyDependenciesCommandHandler.cs
+// DependenciesNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetProjectOrAssemblyDependenciesCommandHandler : NodeCommandHandler
+	class DependenciesNode
 	{
-		public override void ActivateItem ()
+		public static readonly string NodeName = "Dependencies";
+
+		public DependenciesNode (DotNetProject project)
 		{
-			IdeApp.CommandService.DispatchCommand (ProjectCommands.AddReference);
+			Project = project;
+		}
+
+		internal DotNetProject Project { get; private set; }
+
+		public string GetLabel ()
+		{
+			return GettextCatalog.GetString ("Dependencies");
+		}
+
+		public string GetSecondaryLabel ()
+		{
+			return string.Empty;
+		}
+
+		public IconId Icon {
+			get { return Stock.OpenReferenceFolder; }
+		}
+
+		public IconId ClosedIcon {
+			get { return Stock.ClosedReferenceFolder; }
 		}
 	}
 }
