@@ -21,6 +21,11 @@
 	<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/Templates" name = "Microsoft Templating Engine templates">
+	<Description>Microsoft templating engine project templates to be shown in the New Project dialog.</Description>
+	<ExtensionNode name="Template" type="MonoDevelop.Ide.Codons.TemplateExtensionNode"/>
+</ExtensionPoint>
+
 <ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatePackageInstallers" name = "Project template package installers">
 	<Description>Installs packages defined in the project template. Must implement MonoDevelop.Ide.Templates.ProjectTemplatePackageInstaller</Description>
 	<ExtensionNode name="Class" />
@@ -121,6 +126,7 @@
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplatingProviders">
 	<Class id="MonoDevelop.ProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.ProjectTemplatingProvider" />
+	<Class id="MonoDevelop.MicrosoftTemplateEngineProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.MicrosoftTemplateEngineProjectTemplatingProvider" />
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/TemplateImages">

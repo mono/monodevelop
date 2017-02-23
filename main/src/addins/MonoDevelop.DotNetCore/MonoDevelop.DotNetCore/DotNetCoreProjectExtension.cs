@@ -135,7 +135,7 @@ namespace MonoDevelop.DotNetCore
 			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
-				assemblyRunConfiguration?.StartWorkingDirectory ?? Project.BaseDirectory,
+				string.IsNullOrEmpty (assemblyRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : assemblyRunConfiguration.StartWorkingDirectory,
 				outputFileName,
 				assemblyRunConfiguration?.StartArguments
 			) {

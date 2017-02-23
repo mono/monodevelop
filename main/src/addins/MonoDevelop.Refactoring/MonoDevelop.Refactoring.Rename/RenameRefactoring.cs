@@ -153,7 +153,7 @@ namespace MonoDevelop.Refactoring.Rename
 						}
 					}
 				}
-			}));
+			}) { TextLinkPurpose = TextLinkPurpose.Rename });
 		}
 		
 		public class RenameProperties

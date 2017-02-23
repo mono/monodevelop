@@ -58,7 +58,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			foreach (DotNetProject project in GetAllNonDotNetCoreProjects (dotNetCoreProject.ParentSolution)) {
 				foreach (ProjectReference projectReference in project.References) {
-					if (projectReference.ReferenceType == ReferenceType.Project) {
+					if (projectReference.IsProjectReference ()) {
 						Project resolvedProject = projectReference.ResolveProject (project.ParentSolution);
 						if (resolvedProject == dotNetCoreProject) {
 							yield return project;

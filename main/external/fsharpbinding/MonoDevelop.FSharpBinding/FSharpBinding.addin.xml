@@ -153,7 +153,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/BraceMatcher">
-    <Class class="MonoDevelop.FSharp.FSharpBraceMatcher" />
+	<Matcher class="MonoDevelop.FSharp.FSharpBraceMatcher" mimeType="text/x-fsharp"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

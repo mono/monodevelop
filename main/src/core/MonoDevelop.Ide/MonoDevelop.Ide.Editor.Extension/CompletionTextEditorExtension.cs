@@ -131,6 +131,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
 			
 			res = base.KeyPress (descriptor);
+			if (Editor.EditMode == EditMode.TextLink && Editor.TextLinkPurpose == TextLinkPurpose.Rename) {
+				return res;
+			}
 			if (descriptor.KeyChar == (char)16 || descriptor.KeyChar == (char)17)
 				return res;
 
