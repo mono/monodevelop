@@ -108,8 +108,9 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Mac">
+    <Reference Include="Xamarin.Mac" Condition=" $(Configuration.EndsWith('Mac')) ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
