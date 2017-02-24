@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreAssemblyDependenciesNode.cs
+// PackageDependenciesNodeCommandHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,51 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement;
 
-namespace MonoDevelop.DotNetCore.NodeBuilders
+namespace MonoDevelop.DotNetCore.Commands
 {
-	class DotNetCoreAssemblyDependenciesNode
+	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
 	{
-		public static readonly string NodeName = "DotNetCoreAssemblyDependencies";
-
-		public DotNetCoreAssemblyDependenciesNode (DotNetProject project)
+		public override void ActivateItem ()
 		{
-			Project = project;
-		}
-
-		internal DotNetProject Project { get; private set; }
-
-		public bool HasChildNodes ()
-		{
-			return Project.References.Any (ProjectReferenceExtensions.IsAssemblyReference);
-		}
-
-		public string GetLabel ()
-		{
-			return GettextCatalog.GetString ("Assemblies");
-		}
-
-		public string GetSecondaryLabel ()
-		{
-			return string.Empty;
-		}
-
-		public IconId Icon {
-			get { return Stock.OpenReferenceFolder; }
-		}
-
-		public IconId ClosedIcon {
-			get { return Stock.ClosedReferenceFolder; }
-		}
-
-		public IEnumerable<ProjectReference> GetChildNodes ()
-		{
-			return Project.References.Where (ProjectReferenceExtensions.IsAssemblyReference);
+			var runner = new AddPackagesDialogRunner ();
+			runner.Run ();
 		}
 	}
 }

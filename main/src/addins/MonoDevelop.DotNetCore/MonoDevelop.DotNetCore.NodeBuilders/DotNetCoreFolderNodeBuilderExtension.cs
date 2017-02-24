@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreServices.cs
+// DotNetCoreFolderNodeBuilderExtension.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,18 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Core;
 
-namespace MonoDevelop.DotNetCore
+using System;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Projects;
+
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreServices
+	class DotNetCoreFolderNodeBuilderExtension : NodeBuilderExtension
 	{
-		static readonly DotNetCoreProjectFileRenamedHandler projectFileRenamedHandler = 
-			new DotNetCoreProjectFileRenamedHandler ();
-
-		public static void Initialize ()
+		public override bool CanBuildNode (Type dataType)
 		{
-			// Do nothing.
+			return typeof(ProjectFolder).IsAssignableFrom (dataType);
+		}
+
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		{
+			if (parentNode.Options ["ShowAllFiles"])
+				return;
+
+			var folder = dataObject as ProjectFolder;
+			if (folder == null)
+				return;
+
+			var project = folder.Project as DotNetProject;
+			if (project == null)
+				return;
+
+			if (!project.HasFlavor<DotNetCoreProjectExtension> ())
+				return;
+
+			if (folder.Path.CanonicalPath == project.BaseIntermediateOutputPath.CanonicalPath) {
+				attributes |= NodeAttributes.Hidden;
+			}
 		}
 	}
 }

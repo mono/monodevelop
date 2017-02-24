@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreProjectDependenciesNodeBuilder.cs
+// ProjectDependenciesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,28 +25,29 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreProjectDependenciesNodeBuilder : TypeNodeBuilder
+	class ProjectDependenciesNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(DotNetCoreProjectDependenciesNode); }
+			get { return typeof(ProjectDependenciesNode); }
 		}
 
 		public override Type CommandHandlerType {
-			get { return typeof(DotNetProjectOrAssemblyDependenciesCommandHandler); }
+			get { return typeof(ProjectOrAssemblyDependenciesCommandHandler); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return DotNetCoreProjectDependenciesNode.NodeName;
+			return ProjectDependenciesNode.NodeName;
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var node = (DotNetCoreProjectDependenciesNode)dataObject;
+			var node = (ProjectDependenciesNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.Icon);
@@ -60,7 +61,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var node = (DotNetCoreProjectDependenciesNode)dataObject;
+			var node = (ProjectDependenciesNode)dataObject;
 			treeBuilder.AddChildren (node.GetChildNodes ());
 		}
 	}

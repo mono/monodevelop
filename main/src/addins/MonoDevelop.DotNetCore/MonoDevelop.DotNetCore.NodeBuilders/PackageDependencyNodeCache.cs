@@ -1,10 +1,10 @@
 ﻿//
-// PackageDependenciesNode.cs
+// PackageDependencyNodeCache.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,46 +30,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class PackageDependenciesNode
+	class PackageDependencyNodeCache
 	{
-		public static readonly string NodeName = "PackageDependencies";
-
-		DotNetProject project;
 		List<PackageDependency> frameworks = new List<PackageDependency> ();
 		Dictionary<string, PackageDependency> packageDependencies = new Dictionary<string, PackageDependency> ();
 		CancellationTokenSource cancellationTokenSource;
 
-		public PackageDependenciesNode (DependenciesNode dependenciesNode)
+		public PackageDependencyNodeCache (DotNetProject project)
 		{
-			project = dependenciesNode.Project;
+			Project = project;
 		}
 
-		internal DotNetProject Project {
-			get { return project; }
-		}
-
-		public string GetLabel ()
-		{
-			return "NuGet";
-		}
-
-		public string GetSecondaryLabel ()
-		{
-			return string.Empty;
-		}
-
-		public IconId Icon {
-			get { return Stock.OpenReferenceFolder; }
-		}
-
-		public IconId ClosedIcon {
-			get { return Stock.ClosedReferenceFolder; }
-		}
+		internal DotNetProject Project { get; private set; }
 
 		public bool LoadedDependencies { get; private set; }
 
@@ -114,7 +90,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		Task<IEnumerable<PackageDependency>> GetPackageDependenciesAsync (CancellationTokenSource tokenSource)
 		{
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
-			return Task.Run (() => project.GetPackageDependencies (configurationSelector, tokenSource.Token));
+			return Task.Run (() => Project.GetPackageDependencies (configurationSelector, tokenSource.Token));
 		}
 
 		void OnPackageDependenciesRead (Task<IEnumerable<PackageDependency>> task, CancellationTokenSource tokenSource)
@@ -152,9 +128,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			}
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
+		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (
+			DependenciesNode dependenciesNode,
+			bool sdkDependencies)
 		{
-			return frameworks.Select (dependency => new TargetFrameworkNode (this, dependency));
+			return frameworks.Select (dependency => new TargetFrameworkNode (dependenciesNode, dependency, sdkDependencies));
 		}
 
 		public PackageDependency GetDependency (string dependency)
@@ -166,10 +144,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return null;
 		}
 
-		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
+		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes (DependenciesNode dependenciesNode)
 		{
-			return project.Items.OfType<ProjectPackageReference> ()
-				.Select (reference => PackageDependencyNode.Create (this, reference));
+			return Project.Items.OfType<ProjectPackageReference> ()
+				.Select (reference => PackageDependencyNode.Create (dependenciesNode, reference));
 		}
 	}
 }

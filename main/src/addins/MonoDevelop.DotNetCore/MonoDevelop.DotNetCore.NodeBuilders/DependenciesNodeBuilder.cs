@@ -26,10 +26,8 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	public class DependenciesNodeBuilder : TypeNodeBuilder
 	{
@@ -64,9 +62,22 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var node = (DependenciesNode)dataObject;
-			var folderNode = new PackageDependenciesNode (node);
-			folderNode.Refresh ();
-			treeBuilder.AddChild (folderNode);
+			node.PackageDependencyCache.Refresh ();
+
+			var packagesNode = new PackageDependenciesNode (node);
+			if (packagesNode.HasChildNodes ())
+				treeBuilder.AddChild (packagesNode);
+
+			var sdkNode = new SdkDependenciesNode (node);
+			treeBuilder.AddChild (sdkNode);
+
+			var assembliesNode = new AssemblyDependenciesNode (node.Project);
+			if (assembliesNode.HasChildNodes ())
+				treeBuilder.AddChild (assembliesNode);
+
+			var projectsNode = new ProjectDependenciesNode (node.Project);
+			if (projectsNode.HasChildNodes ())
+				treeBuilder.AddChild (projectsNode);
 		}
 	}
 }

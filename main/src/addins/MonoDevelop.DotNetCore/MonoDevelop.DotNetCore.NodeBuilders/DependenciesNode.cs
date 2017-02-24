@@ -1,5 +1,5 @@
 ﻿//
-// TargetFrameworkNode.cs
+// DependenciesNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,74 +25,51 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class TargetFrameworkNode
+	class DependenciesNode
 	{
-		PackageDependenciesNode dependenciesNode;
-		PackageDependency dependency;
-		string name = string.Empty;
+		public static readonly string NodeName = "Dependencies";
 
-		public TargetFrameworkNode (PackageDependenciesNode dependenciesNode, PackageDependency dependency)
+		public DependenciesNode (DotNetProject project)
 		{
-			this.dependenciesNode = dependenciesNode;
-			this.dependency = dependency;
+			Project = project;
+			PackageDependencyCache = new PackageDependencyNodeCache (Project);
 		}
 
-		public TargetFrameworkNode (PackageDependenciesNode dependenciesNode, string name)
-		{
-			this.dependenciesNode = dependenciesNode;
-			this.name = name;
-		}
-
-		public string Name {
-			get {
-				if (dependency != null)
-					return dependency.Name;
-
-				return name;
-			}
-		}
+		internal DotNetProject Project { get; private set; }
+		internal PackageDependencyNodeCache PackageDependencyCache { get; private set; }
 
 		public string GetLabel ()
 		{
-			return GLib.Markup.EscapeText (Name);
+			return GettextCatalog.GetString ("Dependencies");
 		}
 
 		public string GetSecondaryLabel ()
 		{
-			if (dependency != null)
-				return string.Format ("({0})", dependency.Version);
-
 			return string.Empty;
 		}
 
-		public IconId GetIconId ()
-		{
-			return new IconId ("md-framework-dependency");
+		public IconId Icon {
+			get { return Stock.OpenReferenceFolder; }
 		}
 
-		public bool HasDependencies ()
-		{
-			if (dependency != null)
-				return dependency.Dependencies.Any ();
-
-			return false;
+		public IconId ClosedIcon {
+			get { return Stock.ClosedReferenceFolder; }
 		}
 
-		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
+		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (bool sdkDependencies)
 		{
-			if (dependency != null) {
-				return PackageDependencyNode.GetDependencyNodes (
-					dependenciesNode,
-					dependency,
-					topLevel: true);
-			}
-			return new PackageDependencyNode[0];
+			return PackageDependencyCache.GetTargetFrameworkNodes (this, sdkDependencies);
+		}
+
+		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
+		{
+			return PackageDependencyCache.GetProjectPackageReferencesAsDependencyNodes (this);
 		}
 	}
 }

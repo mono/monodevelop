@@ -25,27 +25,33 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class DependenciesNodeBuilderExtension : NodeBuilderExtension
 	{
 		IPackageManagementEvents packageManagementEvents;
 
-		public DependenciesNodeBuilderExtension ()
+		protected override void Initialize ()
 		{
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-
 			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
+
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferencesChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferencesChanged;
 		}
 
 		public override void Dispose ()
 		{
 			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
+			IdeApp.Workspace.ReferenceAddedToProject -= OnReferencesChanged;
+			IdeApp.Workspace.ReferenceRemovedFromProject -= OnReferencesChanged;
 		}
 
 		public override bool CanBuildNode (Type dataType)
@@ -61,7 +67,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void PackageOperationsFinished (object sender, EventArgs e)
 		{
-			RefreshAllChildNodes ();
+			RefreshAllChildNodes (packagesOnly: true);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -74,27 +80,55 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			treeBuilder.AddChild (folderNode);
 		}
 
-		void RefreshAllChildNodes ()
+		void RefreshAllChildNodes (bool packagesOnly = false)
 		{
 			Runtime.RunInMainThread (() => {
 				foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 					if (project.IsDotNetCoreProject ())
-						RefreshChildNodes (project);
+						RefreshChildNodes (project, packagesOnly);
 				}
 			});
 		}
 
-		void RefreshChildNodes (DotNetProject project)
+		void RefreshChildNodes (DotNetProject project, bool packagesOnly)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (project);
 			if (builder != null) {
 				if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
-					if (builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
-						var packagesFolder = (PackageDependenciesNode)builder.DataItem;
-						packagesFolder.Refresh ();
+					if (packagesOnly) {
+						var dependenciesNode = (DependenciesNode)builder.DataItem;
+						dependenciesNode.PackageDependencyCache.Refresh ();
+						UpdateNuGetFolderNode (builder, dependenciesNode);
+					} else {
+						builder.UpdateAll ();
 					}
 				}
 			}
+		}
+
+		void UpdateNuGetFolderNode (ITreeBuilder builder, DependenciesNode dependenciesNode)
+		{
+			bool hasPackages = dependenciesNode.Project.Items.OfType<ProjectPackageReference> ().Any ();
+			if (hasPackages && !builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
+				var packagesNode = new PackageDependenciesNode (dependenciesNode);
+				builder.AddChild (packagesNode);
+			}
+		}
+
+		void OnReferencesChanged (object sender, ProjectReferenceEventArgs e)
+		{
+			RefreshAllChildNodes (e.Project as DotNetProject);
+		}
+
+		void RefreshAllChildNodes (DotNetProject project)
+		{
+			if (project == null)
+				return;
+
+			Runtime.RunInMainThread (() => {
+				if (project.IsDotNetCoreProject ())
+					RefreshChildNodes (project, packagesOnly: false);
+			});
 		}
 	}
 }

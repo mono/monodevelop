@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreFolderNodeBuilderExtension.cs
+// AssemblyDependenciesNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetCoreFolderNodeBuilderExtension : NodeBuilderExtension
+	class AssemblyDependenciesNode
 	{
-		public override bool CanBuildNode (Type dataType)
+		public static readonly string NodeName = "AssemblyDependencies";
+
+		public AssemblyDependenciesNode (DotNetProject project)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType);
+			Project = project;
 		}
 
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		internal DotNetProject Project { get; private set; }
+
+		public bool HasChildNodes ()
 		{
-			if (parentNode.Options ["ShowAllFiles"])
-				return;
+			return Project.References.Any (ProjectReferenceExtensions.IsAssemblyReference);
+		}
 
-			var folder = dataObject as ProjectFolder;
-			if (folder == null)
-				return;
+		public string GetLabel ()
+		{
+			return GettextCatalog.GetString ("Assemblies");
+		}
 
-			var project = folder.Project as DotNetProject;
-			if (project == null)
-				return;
+		public string GetSecondaryLabel ()
+		{
+			return string.Empty;
+		}
 
-			if (!project.HasFlavor<DotNetCoreProjectExtension> ())
-				return;
+		public IconId Icon {
+			get { return Stock.OpenReferenceFolder; }
+		}
 
-			if (folder.Path.CanonicalPath == project.BaseIntermediateOutputPath.CanonicalPath) {
-				attributes |= NodeAttributes.Hidden;
-			}
+		public IconId ClosedIcon {
+			get { return Stock.ClosedReferenceFolder; }
+		}
+
+		public IEnumerable<ProjectReference> GetChildNodes ()
+		{
+			return Project.References.Where (ProjectReferenceExtensions.IsAssemblyReference);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// TargetFrameworkNodeBuilder.cs
+// PackageDependencyNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,26 +26,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.DotNetCore.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class TargetFrameworkNodeBuilder : TypeNodeBuilder
+	class PackageDependencyNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(TargetFrameworkNode); }
+			get { return typeof(PackageDependencyNode); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var node = (TargetFrameworkNode)dataObject;
+			var node = (PackageDependencyNode)dataObject;
 			return node.Name;
+		}
+
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency"; }
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof(PackageDependencyNodeCommandHandler); }
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var node = (TargetFrameworkNode)dataObject;
+			var node = (PackageDependencyNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
@@ -53,7 +61,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var node = (TargetFrameworkNode)dataObject;
+			var node = (PackageDependencyNode)dataObject;
 			return node.HasDependencies ();
 		}
 
@@ -64,7 +72,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		IEnumerable<PackageDependencyNode> GetPackageDependencyNodes (object dataObject)
 		{
-			var node = (TargetFrameworkNode)dataObject;
+			var node = (PackageDependencyNode)dataObject;
 			return node.GetDependencyNodes ();
 		}
 	}
