@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.DotNetCore.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
@@ -119,6 +118,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			if (builder.MoveToChild (DependenciesNode.NodeName, typeof(DependenciesNode))) {
 				if (builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
+					var node = builder.DataItem as PackageDependenciesNode;
+					if (node != null && !node.HasChildNodes ()) {
+						builder.Remove ();
+						return;
+					}
 					builder.UpdateAll ();
 				}
 			}

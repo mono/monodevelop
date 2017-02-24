@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
@@ -97,10 +98,20 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 					if (packagesOnly) {
 						var dependenciesNode = (DependenciesNode)builder.DataItem;
 						dependenciesNode.PackageDependencyCache.Refresh ();
+						UpdateNuGetFolderNode (builder, dependenciesNode);
 					} else {
 						builder.UpdateAll ();
 					}
 				}
+			}
+		}
+
+		void UpdateNuGetFolderNode (ITreeBuilder builder, DependenciesNode dependenciesNode)
+		{
+			bool hasPackages = dependenciesNode.Project.Items.OfType<ProjectPackageReference> ().Any ();
+			if (hasPackages && !builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
+				var packagesNode = new PackageDependenciesNode (dependenciesNode);
+				builder.AddChild (packagesNode);
 			}
 		}
 

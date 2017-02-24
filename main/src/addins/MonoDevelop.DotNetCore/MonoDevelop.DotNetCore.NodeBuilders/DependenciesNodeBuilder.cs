@@ -65,7 +65,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			node.PackageDependencyCache.Refresh ();
 
 			var packagesNode = new PackageDependenciesNode (node);
-			treeBuilder.AddChild (packagesNode);
+			if (packagesNode.HasChildNodes ())
+				treeBuilder.AddChild (packagesNode);
 
 			var sdkNode = new SdkDependenciesNode (node);
 			treeBuilder.AddChild (sdkNode);
