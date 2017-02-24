@@ -665,6 +665,8 @@ namespace Mono.TextEditor
 
 		public int OffsetToLineNumber (int offset)
 		{
+			if (offset < 0 || offset >= this.currentSnapshot.Length)
+				return 0;
 			return this.currentSnapshot.GetLineFromPosition(offset).LineNumber + 1;
 		}
 		#endregion
