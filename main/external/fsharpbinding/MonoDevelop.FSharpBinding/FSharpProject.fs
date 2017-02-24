@@ -7,6 +7,8 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open MonoDevelop.Ide
 open System.Xml
+open System.Xml.Linq
+open System.Xml.XPath
 open MonoDevelop.Core.Assemblies
 open ExtCore.Control
 
@@ -60,6 +62,77 @@ type FSharpProject() as self =
         |> Seq.tryFind (fun i -> i.UnevaluatedValue.Equals(".NETPortable"))
         |> Option.isSome
 
+    let fixProjectFormatForVisualStudio (project:MSBuildProject) =
+        // Merge ItemGroups into one group ordered by folder name
+        // so that VS for Windows can load it.
+        let projectPath = project.FileName.ParentDirectory |> string
+
+        let absolutePath path = MSBuildProjectService.FromMSBuildPath(projectPath, path)
+
+        let directoryNameFromBuildItem (item:MSBuildItem) =
+            let itemInclude = item.Include.Replace('\\', Path.DirectorySeparatorChar)
+            Path.GetDirectoryName itemInclude
+
+        let msbuildItemExistsAsFile (item:MSBuildItem) =
+           let itemPath = absolutePath item.Include
+           item.Name <> "ProjectReference" && File.Exists itemPath
+
+        let groups = project.ItemGroups |> List.ofSeq
+        let itemGroups =
+            groups
+            |> List.map  (fun group ->
+                group, group.Items
+                       |> Seq.filter msbuildItemExistsAsFile
+                       |> List.ofSeq)
+            |> List.filter (fun (_, items) -> items.Length > 0)
+
+        let isParentDirectory folderName fileName =
+            if String.isEmpty folderName then
+                true
+            else
+                let absoluteFolder = DirectoryInfo (absolutePath folderName)
+                let absoluteFile = FileInfo (absolutePath fileName)
+                let rec isParentDirRec (dir:DirectoryInfo) =
+                    match dir with
+                    | null -> false
+                    | dir when dir.FullName = absoluteFolder.FullName -> true
+                    | _ -> isParentDirRec dir.Parent
+                isParentDirRec absoluteFile.Directory
+
+        let unsorted = itemGroups |> List.collect snd
+        let rec splitFilesByParent (items:MSBuildItem list) parentFolder list1 list2 =
+            match items with
+            | h :: t ->
+                if isParentDirectory parentFolder h.Include then
+                    splitFilesByParent t parentFolder (h::list1) list2
+                else
+                    splitFilesByParent t parentFolder list1 (h::list2)
+            | [] -> (list1 |> List.rev) @ (list2 |> List.rev)
+
+        let rec orderFiles items acc lastFolder =
+            match items with
+            | h :: t -> 
+                let newFolder = directoryNameFromBuildItem h
+                if newFolder = lastFolder then
+                    orderFiles t (h::acc) newFolder
+                else
+                    let childrenFirst = (splitFilesByParent t newFolder [] [])
+                    orderFiles childrenFirst (h::acc) newFolder
+            | [] -> acc |> List.rev
+
+        let sortedItems = orderFiles unsorted [] ""
+        let needsSort = 
+            match itemGroups with
+            | [_single, items] when items = sortedItems -> false
+            | _ -> true
+
+        if needsSort then
+            let newGroup = project.AddNewItemGroup()
+
+            for item in sortedItems do
+                project.RemoveItem(item, true)
+                newGroup.AddItem item
+
     [<ProjectPathItemProperty ("TargetProfile", DefaultValue = "mscorlib")>]
     member val TargetProfile = "mscorlib" with get, set
 
@@ -103,9 +176,9 @@ type FSharpProject() as self =
 
     override x.OnWriteProject(monitor, msproject) =
         base.OnWriteProject(monitor, msproject)
+        fixProjectFormatForVisualStudio msproject
         //Fix pcl netcore and TargetFSharpCoreVersion
         let globalGroup = msproject.GetGlobalPropertyGroup()
-
         maybe {
             let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
             let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
@@ -174,6 +247,14 @@ type FSharpProject() as self =
 
     override x.OnReferenceRemovedFromProject(e) =
         base.OnReferenceRemovedFromProject(e)
+        if not self.Loading then invalidateProjectFile()
+
+    //override x.OnFileRenamedInProject(e)=
+    //    base.OnFileRenamedInProject(e)
+    //    if not self.Loading then invalidateProjectFile()
+
+    override x.OnNameChanged(e)=
+        base.OnNameChanged(e)
         if not self.Loading then invalidateProjectFile()
 
     override x.OnGetDefaultResourceId(projectFile) =

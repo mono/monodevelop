@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide
 		internal static void Initialize ()
 		{
 			AddinManager.AddExtensionNodeHandler (path, OnExtensionChanged);
+			Array.Sort (defaultLocaleSet, (x, y) => x.DisplayName.CompareTo (y.DisplayName));
 		}
 
 		public static IReadOnlyList<LocaleSet> CurrentLocaleSet { get { return locales.FirstOrDefault () ?? defaultLocaleSet; } }

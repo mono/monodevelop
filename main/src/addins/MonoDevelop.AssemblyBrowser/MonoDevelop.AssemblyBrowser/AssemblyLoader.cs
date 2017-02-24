@@ -89,6 +89,7 @@ namespace MonoDevelop.AssemblyBrowser
 			loader = new CecilLoader (true);
 			loader.InterningProvider = new FastNonInterningProvider ();
 			loader.IncludeInternalMembers = true;
+			loader.LazyLoad = true;
 
 			assemblyLoaderTask = Task.Run ( () => {
 				try {
@@ -179,7 +180,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return exe;
 
 			foreach (var asm in Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblies ()) {
-				if (asm.Name.ToLowerInvariant () == fullAssemblyName.ToLowerInvariant ())
+				if (string.Equals (asm.Name, fullAssemblyName, StringComparison.OrdinalIgnoreCase))
 					return asm.Location;
 			}
 

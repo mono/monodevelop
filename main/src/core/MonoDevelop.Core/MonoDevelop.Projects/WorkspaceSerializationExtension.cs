@@ -38,8 +38,8 @@ namespace MonoDevelop.Projects
 		public override bool CanRead (FilePath file, Type expectedType)
 		{
 			if (expectedType.IsAssignableFrom (typeof(Workspace))) {
-				string ext = Path.GetExtension (file).ToLower ();
-				if (ext == ".mdw")
+				string ext = Path.GetExtension (file);
+				if (string.Equals (ext, ".mdw", StringComparison.OrdinalIgnoreCase))
 					return true;
 			}
 			return false;
@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 		{
 			return Task.Run (async () => {
 				var workspaceItem = ReadWorkspaceItemFile (fileName, monitor);
-				await workspaceItem.LoadUserProperties ();
+				await workspaceItem.LoadUserProperties ().ConfigureAwait (false);
 				return workspaceItem;
 			});
 		}

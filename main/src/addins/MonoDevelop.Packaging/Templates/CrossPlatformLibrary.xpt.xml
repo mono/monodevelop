@@ -1,0 +1,88 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	created="2016/09/09"
+	lastModified="2016/09/09">
+
+	<TemplateConfiguration>
+		<_Name>Multiplatform Library</_Name>
+		<Category>multiplat/library/general</Category>
+		<Icon>md-crossplatform-shared-project</Icon>
+		<Image id="md-crossplatform-shared-project" />
+		<LanguageName>C#</LanguageName>
+		<_Description>A project template for creating a multiplatform library project and its corresponding NuGet package.</_Description>
+		<Wizard>MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard</Wizard>
+		<DefaultParameters>UseCustomAssemblyInfoVersion=true;AssemblyInfoVersion=1.0.0.0</DefaultParameters>
+	</TemplateConfiguration>
+
+	<Combine name="${ProjectName}" directory=".">
+		<Project name="${ProjectName}.Shared" directory="${ProjectName}.Shared" type="SharedAssetsProject" if="CreateSharedProject">
+			<Options DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
+			<Files>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+			</Files>
+		</Project>
+
+		<Project name="${ProjectName}" directory = "." type="C#PortableLibrary" if="CreatePortableProject">
+			<Options Target="Library"
+				TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile111"
+				DefaultNamespace="${ProjectName}"
+				HideGettingStarted="true" />
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
+			</Packages>
+			<Files>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+
+		<Project name="${ProjectName}.iOS" directory="${ProjectName}.iOS" type="XamarinIOS" if="CreateIOSProject">
+			<Options Target="Library"
+				TargetFrameworkVersion="Xamarin.iOS,Version=v1.0"
+				DefaultNamespace="${ProjectName}"
+				HideGettingStarted="true" />
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="Xamarin.iOS" />
+				<Reference type="Project" refto="${ProjectName}.Shared" />
+			</References>
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
+			</Packages>
+			<Files>
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+		
+		<Project name="${ProjectName}.Android" directory="${ProjectName}.Android" type="MonoDroid" if="CreateAndroidProject">
+			<Options Target="Library" DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="Mono.Android" />
+				<Reference type="Project" refto="${ProjectName}.Shared" />
+			</References>
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
+			</Packages>
+			<Files>
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+
+		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging" if="CreateNuGetProject">
+			<Options TargetFrameworkVersion="4.5" DefaultNamespace="${ProjectName}" HideGettingStarted="true" />
+			<Packages>
+				<Package ID="NuGet.Build.Packaging" Version="0.1.157-dev" directory="../packages" />
+			</Packages>
+			<References>
+				<Reference type="Project" refto="${ProjectName}.Android" if="CreateAndroidProject" />
+				<Reference type="Project" refto="${ProjectName}.iOS" if="CreateIOSProject" />
+			</References>
+		</Project>
+	</Combine>
+</Template>

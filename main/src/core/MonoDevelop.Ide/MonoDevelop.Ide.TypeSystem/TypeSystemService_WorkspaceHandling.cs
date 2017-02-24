@@ -150,11 +150,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				return InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
+				//If we want BeginTiming to work correctly we need to `await`
+				return await InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
 			}
 		}
 
@@ -164,25 +165,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				var ws = item as MonoDevelop.Projects.Workspace;
 				if (ws != null) {
 					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor, cancellationToken);
+						await InternalLoad (list, it, progressMonitor, cancellationToken).ConfigureAwait (false);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
 				} else {
 					var solution = item as MonoDevelop.Projects.Solution;
 					if (solution != null) {
-						var workspace = new MonoDevelopWorkspace ();
-						list.Add (workspace);
-						workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (solution, cancellationToken);
+						var workspace = new MonoDevelopWorkspace (solution);
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
+						list.Add (workspace);
+						workspace.ShowStatusIcon ();
+						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
-						workspace.HideStatusIcon ();
-						TaskCompletionSource <MonoDevelopWorkspace> request;
+						TaskCompletionSource<MonoDevelopWorkspace> request;
 						if (workspaceRequests.TryGetValue (solution, out request))
 							request.TrySetResult (workspace);
+						workspace.HideStatusIcon ();
 					}
 				}
 			});
@@ -339,18 +340,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Tracked project handling
-		static readonly List<string> outputTrackedProjects = new List<string> ();
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
 
 		static void IntitializeTrackedProjectHandling ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).LanguageName;
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
+					outputTrackedProjects.Add (node);
 					break;
 				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
+					outputTrackedProjects.Remove (node);
 					break;
 				}
 			});
@@ -385,7 +386,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			return outputTrackedProjects.Contains (project.LanguageName, StringComparer.OrdinalIgnoreCase);
+			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) || 
+				project.GetTypeTags().Any (tag => outputTrackedProjects.Any (otp => string.Equals (otp.ProjectType, tag, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)

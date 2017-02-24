@@ -153,7 +153,6 @@ namespace MonoDevelop.Ide.Projects
 
 		ProcessedTemplateResult processedTemplate;
 		List <SolutionItem> currentEntries;
-		bool disposeNewItem = true;
 
 		public NewProjectDialogController ()
 		{
@@ -176,9 +175,6 @@ namespace MonoDevelop.Ide.Projects
 			dialog.RegisterController (this);
 
 			dialog.ShowDialog ();
-
-			if (disposeNewItem)
-				DisposeExistingNewItems ();
 
 			wizardProvider.Dispose ();
 			imageProvider.Dispose ();
@@ -655,7 +651,6 @@ namespace MonoDevelop.Ide.Projects
 			else {
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
-				disposeNewItem = false;
 				RunTemplateActions (processedTemplate);
 				if (wizardProvider.HasWizard)
 					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);

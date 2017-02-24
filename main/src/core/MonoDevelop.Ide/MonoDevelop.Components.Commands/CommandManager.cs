@@ -82,6 +82,11 @@ namespace MonoDevelop.Components.Commands
 		internal bool handlerFoundInMulticast;
 		Gtk.Widget lastActiveWidget;
 
+#if MAC
+		Foundation.NSObject keyMonitor;
+		uint throttleLastEventTime = 0;
+#endif
+
 		Dictionary<Command, HashSet<Command>> conflicts;
 		internal Dictionary<Command, HashSet<Command>> Conflicts {
 			get {
@@ -103,10 +108,6 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
-
-			#if MAC
-			AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
-			#endif
 		}
 
 		/// <summary>
@@ -285,7 +286,7 @@ namespace MonoDevelop.Components.Commands
 					}
 				}
 			}
-			
+
 			isChord = false;
 			binding = null;
 			
@@ -294,7 +295,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 
-		#if MAC
+#if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
 			// If we have a native window that can handle this command, let it process
@@ -407,7 +408,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			return false;
 		}
-		#endif
+#endif
 
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
@@ -493,7 +494,7 @@ namespace MonoDevelop.Components.Commands
 
 				if (cinfo.Enabled && cinfo.Visible) {
 					if (!dispatched)
-						dispatched = DispatchCommand (commands [i].Id, CommandSource.Keybinding);
+						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time);
 					conflict.Add (commands [i]);
 				} else
 					bypass = true; // allow Gtk to handle the event if the command is disabled
@@ -663,6 +664,12 @@ namespace MonoDevelop.Components.Commands
 			if (topLevelWindows.First != null && topLevelWindows.First.Value == win)
 				return;
 
+#if MAC
+			if (topLevelWindows.Count == 0) {
+				keyMonitor = AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
+			}
+#endif
+
 			// Ensure all events that were subscribed in StartWaitingForUserInteraction are unsubscribed
 			// before doing any change to the topLevelWindows list
 			EndWaitingForUserInteraction ();
@@ -687,17 +694,26 @@ namespace MonoDevelop.Components.Commands
 		{
 			RegisterUserInteraction ();
 		}
-		
+
 		void TopLevelDestroyed (object o, EventArgs args)
 		{
 			RegisterUserInteraction ();
 
-			Gtk.Window w = (Gtk.Window) o;
+			Gtk.Window w = (Gtk.Window)o;
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
 			w.KeyReleaseEvent -= OnKeyReleased;
 			w.ButtonPressEvent -= HandleButtonPressEvent;
 			topLevelWindows.Remove (w);
+#if MAC
+			if (topLevelWindows.Count == 0) {
+				if (keyMonitor != null) {
+					AppKit.NSEvent.RemoveMonitor (keyMonitor);
+					keyMonitor = null;
+				}
+			}
+#endif
+
 			if (w == lastFocused)
 				lastFocused = null;
 		}
@@ -705,7 +721,17 @@ namespace MonoDevelop.Components.Commands
 		public void Dispose ()
 		{
 			disposed = true;
-			bindings.Dispose ();
+			if (bindings != null) {
+				bindings.Dispose ();
+				bindings = null;
+			}
+
+#if MAC
+			if (keyMonitor != null) {
+				AppKit.NSEvent.RemoveMonitor (keyMonitor);
+				keyMonitor = null;
+			}
+#endif
 			lastFocused = null;
 		}
 		
@@ -1308,10 +1334,49 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
+			return DispatchCommand (commandId, dataItem, initialTarget, source, null);
+		}
+
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
+		/// <param name='source'>
+		/// What is causing the command to be dispatched
+		/// </param>
+		/// <param name='time'>
+		/// The time of the event, if any, that triggered this command
+		/// </param>
+		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, uint? time)
+		{
 			RegisterUserInteraction ();
 			
 			if (guiLock > 0)
 				return false;
+
+#if MAC
+			if (time != null) {
+				nint timeVal = 0;
+
+				timeVal = Foundation.NSUserDefaults.StandardUserDefaults.IntForKey ("KeyRepeat") * 25;
+
+				if (time - throttleLastEventTime < timeVal)
+					return false;
+
+				throttleLastEventTime = (uint)time;
+			}
+#endif
 
 			commandId = CommandManager.ToCommandId (commandId);
 
@@ -1738,11 +1803,11 @@ namespace MonoDevelop.Components.Commands
 					ICommandArrayUpdateHandler customArrayHandlerChain = null;
 					ICommandTargetHandler customTargetHandlerChain = null;
 					ICommandArrayTargetHandler customArrayTargetHandlerChain = null;
-					List<CommandHandlerInfo> methodHandlers = new List<CommandHandlerInfo> ();
+					int handlersStart = handlers.Count;
 					
 					foreach (object attr in method.GetCustomAttributes (true)) {
 						if (attr is CommandHandlerAttribute)
-							methodHandlers.Add (new CommandHandlerInfo (method, (CommandHandlerAttribute) attr));
+							handlers.Add(new CommandHandlerInfo (method, (CommandHandlerAttribute)attr));
 						else if (attr is CommandUpdateHandlerAttribute)
 							AddUpdater (updaters, method, (CommandUpdateHandlerAttribute) attr);
 						else {
@@ -1760,21 +1825,20 @@ namespace MonoDevelop.Components.Commands
 						customArrayTargetHandlerChain = ChainHandler (customArrayTargetHandlerChain, attr);
 					}
 					
-					if (methodHandlers.Count > 0) {
+					if (handlers.Count > handlersStart) {
 						if (customHandlerChain != null || customArrayHandlerChain != null) {
 							// There are custom handlers. Create update handlers for all commands
 							// that the method handles so the custom update handlers can be chained
-							foreach (CommandHandlerInfo ci in methodHandlers) {
-								CommandUpdaterInfo c = AddUpdateHandler (updaters, ci.CommandId);
+							for (int i = handlersStart; i < handlers.Count; ++i) {
+								CommandUpdaterInfo c = AddUpdateHandler (updaters, handlers[i].CommandId);
 								c.AddCustomHandlers (customHandlerChain, customArrayHandlerChain);
 							}
 						}
 						if (customTargetHandlerChain != null || customArrayTargetHandlerChain != null) {
-							foreach (CommandHandlerInfo ci in methodHandlers)
-								ci.AddCustomHandlers (customTargetHandlerChain, customArrayTargetHandlerChain);
+							for (int i = handlersStart; i < handlers.Count; ++i)
+								handlers[i].AddCustomHandlers (customTargetHandlerChain, customArrayTargetHandlerChain);
 						}
 					}
-					handlers.AddRange (methodHandlers);
 				}
 				curType = curType.BaseType;
 			}
@@ -1802,8 +1866,9 @@ namespace MonoDevelop.Components.Commands
 
 		void AddUpdater (List<CommandUpdaterInfo> methodUpdaters, MethodInfo method, CommandUpdateHandlerAttribute attr)
 		{
+			var attrCommandId = CommandManager.ToCommandId (attr.CommandId);
 			foreach (CommandUpdaterInfo ci in methodUpdaters) {
-				if (ci.CommandId.Equals (CommandManager.ToCommandId (attr.CommandId))) {
+				if (ci.CommandId.Equals (attrCommandId)) {
 					ci.Init (method, attr);
 					return;
 				}

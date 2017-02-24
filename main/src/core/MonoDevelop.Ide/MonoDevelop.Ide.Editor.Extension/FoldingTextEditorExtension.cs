@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Task.Run (async () => {
 				try {
 					if (!isDisposed)
-						await UpdateFoldings (Editor, parsedDocument, caretLocation, false, token);
+						await UpdateFoldings (Editor, parsedDocument, caretLocation, false, token).ConfigureAwait (false);
 				} catch (OperationCanceledException) {}
 			}, token);
 		}
@@ -142,6 +142,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 							Editor.SetFoldings (foldSegments);
 					});
 				}
+			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}

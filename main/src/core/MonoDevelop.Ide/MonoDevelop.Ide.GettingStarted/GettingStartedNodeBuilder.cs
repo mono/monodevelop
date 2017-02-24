@@ -25,6 +25,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return "GettingStarted";
 		}
 
+		public override object GetParentObject (object dataObject)
+		{
+			var node = dataObject as GettingStartedNode;
+			return node?.Project ?? base.GetParentObject (dataObject);
+		}
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = GettextCatalog.GetString ("Getting Started");
@@ -36,9 +42,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return false;
 		}
 
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		public override int GetSortIndex (ITreeNavigator node)
 		{
-			return -1;
+			return -2000;
 		}
 
 		public override void OnNodeAdded (object dataObject)

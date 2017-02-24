@@ -7,8 +7,9 @@ using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
+using System.Runtime.InteropServices;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class CorBacktrace: BaseBacktrace
 	{
@@ -29,12 +30,27 @@ namespace MonoDevelop.Debugger.Win32
 
 		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
 		{
-			foreach (CorChain chain in thread.Chains) {
-                if (!chain.IsManaged)
-                    continue;
-                foreach (CorFrame frame in chain.Frames)
-                    yield return frame;
+			var corFrames = new List<CorFrame> ();
+			try {
+				foreach (CorChain chain in thread.Chains) {
+					if (!chain.IsManaged)
+						continue;
+					try {
+						var chainFrames = chain.Frames;
+
+						foreach (CorFrame frame in chainFrames)
+							corFrames.Add (frame);
+					}
+					catch (COMException e) {
+						DebuggerLoggingService.LogMessage ("Failed to enumerate frames of chain: {0}", e.Message);
+					}
+				}
+
 			}
+			catch (COMException e) {
+				DebuggerLoggingService.LogMessage ("Failed to enumerate chains of thread: {0}", e.Message);
+			}
+			return corFrames;
 		}
 
 		internal List<CorFrame> FrameList {
@@ -81,7 +97,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static SequencePoint GetSequencePoint(CorDebuggerSession session, CorFrame frame)
 		{
-			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
+			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module);
 			if (reader == null)
 				return null;
 
@@ -175,17 +191,14 @@ namespace MonoDevelop.Debugger.Win32
 
 		internal static StackFrame CreateFrame (CorDebuggerSession session, CorFrame frame)
 		{
-			// TODO: Fix remaining.
 			uint address = 0;
-			//string typeFQN;
-			//string typeFullName;
 			string addressSpace = "";
 			string file = "";
 			int line = 0;
 			int endLine = 0;
 			int column = 0;
 			int endColumn = 0;
-			string method = "";
+			string method = "[Unknown]";
 			string lang = "";
 			string module = "";
 			string type = "";
@@ -198,8 +211,15 @@ namespace MonoDevelop.Debugger.Win32
 					module = frame.Function.Module.Name;
 					CorMetadataImport importer = new CorMetadataImport (frame.Function.Module);
 					MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
-					method = mi.DeclaringType.FullName + "." + mi.Name;
-					type = mi.DeclaringType.FullName;
+					var declaringType = mi.DeclaringType;
+					if (declaringType != null) {
+						method = declaringType.FullName + "." + mi.Name;
+						type = declaringType.FullName;
+					}
+					else {
+						method = mi.Name;
+					}
+
 					addressSpace = mi.Name;
 					
 					var sp = GetSequencePoint (session, frame);
@@ -230,7 +250,7 @@ namespace MonoDevelop.Debugger.Win32
 				hasDebugInfo = true;
 			} else if (frame.FrameType == CorFrameType.NativeFrame) {
 				frame.GetNativeIP (out address);
-				method = "<Unknown>";
+				method = "[Native frame]";
 				lang = "Native";
 			} else if (frame.FrameType == CorFrameType.InternalFrame) {
 				switch (frame.InternalFrameType) {
@@ -252,11 +272,8 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 
-			if (method == null)
-				method = "<Unknown>";
-
 			var loc = new SourceLocation (method, file, line, column, endLine, endColumn);
-			return new StackFrame ((long)address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
+			return new StackFrame (address, addressSpace, loc, lang, external, hasDebugInfo, hidden, module, type);
 		}
 
 		#endregion

@@ -60,6 +60,16 @@ namespace MonoDevelop.Projects
 			return next.SupportsFlavor (guid);
 		}
 
+		internal bool IsMicrosoftBuildRequired {
+			get {
+				return RequiresMicrosoftBuild || (next != null && next.IsMicrosoftBuildRequired);
+			}
+		}
+
+		protected bool RequiresMicrosoftBuild {
+			get; set;
+		}
+
 		internal protected virtual ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return next.OnCreateRunConfiguration (name);

@@ -153,6 +153,22 @@ namespace MonoDevelop.MacIntegration
 			GlobalSetup ();
 			timer.EndTiming ();
 
+			var appDelegate = NSApplication.SharedApplication.Delegate as Xwt.Mac.AppDelegate;
+			if (appDelegate != null) {
+				appDelegate.Terminating += (object o, TerminationEventArgs e) => {
+					if (MonoDevelop.Ide.IdeApp.IsRunning) {
+						// If GLib the mainloop is still running that means NSApplication.Terminate() was called
+						// before Gtk.Application.Quit(). Cancel Cocoa termination and exit the mainloop.
+						e.Reply = NSApplicationTerminateReply.Cancel;
+						Gtk.Main.Quit ();
+					} else {
+						// The mainloop has already exited and we've already cleaned up our application state
+						// so it's now safe to terminate Cocoa.
+						e.Reply = NSApplicationTerminateReply.Now;
+					}
+				};
+			}
+
 			return loaded;
 		}
 

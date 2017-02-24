@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			this.UseNativeContextMenus ();
 
-			labelTop1.Text = string.Format (labelTop1.Text, uri);
+			labelTop1.LabelProp = string.Format (labelTop1.LabelProp, uri);
 
 			var table = new Table (0, 0, false);
 			table.ColumnSpacing = 6;

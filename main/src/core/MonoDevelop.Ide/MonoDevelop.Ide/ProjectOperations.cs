@@ -84,7 +84,8 @@ namespace MonoDevelop.Ide
 			IdeApp.Workspace.ItemUnloading += IdeAppWorkspaceItemUnloading;
 			
 		}
-		
+
+		[Obsolete ("This property will be removed.")]
 		public BuildResult LastCompilerResult {
 			get { return lastResult; }
 		}
@@ -1138,7 +1139,8 @@ namespace MonoDevelop.Ide
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			if (context.ExecutionHandler.CanExecute (cmd))
-				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole ());
+				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole (
+					OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (Path.GetFileName (file))));
 			else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return AsyncOperation.CompleteOperation;
@@ -1188,28 +1190,94 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (isRebuilding) {
-				if (EndClean != null) {
+				if (res.HasErrors) {
+					CleanDone (monitor, res, entry, tt);
+				} else if (EndClean != null) {
 					OnEndClean (monitor, tt);
 				}
 			} else {
-				CleanDone (monitor, entry, tt);
+				CleanDone (monitor, res, entry, tt);
 			}
 			return res;
 		}
-		
-		void CleanDone (ProgressMonitor monitor, IBuildTarget entry, ITimeTracker tt)
+
+		void CleanDone (ProgressMonitor monitor, BuildResult result, IBuildTarget entry, ITimeTracker tt)
 		{
 			tt.Trace ("Begin reporting clean result");
 			try {
-				monitor.Log.WriteLine ();
-				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
-				tt.Trace ("Reporting result");			
-				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
+				if (result != null) {
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+
+					tt.Trace ("Updating task service");
+				
+					ReportErrors (result);
+
+					tt.Trace ("Reporting result");
+
+					string errorString = GettextCatalog.GetPluralString ("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
+					string warningString = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
+
+					if (monitor.CancellationToken.IsCancellationRequested) {
+						monitor.ReportError (GettextCatalog.GetString ("Clean canceled."), null);
+					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && result.FailedBuildCount == 0) {
+						monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
+					} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
+						monitor.ReportWarning (GettextCatalog.GetString ("Clean: ") + errorString + ", " + warningString);
+					} else if (result.ErrorCount > 0) {
+						monitor.ReportError (GettextCatalog.GetString ("Clean: ") + errorString + ", " + warningString, null);
+					} else {
+						monitor.ReportError (GettextCatalog.GetString ("Clean failed."), null);
+					}
+				}
+
 				OnEndClean (monitor, tt);
+
+				tt.Trace ("Showing results pad");
+
+				ShowErrorsPadIfNecessary ();
+
 			} finally {
 				monitor.Dispose ();
 				tt.End ();
 			}
+		}
+
+		TaskListEntry[] ReportErrors (BuildResult result)
+		{
+			var tasks = new TaskListEntry [result.Errors.Count];
+			for (int n = 0; n < tasks.Length; n++) {
+				tasks [n] = new TaskListEntry (result.Errors [n]);
+				tasks [n].Owner = this;
+			}
+
+			TaskService.Errors.AddRange (tasks);
+			TaskService.Errors.ResetLocationList ();
+			IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+			return tasks;
+		}
+
+		void ShowErrorsPadIfNecessary ()
+		{
+			try {
+				Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+				switch (IdeApp.Preferences.ShowErrorPadAfterBuild.Value) {
+				case BuildResultStates.Always:
+					if (!errorsPad.Visible)
+						errorsPad.IsOpenedAutomatically = true;
+					errorsPad.Visible = true;
+					errorsPad.BringToFront ();
+					break;
+				case BuildResultStates.OnErrors:
+					if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
+						goto case BuildResultStates.Always;
+					break;
+				case BuildResultStates.OnErrorsOrWarnings:
+					if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
+						goto case BuildResultStates.Always;
+					break;
+				}
+			} catch { }
 		}
 
 		public AsyncOperation<BuildResult> Rebuild (Project project, ProjectOperationContext operationContext = null)
@@ -1540,16 +1608,9 @@ namespace MonoDevelop.Ide
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
 					tt.Trace ("Updating task service");
-					tasks = new TaskListEntry [result.Errors.Count];
-					for (int n=0; n<tasks.Length; n++) {
-						tasks [n] = new TaskListEntry (result.Errors [n]);
-						tasks [n].Owner = this;
-					}
 
-					TaskService.Errors.AddRange (tasks);
-					TaskService.Errors.ResetLocationList ();
-					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
-					
+					tasks = ReportErrors (result);
+
 					tt.Trace ("Reporting result");
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
@@ -1575,28 +1636,8 @@ namespace MonoDevelop.Ide
 				
 				tt.Trace ("Showing results pad");
 				
-				try {
-					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					switch (IdeApp.Preferences.ShowErrorPadAfterBuild.Value) {
-					case BuildResultStates.Always:
-						if (!errorsPad.Visible)
-							errorsPad.IsOpenedAutomatically = true;
-						errorsPad.Visible = true;
-						errorsPad.BringToFront ();
-						break;
-					case BuildResultStates.Never:
-						break;
-					case BuildResultStates.OnErrors:
-						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
-							goto case BuildResultStates.Always;
-						goto case BuildResultStates.Never;
-					case BuildResultStates.OnErrorsOrWarnings:
-						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
-							goto case BuildResultStates.Always;
-						goto case BuildResultStates.Never;
-					}
-				} catch {}
-				
+				ShowErrorsPadIfNecessary ();
+
 				if (tasks != null) {
 					TaskListEntry jumpTask = null;
 					switch (IdeApp.Preferences.JumpToFirstErrorOrWarning.Value) {

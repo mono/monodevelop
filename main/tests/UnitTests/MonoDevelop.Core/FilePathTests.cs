@@ -106,6 +106,9 @@ namespace MonoDevelop.Core
 			parent = FilePath.Build ("base" + Path.DirectorySeparatorChar);
 			child = parent.Combine ("child");
 			Assert.IsTrue (child.IsChildPathOf (parent));
+
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=48212
+			Assert.IsFalse (child.IsChildPathOf (child));
 		}
 
 		[Test]

@@ -438,8 +438,6 @@ namespace MonoDevelop.Debugger
 			session.OutputWriter = null;
 			session.LogWriter = null;
 
-			sessionManager.Dispose ();
-
 			Runtime.RunInMainThread (delegate {
 				if (cleaningCurrentSession)
 					HideExceptionCaughtDialog ();
@@ -455,8 +453,9 @@ namespace MonoDevelop.Debugger
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
+			}).ContinueWith ((t) => {
+				sessionManager.Dispose ();
 			});
-
 		}
 
 		static string oldLayout;
@@ -595,7 +594,7 @@ namespace MonoDevelop.Debugger
 		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			var session = debugger.CreateSession ();
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger);
 			session.ExceptionHandler = ExceptionHandler;
 			SetupSession (sessionManager);
@@ -615,6 +614,7 @@ namespace MonoDevelop.Debugger
 			eval.EvaluationTimeout = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500);
 			eval.FlattenHierarchy = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", false);
 			eval.GroupPrivateMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", true);
+			eval.EllipsizedLength = 260; // Instead of random default(100), lets use 260 which should cover 99.9% of file path cases
 			eval.GroupStaticMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", true);
 			eval.MemberEvaluationTimeout = eval.EvaluationTimeout * 2;
 			return new DebuggerSessionOptions {
@@ -669,7 +669,7 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ().Console, factory);
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory);
 			else
 				sessionManager = new SessionManager (session, c, factory);
 			SetupSession (sessionManager);

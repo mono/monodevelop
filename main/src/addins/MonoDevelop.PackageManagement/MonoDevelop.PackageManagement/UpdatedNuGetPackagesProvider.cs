@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -101,8 +102,7 @@ namespace MonoDevelop.PackageManagement
 					.Where (task => task.Exception == null)
 					.Select (task => task.Result)
 					.Where (package => package != null)
-					.OrderByDescending (package => package.Version)
-					.FirstOrDefault ();
+					.MaxValueOrDefault (x => x.Version);
 
 				if (updatedPackage != null) {
 					updatedPackages.Add (updatedPackage);
@@ -126,7 +126,8 @@ namespace MonoDevelop.PackageManagement
 
 			var package = packages
 				.Where (p => IsPackageVersionAllowed (p, packageReference))
-				.OrderByDescending (p => p.Identity.Version).FirstOrDefault ();
+				.MaxValueOrDefault (x => x.Identity.Version);
+
 			if (package == null)
 				return null;
 

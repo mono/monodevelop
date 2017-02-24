@@ -170,6 +170,8 @@ namespace MonoDevelop.CSharp.Project
 			this.comboDebug = global::Gtk.ComboBox.NewText ();
 			this.comboDebug.AppendText (global::Mono.Unix.Catalog.GetString ("Full"));
 			this.comboDebug.AppendText (global::Mono.Unix.Catalog.GetString ("Symbols only"));
+			this.comboDebug.AppendText (global::Mono.Unix.Catalog.GetString ("Portable"));
+			this.comboDebug.AppendText (global::Mono.Unix.Catalog.GetString ("Embedded"));
 			this.comboDebug.AppendText (global::Mono.Unix.Catalog.GetString ("None"));
 			this.comboDebug.Name = "comboDebug";
 			this.comboDebug.Active = 0;

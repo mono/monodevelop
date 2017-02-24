@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class CorMethodCall: AsyncOperation
 	{

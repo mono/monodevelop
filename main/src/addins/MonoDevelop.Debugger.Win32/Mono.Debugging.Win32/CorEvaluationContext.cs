@@ -3,12 +3,13 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 using DC = Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class CorEvaluationContext: EvaluationContext
 	{
 		CorEval corEval;
 		CorFrame frame;
+		CorChain activeChain;
 		int frameIndex;
 		int evalTimestamp;
 		readonly CorBacktrace backtrace;
@@ -37,6 +38,7 @@ namespace MonoDevelop.Debugger.Win32
 				thread = null;
 				frame = null;
 				corEval = null;
+				activeChain = null;
 			}
 		}
 
@@ -50,6 +52,16 @@ namespace MonoDevelop.Debugger.Win32
 			set {
 				thread = value;
 				threadId = thread.Id;
+			}
+		}
+
+		public CorChain ActiveChain {
+			get {
+				CheckTimestamp ();
+				if (activeChain == null) {
+					activeChain = Thread.ActiveChain;
+				}
+				return activeChain;
 			}
 		}
 
