@@ -129,7 +129,7 @@ namespace MonoDevelop.DotNetCore
 				// ContextMenu on Solution
 				var dlg = new ProjectSelectorDialog ();
 				try {
-					dlg.Title = GettextCatalog.GetString ("Check projects to migrate");
+					dlg.Title = GettextCatalog.GetString ("Select projects to migrate");
 					dlg.RootItem = solution;
 					dlg.AllowEmptySelection = false;
 					dlg.SelectableFilter = (arg) => IsMigratableProject (arg as UnknownProject);
