@@ -59,8 +59,12 @@ namespace MonoDevelop.DotNetCore.Commands
 		public void UpdateRemoveItem (CommandInfo info)
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Enabled = CanDeleteMultipleItems () && node.CanBeRemoved;
-			info.Text = GettextCatalog.GetString ("Remove");
+			if (!node.CanBeRemoved) {
+				info.Visible = false;
+			} else {
+				info.Enabled = CanDeleteMultipleItems ();
+				info.Text = GettextCatalog.GetString ("Remove");
+			}
 		}
 
 		public override bool CanDeleteMultipleItems ()
@@ -72,7 +76,7 @@ namespace MonoDevelop.DotNetCore.Commands
 		void CheckCanUpdatePackage (CommandInfo info)
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Enabled = node.CanBeRemoved;
+			info.Visible = node.CanBeRemoved;
 		}
 
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]

@@ -131,6 +131,9 @@
     <Compile Include="MonoDevelop.DotNetCore.Commands\PackageDependencyNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreFolderNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeCache.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNode.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

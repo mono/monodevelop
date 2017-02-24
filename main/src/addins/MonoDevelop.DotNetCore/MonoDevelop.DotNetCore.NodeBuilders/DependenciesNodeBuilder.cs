@@ -62,9 +62,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var node = (DependenciesNode)dataObject;
-			var folderNode = new PackageDependenciesNode (node);
-			folderNode.Refresh ();
-			treeBuilder.AddChild (folderNode);
+			node.PackageDependencyCache.Refresh ();
+
+			var packagesNode = new PackageDependenciesNode (node);
+			treeBuilder.AddChild (packagesNode);
+
+			var sdkNode = new SdkDependenciesNode (node);
+			treeBuilder.AddChild (sdkNode);
 
 			var assembliesNode = new AssemblyDependenciesNode (node.Project);
 			if (assembliesNode.HasChildNodes ())

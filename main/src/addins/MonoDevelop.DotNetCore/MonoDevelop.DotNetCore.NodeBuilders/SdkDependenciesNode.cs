@@ -1,10 +1,10 @@
 ﻿//
-// DependenciesNode.cs
+// SdkDependenciesNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
+
+using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DependenciesNode
+	class SdkDependenciesNode
 	{
-		public static readonly string NodeName = "Dependencies";
+		public static readonly string NodeName = "SdkDependencies";
 
-		public DependenciesNode (DotNetProject project)
+		public SdkDependenciesNode (DependenciesNode parentNode)
 		{
-			Project = project;
-			PackageDependencyCache = new PackageDependencyNodeCache (Project);
+			ParentNode = parentNode;
 		}
 
-		internal DotNetProject Project { get; private set; }
-		internal PackageDependencyNodeCache PackageDependencyCache { get; private set; }
+		internal DotNetProject Project {
+			get { return ParentNode.Project; }
+		}
+
+		internal DependenciesNode ParentNode { get; private set; }
 
 		public string GetLabel ()
 		{
-			return GettextCatalog.GetString ("Dependencies");
+			return GettextCatalog.GetString ("SDK");
 		}
 
 		public string GetSecondaryLabel ()
@@ -62,14 +65,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return Stock.ClosedReferenceFolder; }
 		}
 
-		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (bool sdkDependencies)
-		{
-			return PackageDependencyCache.GetTargetFrameworkNodes (this, sdkDependencies);
+		public bool LoadedDependencies {
+			get { return ParentNode.PackageDependencyCache.LoadedDependencies; }
 		}
 
-		public IEnumerable<PackageDependencyNode> GetProjectPackageReferencesAsDependencyNodes ()
+		public IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes ()
 		{
-			return PackageDependencyCache.GetProjectPackageReferencesAsDependencyNodes (this);
+			return ParentNode.GetTargetFrameworkNodes (sdkDependencies: true);
+		}
+
+		public PackageDependency GetDependency (string dependency)
+		{
+			return ParentNode.PackageDependencyCache.GetDependency (dependency);
 		}
 	}
 }

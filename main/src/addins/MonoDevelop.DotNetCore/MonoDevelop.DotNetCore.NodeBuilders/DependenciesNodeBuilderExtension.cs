@@ -95,10 +95,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			if (builder != null) {
 				if (builder.MoveToChild (DependenciesNode.NodeName, typeof (DependenciesNode))) {
 					if (packagesOnly) {
-						if (builder.MoveToChild (PackageDependenciesNode.NodeName, typeof (PackageDependenciesNode))) {
-							var packagesFolder = (PackageDependenciesNode)builder.DataItem;
-							packagesFolder.Refresh ();
-						}
+						var dependenciesNode = (DependenciesNode)builder.DataItem;
+						dependenciesNode.PackageDependencyCache.Refresh ();
 					} else {
 						builder.UpdateAll ();
 					}

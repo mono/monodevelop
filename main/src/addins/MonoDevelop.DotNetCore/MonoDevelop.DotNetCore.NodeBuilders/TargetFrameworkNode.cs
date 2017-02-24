@@ -33,29 +33,22 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class TargetFrameworkNode
 	{
-		PackageDependenciesNode dependenciesNode;
+		DependenciesNode dependenciesNode;
 		PackageDependency dependency;
-		string name = string.Empty;
+		bool sdkDependencies;
 
-		public TargetFrameworkNode (PackageDependenciesNode dependenciesNode, PackageDependency dependency)
+		public TargetFrameworkNode (
+			DependenciesNode dependenciesNode,
+			PackageDependency dependency,
+			bool sdkDependencies)
 		{
 			this.dependenciesNode = dependenciesNode;
 			this.dependency = dependency;
-		}
-
-		public TargetFrameworkNode (PackageDependenciesNode dependenciesNode, string name)
-		{
-			this.dependenciesNode = dependenciesNode;
-			this.name = name;
+			this.sdkDependencies = sdkDependencies;
 		}
 
 		public string Name {
-			get {
-				if (dependency != null)
-					return dependency.Name;
-
-				return name;
-			}
+			get { return dependency.Name; }
 		}
 
 		public string GetLabel ()
@@ -65,10 +58,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
-			if (dependency != null)
-				return string.Format ("({0})", dependency.Version);
-
-			return string.Empty;
+			return string.Format ("({0})", dependency.Version);
 		}
 
 		public IconId GetIconId ()
@@ -78,21 +68,16 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public bool HasDependencies ()
 		{
-			if (dependency != null)
-				return dependency.Dependencies.Any ();
-
-			return false;
+			return dependency.Dependencies.Any ();
 		}
 
 		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
 		{
-			if (dependency != null) {
-				return PackageDependencyNode.GetDependencyNodes (
-					dependenciesNode,
-					dependency,
-					topLevel: true);
-			}
-			return new PackageDependencyNode[0];
+			return PackageDependencyNode.GetDependencyNodes (
+				dependenciesNode,
+				dependency,
+				sdkDependencies,
+				topLevel: true);
 		}
 	}
 }

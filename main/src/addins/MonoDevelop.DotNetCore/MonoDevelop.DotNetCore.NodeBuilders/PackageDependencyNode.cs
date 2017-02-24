@@ -36,13 +36,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 {
 	class PackageDependencyNode
 	{
-		PackageDependenciesNode dependenciesNode;
+		DependenciesNode dependenciesNode;
 		PackageDependency dependency;
 		string name;
 		string version;
 
 		PackageDependencyNode (
-			PackageDependenciesNode dependenciesNode,
+			DependenciesNode dependenciesNode,
 			PackageDependency dependency,
 			bool topLevel)
 		{
@@ -57,7 +57,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 				IsReadOnly = !PackageReferenceExistsInProject ();
 		}
 
-		PackageDependencyNode (PackageDependenciesNode dependenciesNode, ProjectPackageReference packageReference)
+		PackageDependencyNode (DependenciesNode dependenciesNode, ProjectPackageReference packageReference)
 		{
 			this.dependenciesNode = dependenciesNode;
 			IsTopLevel = true;
@@ -67,19 +67,34 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		}
 
 		public static PackageDependencyNode Create (
-			PackageDependenciesNode dependenciesNode,
+			DependenciesNode dependenciesNode,
 			string dependencyName,
+			bool sdkDependencies,
 			bool topLevel)
 		{
-			PackageDependency dependency = dependenciesNode.GetDependency (dependencyName);
-			if (dependency != null)
-				return new PackageDependencyNode (dependenciesNode, dependency, topLevel);
+			PackageDependency dependency = dependenciesNode.PackageDependencyCache.GetDependency (dependencyName);
+			if (dependency != null) {
+				var node = new PackageDependencyNode (dependenciesNode, dependency, topLevel);
+				if (node.IsSupported (sdkDependencies)) {
+					return node;
+				}
+			}
 
 			return null;
 		}
 
+		/// <summary>
+		/// Sdk dependencies have IsReadOnly set to true.
+		/// </summary>
+		bool IsSupported (bool sdkDependencies)
+		{
+			if (IsReadOnly)
+				return sdkDependencies;
+			return !sdkDependencies;
+		}
+
 		public static PackageDependencyNode Create (
-			PackageDependenciesNode dependenciesNode,
+			DependenciesNode dependenciesNode,
 			ProjectPackageReference packageReference)
 		{
 			return new PackageDependencyNode (dependenciesNode, packageReference);
@@ -143,12 +158,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		}
 
 		public static IEnumerable<PackageDependencyNode> GetDependencyNodes (
-			PackageDependenciesNode dependenciesNode,
+			DependenciesNode dependenciesNode,
 			PackageDependency dependency,
+			bool sdkDependencies = false,
 			bool topLevel = false)
 		{
 			return dependency.Dependencies
-				.Select (item => PackageDependencyNode.Create (dependenciesNode, item, topLevel))
+				.Select (item => Create (dependenciesNode, item, sdkDependencies, topLevel))
 				.Where (item => item != null);
 		}
 
