@@ -293,10 +293,10 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Called when a load operation for this item has started
 		/// </summary>
-		internal protected async virtual Task OnBeginLoad ()
+		internal protected virtual Task OnBeginLoad ()
 		{
 			Loading = true;
-			await LoadUserProperties ();
+			return LoadUserProperties ();
 		}
 		
 		/// <summary>
@@ -334,14 +334,14 @@ namespace MonoDevelop.Projects
 				await OnLoadUserProperties ();
 		}
 
-		protected virtual async Task OnLoadUserProperties ()
+		protected virtual Task OnLoadUserProperties ()
 		{
 			userProperties.Dispose ();
 			userProperties = new PropertyBag ();
 
 			string preferencesFileName = GetPreferencesFileName ();
 
-			await Task.Run (() => {
+			return Task.Run (() => {
 				if (!File.Exists (preferencesFileName))
 					return;
 

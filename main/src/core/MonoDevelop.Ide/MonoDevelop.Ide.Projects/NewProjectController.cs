@@ -573,7 +573,7 @@ namespace MonoDevelop.Ide.Projects
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
 
-			if (!CreateProject ())
+			if (!await CreateProject ())
 				return;
 
 			Solution parentSolution = null;
@@ -679,7 +679,7 @@ namespace MonoDevelop.Ide.Projects
 				.ToList ();
 		}
 
-		bool CreateProject ()
+		async Task<bool> CreateProject ()
 		{
 			if (!projectConfiguration.IsValid ()) {
 				MessageService.ShowError (projectConfiguration.GetErrorMessage ());
@@ -724,7 +724,7 @@ namespace MonoDevelop.Ide.Projects
 			DisposeExistingNewItems ();
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
+				result = await IdeApp.Services.TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
 				if (!result.WorkspaceItems.Any ())
 					return false;
 			} catch (UserException ex) {

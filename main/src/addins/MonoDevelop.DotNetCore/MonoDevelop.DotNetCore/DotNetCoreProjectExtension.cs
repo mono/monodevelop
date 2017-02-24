@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Commands;
@@ -62,10 +63,10 @@ namespace MonoDevelop.DotNetCore
 			base.Initialize ();
 		}
 
-		protected override bool OnGetSupportsFramework (Core.Assemblies.TargetFramework framework)
+		protected override bool OnGetSupportsFramework (TargetFramework framework)
 		{
-			if (framework.Id.Identifier == ".NETCoreApp" ||
-			    framework.Id.Identifier == ".NETStandard")
+			if (framework.IsNetCoreApp () ||
+				framework.IsNetStandard ())
 				return true;
 			return base.OnGetSupportsFramework (framework);
 		}
@@ -87,10 +88,10 @@ namespace MonoDevelop.DotNetCore
 
 		bool CanReferenceProject (DotNetProject targetProject)
 		{
-			if (targetProject.TargetFramework.Id.Identifier != ".NETStandard")
+			if (!targetProject.TargetFramework.IsNetStandard ())
 				return false;
 
-			if (Project.TargetFramework.Id.Identifier != ".NETCoreApp")
+			if (!Project.TargetFramework.IsNetCoreApp ())
 				return false;
 
 			return DotNetCoreFrameworkCompatibility.CanReferenceNetStandardProject (Project.TargetFramework.Id, targetProject);
@@ -120,7 +121,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			dotNetCoreMSBuildProject.WriteProject (msproject);
+			dotNetCoreMSBuildProject.WriteProject (msproject, Project.TargetFramework.Id);
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -134,7 +135,7 @@ namespace MonoDevelop.DotNetCore
 			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
-				assemblyRunConfiguration?.StartWorkingDirectory ?? Project.BaseDirectory,
+				string.IsNullOrEmpty (assemblyRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : assemblyRunConfiguration.StartWorkingDirectory,
 				outputFileName,
 				assemblyRunConfiguration?.StartArguments
 			) {
@@ -441,6 +442,76 @@ namespace MonoDevelop.DotNetCore
 			if (sdkPaths != null)
 				return sdkPaths.IsUnsupportedSdkVersion;
 			return false;
+		}
+
+		// HACK: The FSharp.NET.Core.Sdk.targets defines the path to dotnet using:
+		// <_DotNetHostExecutableDirectory>$(MSBuildExtensionsPath)/../..</_DotNetHostExecutableDirectory>
+		// MSBuildExtensionsPath points to MSBuild supplied with Mono so building FSharp
+		// projects fails using this path since dotnet does not ship with Mono. The
+		// _DotNetHostExecutableDirectory cannot be overridden so as a workaround for
+		// F# projects the MSBuildExtensionsPath is redefined to point to the .NET Core
+		// SDK folder.
+		protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			if (target == ProjectService.BuildTarget) {
+				if (IsFSharpSdkProject ()) {
+					OverrideMSBuildExtensionsPathToFixBuild (context);
+				}
+			}
+			return base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		bool IsFSharpSdkProject ()
+		{
+			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
+		}
+
+		void OverrideMSBuildExtensionsPathToFixBuild (TargetEvaluationContext context)
+		{
+			string path = Path.GetFullPath (Path.Combine (sdkPaths.MSBuildSDKsPath, ".."));
+			context.GlobalProperties.SetValue ("MSBuildExtensionsPath", path);
+		}
+
+		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
+		{
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			return supportedTargetFrameworks.GetFrameworks ();
+		}
+
+		internal bool RestoreAfterSave { get; set; }
+
+		protected override Task OnSave (ProgressMonitor monitor)
+		{
+			if (RestoreAfterSave) {
+				RestoreAfterSave = false;
+				if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
+					return OnRestoreAfterSave (monitor);
+				}
+			}
+			return base.OnSave (monitor);
+		}
+
+		/// <summary>
+		/// This is currently only called after the target framework of the project
+		/// is modified. The project is saved, then re-evaluated and finally the NuGet
+		/// packages are restored. The project re-evaluation is done so any target
+		/// framework changes are available in the MSBuildProject's EvaluatedProperties
+		/// otherwise the restore uses the wrong target framework.
+		/// Also using a GLib.Timeout since triggering the reload straight away can
+		/// cause the Save to fail with an index out of range exception when
+		/// MSBuildPropertyGroup.Add is called when the DotNetProjectConfiguration
+		/// is written.
+		/// </summary>
+		async Task OnRestoreAfterSave (ProgressMonitor monitor)
+		{
+			await base.OnSave (monitor);
+			await Runtime.RunInMainThread (() => {
+				GLib.Timeout.Add (0, () => {
+					Project.NeedsReload = true;
+					FileService.NotifyFileChanged (Project.FileName);
+					return false;
+				});
+			});
 		}
 	}
 }

@@ -202,7 +202,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/BraceMatcher" name = "Brace matcher">
 		<Description>Algorithm for providing matching braces in a file.</Description>
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Matcher" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/AutoInsertBracketHandler" name = "Automatic bracket handler">

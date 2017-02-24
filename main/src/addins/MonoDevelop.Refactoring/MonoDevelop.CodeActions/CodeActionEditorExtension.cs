@@ -781,7 +781,7 @@ namespace MonoDevelop.CodeActions
 												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 											}
 										}
-									}));
+									}) { TextLinkPurpose = TextLinkPurpose.Rename });
 								}
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while renaming " + renameTokenOpt.Value.Parent, ex);

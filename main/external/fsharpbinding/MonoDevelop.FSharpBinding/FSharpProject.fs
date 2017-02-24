@@ -260,6 +260,10 @@ type FSharpProject() as self =
     override x.OnGetDefaultResourceId(projectFile) =
         projectFile.FilePath.FileName
 
+    override x.OnModified(e) =
+        base.OnModified(e)
+        if not self.Loading then invalidateProjectFile()
+
     override x.OnDispose () =
         //if not self.Loading then invalidateProjectFile()
 

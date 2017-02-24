@@ -151,7 +151,7 @@ namespace MonoDevelop.Refactoring.Rename
 						editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 					}
 				}
-			}));
+			}) { TextLinkPurpose = TextLinkPurpose.Rename });
 		}
 		
 		public class RenameProperties
@@ -213,7 +213,7 @@ namespace MonoDevelop.Refactoring.Rename
 					var newName = properties.NewName;
 					if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
 						continue;
-					if (oldFileName.ToUpper () == newName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + newName.ToUpper (), StringComparison.Ordinal))
+					if (string.Equals (oldFileName, newName, StringComparison.OrdinalIgnoreCase) || oldFileName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase))
 						continue;
 					int idx = oldFileName.IndexOf (type.Name, StringComparison.Ordinal);
 					if (idx >= 0) {

@@ -22,7 +22,7 @@ clean-local: sln_clean
 	cd build && $(MAKE) clean
 
 NUGET_FOUND = $$(echo $$(which nuget))
-NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore;
+NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelProcessing;
 
 #FIXME: move the restore logic into MSBuild (Before.sln.targets),
 #       see: https://github.com/kzu/NuGet.Restore

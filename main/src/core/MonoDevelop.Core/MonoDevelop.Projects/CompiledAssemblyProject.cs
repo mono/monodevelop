@@ -184,7 +184,7 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 			if (config == null)
 				return false;
-			if (FileName.Extension.ToLower () != ".exe")
+			if (!string.Equals (FileName.Extension, ".exe", StringComparison.OrdinalIgnoreCase))
 				return false;
 			ExecutionCommand cmd = CreateExecutionCommand (configuration, config);
 			return context.ExecutionHandler.CanExecute (cmd);
@@ -210,7 +210,8 @@ namespace MonoDevelop.Projects
 	{
 		public override bool CanRead (FilePath file, Type expectedType)
 		{
-			return expectedType.IsAssignableFrom (typeof(SolutionItem)) && (file.Extension.ToLower() == ".exe" || file.Extension.ToLower() ==  ".dll");
+			return expectedType.IsAssignableFrom (typeof(SolutionItem)) &&
+				               (string.Equals (file.Extension, ".exe", StringComparison.OrdinalIgnoreCase) || string.Equals (file.Extension, ".dll", StringComparison.OrdinalIgnoreCase));
 		}
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)

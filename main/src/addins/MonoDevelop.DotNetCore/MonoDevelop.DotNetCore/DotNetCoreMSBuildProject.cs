@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
@@ -82,7 +83,7 @@ namespace MonoDevelop.DotNetCore
 			hasDescription = project.HasGlobalProperty ("Description");
 		}
 
-		public void WriteProject (MSBuildProject project)
+		public void WriteProject (MSBuildProject project, TargetFrameworkMoniker framework)
 		{
 			var globalPropertyGroup = project.GetGlobalPropertyGroup ();
 			globalPropertyGroup.RemoveProperty ("ProjectGuid");
@@ -92,16 +93,16 @@ namespace MonoDevelop.DotNetCore
 			if (!IsOutputTypeDefined)
 				globalPropertyGroup.RemoveProperty ("OutputType");
 
-			if (!hasAssemblyName)
-				globalPropertyGroup.RemoveProperty ("AssemblyName");
-
-			if (!hasRootNamespace)
-				globalPropertyGroup.RemoveProperty ("RootNamespace");
+			RemoveMSBuildProjectNameDerivedProperties (globalPropertyGroup);
 
 			if (!hasDescription)
-				globalPropertyGroup.RemoveProperty ("Description");
+				globalPropertyGroup.RemovePropertyIfHasDefaultValue ("Description", "Package Description");
 
 			project.DefaultTargets = null;
+
+			project.RemoveExtraProjectReferenceMetadata ();
+
+			UpdateTargetFramework (project, framework);
 
 			if (HasToolsVersion ())
 				project.ToolsVersion = ToolsVersion;
@@ -110,6 +111,32 @@ namespace MonoDevelop.DotNetCore
 				project.RemoveInternalElements ();
 				project.ToolsVersion = ToolsVersion;
 			}
+		}
+
+		void RemoveMSBuildProjectNameDerivedProperties (MSBuildPropertyGroup globalPropertyGroup)
+		{
+			string msbuildProjectName = globalPropertyGroup.ParentProject.FileName.FileNameWithoutExtension;
+
+			if (!hasAssemblyName)
+				globalPropertyGroup.RemovePropertyIfHasDefaultValue ("AssemblyName", msbuildProjectName);
+
+			if (!hasRootNamespace)
+				globalPropertyGroup.RemovePropertyIfHasDefaultValue ("RootNamespace", msbuildProjectName);
+		}
+
+		void UpdateTargetFramework (MSBuildProject project, TargetFrameworkMoniker framework)
+		{
+			string shortFrameworkName = framework.GetShortFrameworkName ();
+			string existingFramework = targetFrameworks.FirstOrDefault ();
+			if (existingFramework == shortFrameworkName)
+				return;
+
+			if (targetFrameworks.Count == 0)
+				targetFrameworks.Add (shortFrameworkName);
+			else
+				targetFrameworks[0] = shortFrameworkName;
+
+			project.UpdateTargetFrameworks (targetFrameworks);
 		}
 
 		public void AddKnownItemAttributes (MSBuildProject project)
@@ -125,22 +152,38 @@ namespace MonoDevelop.DotNetCore
 
 		public bool AddInternalSdkImports (MSBuildProject project, string sdkPath, string sdkProps, string sdkTargets)
 		{
-			if (project.ImportExists (sdkProps))
+			return AddInternalSdkImports (project, sdkPath, new [] { sdkProps }, new [] { sdkTargets });
+		}
+
+		public bool AddInternalSdkImports (
+			MSBuildProject project,
+			string sdkPath,
+			IEnumerable<string> sdkProps,
+			IEnumerable<string> sdkTargets)
+		{
+			if (project.ImportExists (sdkProps.First ()))
 				return false;
 
 			if (Sdk == "Microsoft.NET.Sdk.Web") {
 				// HACK: Add wildcard items to the project since they are not currently evaluated
 				// properly which results in no files being displayed in the solution window.
 				project.AddWebProjectWildcardItems ();
-			} else {
+			} else if (!Sdk.Contains ("FSharp")) {
 				project.AddProjectWildcardItems ();
 			}
 
 			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
 			// other files to import. So we define this in a property group at the top of the
 			// project before the Sdk.props is imported so these other files can be found.
-			MSBuildImport propsImport = project.AddInternalImport (sdkProps, importAtTop: true);
-			project.AddInternalImport (sdkTargets);
+			MSBuildImport propsImport = null;
+			foreach (string props in sdkProps.Reverse ()) {
+				propsImport = project.AddInternalImport (props, importAtTop: true);
+			}
+
+			foreach (string targets in sdkTargets) {
+				project.AddInternalImport (targets);
+			}
+
 			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPath, propsImport);
 
 			return true;

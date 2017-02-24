@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Project
 	{
 		public static string GetDefaultResourceId (ProjectFile pf)
 		{
-			if (String.IsNullOrEmpty (pf.DependsOn) || !File.Exists (pf.DependsOn) || Path.GetExtension (pf.DependsOn).ToLower () != ".cs")
+			if (String.IsNullOrEmpty (pf.DependsOn) || !File.Exists (pf.DependsOn) || !string.Equals (Path.GetExtension (pf.DependsOn), ".cs", StringComparison.OrdinalIgnoreCase))
 				return null;
 
 			string ns = null;

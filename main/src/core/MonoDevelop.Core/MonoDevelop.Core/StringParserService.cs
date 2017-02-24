@@ -125,7 +125,7 @@ namespace MonoDevelop.Core
 				switch (tname.ToUpper()) {
 				case "ENV":
 					foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables ()) {
-						if (variable.Key.ToString ().ToUpper () == tformat.ToUpper ())
+						if (string.Equals (variable.Key.ToString (), tformat, StringComparison.OrdinalIgnoreCase))
 							return variable.Value.ToString ();
 					}
 					break;

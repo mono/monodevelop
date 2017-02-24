@@ -145,16 +145,15 @@
 
   <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
     <Policies resource="FSharpStylePolicy.xml" />
+    <Policies resource="FSharpFormattingPolicy.xml" />
   </Extension>
-
-  <Policies resource="FSharpFormattingPolicy.xml" />
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
     <Panel id = "FSharpFormatting" _label = "F# Formatting" mimeType="text/x-fsharp" class = "MonoDevelop.FSharp.FSharpFormattingPolicyPanel" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/BraceMatcher">
-    <Class class="MonoDevelop.FSharp.FSharpBraceMatcher" />
+	<Matcher class="MonoDevelop.FSharp.FSharpBraceMatcher" mimeType="text/x-fsharp"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

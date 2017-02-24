@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
-using System;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -37,9 +38,10 @@ namespace MonoDevelop.DotNetCore.Tests
 		DotNetCoreMSBuildProject project;
 		MSBuildProject msbuildProject;
 
-		void CreateMSBuildProject (string xml)
+		void CreateMSBuildProject (string xml, string fileName = @"MyProject.csproj")
 		{
 			msbuildProject = new MSBuildProject ();
+			msbuildProject.FileName = fileName;
 			msbuildProject.LoadXml (xml);
 
 			project = new DotNetCoreMSBuildProject ();
@@ -72,9 +74,10 @@ namespace MonoDevelop.DotNetCore.Tests
 			project.ReadProject (msbuildProject);
 		}
 
-		void WriteProject ()
+		void WriteProject (string framework = ".NETCoreApp", string version = "1.0")
 		{
-			project.WriteProject (msbuildProject);
+			var moniker = new TargetFrameworkMoniker (framework, version);
+			project.WriteProject (msbuildProject, moniker);
 		}
 
 		[Test]
@@ -194,6 +197,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
 
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 
@@ -244,12 +248,41 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
 
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 			project.AddInternalSdkImports (msbuildProject, "SdkPath", "Sdk.props", "Sdk.targets");
 
 			Assert.AreEqual (2, msbuildProject.Imports.Count ());
 			Assert.AreEqual (2, msbuildProject.PropertyGroups.Count ());
+		}
+
+		[Test]
+		public void AddSdkImports_MultipleSdkImportsAdded ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk1;Microsoft.NET.Sdk2\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk1;Microsoft.NET.Sdk2";
+
+			var props = new [] { "Sdk1.props", "Sdk2.props" };
+			var targets = new [] { "Sdk1.targets", "Sdk2.targets" };
+			project.AddInternalSdkImports (msbuildProject, "SdkPath", props, targets);
+
+			var firstPropertyGroup = msbuildProject.PropertyGroups.First ();
+			Assert.AreEqual ("'$(MSBuildSdksPath)' == ''", firstPropertyGroup.Condition);
+
+			var sdkPathProperty = firstPropertyGroup.GetProperty ("MSBuildSdksPath");
+			Assert.AreEqual ("SdkPath", sdkPathProperty.Value);
+
+			var createdImports = msbuildProject.Imports.Select (import => import.Project).ToArray ();
+			var expectedImports = new [] { "Sdk1.props", "Sdk2.props", "Sdk1.targets", "Sdk2.targets" };
+			Assert.AreEqual (expectedImports, createdImports);
 		}
 
 		[Test]
@@ -289,6 +322,24 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void WriteProject_DescriptionNotInOriginalProjectFileAndNonDefaultValueUsed_NotRemovedOnWriting ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("Description", "Test", string.Empty);
+
+			WriteProject ();
+
+			Assert.AreEqual ("Test", GetPropertyValueFromMSBuildProject ("Description"));
+		}
+
+		[Test]
 		public void WriteProject_TargetFrameworkInformationAdded_RemovedOnWriting ()
 		{
 			CreateMSBuildProject (
@@ -309,7 +360,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		public void WriteProject_AssemblyNameAndRootNamespaceAdded_RemovedOnWriting ()
+		public void WriteProject_AssemblyNameAndRootNamespaceAddedButSameAsProjectName_RemovedOnWriting ()
 		{
 			CreateMSBuildProject (
 				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
@@ -317,7 +368,9 @@ namespace MonoDevelop.DotNetCore.Tests
 				"      <OutputType>Exe</OutputType>\r\n" +
 				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
 				"  </PropertyGroup>\r\n" +
-				"</Project>");
+				"</Project>",
+				"Test.csproj"
+			);
 			ReadProject ();
 			AddGlobalPropertyToMSBuildProject ("AssemblyName", "Test");
 			AddGlobalPropertyToMSBuildProject ("RootNamespace", "Test");
@@ -365,6 +418,95 @@ namespace MonoDevelop.DotNetCore.Tests
 			WriteProject ();
 
 			Assert.IsNull (msbuildProject.ToolsVersion);
+		}
+
+		[Test]
+		public void WriteProject_NewProjectReferenceAddedWithNameAndProjectMetadata_ProjectReferenceSavedWithJustIncludeNotNameAndProject ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+			var projectReferenceItem = msbuildProject.AddNewItem ("ProjectReference", @"Lib\Lib.csproj");
+			projectReferenceItem.Metadata.SetValue ("Name", "Lib");
+			projectReferenceItem.Metadata.SetValue ("Project", "{F109E7DF-F561-4CD6-A46E-CFB27A8B6F2C}");
+
+			WriteProject ();
+
+			var projectReferenceSaved = msbuildProject.GetAllItems ()
+				.FirstOrDefault (item => item.Name == "ProjectReference");
+
+			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Name"));
+			Assert.IsFalse (projectReferenceSaved.Metadata.HasProperty ("Project"));
+			Assert.AreEqual (@"Lib\Lib.csproj", projectReferenceSaved.Include);
+		}
+
+		[Test]
+		public void WriteProject_TargetFrameworkVersionChanged_TargetFrameworkUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETCoreApp", "1.1");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual ("netcoreapp1.1", savedFramework);
+		}
+
+		[Test]
+		public void WriteProject_ProjectDefinesMultipleTargetFrameworksAndTargetFrameworkVersionChanged_TargetFrameworksUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFrameworks>netcoreapp1.0;net45</TargetFrameworks>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETCoreApp", "1.1");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				 .GetValue ("TargetFrameworks");
+			Assert.AreEqual ("netcoreapp1.1;net45", savedFramework);
+		}
+
+		[Test]
+		public void WriteProject_AssemblyNameAndRootNamespaceAddedDifferentToProjectName_AssemblyNameAndRootNamespaceSaved ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>",
+			"MyProject.csproj");
+			ReadProject ();
+			AddGlobalPropertyToMSBuildProject ("AssemblyName", "NewAssemblyName");
+			AddGlobalPropertyToMSBuildProject ("RootNamespace", "NewRootNamespace");
+
+			WriteProject ();
+
+			Assert.AreEqual ("NewAssemblyName", GetPropertyValueFromMSBuildProject ("AssemblyName"));
+			Assert.AreEqual ("NewRootNamespace", GetPropertyValueFromMSBuildProject ("RootNamespace"));
 		}
 	}
 }

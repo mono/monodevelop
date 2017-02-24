@@ -54,7 +54,7 @@ namespace MonoDevelop.DotNetCore
 
 		static bool IsNetStandardProject (DotNetProject project)
 		{
-			return project.TargetFramework.Id.Identifier == ".NETStandard";
+			return project.TargetFramework.IsNetStandard ();
 		}
 
 		/// <summary>

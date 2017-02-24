@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var ws = item as MonoDevelop.Projects.Workspace;
 				if (ws != null) {
 					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor, cancellationToken);
+						await InternalLoad (list, it, progressMonitor, cancellationToken).ConfigureAwait (false);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							workspaces = workspaces.Add (workspace);
 						list.Add (workspace);
 						workspace.ShowStatusIcon ();
-						await workspace.TryLoadSolution (cancellationToken);
+						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						TaskCompletionSource<MonoDevelopWorkspace> request;
@@ -340,18 +340,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Tracked project handling
-		static readonly List<string> outputTrackedProjects = new List<string> ();
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
 
 		static void IntitializeTrackedProjectHandling ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).LanguageName;
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
+					outputTrackedProjects.Add (node);
 					break;
 				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
+					outputTrackedProjects.Remove (node);
 					break;
 				}
 			});
@@ -386,7 +386,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			return outputTrackedProjects.Contains (project.LanguageName, StringComparer.OrdinalIgnoreCase);
+			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) || 
+				project.GetTypeTags().Any (tag => outputTrackedProjects.Any (otp => string.Equals (otp.ProjectType, tag, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)

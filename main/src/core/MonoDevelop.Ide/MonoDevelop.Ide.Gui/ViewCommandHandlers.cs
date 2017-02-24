@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Gui
 			string selectedText = buffer.SelectedText;
 			if (string.IsNullOrEmpty (selectedText)) {
 				int pos = buffer.CaretOffset;
-				string ch = buffer.GetTextAt (pos, pos + 1);
+				string ch = buffer.GetTextAt (pos, 1);
 				string upper = ch.ToUpper ();
 				if (upper == ch) {
 					buffer.CaretOffset = pos + 1;
@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Gui
 			string selectedText = buffer.SelectedText;
 			if (string.IsNullOrEmpty (selectedText)) {
 				int pos = buffer.CaretOffset;
-				string ch = buffer.GetTextAt (pos, pos + 1);
+				string ch = buffer.GetTextAt (pos, 1);
 				string lower = ch.ToLower ();
 				if (lower == ch) {
 					buffer.CaretOffset = pos + 1;

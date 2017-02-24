@@ -115,7 +115,8 @@ namespace MonoDevelop.DotNetCore
 
 		IEnumerable<FileEventInfo> GetProjectFiles (IEnumerable<FileEventInfo> files)
 		{
-			return files.Where (file => file.FileName.HasExtension (".csproj")).ToList ();
+			return files.Where (file => file.FileName.HasSupportedDotNetCoreProjectFileExtension ())
+				.ToList ();
 		}
 
 		/// <summary>

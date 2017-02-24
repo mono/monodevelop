@@ -328,10 +328,11 @@ namespace Mono.TextEditor.Utils
 			WriteTextTo (output, 0, Length);
 		}
 
-		public void WriteTextTo (TextWriter output, int index, int count)
+		public void WriteTextTo (TextWriter output, int start, int count)
 		{
-			while (index < index + count) {
-				output.Write (this [index]);
+			int index = 0;
+			while (index < count) {
+				output.Write (this [start + index]);
 				index++;
 			}
 		}

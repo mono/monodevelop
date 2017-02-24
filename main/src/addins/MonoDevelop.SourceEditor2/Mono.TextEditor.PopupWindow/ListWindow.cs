@@ -174,8 +174,8 @@ namespace Mono.TextEditor.PopupWindow
 		public bool IsUniqueMatch {
 			get {
 				int pos = list.Selection + 1;
-				if (provider.Count > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ())
-				    || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (provider.Count > pos && provider.GetText (pos).StartsWith (PartialWord, StringComparison.OrdinalIgnoreCase)
+				    || !(provider.GetText (list.Selection).StartsWith (PartialWord, StringComparison.OrdinalIgnoreCase)))
 					return false;
 				
 				return true;	

@@ -259,9 +259,13 @@ module CompilerArguments =
             |> Seq.tryFind (fun fn -> fn.EndsWith(assemblyName + ".dll", true, CultureInfo.InvariantCulture)
                                       || fn.EndsWith(assemblyName, true, CultureInfo.InvariantCulture))
 
+        let isDotNetCoreProject =
+            let properties = project.MSBuildProject.EvaluatedProperties
+            properties.HasProperty ("TargetFramework") || properties.HasProperty ("TargetFrameworks")
+
         // If 'mscorlib.dll' or 'FSharp.Core.dll' is not in the set of references, we try to resolve and add them.
-        match find "FSharp.Core", find "mscorlib" with
-        | None, Some mscorlib ->
+        match find "FSharp.Core", find "mscorlib", isDotNetCoreProject with
+        | None, Some mscorlib, false ->
             // if mscorlib is founbd without FSharp.Core yield fsharp.core in the same base dir as mscorlib
             // falling back to one of the default directories
             let extraPath = Some (Path.GetDirectoryName (mscorlib))
@@ -269,13 +273,13 @@ module CompilerArguments =
             | Some ref -> yield "-r:" + wrapf(ref)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
 
-        | Some fsharpCore, None ->
+        | Some fsharpCore, None, false ->
             // If FSharp.Core is found without mscorlib yield an mscorlib thats referenced from FSharp.core
             match ReferenceResolution.tryGetReferenceFromAssembly fsharpCore "mscorlib" with
             | Some resolved -> yield "-r:" + wrapf(resolved)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
 
-        | None, None ->
+        | None, None, false ->
             // If neither are found yield the default fsharp.core and mscorlib
             match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" None with
             | Some ref -> yield "-r:" + wrapf(ref)

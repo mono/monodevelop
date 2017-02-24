@@ -131,6 +131,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
 			
 			res = base.KeyPress (descriptor);
+			if (Editor.EditMode == EditMode.TextLink && Editor.TextLinkPurpose == TextLinkPurpose.Rename) {
+				return res;
+			}
 			if (descriptor.KeyChar == (char)16 || descriptor.KeyChar == (char)17)
 				return res;
 
@@ -244,7 +247,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								} else {
 									CompletionWindowManager.Wnd.StartOffset = CurrentCompletionContext.TriggerOffset;
-									CompletionWindowManager.Wnd.EndOffset = Editor.CaretOffset;
 								}
 							} else {
 								CompletionWindowManager.HideWindow ();
@@ -367,7 +369,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
 			}
-
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}

@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
+open System.Threading.Tasks
 open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
@@ -25,7 +26,7 @@ type FSharpTextPasteHandler(editor:TextEditor) =
         let indent = editor.GetLineIndent nonBlankLineNumber
         [|byte indent.Length|]
 
-    override x.PostFomatPastedText (_offset, _length) = ()
+    override x.PostFomatPastedText (_offset, _length) = Task.FromResult None :> Task
 
 
     override x.FormatPlainText(offset, text, copyData) =

@@ -649,9 +649,9 @@ namespace MonoDevelop.SourceEditor
 					double endX;
 
 					if (metrics.SelectionStart != metrics.TextEndOffset) {
-						var start = metrics.Layout.Layout.IndexToPos ((int)metrics.Layout.SelectionStartIndex);
+						var start = metrics.Layout.IndexToPos ((int)metrics.Layout.SelectionStartIndex);
 						startX = (int)(start.X / Pango.Scale.PangoScale);
-						var end = metrics.Layout.Layout.IndexToPos ((int)metrics.Layout.SelectionEndIndex);
+						var end = metrics.Layout.IndexToPos ((int)metrics.Layout.SelectionEndIndex);
 						endX = (int)(end.X / Pango.Scale.PangoScale);
 					} else {
 						startX = x2;
@@ -712,7 +712,7 @@ namespace MonoDevelop.SourceEditor
 					if (column >= metrics.Layout.LineChars.Length)
 						continue;
 					int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
-					var pos = metrics.Layout.Layout.IndexToPos (index);
+					var pos = metrics.Layout.IndexToPos (index);
 					var co = o + task.Column - 1;
 					g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
 					g.MoveTo (
