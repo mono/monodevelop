@@ -106,7 +106,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					yield break;
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
-						yield return task;
+						if (task.Severity != DiagnosticSeverity.Hidden)
+							yield return task;
 					}
 				}
 			}

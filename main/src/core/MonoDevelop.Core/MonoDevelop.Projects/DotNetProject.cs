@@ -784,15 +784,19 @@ namespace MonoDevelop.Projects
 				yield break;
 
 			if (!File.Exists (fileName)) {
-				string ext = Path.GetExtension (fileName).ToLower ();
-				if (ext == ".dll" || ext == ".exe")
+				string ext = Path.GetExtension (fileName);
+				if (string.Equals (ext, ".dll", StringComparison.OrdinalIgnoreCase) || string.Equals (ext, ".exe", StringComparison.OrdinalIgnoreCase))
 					yield break;
-				if (File.Exists (fileName + ".dll"))
-					fileName = fileName + ".dll";
-				else if (File.Exists (fileName + ".exe"))
-					fileName = fileName + ".exe";
-				else
-					yield break;
+				string dllFileName = fileName + ".dll";
+				if (File.Exists (dllFileName))
+					fileName = dllFileName;
+				else {
+					string exeFileName = fileName + ".exe";
+					if (File.Exists (exeFileName))
+						fileName = exeFileName;
+					else
+						yield break;
+				}
 			}
 
 			yield return fileName;

@@ -1288,7 +1288,7 @@ namespace Mono.TextEditor
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
+			foreach (var fold in GetFoldingContaining (offset, length)) {
 				fold.IsFolded = false;
 			}
 		}

@@ -551,7 +551,8 @@ namespace MonoDevelop.Platform
 					SHOpenFolderAndSelectItems (dir, (uint)files.Length, files, 0);
 				} finally {
 					ILFree (dir);
-					files.ToList ().ForEach (ILFree);
+					foreach (var file in files)
+						ILFree (file);
 				}
 			}
 		}

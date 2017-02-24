@@ -1048,6 +1048,10 @@ namespace MonoDevelop.Debugger.Tests
 			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
+			val = Eval ("(int)19.7");
+			Assert.AreEqual ("19", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
 			val = Eval ("(byte)n");
 			Assert.AreEqual ("32", val.Value);
 			Assert.AreEqual ("byte", val.TypeName);

@@ -76,7 +76,7 @@ namespace MonoDevelop.Core.Execution
 				if (OutputStreamChanged != null) {
 					char[] buffer = new char [1024];
 					int nr;
-					while ((nr = await StandardOutput.ReadAsync (buffer, 0, buffer.Length)) > 0) {
+					while ((nr = await StandardOutput.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
 						OutputStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 					}
 				}
@@ -116,7 +116,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				char[] buffer = new char [1024];
 				int nr;
-				while ((nr = await StandardError.ReadAsync (buffer, 0, buffer.Length)) > 0) {
+				while ((nr = await StandardError.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
 					ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
 				}					
 			} finally {
