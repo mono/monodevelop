@@ -304,7 +304,6 @@
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 
 			<ItemSet id = "Navigate" _label = "Navigate">
-				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"/>

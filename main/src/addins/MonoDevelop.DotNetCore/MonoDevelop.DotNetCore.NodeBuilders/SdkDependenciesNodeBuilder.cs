@@ -1,10 +1,10 @@
 ﻿//
-// PackageDependenciesNodeBuilder.cs
+// SdkDependenciesNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class PackageDependenciesNodeBuilder : TypeNodeBuilder
+	class SdkDependenciesNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(PackageDependenciesNode); }
+			get { return typeof(SdkDependenciesNode); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return PackageDependenciesNode.NodeName;
-		}
-
-		public override Type CommandHandlerType {
-			get { return typeof(PackageDependenciesNodeCommandHandler); }
+			return SdkDependenciesNode.NodeName;
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var node = (PackageDependenciesNode)dataObject;
+			var node = (SdkDependenciesNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.Icon);
@@ -64,15 +59,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var dependenciesNode = (PackageDependenciesNode)dataObject;
+			var dependenciesNode = (SdkDependenciesNode)dataObject;
 			if (dependenciesNode.LoadedDependencies) {
 				AddLoadedDependencyNodes (treeBuilder, dependenciesNode);
-			} else {
-				AddDependencyNodesFromPackageReferencesInProject (treeBuilder, dependenciesNode);
 			}
 		}
 
-		void AddLoadedDependencyNodes (ITreeBuilder treeBuilder, PackageDependenciesNode dependenciesNode)
+		void AddLoadedDependencyNodes (ITreeBuilder treeBuilder, SdkDependenciesNode dependenciesNode)
 		{
 			var frameworkNodes = GetTargetFrameworkNodes (dependenciesNode).ToList ();
 			if (frameworkNodes.Count > 1) {
@@ -80,40 +73,39 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			} else if (frameworkNodes.Any ()) {
 				var frameworkNode = frameworkNodes.First ();
 				treeBuilder.AddChildren (frameworkNode.GetDependencyNodes ());
-			} else {
-				AddDependencyNodesFromPackageReferencesInProject (treeBuilder, dependenciesNode);
 			}
 		}
 
 		IEnumerable<TargetFrameworkNode> GetTargetFrameworkNodes (object dataObject)
 		{
-			var dependenciesNode = (PackageDependenciesNode)dataObject;
+			var dependenciesNode = (SdkDependenciesNode)dataObject;
 			return dependenciesNode.GetTargetFrameworkNodes ();
-		}
-
-		void AddDependencyNodesFromPackageReferencesInProject (ITreeBuilder treeBuilder, PackageDependenciesNode dependenciesNode)
-		{
-			treeBuilder.AddChildren (dependenciesNode.GetProjectPackageReferencesAsDependencyNodes ());
 		}
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			var dependenciesNode = (PackageDependenciesNode)dataObject;
-			dependenciesNode.PackageDependenciesChanged += OnPackageDependenciesChanged;
+			var dependenciesNode = (SdkDependenciesNode)dataObject;
+			dependenciesNode.ParentNode.PackageDependencyCache.PackageDependenciesChanged += OnPackageDependenciesChanged;
 		}
 
 		public override void OnNodeRemoved (object dataObject)
 		{
-			var dependenciesNode = (PackageDependenciesNode)dataObject;
-			dependenciesNode.PackageDependenciesChanged -= OnPackageDependenciesChanged;
+			var dependenciesNode = (SdkDependenciesNode)dataObject;
+			dependenciesNode.ParentNode.PackageDependencyCache.PackageDependenciesChanged -= OnPackageDependenciesChanged;
 		}
 
 		void OnPackageDependenciesChanged (object sender, EventArgs e)
 		{
-			var dependenciesNode = (PackageDependenciesNode)sender;
-			ITreeBuilder builder = Context.GetTreeBuilder (dependenciesNode);
-			if (builder != null) {
-				builder.UpdateAll ();
+			var cache = (PackageDependencyNodeCache)sender;
+			var project = cache.Project;
+			ITreeBuilder builder = Context.GetTreeBuilder (project);
+			if (builder == null)
+				return;
+
+			if (builder.MoveToChild (DependenciesNode.NodeName, typeof(DependenciesNode))) {
+				if (builder.MoveToChild (SdkDependenciesNode.NodeName, typeof(SdkDependenciesNode))) {
+					builder.UpdateAll ();
+				}
 			}
 		}
 	}

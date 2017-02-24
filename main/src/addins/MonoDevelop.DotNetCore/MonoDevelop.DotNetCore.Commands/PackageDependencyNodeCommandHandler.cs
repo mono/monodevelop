@@ -27,11 +27,13 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.DotNetCore.NodeBuilders;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.PackageManagement;
+using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.DotNetCore.Commands
 {
 	class PackageDependencyNodeCommandHandler : NodeCommandHandler
 	{
@@ -49,24 +51,20 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageDependencyNode node, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageAction action = CreateUninstallPackageAction (node);
+			IPackageAction action = PackageReferenceNodeCommandHandler.CreateUninstallPackageAction (node.Project, node.Name);
 			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-		}
-
-		IPackageAction CreateUninstallPackageAction (PackageDependencyNode node)
-		{
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (node.Project.ParentSolution);
-			return new UninstallNuGetPackageAction (solutionManager, new DotNetProjectProxy (node.Project)) {
-				PackageId = node.Name
-			};
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Enabled = CanDeleteMultipleItems () && node.CanBeRemoved;
-			info.Text = GettextCatalog.GetString ("Remove");
+			if (!node.CanBeRemoved) {
+				info.Visible = false;
+			} else {
+				info.Enabled = CanDeleteMultipleItems ();
+				info.Text = GettextCatalog.GetString ("Remove");
+			}
 		}
 
 		public override bool CanDeleteMultipleItems ()
@@ -78,7 +76,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void CheckCanUpdatePackage (CommandInfo info)
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
-			info.Enabled = node.CanBeRemoved;
+			info.Visible = node.CanBeRemoved;
 		}
 
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
@@ -86,19 +84,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			var node = (PackageDependencyNode)CurrentNode.DataItem;
 			var project = new DotNetProjectProxy (node.Project);
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (node.Name, project);
 
-			try {
-				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (node.Project.ParentSolution);
-				var action = new UpdateNuGetPackageAction (solutionManager, project) {
-					PackageId = node.Name,
-					IncludePrerelease = !node.IsReleaseVersion ()
-				};
-
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			} catch (Exception ex) {
-				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
-			}
+			PackageReferenceNodeCommandHandler.UpdatePackage (
+				project,
+				node.Name,
+				!node.IsReleaseVersion ());
 		}
 	}
 }

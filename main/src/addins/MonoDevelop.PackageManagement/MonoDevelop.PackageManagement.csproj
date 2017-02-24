@@ -389,16 +389,6 @@
     <Compile Include="MonoDevelop.PackageManagement\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LoggingProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetCoreFrameworkCompatibility.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNodeBuilderExtension.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\DependenciesNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependenciesNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependenciesNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\TargetFrameworkNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\TargetFrameworkNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageDependencyNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageDependenciesNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesLoadErrorWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesLoadErrorWidget.UI.cs">
       <DependentUpon>PackageSourcesLoadErrorWidget.cs</DependentUpon>
@@ -424,7 +414,6 @@
     <Compile Include="NuGet.Commands\MSBuildRestoreResult.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageDependencyNodeCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -1,5 +1,5 @@
 ﻿//
-// PackageDependenciesNodeCommandHandler.cs
+// TargetFrameworkNodeBuilder.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,16 +24,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class PackageDependenciesNodeCommandHandler : NodeCommandHandler
+	class TargetFrameworkNodeBuilder : TypeNodeBuilder
 	{
-		public override void ActivateItem ()
+		public override Type NodeDataType {
+			get { return typeof(TargetFrameworkNode); }
+		}
+
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var runner = new AddPackagesDialogRunner ();
-			runner.Run ();
+			var node = (TargetFrameworkNode)dataObject;
+			return node.Name;
+		}
+
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+		{
+			var node = (TargetFrameworkNode)dataObject;
+			nodeInfo.Label = node.GetLabel ();
+			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
+			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
+		}
+
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			var node = (TargetFrameworkNode)dataObject;
+			return node.HasDependencies ();
+		}
+
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
+		{
+			treeBuilder.AddChildren (GetPackageDependencyNodes (dataObject));
+		}
+
+		IEnumerable<PackageDependencyNode> GetPackageDependencyNodes (object dataObject)
+		{
+			var node = (TargetFrameworkNode)dataObject;
+			return node.GetDependencyNodes ();
 		}
 	}
 }

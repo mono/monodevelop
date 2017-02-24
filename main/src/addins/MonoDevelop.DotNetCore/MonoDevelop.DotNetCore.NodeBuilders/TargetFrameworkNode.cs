@@ -1,10 +1,10 @@
 ﻿//
-// DotNetProjectOrAssemblyDependenciesCommandHandler.cs
+// TargetFrameworkNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Commands;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.NodeBuilders
 {
-	class DotNetProjectOrAssemblyDependenciesCommandHandler : NodeCommandHandler
+	class TargetFrameworkNode
 	{
-		public override void ActivateItem ()
+		DependenciesNode dependenciesNode;
+		PackageDependency dependency;
+		bool sdkDependencies;
+
+		public TargetFrameworkNode (
+			DependenciesNode dependenciesNode,
+			PackageDependency dependency,
+			bool sdkDependencies)
 		{
-			IdeApp.CommandService.DispatchCommand (ProjectCommands.AddReference);
+			this.dependenciesNode = dependenciesNode;
+			this.dependency = dependency;
+			this.sdkDependencies = sdkDependencies;
+		}
+
+		public string Name {
+			get { return dependency.Name; }
+		}
+
+		public string GetLabel ()
+		{
+			return GLib.Markup.EscapeText (Name);
+		}
+
+		public string GetSecondaryLabel ()
+		{
+			return string.Format ("({0})", dependency.Version);
+		}
+
+		public IconId GetIconId ()
+		{
+			return new IconId ("md-framework-dependency");
+		}
+
+		public bool HasDependencies ()
+		{
+			return dependency.Dependencies.Any ();
+		}
+
+		public IEnumerable<PackageDependencyNode> GetDependencyNodes ()
+		{
+			return PackageDependencyNode.GetDependencyNodes (
+				dependenciesNode,
+				dependency,
+				sdkDependencies,
+				topLevel: true);
 		}
 	}
 }
