@@ -26,6 +26,21 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\Mono.TextEditor.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG, MAC</DefineConstants>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\bin\Mono.TextEditor.xml</DocumentationFile>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
@@ -37,6 +52,21 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\bin\Mono.TextEditor.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>MAC</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\Mono.TextEditor.xml</DocumentationFile>
   </PropertyGroup>
@@ -227,6 +257,9 @@
     <Compile Include="Mono.TextEditor.Utils\ImmutableText.cs" />
     <Compile Include="Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
     <Compile Include="Mono.TextEditor\Styles.cs" />
+    <Compile Include="Mono.TextEditor\Gui\AtkCocoaHelper\AtkCocoaHelper.cs" />
+    <Compile Include="Mono.TextEditor\Gui\AtkCocoaHelper\AtkCocoaHelperMac.cs" />
+    <Compile Include="Mono.TextEditor\Gui\AtkCocoaHelper\AtkCocoaHelperNoOp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
@@ -376,6 +409,7 @@
     <Folder Include="Mono.TextEditor\Gui\" />
     <Folder Include="Mono.TextEditor\Document\" />
     <Folder Include="Mono.TextEditor\Standalone\" />
+    <Folder Include="Mono.TextEditor\Gui\AtkCocoaHelper\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -385,14 +419,6 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

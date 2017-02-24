@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 using Mono.TextEditor.Highlighting;
 
-using MonoDevelop.Components.AtkCocoaHelper;
+using Mono.TextEditor.AtkCocoaHelper;
 
 using Gdk; 
 using Gtk;
@@ -225,7 +225,7 @@ namespace Mono.TextEditor
 		public override AccessibilityElementProxy Accessible {
 			get {
 				if (accessible == null) {
-					accessible = new TextViewMarginAccessibilityProxy ();
+					accessible = (AccessibilityElementProxy) new TextViewMarginAccessibilityProxy ();
 				}
 				return accessible;
 			}

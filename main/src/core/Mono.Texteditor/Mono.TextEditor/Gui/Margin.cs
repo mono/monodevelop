@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Components.AtkCocoaHelper;
+using Mono.TextEditor.AtkCocoaHelper;
 
 namespace Mono.TextEditor
 {
@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 			set {
 				isVisible = value;
 
-				Accessible.AccessibilityHidden = !value;
+				Accessible.SetHidden (!value);
 			}
 		}
 		
