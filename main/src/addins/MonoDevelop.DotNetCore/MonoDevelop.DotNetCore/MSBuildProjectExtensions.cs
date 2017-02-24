@@ -138,56 +138,6 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		/// <summary>
-		/// Use IntermediateOutputPath instead of BaseIntermediateOutputPath since the latter
-		/// seems to have a full path so the exclude fails to match the include since these
-		/// are relative paths. IntermediateOutputPath is a relative path however it is not
-		/// as restrictive as BaseIntermediateOutputPath and will not exclude all files from
-		/// this directory. A separate filtering is done in DotNetCoreProjectExtension's
-		/// OnGetSourceFiles to remove files from the BaseIntermediateOutputPath.
-		/// </summary>
-		static string DefaultExcludes = @"$(BaseOutputPath)**;$(IntermediateOutputPath)**;**\*.*proj.user;**\*.*proj;**\*.sln;.*;**\.*\**";
-
-		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
-		// solution window shows no files.
-		public static void AddWebProjectWildcardItems (this MSBuildProject project)
-		{
-			MSBuildObject before = GetInsertBeforeObject (project, true);
-			MSBuildItemGroup itemGroup = project.AddNewItemGroup (before);
-			itemGroup.Label = InternalDotNetCoreLabel;
-
-			MSBuildItem item = itemGroup.AddNewItem ("Content", @"**\*");
-			item.Exclude = DefaultExcludes + @";**\*.cs;**\*.resx;Properties\**;";
-
-			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
-			item.Exclude = DefaultExcludes + @";wwwroot\**";
-
-			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
-			item.Exclude = DefaultExcludes + @";wwwroot\**";
-		}
-
-		// HACK: Temporary workaround. Add wildcard items to the project otherwise the
-		// solution window shows no files.
-		public static void AddProjectWildcardItems (this MSBuildProject project)
-		{
-			MSBuildObject before = GetInsertBeforeObject (project, true);
-			MSBuildItemGroup itemGroup = project.AddNewItemGroup (before);
-			itemGroup.Label = InternalDotNetCoreLabel;
-
-			// DefaultExcludesInProjectFolder contains "**/.*/**" which does not
-			// exclude directories starting with '.'. Using "**\.*\**" works so
-			// add it directly instead of using DefaultExcludesInProjectFolder in
-			// the exclude.
-			MSBuildItem item = itemGroup.AddNewItem ("None", @"**\*");
-			item.Exclude = DefaultExcludes + @";**\*.cs;**\*.resx";
-
-			item = itemGroup.AddNewItem ("Compile", @"**\*.cs");
-			item.Exclude = DefaultExcludes;
-
-			item = itemGroup.AddNewItem ("EmbeddedResource", @"**\*.resx");
-			item.Exclude = DefaultExcludes;
-		}
-
-		/// <summary>
 		/// Remove Name and Project from project references.
 		/// </summary>
 		public static void RemoveExtraProjectReferenceMetadata (this MSBuildProject project)
