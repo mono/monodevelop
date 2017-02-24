@@ -100,6 +100,7 @@
 	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreFolderNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectNodeBuilderExtension" />
+ 		<NodeBuilder class="MonoDevelop.DotNetCore.ProjXNodeBuilderExtension" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
@@ -133,7 +134,14 @@
 				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
 		</Condition>
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+			<Command id = "MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				defaultHandler = "MonoDevelop.DotNetCore.DotNetMigrateCommandHandler"
+				_label = "Migrate to new format"
+				description="Migrates old .NET Core project to new format"/>
+	</Extension>
+	
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition
 			id="ItemType"
@@ -163,6 +171,15 @@
 			<CommandItem
 				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+		</Condition>
+		<Condition id="ItemType" value="UnknownProject|Solution">
+			<CommandItem
+				id="MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+			<SeparatorItem
+				id="DotNetMigrateSeparator"
+				insertafter="MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		</Condition>
 	</Extension>
 
