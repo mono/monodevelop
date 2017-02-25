@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -704,6 +704,26 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\RemoteBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\FileUtilities.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\FileSystemWatcher.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\FileSystemWatcher.OSX.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.CoreFoundation.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.Error.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.EventStream.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.IOError.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.Libraries.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.PathConf.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.RealPath.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.RunLoop.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\Interop.Sync.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\PathInternal.CaseSensitivity.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\PathInternal.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\PathInternal.Unix.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\PatternMatcher.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\SafeCreateHandle.OSX.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\SafeEventStreamHandle.OSX.cs" />
+    <Compile Include="MonoDevelop.FSW\OSX\SR.cs" />
+    <Compile Include="MonoDevelop.FSW\FileSystemWatcher.cs" />
+    <Compile Include="MonoDevelop.FSW\Mono\FileSystemWatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
