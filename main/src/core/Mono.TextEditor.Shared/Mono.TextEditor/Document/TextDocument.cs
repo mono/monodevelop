@@ -225,9 +225,9 @@ namespace Mono.TextEditor
 
 			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
 
-            this.TextBuffer.Changed += this.OnTextBufferChanged;
+			this.TextBuffer.Changed += this.OnTextBufferChanged;
 
-            TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
+			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			textSegmentMarkerTree.InstallListener (this);
 			this.diffTracker.SetTrackDocument (this);
@@ -236,74 +236,74 @@ namespace Mono.TextEditor
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
 			if ((args.Changes != null) && (args.Changes.Count > 0))
-            {
-                cachedText = null;
+			{
+				cachedText = null;
 
-                bool isSetText = object.ReferenceEquals(args.EditTag, TextDocument.setTextEditTag);
+				bool isSetText = object.ReferenceEquals(args.EditTag, TextDocument.setTextEditTag);
 
-                // Report the changes backwards so that the positions are all accurate
-                for (int i = args.Changes.Count - 1; (i >= 0); --i)
+				// Report the changes backwards so that the positions are all accurate
+				for (int i = args.Changes.Count - 1; (i >= 0); --i)
 				{
-                    var change = args.Changes[i];
+					var change = args.Changes[i];
 
-                    bool endUndo = false;
-                    UndoOperation operation = null;
-                    var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+					bool endUndo = false;
+					UndoOperation operation = null;
+					var textChange = new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
 
-                    if (isSetText)
-                    {
-                        textSegmentMarkerTree.Clear();
-                    }
-                    else
-                    {
-                        InterruptFoldWorker();
+					if (isSetText)
+					{
+						textSegmentMarkerTree.Clear();
+					}
+					else
+					{
+						InterruptFoldWorker();
 
-                        if (!isInUndo)
-                        {
-                            operation = new UndoOperation(textChange);
-                            if (currentAtomicOperation != null)
-                            {
-                                currentAtomicOperation.Add(operation);
-                            }
-                            else
-                            {
-                                OnBeginUndo();
-                                undoStack.Push(operation);
-                                endUndo = true;
-                            }
+						if (!isInUndo)
+						{
+							operation = new UndoOperation(textChange);
+							if (currentAtomicOperation != null)
+							{
+								currentAtomicOperation.Add(operation);
+							}
+							else
+							{
+								OnBeginUndo();
+								undoStack.Push(operation);
+								endUndo = true;
+							}
 
-                            redoStack.Clear();
-                        }
+							redoStack.Clear();
+						}
 
-                        if (change.NewLength != 0)
-                            EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
+						if (change.NewLength != 0)
+							EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
 
-                        foldSegmentTree.UpdateOnTextReplace(this, textChange);
-                    }
+						foldSegmentTree.UpdateOnTextReplace(this, textChange);
+					}
 
 					TextChanging?.Invoke(this, textChange);
 
-                    if (isSetText)
-                    {
-                        extendingTextMarkers = new List<TextLineMarker>();
-                        ClearFoldSegments();
+					if (isSetText)
+					{
+						extendingTextMarkers = new List<TextLineMarker>();
+						ClearFoldSegments();
 
-                        TextSet?.Invoke(this, EventArgs.Empty);
-                        CommitUpdateAll();
-                        ClearUndoBuffer();
-                    }
-                    else
-                    {
-                        TextChanged?.Invoke(this, textChange);
+						TextSet?.Invoke(this, EventArgs.Empty);
+						CommitUpdateAll();
+						ClearUndoBuffer();
+					}
+					else
+					{
+						TextChanged?.Invoke(this, textChange);
 
-                        if (endUndo)
-                            OnEndUndo(new UndoOperationEventArgs(operation));
-                    }
-                }
-            }
+						if (endUndo)
+							OnEndUndo(new UndoOperationEventArgs(operation));
+					}
+				}
+			}
 		}
 
-        void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
+		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsCollapsed)
 				foldedSegments.Remove (e.Node);
@@ -379,17 +379,17 @@ namespace Mono.TextEditor
 			ReplaceText (offset, count, value?.Text);
 		}
 
-        public void ReplaceText(int offset, int count, string value)
-        {
-            ReplaceText(offset, count, value, isSetText: false);
-        }
+		public void ReplaceText(int offset, int count, string value)
+		{
+			ReplaceText(offset, count, value, isSetText: false);
+		}
 
-        private static readonly object setTextEditTag = new object();
+		private static readonly object setTextEditTag = new object();
 
-        private void ReplaceText(int offset, int count, string value, bool isSetText)
-        {
+		private void ReplaceText(int offset, int count, string value, bool isSetText)
+		{
 
-            if (offset < 0)
+			if (offset < 0)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
 			if (offset > Length)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + Length +"), was: " + offset);
@@ -401,11 +401,11 @@ namespace Mono.TextEditor
 			if (value == null)
 				value = string.Empty;
 
-            using (var edit = this.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, reiteratedVersionNumber:null, editTag: isSetText ? TextDocument.setTextEditTag : null))
-            {
-                edit.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
-                edit.Apply();
-            }
+			using (var edit = this.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, reiteratedVersionNumber:null, editTag: isSetText ? TextDocument.setTextEditTag : null))
+			{
+				edit.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
+				edit.Apply();
+			}
 
 		}
 
@@ -1553,7 +1553,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null || marker == null)
 				return;
-            AddMarker (new DocumentLineTextSegmentMarker (line, marker));
+			AddMarker (new DocumentLineTextSegmentMarker (line, marker));
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (marker is IExtendingTextLineMarker) {
 				lock (extendingTextMarkers) {
@@ -2150,7 +2150,7 @@ namespace Mono.TextEditor
 					return this.Line.LineNumber + 1;
 				}
 			}
-			       
+				   
 			public override DocumentLine NextLine
 			{
 				get
