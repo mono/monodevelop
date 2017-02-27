@@ -98,7 +98,7 @@ type FSharpParser() =
                          if file = "" then None else Some file
 
     let isObsolete filename version (token:CancellationToken) =
-        SourceCodeServices.IsResultObsolete(fun () ->
+        (fun () ->
             let shortFilename = Path.GetFileName filename
             try
                 if not token.IsCancellationRequested then
