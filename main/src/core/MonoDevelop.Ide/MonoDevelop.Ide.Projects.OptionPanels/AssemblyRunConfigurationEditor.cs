@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 	}
 
-	class DotNetRunConfigurationEditorWidget: Notebook
+	public class DotNetRunConfigurationEditorWidget: Notebook
 	{
 		RadioButton radioStartProject;
 		RadioButton radioStartApp;
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			envVars.StoreValues (config.EnvironmentVariables);
 		}
 
-		void NotifyChanged ()
+		protected void NotifyChanged ()
 		{
 			Changed?.Invoke (this, EventArgs.Empty);
 		}

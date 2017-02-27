@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreExecutionCommand.cs
+// DotNetCoreRunConfiguration.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       David Karlaš <david.karlas@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using MonoDevelop.Core.Execution;
+using System;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	public class DotNetCoreRunConfiguration : AssemblyRunConfiguration
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		public DotNetCoreRunConfiguration (string name)
+			: base (name)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = new DotNetCorePath ().FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
-
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
+		[ItemProperty (DefaultValue = false)]
+		public bool LaunchBrowser { get; set; } = false;
 	}
 }

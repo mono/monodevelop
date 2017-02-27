@@ -132,16 +132,17 @@ namespace MonoDevelop.DotNetCore
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			FilePath outputFileName = GetOutputFileName (configuration);
-			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
+			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
-				string.IsNullOrEmpty (assemblyRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : assemblyRunConfiguration.StartWorkingDirectory,
+				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				assemblyRunConfiguration?.StartArguments
+				dotnetCoreRunConfiguration?.StartArguments
 			) {
-				EnvironmentVariables = assemblyRunConfiguration?.EnvironmentVariables,
-				PauseConsoleOutput = assemblyRunConfiguration?.PauseConsoleOutput ?? false,
-				ExternalConsole = assemblyRunConfiguration?.ExternalConsole ?? false
+				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
+				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
+				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
+				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false
 			};
 		}
 
@@ -351,6 +352,10 @@ namespace MonoDevelop.DotNetCore
 			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
+		public bool IsWeb {
+			get { return dotNetCoreMSBuildProject.Sdk == "Microsoft.NET.Sdk.Web"; }
+		}
+
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
 		{
 			base.OnPrepareForEvaluation (project);
@@ -532,6 +537,11 @@ namespace MonoDevelop.DotNetCore
 					return false;
 				});
 			});
+		}
+
+		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
+		{
+			return new DotNetCoreRunConfiguration (name);
 		}
 	}
 }

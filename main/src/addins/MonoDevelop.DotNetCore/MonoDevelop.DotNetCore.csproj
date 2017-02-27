@@ -134,6 +134,8 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeCache.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
