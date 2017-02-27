@@ -397,16 +397,13 @@ namespace MonoDevelop.Ide.Gui
 				// Freeze the file change events. There can be several such events, and sending them all together
 				// is more efficient
 				FileService.FreezeEvents ();
-
 				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 					return;
-	
 				if (!Window.ViewContent.IsFile) {
 					await Window.ViewContent.Save ();
 					return;
 				}
-				
-				if (Window.ViewContent.ContentName == null) {
+				if (IsUntitled) {
 					await SaveAs ();
 				} else {
 					try {
@@ -459,7 +456,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task SaveAs (string filename)
 		{
-			return RunAsyncOperation (() => SaveAsTask (filename));
+			return Runtime.RunInMainThread (() => SaveAsTask (filename));
 		}
 
 		async Task SaveAsTask (string filename)
