@@ -97,12 +97,12 @@ namespace WebToolingAddin
                              this.GuardedOperations,
                              this) ?? new VacuousTextViewModel(dataModel);
 
-            TextView editor = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
-            editor.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
+            TextView view = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+            view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
-            this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(editor));
+            this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
 
-            return editor;
+            return view;
         }
 
         public ITextViewRoleSet NoRoles
