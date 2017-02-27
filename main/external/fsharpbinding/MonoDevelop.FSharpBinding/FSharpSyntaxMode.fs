@@ -19,18 +19,13 @@ module Patterns =
     type TokenSymbol =
         { TokenInfo : FSharpTokenInfo
           SymbolUse : FSharpSymbolUse option
-          ExtraColorInfo : (Range.range * FSharpTokenColorKind) option }
+          ExtraColorInfo : (Range.range * SemanticClassificationType) option }
 
     let (|Keyword|_|) ts =
         match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
         | FSharpTokenColorKind.Keyword, _ -> Some ts
         | _ -> None
         
-    let (|CustomKeyword|_|) ts =
-        match ts.ExtraColorInfo with
-        | Some(_range, extra) when extra = FSharpTokenColorKind.Keyword -> Some ts
-        | _ -> None
-
     let (|Punctuation|_|) (ts : TokenSymbol) =
         if ts.TokenInfo.Tag = FSharpTokenTag.PLUS_MINUS_OP
            || ts.TokenInfo.Tag = FSharpTokenTag.MINUS
@@ -267,7 +262,7 @@ module Patterns =
         | _ -> None
 
     module SyntaxMode =
-        let makeChunk (symbolsInFile:IDictionary<_,_>) lineNo lineOffset colourisations token =
+        let makeChunk (symbolsInFile:IDictionary<_,_>) lineNo lineOffset (colourisations:(Range.range * SemanticClassificationType) [] option) token =
             let symbol =
                 if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
                     match symbolsInFile.TryGetValue(Range.mkPos lineNo (token.RightColumn + 1)) with
@@ -294,8 +289,6 @@ module Patterns =
                 | InactiveCode ->
                     makeSeg "punctuation.definition.comment.source"
                 | ComputationExpression _name ->
-                    makeSeg "keyword.other.source"
-                | CustomKeyword _ ->   
                     makeSeg "keyword.other.source"
                 | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ ->
                     makeSeg EditorThemeColors.UserTypes

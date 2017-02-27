@@ -714,7 +714,7 @@ module ParameterHinting =
             // Try to get typed result - within the specified timeout
             let! methsOpt =
                 async { let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false) )
+                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, (fun() -> false) )
                         match tyRes with
                         | Some tyRes ->
                             let line, col, lineStr = editor.GetLineInfoFromOffset (startOffset)

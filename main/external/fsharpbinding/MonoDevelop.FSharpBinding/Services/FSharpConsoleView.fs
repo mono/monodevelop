@@ -56,7 +56,7 @@ type FSharpConsoleView() as x =
         // Get defined directives
         let defines = defines |> Option.map (fun (s:string) -> s.Split([| ' '; ';'; ',' |], StringSplitOptions.RemoveEmptyEntries) |> List.ofSeq)
         // Create source tokenizer
-        let sourceTok = SourceTokenizer(defaultArg defines ["INTERACTIVE";"EDITING"], file)
+        let sourceTok = FSharpSourceTokenizer(defaultArg defines ["INTERACTIVE";"EDITING"], file)
         // Parse lines using the tokenizer
         let tokenizer = sourceTok.CreateLineTokenizer(line)
         let rec parseLine state =
