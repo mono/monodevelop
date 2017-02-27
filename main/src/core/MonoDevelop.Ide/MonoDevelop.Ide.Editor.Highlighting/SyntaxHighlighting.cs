@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		HighlightState GetState (IDocumentLine line)
 		{
-			var pl = line.PreviousLine;
+			var pl = line?.PreviousLine;
 			if (pl == null)
 				return HighlightState.CreateNewState (this);
 			if (stateCache.Count == 0)

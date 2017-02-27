@@ -655,7 +655,7 @@ namespace Mono.TextEditor
 
 		public DocumentLine GetLineByOffset (int offset)
 		{
-			if (offset < 0 || offset >= this.currentSnapshot.Length)
+			if (offset < 0 || offset > this.currentSnapshot.Length)
 				return null;
 			var line = this.currentSnapshot.GetLineFromPosition (offset);
 			return new DocumentLineFromTextSnapshotLine(line);
@@ -668,7 +668,7 @@ namespace Mono.TextEditor
 
 		public int OffsetToLineNumber (int offset)
 		{
-			if (offset < 0 || offset >= this.currentSnapshot.Length)
+			if (offset < 0 || offset > this.currentSnapshot.Length)
 				return 0;
 			return this.currentSnapshot.GetLineFromPosition(offset).LineNumber + 1;
 		}
@@ -2445,28 +2445,23 @@ namespace Mono.TextEditor
 			{
 				var otherVersion = other as TextVersionToTextSourceVersion;
 				if (otherVersion?.version.TextBuffer != this.version.TextBuffer)
-				{
 					throw new ArgumentException(nameof(other) + " is from a different document");
-				}
-
+				
 				int cmp = this.version.VersionNumber - otherVersion.version.VersionNumber;
 				if (cmp == 0)
-				{
 					return oldOffset;
-				}
 
-				if (cmp > 0)
-				{
-					return Microsoft.VisualStudio.Text.Tracking.TrackPositionBackwardInTime(Microsoft.VisualStudio.Text.PointTrackingMode.Positive,
+				int result;
+				if (cmp > 0) {
+					result = Microsoft.VisualStudio.Text.Tracking.TrackPositionBackwardInTime (Microsoft.VisualStudio.Text.PointTrackingMode.Positive,
 																		oldOffset,
 																		this.version, otherVersion.version);
-				}
-				else
-				{
-					return Microsoft.VisualStudio.Text.Tracking.TrackPositionForwardInTime(Microsoft.VisualStudio.Text.PointTrackingMode.Positive,
+				} else {
+					result = Microsoft.VisualStudio.Text.Tracking.TrackPositionForwardInTime(Microsoft.VisualStudio.Text.PointTrackingMode.Positive,
 																	   oldOffset,
 																	   this.version, otherVersion.version);
 				}
+				return result;
 			}
 		}
 	}

@@ -342,9 +342,9 @@ namespace Mono.TextEditor
 				containingFoldings.Clear ();
 				endFoldings.Clear ();
 				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-					if (segment.GetStartLine (editor.Document).Offset == lineSegment.Offset) {
+					if (segment.GetStartLine (editor.Document)?.Offset == lineSegment.Offset) {
 						startFoldings.Add (segment);
-					} else if (segment.GetEndLine (editor.Document).Offset == lineSegment.Offset) {
+					} else if (segment.GetEndLine (editor.Document)?.Offset == lineSegment.Offset) {
 						endFoldings.Add (segment);
 					} else {
 						containingFoldings.Add (segment);
