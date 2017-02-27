@@ -193,6 +193,11 @@ namespace MonoDevelop.Ide.Projects
 		void TemplatesTreeViewSelectionChanged (object sender, EventArgs e)
 		{
 			controller.SelectedTemplate = GetSelectedTemplate ();
+			if (templateTextRenderer.RenderRecentTemplate) {
+				// reset selected language if a recent template has been selected
+				templateTextRenderer.SelectedLanguage = controller.SelectedTemplate.Language;
+				controller.SelectedLanguage = controller.SelectedTemplate.Language;
+			}
 			ShowSelectedTemplate ();
 		}
 
