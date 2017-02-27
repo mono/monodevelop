@@ -178,10 +178,10 @@ namespace MonoDevelop.PackageManagement
 
 		bool RemovePackageReference (PackageIdentity packageIdentity, INuGetProjectContext context)
 		{
-			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity);
+			ProjectPackageReference packageReference = project.GetPackageReference (packageIdentity, matchVersion: false);
 
 			if (packageReference == null) {
-				context.Log (MessageLevel.Warning, GettextCatalog.GetString ("Package '{0}' does not exist in project '{1}'", packageIdentity, project.Name));
+				context.Log (MessageLevel.Warning, GettextCatalog.GetString ("Package '{0}' does not exist in project '{1}'", packageIdentity.Id, project.Name));
 				return false;
 			}
 
