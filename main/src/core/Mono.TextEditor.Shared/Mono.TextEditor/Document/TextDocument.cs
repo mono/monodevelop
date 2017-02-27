@@ -655,7 +655,10 @@ namespace Mono.TextEditor
 
 		public DocumentLine GetLineByOffset (int offset)
 		{
-			return new DocumentLineFromTextSnapshotLine(this.currentSnapshot.GetLineFromPosition(offset));
+			if (offset < 0 || offset >= this.currentSnapshot.Length)
+				return null;
+			var line = this.currentSnapshot.GetLineFromPosition (offset);
+			return new DocumentLineFromTextSnapshotLine(line);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
