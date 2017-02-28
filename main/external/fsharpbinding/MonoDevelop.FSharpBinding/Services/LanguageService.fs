@@ -276,7 +276,7 @@ type LanguageService(dirtyNotify, extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-
+    member x.Checker = checker
 
     member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]

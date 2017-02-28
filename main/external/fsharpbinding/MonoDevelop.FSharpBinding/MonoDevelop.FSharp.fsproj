@@ -221,9 +221,16 @@
     <Compile Include="ScriptDebugging.fs" />
     <Compile Include="vs\IncrementalBuild.fs" />
     <Compile Include="vs\ServiceNavigation.fs" />
-    <Compile Include="vs\ServiceUntypedParse.fsi" />
     <Compile Include="vs\ServiceUntypedParse.fs" />
     <Compile Include="vs\ServiceAssemblyContent.fs" />
+    <None Include="vs\CommonRoslynHelpers.fs" />
+    <Compile Include="vs\AsyncTaskBind.fs" />
+    <Compile Include="vs\CommonConstants.fs" />
+    <Compile Include="vs\VsLanguageService.fs" />
+    <Compile Include="vs\Pervasive.fs" />
+    <Compile Include="vs\CommonHelpers.fs" />
+    <Compile Include="vs\AssemblyContentProvider.fs" />
+    <None Include="vs\ServiceUntypedParse.fsi" />
     <Compile Include="CodeFix\AddOpenCodeFixProvider.fs" />
   </ItemGroup>
   <ProjectExtensions>

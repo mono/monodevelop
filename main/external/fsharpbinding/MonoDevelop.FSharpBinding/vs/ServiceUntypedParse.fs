@@ -639,7 +639,8 @@ module UntypedParseImpl =
             | SynExpr.Sequential(_, _, e1, e2, _) -> Some [e1; e2]
             | _ -> None
 
-        let inline orElse x = Microsoft.FSharp.Core.Option.orElse x
+        let orElseInt ifNone option = match option with None -> ifNone | Some _ -> option
+        let inline orElse x = orElseInt x
 
         let inline isPosInRange range = Range.rangeContainsPos range pos
 
@@ -1171,20 +1172,20 @@ module UntypedParseImpl =
                             | None -> Some (CompletionContext.Invalid) // A $ .B -> no completion list
                         | _ -> None 
                         
-                    member this.VisitBinding(defaultTraverse, synBinding) = defaultTraverse synBinding 
+                    member this.VisitBinding(defaultTraverse, synBinding) = defaultTraverse synBinding }
                     
-                    member this.VisitHashDirective(range) = 
-                        if rangeContainsPos range pos then Some CompletionContext.Invalid 
+                    //member this.VisitHashDirective(range) = 
+                    //    if rangeContainsPos range pos then Some CompletionContext.Invalid 
                         
-                        else None 
+                    //    else None 
                         
-                    member this.VisitModuleOrNamespace(SynModuleOrNamespace(longId = idents)) =
-                        match List.tryLast idents with
-                        | Some lastIdent when pos.Line = lastIdent.idRange.EndLine ->
-                            let stringBetweenModuleNameAndPos = lineStr.[lastIdent.idRange.EndColumn..pos.Column - 1]
-                            if stringBetweenModuleNameAndPos |> Seq.forall (fun x -> x = ' ' || x = '.') then
-                                Some CompletionContext.Invalid
-                            else None
-                        | _ -> None }
+                    //member this.VisitModuleOrNamespace(SynModuleOrNamespace(longId = idents)) =
+                    //    match List.tryLast idents with
+                    //    | Some lastIdent when pos.Line = lastIdent.idRange.EndLine ->
+                    //        let stringBetweenModuleNameAndPos = lineStr.[lastIdent.idRange.EndColumn..pos.Column - 1]
+                    //        if stringBetweenModuleNameAndPos |> Seq.forall (fun x -> x = ' ' || x = '.') then
+                    //            Some CompletionContext.Invalid
+                    //        else None
+                    //    | _ -> None }
 
         AstTraversal.Traverse(pos, pt, walker)

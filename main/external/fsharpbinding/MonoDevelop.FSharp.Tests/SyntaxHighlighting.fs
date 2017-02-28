@@ -140,9 +140,6 @@ type SyntaxHighlighting() =
     [<TestCase("module A$=$", "source.fs")>]
     [<TestCase("let $defaultKeyword$ =", "entity.name.field")>]
     [<TestCase("addButton (\"$gtk-save$\"", "string.quoted.double.source.fs")>]
-
-<<<<<<< c74cb473975e3a2e54053d0c59d71999d410cccb
-=======
     [<TestCase("let simpleBinding = $1$", "Number")>]
     [<TestCase("$let$ simpleBinding = 1", "Keyword(Iteration)")>]
     [<TestCase("$let!$ simpleBinding = 1", "Keyword(Iteration)")>]
@@ -235,7 +232,6 @@ type SyntaxHighlighting() =
     [<TestCase("module A$=$", "Plain Text")>]
     [<TestCase("let $colorToStr$ (c:Color) =", "User Method Declaration")>]
     [<TestCase("let $defaultKeyword$ =", "User Field Declaration")>]
->>>>>>> Can add namespaces for types via right click
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
