@@ -78,6 +78,14 @@ namespace MonoDevelop.PackageManagement.Commands
 			};
 		}
 
+		internal static IPackageAction CreateUninstallPackagesAction (DotNetProject project, string[] packageIds)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			var action = new UninstallNuGetPackagesAction (solutionManager, new DotNetProjectProxy (project));
+			action.AddPackageIds (packageIds);
+			return action;
+		}
+
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{

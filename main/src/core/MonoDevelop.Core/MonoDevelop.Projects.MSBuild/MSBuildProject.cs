@@ -368,6 +368,13 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 		}
 
+		internal Task<bool> SaveAsync (string fileName, string content)
+		{
+			return Task.Run (() => {
+				return TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
+			});
+		}
+
 		public string SaveToString ()
 		{
 			IsNewProject = false;

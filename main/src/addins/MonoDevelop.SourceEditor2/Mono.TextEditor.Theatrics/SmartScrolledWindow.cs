@@ -46,7 +46,7 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
-		public class SmartScrolledWindowContainerChild : Container.ContainerChild
+		internal class SmartScrolledWindowContainerChild : Container.ContainerChild
 		{
 			public ChildPosition ChildPosition {
 				get;

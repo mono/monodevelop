@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		public class LayoutProxy : IDisposable
+		internal class LayoutProxy : IDisposable
 		{
 			readonly LayoutCache layoutCache;
 			readonly Pango.Layout layout;

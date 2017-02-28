@@ -96,7 +96,12 @@ namespace MonoDevelop.Ide
 			SetupExceptionManager ();
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
-			IdeApp.Customizer.Initialize ();
+			try {
+				IdeApp.Customizer.Initialize ();
+			} catch (UnauthorizedAccessException ua) {
+				LoggingService.LogError ("Unauthorized access: " + ua.Message);
+				return 1;
+			}
 
 			try {
 				GLibLogging.Enabled = true;

@@ -262,6 +262,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Enabled = mutableModel.Enabled,
 						Hidden = !mutableModel.Visible,
 					};
+					if (!string.IsNullOrEmpty (runtime.Image)) {
+						menuItem.Image = ImageService.GetIcon (runtime.Image).ToNSImage ();
+					}
+					if (!string.IsNullOrEmpty (runtime.Tooltip)) {
+						menuItem.ToolTip = runtime.Tooltip;
+					}
 					if (ActiveRuntime == runtime || (ActiveRuntime?.Children.Contains (runtime) ?? false)) {
 						menuItem.State = NSCellStateValue.On;
 					}
@@ -297,6 +303,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSImage projectImageDisabled = MultiResImage.CreateMultiResImage ("project", "disabled");
 			NSImage deviceImage = MultiResImage.CreateMultiResImage ("device", "");
 			NSImage deviceImageDisabled = MultiResImage.CreateMultiResImage ("device", "disabled");
+
+			string lastDeviceIconId;
+			NSImage lastDeviceImage;
+			NSImage lastDeviceImageDisabled;
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				Cells = new [] {
@@ -501,20 +511,49 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				UpdateImages ();
 			}
 
+			static NSImage FixImageServiceImage (Xwt.Drawing.Image image, double scale, string[] styles)
+			{
+				NSImage result = image.WithStyles (styles).ToBitmap (scale).ToNSImage ();
+				result.Template = true;
+				return result;
+			}
+
+			NSImage GetDeviceImage (bool enabled)
+			{
+				if (ActiveRuntime == null || string.IsNullOrEmpty (ActiveRuntime.Image))
+					return enabled ? deviceImage : deviceImageDisabled;
+				if (ActiveRuntime.Image == lastDeviceIconId)
+					return enabled ? lastDeviceImage : lastDeviceImageDisabled;
+
+				lastDeviceIconId = ActiveRuntime.Image;
+				var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+				Xwt.Drawing.Image baseIcon = ImageService.GetIcon (ActiveRuntime.Image, Gtk.IconSize.Menu);
+
+				string [] styles, disabledStyles;
+				if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark") {
+					styles = new [] { "dark" };
+					disabledStyles = new [] { "dark", "disabled" };
+				} else {
+					styles = null;
+					disabledStyles = new [] { "disabled" };
+				}
+
+				lastDeviceImage = FixImageServiceImage (baseIcon, scale, styles);
+				lastDeviceImageDisabled = FixImageServiceImage (baseIcon, scale, disabledStyles);
+				return enabled ? lastDeviceImage : lastDeviceImageDisabled;
+			}
+
 			void UpdateImages ()
 			{
 				NSImage runConfigImage = projectImage;
 				NSImage configImage = projectImage;
-				NSImage runtimeImage = deviceImage;
+				NSImage runtimeImage = GetDeviceImage (Cells [RuntimeIdx].Enabled);
 
 				if (!Cells [RunConfigurationIdx].Enabled)
 					runConfigImage = projectImageDisabled;
 
 				if (!Cells [ConfigurationIdx].Enabled)
 					configImage = projectImageDisabled;
-
-				if (!Cells [ConfigurationIdx].Enabled)
-					runtimeImage = deviceImageDisabled;
 
 				// HACK
 				// For some reason NSPathControl does not like the images that ImageService provides. To use them it requires

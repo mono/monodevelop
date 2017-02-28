@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.DotNetCore.NodeBuilders;
@@ -67,9 +68,34 @@ namespace MonoDevelop.DotNetCore.Commands
 			}
 		}
 
-		public override bool CanDeleteMultipleItems ()
+		public override void DeleteMultipleItems ()
 		{
-			return !MultipleSelectedNodes;
+			int nodeCount = CurrentNodes.Count ();
+			if (nodeCount == 1) {
+				DeleteItem ();
+			} else if (nodeCount > 0) {
+				var nodes = CurrentNodes.Select (node => (PackageDependencyNode)node.DataItem).ToArray ();
+				RemoveMultiplePackages (nodes);
+			}
+		}
+
+		void RemoveMultiplePackages (PackageDependencyNode[] nodes)
+		{
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRemovingPackagesFromProjectMessage (nodes.Length);
+
+			try {
+				RemoveMultiplePackage (nodes, progressMessage);
+			} catch (Exception ex) {
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
+
+		void RemoveMultiplePackage (PackageDependencyNode[] nodes, ProgressMonitorStatusMessage progressMessage)
+		{
+			var project = nodes[0].Project;
+			string[] packageIds = nodes.Select (node => node.Name).ToArray ();
+			IPackageAction action = PackageReferenceNodeCommandHandler.CreateUninstallPackagesAction (project, packageIds);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
 		[CommandUpdateHandler (PackageReferenceNodeCommands.UpdatePackage)]

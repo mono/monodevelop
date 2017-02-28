@@ -189,6 +189,12 @@ namespace MonoDevelop.PackageManagement
 				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity, matchVersion));
 		}
 
+		public static bool HasPackageReference (this DotNetProject project, string packageId)
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.Any (projectItem => StringComparer.OrdinalIgnoreCase.Equals (projectItem.Include, packageId));
+		}
+
 		public static FilePath GetNuGetAssetsFilePath (this DotNetProject project)
 		{
 			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);

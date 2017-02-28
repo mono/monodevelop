@@ -478,6 +478,26 @@ namespace MonoDevelop.DotNetCore
 			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
+		/// <summary>
+		/// Handle a new project being created and added to a new solution. In this case
+		/// the NuGet packages should be restored. Need to avoid running a restore when
+		/// a solution is being opened so check that project's parent solution is open in
+		/// the IDE.
+		/// </summary>
+		protected override void OnBoundToSolution ()
+		{
+			base.OnBoundToSolution ();
+
+			if (Project.Loading)
+				return;
+
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)
+				return;
+
+			if (ProjectNeedsRestore ())
+				RestorePackagesInProjectHandler.Run (Project);
+		}
+
 		internal bool RestoreAfterSave { get; set; }
 
 		protected override Task OnSave (ProgressMonitor monitor)
