@@ -39,7 +39,7 @@ using System.Diagnostics;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
+	partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
 		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.EditorTheme), typeof (bool));

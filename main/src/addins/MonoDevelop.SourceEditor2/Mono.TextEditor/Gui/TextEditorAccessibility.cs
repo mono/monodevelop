@@ -374,7 +374,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor
+	internal class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor
 	{
 		private Gtk.Widget widget;
 		private uint focus_id = 0;

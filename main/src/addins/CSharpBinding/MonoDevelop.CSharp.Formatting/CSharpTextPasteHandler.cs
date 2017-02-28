@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
 				var tree = await indent.DocumentContext.AnalysisDocument.GetSyntaxTreeAsync ();
 				int lineStartOffset = indent.Editor.GetLineByOffset (insertionOffset).Offset;
-				int formatCharsCount = insertedChars + (lineStartOffset - insertionOffset);
+				int formatCharsCount = insertedChars + (insertionOffset - lineStartOffset);
 				var policy = indent.DocumentContext.GetFormattingPolicy ();
 				var textPolicy = indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> ();
 				var optionSet = policy.CreateOptions (textPolicy);

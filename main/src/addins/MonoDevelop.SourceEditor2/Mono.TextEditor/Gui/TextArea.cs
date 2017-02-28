@@ -2432,7 +2432,7 @@ namespace Mono.TextEditor
 			In, Out, Bounce
 		}
 		
-		public class RegionPulseAnimation : IAnimationDrawer
+		internal class RegionPulseAnimation : IAnimationDrawer
 		{
 			MonoTextEditor editor;
 			

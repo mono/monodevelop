@@ -20,8 +20,13 @@ type CompilerArgumentsTests() =
         let path = path.Substring(0,path.Length - 1)
         path
 
+    let createFSharpProject() =
+        let testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        testProject.FileName <- FilePath "FSharpProject.fsproj"
+        testProject
+
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
-        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        use testProject = createFSharpProject()
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let _ = testProject.AddReference assemblyName
         let references =
@@ -31,16 +36,14 @@ type CompilerArgumentsTests() =
                                                  ConfigurationSelector.Default,
                                                  true) 
 
-        references.Length |> should equal 3
-
         //The two paths for mscorlib and FSharp.Core should match
         let testPaths = references |> List.map makeTestableReference
         match testPaths |> List.map Path.GetDirectoryName with
-        | [one; two; three] -> ()//one |> should equal three
-        | _ -> Assert.Fail("Too many references returned")
+        | [one; two; three] -> ()
+        | _ -> Assert.Fail(sprintf "Too many references returned %A" testPaths)
 
     member private x.``Run Only FSharp.Core referenced``(assemblyName) =
-        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        use testProject = createFSharpProject()
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let reference = testProject.AddReference assemblyName
         let references = 
@@ -102,7 +105,7 @@ type CompilerArgumentsTests() =
     [<Test>]
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
         if not Platform.IsWindows then
-            use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+            use testProject = createFSharpProject()
             let _ = testProject.AddReference "mscorlib"
             let reference = testProject.AddReference "FSharp.Core.dll"
             let references =

@@ -196,7 +196,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public class EditorContainerChild : Container.ContainerChild
+		internal class EditorContainerChild : Container.ContainerChild
 		{
 			public int X { get; set; }
 			public int Y { get; set; }

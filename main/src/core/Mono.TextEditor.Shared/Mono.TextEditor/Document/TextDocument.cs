@@ -675,7 +675,7 @@ namespace Mono.TextEditor
 		#endregion
 
 		#region Undo/Redo operations
-		public class UndoOperation
+		internal class UndoOperation
 		{
 			TextChangeEventArgs args;
 
@@ -2025,7 +2025,7 @@ namespace Mono.TextEditor
 		}
 
 
-		public class SnapshotDocument : TextDocument
+		internal class SnapshotDocument : TextDocument
 		{
 			readonly ITextSourceVersion version;
 			public override ITextSourceVersion Version  {

@@ -183,6 +183,20 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync(
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			return packageManager.PreviewBuildIntegratedProjectActionsAsync (
+				(BuildIntegratedNuGetProject)buildIntegratedProject,
+				nuGetProjectActions,
+				nuGetProjectContext,
+				token
+			);
+		}
+
 		public async Task OpenReadmeFiles (
 			NuGetProject nuGetProject,
 			IEnumerable<PackageIdentity> packages,

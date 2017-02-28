@@ -205,7 +205,7 @@ namespace Mono.TextEditor
 			selectedRegions.Clear ();
 		}
 
-		public class SearchWorkerArguments
+		internal class SearchWorkerArguments
 		{
 			public int FirstLine { get; set; }
 
@@ -1230,7 +1230,7 @@ namespace Mono.TextEditor
 			return Encoding.UTF8.GetString (bytes, 0, index).Length;
 		}
 
-		public class LayoutWrapper : IDisposable
+		internal class LayoutWrapper : IDisposable
 		{
 			readonly TextViewMargin parent;
 
@@ -1320,7 +1320,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public class BackgroundColor
+			internal class BackgroundColor
 			{
 				public readonly Cairo.Color Color;
 				public readonly int FromIdx;

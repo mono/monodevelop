@@ -242,12 +242,20 @@ namespace MonoDevelop.Ide.Templates
 			var templatePath = item.Uri.StartsWith (templateUriScheme, StringComparison.Ordinal) ? item.Uri.Substring (templateUriScheme.Length) : item.Uri;
 			var parts = templatePath.Split ('/');
 			var templateId = parts [parts.Length - 1];
-			if (parts.Length > 2) {
-				return IdeApp.Services.TemplatingService.GetTemplate ((template) => template.Id == templateId,
-				                                                      (category) => category.Id == parts[0],
-				                                                      (category) => category.Id == parts[1]);
-			} else
-				return IdeApp.Services.TemplatingService.GetTemplate (templateId);
+			SolutionTemplate recentTemplate = null;
+
+			if (parts.Length > 1)
+				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+					(template) => template.Id == templateId,
+					(category) => parts.Length > 1 ? category.Id == parts[0] : true,
+					(category) => parts.Length > 2 ? category.Id == parts[1] : true
+				);
+
+			// fallback to global template lookup if no category matched
+			// in this case the category is not guaranteed if a template is listed in more than one category
+			if (recentTemplate == null)
+				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (templateId);
+			return recentTemplate;
 		}
 
 		public void Dispose ()

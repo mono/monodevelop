@@ -508,21 +508,30 @@ namespace MonoDevelop.Core.Execution
 					return;
 				}
 
-				lock (pendingMessageTasks) {
-					var t = Task.Run (() => {
-						msg = LoadMessageData (msg);
-						if (type == 0)
-							ProcessResponse (msg);
-						else
-							ProcessRemoteMessage (msg);
-					});
-					t.ContinueWith (ta => {
-						lock (pendingMessageTasks) {
-							pendingMessageTasks.Remove (ta);
-						}
-					}).Ignore ();
+				HandleMessage (msg, type);
+			}
+		}
+
+		async void HandleMessage (BinaryMessage msg, byte type)
+		{
+			var t = Task.Run (() => {
+				msg = LoadMessageData (msg);
+				if (type == 0)
+					ProcessResponse (msg);
+				else
+					ProcessRemoteMessage (msg);
+			});
+
+			try {
+				lock (pendingMessageTasks)
 					pendingMessageTasks.Add (t);
-				}
+
+				await t.ConfigureAwait (false);
+			} catch (Exception e) {
+				LoggingService.LogError ("RemoteProcessConnection.HandleMessage failed", e);
+			} finally {
+				lock (pendingMessageTasks)
+					pendingMessageTasks.Remove (t);
 			}
 		}
 
@@ -530,7 +539,8 @@ namespace MonoDevelop.Core.Execution
 
 		public Task ProcessPendingMessages ()
 		{
-			return Task.WhenAll (pendingMessageTasks.ToArray ());
+			lock (pendingMessageTasks)
+				return Task.WhenAll (pendingMessageTasks.ToArray ());
 		}
 
 		BinaryMessage LoadMessageData (BinaryMessage msg)

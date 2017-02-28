@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 		
-		public class HeightChangedEventArgs : EventArgs
+		internal class HeightChangedEventArgs : EventArgs
 		{
 			public int Line { get; set; }
 
@@ -237,7 +237,7 @@ namespace Mono.TextEditor
 			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber));
 		}
 		
-		public class FoldMarker
+		internal class FoldMarker
 		{
 			public readonly int Line;
 			public readonly int Count;
@@ -528,7 +528,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public class HeightNode : IRedBlackTreeNode
+		internal class HeightNode : IRedBlackTreeNode
 		{
 			public double totalHeight;
 			public double height;
