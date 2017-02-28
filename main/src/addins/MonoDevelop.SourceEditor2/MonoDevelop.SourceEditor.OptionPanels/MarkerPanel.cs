@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	
-	public partial class MarkerPanel : Gtk.Bin, IOptionsPanel
+	partial class MarkerPanel : Gtk.Bin, IOptionsPanel
 	{
 
 		bool showLineNumbers;

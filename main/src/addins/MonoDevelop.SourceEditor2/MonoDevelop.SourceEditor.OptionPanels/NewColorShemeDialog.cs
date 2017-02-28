@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class NewColorShemeDialog : Gtk.Dialog
+	partial class NewColorShemeDialog : Gtk.Dialog
 	{
 		Gtk.ListStore store = new Gtk.ListStore (typeof(string));
 			

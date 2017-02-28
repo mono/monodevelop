@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 			clipboard.SetWithData (CopyOperation.TargetEntries, operation.ClipboardGetFunc, operation.ClipboardClearFunc);
 		}
 	
-		public class CopyOperation
+		internal class CopyOperation
 		{
 			public const int TextType     = 1;
 			public const int HTMLTextType = 2;
