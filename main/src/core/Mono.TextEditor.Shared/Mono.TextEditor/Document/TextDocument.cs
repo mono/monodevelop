@@ -320,7 +320,10 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
+				var tmp = IsReadOnly;
+				IsReadOnly = false;
 				this.ReplaceText(0, this.currentSnapshot.Length, value);
+				IsReadOnly = tmp;
 			}
 		}
 
