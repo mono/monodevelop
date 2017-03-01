@@ -48,7 +48,7 @@ namespace MonoDevelop.DotNetCore
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			if (DotNetMigrateCommandHandler.IsMigratableProject (dataObject as UnknownProject))
+			if (!DotNetMigrateCommandHandler.IsMigratableProject (dataObject as UnknownProject))
 				return;
 
 			nodeInfo.StatusMessage = GettextCatalog.GetString ("Project format is not supported by {0}.\nUse 'Migrate to new format' command on solution or single project to migrate to format supported by {0}.", BrandingService.ApplicationName);
