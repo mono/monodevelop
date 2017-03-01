@@ -34,6 +34,7 @@ using System.Reflection;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -73,11 +74,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				var newText = oldText.WithChanges (changes);
 				currentText = newText;
-				try {
-					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while text replacing", ex);
-				}
+				Task.Run (delegate {
+					try {
+						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while text replacing", ex);
+					}
+				});
 			}
 		}
 
