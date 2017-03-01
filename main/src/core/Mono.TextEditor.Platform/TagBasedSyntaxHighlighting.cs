@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.Platform
 			{
 				if (curSpan.Span.Start > lastClassifiedOffsetEnd)
 				{
-					scopeStack = new ScopeStack(EditorThemeColors.UserTypes);
+					scopeStack = new ScopeStack(EditorThemeColors.Foreground);
 					ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add(whitespaceSegment);
 				}
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.Platform
 
 			if (snapshotLine.End.Position  > lastClassifiedOffsetEnd)
 			{
-				scopeStack = new ScopeStack(EditorThemeColors.UserTypes);
+				scopeStack = new ScopeStack(EditorThemeColors.Foreground);
 				ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, snapshotLine.End.Position - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add(whitespaceSegment);
 			}
