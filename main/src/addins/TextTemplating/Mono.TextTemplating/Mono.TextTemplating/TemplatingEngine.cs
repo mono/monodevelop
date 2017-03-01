@@ -183,8 +183,11 @@ namespace Mono.TextTemplating
 					continue;
 
 				string resolvedAssem = host.ResolveAssemblyReference (assem);
-				if (!string.IsNullOrEmpty (resolvedAssem) && File.Exists (resolvedAssem)) {
-					resolved [AssemblyName.GetAssemblyName (resolvedAssem).FullName] = resolvedAssem;
+				if (!string.IsNullOrEmpty (resolvedAssem)) {
+					var assemblyName = resolvedAssem;
+					if (File.Exists (resolvedAssem))
+						assemblyName = AssemblyName.GetAssemblyName (resolvedAssem).FullName;
+					resolved [assemblyName] = resolvedAssem;
 				} else {
 					pt.LogError ("Could not resolve assembly reference '" + assem + "'");
 					return null;
