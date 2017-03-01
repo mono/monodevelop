@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.Text.Operations.Implementation
     using Microsoft.VisualStudio.Text.Formatting;
     using Microsoft.VisualStudio.Utilities;
     using Microsoft.VisualStudio.Text.Outlining;
-    using Microsoft.VisualStudio.Language.Intellisense.Utilities;
+    //using Microsoft.VisualStudio.Language.Intellisense.Utilities;
 
     [Export(typeof(IEditorOperationsFactoryService))]
     internal sealed class EditorOperationsFactoryService : IEditorOperationsFactoryService
@@ -19,8 +19,8 @@ namespace Microsoft.VisualStudio.Text.Operations.Implementation
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorFactory { get; set; }
 
         // This service should be optional: it is implemented on the VS side and other hosts may not implement it.
-        [Import(AllowDefault = true)]
-        internal IWaitIndicator WaitIndicator { get; set; }
+        //[Import(AllowDefault = true)]
+        //internal IWaitIndicator WaitIndicator { get; set; }
 
         [Import]
         internal ITextSearchService TextSearchService { get; set; }
