@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
@@ -112,6 +113,8 @@ namespace MonoDevelop.DotNetCore
 				var newProject = await project.ParentFolder.AddItem (monitor, newProjectFile);
 				project.ParentFolder.Items.Remove (project);
 				await newProject.ParentSolution.SaveAsync (monitor);
+
+				RestorePackagesInProjectHandler.Run ((DotNetProject)newProject);
 			} else {
 				solution.NeedsReload = true;
 				FileService.NotifyFileChanged (solution.FileName);
