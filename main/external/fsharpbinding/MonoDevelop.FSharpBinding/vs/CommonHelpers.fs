@@ -88,7 +88,7 @@ module internal CommonHelpers =
         | FSharpTokenColorKind.InactiveCode -> ClassificationTypeNames.ExcludedCode 
         | FSharpTokenColorKind.PreprocessorKeyword -> ClassificationTypeNames.PreprocessorKeyword 
         | FSharpTokenColorKind.Operator -> ClassificationTypeNames.Operator
-        | FSharpTokenColorKind.Punctuation -> ClassificationTypeNames.Punctuation
+        //| FSharpTokenColorKind.Punctuation -> ClassificationTypeNames.Punctuation
         | FSharpTokenColorKind.Default | _ -> ClassificationTypeNames.Text
 
     let private scanSourceLine(sourceTokenizer: FSharpSourceTokenizer, textLine: TextLine, lineContents: string, lexState: FSharpTokenizerLexState) : SourceLineData =
@@ -184,7 +184,8 @@ module internal CommonHelpers =
          with 
          | :? System.OperationCanceledException -> reraise()
          |  ex -> 
-             Assert.Exception(ex)
+             MonoDevelop.Core.LoggingService.LogError(ex.ToString())
+             //Assert.Exception(ex)
              List<ClassifiedSpan>()
 
     type private DraftToken =
@@ -195,205 +196,207 @@ module internal CommonHelpers =
             { Kind = kind; Token = token; RightColumn = token.LeftColumn + token.FullMatchedLength - 1 }
     
     /// Returns symbol at a given position.
-    let private getSymbolFromTokens (fileName: string, tokens: FSharpTokenInfo list, linePos: LinePosition, lineStr: string, lookupKind: SymbolLookupKind) : LexerSymbol option =
-        let isIdentifier t = t.CharClass = FSharpTokenCharKind.Identifier
-        let isOperator t = t.ColorClass = FSharpTokenColorKind.Operator
-        let isPunctuation t = t.ColorClass = FSharpTokenColorKind.Punctuation
+    //let private getSymbolFromTokens (fileName: string, tokens: FSharpTokenInfo list, linePos: LinePosition, lineStr: string, lookupKind: SymbolLookupKind) : LexerSymbol option =
+    //    let isIdentifier t = t.CharClass = FSharpTokenCharKind.Identifier
+    //    let isOperator t = t.ColorClass = FSharpTokenColorKind.Operator
+    //    //let isPunctuation t = t.ColorClass = FSharpTokenColorKind.Punctuation
     
-        let inline (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|Other|) (token: FSharpTokenInfo) =
-            if token.Tag = FSharpTokenTag.QUOTE then GenericTypeParameterPrefix
-            elif token.Tag = FSharpTokenTag.INFIX_AT_HAT_OP then
-                 // The lexer return INFIX_AT_HAT_OP token for both "^" and "@" symbols.
-                 // We have to check the char itself to distinguish one from another.
-                 if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn] = '^' then 
-                    StaticallyResolvedTypeParameterPrefix
-                 else Other
-            else Other
+    //    let inline (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|Other|) (token: FSharpTokenInfo) =
+    //        if token.Tag = FSharpTokenTag.QUOTE then GenericTypeParameterPrefix
+    //        elif token.Tag = FSharpTokenTag.INFIX_AT_HAT_OP then
+    //             // The lexer return INFIX_AT_HAT_OP token for both "^" and "@" symbols.
+    //             // We have to check the char itself to distinguish one from another.
+    //             if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn] = '^' then 
+    //                StaticallyResolvedTypeParameterPrefix
+    //             else Other
+    //        else Other
        
-        // Operators: Filter out overlapped operators (>>= operator is tokenized as three distinct tokens: GREATER, GREATER, EQUALS. 
-        // Each of them has FullMatchedLength = 3. So, we take the first GREATER and skip the other two).
-        //
-        // Generic type parameters: we convert QUOTE + IDENT tokens into single IDENT token, altering its LeftColumn 
-        // and FullMathedLength (for "'type" which is tokenized as (QUOTE, left=2) + (IDENT, left=3, length=4) 
-        // we'll get (IDENT, left=2, length=5).
-        //
-        // Statically resolved type parameters: we convert INFIX_AT_HAT_OP + IDENT tokens into single IDENT token, altering its LeftColumn 
-        // and FullMathedLength (for "^type" which is tokenized as (INFIX_AT_HAT_OP, left=2) + (IDENT, left=3, length=4) 
-        // we'll get (IDENT, left=2, length=5).
-        let tokens = 
-            let tokensCount = tokens.Length
-            tokens
-            |> List.foldi (fun (acc, lastToken) index (token: FSharpTokenInfo) ->
-                match lastToken with
-                | Some t when token.LeftColumn <= t.RightColumn -> acc, lastToken
-                | _ ->
-                    let isLastToken = index = tokensCount - 1
-                    match token with
-                    | GenericTypeParameterPrefix when not isLastToken -> acc, Some (DraftToken.Create LexerSymbolKind.GenericTypeParameter token)
-                    | StaticallyResolvedTypeParameterPrefix when not isLastToken -> acc, Some (DraftToken.Create LexerSymbolKind.StaticallyResolvedTypeParameter token)
-                    | _ ->
-                        let draftToken =
-                            match lastToken with
-                            | Some { Kind = LexerSymbolKind.GenericTypeParameter | LexerSymbolKind.StaticallyResolvedTypeParameter as kind } when isIdentifier token ->
-                                DraftToken.Create kind { token with LeftColumn = token.LeftColumn - 1
-                                                                    FullMatchedLength = token.FullMatchedLength + 1 }
-                            // ^ operator                                                
-                            | Some { Kind = LexerSymbolKind.StaticallyResolvedTypeParameter } ->
-                                DraftToken.Create LexerSymbolKind.Operator { token with LeftColumn = token.LeftColumn - 1
-                                                                                        FullMatchedLength = 1 }
-                            | _ -> 
-                                let kind = 
-                                    if isOperator token then LexerSymbolKind.Operator 
-                                    elif isIdentifier token then LexerSymbolKind.Ident 
-                                    elif isPunctuation token then LexerSymbolKind.Punctuation
-                                    else LexerSymbolKind.Other
+    //    // Operators: Filter out overlapped operators (>>= operator is tokenized as three distinct tokens: GREATER, GREATER, EQUALS. 
+    //    // Each of them has FullMatchedLength = 3. So, we take the first GREATER and skip the other two).
+    //    //
+    //    // Generic type parameters: we convert QUOTE + IDENT tokens into single IDENT token, altering its LeftColumn 
+    //    // and FullMathedLength (for "'type" which is tokenized as (QUOTE, left=2) + (IDENT, left=3, length=4) 
+    //    // we'll get (IDENT, left=2, length=5).
+    //    //
+    //    // Statically resolved type parameters: we convert INFIX_AT_HAT_OP + IDENT tokens into single IDENT token, altering its LeftColumn 
+    //    // and FullMathedLength (for "^type" which is tokenized as (INFIX_AT_HAT_OP, left=2) + (IDENT, left=3, length=4) 
+    //    // we'll get (IDENT, left=2, length=5).
+    //    let tokens = 
+    //        let tokensCount = tokens.Length
+    //        tokens
+    //        |> List.foldi (fun (acc, lastToken) index (token: FSharpTokenInfo) ->
+    //            match lastToken with
+    //            | Some t when token.LeftColumn <= t.RightColumn -> acc, lastToken
+    //            | _ ->
+    //                let isLastToken = index = tokensCount - 1
+    //                match token with
+    //                | GenericTypeParameterPrefix when not isLastToken -> acc, Some (DraftToken.Create LexerSymbolKind.GenericTypeParameter token)
+    //                | StaticallyResolvedTypeParameterPrefix when not isLastToken -> acc, Some (DraftToken.Create LexerSymbolKind.StaticallyResolvedTypeParameter token)
+    //                | _ ->
+    //                    let draftToken =
+    //                        match lastToken with
+    //                        | Some { Kind = LexerSymbolKind.GenericTypeParameter | LexerSymbolKind.StaticallyResolvedTypeParameter as kind } when isIdentifier token ->
+    //                            DraftToken.Create kind { token with LeftColumn = token.LeftColumn - 1
+    //                                                                FullMatchedLength = token.FullMatchedLength + 1 }
+    //                        // ^ operator                                                
+    //                        | Some { Kind = LexerSymbolKind.StaticallyResolvedTypeParameter } ->
+    //                            DraftToken.Create LexerSymbolKind.Operator { token with LeftColumn = token.LeftColumn - 1
+    //                                                                                    FullMatchedLength = 1 }
+    //                        | _ -> 
+    //                            let kind = 
+    //                                if isOperator token then LexerSymbolKind.Operator 
+    //                                elif isIdentifier token then LexerSymbolKind.Ident 
+    //                                //elif isPunctuation token then LexerSymbolKind.Punctuation
+    //                                else LexerSymbolKind.Other
 
-                                DraftToken.Create kind token
-                        draftToken :: acc, Some draftToken
-                ) ([], None)
-            |> fst
+    //                            DraftToken.Create kind token
+    //                    draftToken :: acc, Some draftToken
+    //            ) ([], None)
+    //        |> fst
            
-        // One or two tokens that in touch with the cursor (for "let x|(g) = ()" the tokens will be "x" and "(")
-        let tokensUnderCursor = 
-            let rightColumnCorrection = 
-                match lookupKind with 
-                | SymbolLookupKind.Precise -> 0
-                | SymbolLookupKind.Greedy -> 1
+    //    // One or two tokens that in touch with the cursor (for "let x|(g) = ()" the tokens will be "x" and "(")
+    //    let tokensUnderCursor = 
+    //        let rightColumnCorrection = 
+    //            match lookupKind with 
+    //            | SymbolLookupKind.Precise -> 0
+    //            | SymbolLookupKind.Greedy -> 1
             
-            tokens |> List.filter (fun x -> x.Token.LeftColumn <= linePos.Character && (x.RightColumn + rightColumnCorrection) >= linePos.Character)
+    //        tokens |> List.filter (fun x -> x.Token.LeftColumn <= linePos.Character && (x.RightColumn + rightColumnCorrection) >= linePos.Character)
                 
-        // Select IDENT token. If failed, select OPERATOR token.
-        tokensUnderCursor
-        |> List.tryFind (fun { DraftToken.Kind = k } -> 
-            match k with 
-            | LexerSymbolKind.Ident 
-            | LexerSymbolKind.GenericTypeParameter 
-            | LexerSymbolKind.StaticallyResolvedTypeParameter -> true 
-            | _ -> false) 
-        |> Option.orElseWith (fun _ -> tokensUnderCursor |> List.tryFind (fun { DraftToken.Kind = k } -> k = LexerSymbolKind.Operator))
-        |> Option.map (fun token ->
-            let plid, _ = QuickParse.GetPartialLongNameEx(lineStr, token.RightColumn)
-            let identStr = lineStr.Substring(token.Token.LeftColumn, token.Token.FullMatchedLength)
-            { Kind = token.Kind
-              Ident = 
-                Ident 
-                    (identStr, 
-                     Range.mkRange 
-                        fileName 
-                        (Range.mkPos (linePos.Line + 1) token.Token.LeftColumn)
-                        (Range.mkPos (linePos.Line + 1) (token.RightColumn + 1))) 
-              FullIsland = plid @ [identStr] })
+    //    // Select IDENT token. If failed, select OPERATOR token.
+    //    tokensUnderCursor
+    //    |> List.tryFind (fun { DraftToken.Kind = k } -> 
+    //        match k with 
+    //        | LexerSymbolKind.Ident 
+    //        | LexerSymbolKind.GenericTypeParameter 
+    //        | LexerSymbolKind.StaticallyResolvedTypeParameter -> true 
+    //        | _ -> false) 
+    //    |> Option.orElseWith (fun _ -> tokensUnderCursor |> List.tryFind (fun { DraftToken.Kind = k } -> k = LexerSymbolKind.Operator))
+    //    |> Option.map (fun token ->
+    //        let plid, _ = QuickParse.GetPartialLongNameEx(lineStr, token.RightColumn)
+    //        let identStr = lineStr.Substring(token.Token.LeftColumn, token.Token.FullMatchedLength)
+    //        { Kind = token.Kind
+    //          Ident = 
+    //            Ident 
+    //                (identStr, 
+    //                 Range.mkRange 
+    //                    fileName 
+    //                    (Range.mkPos (linePos.Line + 1) token.Token.LeftColumn)
+    //                    (Range.mkPos (linePos.Line + 1) (token.RightColumn + 1))) 
+    //          FullIsland = plid @ [identStr] })
 
-    let private getCachedSourceLineData(documentKey: DocumentId, sourceText: SourceText, position: int, fileName: string, defines: string list) = 
-        let textLine = sourceText.Lines.GetLineFromPosition(position)
-        let textLinePos = sourceText.Lines.GetLinePosition(position)
-        let lineNumber = textLinePos.Line + 1 // FCS line number
-        let sourceTokenizer = FSharpSourceTokenizer(defines, Some fileName)
-        let lines = sourceText.Lines
-        // We keep incremental data per-document. When text changes we correlate text line-by-line (by hash codes of lines)
-        let sourceTextData = dataCache.GetValue(documentKey, fun key -> SourceTextData(lines.Count))
-        // Go backwards to find the last cached scanned line that is valid
-        let scanStartLine = 
-            let mutable i = min (lines.Count - 1) lineNumber
-            while i > 0 &&
-               (match sourceTextData.[i] with 
-                | Some data -> not (data.IsValid(lines.[i])) 
-                | None -> true
-               ) do  
-               i <- i - 1
-            i
-        let lexState = if scanStartLine = 0 then 0L else sourceTextData.[scanStartLine - 1].Value.LexStateAtEndOfLine
-        let lineContents = textLine.Text.ToString(textLine.Span)
+    //let private getCachedSourceLineData(documentKey: DocumentId, sourceText: SourceText, position: int, fileName: string, defines: string list) = 
+    //    let textLine = sourceText.Lines.GetLineFromPosition(position)
+    //    let textLinePos = sourceText.Lines.GetLinePosition(position)
+    //    let lineNumber = textLinePos.Line + 1 // FCS line number
+    //    let sourceTokenizer = FSharpSourceTokenizer(defines, Some fileName)
+    //    let lines = sourceText.Lines
+    //    // We keep incremental data per-document. When text changes we correlate text line-by-line (by hash codes of lines)
+    //    let sourceTextData = dataCache.GetValue(documentKey, fun key -> SourceTextData(lines.Count))
+    //    // Go backwards to find the last cached scanned line that is valid
+    //    let scanStartLine = 
+    //        let mutable i = min (lines.Count - 1) lineNumber
+    //        while i > 0 &&
+    //           (match sourceTextData.[i] with 
+    //            | Some data -> not (data.IsValid(lines.[i])) 
+    //            | None -> true
+    //           ) do  
+    //           i <- i - 1
+    //        i
+    //    let lexState = if scanStartLine = 0 then 0L else sourceTextData.[scanStartLine - 1].Value.LexStateAtEndOfLine
+    //    let lineContents = textLine.Text.ToString(textLine.Span)
         
-        // We can reuse the old data when 
-        //   1. the line starts at the same overall position
-        //   2. the hash codes match
-        //   3. the start-of-line lex states are the same
-        match sourceTextData.[lineNumber] with 
-        | Some data when data.IsValid(textLine) && data.LexStateAtStartOfLine = lexState -> 
-            data, textLinePos, lineContents
-        | _ -> 
-            // Otherwise, we recompute
-            let newData = scanSourceLine(sourceTokenizer, textLine, lineContents, lexState)
-            sourceTextData.[lineNumber] <- Some newData
-            newData, textLinePos, lineContents
+    //    // We can reuse the old data when 
+    //    //   1. the line starts at the same overall position
+    //    //   2. the hash codes match
+    //    //   3. the start-of-line lex states are the same
+    //    match sourceTextData.[lineNumber] with 
+    //    | Some data when data.IsValid(textLine) && data.LexStateAtStartOfLine = lexState -> 
+    //        data, textLinePos, lineContents
+    //    | _ -> 
+    //        // Otherwise, we recompute
+    //        let newData = scanSourceLine(sourceTokenizer, textLine, lineContents, lexState)
+    //        sourceTextData.[lineNumber] <- Some newData
+    //        newData, textLinePos, lineContents
            
-    let tokenizeLine (documentKey, sourceText, position, fileName, defines) =
-        try
-            let lineData, _, _ = getCachedSourceLineData(documentKey, sourceText, position, fileName, defines)
-            lineData.Tokens   
-        with 
-        |  ex -> 
-            Assert.Exception(ex)
-            []
+    //let tokenizeLine (documentKey, sourceText, position, fileName, defines) =
+    //    try
+    //        let lineData, _, _ = getCachedSourceLineData(documentKey, sourceText, position, fileName, defines)
+    //        lineData.Tokens   
+    //    with 
+    //    |  ex -> 
+    //        //Assert.Exception(ex)
+    //        MonoDevelop.Core.LoggingService.LogInternalError ex
+    //        []
 
-    let getSymbolAtPosition(documentKey: DocumentId, sourceText: SourceText, position: int, fileName: string, defines: string list, lookupKind: SymbolLookupKind) : LexerSymbol option =
-        try
-            let lineData, textLinePos, lineContents = getCachedSourceLineData(documentKey, sourceText, position, fileName, defines)
-            getSymbolFromTokens(fileName, lineData.Tokens, textLinePos, lineContents, lookupKind)
-        with 
-        | :? System.OperationCanceledException -> reraise()
-        |  ex -> 
-            Assert.Exception(ex)
-            None
+    //let getSymbolAtPosition(documentKey: DocumentId, sourceText: SourceText, position: int, fileName: string, defines: string list, lookupKind: SymbolLookupKind) : LexerSymbol option =
+    //    try
+    //        let lineData, textLinePos, lineContents = getCachedSourceLineData(documentKey, sourceText, position, fileName, defines)
+    //        getSymbolFromTokens(fileName, lineData.Tokens, textLinePos, lineContents, lookupKind)
+    //    with 
+    //    | :? System.OperationCanceledException -> reraise()
+    //    |  ex -> 
+    //        //Assert.Exception(ex)
+    //        MonoDevelop.Core.LoggingService.LogInternalError ex
+    //        None
 
-    /// Fix invalid span if it appears to have redundant suffix and prefix.
-    let fixupSpan (sourceText: SourceText, span: TextSpan) : TextSpan =
-        let text = sourceText.GetSubText(span).ToString()
-        match text.LastIndexOf '.' with
-        | -1 | 0 -> span
-        | index -> TextSpan(span.Start + index + 1, text.Length - index - 1)
+    ///// Fix invalid span if it appears to have redundant suffix and prefix.
+    //let fixupSpan (sourceText: SourceText, span: TextSpan) : TextSpan =
+    //    let text = sourceText.GetSubText(span).ToString()
+    //    match text.LastIndexOf '.' with
+    //    | -1 | 0 -> span
+    //    | index -> TextSpan(span.Start + index + 1, text.Length - index - 1)
 
-    let isValidNameForSymbol (lexerSymbolKind: LexerSymbolKind, symbol: FSharpSymbol, name: string) : bool =
-        let doubleBackTickDelimiter = "``"
+    //let isValidNameForSymbol (lexerSymbolKind: LexerSymbolKind, symbol: FSharpSymbol, name: string) : bool =
+    //    let doubleBackTickDelimiter = "``"
         
-        let isDoubleBacktickIdent (s: string) =
-            let doubledDelimiter = 2 * doubleBackTickDelimiter.Length
-            if s.StartsWith(doubleBackTickDelimiter) && s.EndsWith(doubleBackTickDelimiter) && s.Length > doubledDelimiter then
-                let inner = s.Substring(doubleBackTickDelimiter.Length, s.Length - doubledDelimiter)
-                not (inner.Contains(doubleBackTickDelimiter))
-            else false
+    //    let isDoubleBacktickIdent (s: string) =
+    //        let doubledDelimiter = 2 * doubleBackTickDelimiter.Length
+    //        if s.StartsWith(doubleBackTickDelimiter) && s.EndsWith(doubleBackTickDelimiter) && s.Length > doubledDelimiter then
+    //            let inner = s.Substring(doubleBackTickDelimiter.Length, s.Length - doubledDelimiter)
+    //            not (inner.Contains(doubleBackTickDelimiter))
+    //        else false
         
-        let isIdentifier (ident: string) =
-            if isDoubleBacktickIdent ident then
-                true
-            else
-                ident 
-                |> Seq.mapi (fun i c -> i, c)
-                |> Seq.forall (fun (i, c) -> 
-                     if i = 0 then PrettyNaming.IsIdentifierFirstCharacter c 
-                     else PrettyNaming.IsIdentifierPartCharacter c) 
+    //    let isIdentifier (ident: string) =
+    //        if isDoubleBacktickIdent ident then
+    //            true
+    //        else
+    //            ident 
+    //            |> Seq.mapi (fun i c -> i, c)
+    //            |> Seq.forall (fun (i, c) -> 
+    //                 if i = 0 then PrettyNaming.IsIdentifierFirstCharacter c 
+    //                 else PrettyNaming.IsIdentifierPartCharacter c) 
         
-        let isFixableIdentifier (s: string) = 
-            not (String.IsNullOrEmpty s) && Lexhelp.Keywords.NormalizeIdentifierBackticks s |> isIdentifier
+    //    let isFixableIdentifier (s: string) = 
+    //        not (String.IsNullOrEmpty s) && Lexhelp.Keywords.NormalizeIdentifierBackticks s |> isIdentifier
         
-        let forbiddenChars = [| '.'; '+'; '$'; '&'; '['; ']'; '/'; '\\'; '*'; '\'' |]
+    //    let forbiddenChars = [| '.'; '+'; '$'; '&'; '['; ']'; '/'; '\\'; '*'; '\'' |]
         
-        let isTypeNameIdent (s: string) =
-            not (String.IsNullOrEmpty s) && s.IndexOfAny forbiddenChars = -1 && isFixableIdentifier s 
+    //    let isTypeNameIdent (s: string) =
+    //        not (String.IsNullOrEmpty s) && s.IndexOfAny forbiddenChars = -1 && isFixableIdentifier s 
         
-        let isUnionCaseIdent (s: string) =
-            isTypeNameIdent s && Char.IsUpper(s.Replace(doubleBackTickDelimiter, "").[0])
+    //    let isUnionCaseIdent (s: string) =
+    //        isTypeNameIdent s && Char.IsUpper(s.Replace(doubleBackTickDelimiter, "").[0])
         
-        let isTypeParameter (prefix: char) (s: string) =
-            s.Length >= 2 && s.[0] = prefix && isIdentifier s.[1..]
+    //    let isTypeParameter (prefix: char) (s: string) =
+    //        s.Length >= 2 && s.[0] = prefix && isIdentifier s.[1..]
         
-        let isGenericTypeParameter = isTypeParameter '''
-        let isStaticallyResolvedTypeParameter = isTypeParameter '^'
+    //    let isGenericTypeParameter = isTypeParameter '''
+    //    let isStaticallyResolvedTypeParameter = isTypeParameter '^'
         
-        match lexerSymbolKind, symbol with
-        | _, :? FSharpUnionCase -> isUnionCaseIdent name
-        | _, :? FSharpActivePatternCase -> 
-            // Different from union cases, active patterns don't accept double-backtick identifiers
-            isFixableIdentifier name && not (String.IsNullOrEmpty name) && Char.IsUpper(name.[0]) 
-        | LexerSymbolKind.Operator, _ -> PrettyNaming.IsOperatorName name
-        | LexerSymbolKind.Punctuation, _ -> PrettyNaming.IsPunctuation name
-        | LexerSymbolKind.GenericTypeParameter, _ -> isGenericTypeParameter name
-        | LexerSymbolKind.StaticallyResolvedTypeParameter, _ -> isStaticallyResolvedTypeParameter name
-        | (LexerSymbolKind.Ident | LexerSymbolKind.Other), _ ->
-            match symbol with
-            | :? FSharpEntity as e when e.IsClass || e.IsFSharpRecord || e.IsFSharpUnion || e.IsValueType || e.IsFSharpModule || e.IsInterface -> isTypeNameIdent name
-            | _ -> isFixableIdentifier name
+    //    match lexerSymbolKind, symbol with
+    //    | _, :? FSharpUnionCase -> isUnionCaseIdent name
+    //    | _, :? FSharpActivePatternCase -> 
+    //        // Different from union cases, active patterns don't accept double-backtick identifiers
+    //        isFixableIdentifier name && not (String.IsNullOrEmpty name) && Char.IsUpper(name.[0]) 
+    //    | LexerSymbolKind.Operator, _ -> PrettyNaming.IsOperatorName name
+    //    //| LexerSymbolKind.Punctuation, _ -> PrettyNaming.IsPunctuation name
+    //    | LexerSymbolKind.GenericTypeParameter, _ -> isGenericTypeParameter name
+    //    | LexerSymbolKind.StaticallyResolvedTypeParameter, _ -> isStaticallyResolvedTypeParameter name
+    //    | (LexerSymbolKind.Ident | LexerSymbolKind.Other), _ ->
+    //        match symbol with
+    //        | :? FSharpEntity as e when e.IsClass || e.IsFSharpRecord || e.IsFSharpUnion || e.IsValueType || e.IsFSharpModule || e.IsInterface -> isTypeNameIdent name
+    //        | _ -> isFixableIdentifier name
 
 [<RequireQualifiedAccess; NoComparison>] 
 type internal SymbolDeclarationLocation = 
@@ -405,8 +408,8 @@ module internal Extensions =
     open System
     open System.IO
     open Microsoft.FSharp.Compiler.Ast
-    open Microsoft.FSharp.Compiler.Lib
-    open Microsoft.VisualStudio.FSharp.Editor.Logging
+    //open Microsoft.FSharp.Compiler.Lib
+    //open Microsoft.VisualStudio.FSharp.Editor.Logging
 
     type System.IServiceProvider with
         member x.GetService<'T>() = x.GetService(typeof<'T>) :?> 'T
@@ -421,7 +424,7 @@ module internal Extensions =
         | Ready of (FSharpParseFileResults * FSharpCheckFileResults) option
         | StillRunning of Async<(FSharpParseFileResults * FSharpCheckFileResults) option>
 
-    let getFreshFileCheckResultsTimeoutMillis = GetEnvInteger "VFT_GetFreshFileCheckResultsTimeoutMillis" 1000
+    let getFreshFileCheckResultsTimeoutMillis = 1000//GetEnvInteger "VFT_GetFreshFileCheckResultsTimeoutMillis" 1000
     
     type FSharpChecker with
         member this.ParseDocument(document: Document, options: FSharpProjectOptions, sourceText: string) =
@@ -440,9 +443,10 @@ module internal Extensions =
             }
 
         member this.ParseAndCheckDocument(filePath: string, textVersionHash: int, sourceText: string, options: FSharpProjectOptions, allowStaleResults: bool) : Async<(FSharpParseFileResults * Ast.ParsedInput * FSharpCheckFileResults) option> =
+            let checker = MonoDevelop.FSharp.MDLanguageService.Instance.Checker
             let parseAndCheckFile =
                 async {
-                    let! parseResults, checkFileAnswer = this.ParseAndCheckFileInProject(filePath, textVersionHash, sourceText, options)
+                    let! parseResults, checkFileAnswer = checker.ParseAndCheckFileInProject(filePath, textVersionHash, sourceText, options)
                     return
                         match checkFileAnswer with
                         | FSharpCheckFileAnswer.Aborted -> 
@@ -451,17 +455,17 @@ module internal Extensions =
                             Some (parseResults, checkFileResults)
                 }
 
-            let tryGetFreshResultsWithTimeout() : Async<CheckResults> =
-                async {
-                    try
-                        let! worker = Async.StartChild(parseAndCheckFile, getFreshFileCheckResultsTimeoutMillis)
-                        let! result = worker 
-                        return Ready result
-                    with :? TimeoutException ->
-                        return StillRunning parseAndCheckFile
-                }
+            //let tryGetFreshResultsWithTimeout() : Async<CheckResults> =
+            //    async {
+            //        try
+            //            let! worker = Async.StartChild(parseAndCheckFile, getFreshFileCheckResultsTimeoutMillis)
+            //            let! result = worker 
+            //            return Ready result
+            //        with :? TimeoutException ->
+            //            return StillRunning parseAndCheckFile
+            //    }
 
-            let bindParsedInput(results: (FSharpParseFileResults * FSharpCheckFileResults) option) =
+            let bindParsedInput (results: (FSharpParseFileResults * FSharpCheckFileResults) option) =
                 match results with
                 | Some(parseResults, checkResults) ->
                     match parseResults.ParseTree with
@@ -469,24 +473,25 @@ module internal Extensions =
                     | None -> None
                 | None -> None
 
-            if allowStaleResults then
-                async {
-                    let! freshResults = tryGetFreshResultsWithTimeout()
+            parseAndCheckFile |> Async.map bindParsedInput
+            //if allowStaleResults then
+            //    async {
+            //        let! freshResults = tryGetFreshResultsWithTimeout()
                     
-                    let! results =
-                        match freshResults with
-                        | Ready x -> async.Return x
-                        | StillRunning worker ->
-                            async {
-                                match allowStaleResults, this.TryGetRecentCheckResultsForFile(filePath, options) with
-                                | true, Some (parseResults, checkFileResults, _) ->
-                                    return Some (parseResults, checkFileResults)
-                                | _ ->
-                                    return! worker
-                            }
-                    return bindParsedInput results
-                }
-            else parseAndCheckFile |> Async.map bindParsedInput
+            //        let! results =
+            //            match freshResults with
+            //            | Ready x -> async.Return x
+            //            | StillRunning worker ->
+            //                async {
+            //                    match allowStaleResults, checker.TryGetRecentCheckResultsForFile(filePath, options) with
+            //                    | true, Some (parseResults, checkFileResults, _) ->
+            //                        return Some (parseResults, checkFileResults)
+            //                    | _ ->
+            //                        return! worker
+            //                }
+            //        return bindParsedInput results
+            //    }
+            //else parseAndCheckFile |> Async.map bindParsedInput
 
         member this.ParseAndCheckDocument(document: Document, options: FSharpProjectOptions, allowStaleResults: bool, ?sourceText: SourceText) : Async<(FSharpParseFileResults * Ast.ParsedInput * FSharpCheckFileResults) option> =
             async {
@@ -603,75 +608,75 @@ module internal Extensions =
                 ]
             allBaseTypes x
 
-    type FSharpNavigationDeclarationItem with
-        member x.RoslynGlyph : Glyph =
-            match x.GlyphMajor with
-            | GlyphMajor.Class
-            | GlyphMajor.Typedef
-            | GlyphMajor.Type
-            | GlyphMajor.Exception ->
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.ClassPrivate
-                | Some SynAccess.Internal -> Glyph.ClassInternal
-                | _ -> Glyph.ClassPublic
-            | GlyphMajor.Constant -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.ConstantPrivate
-                | Some SynAccess.Internal -> Glyph.ConstantInternal
-                | _ -> Glyph.ConstantPublic
-            | GlyphMajor.Delegate -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.DelegatePrivate
-                | Some SynAccess.Internal -> Glyph.DelegateInternal
-                | _ -> Glyph.DelegatePublic
-            | GlyphMajor.Union
-            | GlyphMajor.Enum -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.EnumPrivate
-                | Some SynAccess.Internal -> Glyph.EnumInternal
-                | _ -> Glyph.EnumPublic
-            | GlyphMajor.EnumMember
-            | GlyphMajor.Variable
-            | GlyphMajor.FieldBlue -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.FieldPrivate
-                | Some SynAccess.Internal -> Glyph.FieldInternal
-                | _ -> Glyph.FieldPublic
-            | GlyphMajor.Event -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.EventPrivate
-                | Some SynAccess.Internal -> Glyph.EventInternal
-                | _ -> Glyph.EventPublic
-            | GlyphMajor.Interface -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.InterfacePrivate
-                | Some SynAccess.Internal -> Glyph.InterfaceInternal
-                | _ -> Glyph.InterfacePublic
-            | GlyphMajor.Method
-            | GlyphMajor.Method2 -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.MethodPrivate
-                | Some SynAccess.Internal -> Glyph.MethodInternal
-                | _ -> Glyph.MethodPublic
-            | GlyphMajor.Module -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.ModulePrivate
-                | Some SynAccess.Internal -> Glyph.ModuleInternal
-                | _ -> Glyph.ModulePublic
-            | GlyphMajor.NameSpace -> Glyph.Namespace
-            | GlyphMajor.Property -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.PropertyPrivate
-                | Some SynAccess.Internal -> Glyph.PropertyInternal
-                | _ -> Glyph.PropertyPublic
-            | GlyphMajor.Struct
-            | GlyphMajor.ValueType -> 
-                match x.Access with
-                | Some SynAccess.Private -> Glyph.StructurePrivate
-                | Some SynAccess.Internal -> Glyph.StructureInternal
-                | _ -> Glyph.StructurePublic
-            | GlyphMajor.Error -> Glyph.Error
-            | _ -> Glyph.None
+    //type FSharpNavigationDeclarationItem with
+    //    member x.RoslynGlyph : Glyph =
+    //        match x.GlyphMajor with
+    //        | GlyphMajor.Class
+    //        | GlyphMajor.Typedef
+    //        | GlyphMajor.Type
+    //        | GlyphMajor.Exception ->
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.ClassPrivate
+    //            | Some SynAccess.Internal -> Glyph.ClassInternal
+    //            | _ -> Glyph.ClassPublic
+    //        | GlyphMajor.Constant -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.ConstantPrivate
+    //            | Some SynAccess.Internal -> Glyph.ConstantInternal
+    //            | _ -> Glyph.ConstantPublic
+    //        | GlyphMajor.Delegate -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.DelegatePrivate
+    //            | Some SynAccess.Internal -> Glyph.DelegateInternal
+    //            | _ -> Glyph.DelegatePublic
+    //        | GlyphMajor.Union
+    //        | GlyphMajor.Enum -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.EnumPrivate
+    //            | Some SynAccess.Internal -> Glyph.EnumInternal
+    //            | _ -> Glyph.EnumPublic
+    //        | GlyphMajor.EnumMember
+    //        | GlyphMajor.Variable
+    //        | GlyphMajor.FieldBlue -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.FieldPrivate
+    //            | Some SynAccess.Internal -> Glyph.FieldInternal
+    //            | _ -> Glyph.FieldPublic
+    //        | GlyphMajor.Event -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.EventPrivate
+    //            | Some SynAccess.Internal -> Glyph.EventInternal
+    //            | _ -> Glyph.EventPublic
+    //        | GlyphMajor.Interface -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.InterfacePrivate
+    //            | Some SynAccess.Internal -> Glyph.InterfaceInternal
+    //            | _ -> Glyph.InterfacePublic
+    //        | GlyphMajor.Method
+    //        | GlyphMajor.Method2 -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.MethodPrivate
+    //            | Some SynAccess.Internal -> Glyph.MethodInternal
+    //            | _ -> Glyph.MethodPublic
+    //        | GlyphMajor.Module -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.ModulePrivate
+    //            | Some SynAccess.Internal -> Glyph.ModuleInternal
+    //            | _ -> Glyph.ModulePublic
+    //        | GlyphMajor.NameSpace -> Glyph.Namespace
+    //        | GlyphMajor.Property -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.PropertyPrivate
+    //            | Some SynAccess.Internal -> Glyph.PropertyInternal
+    //            | _ -> Glyph.PropertyPublic
+    //        | GlyphMajor.Struct
+    //        | GlyphMajor.ValueType -> 
+    //            match x.Access with
+    //            | Some SynAccess.Private -> Glyph.StructurePrivate
+    //            | Some SynAccess.Internal -> Glyph.StructureInternal
+    //            | _ -> Glyph.StructurePublic
+    //        | GlyphMajor.Error -> Glyph.Error
+    //        | _ -> Glyph.None
 
 /// Active patterns over `FSharpSymbolUse`.
 module internal SymbolUse =

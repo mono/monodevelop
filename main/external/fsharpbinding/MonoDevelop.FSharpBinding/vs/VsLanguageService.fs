@@ -16,3 +16,5 @@ type ProjectInfoManager() =
     member x.TryGetOptionsForEditingDocumentOrProject (document:Document) =
         let res, sourceText = document.TryGetText()
         languageService.GetCheckerOptions(document.FilePath, document.Project.FilePath, sourceText.ToString())
+
+namespace Microsoft.FSharp.Compiler.Parser

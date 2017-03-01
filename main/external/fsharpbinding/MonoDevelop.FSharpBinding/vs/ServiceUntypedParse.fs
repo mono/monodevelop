@@ -78,303 +78,303 @@ type CompletionContext =
 // FSharpParseFileResults
 //----------------------------------------------------------------------------
 
-[<Sealed>]
-type FSharpParseFileResults(errors : FSharpErrorInfo[], input : Ast.ParsedInput option, parseHadErrors : bool, dependencyFiles : string list) = 
+//[<Sealed>]
+//type FSharpParseFileResults(errors : FSharpErrorInfo[], input : Ast.ParsedInput option, parseHadErrors : bool, dependencyFiles : string list) = 
 
-    member scope.Errors = errors
+//    member scope.Errors = errors
 
-    member scope.ParseHadErrors = parseHadErrors
+//    member scope.ParseHadErrors = parseHadErrors
 
-    member scope.ParseTree = input
+//    member scope.ParseTree = input
 
-    member scope.FindNoteworthyParamInfoLocations(pos) = 
-        match input with
-        | Some(input) -> FSharpNoteworthyParamInfoLocations.Find(pos,input)
-        | _ -> None
+//    member scope.FindNoteworthyParamInfoLocations(pos) = 
+//        match input with
+//        | Some(input) -> FSharpNoteworthyParamInfoLocations.Find(pos,input)
+//        | _ -> None
     
-    /// Get declared items and the selected item at the specified location
-    member private scope.GetNavigationItemsImpl() =
-       ErrorScope.Protect Range.range0 
-            (fun () -> 
-                match input with
-                | Some(ParsedInput.ImplFile(ParsedImplFileInput(_modname,_isScript,_qualName,_pragmas,_hashDirectives,modules,_isLastCompiland))) ->
-                    NavigationImpl.getNavigationFromImplFile modules 
-                | Some(ParsedInput.SigFile(ParsedSigFileInput(_modname,_qualName,_pragmas,_hashDirectives,_modules))) ->
-                    NavigationImpl.empty
-                | _ -> 
-                    NavigationImpl.empty )
-            (fun _ -> NavigationImpl.empty)   
+//    /// Get declared items and the selected item at the specified location
+//    member private scope.GetNavigationItemsImpl() =
+//       ErrorScope.Protect Range.range0 
+//            (fun () -> 
+//                match input with
+//                | Some(ParsedInput.ImplFile(ParsedImplFileInput(_modname,_isScript,_qualName,_pragmas,_hashDirectives,modules,_isLastCompiland))) ->
+//                    NavigationImpl.getNavigationFromImplFile modules 
+//                | Some(ParsedInput.SigFile(ParsedSigFileInput(_modname,_qualName,_pragmas,_hashDirectives,_modules))) ->
+//                    NavigationImpl.empty
+//                | _ -> 
+//                    NavigationImpl.empty )
+//            (fun _ -> NavigationImpl.empty)   
             
-    member private scope.ValidateBreakpointLocationImpl(pos) =
-        let isMatchRange m = rangeContainsPos m pos || m.StartLine = pos.Line
+//    member private scope.ValidateBreakpointLocationImpl(pos) =
+//        let isMatchRange m = rangeContainsPos m pos || m.StartLine = pos.Line
 
-        // Process let-binding
-        let findBreakPoints () = 
-            let checkRange m = [ if isMatchRange m then yield m ]
-            let walkBindSeqPt sp = [ match sp with SequencePointAtBinding m -> yield! checkRange m | _ -> () ]
-            let walkForSeqPt sp = [ match sp with SequencePointAtForLoop m -> yield! checkRange m | _ -> () ]
-            let walkWhileSeqPt sp = [ match sp with SequencePointAtWhileLoop m -> yield! checkRange m | _ -> () ]
-            let walkTrySeqPt sp = [ match sp with SequencePointAtTry m -> yield! checkRange m | _ -> () ]
-            let walkWithSeqPt sp = [ match sp with SequencePointAtWith m -> yield! checkRange m | _ -> () ]
-            let walkFinallySeqPt sp = [ match sp with SequencePointAtFinally m -> yield! checkRange m | _ -> () ]
+//        // Process let-binding
+//        let findBreakPoints () = 
+//            let checkRange m = [ if isMatchRange m then yield m ]
+//            let walkBindSeqPt sp = [ match sp with SequencePointAtBinding m -> yield! checkRange m | _ -> () ]
+//            let walkForSeqPt sp = [ match sp with SequencePointAtForLoop m -> yield! checkRange m | _ -> () ]
+//            let walkWhileSeqPt sp = [ match sp with SequencePointAtWhileLoop m -> yield! checkRange m | _ -> () ]
+//            let walkTrySeqPt sp = [ match sp with SequencePointAtTry m -> yield! checkRange m | _ -> () ]
+//            let walkWithSeqPt sp = [ match sp with SequencePointAtWith m -> yield! checkRange m | _ -> () ]
+//            let walkFinallySeqPt sp = [ match sp with SequencePointAtFinally m -> yield! checkRange m | _ -> () ]
 
-            let rec walkBind (Binding(_, _, _, _, _, _, SynValData(memFlagsOpt,_,_), synPat, _, synExpr, _, spInfo)) =
-                [ // Don't yield the binding sequence point if there are any arguments, i.e. we're defining a function or a method
-                  let isFunction = 
-                      Option.isSome memFlagsOpt ||
-                      match synPat with 
-                      | SynPat.LongIdent (_,_,_, SynConstructorArgs.Pats args,_,_) when not (List.isEmpty args) -> true
-                      | _ -> false
-                  if not isFunction then 
-                      yield! walkBindSeqPt spInfo
+//            let rec walkBind (Binding(_, _, _, _, _, _, SynValData(memFlagsOpt,_,_), synPat, _, synExpr, _, spInfo)) =
+//                [ // Don't yield the binding sequence point if there are any arguments, i.e. we're defining a function or a method
+//                  let isFunction = 
+//                      Option.isSome memFlagsOpt ||
+//                      match synPat with 
+//                      | SynPat.LongIdent (_,_,_, SynConstructorArgs.Pats args,_,_) when not (List.isEmpty args) -> true
+//                      | _ -> false
+//                  if not isFunction then 
+//                      yield! walkBindSeqPt spInfo
 
-                  yield! walkExpr (isFunction || (match spInfo with SequencePointAtBinding _ -> false | _-> true)) synExpr ]
+//                  yield! walkExpr (isFunction || (match spInfo with SequencePointAtBinding _ -> false | _-> true)) synExpr ]
 
-            and walkExprs es = List.collect (walkExpr false) es
-            and walkBinds es = List.collect walkBind es
-            and walkMatchClauses cl = 
-                [ for (Clause(_,whenExpr,e,_,_)) in cl do 
-                    match whenExpr with 
-                    | Some e -> yield! walkExpr false e 
-                    | _ -> ()
-                    yield! walkExpr true e ]
+//            and walkExprs es = List.collect (walkExpr false) es
+//            and walkBinds es = List.collect walkBind es
+//            and walkMatchClauses cl = 
+//                [ for (Clause(_,whenExpr,e,_,_)) in cl do 
+//                    match whenExpr with 
+//                    | Some e -> yield! walkExpr false e 
+//                    | _ -> ()
+//                    yield! walkExpr true e ]
 
-            and walkExprOpt (spAlways:bool) eOpt = [ match eOpt with Some e -> yield! walkExpr spAlways e | _ -> () ]
+//            and walkExprOpt (spAlways:bool) eOpt = [ match eOpt with Some e -> yield! walkExpr spAlways e | _ -> () ]
             
-            and IsBreakableExpression e =
-                match e with
-                | SynExpr.Match _
-                | SynExpr.IfThenElse _
-                | SynExpr.For _
-                | SynExpr.ForEach _
-                | SynExpr.While _ -> true
-                | _ -> not (IsControlFlowExpression e)
+//            and IsBreakableExpression e =
+//                match e with
+//                | SynExpr.Match _
+//                | SynExpr.IfThenElse _
+//                | SynExpr.For _
+//                | SynExpr.ForEach _
+//                | SynExpr.While _ -> true
+//                | _ -> not (IsControlFlowExpression e)
 
-            // Determine the breakpoint locations for an expression. spAlways indicates we always
-            // emit a breakpoint location for the expression unless it is a syntactic control flow construct
-            and walkExpr (spAlways:bool)  e =
-                let m = e.Range
-                if not (isMatchRange m) then [] else
-                [ if spAlways && IsBreakableExpression e then 
-                      yield! checkRange m
+//            // Determine the breakpoint locations for an expression. spAlways indicates we always
+//            // emit a breakpoint location for the expression unless it is a syntactic control flow construct
+//            and walkExpr (spAlways:bool)  e =
+//                let m = e.Range
+//                if not (isMatchRange m) then [] else
+//                [ if spAlways && IsBreakableExpression e then 
+//                      yield! checkRange m
 
-                  match e with
-                  | SynExpr.ArbitraryAfterError _ 
-                  | SynExpr.LongIdent _
-                  | SynExpr.LibraryOnlyILAssembly _
-                  | SynExpr.LibraryOnlyStaticOptimization _
-                  | SynExpr.Null _
-                  | SynExpr.Ident _
-                  | SynExpr.ImplicitZero _
-                  | SynExpr.Const _ -> 
-                     ()
+//                  match e with
+//                  | SynExpr.ArbitraryAfterError _ 
+//                  | SynExpr.LongIdent _
+//                  | SynExpr.LibraryOnlyILAssembly _
+//                  | SynExpr.LibraryOnlyStaticOptimization _
+//                  | SynExpr.Null _
+//                  | SynExpr.Ident _
+//                  | SynExpr.ImplicitZero _
+//                  | SynExpr.Const _ -> 
+//                     ()
 
-                  | SynExpr.Quote(_,_,e,_,_)
-                  | SynExpr.TypeTest (e,_,_)
-                  | SynExpr.Upcast (e,_,_)
-                  | SynExpr.AddressOf (_,e,_,_)
-                  | SynExpr.CompExpr (_,_,e,_) 
-                  | SynExpr.ArrayOrListOfSeqExpr (_,e,_)
-                  | SynExpr.Typed (e,_,_)
-                  | SynExpr.FromParseError (e,_) 
-                  | SynExpr.DiscardAfterMissingQualificationAfterDot (e,_) 
-                  | SynExpr.Do (e,_)
-                  | SynExpr.Assert (e,_)
-                  | SynExpr.Fixed (e,_)
-                  | SynExpr.DotGet (e,_,_,_) 
-                  | SynExpr.LongIdentSet (_,e,_)
-                  | SynExpr.New (_,_,e,_) 
-                  | SynExpr.TypeApp (e,_,_,_,_,_,_) 
-                  | SynExpr.LibraryOnlyUnionCaseFieldGet (e,_,_,_) 
-                  | SynExpr.Downcast (e,_,_)
-                  | SynExpr.InferredUpcast (e,_)
-                  | SynExpr.InferredDowncast (e,_)
-                  | SynExpr.Lazy (e, _)
-                  | SynExpr.TraitCall(_,_,e,_)
-                  | SynExpr.Paren(e,_,_,_) -> 
-                      yield! walkExpr false e
+//                  | SynExpr.Quote(_,_,e,_,_)
+//                  | SynExpr.TypeTest (e,_,_)
+//                  | SynExpr.Upcast (e,_,_)
+//                  | SynExpr.AddressOf (_,e,_,_)
+//                  | SynExpr.CompExpr (_,_,e,_) 
+//                  | SynExpr.ArrayOrListOfSeqExpr (_,e,_)
+//                  | SynExpr.Typed (e,_,_)
+//                  | SynExpr.FromParseError (e,_) 
+//                  | SynExpr.DiscardAfterMissingQualificationAfterDot (e,_) 
+//                  | SynExpr.Do (e,_)
+//                  | SynExpr.Assert (e,_)
+//                  | SynExpr.Fixed (e,_)
+//                  | SynExpr.DotGet (e,_,_,_) 
+//                  | SynExpr.LongIdentSet (_,e,_)
+//                  | SynExpr.New (_,_,e,_) 
+//                  | SynExpr.TypeApp (e,_,_,_,_,_,_) 
+//                  | SynExpr.LibraryOnlyUnionCaseFieldGet (e,_,_,_) 
+//                  | SynExpr.Downcast (e,_,_)
+//                  | SynExpr.InferredUpcast (e,_)
+//                  | SynExpr.InferredDowncast (e,_)
+//                  | SynExpr.Lazy (e, _)
+//                  | SynExpr.TraitCall(_,_,e,_)
+//                  | SynExpr.Paren(e,_,_,_) -> 
+//                      yield! walkExpr false e
 
-                  | SynExpr.YieldOrReturn (_,e,_)
-                  | SynExpr.YieldOrReturnFrom (_,e,_)
-                  | SynExpr.DoBang  (e,_) ->
-                      yield! checkRange e.Range
-                      yield! walkExpr false e
+//                  | SynExpr.YieldOrReturn (_,e,_)
+//                  | SynExpr.YieldOrReturnFrom (_,e,_)
+//                  | SynExpr.DoBang  (e,_) ->
+//                      yield! checkRange e.Range
+//                      yield! walkExpr false e
 
-                  | SynExpr.NamedIndexedPropertySet (_,e1,e2,_)
-                  | SynExpr.DotSet (e1,_,e2,_)
-                  | SynExpr.LibraryOnlyUnionCaseFieldSet (e1,_,_,e2,_)
-                  | SynExpr.App (_,_,e1,e2,_) -> 
-                      yield! walkExpr false e1 
-                      yield! walkExpr false e2
+//                  | SynExpr.NamedIndexedPropertySet (_,e1,e2,_)
+//                  | SynExpr.DotSet (e1,_,e2,_)
+//                  | SynExpr.LibraryOnlyUnionCaseFieldSet (e1,_,_,e2,_)
+//                  | SynExpr.App (_,_,e1,e2,_) -> 
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr false e2
 
-                  | SynExpr.ArrayOrList (_,es,_)
-                  | SynExpr.Tuple (es,_,_) 
-                  | SynExpr.StructTuple (es,_,_) -> 
-                      yield! walkExprs es
+//                  | SynExpr.ArrayOrList (_,es,_)
+//                  | SynExpr.Tuple (es,_,_) 
+//                  | SynExpr.StructTuple (es,_,_) -> 
+//                      yield! walkExprs es
 
-                  | SynExpr.Record (_,copyExprOpt,fs,_) ->
-                      match copyExprOpt with
-                      | Some (e,_) -> yield! walkExpr true e
-                      | None -> ()
-                      yield! walkExprs (List.map (fun (_, v, _) -> v) fs |> List.choose id)
+//                  | SynExpr.Record (_,copyExprOpt,fs,_) ->
+//                      match copyExprOpt with
+//                      | Some (e,_) -> yield! walkExpr true e
+//                      | None -> ()
+//                      yield! walkExprs (List.map (fun (_, v, _) -> v) fs |> List.choose id)
 
-                  | SynExpr.ObjExpr (_,_,bs,is,_,_) -> 
-                      yield! walkBinds bs  
-                      for (InterfaceImpl(_,bs,_)) in is do yield! walkBinds bs
-                  | SynExpr.While (spWhile,e1,e2,_) -> 
-                      yield! walkWhileSeqPt spWhile
-                      yield! walkExpr false e1 
-                      yield! walkExpr true e2
-                  | SynExpr.JoinIn(e1, _range, e2, _range2) -> 
-                      yield! walkExpr false e1 
-                      yield! walkExpr false e2
-                  | SynExpr.For (spFor,_,e1,_,e2,e3,_) -> 
-                      yield! walkForSeqPt spFor
-                      yield! walkExpr false e1 
-                      yield! walkExpr true e2 
-                      yield! walkExpr true e3
-                  | SynExpr.ForEach (spFor,_,_,_,e1,e2,_) ->
-                      yield! walkForSeqPt spFor
-                      yield! walkExpr false e1 
-                      yield! walkExpr true e2 
-                  | SynExpr.MatchLambda(_isExnMatch,_argm,cl,spBind,_wholem) -> 
-                      yield! walkBindSeqPt spBind
-                      for (Clause(_,whenExpr,e,_,_)) in cl do 
-                          yield! walkExprOpt false whenExpr
-                          yield! walkExpr true e 
-                  | SynExpr.Lambda (_,_,_,e,_) -> 
-                      yield! walkExpr true e 
-                  | SynExpr.Match (spBind,e,cl,_,_) ->
-                      yield! walkBindSeqPt spBind
-                      yield! walkExpr false e 
-                      for (Clause(_,whenExpr,e,_,_)) in cl do 
-                          yield! walkExprOpt false whenExpr
-                          yield! walkExpr true e 
-                  | SynExpr.LetOrUse (_,_,bs,e,_) -> 
-                      yield! walkBinds bs  
-                      yield! walkExpr true e
+//                  | SynExpr.ObjExpr (_,_,bs,is,_,_) -> 
+//                      yield! walkBinds bs  
+//                      for (InterfaceImpl(_,bs,_)) in is do yield! walkBinds bs
+//                  | SynExpr.While (spWhile,e1,e2,_) -> 
+//                      yield! walkWhileSeqPt spWhile
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr true e2
+//                  | SynExpr.JoinIn(e1, _range, e2, _range2) -> 
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr false e2
+//                  | SynExpr.For (spFor,_,e1,_,e2,e3,_) -> 
+//                      yield! walkForSeqPt spFor
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr true e2 
+//                      yield! walkExpr true e3
+//                  | SynExpr.ForEach (spFor,_,_,_,e1,e2,_) ->
+//                      yield! walkForSeqPt spFor
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr true e2 
+//                  | SynExpr.MatchLambda(_isExnMatch,_argm,cl,spBind,_wholem) -> 
+//                      yield! walkBindSeqPt spBind
+//                      for (Clause(_,whenExpr,e,_,_)) in cl do 
+//                          yield! walkExprOpt false whenExpr
+//                          yield! walkExpr true e 
+//                  | SynExpr.Lambda (_,_,_,e,_) -> 
+//                      yield! walkExpr true e 
+//                  | SynExpr.Match (spBind,e,cl,_,_) ->
+//                      yield! walkBindSeqPt spBind
+//                      yield! walkExpr false e 
+//                      for (Clause(_,whenExpr,e,_,_)) in cl do 
+//                          yield! walkExprOpt false whenExpr
+//                          yield! walkExpr true e 
+//                  | SynExpr.LetOrUse (_,_,bs,e,_) -> 
+//                      yield! walkBinds bs  
+//                      yield! walkExpr true e
 
-                  | SynExpr.TryWith (e,_,cl,_,_,spTry,spWith) -> 
-                      yield! walkTrySeqPt spTry
-                      yield! walkWithSeqPt spWith
-                      yield! walkExpr true e 
-                      yield! walkMatchClauses cl
+//                  | SynExpr.TryWith (e,_,cl,_,_,spTry,spWith) -> 
+//                      yield! walkTrySeqPt spTry
+//                      yield! walkWithSeqPt spWith
+//                      yield! walkExpr true e 
+//                      yield! walkMatchClauses cl
                   
-                  | SynExpr.TryFinally (e1,e2,_,spTry,spFinally) ->
-                      yield! walkExpr true e1
-                      yield! walkExpr true e2
-                      yield! walkTrySeqPt spTry
-                      yield! walkFinallySeqPt spFinally
-                  | SynExpr.Sequential (spSeq,_,e1,e2,_) -> 
-                      yield! walkExpr (match spSeq with SuppressSequencePointOnStmtOfSequential -> false | _ -> true) e1
-                      yield! walkExpr (match spSeq with SuppressSequencePointOnExprOfSequential -> false | _ -> true) e2
-                  | SynExpr.IfThenElse (e1,e2,e3opt,spBind,_,_,_) ->
-                      yield! walkBindSeqPt spBind
-                      yield! walkExpr false e1
-                      yield! walkExpr true e2
-                      yield! walkExprOpt true e3opt
-                  | SynExpr.DotIndexedGet (e1,es,_,_) -> 
-                      yield! walkExpr false e1 
-                      yield! walkExprs [ for e in es do yield! e.Exprs ]
-                  | SynExpr.DotIndexedSet (e1,es,e2,_,_,_) ->
-                      yield! walkExpr false e1 
-                      yield! walkExprs [ for e in es do yield! e.Exprs ]
-                      yield! walkExpr false e2 
-                  | SynExpr.DotNamedIndexedPropertySet (e1,_,e2,e3,_) ->
-                      yield! walkExpr false e1 
-                      yield! walkExpr false e2 
-                      yield! walkExpr false e3 
+//                  | SynExpr.TryFinally (e1,e2,_,spTry,spFinally) ->
+//                      yield! walkExpr true e1
+//                      yield! walkExpr true e2
+//                      yield! walkTrySeqPt spTry
+//                      yield! walkFinallySeqPt spFinally
+//                  | SynExpr.Sequential (spSeq,_,e1,e2,_) -> 
+//                      yield! walkExpr (match spSeq with SuppressSequencePointOnStmtOfSequential -> false | _ -> true) e1
+//                      yield! walkExpr (match spSeq with SuppressSequencePointOnExprOfSequential -> false | _ -> true) e2
+//                  | SynExpr.IfThenElse (e1,e2,e3opt,spBind,_,_,_) ->
+//                      yield! walkBindSeqPt spBind
+//                      yield! walkExpr false e1
+//                      yield! walkExpr true e2
+//                      yield! walkExprOpt true e3opt
+//                  | SynExpr.DotIndexedGet (e1,es,_,_) -> 
+//                      yield! walkExpr false e1 
+//                      yield! walkExprs [ for e in es do yield! e.Exprs ]
+//                  | SynExpr.DotIndexedSet (e1,es,e2,_,_,_) ->
+//                      yield! walkExpr false e1 
+//                      yield! walkExprs [ for e in es do yield! e.Exprs ]
+//                      yield! walkExpr false e2 
+//                  | SynExpr.DotNamedIndexedPropertySet (e1,_,e2,e3,_) ->
+//                      yield! walkExpr false e1 
+//                      yield! walkExpr false e2 
+//                      yield! walkExpr false e3 
 
-                  | SynExpr.LetOrUseBang  (spBind,_,_,_,e1,e2,_) -> 
-                      yield! walkBindSeqPt spBind
-                      yield! walkExpr true e1
-                      yield! walkExpr true e2 ]
+//                  | SynExpr.LetOrUseBang  (spBind,_,_,_,e1,e2,_) -> 
+//                      yield! walkBindSeqPt spBind
+//                      yield! walkExpr true e1
+//                      yield! walkExpr true e2 ]
             
-            // Process a class declaration or F# type declaration
-            let rec walkTycon (TypeDefn(ComponentInfo(_, _, _, _, _, _, _, _), repr, membDefns, m)) =
-                if not (isMatchRange m) then [] else
-                [ for memb in membDefns do yield! walkMember memb
-                  match repr with
-                  | SynTypeDefnRepr.ObjectModel(_, membDefns, _) -> 
-                      for memb in membDefns do yield! walkMember memb
-                  | _ -> () ]
+//            // Process a class declaration or F# type declaration
+//            let rec walkTycon (TypeDefn(ComponentInfo(_, _, _, _, _, _, _, _), repr, membDefns, m)) =
+//                if not (isMatchRange m) then [] else
+//                [ for memb in membDefns do yield! walkMember memb
+//                  match repr with
+//                  | SynTypeDefnRepr.ObjectModel(_, membDefns, _) -> 
+//                      for memb in membDefns do yield! walkMember memb
+//                  | _ -> () ]
                       
-            // Returns class-members for the right dropdown                  
-            and walkMember memb =
-                if not (rangeContainsPos memb.Range pos) then [] else
-                [ match memb with
-                  | SynMemberDefn.LetBindings(binds, _, _, _) -> yield! walkBinds binds
-                  | SynMemberDefn.AutoProperty(_attribs, _isStatic, _id, _tyOpt, _propKind, _, _xmlDoc, _access, synExpr, _, _) -> yield! walkExpr true synExpr
-                  | SynMemberDefn.ImplicitCtor(_,_,_,_,m) -> yield! checkRange m
-                  | SynMemberDefn.Member(bind, _) -> yield! walkBind bind
-                  | SynMemberDefn.Interface(_synty, Some(membs), _) -> for m in membs do yield! walkMember m
-                  | SynMemberDefn.Inherit(_, _, m) -> 
-                      // can break on the "inherit" clause
-                      yield! checkRange m
-                  | _ -> ()  ]
+//            // Returns class-members for the right dropdown                  
+//            and walkMember memb =
+//                if not (rangeContainsPos memb.Range pos) then [] else
+//                [ match memb with
+//                  | SynMemberDefn.LetBindings(binds, _, _, _) -> yield! walkBinds binds
+//                  | SynMemberDefn.AutoProperty(_attribs, _isStatic, _id, _tyOpt, _propKind, _, _xmlDoc, _access, synExpr, _, _) -> yield! walkExpr true synExpr
+//                  | SynMemberDefn.ImplicitCtor(_,_,_,_,m) -> yield! checkRange m
+//                  | SynMemberDefn.Member(bind, _) -> yield! walkBind bind
+//                  | SynMemberDefn.Interface(_synty, Some(membs), _) -> for m in membs do yield! walkMember m
+//                  | SynMemberDefn.Inherit(_, _, m) -> 
+//                      // can break on the "inherit" clause
+//                      yield! checkRange m
+//                  | _ -> ()  ]
 
-            // Process declarations nested in a module that should be displayed in the left dropdown
-            // (such as type declarations, nested modules etc.)                            
-            let rec walkDecl decl = 
-                [ match decl with 
-                  | SynModuleDecl.Let(_, binds, m) when isMatchRange m -> 
-                      yield! walkBinds binds
-                  | SynModuleDecl.DoExpr(spExpr,expr, m) when isMatchRange m ->  
-                      yield! walkBindSeqPt spExpr
-                      yield! walkExpr false expr
-                  | SynModuleDecl.ModuleAbbrev _ -> ()
-                  | SynModuleDecl.NestedModule(_, _isRec, decls, _, m) when isMatchRange m ->
-                      for d in decls do yield! walkDecl d
-                  | SynModuleDecl.Types(tydefs, m) when isMatchRange m -> 
-                      for d in tydefs do yield! walkTycon d
-                  | SynModuleDecl.Exception(SynExceptionDefn(SynExceptionDefnRepr(_, _, _, _, _, _), membDefns, _), m) 
-                        when isMatchRange m ->
-                      for m in membDefns do yield! walkMember m
-                  | _ -> () ] 
+//            // Process declarations nested in a module that should be displayed in the left dropdown
+//            // (such as type declarations, nested modules etc.)                            
+//            let rec walkDecl decl = 
+//                [ match decl with 
+//                  | SynModuleDecl.Let(_, binds, m) when isMatchRange m -> 
+//                      yield! walkBinds binds
+//                  | SynModuleDecl.DoExpr(spExpr,expr, m) when isMatchRange m ->  
+//                      yield! walkBindSeqPt spExpr
+//                      yield! walkExpr false expr
+//                  | SynModuleDecl.ModuleAbbrev _ -> ()
+//                  | SynModuleDecl.NestedModule(_, _isRec, decls, _, m) when isMatchRange m ->
+//                      for d in decls do yield! walkDecl d
+//                  | SynModuleDecl.Types(tydefs, m) when isMatchRange m -> 
+//                      for d in tydefs do yield! walkTycon d
+//                  | SynModuleDecl.Exception(SynExceptionDefn(SynExceptionDefnRepr(_, _, _, _, _, _), membDefns, _), m) 
+//                        when isMatchRange m ->
+//                      for m in membDefns do yield! walkMember m
+//                  | _ -> () ] 
                       
-            // Collect all the items in a module  
-            let walkModule (SynModuleOrNamespace(_,_,_,decls,_,_,_,m)) =
-                if isMatchRange m then
-                    List.collect walkDecl decls
-                else
-                    []
+//            // Collect all the items in a module  
+//            let walkModule (SynModuleOrNamespace(_,_,_,decls,_,_,_,m)) =
+//                if isMatchRange m then
+//                    List.collect walkDecl decls
+//                else
+//                    []
                       
-           /// Get information for implementation file        
-            let walkImplFile (modules:SynModuleOrNamespace list) = List.collect walkModule modules
+//           /// Get information for implementation file        
+//            let walkImplFile (modules:SynModuleOrNamespace list) = List.collect walkModule modules
                      
-            match input with
-            | Some(ParsedInput.ImplFile(ParsedImplFileInput(_,_,_,_,_,modules,_))) -> walkImplFile modules 
-            | _ -> []
+//            match input with
+//            | Some(ParsedInput.ImplFile(ParsedImplFileInput(_,_,_,_,_,modules,_))) -> walkImplFile modules 
+//            | _ -> []
  
-        ErrorScope.Protect Range.range0 
-            (fun () -> 
-                let locations = findBreakPoints()
+//        ErrorScope.Protect Range.range0 
+//            (fun () -> 
+//                let locations = findBreakPoints()
                 
-                match locations |> List.filter (fun m -> rangeContainsPos m pos) with
-                | [] ->
-                    match locations |> List.filter (fun m -> rangeBeforePos m pos |> not) with
-                    | [] -> Seq.tryHead locations
-                    | locationsAfterPos -> Seq.tryHead locationsAfterPos
-                | coveringLocations -> Seq.tryLast coveringLocations)
-            (fun _msg -> None)
+//                match locations |> List.filter (fun m -> rangeContainsPos m pos) with
+//                | [] ->
+//                    match locations |> List.filter (fun m -> rangeBeforePos m pos |> not) with
+//                    | [] -> Seq.tryHead locations
+//                    | locationsAfterPos -> Seq.tryHead locationsAfterPos
+//                | coveringLocations -> Seq.tryLast coveringLocations)
+//            (fun _msg -> None)
             
-    /// When these files appear or disappear the configuration for the current project is invalidated.
-    member scope.DependencyFiles = dependencyFiles
+//    /// When these files appear or disappear the configuration for the current project is invalidated.
+//    member scope.DependencyFiles = dependencyFiles
                     
-    member scope.FileName =
-      match input with
-      | Some(ParsedInput.ImplFile(ParsedImplFileInput(modname, _, _, _, _, _, _))) 
-      | Some(ParsedInput.SigFile(ParsedSigFileInput(modname, _, _, _, _))) -> modname
-      | _ -> ""
+//    member scope.FileName =
+//      match input with
+//      | Some(ParsedInput.ImplFile(ParsedImplFileInput(modname, _, _, _, _, _, _))) 
+//      | Some(ParsedInput.SigFile(ParsedSigFileInput(modname, _, _, _, _))) -> modname
+//      | _ -> ""
     
-    // Get items for the navigation drop down bar       
-    member scope.GetNavigationItems() =
-        // This does not need to be run on the background thread
-        scope.GetNavigationItemsImpl()
+//    // Get items for the navigation drop down bar       
+//    member scope.GetNavigationItems() =
+//        // This does not need to be run on the background thread
+//        scope.GetNavigationItemsImpl()
 
-    member scope.ValidateBreakpointLocation(pos) =
-        // This does not need to be run on the background thread
-        scope.ValidateBreakpointLocationImpl(pos)
+//    member scope.ValidateBreakpointLocation(pos) =
+//        // This does not need to be run on the background thread
+//        scope.ValidateBreakpointLocationImpl(pos)
 
 type ModuleKind = { IsAutoOpen: bool; HasModuleSuffix: bool }
 
