@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
+		bool restoreRequired;
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
@@ -265,8 +265,12 @@ namespace MonoDevelop.PackageManagement
 			return Task.FromResult (false);
 		}
 
-		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
+			if (restoreRequired) {
+				return RestorePackages (nuGetProjectContext, token);
+			}
+
 			Runtime.RunInMainThread (() => {
 				DotNetProject.NotifyModified ("References");
 			});
@@ -276,12 +280,36 @@ namespace MonoDevelop.PackageManagement
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
+		async Task RestorePackages (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			var packageRestorer = await Runtime.RunInMainThread (() => {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				return new MonoDevelopBuildIntegratedRestorer (solutionManager);
+			});
+
+			var restoreTask = packageRestorer.RestorePackages (this, token);
+			using (var task = new PackageRestoreTask (restoreTask)) {
+				await restoreTask;
+			}
+
+			if (!packageRestorer.LockFileChanged) {
+				// Need to refresh the references since the restore did not.
+				await Runtime.RunInMainThread (() => {
+					DotNetProject.NotifyModified ("References");
+					packageManagementEvents.OnFileChanged (project.GetNuGetAssetsFilePath ());
+				});
+			}
+
+			await base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
 		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
 		{
 		}
 
 		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
 		{
+			restoreRequired = actions.Any (action => action.NuGetProjectActionType == NuGetProjectActionType.Install);
 		}
 
 		public void NotifyProjectReferencesChanged ()
