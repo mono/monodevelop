@@ -138,7 +138,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 			<Command id = "MonoDevelop.DotNetCore.Commands.DotNetMigrate"
 				defaultHandler = "MonoDevelop.DotNetCore.DotNetMigrateCommandHandler"
-				_label = "Migrate to new format"
+				_label = "Migrate to New Format"
 				description="Migrates old .NET Core project to new format"/>
 	</Extension>
 	
