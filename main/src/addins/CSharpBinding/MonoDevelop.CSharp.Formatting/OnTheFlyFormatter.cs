@@ -111,29 +111,32 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var caretOffset = editor.CaretOffset;
 			var caretEndOffset = caretOffset;
+			using (var undo = editor.OpenUndoGroup ()) {
 
-			int delta = 0;
-			foreach (var change in newTree.GetChanges (syntaxTree)) {
-				if (!exact && change.Span.Start >= caretOffset)
-					continue;
-				if (exact && !span.Contains (change.Span.Start))
-					continue;
-				var newText = change.NewText;
-				var length = change.Span.Length;
-				var changeEnd = delta + change.Span.End - 1;
-				if (changeEnd < editor.Length && changeEnd >= 0 && editor.GetCharAt (changeEnd) == '\r')
-					length--;
-				var replaceOffset = delta + change.Span.Start;
-				editor.ReplaceText (replaceOffset, length, newText);
-				delta = delta - length + newText.Length;
-				if (change.Span.Start < caretOffset) {
-					if (change.Span.End < caretOffset) {
-						caretEndOffset += newText.Length - length;
-					} else {
-						caretEndOffset = replaceOffset;
+				int delta = 0;
+				foreach (var change in newTree.GetChanges (syntaxTree)) {
+					if (!exact && change.Span.Start >= caretOffset)
+						continue;
+					if (exact && !span.Contains (change.Span.Start))
+						continue;
+					var newText = change.NewText;
+					var length = change.Span.Length;
+					var changeEnd = delta + change.Span.End - 1;
+					if (changeEnd < editor.Length && changeEnd >= 0 && editor.GetCharAt (changeEnd) == '\r')
+						length--;
+					var replaceOffset = delta + change.Span.Start;
+					editor.ReplaceText (replaceOffset, length, newText);
+					delta = delta - length + newText.Length;
+					if (change.Span.Start < caretOffset) {
+						if (change.Span.End < caretOffset) {
+							caretEndOffset += newText.Length - length;
+						} else {
+							caretEndOffset = replaceOffset;
+						}
 					}
 				}
 			}
+
 			if (startOffset < caretOffset) {
 				if (0 <= caretEndOffset && caretEndOffset < editor.Length)
 					editor.CaretOffset = caretEndOffset;
