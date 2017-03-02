@@ -3278,7 +3278,7 @@ namespace MonoDevelop.Projects
 			// attribute.
 
 			if (globItem.Name != item.Name) {
-				return ExpandedItemAction.AddRemoveAndIncludeItem;
+				return GenerateItemNameChangedDiff (globItem, item);
 			}
 
 			MSBuildItem updateItem = null;
@@ -3369,6 +3369,22 @@ namespace MonoDevelop.Projects
 						return ExpandedItemAction.Exclude;
 					}
 				}
+			}
+			return ExpandedItemAction.None;
+		}
+
+		ExpandedItemAction GenerateItemNameChangedDiff (MSBuildItem globItem, MSBuildItem item)
+		{
+			var existingRemoveItem = globItem.ParentProject.GetAllItems ()
+				.FirstOrDefault (i => i.IsRemove && i.Remove == item.Include);
+			if (existingRemoveItem == null)
+				return ExpandedItemAction.AddRemoveAndIncludeItem;
+
+			var existingIncludeItem = globItem.ParentProject.GetAllItems ()
+				.FirstOrDefault (i => i.Include == item.Include);
+			if (existingIncludeItem != null) {
+				foreach (var p in item.Metadata.GetProperties ())
+					existingIncludeItem.Metadata.SetValue (p.Name, p.Value);
 			}
 			return ExpandedItemAction.None;
 		}

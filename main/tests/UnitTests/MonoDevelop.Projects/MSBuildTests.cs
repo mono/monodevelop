@@ -1044,6 +1044,50 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedProjectReloadThenCopyToOutputChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
 		{
