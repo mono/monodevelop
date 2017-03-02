@@ -24,14 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
 {
+	[DebuggerDisplay("({offset}, {removedText.Length}, {insertedText.Text})")]
 	public sealed class TextChange
 	{
 		readonly int offset;
+		int newOffset;
 		readonly ITextSource removedText;
 		readonly ITextSource insertedText;
 
@@ -40,6 +43,7 @@ namespace MonoDevelop.Core.Text
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
 			this.offset = offset;
+			this.newOffset = offset;
 			this.removedText = removedText != null ? new StringTextSource (removedText) : StringTextSource.Empty;
 			this.insertedText = insertedText != null ? new StringTextSource (insertedText) : StringTextSource.Empty;
 		}
@@ -49,8 +53,19 @@ namespace MonoDevelop.Core.Text
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException(nameof (offset), offset, "offset must not be negative");
 			this.offset = offset;
+			this.newOffset = offset;
 			this.removedText = removedText ?? StringTextSource.Empty;
 			this.insertedText = insertedText ?? StringTextSource.Empty;
+		}
+
+		public TextChange(int offset, int newOffset, string removedText, string insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException(nameof(offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = newOffset;
+			this.removedText = removedText != null ? new StringTextSource(removedText) : StringTextSource.Empty;
+			this.insertedText = insertedText != null ? new StringTextSource(insertedText) : StringTextSource.Empty;
 		}
 
 		/// <summary>
@@ -58,6 +73,14 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public int Offset {
 			get { return offset; }
+		}
+
+		/// <summary>
+		/// The offset at which the change occurs relative to the new buffer.
+		/// </summary>
+		public int NewOffset
+		{
+			get { return newOffset; }
 		}
 
 		/// <summary>

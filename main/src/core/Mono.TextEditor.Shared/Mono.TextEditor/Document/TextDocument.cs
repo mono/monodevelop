@@ -242,7 +242,7 @@ namespace Mono.TextEditor
 			cachedText = null;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
-				changes.Add (new TextChange (change.OldPosition, change.OldText, change.NewText));
+				changes.Add (new TextChange(change.OldPosition, change.NewPosition, change.OldText, change.NewText));
 				EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
 			}
 			bool endUndo = false;
@@ -268,6 +268,7 @@ namespace Mono.TextEditor
 
 			foldSegmentTree.UpdateOnTextReplace(this, textChange);
 			textSegmentMarkerTree.UpdateOnTextReplace (this, textChange);
+
 			TextChanged?.Invoke(this, textChange);
 			if (endUndo)
 				OnEndUndo(new UndoOperationEventArgs(operation));
@@ -369,14 +370,25 @@ namespace Mono.TextEditor
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
 		}
 
-		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		public void ApplyTextChanges (IEnumerable<MonoDevelop.Core.Text.TextChange> changes)
 		{
 			if (changes == null)
 				throw new ArgumentNullException (nameof (changes));
+
 			var edit = this.TextBuffer.CreateEdit ();
 			foreach (var change in changes)
-				edit.Replace (new Microsoft.VisualStudio.Text.Span (change.Span.Start, change.Span.Length), change.NewText);
+				edit.Replace (change.Offset, change.RemovalLength, change.InsertedText.Text);
 			edit.Apply ();
+		}
+
+		public void ApplyTextChanges(IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (changes == null)
+				throw new ArgumentNullException(nameof(changes));
+			var edit = this.TextBuffer.CreateEdit();
+			foreach (var change in changes)
+				edit.Replace(change.Span.Start, change.Span.Length, change.NewText);
+			edit.Apply();
 		}
 
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -714,18 +726,22 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges) {
-					doc.ReplaceText (change.Offset, change.InsertionLength, change.RemovedText.Text);
-				}
+				var changes = new List<TextChange>();
+				foreach (var change in args.TextChanges)
+					changes.Add(new TextChange(change.NewOffset, change.InsertedText, change.RemovedText));
+
+				doc.ApplyTextChanges(changes);
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges.Reverse()) {
-					doc.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText.Text);
-				}
+				var changes = new List<TextChange>();
+				foreach (var change in args.TextChanges.Reverse())
+					changes.Add(new TextChange(change.Offset, change.RemovedText, change.InsertedText));
+
+				doc.ApplyTextChanges(changes);
 				if (fireEvent)
 					OnRedoDone ();
 			}
