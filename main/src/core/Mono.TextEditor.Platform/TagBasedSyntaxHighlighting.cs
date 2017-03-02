@@ -180,7 +180,7 @@ namespace Microsoft.VisualStudio.Platform
 					styleName = "support.type.property-name.css";
 					break;
 				case "CSS Property Value":
-					styleName = "meta.property-value.css";
+					styleName = "support.constant.property-value.css";
 					break;
 				case "CSS String Value":
 					styleName = "string.quoted.double.css";
