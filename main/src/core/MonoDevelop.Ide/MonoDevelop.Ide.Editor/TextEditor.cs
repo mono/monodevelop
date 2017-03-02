@@ -673,6 +673,17 @@ namespace MonoDevelop.Ide.Editor
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
+		/// <summary>
+		/// Applies a batch of text changes. Note that the textchange offsets are always offsets in the current (old) document.
+		/// </summary>
+		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (changes == null)
+				throw new ArgumentNullException (nameof (changes));
+			Runtime.AssertMainThread ();
+			ReadWriteTextDocument.ApplyTextChanges (changes);
+		}
+
 		public IDocumentLine GetLine (int lineNumber)
 		{
 			return ReadOnlyTextDocument.GetLine (lineNumber);

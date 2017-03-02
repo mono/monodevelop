@@ -369,6 +369,16 @@ namespace Mono.TextEditor
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
 		}
 
+		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (changes == null)
+				throw new ArgumentNullException (nameof (changes));
+			var edit = this.TextBuffer.CreateEdit ();
+			foreach (var change in changes)
+				edit.Replace (new Microsoft.VisualStudio.Text.Span (change.Span.Start, change.Span.Length), change.NewText);
+			edit.Apply ();
+		}
+
 		public string GetTextBetween (int startOffset, int endOffset)
 		{
 			if (startOffset < 0)
