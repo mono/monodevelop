@@ -3383,6 +3383,9 @@ namespace MonoDevelop.Projects
 			var existingIncludeItem = globItem.ParentProject.GetAllItems ()
 				.FirstOrDefault (i => i.Include == item.Include);
 			if (existingIncludeItem != null) {
+				foreach (var p in existingIncludeItem.Metadata.GetProperties ().ToArray ())
+					existingIncludeItem.Metadata.RemoveProperty (p.Name);
+
 				foreach (var p in item.Metadata.GetProperties ())
 					existingIncludeItem.Metadata.SetValue (p.Name, p.Value);
 			}

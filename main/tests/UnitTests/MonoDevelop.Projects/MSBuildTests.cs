@@ -1088,6 +1088,58 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChangedRemoved ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.CopyToOutputDirectory = FileCopyMode.None;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+		}
+
+		/// <summary>
+		/// If an MSBuild item has a property on loading then if all the properties are removed the 
+		/// project file when saved will still have an end element. So this test uses a different
+		/// .saved5 file compared with the previous test and includes the extra end tag for the
+		/// EmbeddedResource.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChangedRemovedAfterReload ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.CopyToOutputDirectory = FileCopyMode.None;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved5")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
 		{
