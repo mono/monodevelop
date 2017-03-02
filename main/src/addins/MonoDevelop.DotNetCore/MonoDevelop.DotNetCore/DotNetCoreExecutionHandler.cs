@@ -26,6 +26,12 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net.Sockets;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -40,12 +46,59 @@ namespace MonoDevelop.DotNetCore
 		{
 			var dotNetCoreCommand = (DotNetCoreExecutionCommand)command;
 
-			return Runtime.ProcessService.StartConsoleProcess (
+			// ApplicationURL is passed to ASP.NET Core server via ASPNETCORE_URLS enviorment variable
+			var envVariables = dotNetCoreCommand.EnvironmentVariables.ToDictionary ((arg) => arg.Key, (arg) => arg.Value);
+			envVariables ["ASPNETCORE_URLS"] = dotNetCoreCommand.ApplicationURL;
+
+			var process = Runtime.ProcessService.StartConsoleProcess (
 				dotNetCoreCommand.Command,
 				dotNetCoreCommand.Arguments,
 				dotNetCoreCommand.WorkingDirectory,
 				console,
-				dotNetCoreCommand.EnvironmentVariables);
+				envVariables);
+			if (dotNetCoreCommand.LaunchBrowser) {
+				LaunchBrowser (dotNetCoreCommand.ApplicationURL, dotNetCoreCommand.LaunchURL, process.Task).Ignore ();
+			}
+			return process;
+		}
+
+		public static async Task LaunchBrowser (string appUrl, string launchUrl, Task processTask)
+		{
+			Uri launchUri;
+			//Check if lanuchUrl is valid absolute url and use it if it is...
+			if (!Uri.TryCreate (launchUrl, UriKind.Absolute, out launchUri)) {
+				//Otherwise check if appUrl is valid absolute and lanuchUrl is relative then concat them...
+				Uri appUri;
+				if (!Uri.TryCreate (appUrl, UriKind.Absolute, out appUri)) {
+					LoggingService.LogWarning ("Failed to launch browser because invalid launch and app urls.");
+					return;
+				}
+				if (!Uri.TryCreate (launchUrl, UriKind.Relative, out launchUri)) {
+					LoggingService.LogWarning ("Failed to launch browser because invalid launch url.");
+					return;
+				}
+				launchUri = new Uri (appUri, launchUri);
+			}
+
+			//Try to connect every 50ms while process is running
+			while (!processTask.IsCompleted) {
+				await Task.Delay (50);
+				using (var tcpClient = new TcpClient ()) {
+					try {
+						tcpClient.Connect (launchUri.Host, launchUri.Port);
+						break;
+					} catch {
+					}
+				}
+			}
+
+			if (processTask.IsCompleted) {
+				LoggingService.LogDebug ("Failed to launch browser because process exited before server started listening.");
+				return;
+			}
+
+			// Process is still alive hence we succesfully connected inside loop to web server, launch browser
+			DesktopService.ShowUrl (launchUri.AbsoluteUri);
 		}
 	}
 }
