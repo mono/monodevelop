@@ -802,7 +802,7 @@ namespace Mono.TextEditor
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor.Layout != null) {
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor?.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
 				descriptor.Dispose ();
@@ -1355,6 +1355,8 @@ namespace Mono.TextEditor
 
 			public Pango.Rectangle IndexToPos (int index)
 			{
+				if (Layout == null)
+					return Pango.Rectangle.Zero;
 				return Layout.IndexToPos (index);
 			}
 
