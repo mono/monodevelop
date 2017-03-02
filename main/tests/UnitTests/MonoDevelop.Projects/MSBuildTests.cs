@@ -1021,6 +1021,29 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SaveProjectWithWildcardsAfterBuildActionChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			// Changing the text1-1.txt. file to EmbeddedResource should result in the following
+			// being added:
+			//
+			// <Content Remove="Content\text1-1.txt" />
+			// <EmbeddedResource Include="Content\text1-1.txt" />
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
 		{

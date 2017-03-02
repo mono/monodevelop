@@ -3063,7 +3063,8 @@ namespace MonoDevelop.Projects
 		{
 			None,
 			Exclude,
-			AddUpdateItem
+			AddUpdateItem,
+			AddRemoveAndIncludeItem
 		}
 
 		/// <summary>
@@ -3106,6 +3107,10 @@ namespace MonoDevelop.Projects
 								it.ProjectItem.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it.MSBuildItem, it.MSBuildItem.Include, null);
 								msproject.AddItem (it.MSBuildItem);
 							} else if (it.Action == ExpandedItemAction.AddUpdateItem) {
+								msproject.AddItem (it.MSBuildItem);
+							} else if (it.Action == ExpandedItemAction.AddRemoveAndIncludeItem) {
+								var removeItem = new MSBuildItem (globItem.Name) { Remove = it.MSBuildItem.Include };
+								msproject.AddItem (removeItem);
 								msproject.AddItem (it.MSBuildItem);
 							}
 						}
@@ -3271,6 +3276,10 @@ namespace MonoDevelop.Projects
 			// This method compares the evaluated item that was used to load a project item with the msbuild
 			// item that has now been saved. If there are changes, it saves the changes in an item with Update
 			// attribute.
+
+			if (globItem.Name != item.Name) {
+				return ExpandedItemAction.AddRemoveAndIncludeItem;
+			}
 
 			MSBuildItem updateItem = null;
 			HashSet<MSBuildItem> itemsToDelete = null;
