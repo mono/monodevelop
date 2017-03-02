@@ -1,6 +1,7 @@
-// Copyright (c) Microsoft Corporation
-// All rights reserved
-
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//  Licensed under the MIT License. See License.txt in the project root for license information.
+//
 namespace Microsoft.VisualStudio.Text.Utilities
 {
     using System;
@@ -310,7 +311,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
                     char ch = text[c];
                     AppendChar(result, ch);
                 }
-                result.Append(" … ");
+                result.Append(" ï¿½ ");
                 for (int c = text.Length - (truncateLength / 2); c < text.Length; ++c)
                 {
                     char ch = text[c];
