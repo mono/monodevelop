@@ -178,10 +178,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		/// <summary>
-		/// Given an assembly file name, returns the corresponding debug information file name.
-		/// (.mdb for Mono, .pdb for MS.NET)
-		/// </summary>
+		[Obsolete ("Use DotNetProject.GetAssemblyDebugInfoFile()")]
 		public abstract string GetAssemblyDebugInfoFile (string assemblyPath);
 		
 		/// <summary>
