@@ -3196,8 +3196,19 @@ namespace MonoDevelop.Projects
 							item.Write (this, it);
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
+
+							// Add an expanded item so a Remove item does not
+							// get added back again.
+							ExpandedItemList items;
+							if (expandedItems.TryGetValue (globItem, out items)) {
+								var einfo = new ExpandedItemInfo {
+									ProjectItem = item,
+									MSBuildItem = it
+								};
+								items.Add (einfo);
+							}
+						}
 					}
-				}
 				}
 				if (buildItem == null)
 					buildItem = msproject.AddNewItem (item.ItemName, include);
@@ -3279,6 +3290,8 @@ namespace MonoDevelop.Projects
 
 			if (globItem.Name != item.Name) {
 				return GenerateItemNameChangedDiff (globItem, item);
+			} else {
+				RemoveExistingRemoveAndIncludeItems (globItem, item);
 			}
 
 			MSBuildItem updateItem = null;
@@ -3390,6 +3403,23 @@ namespace MonoDevelop.Projects
 					existingIncludeItem.Metadata.SetValue (p.Name, p.Value);
 			}
 			return ExpandedItemAction.None;
+		}
+
+		void RemoveExistingRemoveAndIncludeItems (MSBuildItem globItem, MSBuildItem item)
+		{
+			List<MSBuildItem> itemsToDelete = null;
+			foreach (var it in globItem.ParentProject.GetAllItems ()) {
+				if (it.Remove == item.Include || it.Include == item.Include) {
+					if (itemsToDelete == null)
+						itemsToDelete = new List<MSBuildItem> ();
+					itemsToDelete.Add (it);
+				}
+			}
+
+			if (itemsToDelete != null) {
+				foreach (var it in itemsToDelete)
+					globItem.ParentProject.RemoveItem (it);
+			}
 		}
 
 		IEnumerable<MSBuildItem> FindUpdateItemsForItem (MSBuildItem globItem, string include)
