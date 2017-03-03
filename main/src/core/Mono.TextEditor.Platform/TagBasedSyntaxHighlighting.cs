@@ -208,6 +208,9 @@ namespace Microsoft.VisualStudio.Platform
 				case "comment":
 					styleName = "comment.block.json";
 					break;
+				case "JSON Property Name":
+					styleName = "support.type.property-name.json";
+					break;
 
 				default:
 					styleName = EditorThemeColors.Foreground;
