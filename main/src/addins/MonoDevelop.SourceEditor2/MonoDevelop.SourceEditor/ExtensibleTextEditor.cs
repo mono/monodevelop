@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using Gtk;
 
@@ -417,18 +418,27 @@ namespace MonoDevelop.SourceEditor
 			if (line == null)
 				return null;
 
-			var error = Document.GetTextSegmentMarkersAt (offset).OfType<ErrorMarker> ().FirstOrDefault ();
-			
-			if (error != null) {
+			var errors = Document.GetTextSegmentMarkersAt(offset).OfType<ErrorMarker>();
+			StringBuilder sb = null;
+
+			foreach (var error in errors)
+			{
+				if (sb != null)
+					sb.AppendLine();
+				else
+					sb = new StringBuilder();
+
 				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
-					return GettextCatalog.GetString ("<b>Warning</b>: {0}",
-						GLib.Markup.EscapeText (error.Error.Message));
-				return GettextCatalog.GetString ("<b>Error</b>: {0}",
-					GLib.Markup.EscapeText (error.Error.Message));
+					sb.Append(GettextCatalog.GetString("<b>Warning</b>: {0}",
+						GLib.Markup.EscapeText(error.Error.Message)));
+				else
+					sb.Append(GettextCatalog.GetString("<b>Error</b>: {0}",
+						GLib.Markup.EscapeText(error.Error.Message)));
 			}
-			return null;
+
+			return (sb.Length > 0 ? sb.ToString() : null);
 		}
-		
+
 		public MonoDevelop.Projects.Project Project {
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;
