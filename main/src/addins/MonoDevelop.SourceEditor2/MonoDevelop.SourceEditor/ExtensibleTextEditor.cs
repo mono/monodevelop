@@ -436,7 +436,7 @@ namespace MonoDevelop.SourceEditor
 						GLib.Markup.EscapeText(error.Error.Message)));
 			}
 
-			return (sb.Length > 0 ? sb.ToString() : null);
+			return sb?.ToString();
 		}
 
 		public MonoDevelop.Projects.Project Project {
