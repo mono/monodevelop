@@ -66,6 +66,31 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task DeleteFile ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-test.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c1.cs");
+			p.Files.Remove (f);
+			string text = File.ReadAllText (f.FilePath);
+			File.Delete (f.FilePath);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName.ChangeName ("glob-test-saved2")));
+
+			File.WriteAllText (f.FilePath, text);
+			p.AddFile (f.FilePath);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("glob-test-saved2")));
+		}
+
+		[Test]
 		public async Task AddFile ()
 		{
 			// When adding a file, if the new file is included in a glob, there is no need to add a new project item.

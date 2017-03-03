@@ -3093,8 +3093,11 @@ namespace MonoDevelop.Projects
 					if (UseAdvancedGlobSupport) {
 						// Add remove items if necessary
 						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
-							var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
-							msproject.AddItem (removeItem);
+							var file = removed as ProjectFile;
+							if (file == null || File.Exists (file.FilePath)) {
+								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
+								msproject.AddItem (removeItem);
+							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
 						}
 
