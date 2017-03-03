@@ -53,8 +53,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override void Dispose ()
 		{
+			Editor.LineShown -= Editor_LineShown;
+			Editor.TextChanged -= Editor_TextChanged;
 			src.Cancel ();
 			DisposeUrlTextMarker ();
+			base.Dispose ();
 		}
 
 		void DisposeUrlTextMarker ()
