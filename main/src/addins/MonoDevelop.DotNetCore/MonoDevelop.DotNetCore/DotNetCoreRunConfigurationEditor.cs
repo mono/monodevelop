@@ -72,9 +72,13 @@ namespace MonoDevelop.DotNetCore
 		CheckBox launchBrowser;
 		TextEntry launchUrl;
 		TextEntry applicationUrl;
-		Xwt.ImageView applicationUrlWarning;
 		XwtBoxTooltip applicationUrlWarningTooltip;
 
+		public DotNetCoreRunConfigurationEditorWidget ()
+			: base (false)
+		{
+
+		}
 
 		public void LoadCore (Project project, DotNetCoreRunConfiguration config)
 		{
@@ -83,26 +87,41 @@ namespace MonoDevelop.DotNetCore
 			var coreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
 			if (coreProject == null || !coreProject.IsWeb)
 				return;
-			var table = new Table ();
-			table.Margin = 12;
+			var mainBox = new VBox ();
+			mainBox.Margin = 24;
 
-			table.Add (launchBrowser = new CheckBox (GettextCatalog.GetString ("Launch URL:")), 0, 0);
-			table.Add (launchUrl = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("Absolute or relative URL") }, 1, 0, hexpand: true);
-
-			table.Add (new Label (GettextCatalog.GetString ("App URL:")), 0, 1);
-
-			applicationUrlWarning = new Xwt.ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-			applicationUrlWarningTooltip = new XwtBoxTooltip (applicationUrlWarning) {
+			var appUrlTable = new Table ();
+			appUrlTable.Add (new Label (GettextCatalog.GetString ("App URL:")), 0, 0);
+			var applicationUrlBox = new HBox ();
+			applicationUrlWarningTooltip = new XwtBoxTooltip (new Xwt.ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu))) {
 				ToolTip = GettextCatalog.GetString ("Invalid URL"),
 				Severity = Ide.Tasks.TaskSeverity.Warning
 			};
-
-			var applicationUrlBox = new HBox ();
-			applicationUrlBox.PackStart (applicationUrl = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("The URL of the application") }, true, true);
+			applicationUrlBox.PackStart (applicationUrl = new TextEntry (), true, true);
 			applicationUrlBox.PackStart (applicationUrlWarningTooltip);
+			appUrlTable.Add (applicationUrlBox, 1, 0, hexpand: true);
+			appUrlTable.Add (new Label (GettextCatalog.GetString ("Where your app should listen for connections")) { Sensitive = false }, 1, 1, hexpand: true);
+			mainBox.PackStart (appUrlTable);
 
-			table.Add (applicationUrlBox, 1, 1, hexpand: true);
-			Add (table, GettextCatalog.GetString ("ASP.NET Core"));
+			mainBox.PackStart (launchBrowser = new CheckBox (GettextCatalog.GetString ("Open URL in web browser when app starts:")), marginTop: 16);
+
+			var browserTable = new Table ();
+			browserTable.MarginLeft = 16;
+			var offset = 0;
+			//offset = 1; // just so uncommenting Browser Combobox works as expected
+			//browserTable.Add (new Label (GettextCatalog.GetString ("Web Browser:")), 0, 0, hpos: WidgetPlacement.End);
+			//var browsersCombobox = new ComboBox ();
+			//browsersCombobox.Items.Add ("Chrome");
+			//browsersCombobox.Items.Add ("Firefox");
+			//browsersCombobox.Items.Add ("Opera");
+			//browsersCombobox.Items.Add ("Safari");
+			//browserTable.Add (browsersCombobox, 1, 0, hpos: WidgetPlacement.Start);
+			browserTable.Add (launchUrl = new TextEntry (), 1, offset, hexpand: true);
+			browserTable.Add (new Label (GettextCatalog.GetString ("URL:")), 0, offset, hpos: WidgetPlacement.End);
+			browserTable.Add (new Label (GettextCatalog.GetString ("Absolute or relative to App URL")) { Sensitive = false }, 1, offset + 1);
+			mainBox.PackStart (browserTable);
+
+			Add (mainBox, GettextCatalog.GetString ("ASP.NET Core"));
 
 			launchBrowser.Active = config.LaunchBrowser;
 			launchUrl.Text = config.LaunchUrl;

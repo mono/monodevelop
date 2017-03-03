@@ -80,6 +80,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		InformationPopoverWidget appEntryInfoIcon;
 
 		public DotNetRunConfigurationEditorWidget ()
+			: this (true)
+		{
+
+		}
+
+		public DotNetRunConfigurationEditorWidget (bool includeAdvancedTab)
 		{
 			VBox mainBox = new VBox ();
 
@@ -140,7 +146,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (box, 1, 1, hexpand: true);
 			adBox.PackStart (table);
 
-			Add (adBox, GettextCatalog.GetString ("Advanced"));
+			if (includeAdvancedTab)
+				Add (adBox, GettextCatalog.GetString ("Advanced"));
 
 			monoSettingsButton.Clicked += EditRuntimeClicked;
 			radioStartProject.ActiveChanged += (sender, e) => UpdateStatus ();

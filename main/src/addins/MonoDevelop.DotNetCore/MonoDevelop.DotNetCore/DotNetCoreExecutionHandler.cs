@@ -64,6 +64,7 @@ namespace MonoDevelop.DotNetCore
 
 		public static async Task LaunchBrowser (string appUrl, string launchUrl, Task processTask)
 		{
+			launchUrl = launchUrl ?? "";
 			Uri launchUri;
 			//Check if lanuchUrl is valid absolute url and use it if it is...
 			if (!Uri.TryCreate (launchUrl, UriKind.Absolute, out launchUri)) {
