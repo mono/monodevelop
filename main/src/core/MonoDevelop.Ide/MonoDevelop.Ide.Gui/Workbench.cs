@@ -1538,36 +1538,26 @@ namespace MonoDevelop.Ide.Gui
 			this.project = project;
 		}
 
-		public async Task<bool> Invoke(string fileName)
+		public async Task<bool> Invoke (string fileName)
 		{
-			try
-			{
-				Counters.OpenDocumentTimer.Trace("Creating content");
-				string mimeType = DesktopService.GetMimeTypeForUri(fileName);
-				if (binding.CanHandle(fileName, mimeType, project))
-				{
-					try
-					{
-					newContent = binding.CreateContent(fileName, mimeType, project);
-					}
-					catch (InvalidEncodingException iex)
-					{
-						monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+			try {
+				Counters.OpenDocumentTimer.Trace ("Creating content");
+				string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+				if (binding.CanHandle (fileName, mimeType, project)) {
+					try {
+						newContent = binding.CreateContent (fileName, mimeType, project);
+					} catch (InvalidEncodingException iex) {
+						monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+						return false;
+					} catch (OverflowException) {
+						monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
 						return false;
 					}
-					catch (OverflowException)
-					{
-						monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. File too large.", fileName), null);
-						return false;
-					}
+				} else {
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}
-				else
-				{
-					monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not be opened.", fileName), null);
-				}
-				if (newContent == null)
-				{
-					monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not be opened.", fileName), null);
+				if (newContent == null) {
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return false;
 				}
 
@@ -1575,113 +1565,44 @@ namespace MonoDevelop.Ide.Gui
 				if (project != null)
 					newContent.Project = project;
 
-				Counters.OpenDocumentTimer.Trace("Loading file");
+				Counters.OpenDocumentTimer.Trace ("Loading file");
 
-				try
-				{
-					await newContent.Load(fileInfo);
-				}
-				catch (InvalidEncodingException iex)
-				{
-					monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+				try {
+					await newContent.Load (fileInfo);
+				} catch (InvalidEncodingException iex) {
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+					return false;
+				} catch (OverflowException) {
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
 					return false;
 				}
-				catch (OverflowException)
-				{
-					monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. File too large.", fileName), null);
-					return false;
-				}
-			}
-			catch (Exception ex)
-			{
-				monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not be opened.", fileName), ex);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return false;
 			}
 
 			// content got re-used
 			if (newContent.WorkbenchWindow != null) {
-				newContent.WorkbenchWindow.SelectWindow();
+				newContent.WorkbenchWindow.SelectWindow ();
 				fileInfo.NewContent = newContent;
 				return true;
 			}
 
-			Counters.OpenDocumentTimer.Trace("Showing view");
+			Counters.OpenDocumentTimer.Trace ("Showing view");
 
-			workbench.ShowView(newContent, fileInfo.Options.HasFlag(OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
+			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
 
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 
-
-			var ipos = (TextEditor)newContent.GetContent(typeof(TextEditor));
-			if (fileInfo.Line > 0 && ipos != null)
-			{
-				FileSettingsStore.Remove(fileName);
-				ipos.RunWhenLoaded(JumpToLine);
+			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
+			if (fileInfo.Line > 0 && ipos != null) {
+				FileSettingsStore.Remove (fileName);
+				ipos.RunWhenLoaded (JumpToLine);
 			}
 
 			fileInfo.NewContent = newContent;
 			return true;
 		}
-
-		//	public async Task<bool> Invoke (string fileName)
-		//	{
-		//		try {
-		//			Counters.OpenDocumentTimer.Trace ("Creating content and loading file");
-		//			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-		//			if (binding.CanHandle (fileName, mimeType, project)) {
-		//                try
-		//                {
-		//                    newContent = binding.CreateContent(fileName, mimeType, project);
-		//                }
-		//                catch (InvalidEncodingException iex)
-		//                {
-		//                    monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
-		//                    return false;
-		//                }
-		//                catch (OverflowException)
-		//                {
-		//                    monitor.ReportError(GettextCatalog.GetString("The file '{0}' could not opened. File too large.", fileName), null);
-		//                    return false;
-		//                }
-		//            } else {
-		//				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
-		//			}
-		//			if (newContent == null) {
-		//				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
-		//				return false;
-		//			}
-		//
-		//			newContent.Binding = binding;
-		//			if (project != null)
-		//				newContent.Project = project;
-		//		} catch (Exception ex) {
-		//			monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
-		//			return false;
-		//		}
-		//		
-		//		// content got re-used
-		//		if (newContent.WorkbenchWindow != null) {
-		//			newContent.WorkbenchWindow.SelectWindow ();
-		//			fileInfo.NewContent = newContent;
-		//			return true;
-		//		}
-		//
-		//		Counters.OpenDocumentTimer.Trace ("Showing view");
-		//
-		//		workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
-		//
-		//		newContent.WorkbenchWindow.DocumentType = binding.Name;
-		//		
-		//
-		//		var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
-		//		if (fileInfo.Line > 0 && ipos != null) {
-		//			FileSettingsStore.Remove (fileName);
-		//			ipos.RunWhenLoaded (JumpToLine); 
-		//		}
-		//		
-		//		fileInfo.NewContent = newContent;
-		//		return true;
-		//	}
 
 		void JumpToLine ()
 		{
