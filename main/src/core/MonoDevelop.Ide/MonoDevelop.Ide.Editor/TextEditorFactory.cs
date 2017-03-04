@@ -51,6 +51,13 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument ();
 		}
 
+		public static ITextDocument CreateNewDocument(string fileName, string mimeType = null)
+		{
+			if (fileName == null)
+				throw new System.ArgumentNullException(nameof(fileName));
+			return currentFactory.CreateNewDocument(fileName, mimeType);
+		}
+
 		public static ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType = null)
 		{
 			if (textSource == null)
@@ -74,15 +81,27 @@ namespace MonoDevelop.Ide.Editor
 
 		static ConfigurationProperty<double> zoomLevel = ConfigurationProperty.Create ("Editor.ZoomLevel", 1.0d);
 
-		public static TextEditor CreateNewEditor (TextEditorType textEditorType = TextEditorType.Default)
+		public static TextEditor CreateNewEditor(string fileName, string mimeType, TextEditorType textEditorType = TextEditorType.Default)
 		{
-			var result = new TextEditor (currentFactory.CreateNewEditor (), textEditorType) {
-				ZoomLevel = zoomLevel
-			};
-			result.ZoomLevelChanged += delegate {
-				zoomLevel.Value = result.ZoomLevel;
-			};
+			var result = new TextEditor(currentFactory.CreateNewEditor(fileName, mimeType), textEditorType);
+			InitializeTextEditor(result);
 			return result;
+		}
+
+		public static TextEditor CreateNewEditor(TextEditorType textEditorType = TextEditorType.Default)
+		{
+			var result = new TextEditor(currentFactory.CreateNewEditor(), textEditorType);
+			InitializeTextEditor(result);
+			return result;
+		}
+
+		private static void InitializeTextEditor(TextEditor textEditor)
+		{
+			textEditor.ZoomLevel = zoomLevel;
+
+			textEditor.ZoomLevelChanged += delegate {
+				zoomLevel.Value = textEditor.ZoomLevel;
+			};
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)

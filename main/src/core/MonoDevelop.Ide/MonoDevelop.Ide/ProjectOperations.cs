@@ -2491,15 +2491,8 @@ namespace MonoDevelop.Ide
 				}
 			}
 
-			bool hadBom;
-			Encoding encoding;
-			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = TextEditorFactory.CreateNewDocument ();
-			data.UseBOM = hadBom;
-			data.Encoding = encoding;
-			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.FileName = filePath;
-			data.Text = text;
+			var data = TextEditorFactory.CreateNewDocument (filePath, DesktopService.GetMimeTypeForUri(filePath));
+
 			isOpen = false;
 			return data;
 		}

@@ -33,12 +33,12 @@ namespace MonoDevelop.Ide.Editor
 	[TestFixture]
 	public abstract class ReadonlyTextDocumentTestBase : TextSourceTestBase
 	{
-		protected sealed override ITextSource CreateTextSource (string text, Encoding enc = null, bool useBom = false)
+		protected sealed override ITextSource CreateTextSource (string text, Encoding enc = null)
 		{
-			return CreateReadonlyTextDocument (text, enc, useBom);
+			return CreateReadonlyTextDocument (text, enc);
 		}
 
-		protected abstract IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null, bool useBom = false);
+		protected abstract IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null);
 
 
 		[Test]

@@ -45,11 +45,6 @@ namespace MonoDevelop.Core.Text
 		readonly ITextSourceVersion version;
 
 		/// <summary>
-		/// Determines if a byte order mark was read or is going to be written.
-		/// </summary>
-		public bool UseBOM { get; private set; }
-
-		/// <summary>
 		/// Encoding of the text that was read from or is going to be saved to.
 		/// </summary>
 		public Encoding Encoding { get; private set; }
@@ -62,8 +57,7 @@ namespace MonoDevelop.Core.Text
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
-			this.UseBOM = useBom;
-			this.Encoding = encoding ?? Encoding.UTF8;
+			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 		}
 
 		/// <summary>
@@ -75,8 +69,7 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.version = version;
-			this.UseBOM = useBom;
-			this.Encoding = encoding ?? Encoding.UTF8;
+			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 		}
 
 		/// <inheritdoc/>
@@ -126,12 +119,18 @@ namespace MonoDevelop.Core.Text
 
 		public StringTextSource WithEncoding (Encoding encoding)
 		{
-			return new StringTextSource (text, encoding, UseBOM);
+			return new StringTextSource (text, encoding);
 		}
 
 		public StringTextSource WithBom (bool useBom)
 		{
-			return new StringTextSource (text, Encoding, useBom);
+			var newEncoding = this.Encoding;
+			if ((newEncoding?.WindowsCodePage == 1200 /*UTF8*/) && ((newEncoding.GetPreamble().Length > 0) != useBom))
+			{
+				newEncoding = useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+			}
+
+			return new StringTextSource(text, newEncoding);
 		}
 
 		public static StringTextSource ReadFrom (string fileName)

@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				}
 			}
 
-			return new StringTextSource (result.ToString (), input.Encoding, input.UseBOM);
+			return new StringTextSource (result.ToString (), input.Encoding);
 		}
 	}
 }
