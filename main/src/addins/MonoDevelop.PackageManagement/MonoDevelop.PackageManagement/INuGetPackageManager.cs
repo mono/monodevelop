@@ -70,6 +70,12 @@ namespace MonoDevelop.PackageManagement
 			INuGetProjectContext nuGetProjectContext,
 			CancellationToken token);
 
+		Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync(
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
+
 		Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,

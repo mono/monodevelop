@@ -264,6 +264,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" design-size="416 434">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -572,6 +573,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" design-size="426 436">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -925,6 +927,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" design-size="1074 503">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox5">
         <property name="MemberName" />

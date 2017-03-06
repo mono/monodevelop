@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetCoreTestProvider.cs
+// TestableUninstallNuGetPackagesAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,13 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-
-namespace MonoDevelop.DotNetCore.UnitTesting
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	interface IDotNetCoreTestProvider
+	class TestableUninstallNuGetPackagesAction : UninstallNuGetPackagesAction
 	{
-		IEnumerable<TestCase> GetTests ();
+		public FakeNuGetProjectContext ProjectContext;
+		public FakeNuGetPackageManager PackageManager;
+		public PackageManagementEvents PackageManagementEvents;
+
+		public TestableUninstallNuGetPackagesAction (
+			FakeSolutionManager solutionManager,
+			FakeDotNetProject project)
+			: this (
+				solutionManager,
+				project,
+				new FakeNuGetProjectContext (),
+				new FakeNuGetPackageManager (),
+				new PackageManagementEvents ())
+		{
+		}
+
+		public TestableUninstallNuGetPackagesAction (
+			FakeSolutionManager solutionManager,
+			FakeDotNetProject dotNetProject,
+			FakeNuGetProjectContext projectContext,
+			FakeNuGetPackageManager packageManager,
+			PackageManagementEvents packageManagementEvents)
+			: base (
+				solutionManager,
+				dotNetProject,
+				projectContext,
+				packageManager,
+				packageManagementEvents)
+		{
+			ProjectContext = projectContext;
+			PackageManager = packageManager;
+
+			PackageManagementEvents = packageManagementEvents;
+		}
 	}
 }

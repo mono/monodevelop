@@ -631,10 +631,10 @@ namespace MonoDevelop.Projects
 			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
-			await WriteProjectAsync (monitor);
+			string content = await WriteProjectAsync (monitor);
 
 			// Doesn't save the file to disk if the content did not change
-			if (await sourceProject.SaveAsync (FileName)) {
+			if (await sourceProject.SaveAsync (FileName, content)) {
 				if (userProject != null) {
 					if (!userProject.GetAllObjects ().Any ())
 						File.Delete (userProject.FileName);
@@ -1349,8 +1349,8 @@ namespace MonoDevelop.Projects
 				if (modifiedInMemory) {
 					try {
 						modifiedInMemory = false;
-						await WriteProjectAsync (new ProgressMonitor ());
-						await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
+						string content = await WriteProjectAsync (new ProgressMonitor ());
+						await projectBuilder.RefreshWithContent (content);
 					} catch {
 						projectBuilder.ReleaseReference ();
 						throw;
@@ -1382,8 +1382,8 @@ namespace MonoDevelop.Projects
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
-					await WriteProjectAsync (new ProgressMonitor ());
-					await pb.RefreshWithContent (sourceProject.SaveToString ());
+					string content = await WriteProjectAsync (new ProgressMonitor ());
+					await pb.RefreshWithContent (content);
 				} catch {
 					pb.Dispose ();
 					throw;
@@ -2211,11 +2211,12 @@ namespace MonoDevelop.Projects
 
 		AsyncCriticalSection writeProjectLock = new AsyncCriticalSection ();
 
-		internal async Task WriteProjectAsync (ProgressMonitor monitor)
+		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
 		{
 			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
-				await Task.Run (() => {
+				return await Task.Run (() => {
 					WriteProject (monitor);
+					return sourceProject.SaveToString ();
 				}).ConfigureAwait (false);
 			}
 		}
@@ -3097,8 +3098,11 @@ namespace MonoDevelop.Projects
 					if (UseAdvancedGlobSupport) {
 						// Add remove items if necessary
 						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
-							var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
-							msproject.AddItem (removeItem);
+							var file = removed as ProjectFile;
+							if (file == null || File.Exists (file.FilePath)) {
+								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
+								msproject.AddItem (removeItem);
+							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
 						}
 

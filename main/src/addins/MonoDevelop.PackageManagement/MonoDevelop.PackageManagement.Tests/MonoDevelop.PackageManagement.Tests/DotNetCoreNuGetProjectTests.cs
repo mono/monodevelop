@@ -123,7 +123,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (result);
 			Assert.IsFalse (project.IsSaved);
 			Assert.AreEqual (MessageLevel.Warning, context.LastLogLevel);
-			Assert.AreEqual ("Package 'NUnit.2.6.1' does not exist in project 'MyProject'", context.LastMessageLogged);
+			Assert.AreEqual ("Package 'NUnit' does not exist in project 'MyProject'", context.LastMessageLogged);
+		}
+
+		[Test]
+		public async Task UninstallPackageAsync_DifferentPackageVersionInstalled_PackageReferenceRemoved ()
+		{
+			CreateNuGetProject ();
+			AddDotNetProjectPackageReference ("NUnit", "2.6.1");
+
+			bool result = await UninstallPackageAsync ("NUnit", "3.5");
+
+			Assert.IsFalse (dotNetProject.Items.OfType<ProjectPackageReference> ().Any ());
+			Assert.IsTrue (result);
+			Assert.IsTrue (project.IsSaved);
 		}
 
 		[Test]

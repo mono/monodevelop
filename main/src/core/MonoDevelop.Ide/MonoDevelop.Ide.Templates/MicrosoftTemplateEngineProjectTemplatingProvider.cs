@@ -140,7 +140,8 @@ namespace MonoDevelop.Ide.Templates
 				config.GetValidProjectName (),
 				config.ProjectLocation,
 				new Dictionary<string, string> (),
-				true);
+				true,
+				false);
 			if (result.ResultInfo.PrimaryOutputs.Any ()) {
 				foreach (var res in result.ResultInfo.PrimaryOutputs) {
 					var fullPath = Path.Combine (config.ProjectLocation, res.Path);

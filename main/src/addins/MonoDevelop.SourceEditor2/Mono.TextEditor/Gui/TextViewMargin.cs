@@ -203,7 +203,7 @@ namespace Mono.TextEditor
 			selectedRegions.Clear ();
 		}
 
-		public class SearchWorkerArguments
+		internal class SearchWorkerArguments
 		{
 			public int FirstLine { get; set; }
 
@@ -802,7 +802,7 @@ namespace Mono.TextEditor
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor.Layout != null) {
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor?.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
 				descriptor.Dispose ();
@@ -1227,7 +1227,7 @@ namespace Mono.TextEditor
 			return Encoding.UTF8.GetString (bytes, 0, index).Length;
 		}
 
-		public class LayoutWrapper : IDisposable
+		internal class LayoutWrapper : IDisposable
 		{
 			readonly TextViewMargin parent;
 
@@ -1317,7 +1317,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public class BackgroundColor
+			internal class BackgroundColor
 			{
 				public readonly Cairo.Color Color;
 				public readonly int FromIdx;
@@ -1355,6 +1355,8 @@ namespace Mono.TextEditor
 
 			public Pango.Rectangle IndexToPos (int index)
 			{
+				if (Layout == null)
+					return Pango.Rectangle.Zero;
 				return Layout.IndexToPos (index);
 			}
 

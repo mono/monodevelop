@@ -247,6 +247,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 			return Task.FromResult (0);
 		}
+
+		public IBuildIntegratedNuGetProject PreviewBuildIntegratedProject;
+		public List<NuGetProjectAction> PreviewBuildIntegratedProjectActions;
+		public INuGetProjectContext PreviewBuildIntegratedContext;
+		public CancellationToken PreviewBuildIntegratedCancellationToken;
+		public BuildIntegratedProjectAction BuildIntegratedProjectAction;
+
+		public Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync (
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			PreviewBuildIntegratedProject = buildIntegratedProject;
+			PreviewBuildIntegratedProjectActions = nuGetProjectActions.ToList ();
+			PreviewBuildIntegratedContext = nuGetProjectContext;
+			PreviewBuildIntegratedCancellationToken = token;
+
+			BeforePreviewUninstallPackagesAsync ();
+
+			return Task.FromResult (BuildIntegratedProjectAction);
+		}
 	}
 }
 

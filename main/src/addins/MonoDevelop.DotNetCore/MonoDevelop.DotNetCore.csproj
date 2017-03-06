@@ -117,6 +117,7 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\AssemblyDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectReferencesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetMigrate.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DependenciesNodeBuilderExtension.cs" />
@@ -134,6 +135,8 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\PackageDependencyNodeCache.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNode.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />

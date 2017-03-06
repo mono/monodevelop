@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting;
 
@@ -40,7 +40,8 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 			var dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
 			if (dotNetCoreProject != null) {
-				return new DotNetCoreProjectTestSuite (dotNetCoreProject);
+				if (project.HasPackageReference ("Microsoft.NET.Test.Sdk"))
+					return new DotNetCoreProjectTestSuite (dotNetCoreProject);
 			}
 
 			return null;

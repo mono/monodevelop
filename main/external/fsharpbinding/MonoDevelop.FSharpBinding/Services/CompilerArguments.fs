@@ -357,7 +357,9 @@ module CompilerArguments =
       IsIncompleteTypeCheckEnvironment = false
       UseScriptResolutionRules = false
       LoadTime = loadedTimeStamp
-      UnresolvedReferences = None }
+      UnresolvedReferences = None
+      OriginalLoadReferences = []
+      ExtraProjectInfo = None }
 
   /// Get source files of the current project (returns files that have
   /// build action set to 'Compile', but not e.g. scripts or resources)
