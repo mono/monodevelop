@@ -854,10 +854,15 @@ namespace MonoDevelop.Ide.Gui
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
-					await FindDocument (window).Save ();
-					args.Cancel = viewContent.IsDirty;
-					if (args.Cancel)
-						FindDocument (window).Select ();
+					args.Cancel = true;
+					var resultSaveAs = await FindDocument (window).SaveAs ();
+					if (resultSaveAs) {
+						viewContent.IsDirty = false;
+						window.CloseWindow (true);
+					} else {
+						window.SelectWindow ();
+					}
+					return;
 				} else {
 					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
