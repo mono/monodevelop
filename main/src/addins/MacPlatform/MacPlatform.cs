@@ -247,30 +247,11 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
-				var submenuitem = new MDSubMenuItem (commandManager, appCes);
-				int index = 0;
-				NSMenuItem lastSeparator = null;
-
-				// Need to update the menus when they're created rather than just when they're opened
-				// so that they'll have correct values for accessibility purposes
-				//
-				// This has the potential to be a performance issue.
-				//
-				// In theory, it should be possible to do this when overriding the accessibilityLabel property
-				// and then forcing an update when the item is first accessed, but for some reason only known to Cocoa
-				// NSMenu/NSMenuItem didn't call the accessibility properties until macOS Sierra.
-				submenuitem.Update (null, ref lastSeparator, ref index);
-				rootMenu.AddItem (submenuitem);
+				rootMenu.AddItem (new MDSubMenuItem (commandManager, appCes));
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					index++;
-					lastSeparator = null;
-
-					submenuitem = new MDSubMenuItem (commandManager, (CommandEntrySet)ce);
-					submenuitem.Update (null, ref lastSeparator, ref index);
-
-					rootMenu.AddItem (submenuitem);
+					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
 				}
 			} catch (Exception ex) {
 				try {
