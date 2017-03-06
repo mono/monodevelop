@@ -720,9 +720,6 @@ namespace MonoDevelop.Projects
 						debugFile = Path.ChangeExtension (file, ".pdb");
 						if (File.Exists (debugFile))
 							list.Add (debugFile, copyIfNewer);
-						debugFile = Path.ChangeExtension (file, ".ppdb");
-						if (File.Exists (debugFile))
-							list.Add (debugFile, copyIfNewer);
 					}
 				}
 				else {
