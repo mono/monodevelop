@@ -35,6 +35,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -339,18 +340,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Tracked project handling
-		static readonly List<string> outputTrackedProjects = new List<string> ();
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
 
 		static void IntitializeTrackedProjectHandling ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).LanguageName;
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
+					AddOutputTrackingNode (node);
 					break;
 				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
+					outputTrackedProjects.Remove (node);
 					break;
 				}
 			});
@@ -358,8 +359,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+		}
 
-
+		/// <summary>
+		/// Adds an output tracking node for unit testing purposes.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal static void AddOutputTrackingNode (TypeSystemOutputTrackingNode node)
+		{
+			outputTrackedProjects.Add (node);
 		}
 
 		static void HandleEndBuild (object sender, BuildEventArgs args)
@@ -385,7 +393,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			return outputTrackedProjects.Contains (project.LanguageName, StringComparer.OrdinalIgnoreCase);
+			return outputTrackedProjects.Any (otp => string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase)) || 
+				project.GetTypeTags().Any (tag => outputTrackedProjects.Any (otp => string.Equals (otp.ProjectType, tag, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
