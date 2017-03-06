@@ -32,6 +32,9 @@ namespace MonoDevelop.DotNetCore
 	{
 		public static string GetShortFrameworkName (this TargetFrameworkMoniker framework)
 		{
+			if (framework.IsNetFramework ())
+				return GetShortNetFrameworkName (framework);
+
 			string identifier = GetShortFrameworkIdentifier (framework);
 			return identifier + framework.Version;
 		}
@@ -47,6 +50,16 @@ namespace MonoDevelop.DotNetCore
 				shortFrameworkIdentifier = shortFrameworkIdentifier.Substring (1);
 
 			return shortFrameworkIdentifier.ToLower ();
+		}
+
+		static string GetShortNetFrameworkName (TargetFrameworkMoniker framework)
+		{
+			return "net" + framework.Version.Replace (".", string.Empty);
+		}
+
+		public static bool IsNetFramework (this TargetFrameworkMoniker framework)
+		{
+			return framework.Identifier == ".NETFramework";
 		}
 	}
 }

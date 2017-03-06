@@ -481,7 +481,7 @@ namespace MonoDevelop.DotNetCore
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
 		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
 			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
