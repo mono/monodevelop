@@ -158,6 +158,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public int EndOffset {
 			get { return window.EndOffset; }
+			set { window.EndOffset = value; }
 		}
 
 		internal ICompletionWidget CompletionWidget {

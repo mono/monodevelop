@@ -53,8 +53,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override void Dispose ()
 		{
+			Editor.LineShown -= Editor_LineShown;
+			Editor.TextChanged -= Editor_TextChanged;
 			src.Cancel ();
 			DisposeUrlTextMarker ();
+			base.Dispose ();
 		}
 
 		void DisposeUrlTextMarker ()
@@ -113,10 +116,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		void Editor_TextChanged (object sender, TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
-				var startLine = Editor.GetLineByOffset (change.Offset);
+				var offset = e.GetNewOffset (change.Offset);
+				var startLine = Editor.GetLineByOffset (offset);
 				int startLineOffset = startLine.Offset;
 
-				var segments = scannedSegmentTree.GetSegmentsOverlapping (change.Offset, change.RemovalLength).ToList ();
+				var segments = scannedSegmentTree.GetSegmentsOverlapping (offset, change.RemovalLength).ToList ();
 				foreach (var seg in segments) {
 					foreach (var u in seg.UrlTextMarker) {
 						Editor.RemoveMarker (u);

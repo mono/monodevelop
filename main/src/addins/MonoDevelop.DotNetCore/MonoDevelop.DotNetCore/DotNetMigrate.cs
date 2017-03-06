@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Projects;
 using System.IO;
-using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.PackageManagement.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -48,10 +49,10 @@ namespace MonoDevelop.DotNetCore
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			if (DotNetMigrateCommandHandler.IsMigratableProject (dataObject as UnknownProject))
+			if (!DotNetMigrateCommandHandler.IsMigratableProject (dataObject as UnknownProject))
 				return;
 
-			nodeInfo.StatusMessage = GettextCatalog.GetString ("Project format is not supported by {0}.\nUse 'Migrate to new format' command on solution or single project to migrate to format supported by {0}.", BrandingService.ApplicationName);
+			nodeInfo.StatusMessage = GettextCatalog.GetString ("Project format is not supported by {0}.\nUse 'Migrate to New Format' command on solution or single project to migrate to format supported by {0}.", BrandingService.ApplicationName);
 		}
 	}
 
@@ -112,6 +113,8 @@ namespace MonoDevelop.DotNetCore
 				var newProject = await project.ParentFolder.AddItem (monitor, newProjectFile);
 				project.ParentFolder.Items.Remove (project);
 				await newProject.ParentSolution.SaveAsync (monitor);
+
+				RestorePackagesInProjectHandler.Run ((DotNetProject)newProject);
 			} else {
 				solution.NeedsReload = true;
 				FileService.NotifyFileChanged (solution.FileName);
@@ -152,7 +155,7 @@ namespace MonoDevelop.DotNetCore
 			} else {
 				selectedProjects = new UnknownProject [] { project };
 			}
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
+			using (var monitor = CreateOutputProgressMonitor ()) {
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Migrating…"), 1);
 					if (wholeSolution) {
@@ -168,6 +171,16 @@ namespace MonoDevelop.DotNetCore
 					monitor.ReportError (GettextCatalog.GetString ("Failed to migrate") + Environment.NewLine + e);
 				}
 			}
+		}
+
+		ProgressMonitor CreateOutputProgressMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				"DotNetCoreMigration",
+				GettextCatalog.GetString (".NET Core Migration"),
+				Stock.PadExecute,
+				true,
+				true);
 		}
 
 		protected override void Update (CommandInfo info)

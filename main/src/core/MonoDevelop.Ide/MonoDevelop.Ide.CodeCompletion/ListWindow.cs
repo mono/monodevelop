@@ -156,7 +156,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected internal virtual void ResetState ()
 		{
 			HideWhenWordDeleted = false;
-			lastCommitCharEndoffset = -1;
 			list.ResetState ();
 		}
 		
@@ -261,9 +260,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		public int EndOffset {
-			get {
-				return startOffset + PartialWord.Length;
-			}
+			get;
+			set;
 		}
 
 		public ICompletionWidget CompletionWidget {
@@ -274,13 +272,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.CompletionWidget = value;
 			}
 		}
-		
-		int lastCommitCharEndoffset = -1;
+
 		public virtual string PartialWord {
 			get {
 				if (CompletionWidget == null)
 					return "";
-				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, lastCommitCharEndoffset > 0 ? lastCommitCharEndoffset : CompletionWidget.CaretOffset)); 
+				return CompletionWidget.GetText (StartOffset, EndOffset); 
 			}
 			
 		}
@@ -314,29 +311,40 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
-			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) // CompletionWidget == null may happen in unit tests.
+			UpdateLastWordChar ();
+			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) {// CompletionWidget == null may happen in unit tests.
+				UpdateLastWordChar ();
 				return KeyActions.CloseWindow | KeyActions.Process;
+			}
 
-			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)
+			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset) {
+				UpdateLastWordChar ();
 				return KeyActions.CloseWindow | KeyActions.Process;
+			}
 			switch (descriptor.SpecialKey) {
 			case SpecialKey.BackSpace:
 				ResetSizes ();
 				UpdateWordSelection ();
+				UpdateLastWordChar ();
 				return KeyActions.Process;
 			}
 			var keyChar = descriptor.KeyChar;
 
-			if (keyChar == '[' && CloseOnSquareBrackets)
+			if (keyChar == '[' && CloseOnSquareBrackets) {
+				UpdateLastWordChar ();
 				return KeyActions.Process | KeyActions.CloseWindow;
+			}
 			
 			if (char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				ResetSizes ();
 				UpdateWordSelection ();
+				UpdateLastWordChar ();
 				return KeyActions.Process;
 			}
-			if (SelectedItemIndex < 0)
+			if (SelectedItemIndex < 0) {
+				UpdateLastWordChar ();
 				return KeyActions.Process;
+			}
 			var data = DataProvider.GetCompletionData (SelectedItemIndex);
 
 			if (data.IsCommitCharacter (keyChar, PartialWord)) {
@@ -346,13 +354,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
 					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
-				}    
+				}
+				UpdateLastWordChar ();
 				if (match >= 0 && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
 
 				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {
 					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
@@ -375,13 +383,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
 					var text = DataProvider.GetText (selectedItem);
-					if (!text.Substring (0, Math.Min (text.Length , CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal))
+					if (!text.Substring (0, Math.Min (text.Length, CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
+						UpdateLastWordChar ();
 						return KeyActions.Process | KeyActions.CloseWindow;
+					}
 				}
 			}
+			UpdateLastWordChar ();
 			return KeyActions.Process;
 		}
-		
+
+		void UpdateLastWordChar ()
+		{
+			EndOffset = CompletionWidget.CaretOffset;
+		}
+
 		public KeyActions PreProcessKey (KeyDescriptor descriptor)
 		{
 			switch (descriptor.SpecialKey) {
@@ -426,7 +442,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case SpecialKey.Return:
 				if (completionDataList == null || completionDataList.Count == 0)
 					return KeyActions.CloseWindow;
-				lastCommitCharEndoffset = CompletionWidget.CaretOffset;
 				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
 				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
 			case SpecialKey.Down:
