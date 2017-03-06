@@ -31,21 +31,21 @@ using System.Diagnostics;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
+using Microsoft.VisualStudio.Text.Implementation;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Mono.TextEditor
 {
 	static class MiscActions
 	{
-		public static int RemoveTabInLine (TextEditorData data, DocumentLine line)
+		public static Microsoft.CodeAnalysis.Text.TextChange RemoveTabInLine (TextEditorData data, DocumentLine line)
 		{
 			if (line.LengthIncludingDelimiter == 0)
-				return 0;
+				return default (Microsoft.CodeAnalysis.Text.TextChange);
 			using (var undoGroup = data.OpenUndoGroup ()) {
 				char ch = data.Document.GetCharAt (line.Offset); 
-				if (ch == '\t') {
-					data.Remove (line.Offset, 1);
-					data.Document.CommitLineUpdate (line);
-					return 1;
+				if (ch == '\t') {			 
+					return new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (line.Offset, 1), "");
 				} else if (ch == ' ') {
 					int removeCount = 0;
 					for (int i = 0; i < data.Options.IndentationSize;) {
@@ -60,12 +60,10 @@ namespace Mono.TextEditor
 							break;
 						}
 					}
-					data.Remove (line.Offset, removeCount);
-					data.Document.CommitLineUpdate (line);
-					return removeCount;
+					return new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (line.Offset, removeCount), "");
 				}
 			}
-			return 0;
+			return default (Microsoft.CodeAnalysis.Text.TextChange);
 		}
 		
 		public static void RemoveIndentSelection (TextEditorData data)
@@ -83,17 +81,24 @@ namespace Mono.TextEditor
 				int removeLast = 0;
 				bool removedFromFirst = false;
 				int removeFirst = 0;
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+				DocumentLine last = null;
 				foreach (var line in data.SelectedLines) {
-					int remove = RemoveTabInLine (data, line);
-					removedFromLast |= remove > 0;
-					removeLast = remove;
+					var remove = RemoveTabInLine (data, line);
+					removedFromLast |= remove.Span.Length > 0;
+					removeLast = remove.Span.Length;
 					if (first) {
-						removedFromFirst = remove > 0;
-						removeFirst = remove;
+						removedFromFirst = remove.Span.Length > 0;
+						removeFirst = remove.Span.Length;
 						first = false;
 					}
+					if (remove.Span.Length > 0)
+						changes.Add (remove);
+					last = line;
 				}
-
+				data.Document.ApplyTextChanges (changes);
+				if (last != null)
+					data.Document.CommitLineUpdate (last);
 				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - (anchor < lead ? removeFirst : removeLast));
 				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - (anchor < lead ? removeLast : removeFirst));
 				
@@ -126,7 +131,7 @@ namespace Mono.TextEditor
 				if (line.Length == 0 && data.Caret.Column > 1) {
 					data.Caret.Column = 1;
 				} else {
-					RemoveTabInLine (data, line);
+					data.Document.ApplyTextChanges (new [] { RemoveTabInLine (data, line) });	
 				}
 			}
 		}
@@ -161,12 +166,16 @@ namespace Mono.TextEditor
 			var anchor = data.MainSelection.Anchor;
 			var lead = data.MainSelection.Lead;
 			var indentationString = data.Options.IndentationString;
+			var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
+			foreach (DocumentLine line in data.SelectedLines) {
+				if (data.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0)
+					continue;
+				changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (line.Offset, 0), indentationString)); 
+			}
+
 			using (var undo = data.OpenUndoGroup (OperationType.Format)) {
-				foreach (DocumentLine line in data.SelectedLines) {
-					if (data.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0)
-						continue;
-					data.Insert (line.Offset, indentationString);
-				}
+				data.Document.ApplyTextChanges (changes);
 			}
 			int chars = indentationString.Length;
 			var leadCol = lead.Column > 1 || lead < anchor ? lead.Column + chars : 1;
