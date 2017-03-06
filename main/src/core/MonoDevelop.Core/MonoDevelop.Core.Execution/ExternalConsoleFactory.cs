@@ -38,7 +38,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public ExternalConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var c = new ExternalConsole (closeOnDispose);
+			var c = new ExternalConsole (closeOnDispose, null);
 			if (cancellationToken != default(CancellationToken))
 				c.BindToCancelToken (cancellationToken);
 			return c;
@@ -46,18 +46,21 @@ namespace MonoDevelop.Core.Execution
 
 		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 		{
-			return new ExternalConsole (true);
+			return new ExternalConsole (!options.PauseWhenFinished, options.Title);
 		}
 	}
 	
 	public sealed class ExternalConsole: OperationConsole
 	{
-		internal ExternalConsole (bool closeOnDispose)
+		internal ExternalConsole (bool closeOnDispose, string title)
 		{
 			CloseOnDispose = closeOnDispose;
+			Title = title;
 		}
 		
 		public bool CloseOnDispose { get; set; }
+
+		public string Title { get; set; }
 
 		public override TextReader In {
 			get { return Console.In; }
