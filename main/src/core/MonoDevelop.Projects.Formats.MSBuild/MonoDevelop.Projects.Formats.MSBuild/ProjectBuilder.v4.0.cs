@@ -62,8 +62,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (taskId, delegate {
+				Project project = null;
 				try {
-					var project = SetupProject (configurations);
+					project = SetupProject (configurations);
 					InitLogger (logWriter);
 
 					ILogger[] loggers;
@@ -74,6 +75,12 @@ namespace MonoDevelop.Projects.MSBuild
 						loggers = new ILogger[] { logger, consoleLogger, eventLogger };
 					} else {
 						loggers = new ILogger[] { logger };
+					}
+
+					if (globalProperties != null) {
+						foreach (var p in globalProperties)
+							project.SetGlobalProperty (p.Key, p.Value);
+						project.ReevaluateIfNecessary ();
 					}
 
 					//building the project will create items and alter properties, so we use a new instance
@@ -117,6 +124,11 @@ namespace MonoDevelop.Projects.MSBuild
 					result = new MSBuildResult (new [] { r });
 				} finally {
 					DisposeLogger ();
+					if (project != null && globalProperties != null) {
+						foreach (var p in globalProperties)
+							project.RemoveGlobalProperty (p.Key);
+						project.ReevaluateIfNecessary ();
+					}
 				}
 			});
 			return result;
