@@ -1187,6 +1187,64 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
 		}
 
+		/// <summary>
+		/// Changed BuildAction include has an CopyToOutputDirectory property. After reverting
+		/// the BuildAction the Remove and Include item should be removed but an Update
+		/// item should be added with the CopyToOutputDirectory property.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgain2 ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgainAfterReload2 ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+
+			// Save again to make sure another Update item is not added.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()

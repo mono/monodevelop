@@ -3206,6 +3206,16 @@ namespace MonoDevelop.Projects
 									MSBuildItem = it
 								};
 								items.Add (einfo);
+
+								if (buildItem == null && item.BackingItem != null && globItem.Name != item.BackingItem.Name) {
+									it.Update = item.Include;
+									sourceItems = new [] { globItem };
+									item.BackingItem = globItem;
+									item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it, globItem.Include, sourceItems);
+									einfo.Action = ExpandedItemAction.AddUpdateItem;
+									items.Modified = true;
+									return;
+								}
 							}
 						}
 					}
@@ -3465,7 +3475,7 @@ namespace MonoDevelop.Projects
 			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
 			if (sourceItems != null) {
 				foreach (var s in sourceItems)
-					eit.AddSourceItem (item);
+					eit.AddSourceItem (s);
 			} else
 				eit.AddSourceItem (item);
 			return eit;
