@@ -853,7 +853,13 @@ namespace MonoDevelop.Ide.Gui
 							: System.IO.Path.GetFileName (viewContent.ContentName)),
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
-				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
+				if (result == AlertButton.Save) {
+					args.Cancel = true;
+					await FindDocument (window).Save ();
+					viewContent.IsDirty = false;
+					window.CloseWindow (true);
+					return;
+				} else if (result == AlertButton.SaveAs) {
 					args.Cancel = true;
 					var resultSaveAs = await FindDocument (window).SaveAs ();
 					if (resultSaveAs) {
