@@ -300,7 +300,12 @@ namespace Mono.TextEditor
 			this.Initialize();
 		}
 
-		public TextDocument(TextDocument doc)       // this clones doc
+		public TextDocument Clone()
+		{
+			return new TextDocument(this);
+		}
+
+		private TextDocument(TextDocument doc)
 		{
 			var snapshot = doc.currentSnapshot;
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
