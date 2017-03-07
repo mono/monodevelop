@@ -160,6 +160,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetSourceFiles (monitor, configuration);
 		}
 
+		internal protected virtual bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return next.OnGetSupportsImportedItem (buildItem);
+		}
+
 		#region Building
 
 		internal protected virtual bool OnGetIsCompileable (string fileName)

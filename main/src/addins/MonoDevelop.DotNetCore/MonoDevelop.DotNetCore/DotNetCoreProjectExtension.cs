@@ -542,6 +542,11 @@ namespace MonoDevelop.DotNetCore
 			});
 		}
 
+		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return BuildAction.DotNetActions.Contains (buildItem.Name);
+		}
+
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new DotNetCoreRunConfiguration (name);
