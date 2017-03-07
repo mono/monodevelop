@@ -229,6 +229,15 @@ namespace MonoDevelop.Components
 			screenPoint.X += geometry.X;
 			return screenPoint;
 		}
+
+		public static Gdk.Rectangle GetSceenBounds (this AppKit.NSView widget)
+		{
+			var frame = widget.Frame;
+			var point = ConvertToGdkCoordinates (widget.Window?.Screen, new Gdk.Point ((int)frame.Location.X, (int)frame.Location.Y));
+			frame.X = point.X;
+			frame.Y = point.Y;
+			return new Gdk.Rectangle ((int)frame.X, (int)frame.Y, (int)frame.Width, (int)frame.Height);
+		}
 		#endif
 
 		public static Gdk.Rectangle GetSceenBounds (this Xwt.Widget widget)

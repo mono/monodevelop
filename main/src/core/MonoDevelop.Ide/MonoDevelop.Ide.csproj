@@ -9046,6 +9046,9 @@
     <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtPopup.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtPopupWindowTheme.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtThemedPopup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9097,6 +9100,7 @@
     <Folder Include="MonoDevelop.Components\Windows\" />
     <Folder Include="MonoDevelop.Ide.GettingStarted\" />
     <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
+    <Folder Include="MonoDevelop.Components\Xwt\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
