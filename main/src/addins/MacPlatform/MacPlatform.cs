@@ -177,7 +177,6 @@ namespace MonoDevelop.MacIntegration
 			if (keyboardMode == 2) {
 				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
 			}
-			Gtk.Rc.ReparseAll ();
 
 			return loaded;
 		}
