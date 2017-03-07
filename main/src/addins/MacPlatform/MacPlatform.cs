@@ -169,6 +169,16 @@ namespace MonoDevelop.MacIntegration
 				};
 			}
 
+			// Now that Cocoa has been initialized we can check whether the keyboard focus mode is turned on
+			// See System Preferences - Keyboard - Shortcuts - Full Keyboard Access
+			var keyboardMode = NSUserDefaults.StandardUserDefaults.IntForKey ("AppleKeyboardUIMode");
+			// 0 - Text boxes and lists only
+			// 2 - All controls
+			if (keyboardMode == 2) {
+				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
+			}
+			Gtk.Rc.ReparseAll ();
+
 			return loaded;
 		}
 
