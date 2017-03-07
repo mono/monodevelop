@@ -36,7 +36,7 @@ namespace MonoDevelop.Components
 		Xwt.ImageView imageView;
 		string message;
 		TooltipPopoverWindow popover;
-		PopupPosition popupPosition;
+		PopupPosition popupPosition = PopupPosition.Top;
 
 		public InformationPopoverWidget ()
 		{
@@ -119,10 +119,22 @@ namespace MonoDevelop.Components
 		protected override void OnMouseExited (EventArgs args)
 		{
 			base.OnMouseExited (args);
+			DestroyPopover ();
+		}
+
+		void DestroyPopover ()
+		{
 			if (popover != null) {
 				popover.Destroy ();
 				popover = null;
 			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing)
+				DestroyPopover ();
+			base.Dispose (disposing);
 		}
 	}
 }
