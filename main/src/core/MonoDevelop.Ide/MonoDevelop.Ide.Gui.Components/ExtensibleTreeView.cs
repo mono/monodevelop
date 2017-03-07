@@ -525,13 +525,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			statusMessageVisible = true;
 			statusIconIter = it;
 
-			statusPopover = new TooltipPopoverWindow {
-				ShowArrow = true,
-				Text = info.StatusMessage,
-				Severity = info.StatusSeverity
-			};
+			statusPopover = TooltipPopoverWindow.Create ();
+			statusPopover.ShowArrow = true;
+			statusPopover.Text = info.StatusMessage;
+			statusPopover.Severity = info.StatusSeverity;
 			rect.Y += 2;
-			statusPopover.ShowPopup (this, rect, PopupPosition.Bottom);
+			statusPopover.ShowPopup (this, rect, PopupPosition.Top);
 		}
 
 		void HideStatusMessage ()
