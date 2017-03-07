@@ -193,13 +193,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
-    </None>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Samples\Xamarin.iOS.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
