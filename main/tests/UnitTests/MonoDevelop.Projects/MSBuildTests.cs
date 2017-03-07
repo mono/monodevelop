@@ -1530,6 +1530,33 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Something failed (show.targets): show", res.Errors [0].ErrorText);
 		}
 
+		/// <summary>
+		/// As above but the property has the same as a default global property defined
+		/// by the IDE. This test makes sures the existing global properties are
+		/// restored.
+		/// </summary>
+		[Test]
+		public async Task BuildWithCustomProps3 ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.RequiresMicrosoftBuild = true;
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.SetValue ("BuildingInsideVisualStudio", "false");
+			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (false.targets): false", res.Errors [0].ErrorText);
+
+			await p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (true.targets): true", res.Errors [0].ErrorText);
+		}
+
 		[Test]
 		public async Task CopyConfiguration ()
 		{

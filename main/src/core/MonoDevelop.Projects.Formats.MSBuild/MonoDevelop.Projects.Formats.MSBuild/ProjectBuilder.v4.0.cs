@@ -123,6 +123,8 @@ namespace MonoDevelop.Projects.MSBuild
 					if (project != null && globalProperties != null) {
 						foreach (var p in globalProperties)
 							project.RemoveGlobalProperty (p.Key);
+						foreach (var p in engine.GlobalProperties)
+							project.SetGlobalProperty (p.Key, p.Value);
 						project.ReevaluateIfNecessary ();
 					}
 				}
