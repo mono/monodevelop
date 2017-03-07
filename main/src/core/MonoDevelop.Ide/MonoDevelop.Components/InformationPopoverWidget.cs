@@ -42,8 +42,8 @@ namespace MonoDevelop.Components
 		{
 			severity = TaskSeverity.Information;
 			imageView = new Xwt.ImageView ();
-			Content = imageView;
 			UpdateIcon ();
+			Content = imageView;
 		}
 
 		public TaskSeverity Severity {
@@ -85,11 +85,11 @@ namespace MonoDevelop.Components
 		{
 			switch (severity) {
 			case TaskSeverity.Error:
-				return ImageService.GetIcon ("md-error");
+				return ImageService.GetIcon ("md-error", Gtk.IconSize.Menu);
 			case TaskSeverity.Warning:
-				return ImageService.GetIcon ("md-warning");
+				return ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu);
 			}
-			return ImageService.GetIcon ("md-information");
+			return ImageService.GetIcon ("md-information", Gtk.IconSize.Menu);
 		}
 
 		protected override void OnMouseEntered (EventArgs args)
