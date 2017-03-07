@@ -102,12 +102,11 @@ namespace MonoDevelop.Components
 		{
 			if (popover != null)
 				popover.Destroy ();
-			popover = new TooltipPopoverWindow {
-				ShowArrow = true,
-				Text = message,
-				Severity = severity
-			};
-			popover.ShowPopup ((Gtk.Widget)this.Surface.NativeWidget, popupPosition);
+			popover = TooltipPopoverWindow.Create ();
+			popover.ShowArrow = true;
+			popover.Text = message;
+			popover.Severity = severity;
+			popover.ShowPopup (this, popupPosition);
 		}
 
 		void UpdatePopover ()
