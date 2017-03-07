@@ -324,6 +324,7 @@ namespace Mono.TextEditor
 				var tmp = IsReadOnly;
 				IsReadOnly = false;
 				this.ReplaceText(0, this.currentSnapshot.Length, value);
+				ClearUndoBuffer ();
 				IsReadOnly = tmp;
 			}
 		}

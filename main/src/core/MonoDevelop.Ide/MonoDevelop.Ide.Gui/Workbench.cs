@@ -677,7 +677,7 @@ namespace MonoDevelop.Ide.Gui
 					defaultName, mimeType, content, Environment.NewLine));
 			
 			newContent.UntitledName = defaultName;
-			newContent.IsDirty = true;
+			newContent.IsDirty = false;
 			newContent.Binding = binding;
 			workbench.ShowView (newContent, true, binding);
 
