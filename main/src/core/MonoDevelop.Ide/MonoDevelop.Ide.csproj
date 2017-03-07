@@ -145,10 +145,6 @@
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
     </Reference>
@@ -175,8 +171,27 @@
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Features">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="Microsoft.TemplateEngine.Abstractions">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Abstractions.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TemplateEngine.Core.Contracts">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.Contracts.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Core.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TemplateEngine.Utils">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Utils.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TemplateEngine.Core">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TemplateEngine.Edge">
+      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Edge.1.0.0-beta1-20170223-126\lib\net45\Microsoft.TemplateEngine.Edge.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -9228,6 +9243,10 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\GlobalOptionPersister.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TextPolicyDocumentOptionsProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProjectTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineSolutionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProcessedTemplateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

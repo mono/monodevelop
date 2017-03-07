@@ -69,7 +69,9 @@ type ``Template tests``() =
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
 
     member x.Templates =
-        solutionTemplates |> Seq.map (fun t -> t.Id)
+        solutionTemplates 
+        |> Seq.map (fun t -> t.Id)
+        |> Seq.filter (fun id -> ProjectTemplate.ProjectTemplates |> Seq.exists(fun t -> t.Id = id))
 
     [<Test>]
     member x.``FSharp portable project``() =

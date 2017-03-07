@@ -31,7 +31,7 @@ namespace Mono.TextEditor.Utils
 	static class FileSettingsStore
 	{
 		
-		public class Settings
+		internal class Settings
 		{
 			public int CaretOffset { get; set; }
 

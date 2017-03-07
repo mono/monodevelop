@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace MonoDevelop.DotNetCore.UnitTesting
 {
-	public interface IDotNetCoreTestProvider
+	interface IDotNetCoreTestProvider
 	{
 		IEnumerable<TestCase> GetTests ();
 	}

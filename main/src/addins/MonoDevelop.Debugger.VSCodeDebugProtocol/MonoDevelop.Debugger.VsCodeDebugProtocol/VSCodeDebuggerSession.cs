@@ -34,6 +34,9 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
+using System.Threading;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -150,7 +153,17 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected virtual void OnDebugAdaptorRequestReceived (object sender, RequestReceivedEventArgs e)
 		{
-
+			if (e.Command == "runInTerminal") {
+				var args = (RunInTerminalArguments)e.Args;
+				var consoleOptions = OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (args.Title).WithPauseWhenFinished (pauseWhenFinished);
+				Runtime.ProcessService.StartConsoleProcess (
+					args.Args [0],
+					string.Join (" ", args.Args.Skip (1).ToArray ()),
+					args.Cwd,
+					ExternalConsoleFactory.Instance.CreateConsole (consoleOptions),
+					args.Env.ToDictionary ((i) => i.Key, (i) => i.Value.ToString ()));
+				e.Response = new RunInTerminalResponse ();
+			}
 		}
 
 		void StartDebugAgent ()
@@ -196,8 +209,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			Launch (startInfo);
 		}
 
+		bool pauseWhenFinished;
 		protected void Launch (DebuggerStartInfo startInfo)
 		{
+			pauseWhenFinished = !startInfo.CloseExternalConsoleOnExit;
 			StartDebugAgent ();
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
@@ -296,19 +311,19 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return null;
 		}
 
-		List<Source> existingSourcesWithBreakpoints = new List<Source> ();
+		List<string> pathsWithBreakpoints = new List<string> ();
 
 		void UpdateBreakpoints ()
 		{
-			//First clear all old breakpoints
-			foreach (var source in existingSourcesWithBreakpoints)
-				protocolClient.SendRequest (new SetBreakpointsRequest (source, new List<SourceBreakpoint> ()), null);
-			existingSourcesWithBreakpoints.Clear ();
+			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled).GroupBy (b => b.FileName).ToArray ();
+			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
+			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
-			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().GroupBy (b => b.FileName).ToArray ();
+			foreach (var path in filesForRemoval)
+				protocolClient.SendRequest (new SetBreakpointsRequest (new Source (Path.GetFileName (path), path), new List<SourceBreakpoint> ()), null);
+
 			foreach (var sourceFile in bks) {
 				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
-				existingSourcesWithBreakpoints.Add (source);
 				protocolClient.SendRequest (new SetBreakpointsRequest (
 					source,
 					sourceFile.Select (b => new SourceBreakpoint {
@@ -360,8 +375,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			if (protocolClient != null)
+			if (protocolClient != null) {
 				protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
+				protocolClient.SendRequestSync (new DisconnectRequest ());
+				protocolClient.Stop ();
+			}
 		}
 	}
 }

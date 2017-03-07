@@ -9,6 +9,7 @@
 	<SomeChars>1.0</SomeChars>
 	<TestFile>files\test.txt</TestFile>
 	<Substring>$(Prop.Substring(1,3))</Substring>
+	<SubstringIgnoreCase>$(Prop.SubString(1,3))</SubstringIgnoreCase>
 	<MethodWithParams1>$([System.String]::Format("ab"))</MethodWithParams1>
 	<MethodWithParams2>$([System.String]::Format("a{0}c",b))</MethodWithParams2>
 	<MethodWithParams3>$([System.String]::Format("a{0}{1}d",b,c))</MethodWithParams3>
@@ -30,6 +31,8 @@
 	<SplitLength>$(Prop.Split('d').Length)</SplitLength>
 	<NewString>$([System.String]::new('$(Prop)').TrimEnd('h'))</NewString>
 	<CharConvert>$(SomeChars.Replace(".", "").PadRight(3,"0"))</CharConvert>
+	<StringAtIndex0>$(Prop[0])</StringAtIndex0>
+	<StringAtIndex1>$(Prop[1])</StringAtIndex1>
 	<Path>\a\b\</Path>
 	<CharTrim>$(Path.Trim (\b))</CharTrim>
 	<OutDir>foo</OutDir>

@@ -198,7 +198,6 @@
     <Compile Include="Mono.TextEditor\Gui\DashedLineMargin.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldingScreenbackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
-    <Compile Include="Mono.TextEditor\Gui\GtkGestures.cs" />
     <Compile Include="Mono.TextEditor\Gui\GutterMargin.cs" />
     <Compile Include="Mono.TextEditor\Gui\IAnimationDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\IBackgroundRenderer.cs" />

@@ -132,16 +132,20 @@ namespace MonoDevelop.DotNetCore
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			FilePath outputFileName = GetOutputFileName (configuration);
-			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
+			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
-				assemblyRunConfiguration?.StartWorkingDirectory ?? Project.BaseDirectory,
+				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				assemblyRunConfiguration?.StartArguments
+				dotnetCoreRunConfiguration?.StartArguments
 			) {
-				EnvironmentVariables = assemblyRunConfiguration?.EnvironmentVariables,
-				PauseConsoleOutput = assemblyRunConfiguration?.PauseConsoleOutput ?? false,
-				ExternalConsole = assemblyRunConfiguration?.ExternalConsole ?? false
+				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
+				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
+				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
+				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
+				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
+				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
@@ -351,6 +355,10 @@ namespace MonoDevelop.DotNetCore
 			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
+		public bool IsWeb {
+			get { return (dotNetCoreMSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1; }
+		}
+
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
 		{
 			base.OnPrepareForEvaluation (project);
@@ -474,8 +482,28 @@ namespace MonoDevelop.DotNetCore
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
 		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
 			return supportedTargetFrameworks.GetFrameworks ();
+		}
+
+		/// <summary>
+		/// Handle a new project being created and added to a new solution. In this case
+		/// the NuGet packages should be restored. Need to avoid running a restore when
+		/// a solution is being opened so check that project's parent solution is open in
+		/// the IDE.
+		/// </summary>
+		protected override void OnBoundToSolution ()
+		{
+			base.OnBoundToSolution ();
+
+			if (Project.Loading)
+				return;
+
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != Project.ParentSolution)
+				return;
+
+			if (ProjectNeedsRestore ())
+				RestorePackagesInProjectHandler.Run (Project);
 		}
 
 		internal bool RestoreAfterSave { get; set; }
@@ -512,6 +540,11 @@ namespace MonoDevelop.DotNetCore
 					return false;
 				});
 			});
+		}
+
+		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
+		{
+			return new DotNetCoreRunConfiguration (name);
 		}
 	}
 }

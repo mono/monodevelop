@@ -250,11 +250,12 @@ namespace MonoDevelop.Ide.Projects
 
 		string GetSelectedLanguage ()
 		{
-			if (!Template.AvailableLanguages.Any ()) {
+			if (!Template.AvailableLanguages.Any ())
 				return String.Empty;
-			} else if (Template.AvailableLanguages.Contains (SelectedLanguage)) {
+			else if (RenderRecentTemplate)
+				return Template.Language;
+			else if (Template.AvailableLanguages.Contains (SelectedLanguage))
 				return SelectedLanguage;
-			}
 
 			return Template.AvailableLanguages.First ();
 		}

@@ -101,10 +101,5 @@ namespace UnitTests
 		{
 			return Path.Combine (Path.GetTempPath (), "test-file-" + (pcount++) + extension);
 		}
-		
-		public static string GetMdb (string file)
-		{
-			return Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyDebugInfoFile (file);
-		}
 	}
 }

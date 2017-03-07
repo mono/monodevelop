@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -35,11 +36,13 @@ namespace MonoDevelop.DotNetCore
 		const int HighestNetStandard1xMinorVersionSupported = 6;
 		const int HighestNetCoreApp1xMinorVersionSupported = 1;
 
+		DotNetProject project;
 		TargetFramework framework;
 
-		public DotNetCoreProjectSupportedTargetFrameworks (TargetFramework framework)
+		public DotNetCoreProjectSupportedTargetFrameworks (DotNetProject project)
 		{
-			this.framework = framework;
+			this.project = project;
+			framework = project.TargetFramework;
 		}
 
 		public IEnumerable<TargetFramework> GetFrameworks ()
@@ -48,6 +51,8 @@ namespace MonoDevelop.DotNetCore
 				return GetNetStandardTargetFrameworks ();
 			} else if (framework.IsNetCoreApp ()) {
 				return GetNetCoreAppTargetFrameworks ();
+			} else if (framework.IsNetFramework ()) {
+				return GetNetFrameworkTargetFrameworks ();
 			}
 
 			return new TargetFramework [0];
@@ -70,6 +75,16 @@ namespace MonoDevelop.DotNetCore
 		IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
 			return GetTargetFrameworksVersion1x (".NETCoreApp", HighestNetCoreApp1xMinorVersionSupported);
+		}
+
+		IEnumerable<TargetFramework> GetNetFrameworkTargetFrameworks ()
+		{
+			foreach (var targetFramework in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				if (!targetFramework.Hidden &&
+					targetFramework.IsNetFramework () &&
+					project.TargetRuntime.IsInstalled (targetFramework))
+					yield return targetFramework;
+			}
 		}
 	}
 }

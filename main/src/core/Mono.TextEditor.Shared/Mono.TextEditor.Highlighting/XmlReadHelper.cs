@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Highlighting
 		public delegate bool ReaderCallback ();
 		public delegate bool ReaderCallbackWithData (ReadCallbackData data);
 		
-		public class ReadCallbackData {
+		internal class ReadCallbackData {
 			bool skipNextRead = false;
 			public bool SkipNextRead {
 				get { return skipNextRead; }

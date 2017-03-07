@@ -468,6 +468,48 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void WriteProject_NetStandardTargetFrameworkVersionChanged_TargetFrameworkUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netstandard1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETStandard", "1.6");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual ("netstandard1.6", savedFramework);
+		}
+
+		[Test]
+		public void WriteProject_NetFrameworkVersionChanged_TargetFrameworkUpdated ()
+		{
+			CreateMSBuildProject (
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>net45</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+			ReadProject ();
+			project.Sdk = "Microsoft.NET.Sdk";
+
+			WriteProject (".NETFramework", "4.6");
+
+			string savedFramework = msbuildProject.GetGlobalPropertyGroup ()
+				.GetValue ("TargetFramework");
+			Assert.AreEqual ("net46", savedFramework);
+		}
+
+		[Test]
 		public void WriteProject_ProjectDefinesMultipleTargetFrameworksAndTargetFrameworkVersionChanged_TargetFrameworksUpdated ()
 		{
 			CreateMSBuildProject (

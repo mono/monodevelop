@@ -74,6 +74,8 @@ namespace MonoDevelop.PackageManagement
 			context = CreateRestoreContext ();
 		}
 
+		public bool LockFileChanged { get; private set; }
+
 		public async Task RestorePackages (
 			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken)
@@ -93,6 +95,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (changedLocks.Count > 0) {
+				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFilesChanged (changedLocks);
 					foreach (var project in affectedProjects) {
@@ -113,6 +116,7 @@ namespace MonoDevelop.PackageManagement
 			if (projectToReload != null) {
 				await ReloadProject (projectToReload, changedLock);
 			} else if (changedLock != null) {
+				LockFileChanged = true;
 				await Runtime.RunInMainThread (() => {
 					FileService.NotifyFileChanged (changedLock);
 					NotifyProjectReferencesChanged (project);
@@ -219,6 +223,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return Runtime.RunInMainThread (async () => {
 				if (changedLock != null) {
+					LockFileChanged = true;
 					FileService.NotifyFileChanged (changedLock);
 				}
 				await projectToReload.ReevaluateProject (new ProgressMonitor ());

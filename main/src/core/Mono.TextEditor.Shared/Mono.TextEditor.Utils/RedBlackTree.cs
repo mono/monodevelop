@@ -470,7 +470,7 @@ namespace Mono.TextEditor.Utils
 
 		#endregion
 
-		public class RedBlackTreeNodeEventArgs : EventArgs
+		internal class RedBlackTreeNodeEventArgs : EventArgs
 		{
 			public T Node { get; private set; }
 

@@ -958,7 +958,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				switch (drawingStep) {
 				case 0:
 					var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (mode) : 1.0;
-					CachedDraw (cr, ref mode.backgroundSurface, allocation, draw: (c, o) => mode.DrawBackground (c, allocation), forceScale: displayScale);
+					mode.DrawBackground (cr, allocation);
 					drawingStep++;
 					return true;
 				case 1:

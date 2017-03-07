@@ -91,14 +91,6 @@
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.Restore" />
 		</Condition>
-		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.DependenciesNode|MonoDevelop.PackageManagement.NodeBuilders.PackageDependenciesNode">
-			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
-			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
-			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.Restore" />
-		</Condition>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
@@ -137,11 +129,6 @@
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferenceNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferencesNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferencesFromPackagesFolderNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.DependenciesNodeBuilderExtension" />
-		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.DependenciesNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.PackageDependenciesNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.TargetFrameworkNodeBuilder" />
-		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.PackageDependencyNodeBuilder" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
@@ -151,15 +138,6 @@
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
-		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
-		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
-	</Extension>
-
-	<ExtensionPoint path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
-	</ExtensionPoint>
-
-	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageDependency">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>

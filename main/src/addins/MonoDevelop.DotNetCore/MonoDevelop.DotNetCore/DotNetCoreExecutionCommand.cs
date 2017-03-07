@@ -45,5 +45,9 @@ namespace MonoDevelop.DotNetCore
 
 		public bool PauseConsoleOutput { get; set; }
 		public bool ExternalConsole { get; set; }
+		public bool LaunchBrowser { get; set; }
+		public string LaunchURL { get; set; }
+		public string ApplicationURL { get; set; }
+		public PipeTransportSettings PipeTransport { get; set; }
 	}
 }

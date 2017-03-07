@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor.Tests
 {
@@ -49,8 +50,9 @@ namespace Mono.TextEditor.Tests
 				return null;
 			}
 
-			public override void PostFomatPastedText (int offset, int length)
+			public override Task PostFomatPastedText (int offset, int length)
 			{
+				return Task.FromResult (true);
 			}
 		}
 
