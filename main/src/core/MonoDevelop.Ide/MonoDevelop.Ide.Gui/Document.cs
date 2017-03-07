@@ -449,20 +449,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public Task SaveAs ()
+		public Task<bool> SaveAs ()
 		{
 			return SaveAs (null);
 		}
 
-		public Task SaveAs (string filename)
+		public Task<bool> SaveAs (string filename)
 		{
 			return Runtime.RunInMainThread (() => SaveAsTask (filename));
 		}
 
-		async Task SaveAsTask (string filename)
+		async Task<bool> SaveAsTask (string filename)
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
-				return;
+				return false;
 
 			Encoding encoding = null;
 			
@@ -485,9 +485,9 @@ namespace MonoDevelop.Ide.Gui
 					dlg.CurrentFolder = Path.GetDirectoryName ((string)Window.ViewContent.ContentName);
 					dlg.InitialFileName = Path.GetFileName ((string)Window.ViewContent.ContentName);
 				}
-				
+
 				if (!dlg.Run ())
-					return;
+					return false;
 				
 				filename = dlg.SelectedFile;
 				encoding = dlg.Encoding;
@@ -495,12 +495,12 @@ namespace MonoDevelop.Ide.Gui
 		
 			if (!FileService.IsValidPath (filename)) {
 				MessageService.ShowMessage (GettextCatalog.GetString ("File name {0} is invalid", filename));
-				return;
+				return false;
 			}
 			// detect preexisting file
 			if (File.Exists (filename)) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile))
-					return;
+					return false;
 			}
 			
 			// save backup first
@@ -516,7 +516,9 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
+
 			await UpdateParseDocument ();
+			return true;
 		}
 		
 		public bool Close ()

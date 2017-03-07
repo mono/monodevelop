@@ -1,11 +1,10 @@
-//*****************************************************************************
-// LcsDiff.cs
-// 
-// An implementation of the difference algorithm described in
-// "An O(ND) Difference Algorithm and its Variations" by Eugene W. Myers
 //
-// Copyright (C) 2008 Microsoft Corporation
-//*****************************************************************************
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//  Licensed under the MIT License. See License.txt in the project root for license information.
+//
+// This file contain implementations details that are subject to change without notice.
+// Use at your own risk.
+//
 using System;
 using System.Collections;
 using System.Collections.Generic;

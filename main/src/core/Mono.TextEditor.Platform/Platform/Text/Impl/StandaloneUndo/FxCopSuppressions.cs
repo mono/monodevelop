@@ -1,3 +1,10 @@
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//  Licensed under the MIT License. See License.txt in the project root for license information.
+//
+// This file contain implementations details that are subject to change without notice.
+// Use at your own risk.
+//
 #if CODE_ANALYSIS_BASELINE
 using System.Diagnostics.CodeAnalysis;
 [module: SuppressMessage("Microsoft.Naming","CA2204:Literals should be spelled correctly", MessageId="UndoCalledButCanUndoFalse", Scope="member", Target="Microsoft.VisualStudio.Text.Operations.Standalone.UndoTransactionImpl.#Undo()", Justification="Member name")]

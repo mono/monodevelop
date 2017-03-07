@@ -122,19 +122,6 @@
 
       <Compile Include="$(MSBuildThisFileDirectory)Platform\Imaging\Impl\ImageMoniker.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedAction.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedAction2.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionCategory.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionCategoryRegistryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionCategorySet.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionsSource.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionsSourceProvider.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\ISuggestedActionWithFlavors.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\PredefinedSuggestedActionCategoryNames.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\SuggestedActionCategoryDefinition.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\SuggestedActionSet.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Def\Intellisense\Suggestions\SuggestedActionSetPriority.cs" />
-
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextView.cs" />
