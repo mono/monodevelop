@@ -206,7 +206,7 @@ namespace MonoDevelop.Core.Execution
 						dict[kvp.Key] = kvp.Value;
 				
 				var p = externalConsoleHandler (command, arguments, workingDirectory, dict,
-					GettextCatalog.GetString ("{0} External Console", BrandingService.ApplicationName),
+					externalConsole?.Title ?? GettextCatalog.GetString ("{0} External Console", BrandingService.ApplicationName),
 					externalConsole != null ? !externalConsole.CloseOnDispose : false);
 
 				if (p != null) {

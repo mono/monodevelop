@@ -149,17 +149,18 @@ namespace MonoDevelop.DotNetCore
 		public void SaveCore ()
 		{
 			base.Save ();
-			config.LaunchBrowser = launchBrowser.Active;
-			config.LaunchUrl = launchUrl.Text;
-			config.ApplicationURL = applicationUrl.Text;
+			if (applicationUrl != null) {//applicationUrl != null means it's web project, hence set values
+				config.LaunchBrowser = launchBrowser.Active;
+				config.LaunchUrl = launchUrl.Text;
+				config.ApplicationURL = applicationUrl.Text;
+			}
 		}
 
 		public bool ValidateCore ()
 		{
 			if (!base.Validate ())
 				return false;
-
-			return IsValidUrl (applicationUrl.Text);
+			return applicationUrl == null || IsValidUrl (applicationUrl.Text);//applicationUrl == null means it's not web project, hence it's valid config
 		}
 	}
 }

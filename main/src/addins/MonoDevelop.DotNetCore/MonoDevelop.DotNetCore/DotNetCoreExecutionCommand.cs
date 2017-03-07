@@ -48,5 +48,6 @@ namespace MonoDevelop.DotNetCore
 		public bool LaunchBrowser { get; set; }
 		public string LaunchURL { get; set; }
 		public string ApplicationURL { get; set; }
+		public PipeTransportSettings PipeTransport { get; set; }
 	}
 }
