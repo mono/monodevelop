@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				msbuildBinDir = Console.ReadLine ().Trim ();
 				AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
+
 				Start ();
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
