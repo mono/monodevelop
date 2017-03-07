@@ -63,6 +63,7 @@ namespace MonoDevelop.Projects.MSBuild
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (taskId, delegate {
 				Project project = null;
+				Dictionary<string, string> originalGlobalProperties = null;
 				try {
 					project = SetupProject (configurations);
 					InitLogger (logWriter);
@@ -78,6 +79,9 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 
 					if (globalProperties != null) {
+						originalGlobalProperties = new Dictionary<string, string> ();
+						foreach (var p in project.GlobalProperties)
+							originalGlobalProperties [p.Key] = p.Value;
 						foreach (var p in globalProperties)
 							project.SetGlobalProperty (p.Key, p.Value);
 						project.ReevaluateIfNecessary ();
@@ -123,7 +127,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (project != null && globalProperties != null) {
 						foreach (var p in globalProperties)
 							project.RemoveGlobalProperty (p.Key);
-						foreach (var p in engine.GlobalProperties)
+						foreach (var p in originalGlobalProperties)
 							project.SetGlobalProperty (p.Key, p.Value);
 						project.ReevaluateIfNecessary ();
 					}
