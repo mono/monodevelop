@@ -144,7 +144,8 @@ namespace MonoDevelop.DotNetCore
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
 				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
 				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL
+				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
