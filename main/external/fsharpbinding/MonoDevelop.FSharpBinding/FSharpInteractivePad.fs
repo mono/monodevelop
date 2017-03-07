@@ -45,11 +45,6 @@ type KillIntent =
     | Kill
     | NoIntent // Unexpected kill, or from #q/#quit, so we prompt
 
-type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultSourceEditorOptions) =
-    inherit TextEditorOptions()
-    //interface Mono.TextEditor.ITextEditorOptions with
-    //    member x.ColorScheme = options.ColorScheme
-
 type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
     inherit TextLineMarker()
     static let tag = obj()
@@ -63,7 +58,7 @@ type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
 
     interface IExtendingTextLineMarker with
         member x.GetLineHeight editor = editor.LineHeight + image.Height
-        member x.Draw(editor, g, lineNr, lineArea) = ()
+        member x.Draw(_editor, _g, _lineNr, _lineArea) = ()
         member x.IsSpaceAbove with get() = false
 
 type FsiDocumentContext() =
