@@ -135,6 +135,23 @@
       <Name>MonoDevelop.PackageManagement</Name>
     </ProjectReference>
   </ItemGroup>
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj">
+      <Project>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</Project>
+      <Name>MonoDevelop.FSharpInteractive.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
+      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
+      <Name>MonoDevelop.FSharp.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
     <Compile Include="TestDocument.fs" />
@@ -154,25 +171,7 @@
     <Compile Include="ParsingTests.fs" />
     <Compile Include="CompletionTests.fs" />
     <Compile Include="TemplateTests.fs" />
-  </ItemGroup>
-  <PropertyGroup>
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj">
-      <Project>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</Project>
-      <Name>MonoDevelop.FSharpInteractive.Service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
-      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
-      <Name>MonoDevelop.FSharp.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Interactive.fs" />
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="HighlightUsagesTests.fs" />
     <Compile Include="CopyPaste.fs" />
@@ -194,6 +193,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
+    </None>
+    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Samples\Xamarin.iOS.fsproj" />

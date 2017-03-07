@@ -214,7 +214,8 @@ type FSharpInteractivePad() =
 
     let setupSession() =
         try
-            let ses = InteractiveSession()
+            let pathToExe = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
+            let ses = InteractiveSession(pathToExe)
             input.Clear()
             promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
