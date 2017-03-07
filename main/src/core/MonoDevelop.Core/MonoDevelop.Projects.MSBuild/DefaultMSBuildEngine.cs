@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildPropertyGroup group)
 		{
-			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (project, context, group.Condition, true))
+			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (project, context, group.Condition, conditionCache, true))
 				return;
 
 			foreach (var prop in group.GetProperties ())
@@ -254,29 +254,29 @@ namespace MonoDevelop.Projects.MSBuild
 			bool conditionIsTrue = true;
 
 			if (!string.IsNullOrEmpty (items.Condition))
-				conditionIsTrue = SafeParseAndEvaluate (project, context, items.Condition);
+				conditionIsTrue = SafeParseAndEvaluate (project, context, items.Condition, conditionCache);
 
 			foreach (var item in items.Items) {
 
 				var include = context.EvaluateString (item.Include);
 				var exclude = context.EvaluateString (item.Exclude);
 
-				var it = CreateEvaluatedItem (context, project, project.Project, item, include);
+				var it = CreateEvaluatedItem (context, project, project.Project, item, include, conditionCache);
 
-				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (project, context, it.Condition));
+				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (project, context, it.Condition, conditionCache));
 
 				var excludeRegex = !string.IsNullOrEmpty (exclude) ? new Regex (ExcludeToRegex (exclude)) : null;
 
 				if (it.Include.IndexOf (';') == -1)
-					AddItem (project, context, item, it, it.Include, excludeRegex, trueCond);
+					AddItem (project, context, item, it, it.Include, excludeRegex, trueCond, conditionCache);
 				else {
 					foreach (var inc in it.Include.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries))
-						AddItem (project, context, item, it, inc, excludeRegex, trueCond);
+						AddItem (project, context, item, it, inc, excludeRegex, trueCond, conditionCache);
 				}
 			}
 		}
 
-		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
+		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond, Dictionary<string, ConditionExpression> conditionCache)
 		{
 			// Don't add the result from any item that has an empty include. MSBuild never returns those.
 			if (include == string.Empty)
@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects.MSBuild
 				// This is a transform
 				List<MSBuildItemEvaluated> evalItems;
 				var transformExp = include.Substring (2, include.Length - 3);
-				if (ExecuteTransform (project, context, item, transformExp, out evalItems)) {
+				if (ExecuteTransform (project, context, item, transformExp, out evalItems, conditionCache)) {
 					foreach (var newItem in evalItems) {
 						project.EvaluatedItemsIgnoringCondition.Add (newItem);
 						if (trueCond)
@@ -298,7 +298,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (path == "**" || path.EndsWith ("\\**"))
 					path = path + "/*";
 				var subpath = path.Split ('\\');
-				foreach (var eit in ExpandWildcardFilePath (project, project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
+				foreach (var eit in ExpandWildcardFilePath (project, project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0, conditionCache)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
 					project.EvaluatedItemsIgnoringCondition.Add (eit);
@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} else if (include != it.Include) {
 				if (excludeRegex != null && excludeRegex.IsMatch (include))
 					return;
-				it = CreateEvaluatedItem (context, project, project.Project, item, include);
+				it = CreateEvaluatedItem (context, project, project.Project, item, include, conditionCache);
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
@@ -321,7 +321,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
+		static bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items, Dictionary<string, ConditionExpression> conditionCache)
 		{
 			bool ignoreMetadata = false;
 
@@ -379,7 +379,7 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 						// Now override metadata from the new item definition
 						foreach (var c in item.Metadata.GetProperties ()) {
-							if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (project, context, c.Condition, true))
+							if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (project, context, c.Condition, conditionCache, true))
 								md [c.Name] = new MSBuildPropertyEvaluated (project.Project, c.Name, c.Value, context.EvaluateString (c.Value));
 						}
 						((MSBuildPropertyGroupEvaluated)newItem.Metadata).SetProperties (md);
@@ -600,14 +600,14 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports, bool evalItems)
 		{
-			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (project, context, imports.Condition, true))
+			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (project, context, imports.Condition, conditionCache, true))
 				return;
 
 			foreach (var item in imports.Imports)
 				Evaluate (project, context, item, evalItems);
 		}
 
-		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
+		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index, Dictionary<string, ConditionExpression> conditionCache)
 		{
 			var res = Enumerable.Empty<MSBuildItemEvaluated> ();
 
@@ -617,10 +617,10 @@ namespace MonoDevelop.Projects.MSBuild
 			var path = filePath [index];
 
 			if (path == "..")
-				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1, conditionCache);
 			
 			if (path == ".")
-				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, recursive, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, recursive, filePath, index + 1, conditionCache);
 
 			if (!Directory.Exists (basePath))
 				return res;
@@ -634,13 +634,13 @@ namespace MonoDevelop.Projects.MSBuild
 				if (baseRecursiveDir.IsNullOrEmpty)
 					baseRecursiveDir = basePath;
 				
-				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, true, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, true, filePath, index + 1, conditionCache);
 			}
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index));
+					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index, conditionCache));
 			}
 
 			if (index == filePath.Length - 1) {
@@ -654,7 +654,7 @@ namespace MonoDevelop.Projects.MSBuild
 				res = res.Concat (Directory.EnumerateFiles (basePath, path).Select (f => {
 					context.SetItemContext (f, recursiveDir);
 					var ev = baseDir + Path.GetFileName (f);
-					return CreateEvaluatedItem (context, pinfo, project, sourceItem, ev);
+					return CreateEvaluatedItem (context, pinfo, project, sourceItem, ev, conditionCache);
 				}));
 			}
 			else {
@@ -665,9 +665,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
-						res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1));
+						res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1, conditionCache));
 				} else
-					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1));
+					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1, conditionCache));
 			}
 
 			return res;
@@ -713,14 +713,14 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
 		}
 
-		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
+		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include, Dictionary<string, ConditionExpression> conditionCache)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
 			// Only evaluate properties for non-transforms.
 			if (!IsIncludeTransform (include)) {
 				foreach (var c in sourceItem.Metadata.GetProperties ()) {
-					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
+					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, conditionCache, true))
 						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
 				}
 			}
@@ -734,7 +734,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
-			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (project, context, prop.Condition, true)) {
+			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (project, context, prop.Condition, conditionCache, true)) {
 				bool needsItemEvaluation;
 				var val = context.Evaluate (prop.UnevaluatedValue, out needsItemEvaluation);
 				if (needsItemEvaluation)
@@ -746,7 +746,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MSBuildItemEvaluated Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
 		{
-			return CreateEvaluatedItem (context, project, project.Project, item, context.EvaluateString (item.Include));
+			return CreateEvaluatedItem (context, project, project.Project, item, context.EvaluateString (item.Include), conditionCache);
 		}
 
 		IEnumerable<ProjectInfo> GetImportedProjects (ProjectInfo project, MSBuildImport import)
@@ -830,7 +830,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, conditionCache, true))
 				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
@@ -873,7 +873,7 @@ namespace MonoDevelop.Projects.MSBuild
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose, bool evalItems)
 		{
 			foreach (var op in choose.GetOptions ()) {
-				if (op.IsOtherwise || SafeParseAndEvaluate (project, context, op.Condition, true)) {
+				if (op.IsOtherwise || SafeParseAndEvaluate (project, context, op.Condition, conditionCache, true)) {
 					EvaluateObjects (project, context, op.GetAllObjects (), evalItems);
 					break;
 				}
@@ -882,7 +882,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildTarget target)
 		{
-			bool condIsTrue = SafeParseAndEvaluate (project, context, target.Condition);
+			bool condIsTrue = SafeParseAndEvaluate (project, context, target.Condition, conditionCache);
 			var newTarget = new MSBuildTarget (target.Name, target.Tasks);
 			newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
 			newTarget.Inputs = context.EvaluateString (target.Inputs);
@@ -896,14 +896,21 @@ namespace MonoDevelop.Projects.MSBuild
 				project.Targets.Add (newTarget);
 		}
 
-		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
+		Dictionary<string, ConditionExpression> conditionCache = new Dictionary<string, ConditionExpression> ();
+		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, Dictionary<string, ConditionExpression> conditionCache = null, bool collectConditionedProperties = false)
 		{
 			try {
 				if (String.IsNullOrEmpty (condition))
 					return true;
 
 				try {
-					ConditionExpression ce = ConditionParser.ParseCondition (condition);
+					ConditionExpression ce;
+					lock (conditionCache) {
+						if (conditionCache == null || !conditionCache.TryGetValue (condition, out ce))
+							ce = ConditionParser.ParseCondition (condition);
+						if (conditionCache != null)
+							conditionCache [condition] = ce;
+					}
 
 					if (!ce.CanEvaluateToBool (context))
 						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
