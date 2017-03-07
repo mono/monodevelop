@@ -682,6 +682,8 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ShowView (newContent, true, binding);
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
+			document.Editor.Encoding = Encoding.UTF8;
+			document.Editor.UseBOM = true;
 			document.StartReparseThread ();
 			return document;
 		}
