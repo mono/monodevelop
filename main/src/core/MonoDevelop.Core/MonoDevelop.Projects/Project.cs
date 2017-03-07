@@ -3364,6 +3364,14 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+
+			if (evalItem.Metadata.GetProperties ().Count () == 0 && item.Metadata.GetProperties ().Count () == 0) {
+				updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
+				foreach (var it in updateItems) {
+					if (it.ParentNode != null)
+						it.ParentGroup.RemoveItem (it);
+				}
+			}
 			return ExpandedItemAction.None;
 		}
 

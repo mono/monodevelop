@@ -363,6 +363,42 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task FileUpdateChangeThenRemoveMetadataAfterReload ()
+		{
+			// An update item is created by adding a property.
+			// Then the metadata is removed.
+			// The update item has to be removed
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-test.csproj");
+			string originalProjFile = new FilePath (projFile).ChangeName ("glob-test-original.csproj");
+			File.Copy (projFile, originalProjFile);
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			f.Metadata.SetValue ("foo", "bar");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update1-test")), projectXml);
+
+			// Reload the project.
+			p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+			f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+
+			f.Metadata.RemoveProperty ("foo");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+		}
+
+		[Test]
 		public async Task FileUpdateChangeMetadataDefinedInGlob ()
 		{
 			// The glob item defines a metadata. All evaluated items have that value.
