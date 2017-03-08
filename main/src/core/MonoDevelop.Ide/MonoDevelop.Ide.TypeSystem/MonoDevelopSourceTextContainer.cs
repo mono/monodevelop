@@ -34,6 +34,7 @@ using System.Reflection;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -64,16 +65,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			var handler = TextChanged;
 			if (handler != null) {
 				var oldText = CurrentText;
-				var insertedText = e.InsertedText.Text;
-				if (e.RemovalLength == 0 && string.IsNullOrEmpty (insertedText))
-					return;
-				var newText = oldText.Replace (e.Offset, e.RemovalLength, insertedText);
-				currentText = newText;
-				try {
-					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while text replacing", ex);
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+				var changeRanges = new List<TextChangeRange> ();
+				foreach (var c in e.TextChanges) {
+					var span = new TextSpan (c.Offset, c.RemovalLength);
+					changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
+					changeRanges.Add (new TextChangeRange (span, c.InsertionLength)); 
 				}
+				var newText = oldText.WithChanges (changes);
+				currentText = newText;
+				Task.Run (delegate {
+					try {
+						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while text replacing", ex);
+					}
+				});
 			}
 		}
 

@@ -90,9 +90,11 @@ namespace Mono.TextEditor
 		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			var lineSegment = line.Segment;
-			if (lineSegment.IsInside (e.Offset) || lineSegment.IsInside (e.Offset + e.RemovalLength) ||
-			    e.Offset <= lineSegment.Offset && lineSegment.Offset <= e.Offset + e.RemovalLength) {
-				doc.RemoveMarker (this);
+			foreach (var change in e.TextChanges) {
+				if (lineSegment.IsInside (change.Offset) || lineSegment.IsInside (change.Offset + change.RemovalLength) ||
+					change.Offset <= lineSegment.Offset && lineSegment.Offset <= change.Offset + change.RemovalLength) {
+					doc.RemoveMarker (this);
+				}
 			}
 		}
 

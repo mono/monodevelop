@@ -24,26 +24,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
 {
-	/// <summary>
-	/// Describes a change of the document text.
-	/// This class is thread-safe.
-	/// </summary>
-	[Serializable]
-	public class TextChangeEventArgs : EventArgs
+	[DebuggerDisplay("({offset}, {removedText.Length}, {insertedText.Text})")]
+	public sealed class TextChange
 	{
 		readonly int offset;
+		int newOffset;
 		readonly ITextSource removedText;
 		readonly ITextSource insertedText;
+
+		public TextChange (int offset, string removedText, string insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = offset;
+			this.removedText = removedText != null ? new StringTextSource (removedText) : StringTextSource.Empty;
+			this.insertedText = insertedText != null ? new StringTextSource (insertedText) : StringTextSource.Empty;
+		}
+
+		public TextChange (int offset, ITextSource removedText, ITextSource insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException(nameof (offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = offset;
+			this.removedText = removedText ?? StringTextSource.Empty;
+			this.insertedText = insertedText ?? StringTextSource.Empty;
+		}
+
+		public TextChange(int offset, int newOffset, string removedText, string insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException(nameof(offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = newOffset;
+			this.removedText = removedText != null ? new StringTextSource(removedText) : StringTextSource.Empty;
+			this.insertedText = insertedText != null ? new StringTextSource(insertedText) : StringTextSource.Empty;
+		}
 
 		/// <summary>
 		/// The offset at which the change occurs.
 		/// </summary>
 		public int Offset {
 			get { return offset; }
+		}
+
+		/// <summary>
+		/// The offset at which the change occurs relative to the new buffer.
+		/// </summary>
+		public int NewOffset
+		{
+			get { return newOffset; }
 		}
 
 		/// <summary>
@@ -84,33 +121,9 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Creates a new TextChangeEventArgs object.
-		/// </summary>
-		public TextChangeEventArgs(int offset, string removedText, string insertedText)
-		{
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset", offset, "offset must not be negative");
-			this.offset = offset;
-			this.removedText = removedText != null ? new StringTextSource(removedText) : StringTextSource.Empty;
-			this.insertedText = insertedText != null ? new StringTextSource(insertedText) : StringTextSource.Empty;
-		}
-
-		/// <summary>
-		/// Creates a new TextChangeEventArgs object.
-		/// </summary>
-		public TextChangeEventArgs(int offset, ITextSource removedText, ITextSource insertedText)
-		{
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset", offset, "offset must not be negative");
-			this.offset = offset;
-			this.removedText = removedText ?? StringTextSource.Empty;
-			this.insertedText = insertedText ?? StringTextSource.Empty;
-		}
-
-		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
-		public virtual int GetNewOffset(int offset)
+		public int GetNewOffset(int offset)
 		{
 			if (offset >= this.Offset && offset <= this.Offset + this.RemovalLength) {
 //				if (movementType == AnchorMovementType.BeforeInsertion)
@@ -123,18 +136,74 @@ namespace MonoDevelop.Core.Text
 				return offset;
 			}
 		}
+	}
+
+	/// <summary>
+	/// Describes a change of the document text.
+	/// This class is thread-safe.
+	/// </summary>
+	[Serializable]
+	public class TextChangeEventArgs : EventArgs
+	{
+		public IReadOnlyList<TextChange> TextChanges { get; }
+
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		public TextChangeEventArgs(int offset, string removedText, string insertedText)
+		{
+			TextChanges = new List<TextChange> () {
+				new TextChange (offset, removedText, insertedText)
+			};
+		}
+
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		public TextChangeEventArgs(int offset, ITextSource removedText, ITextSource insertedText)
+		{
+			TextChanges = new List<TextChange> () {
+				new TextChange (offset, removedText, insertedText)
+			};
+		}
+
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		public TextChangeEventArgs (IReadOnlyList<TextChange> textChanges)
+		{
+			if (textChanges == null)
+				throw new ArgumentNullException (nameof (textChanges));
+			TextChanges = textChanges;
+		}
+
+		/// <summary>
+		/// Gets the new offset where the specified offset moves after this document change.
+		/// </summary>
+		public virtual int GetNewOffset(int offset)
+		{
+			foreach (var change in TextChanges) {
+				offset = change.GetNewOffset (offset);
+			}
+			return offset;
+		}
 
 		/// <summary>
 		/// Creates TextChangeEventArgs for the reverse change.
 		/// </summary>
 		public virtual TextChangeEventArgs Invert()
 		{
-			return new TextChangeEventArgs(offset, insertedText, removedText);
+			var invertedChanges = new List<TextChange> ();
+			for (int i = TextChanges.Count - 1; i >= 0; i--) {
+				var c = TextChanges [i];
+				invertedChanges.Add (new TextChange(c.Offset, c.InsertedText, c.RemovedText));
+			}
+			return new TextChangeEventArgs(invertedChanges);
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[TextChangeEventArgs: offset={0}, removedText={1}, insertedText={2}, RemovalLength={3}, InsertionLength={4}]", offset, Escape(removedText?.Text), Escape(insertedText?.Text), RemovalLength, InsertionLength);
+			return string.Format ("[TextChangeEventArgs: #TextChanges={0}]", TextChanges.Count);
 		}
 
 		static string Escape (string text)

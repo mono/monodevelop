@@ -192,7 +192,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo += HandleEndUndo;
 
-			widget.TextEditor.Document.TextChanging += OnTextReplacing;
 			widget.TextEditor.Document.TextChanged += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			widget.TextEditor.Document.TextSet += HandleDocumentTextSet;
@@ -273,12 +272,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
-
-			int startIndex = args.Offset;
-			foreach (var marker in currentErrorMarkers) {
-				var line = marker.LineSegment;
-				if (line == null || line.Contains (args.Offset) || line.Contains (args.Offset + args.InsertionLength) || args.Offset < line.Offset && line.Offset < args.Offset + args.InsertionLength) {
-					markersToRemove.Enqueue (marker);
+			foreach (var change in args.TextChanges) {
+				int startIndex = change.Offset;
+				foreach (var marker in currentErrorMarkers) {
+					var line = marker.LineSegment;
+					if (line == null || line.Contains (change.Offset) || line.Contains (change.Offset + change.InsertionLength) || change.Offset < line.Offset && line.Offset < change.Offset + change.InsertionLength) {
+						markersToRemove.Enqueue (marker);
+					}
 				}
 			}
 			ResetRemoveMarker ();
@@ -518,7 +518,7 @@ namespace MonoDevelop.SourceEditor
 			var lineSegment = doc.GetLine (task.Line);
 			if (lineSegment == null)
 				return;
-			var marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)doc.GetMarkers (lineSegment).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker == null)
 				return;
 			
@@ -594,11 +594,10 @@ namespace MonoDevelop.SourceEditor
 						var lineSegment = widget.Document.GetLine (marker.Task.Line);
 						if (lineSegment == null)
 							continue;
-						var oldMarker = lineSegment.Markers.OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
+						var oldMarker = widget.Document.GetMarkers (lineSegment).OfType<MessageBubbleTextMarker> ().FirstOrDefault ();
 						if (oldMarker != null) {
 							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
 						} else {
-							marker.LineSegment = lineSegment;
 							widget.Document.AddMarker (lineSegment, marker, false, 0);
 							newErrorMarkers.Add (marker);
 						}
@@ -998,7 +997,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
 			widget.TextEditor.IconMargin.MouseMoved -= OnIconMarginMouseMoved;
 			widget.TextEditor.IconMargin.MouseLeave -= OnIconMarginMouseLeave;
-			widget.TextEditor.Document.TextChanging -= OnTextReplacing;
 			widget.TextEditor.Document.TextChanged -= OnTextReplaced;
 
 
@@ -1054,40 +1052,34 @@ namespace MonoDevelop.SourceEditor
 			}
 			return IsUntitled || writeAllowed;
 		}
-		
-		string oldReplaceText;
-		
-		void OnTextReplacing (object s, TextChangeEventArgs a)
-		{
-			oldReplaceText = a.RemovedText.Text;
-		}
-		
+
 		void OnTextReplaced (object s, TextChangeEventArgs a)
 		{
 			IsDirty = Document.IsDirty;
-			
-			var location = Document.OffsetToLocation (a.Offset);
-			
-			int i = 0, lines = 0;
-			while (i != -1 && i < oldReplaceText.Length) {
-				i = oldReplaceText.IndexOf ('\n', i);
-				if (i != -1) {
-					lines--;
-					i++;
-				}
-			}
+			foreach (var change in a.TextChanges) {
+				var location = Document.OffsetToLocation (change.Offset);
 
-			if (a.InsertedText != null) {
-				i = 0;
-				string sb = a.InsertedText.Text;
-				while (i < sb.Length) {
-					if (sb [i] == '\n')
-						lines++;
-					i++;
+				int i = 0, lines = 0;
+				while (i != -1 && i < change.RemovedText.Text.Length) {
+					i = change.RemovedText.Text.IndexOf ('\n', i);
+					if (i != -1) {
+						lines--;
+						i++;
+					}
 				}
+
+				if (change.InsertedText != null) {
+					i = 0;
+					string sb = change.InsertedText.Text;
+					while (i < sb.Length) {
+						if (sb [i] == '\n')
+							lines++;
+						i++;
+					}
+				}
+				if (lines != 0)
+					TextEditorService.NotifyLineCountChanged (this, location.Line, lines, location.Column);
 			}
-			if (lines != 0)
-				TextEditorService.NotifyLineCountChanged (this, location.Line, lines, location.Column);
 		}
 
 		void OnCurrentFrameChanged (object s, EventArgs args)
@@ -1446,7 +1438,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			if (hoverDebugLineMarker == null && e.LineSegment != null && e.LineSegment.Markers.FirstOrDefault (m => m is DebugIconMarker) == null) {
+			if (hoverDebugLineMarker == null && e.LineSegment != null && e.Editor.Document.GetMarkers (e.LineSegment).FirstOrDefault (m => m is DebugIconMarker) == null) {
 				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
@@ -1663,18 +1655,14 @@ namespace MonoDevelop.SourceEditor
 		public void SetBookmarked (int position, bool mark)
 		{
 			var line = GetLine (position);
-			if (line != null && line.IsBookmarked != mark) {
-				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (line.Offset);
-				line.IsBookmarked = mark;
-				widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
-				widget.TextEditor.Document.CommitDocumentUpdate ();
-			}
+			if (line != null)
+				widget.TextEditor.Document.SetIsBookmarked (line, mark);
 		}
 		
 		public bool IsBookmarked (int position)
 		{
 			var line = GetLine (position);
-			return line != null && line.IsBookmarked;
+			return line != null && widget.TextEditor.Document.IsBookmarked (line);
 		}
 		
 		public void PrevBookmark ()
@@ -2741,7 +2729,7 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarkers (IDocumentLine line)
 		{
-			return ((DocumentLine)line).Markers.OfType<ITextLineMarker> ();
+			return Document.GetMarkers (((DocumentLine)line)).OfType<ITextLineMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)

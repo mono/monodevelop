@@ -349,6 +349,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual async void RunCompletionCommand ()
 		{
+			await TriggerCompletion(CompletionTriggerReason.CompletionCommand);
+		}
+
+		public virtual async Task TriggerCompletion(CompletionTriggerReason reason)
+		{
 			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
 
@@ -356,6 +361,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
 			}
+			Editor.EnsureCaretIsNotVirtual ();
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -364,7 +370,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
-			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand));
+			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
 			if (completionList.TriggerWordStart >= 0) {
 				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;

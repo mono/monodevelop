@@ -677,11 +677,13 @@ namespace MonoDevelop.Ide.Gui
 					defaultName, mimeType, content, Environment.NewLine));
 			
 			newContent.UntitledName = defaultName;
-			newContent.IsDirty = true;
+			newContent.IsDirty = false;
 			newContent.Binding = binding;
 			workbench.ShowView (newContent, true, binding);
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
+			document.Editor.Encoding = Encoding.UTF8;
+			document.Editor.UseBOM = true;
 			document.StartReparseThread ();
 			return document;
 		}
@@ -853,11 +855,22 @@ namespace MonoDevelop.Ide.Gui
 							: System.IO.Path.GetFileName (viewContent.ContentName)),
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
-				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
+				if (result == AlertButton.Save) {
+					args.Cancel = true;
 					await FindDocument (window).Save ();
-					args.Cancel = viewContent.IsDirty;
-					if (args.Cancel)
-						FindDocument (window).Select ();
+					viewContent.IsDirty = false;
+					window.CloseWindow (true);
+					return;
+				} else if (result == AlertButton.SaveAs) {
+					args.Cancel = true;
+					var resultSaveAs = await FindDocument (window).SaveAs ();
+					if (resultSaveAs) {
+						viewContent.IsDirty = false;
+						window.CloseWindow (true);
+					} else {
+						window.SelectWindow ();
+					}
+					return;
 				} else {
 					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)

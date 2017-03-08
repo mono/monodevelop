@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 					var st = await document.GetTextAsync ().ConfigureAwait (false);
 					var bounds = CalcTypeBounds (removeType);
 
-					return document.WithText (st.WithChanges (new TextChange (new TextSpan (bounds.Offset, bounds.Length), "")));
+					return document.WithText (st.WithChanges (new Microsoft.CodeAnalysis.Text.TextChange (new TextSpan (bounds.Offset, bounds.Length), "")));
 				}
 
 				var correctFileName = GetCorrectFileName (document, type);

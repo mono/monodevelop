@@ -2472,7 +2472,7 @@ namespace MonoDevelop.Ide
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
 			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
+				if (IsSearchedDocument (doc, filePath)) {
 					return doc.Editor;
 				}
 			}
@@ -2484,7 +2484,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Workbench != null) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.FileName == filePath && doc.Editor != null) {
+					if (IsSearchedDocument (doc, filePath)) {
 						isOpen = true;
 						return doc.Editor;
 					}
@@ -2502,6 +2502,11 @@ namespace MonoDevelop.Ide
 			data.Text = text;
 			isOpen = false;
 			return data;
+		}
+
+		static bool IsSearchedDocument (Document doc, FilePath filePath)
+		{
+			return doc.IsFile && doc.Editor != null && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), filePath) == 0;
 		}
 	}
 }

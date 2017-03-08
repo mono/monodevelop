@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CodeCompletionContext CodeCompletionContext {
 			get { return window.CodeCompletionContext; }
 			set { window.CodeCompletionContext = value; }
-		}
+		} 
 
 		internal int StartOffset {
 			get { return window.StartOffset; }
@@ -158,6 +158,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public int EndOffset {
 			get { return window.EndOffset; }
+			set { window.EndOffset = value; }
 		}
 
 		internal ICompletionWidget CompletionWidget {
@@ -686,10 +687,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
-					UpdateWordSelection ();
 					initialWordLength = 0;
 					//completionWidget.SelectedLength;
-					StartOffset = CompletionWidget.CaretOffset;
+					StartOffset = completionContext.TriggerOffset;
+					UpdateWordSelection ();
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
@@ -885,7 +886,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// no selection, try to find a selection
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
-				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString);
+				var match = FindMatchedEntry (List.CompletionString);
+				List.SelectEntry (match);
 			}
 			// no success, hide declaration view
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {

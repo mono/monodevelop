@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Web.Razor;
 using MonoDevelop.Ide.Editor;
@@ -80,12 +81,13 @@ namespace MonoDevelop.AspNet.Razor
 		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			lock (document) {
+				var change = e.TextChanges.First ();
 				if (lastChange == null)
-					lastChange = new ChangeInfo (e.Offset, new System.Web.Razor.Text.SeekableTextReader ((sender as MonoDevelop.Ide.Editor.ITextDocument).Text));
-				if (e.ChangeDelta > 0) {
-					lastChange.Length += e.InsertionLength;
+					lastChange = new ChangeInfo (change.Offset, new System.Web.Razor.Text.SeekableTextReader ((sender as MonoDevelop.Ide.Editor.ITextDocument).Text));
+				if (change.ChangeDelta > 0) {
+					lastChange.Length += change.InsertionLength;
 				} else {
-					lastChange.Length -= e.RemovalLength;
+					lastChange.Length -= change.RemovalLength;
 				}
 			}
 		}

@@ -99,7 +99,6 @@ namespace MonoDevelop.Ide.Editor
 			editor.FileName = fileName;
 			editor.MimeType = mimeType;
 			editor.GetViewContent ().Project = ownerProject;
-			editor.GetViewContent ().ContentName = fileName;
 			return editor.GetViewContent (); 
 		}
 

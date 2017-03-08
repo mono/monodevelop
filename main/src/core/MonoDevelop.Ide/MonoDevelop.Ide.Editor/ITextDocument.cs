@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core.Text;
 using System.Text;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -67,6 +68,8 @@ namespace MonoDevelop.Ide.Editor
 		void ReplaceText (int offset, int length, string value);
 
 		void ReplaceText (int offset, int length, ITextSource value);
+
+		void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes);
 
 		bool IsInAtomicUndo {
 			get;

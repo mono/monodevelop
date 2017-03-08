@@ -1061,8 +1061,9 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			DocumentLine curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			MonoDevelop.SourceEditor.MessageBubbleTextMarker marker = null;
-			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
-				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
+
+			if (curLine != null && TextEditor.Document.GetMarkers (curLine).Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
+				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)TextEditor.Document.GetMarkers (curLine).First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
 //				marker.CollapseExtendedErrors = false;
 			}
 			
@@ -1357,7 +1358,7 @@ namespace MonoDevelop.SourceEditor
 				info.Visible = false;
 				return;
 			}
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)TextEditor.Document.GetMarkers (line).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			info.Visible = marker != null;
 		}
 		
@@ -1366,7 +1367,7 @@ namespace MonoDevelop.SourceEditor
 			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			if (line == null)
 				return;
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)TextEditor.Document.GetMarkers (line).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker != null) {
 				marker.IsVisible = !marker.IsVisible;
 				TextEditor.QueueDraw ();

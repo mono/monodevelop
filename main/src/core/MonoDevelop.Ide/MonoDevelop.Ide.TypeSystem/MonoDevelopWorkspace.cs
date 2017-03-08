@@ -100,7 +100,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (assemblyNode == null)
 					continue;
 				try {
-					var assembly = Assembly.LoadFrom (assemblyNode.FileName);
+					var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
+					var assembly = Assembly.LoadFrom(assemblyFilePath);
 					assemblies.Add (assembly);
 				} catch (Exception e) {
 					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
@@ -931,8 +932,10 @@ namespace MonoDevelop.Ide.TypeSystem
 									// Just to get sure if no insertion points -> go back to the formatted version.
 									var textChanges = editor.Version.GetChangesTo (formattedVersion).ToList ();
 									using (var undo2 = editor.OpenUndoGroup ()) {
-										foreach (var v in textChanges) {
-											editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+										foreach (var textChange in textChanges) {
+											foreach (var v in textChange.TextChanges.Reverse ()) {
+												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											}
 										}
 									}
 									return;
@@ -946,8 +949,10 @@ namespace MonoDevelop.Ide.TypeSystem
 								if (!isMethod) {
 									// atm only for generate field/property : remove all new lines generated & just insert the plain node.
 									// for methods it's not so easy because of "extract code" changes.
-									foreach (var v in editor.Version.GetChangesTo (oldVersion).ToList ()) {
-										editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+									foreach (var textChange in editor.Version.GetChangesTo (oldVersion).ToList ()) {
+										foreach (var v in textChange.TextChanges.Reverse ()) {
+											editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+										}
 									}
 								}
 
@@ -979,8 +984,9 @@ namespace MonoDevelop.Ide.TypeSystem
 									if (!args.Success) {
 										var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
 										using (var undo2 = editor.OpenUndoGroup ()) {
-											foreach (var v in textChanges) {
-												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											foreach (var textChange in textChanges) {
+												foreach (var v in textChange.TextChanges.Reverse ())
+													editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 											}
 										}
 									}
@@ -1038,7 +1044,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static int ApplyChanges (Projection projection, ITextDocument data, List<TextChange> changes)
+		static int ApplyChanges (Projection projection, ITextDocument data, List<Microsoft.CodeAnalysis.Text.TextChange> changes)
 		{
 			int delta = 0;
 			foreach (var change in changes) {

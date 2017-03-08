@@ -290,7 +290,7 @@ namespace Mono.TextEditor
 
 			var startOffset = prevLine != null ? prevLine.EndOffset : 0;
 			var count = data.Caret.Offset - startOffset;
-			if (count < 0)
+			if (count < 0 || startOffset >= data.Length)
 				return;
 			data.Remove (startOffset, count);
 			if (prevLine != null) {

@@ -260,15 +260,13 @@ namespace Mono.TextEditor
 				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
 					DocumentLine line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
-					if (line.GetMarker (typeof(TextLinkMarker)) != null)
+					TextLinkMarker marker = (TextLinkMarker)Editor.Document.GetMarkers (line).OfType<TextLinkMarker> ().FirstOrDefault ();
+					if (marker != null)
 						continue;
-					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof(TextLinkMarker));
-					if (marker == null) {
-						marker = new TextLinkMarker (this);
-						marker.BaseOffset = baseOffset;
-						Editor.Document.AddMarker (line, marker);
-						textLinkMarkers.Add (marker);
-					}
+					marker = new TextLinkMarker (this);
+					marker.BaseOffset = baseOffset;
+					Editor.Document.AddMarker (line, marker);
+					textLinkMarkers.Add (marker);
 				}
 			}
 			
@@ -335,16 +333,18 @@ namespace Mono.TextEditor
 		void UpdateLinksOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			wasReplaced = true;
-			int offset = e.Offset - baseOffset;
-			int delta = e.ChangeDelta;
-			if (!IsInUpdate && !links.Any (link => link.Links.Any (segment => segment.Contains (offset)
-				|| segment.EndOffset == offset))) {
-				SetCaretPosition = false;
-				ExitTextLinkMode ();
-				return;
+			foreach (var change in e.TextChanges) {
+				int offset = change.Offset - baseOffset;
+				int delta = change.ChangeDelta;
+				if (!IsInUpdate && !links.Any (link => link.Links.Any (segment => segment.Contains (offset)
+					|| segment.EndOffset == offset))) {
+					SetCaretPosition = false;
+					ExitTextLinkMode ();
+					return;
+				}
+				AdjustLinkOffsets (offset, delta);
+				UpdateTextLinks ();
 			}
-			AdjustLinkOffsets (offset, delta);
-			UpdateTextLinks ();
 		}
 
 		void AdjustLinkOffsets (int offset, int delta)

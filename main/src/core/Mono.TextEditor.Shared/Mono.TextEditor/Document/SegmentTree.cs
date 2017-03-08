@@ -89,43 +89,45 @@ namespace Mono.TextEditor
 		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			IsDirty = true;
-			if (e.RemovalLength == 0) {
-				var length = e.InsertionLength;
-				foreach (var segment in GetSegmentsAt (e.Offset).Where (s => s.Offset < e.Offset && e.Offset < s.EndOffset)) {
-					segment.Length += length;
-					segment.UpdateAugmentedData ();
-				}
-				var node = SearchFirstSegmentWithStartAfter (e.Offset);
-				if (node != null) {
-					node.DistanceToPrevNode += length;
-					node.UpdateAugmentedData ();
-				}
-				return;
-			}
-			int delta = e.ChangeDelta;
-			foreach (var segment in new List<T> (GetSegmentsOverlapping (e.Offset, e.RemovalLength))) {
-				if (segment.Offset < e.Offset) {
-					if (segment.EndOffset >= e.Offset + e.RemovalLength) {
-						segment.Length += delta;
-					} else {
-						segment.Length = e.Offset - segment.Offset;
+			foreach (var change in e.TextChanges) {
+				if (change.RemovalLength == 0) {
+					var length = change.InsertionLength;
+					foreach (var segment in GetSegmentsAt (change.Offset).Where (s => s.Offset < change.Offset && change.Offset < s.EndOffset)) {
+						segment.Length += length;
+						segment.UpdateAugmentedData ();
 					}
-					segment.UpdateAugmentedData ();
+					var node = SearchFirstSegmentWithStartAfter (change.Offset);
+					if (node != null) {
+						node.DistanceToPrevNode += length;
+						node.UpdateAugmentedData ();
+					}
 					continue;
 				}
-				int remainingLength = segment.EndOffset - (e.Offset + e.RemovalLength);
-				Remove (segment);
-				if (remainingLength > 0) {
-					segment.Offset = e.Offset + e.RemovalLength;
-					segment.Length = remainingLength;
-					Add (segment);
+				int delta = change.ChangeDelta;
+				foreach (var segment in new List<T> (GetSegmentsOverlapping (change.Offset, change.RemovalLength))) {
+					if (segment.Offset < change.Offset) {
+						if (segment.EndOffset >= change.Offset + change.RemovalLength) {
+							segment.Length += delta;
+						} else {
+							segment.Length = change.Offset - segment.Offset;
+						}
+						segment.UpdateAugmentedData ();
+						continue;
+					}
+					int remainingLength = segment.EndOffset - (change.Offset + change.RemovalLength);
+					Remove (segment);
+					if (remainingLength > 0) {
+						segment.Offset = change.Offset + change.RemovalLength;
+						segment.Length = remainingLength;
+						Add (segment);
+					}
 				}
-			}
-			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);
+				var next = SearchFirstSegmentWithStartAfter (change.Offset + 1);
 
-			if (next != null) {
-				next.DistanceToPrevNode += delta;
-				next.UpdateAugmentedData ();
+				if (next != null) {
+					next.DistanceToPrevNode += delta;
+					next.UpdateAugmentedData ();
+				}
 			}
 		}
 		

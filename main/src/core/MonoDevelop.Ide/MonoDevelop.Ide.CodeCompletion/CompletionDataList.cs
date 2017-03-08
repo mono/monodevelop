@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// <returns>The filtered completion list, or null if the default list should be taken.</returns>
 		/// <param name="input">Contains all information needed to filter the list.</param>
 		CompletionListFilterResult FilterCompletionList (CompletionListFilterInput input);
-		int FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems);
+		CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems);
 		int [] GetHighlightedIndices (CompletionData completionData, string completionString);
 	}
 	
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				handler (this, e);
 		}
 
-		public virtual int FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems)
+		public virtual CompletionSelectionStatus FindMatchedEntry (ICompletionDataList completionDataList, MruCache cache, string partialWord, List<int> filteredItems)
 		{
 			                  // default - word with highest match rating in the list.
 			int idx = -1;
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					idx = bestIndex;
 					// exact match found.
 					if (string.Compare (bestWord, partialWord ?? "", true) == 0)
-						return idx;
+						return new CompletionSelectionStatus (idx);
 				}
 			}
 
@@ -249,7 +249,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			return idx;
+			return new CompletionSelectionStatus(idx);
 		}
 
 		public virtual int [] GetHighlightedIndices (CompletionData completionData, string completionString)

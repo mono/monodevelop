@@ -150,6 +150,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		async Task<HighlightedLine> ISyntaxHighlighting.GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
+			if (line == null)
+				throw new ArgumentNullException (nameof (line));
 			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
 				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
@@ -195,7 +197,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		async Task<ScopeStack> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = editor.GetLineByOffset (offset);
-
+			if (line == null)
+				throw new ArgumentOutOfRangeException (nameof (offset), "Offset out of range.");
 			foreach (var seg in (await ((ISyntaxHighlighting)this).GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false)).Segments) {
 				if (seg.Contains (offset))
 					return seg.ScopeStack;

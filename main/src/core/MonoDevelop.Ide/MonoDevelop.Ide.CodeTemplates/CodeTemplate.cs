@@ -328,13 +328,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var data = TextEditorFactory.CreateNewDocument ();
 			data.Text = sb.ToString ();
 			data.TextChanged += delegate(object sender, MonoDevelop.Core.Text.TextChangeEventArgs e) {
-				int delta = e.InsertionLength - e.RemovalLength;
+				foreach (var change in e.TextChanges) {
+					int delta = change.InsertionLength - change.RemovalLength;
 
-				foreach (var link in result.TextLinks) {
-					link.Links = link.Links.AdjustSegments (e).ToList ();
+					foreach (var link in result.TextLinks) {
+						link.Links = link.Links.AdjustSegments (e).ToList ();
+					}
+					if (result.CaretEndOffset > change.Offset)
+						result.CaretEndOffset += delta;
 				}
-				if (result.CaretEndOffset > e.Offset)
-					result.CaretEndOffset += delta;
 			};
 
 			IndentCode (data, context.LineIndent);

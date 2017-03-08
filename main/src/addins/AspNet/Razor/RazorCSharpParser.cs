@@ -324,15 +324,15 @@ namespace MonoDevelop.AspNet.Razor
 			return host;
 		}
 
-		static TextChange CreateTextChange (RazorCSharpParserContext context, SeekableTextReader source)
+		static System.Web.Razor.Text.TextChange CreateTextChange (RazorCSharpParserContext context, SeekableTextReader source)
 		{
 			ChangeInfo lastChange = context.GetLastTextChange ();
 			if (lastChange == null)
-				return new TextChange (0, 0, new SeekableTextReader (String.Empty), 0, source.Length, source);
+				return new System.Web.Razor.Text.TextChange (0, 0, new SeekableTextReader (String.Empty), 0, source.Length, source);
 			if (lastChange.DeleteChange)
-				return new TextChange (lastChange.StartOffset, lastChange.AbsoluteLength, lastChange.Buffer,
+				return new System.Web.Razor.Text.TextChange (lastChange.StartOffset, lastChange.AbsoluteLength, lastChange.Buffer,
 					lastChange.StartOffset,	0, source);
-			return new TextChange (lastChange.StartOffset, 0, lastChange.Buffer, lastChange.StartOffset,
+			return new System.Web.Razor.Text.TextChange (lastChange.StartOffset, 0, lastChange.Buffer, lastChange.StartOffset,
 				lastChange.AbsoluteLength, source);
 		}
 
