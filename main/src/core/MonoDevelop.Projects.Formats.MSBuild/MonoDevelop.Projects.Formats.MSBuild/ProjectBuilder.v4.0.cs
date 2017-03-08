@@ -142,6 +142,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
+				
+				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
+				// loading the project.
+				Directory.CreateDirectory (Path.Combine (Path.GetDirectoryName (file), "obj"));
+
 				var content = buildEngine.GetUnsavedProjectContent (file);
 				if (content == null)
 					p = engine.LoadProject (file);

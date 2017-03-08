@@ -192,30 +192,6 @@ namespace MonoDevelop.SourceEditor
 			FileRegistry.Add(this);
 		}
 
-		private static TextDocument CreateTextDocumentFromReadonlyTextDocument(IReadonlyTextDocument document)
-		{
-			TextDocument doc;
-			if (document != null)
-			{
-				var textDocument = document as TextDocument;
-				if (textDocument != null)
-				{
-					doc = textDocument;
-				}
-				else
-				{
-					var documentAsTextDocument = document as TextDocument;
-					doc = (documentAsTextDocument != null) ? documentAsTextDocument.Clone() : new TextDocument(document.Text);
-				}
-			}
-			else
-			{
-				doc = new TextDocument();
-			}
-
-			return doc;
-		}
-
 		private SourceEditorView(TextDocument doc)
 		{
 			Counters.LoadedEditors++;
@@ -271,6 +247,30 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			// Document.AddAnnotation (this);
 			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
+		}
+
+		private static TextDocument CreateTextDocumentFromReadonlyTextDocument(IReadonlyTextDocument document)
+		{
+			TextDocument doc;
+			if (document != null)
+			{
+				var textDocument = document as TextDocument;
+				if (textDocument != null)
+				{
+					doc = textDocument;
+				}
+				else
+				{
+					// Shouldn't need this but a fallback if someone provides their own implementation of IReadonlyTextDocument
+					doc = new TextDocument(document.Text);
+				}
+			}
+			else
+			{
+				doc = new TextDocument();
+			}
+
+			return doc;
 		}
 
 		void Document_MimeTypeChanged (object sender, EventArgs e)
@@ -759,7 +759,7 @@ namespace MonoDevelop.SourceEditor
 						AlertButton.Cancel,
 						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
 					if (result != AlertButton.Cancel) {
-						this.Document.VsTextDocument.Encoding = Encoding.UTF8;
+						this.Document.VsTextDocument.Encoding = MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
 						this.Document.VsTextDocument.Save();
 					}
 					else {
@@ -856,7 +856,7 @@ namespace MonoDevelop.SourceEditor
 			bool didLoadCleanly;
 			if (!reload && AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
-				this.Document.VsTextDocument.Encoding = loadEncoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+				this.Document.VsTextDocument.Encoding = loadEncoding ?? MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
 				didLoadCleanly = false;
 			}
 			else {

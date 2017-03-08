@@ -38,5 +38,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			return framework.Id.Identifier == ".NETCoreApp";
 		}
+
+		public static bool IsNetFramework (this TargetFramework framework)
+		{
+			return framework.Id.IsNetFramework ();
+		}
 	}
 }

@@ -34,6 +34,9 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
+using System.Threading;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
@@ -150,7 +153,17 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected virtual void OnDebugAdaptorRequestReceived (object sender, RequestReceivedEventArgs e)
 		{
-
+			if (e.Command == "runInTerminal") {
+				var args = (RunInTerminalArguments)e.Args;
+				var consoleOptions = OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (args.Title).WithPauseWhenFinished (pauseWhenFinished);
+				Runtime.ProcessService.StartConsoleProcess (
+					args.Args [0],
+					string.Join (" ", args.Args.Skip (1).ToArray ()),
+					args.Cwd,
+					ExternalConsoleFactory.Instance.CreateConsole (consoleOptions),
+					args.Env.ToDictionary ((i) => i.Key, (i) => i.Value.ToString ()));
+				e.Response = new RunInTerminalResponse ();
+			}
 		}
 
 		void StartDebugAgent ()
@@ -196,8 +209,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			Launch (startInfo);
 		}
 
+		bool pauseWhenFinished;
 		protected void Launch (DebuggerStartInfo startInfo)
 		{
+			pauseWhenFinished = !startInfo.CloseExternalConsoleOnExit;
 			StartDebugAgent ();
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
@@ -360,8 +375,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			if (protocolClient != null)
+			if (protocolClient != null) {
 				protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
+				protocolClient.SendRequestSync (new DisconnectRequest ());
+				protocolClient.Stop ();
+			}
 		}
 	}
 }

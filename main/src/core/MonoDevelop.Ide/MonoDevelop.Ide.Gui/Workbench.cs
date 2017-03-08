@@ -677,11 +677,12 @@ namespace MonoDevelop.Ide.Gui
 					defaultName, mimeType, content, Environment.NewLine));
 			
 			newContent.UntitledName = defaultName;
-			newContent.IsDirty = true;
+			newContent.IsDirty = false;
 			newContent.Binding = binding;
 			workbench.ShowView (newContent, true, binding);
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
+			document.Editor.Encoding = Encoding.UTF8;
 			document.StartReparseThread ();
 			return document;
 		}

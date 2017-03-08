@@ -144,7 +144,8 @@ namespace MonoDevelop.DotNetCore
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
 				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
 				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL
+				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
@@ -481,7 +482,7 @@ namespace MonoDevelop.DotNetCore
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
 		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
 			return supportedTargetFrameworks.GetFrameworks ();
 		}
 

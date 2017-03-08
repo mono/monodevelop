@@ -3077,18 +3077,20 @@ namespace Mono.TextEditor
 			bool ConsumeLayout (LayoutWrapper layoutWrapper, int xp, int yp)
 			{
 				int trailing;
-				bool isInside = layoutWrapper.XyToIndex (xp, yp, out index, out trailing);
+				if (layoutWrapper.Layout != null) {
+					bool isInside = layoutWrapper.XyToIndex (xp, yp, out index, out trailing);
 
-				if (isInside) {
-					int lineNr;
-					int xp1, xp2;
-					layoutWrapper.IndexToLineX (index, false, out lineNr, out xp1);
-					layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
-					index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
+					if (isInside) {
+						int lineNr;
+						int xp1, xp2;
+						layoutWrapper.IndexToLineX (index, false, out lineNr, out xp1);
+						layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
+						index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
 
-					if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
-						index++;
-					return true;
+						if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+							index++;
+						return true;
+					}
 				}
 				index = line.Length;
 				return false;

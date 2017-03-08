@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 
 		public string MimeType {
 			get {
-				var snapshot = this.currentSnapshot;
+				var snapshot = this.TextBuffer.CurrentSnapshot;
 				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
 			}
 			set {
@@ -115,7 +115,7 @@ namespace Mono.TextEditor
 				return this.VsTextDocument.Encoding;
 			}
 			set {
-				this.VsTextDocument.Encoding = value ?? defaultEncoding;
+				this.VsTextDocument.Encoding = value ?? MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
 			}
 		}
 
@@ -227,7 +227,7 @@ namespace Mono.TextEditor
 			cachedText = null;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
-				changes.Add (new TextChange (change.OldPosition, change.OldText, change.NewText));
+				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
 				EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
 			}
 			bool endUndo = false;
@@ -238,7 +238,7 @@ namespace Mono.TextEditor
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
-	  
+
 			if (!isInUndo) {
 				operation = new UndoOperation(textChange);
 				if (currentAtomicOperation != null) {
@@ -253,6 +253,7 @@ namespace Mono.TextEditor
 
 			foldSegmentTree.UpdateOnTextReplace(this, textChange);
 			textSegmentMarkerTree.UpdateOnTextReplace (this, textChange);
+
 			TextChanged?.Invoke(this, textChange);
 			if (endUndo)
 				OnEndUndo(new UndoOperationEventArgs(operation));
@@ -260,6 +261,8 @@ namespace Mono.TextEditor
 
 		void OnTextBufferContentTypeChanged(object sender, Microsoft.VisualStudio.Text.ContentTypeChangedEventArgs args)
 		{
+			this.currentSnapshot = this.TextBuffer.CurrentSnapshot; // Changing the content type changes the snapshot even though there are no text changes.
+
 			UpdateSyntaxMode();
 			this.MimeTypeChanged?.Invoke(this, EventArgs.Empty);
 		}
@@ -288,14 +291,13 @@ namespace Mono.TextEditor
 			this.Initialize();
 		}
 
-		private static readonly Encoding defaultEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 		public TextDocument (string text = null)
 		{
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(text ?? string.Empty,
 																							PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
 
 			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, string.Empty);
-			this.VsTextDocument.Encoding = defaultEncoding;
+			this.VsTextDocument.Encoding = MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
 
 			this.Initialize();
 		}
@@ -351,6 +353,7 @@ namespace Mono.TextEditor
 				var tmp = IsReadOnly;
 				IsReadOnly = false;
 				this.ReplaceText(0, this.currentSnapshot.Length, value);
+				ClearUndoBuffer ();
 				IsReadOnly = tmp;
 			}
 		}
@@ -397,14 +400,30 @@ namespace Mono.TextEditor
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
 		}
 
-		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		public void ApplyTextChanges (IEnumerable<MonoDevelop.Core.Text.TextChange> changes)
 		{
 			if (changes == null)
 				throw new ArgumentNullException (nameof (changes));
-			var edit = this.TextBuffer.CreateEdit ();
-			foreach (var change in changes)
-				edit.Replace (new Microsoft.VisualStudio.Text.Span (change.Span.Start, change.Span.Length), change.NewText);
-			edit.Apply ();
+
+			using (var edit = this.TextBuffer.CreateEdit())
+			{
+				foreach (var change in changes)
+					edit.Replace(change.Offset, change.RemovalLength, change.InsertedText.Text);
+				edit.Apply();
+			}
+		}
+
+		public void ApplyTextChanges(IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (changes == null)
+				throw new ArgumentNullException(nameof(changes));
+
+			using (var edit = this.TextBuffer.CreateEdit())
+			{
+				foreach (var change in changes)
+					edit.Replace(change.Span.Start, change.Span.Length, change.NewText);
+				edit.Apply();
+			}
 		}
 
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -746,18 +765,22 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges) {
-					doc.ReplaceText (change.Offset, change.InsertionLength, change.RemovedText.Text);
-				}
+				var changes = new List<TextChange>();
+				foreach (var change in args.TextChanges)
+					changes.Add(new TextChange(change.NewOffset, change.InsertedText, change.RemovedText));
+
+				doc.ApplyTextChanges(changes);
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				foreach (var change in args.TextChanges.Reverse()) {
-					doc.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText.Text);
-				}
+				var changes = new List<TextChange>();
+				foreach (var change in args.TextChanges.Reverse())
+					changes.Add(new TextChange(change.Offset, change.RemovedText, change.InsertedText));
+
+				doc.ApplyTextChanges(changes);
 				if (fireEvent)
 					OnRedoDone ();
 			}

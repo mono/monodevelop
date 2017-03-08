@@ -57,7 +57,7 @@ namespace MonoDevelop.Core.Text
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
-			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.version = version;
-			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding);
 		}
 
 		/// <inheritdoc/>
@@ -127,7 +127,7 @@ namespace MonoDevelop.Core.Text
 			var newEncoding = this.Encoding;
 			if ((newEncoding?.WindowsCodePage == 1200 /*UTF8*/) && ((newEncoding.GetPreamble().Length > 0) != useBom))
 			{
-				newEncoding = useBom ? Encoding.UTF8 : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+				newEncoding = useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding;
 			}
 
 			return new StringTextSource(text, newEncoding);
