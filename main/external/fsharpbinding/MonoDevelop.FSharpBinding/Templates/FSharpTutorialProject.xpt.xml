@@ -720,19 +720,6 @@ module DiscriminatedUnions =
             elif item < x then Node(x, insert item left, right) // Call into left subtree.
             else Node(x, left, insert item right) // Call into right subtree.
 
-    /// Discriminated Unions can also be represented as structs via the 'Struct' attribute.
-    /// This is helpful in situations where the performance of structs outweighs
-    /// the flexibility of reference types.
-    ///
-    /// However, there are two important things to know when doing this:
-    ///     1. A struct DU cannot be recursively-defined.
-    ///     2. A struct DU must have unique names for each of its cases.
-    [<Struct>]
-    type Shape =
-        | Circle of radius: float
-        | Square of side: float
-        | Triangle of height: float * width: float
-
 
 /// Pattern Matching is a feature of F# that allows you to utilize Patterns,
 /// which are a way to compare data with a logical structure or structures, 
