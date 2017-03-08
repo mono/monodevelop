@@ -39,8 +39,9 @@
           <![CDATA[// This sample will guide you through elements of the F# language.
 //
 // *******************************************************************************************************
-//   To execute the code in F# Interactive, highlight a section of code and press Alt-Enter or right-click 
-//   and select "Execute in Interactive".  You can open the F# Interactive Window from the "View" menu. 
+//   To execute the code in F# Interactive, highlight a section of code and press Alt-Enter in Windows or 
+//   Ctrl-Enter Mac, or right-click and select "Send Selection to F# Interactive".  
+//   You can open the F# Interactive Window from the "View" menu.
 // *******************************************************************************************************
 //
 // For more about F#, see:
@@ -56,11 +57,6 @@
 //     http://fsharp.org/guides/web/
 //     http://fsharp.org/guides/data-science/
 //
-// To install the Visual F# Power Tools, use
-//     'Tools' --> 'Extensions and Updates' --> `Online` and search
-//
-// For additional templates to use with F#, see the 'Online Templates' in Visual Studio, 
-//     'New Project' --> 'Online Templates'
 
 // F# supports three kinds of comments:
 
