@@ -1057,6 +1057,11 @@ namespace MonoDevelop.Projects
 			return sourceProject.EvaluatedTargetsIgnoringCondition.Any (t => t.Name == target);
 		}
 
+		protected virtual bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return false;
+		}
+
 		/// <summary>
 		/// Runs a build or execution target.
 		/// </summary>
@@ -2645,7 +2650,7 @@ namespace MonoDevelop.Projects
 
 			var localItems = new List<ProjectItem> ();
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
-				if (buildItem.IsImported)
+				if (buildItem.IsImported && !ProjectExtension.OnGetSupportsImportedItem (buildItem))
 					continue;
 				if (BuildAction.ReserverIdeActions.Contains (buildItem.Name))
 					continue;
@@ -3094,8 +3099,11 @@ namespace MonoDevelop.Projects
 					if (UseAdvancedGlobSupport) {
 						// Add remove items if necessary
 						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
-							var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
-							msproject.AddItem (removeItem);
+							var file = removed as ProjectFile;
+							if (file == null || File.Exists (file.FilePath)) {
+								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
+								msproject.AddItem (removeItem);
+							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
 						}
 
@@ -3881,6 +3889,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				return Project.OnGetSourceFiles (monitor, configuration);
+			}
+
+			internal protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+			{
+				return Project.OnGetSupportsImportedItem (buildItem);
 			}
 
 			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)

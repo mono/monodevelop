@@ -62,8 +62,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (taskId, delegate {
+				Project project = null;
+				Dictionary<string, string> originalGlobalProperties = null;
 				try {
-					var project = SetupProject (configurations);
+					project = SetupProject (configurations);
 					InitLogger (logWriter);
 
 					ILogger[] loggers;
@@ -76,12 +78,17 @@ namespace MonoDevelop.Projects.MSBuild
 						loggers = new ILogger[] { logger };
 					}
 
+					if (globalProperties != null) {
+						originalGlobalProperties = new Dictionary<string, string> ();
+						foreach (var p in project.GlobalProperties)
+							originalGlobalProperties [p.Key] = p.Value;
+						foreach (var p in globalProperties)
+							project.SetGlobalProperty (p.Key, p.Value);
+						project.ReevaluateIfNecessary ();
+					}
+
 					//building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
-
-					if (globalProperties != null)
-						foreach (var p in globalProperties)
-							pi.SetProperty (p.Key, p.Value);
 					
 					pi.Build (runTargets, loggers);
 
@@ -117,6 +124,13 @@ namespace MonoDevelop.Projects.MSBuild
 					result = new MSBuildResult (new [] { r });
 				} finally {
 					DisposeLogger ();
+					if (project != null && globalProperties != null) {
+						foreach (var p in globalProperties)
+							project.RemoveGlobalProperty (p.Key);
+						foreach (var p in originalGlobalProperties)
+							project.SetGlobalProperty (p.Key, p.Value);
+						project.ReevaluateIfNecessary ();
+					}
 				}
 			});
 			return result;
@@ -142,6 +156,11 @@ namespace MonoDevelop.Projects.MSBuild
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
+				
+				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
+				// loading the project.
+				Directory.CreateDirectory (Path.Combine (Path.GetDirectoryName (file), "obj"));
+
 				var content = buildEngine.GetUnsavedProjectContent (file);
 				if (content == null)
 					p = engine.LoadProject (file);

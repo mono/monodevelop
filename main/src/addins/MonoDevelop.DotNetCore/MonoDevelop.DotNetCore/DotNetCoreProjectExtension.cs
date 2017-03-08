@@ -132,16 +132,20 @@ namespace MonoDevelop.DotNetCore
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			FilePath outputFileName = GetOutputFileName (configuration);
-			var assemblyRunConfiguration = runConfiguration as AssemblyRunConfiguration;
+			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
 
 			return new DotNetCoreExecutionCommand (
-				string.IsNullOrEmpty (assemblyRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : assemblyRunConfiguration.StartWorkingDirectory,
+				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				assemblyRunConfiguration?.StartArguments
+				dotnetCoreRunConfiguration?.StartArguments
 			) {
-				EnvironmentVariables = assemblyRunConfiguration?.EnvironmentVariables,
-				PauseConsoleOutput = assemblyRunConfiguration?.PauseConsoleOutput ?? false,
-				ExternalConsole = assemblyRunConfiguration?.ExternalConsole ?? false
+				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
+				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
+				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
+				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
+				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
+				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
@@ -351,6 +355,10 @@ namespace MonoDevelop.DotNetCore
 			get { return dotNetCoreMSBuildProject.HasSdk; }
 		}
 
+		public bool IsWeb {
+			get { return (dotNetCoreMSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1; }
+		}
+
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
 		{
 			base.OnPrepareForEvaluation (project);
@@ -381,7 +389,27 @@ namespace MonoDevelop.DotNetCore
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
+			sourceFiles = AddMissingProjectFiles (sourceFiles);
+
 			return RemoveFilesFromIntermediateDirectory (sourceFiles);
+		}
+
+		ProjectFile[] AddMissingProjectFiles (ProjectFile[] files)
+		{
+			List<ProjectFile> missingFiles = null;
+			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
+				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
+					if (missingFiles == null)
+						missingFiles = new List<ProjectFile> ();
+					missingFiles.Add (existingFile);
+				}
+			}
+
+			if (missingFiles == null)
+				return files;
+
+			missingFiles.AddRange (files);
+			return missingFiles.ToArray ();
 		}
 
 		ProjectFile[] RemoveFilesFromIntermediateDirectory (ProjectFile[] files)
@@ -474,7 +502,7 @@ namespace MonoDevelop.DotNetCore
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
 		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
 			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
@@ -532,6 +560,16 @@ namespace MonoDevelop.DotNetCore
 					return false;
 				});
 			});
+		}
+
+		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return BuildAction.DotNetActions.Contains (buildItem.Name);
+		}
+
+		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
+		{
+			return new DotNetCoreRunConfiguration (name);
 		}
 	}
 }
