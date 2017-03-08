@@ -362,6 +362,42 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
 		}
 
+		/// <summary>
+		/// Same as above but the globs are defined in a .targets file that is imported
+		/// into the main project.
+		/// </summary>
+		[Test]
+		public async Task FileUpdateChangeThenRemoveMetadata2 ()
+		{
+			//var tn = new ProjectTypeNode ();
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			//MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+			string originalProjFile = new FilePath (projFile).ChangeName ("glob-import-test-original.csproj");
+			File.Copy (projFile, originalProjFile);
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			Assert.AreEqual (3, p.Files.Count);
+
+			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+			f.Metadata.SetValue ("foo", "bar");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
+
+			f.Metadata.RemoveProperty ("foo");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			projectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+		}
+
 		[Test]
 		public async Task FileUpdateChangeThenRemoveMetadataAfterReload ()
 		{
@@ -511,6 +547,14 @@ namespace MonoDevelop.Projects
 
 				Console.WriteLine ("Serialization roundtrip test: " + Path.GetFileName (f));
 				Assert.AreEqual (refXml, savedXml, Path.GetFileName (f) + ": roundtrip serialization failure");
+			}
+		}
+
+		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
+		{
+			protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+			{
+				return BuildAction.DotNetCommonActions.Contains (buildItem.Name);
 			}
 		}
 	}

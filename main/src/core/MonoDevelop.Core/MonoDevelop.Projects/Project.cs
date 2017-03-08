@@ -3370,11 +3370,11 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			if (evalItem.Metadata.GetProperties ().Count () == 0 && item.Metadata.GetProperties ().Count () == 0) {
+			if (!evalItem.Metadata.GetProperties ().Any () && !item.Metadata.GetProperties ().Any ()) {
 				updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 				foreach (var it in updateItems) {
 					if (it.ParentNode != null)
-						it.ParentGroup.RemoveItem (it);
+						it.ParentProject.RemoveItem (it);
 				}
 			}
 			return ExpandedItemAction.None;
@@ -3387,6 +3387,13 @@ namespace MonoDevelop.Projects
 				if (!globItemFound)
 					globItemFound = (it == globItem);
 				else {
+					if (it.Update == include)
+						yield return it;
+				}
+			}
+
+			if (globItemFound && globItem.ParentProject != MSBuildProject) {
+				foreach (var it in MSBuildProject.GetAllItems ()) {
 					if (it.Update == include)
 						yield return it;
 				}
