@@ -45,7 +45,11 @@ namespace MonoDevelop.Components
 				container.Content = value;
 			}
 		}
-		
+
+		public XwtThemedPopup () : this (PopupType.Tooltip)
+		{
+		}
+
 		public XwtThemedPopup (PopupType type) : base (type)
 		{
 			base.Content = container = new XwtPopoverCanvas ();
