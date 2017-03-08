@@ -190,7 +190,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					LoggingService.LogError ("Error in semantic highlighting: " + e);
 					return syntaxLine;
 				}
-				return new HighlightedLine (segments);
+				return new HighlightedLine (line, segments);
 			}
 		}
 

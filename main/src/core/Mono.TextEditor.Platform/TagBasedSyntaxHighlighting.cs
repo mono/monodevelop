@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.Platform
 			ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
 			if ((this.classifier == null) || (snapshotLine == null))
 			{
-				return Task.FromResult(new HighlightedLine(new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
+				return Task.FromResult(new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
 			}
 
 			List<ColoredSegment> coloredSegments = new List<ColoredSegment>();
@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.Platform
 				coloredSegments.Add(whitespaceSegment);
 			}
 
-			HighlightedLine result = new HighlightedLine(coloredSegments);
+			HighlightedLine result = new HighlightedLine(line, coloredSegments);
 			return Task.FromResult(result);
 		}
 

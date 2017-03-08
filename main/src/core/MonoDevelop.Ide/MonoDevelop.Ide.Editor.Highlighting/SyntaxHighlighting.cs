@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length)
 			{
 				if (ContextStack.IsEmpty)
-					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
+					return Task.FromResult (new HighlightedLine (new TextSegment (startOffset, length), new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				SyntaxContext currentContext = null;
 				List<SyntaxContext> lastContexts = new List<SyntaxContext> ();
 				Match match = null;
@@ -179,6 +179,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int curSegmentOffset = 0;
 				int endOffset = offset + length;
 				int lastMatch = -1;
+				var highlightedSegment = new TextSegment (startOffset, length);
 				string lineText = text.GetTextAt (startOffset, length);
 			restart:
 				if (lastMatch == offset) {
@@ -310,7 +311,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (endOffset - curSegmentOffset > 0) {
 					segments.Add (new ColoredSegment (curSegmentOffset, endOffset - curSegmentOffset, ScopeStack));
 				}
-				return Task.FromResult (new HighlightedLine (segments));
+
+				return Task.FromResult (new HighlightedLine (highlightedSegment, segments));
 			}
 
 			void PushStack (SyntaxMatch curMatch, IEnumerable<SyntaxContext> nextContexts)

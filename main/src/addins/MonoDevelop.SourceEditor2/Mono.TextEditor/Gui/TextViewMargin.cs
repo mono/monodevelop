@@ -1107,7 +1107,8 @@ namespace Mono.TextEditor
 			HighlightedLine result;
 			var lineNumber = line.LineNumber;
 			if (cachedLines.TryGetValue (lineNumber, out result)) {
-				return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
+				if (result.TextSegment.Length == line.Length && result.TextSegment.Offset == line.Offset)
+					return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
 			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
