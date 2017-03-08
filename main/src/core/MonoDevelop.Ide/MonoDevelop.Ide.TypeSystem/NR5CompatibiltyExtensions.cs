@@ -32,6 +32,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -155,14 +156,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetAllTypesInMainAssembly (this Compilation compilation, CancellationToken cancellationToken = default(CancellationToken))
+		public static IEnumerable<INamedTypeSymbol> GetAllTypesInMainAssembly (this Compilation compilation, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (compilation == null)
 				throw new ArgumentNullException (nameof (compilation));
 			return compilation.Assembly.GlobalNamespace.GetAllTypes (cancellationToken);
 		}
 
-		public static IEnumerable<T> GetAccessibleMembersInThisAndBaseTypes<T>(this ITypeSymbol containingType, ISymbol within) where T : class, ISymbol
+		public static IEnumerable<T> GetAccessibleMembersInThisAndBaseTypes<T> (this ITypeSymbol containingType, ISymbol within) where T : class, ISymbol
 		{
 			if (containingType == null)
 				return Enumerable.Empty<T> ();
@@ -283,6 +284,46 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			return true;
+		}
+
+		public static bool IsAccessibleWithinMD (this ISymbol symbol, ISymbol within, ITypeSymbol throughTypeOpt = null)
+		{
+			return symbol.IsAccessibleWithin (within, throughTypeOpt);
+		}
+
+		public static IEnumerable<INamedTypeSymbol> GetBaseTypesMD (this ITypeSymbol symbol)
+		{
+			foreach (var item in symbol.GetBaseTypes ())
+				yield return item;
+		}
+
+		public static TSymbol GetEnclosingSymbolMD<TSymbol> (this SemanticModel semanticModel, int position, CancellationToken cancellationToken)
+			where TSymbol : ISymbol
+		{
+			for (var symbol = semanticModel.GetEnclosingSymbol (position, cancellationToken);
+				 symbol != null;
+				 symbol = symbol.ContainingSymbol) {
+				if (symbol is TSymbol) {
+					return (TSymbol)symbol;
+				}
+			}
+
+			return default (TSymbol);
+		}
+
+		public static IEnumerable<INamedTypeSymbol> GetAllTypesMD (this INamespaceSymbol namespaceSymbol, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			foreach (var item in namespaceSymbol.GetAllTypes (cancellationToken))
+				yield return item;
+		}
+	}
+
+	[Obsolete]
+	public static class SignatureComparerMD
+	{
+		public static bool HaveSameSignature (ISymbol symbol1, ISymbol symbol2, bool caseSensitive)
+		{
+			return SignatureComparer.Instance.HaveSameSignature (symbol1, symbol2, caseSensitive);
 		}
 	}
 }
