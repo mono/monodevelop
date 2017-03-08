@@ -864,29 +864,23 @@ namespace MonoDevelop.SourceEditor
 				{
 					UpdateMimeType(fileName);
 
-					 string text = null;
-					 bool hadBom;
-					 if (loadEncoding == null)
-					 {
-						 text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out hadBom, out loadEncoding);
-					 }
-					 else
-					 {
-						 text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding, out hadBom);
-					 }
-					 this.Document.VsTextDocument.Encoding = loadEncoding;
-					 
-					 text = ProcessLoadText(text);
-					 if (reload)
-					 {
-						 document.ReplaceText(0, Document.Length, text);
-						 document.DiffTracker.Reset();
-					 }
-					 else
-					 {
-						 document.Text = text;
-						 document.DiffTracker.SetBaseDocument(Document.CreateDocumentSnapshot());
-					 }
+					string text = null;
+					bool hadBom;
+					if (loadEncoding == null) {
+						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out hadBom, out loadEncoding);
+					} else {
+						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding, out hadBom);
+					}
+					this.Document.VsTextDocument.Encoding = loadEncoding;
+
+					text = ProcessLoadText(text);
+					if (reload) {
+						document.ReplaceText(0, Document.Length, text);
+						document.DiffTracker.Reset();
+					} else {
+						document.Text = text;
+						document.DiffTracker.SetBaseDocument(Document.CreateDocumentSnapshot());
+					}
 				}
 				didLoadCleanly = true;
 			}
