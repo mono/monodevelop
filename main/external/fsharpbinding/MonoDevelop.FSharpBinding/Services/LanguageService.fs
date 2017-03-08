@@ -179,7 +179,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
     member x.GetExtraColorizations() =
         match infoOpt with
-        | Some checkResults -> Some(checkResults.GetSemanticClassification())
+        | Some checkResults -> Some(checkResults.GetSemanticClassification(None))
         | None -> None
 
     member x.GetStringFormatterColours() =
@@ -197,7 +197,7 @@ type AllowStaleResults =
 //type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
-type LanguageService(dirtyNotify, extraProjectInfo) as x =
+type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
     /// Not yet sure if this works for scripts.

@@ -28,10 +28,12 @@ using System.Net;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreRunConfiguration : AssemblyRunConfiguration
+	public class DotNetCoreRunConfiguration : AssemblyRunConfiguration
 	{
 		public DotNetCoreRunConfiguration (string name)
 			: base (name)
@@ -41,7 +43,7 @@ namespace MonoDevelop.DotNetCore
 		protected override void Initialize (Project project)
 		{
 			base.Initialize (project);
-			if (string.IsNullOrEmpty (ApplicationURL)) {
+			if (project.GetFlavor<DotNetCoreProjectExtension> ()?.IsWeb ?? false && string.IsNullOrEmpty (ApplicationURL)) {
 				var tcpListner = new TcpListener (IPAddress.Loopback, 0);
 				tcpListner.Start ();
 				ApplicationURL = $"http://localhost:{((IPEndPoint)tcpListner.LocalEndpoint).Port}";
@@ -58,6 +60,9 @@ namespace MonoDevelop.DotNetCore
 		[ItemProperty (DefaultValue = null)]
 		public string ApplicationURL { get; set; }
 
+		[ItemProperty (DefaultValue = null)]
+		public PipeTransportSettings PipeTransport { get; set; }
+
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
 		{
 			base.OnCopyFrom (config, isRename);
@@ -67,6 +72,36 @@ namespace MonoDevelop.DotNetCore
 			LaunchBrowser = other.LaunchBrowser;
 			LaunchUrl = other.LaunchUrl;
 			ApplicationURL = other.ApplicationURL;
+			if (other.PipeTransport == null)
+				PipeTransport = null;
+			else
+				PipeTransport = new PipeTransportSettings (other.PipeTransport);
 		}
+	}
+
+	public class PipeTransportSettings
+	{
+		public PipeTransportSettings ()
+		{ }
+
+		public PipeTransportSettings (PipeTransportSettings copy)
+		{
+			WorkingDirectory = copy.WorkingDirectory;
+			Program = copy.Program;
+			Arguments = copy.Arguments.ToArray ();//make copy of array
+			DebuggerPath = copy.DebuggerPath;
+			EnvironmentVariables = new EnvironmentVariableCollection (copy.EnvironmentVariables);
+		}
+
+		[ItemProperty (DefaultValue = null)]
+		public string WorkingDirectory { get; set; }
+		[ItemProperty (DefaultValue = null)]
+		public string Program { get; set; }
+		[ItemProperty (SkipEmpty = true)]
+		public string [] Arguments { get; set; } = new string [0];
+		[ItemProperty (DefaultValue = null)]
+		public string DebuggerPath { get; set; }
+		[ItemProperty (SkipEmpty = true, WrapObject = false)]
+		public EnvironmentVariableCollection EnvironmentVariables { get; private set; } = new EnvironmentVariableCollection ();
 	}
 }

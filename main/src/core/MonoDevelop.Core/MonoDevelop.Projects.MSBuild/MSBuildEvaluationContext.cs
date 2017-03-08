@@ -181,8 +181,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static string DefaultExtensionsPath {
 			get {
-				if (extensionsPath == null)
-					extensionsPath = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
+				if (extensionsPath == null) {
+					var path = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
+					if (path != null && !IsExternalMSBuildExtensionsPath (path))
+						extensionsPath = path;
+				}
 
 				if (extensionsPath == null) {
 					// NOTE: code from mcs/tools/gacutil/driver.cs
@@ -200,6 +203,40 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		static string macOSXExternalXBuildDir;
+
+		static string DefaultMacOSXExternalXBuildDir {
+			get {
+				if (macOSXExternalXBuildDir == null) {
+					var path = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
+					if (path != null && IsExternalMSBuildExtensionsPath (path))
+						macOSXExternalXBuildDir = path;
+					else
+						macOSXExternalXBuildDir = MacOSXExternalXBuildDir;
+				}
+				return macOSXExternalXBuildDir;
+			}
+		}
+
+		static bool IsExternalMSBuildExtensionsPath (string path)
+		{
+			// Mono has a hack to allow loading msbuild targets from different locations. Besides the default location
+			// inside Mono, targets are also loaded from /Library/Frameworks/Mono.framework/External/xbuild.
+			// When evaluating an msbuild project, MSBuildExtensionsPath is replaced by those locations.
+
+			// This check is a workaround for a special corner case that happens, for example, when building the Xamarin SDKs.
+			// In that case, the MSBuildExtensionsPath env var is specified to point to a local version of the msbuild targets
+			// that are usually installed in /Library/Frameworks/Mono.framework/External/xbuild.
+			// However, by setting this variable, the new value replaces the default build target location, and msbuild
+			// can't finde Microsoft.Common.props.
+
+			// This check is done to avoid overwriting the default msbuild builds target location when what is being
+			// specified in MSBuildExtensionsPath is actually a path that intends to replace the external build
+			// targets path.
+
+			return Platform.IsMac && path.Contains ("Mono.framework/External/xbuild");
+		}
+
 		static string DotConfigExtensionsPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), Path.Combine ("xbuild", "tasks"));
 		const string MacOSXExternalXBuildDir = "/Library/Frameworks/Mono.framework/External/xbuild";
 
@@ -209,7 +246,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (Platform.IsWindows)
 				yield return null;
 			if (Platform.IsMac)
-				yield return MacOSXExternalXBuildDir;
+				yield return DefaultMacOSXExternalXBuildDir;
 			yield return DotConfigExtensionsPath;
 			yield return DefaultExtensionsPath;
 		}

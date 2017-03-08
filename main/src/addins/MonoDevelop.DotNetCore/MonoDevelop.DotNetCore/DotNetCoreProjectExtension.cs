@@ -144,7 +144,8 @@ namespace MonoDevelop.DotNetCore
 				ExternalConsole = dotnetCoreRunConfiguration?.ExternalConsole ?? false,
 				LaunchBrowser = dotnetCoreRunConfiguration?.LaunchBrowser ?? false,
 				LaunchURL = dotnetCoreRunConfiguration?.LaunchUrl,
-				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL
+				ApplicationURL = dotnetCoreRunConfiguration?.ApplicationURL,
+				PipeTransport = dotnetCoreRunConfiguration?.PipeTransport
 			};
 		}
 
@@ -388,7 +389,27 @@ namespace MonoDevelop.DotNetCore
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
+			sourceFiles = AddMissingProjectFiles (sourceFiles);
+
 			return RemoveFilesFromIntermediateDirectory (sourceFiles);
+		}
+
+		ProjectFile[] AddMissingProjectFiles (ProjectFile[] files)
+		{
+			List<ProjectFile> missingFiles = null;
+			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
+				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
+					if (missingFiles == null)
+						missingFiles = new List<ProjectFile> ();
+					missingFiles.Add (existingFile);
+				}
+			}
+
+			if (missingFiles == null)
+				return files;
+
+			missingFiles.AddRange (files);
+			return missingFiles.ToArray ();
 		}
 
 		ProjectFile[] RemoveFilesFromIntermediateDirectory (ProjectFile[] files)
@@ -481,7 +502,7 @@ namespace MonoDevelop.DotNetCore
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
 		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project.TargetFramework);
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
 			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
@@ -539,6 +560,11 @@ namespace MonoDevelop.DotNetCore
 					return false;
 				});
 			});
+		}
+
+		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return BuildAction.DotNetActions.Contains (buildItem.Name);
 		}
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
