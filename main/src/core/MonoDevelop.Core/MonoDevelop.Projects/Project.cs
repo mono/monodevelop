@@ -3356,7 +3356,7 @@ namespace MonoDevelop.Projects
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 					foreach (var it in updateItems.Where (i => i.ParentNode != null)) {
 						if (it.Metadata.RemoveProperty (p.Name) && !it.Metadata.GetProperties ().Any ())
-							it.ParentGroup.RemoveItem (it);
+							it.ParentProject.RemoveItem (it);
 					}
 					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
 					if (globItem.Metadata.HasProperty (p.Name)) {
