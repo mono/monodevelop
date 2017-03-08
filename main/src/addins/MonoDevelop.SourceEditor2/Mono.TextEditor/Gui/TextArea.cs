@@ -2951,8 +2951,8 @@ namespace Mono.TextEditor
 		{
 			HideTooltip ();
 			foreach (var change in args.TextChanges) {
-				var start = editor.Document.OffsetToLineNumber (change.Offset);
-				var end = editor.Document.OffsetToLineNumber (change.Offset + change.InsertionLength);
+				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
+				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);
 			}
 			// TODO: Not sure if the update is needed anymore (I don't think so atm - since extending text line markers update itself)
