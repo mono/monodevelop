@@ -9049,6 +9049,7 @@
     <Compile Include="MonoDevelop.Components\Xwt\XwtPopup.cs" />
     <Compile Include="MonoDevelop.Components\Xwt\XwtPopupWindowTheme.cs" />
     <Compile Include="MonoDevelop.Components\Xwt\XwtThemedPopup.cs" />
+    <Compile Include="MonoDevelop.Components\XwtWindowControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
