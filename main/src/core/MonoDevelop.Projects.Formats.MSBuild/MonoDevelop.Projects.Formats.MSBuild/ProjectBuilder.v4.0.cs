@@ -168,9 +168,10 @@ namespace MonoDevelop.Projects.MSBuild
 					Environment.CurrentDirectory = Path.GetDirectoryName (file);
 					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
 					projectRootElement.FullPath = file;
-					string toolsVersion = projectRootElement.ToolsVersion;
-					if (string.IsNullOrEmpty (toolsVersion))
-						toolsVersion = engine.DefaultToolsVersion;
+
+					// Use the engine's default tools version to load the project. We want to build with the latest
+					// tools version.
+					string toolsVersion = engine.DefaultToolsVersion;
 					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
 				}
 			}
