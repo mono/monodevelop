@@ -33,23 +33,23 @@ namespace Mono.TextEditor
 	{
 		public abstract Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
 
-		public virtual bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
+		public virtual bool IsInteractive (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
 		{
 			return false;
 		}
 
-		protected virtual void GetRequiredPosition (MonoTextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected virtual void GetRequiredPosition (MonoTextEditor editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
 		{
-			requiredWidth = tipWindow.SizeRequest ().Width;
+			requiredWidth = (int)tipWindow.Width;
 			xalign = 0.5;
 		}
 
-		public virtual Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			return null;
 		}
 
-		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public virtual Xwt.WindowFrame ShowTooltipWindow (MonoTextEditor editor, Xwt.WindowFrame tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
 			int ox = 0, oy = 0;
 			if (editor.GdkWindow != null)
@@ -72,15 +72,15 @@ namespace Mono.TextEditor
 			if (x < geometry.Left)
 				x = geometry.Left;
 			
-			int h = tipWindow.SizeRequest ().Height;
+			int h = (int)tipWindow.Height;
 			if (y + h >= geometry.Y + geometry.Height)
 				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
 			
-			tipWindow.Move (x, y);
+			tipWindow.Location = new Xwt.Point (x, y);
 			
-			tipWindow.ShowAll ();
+			tipWindow.Show ();
 
 			return tipWindow;
 		}

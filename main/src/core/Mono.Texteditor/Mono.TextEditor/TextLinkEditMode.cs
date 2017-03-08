@@ -562,7 +562,7 @@ namespace Mono.TextEditor
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 
-		public override Gtk.Window CreateTooltipWindow (MonoTextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			TextLink link = item.Item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))
@@ -570,12 +570,12 @@ namespace Mono.TextEditor
 			
 			TooltipWindow window = new TooltipWindow ();
 			window.Markup = link.Tooltip;
-			return window;
+			return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).WrapWindow (window);
 		}
 
-		protected override void GetRequiredPosition (MonoTextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (MonoTextEditor Editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
 		{
-			TooltipWindow win = (TooltipWindow)tipWindow;
+			TooltipWindow win = (TooltipWindow)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeWindow (tipWindow);
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
 		}

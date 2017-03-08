@@ -2748,7 +2748,7 @@ namespace Mono.TextEditor
 		int tipX, tipY, tipOffset;
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
-		static Gtk.Window tipWindow;
+		static Xwt.WindowFrame tipWindow;
 		static TooltipProvider currentTooltipProvider;
 
 		// Data for the next tooltip to be shown
@@ -2790,7 +2790,9 @@ namespace Mono.TextEditor
 				return;
 			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
 				int wx, ww, wh;
-				tipWindow.GetSize (out ww, out wh);
+				var s = tipWindow.Size;
+				ww = (int)s.Width;
+				wh = (int)s.Height;
 				wx = tipX - ww/2;
 				if (xloc >= wx && xloc < tipX + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
@@ -2855,7 +2857,7 @@ namespace Mono.TextEditor
 				tipY = nextTipY;
 				tipOffset = nextTipOffset;
 				tipItem = item;
-				Gtk.Window tw = null;
+				Xwt.WindowFrame tw = null;
 				try {
 					tw = provider.CreateTooltipWindow (editor, nextTipOffset, nextTipModifierState, item);
 					if (tw != null)
@@ -2896,7 +2898,7 @@ namespace Mono.TextEditor
 //					if (x >= 0 && y >= 0 && x < w && y < h)
 //						return;
 //				}
-				tipWindow.Destroy ();
+				tipWindow.Dispose ();
 				tipWindow = null;
 				tipItem = null;
 			}
