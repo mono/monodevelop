@@ -89,18 +89,18 @@ namespace MonoDevelop.Ide.Editor
 	{
 		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken));
 
-		public virtual bool IsInteractive (TextEditor editor, Control tipWindow)
+		public virtual bool IsInteractive (TextEditor editor, Window tipWindow)
 		{
 			return false;
 		}
 
-		public virtual void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public virtual void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			requiredWidth = ((Gtk.Widget)tipWindow).SizeRequest ().Width;
+			requiredWidth = ((Gtk.Window)tipWindow).SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public virtual Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return null;
 		}
@@ -131,12 +131,12 @@ namespace MonoDevelop.Ide.Editor
 			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);
 		}
 
-		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public virtual void ShowTooltipWindow (TextEditor editor, Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			if (tipWindow == null)
 				return;
 
-			var tipInfoWindow = ((Gtk.Widget)tipWindow) as TooltipInformationWindow;
+			var tipInfoWindow = ((Gtk.Window)tipWindow) as TooltipInformationWindow;
 			if (tipInfoWindow != null) {
 				ShowTipInfoWindow (editor, tipInfoWindow, item, modifierState, mouseX, mouseY);
 				return;

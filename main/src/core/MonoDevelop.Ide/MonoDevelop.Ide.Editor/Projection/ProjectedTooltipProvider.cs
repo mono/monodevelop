@@ -59,22 +59,22 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return null;
 		}
 
-		public override bool IsInteractive (TextEditor editor, Control tipWindow)
+		public override bool IsInteractive (TextEditor editor, Window tipWindow)
 		{
 			return projectedTooltipProvider.IsInteractive (editor, tipWindow);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (TextEditor editor, Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			projectedTooltipProvider.ShowTooltipWindow (editor, tipWindow, item, modifierState, mouseX, mouseY);
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			projectedTooltipProvider.GetRequiredPosition (editor, tipWindow, out requiredWidth, out xalign);
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			foreach (var pseg in projection.ProjectedSegments) {
 				if (pseg.ContainsOriginal (offset)) {
