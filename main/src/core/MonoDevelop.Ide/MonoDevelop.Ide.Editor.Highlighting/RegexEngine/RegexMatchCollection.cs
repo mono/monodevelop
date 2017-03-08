@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         internal ArrayList _matches;
 #endif
         internal bool _done;
-        internal ITextSource _input;
+        internal string _input;
         internal int _beginning;
         internal int _length;
         internal int _startat;
@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Nonpublic constructor
          */
-        internal MatchCollection(Regex regex, ITextSource input, int beginning, int length, int startat) {
+        internal MatchCollection(Regex regex, string input, int beginning, int length, int startat) {
             if (startat < 0 || startat > input.Length)
                 throw new ArgumentOutOfRangeException("startat");
 

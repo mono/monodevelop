@@ -31,7 +31,7 @@ public class RegexMatchTimeoutException : TimeoutException, ISerializable {
 #endif
 
 
-    private ITextSource regexInput = null;
+	private string regexInput = null;
 
     private string regexPattern = null;
 
@@ -45,7 +45,7 @@ public class RegexMatchTimeoutException : TimeoutException, ISerializable {
     /// <param name="regexInput">Matching timeout occured during mathing within the specified input.</param>
     /// <param name="regexPattern">Matching timeout occured during mathing to the specified pattern.</param>
     /// <param name="matchTimeout">Matching timeout occured becasue matching took longer than the specified timeout.</param>
-    public RegexMatchTimeoutException(ITextSource regexInput, string regexPattern, TimeSpan matchTimeout) :
+    public RegexMatchTimeoutException(string regexInput, string regexPattern, TimeSpan matchTimeout) :
 			base("") {
         Init(regexInput, regexPattern, matchTimeout);
     }
@@ -116,7 +116,7 @@ public class RegexMatchTimeoutException : TimeoutException, ISerializable {
         Init(null, "", TimeSpan.FromTicks(-1));
     }
 
-    private void Init(ITextSource input, string pattern, TimeSpan timeout) {
+		private void Init (string input, string pattern, TimeSpan timeout) {
         this.regexInput = input;
         this.regexPattern = pattern;
         this.matchTimeout = timeout;
@@ -138,7 +138,7 @@ public class RegexMatchTimeoutException : TimeoutException, ISerializable {
     #if SILVERLIGHT && !FEATURE_NETCORE
     internal string Input {
     #else
-    public ITextSource Input {
+    public string Input {
     #endif
     #if SILVERLIGHT
         [SecurityCritical]

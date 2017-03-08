@@ -311,38 +311,31 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
-			UpdateLastWordChar ();
 			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) {// CompletionWidget == null may happen in unit tests.
-				UpdateLastWordChar ();
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset) {
-				UpdateLastWordChar ();
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 			switch (descriptor.SpecialKey) {
 			case SpecialKey.BackSpace:
 				ResetSizes ();
 				UpdateWordSelection ();
-				UpdateLastWordChar ();
 				return KeyActions.Process;
 			}
 			var keyChar = descriptor.KeyChar;
 
 			if (keyChar == '[' && CloseOnSquareBrackets) {
-				UpdateLastWordChar ();
 				return KeyActions.Process | KeyActions.CloseWindow;
 			}
 			
 			if (char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				ResetSizes ();
 				UpdateWordSelection ();
-				UpdateLastWordChar ();
 				return KeyActions.Process;
 			}
 			if (SelectedItemIndex < 0) {
-				UpdateLastWordChar ();
 				return KeyActions.Process;
 			}
 			var data = DataProvider.GetCompletionData (SelectedItemIndex);
@@ -355,7 +348,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
 				}
-				UpdateLastWordChar ();
 				if (match >= 0 && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
@@ -384,16 +376,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 						return KeyActions.CloseWindow;
 					var text = DataProvider.GetText (selectedItem);
 					if (!text.Substring (0, Math.Min (text.Length, CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-						UpdateLastWordChar ();
 						return KeyActions.Process | KeyActions.CloseWindow;
 					}
 				}
 			}
-			UpdateLastWordChar ();
 			return KeyActions.Process;
 		}
 
-		void UpdateLastWordChar ()
+		internal void UpdateLastWordChar ()
 		{
 			EndOffset = CompletionWidget.CaretOffset;
 		}

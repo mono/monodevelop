@@ -23,11 +23,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	[ Serializable() ] 
 #endif
     class Capture {
-        internal ITextSource _text;
+        internal string _text;
         internal int _index;
         internal int _length;
 
-        internal Capture(ITextSource text, int i, int l) {
+        internal Capture(string text, int i, int l) {
             _text = text;
             _index = i;
             _length = l;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /// </devdoc>
         public string Value {
             get {
-				return _text.GetTextAt (_index, _length);
+				return _text.Substring (_index, _length);
             }
         }
 
@@ -82,29 +82,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             return Value;
         }
 
-		public ITextSource ToTextSource() {
-			return _text.CreateSnapshot (_index, _length);
+		public string ToTextSource() {
+			return _text.Substring (_index, _length);
 		}
 
         /*
          * The original string
          */
-        internal ITextSource GetOriginalString() {
+        internal string GetOriginalString() {
             return _text;
         }
 
         /*
          * The substring to the left of the capture
          */
-        internal ITextSource GetLeftSubstring() {
-			return _text.CreateSnapshot(0, _index);
+        internal string GetLeftSubstring() {
+			return _text.Substring(0, _index);
         }
 
         /*
          * The substring to the right of the capture
          */
-        internal ITextSource GetRightSubstring() {
-			return _text.CreateSnapshot(_index + _length, _text.Length - _index - _length);
+        internal string GetRightSubstring() {
+			return _text.Substring(_index + _length, _text.Length - _index - _length);
         }
 
 #if DBG
