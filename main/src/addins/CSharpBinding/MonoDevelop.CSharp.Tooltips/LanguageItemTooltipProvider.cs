@@ -141,7 +141,7 @@ namespace MonoDevelop.SourceEditor
 		public override void GetRequiredPosition (TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
-			requiredWidth = win.Allocation.Width;
+			requiredWidth = (int)win.Width;
 			xalign = 0.5;
 		}
 

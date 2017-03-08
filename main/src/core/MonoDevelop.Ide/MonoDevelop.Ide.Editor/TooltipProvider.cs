@@ -96,7 +96,10 @@ namespace MonoDevelop.Ide.Editor
 
 		public virtual void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			requiredWidth = ((Gtk.Window)tipWindow).SizeRequest ().Width;
+			if (tipWindow is XwtWindowControl)
+				requiredWidth = (int)tipWindow.GetNativeWidget<Xwt.WindowFrame> ().Width;
+			else
+				requiredWidth = ((Gtk.Window)tipWindow).SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
@@ -136,7 +139,7 @@ namespace MonoDevelop.Ide.Editor
 			if (tipWindow == null)
 				return;
 
-			var tipInfoWindow = ((Gtk.Window)tipWindow) as TooltipInformationWindow;
+			TooltipInformationWindow tipInfoWindow = (tipWindow as XwtWindowControl)?.Window as TooltipInformationWindow;
 			if (tipInfoWindow != null) {
 				ShowTipInfoWindow (editor, tipInfoWindow, item, modifierState, mouseX, mouseY);
 				return;
@@ -162,17 +165,16 @@ namespace MonoDevelop.Ide.Editor
 				x = geometry.X + geometry.Width - w;
 			if (x < geometry.Left)
 				x = geometry.Left;
-			
-			var gtkWindow = (Gtk.Window)tipWindow;
-			int h = gtkWindow.SizeRequest ().Height;
+
+			var xwtWindow = (Xwt.WindowFrame)tipWindow;
+			int h = (int)xwtWindow.Size.Height;
 			if (y + h >= geometry.Y + geometry.Height)
 				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
 			
-			gtkWindow.Move (x, y);
-			
-			gtkWindow.ShowAll ();
+			xwtWindow.Location = new Xwt.Point(x, y);
+			xwtWindow.Show ();
 		}
 
 		protected bool IsDisposed {
