@@ -101,7 +101,7 @@ namespace Mono.TextEditor
 			set {
 				if (highlightCaretLine != value) {
 					highlightCaretLine = value;
-					RemoveCachedLine (Document.GetLine (Caret.Line));
+					RemoveCachedLine (Caret.Line);
 					Document.CommitLineUpdate (Caret.Line);
 				}
 			}
@@ -167,7 +167,7 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
-			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
+			RemoveCachedLine (Document.OffsetToLineNumber (e.Offset));
 			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 				int delta = e.ChangeDelta;
 				mouseWordStart += delta;
@@ -186,11 +186,10 @@ namespace Mono.TextEditor
 			int startLine = YToLine (textEditor.GetTextEditorData ().VAdjustment.Value) - 5;
 			//We don't want to invalidate 5 lines after end(+10 because start is already -5)
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 10;
-			List<DocumentLine> linesToRemove = new List<DocumentLine> ();
-			foreach (DocumentLine line in layoutDict.Keys) {
-				int curLine = line.LineNumber;
+			var linesToRemove = new List<int> ();
+			foreach (var curLine in layoutDict.Keys) {
 				if (startLine >= curLine || endLine <= curLine) {
-					linesToRemove.Add (line);
+					linesToRemove.Add (curLine);
 				}
 			}
 			linesToRemove.ForEach (RemoveCachedLine);
@@ -793,20 +792,21 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Dictionary<DocumentLine, LayoutDescriptor> layoutDict = new Dictionary<DocumentLine, LayoutDescriptor> ();
+		Dictionary<int, LayoutDescriptor> layoutDict = new Dictionary<int, LayoutDescriptor> ();
 		
 		internal LayoutWrapper CreateLinePartLayout (DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
-			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
+			int lineNumber = line.LineNumber;
+			if (!containsPreedit && layoutDict.TryGetValue (lineNumber, out descriptor)) {
 				bool isInvalid;
 				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor?.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNumber);
 			}
 			var wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
@@ -1027,7 +1027,7 @@ namespace Mono.TextEditor
 				selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
 				descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
 				if (!containsPreedit && cachedChunks.Item2) {
-					layoutDict [line] = descriptor;
+					layoutDict [lineNumber] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
 				OnLineShown (line);
@@ -1051,21 +1051,21 @@ namespace Mono.TextEditor
 
 		public IEnumerable<DocumentLine> CachedLine {
 			get {
-				return layoutDict.Keys;
+				return layoutDict.Keys.Select (ln => this.textEditor.GetLine (ln));
 			}
 		}
 
-		public void RemoveCachedLine (DocumentLine line)
+		public void RemoveCachedLine (int lineNumber)
 		{
-			if (line == null)
+			if (lineNumber <= 0)
 				return;
 			textEditor.CheckUIThread ();
 			LayoutDescriptor descriptor;
-			if (layoutDict.TryGetValue (line, out descriptor)) {
+			if (layoutDict.TryGetValue (lineNumber, out descriptor)) {
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNumber);
 			}
-			cachedLines.Remove (line);
+			cachedLines.Remove (lineNumber);
 		}
 
 		internal void DisposeLayoutDict ()
@@ -1097,25 +1097,27 @@ namespace Mono.TextEditor
 				this.Chunk = chunk;
 			}
 		}
-		Dictionary<DocumentLine, HighlightedLine> cachedLines = new Dictionary<DocumentLine, HighlightedLine> ();
+		Dictionary<int, HighlightedLine> cachedLines = new Dictionary<int, HighlightedLine> ();
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
 		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
 			HighlightedLine result;
-			if (cachedLines.TryGetValue (line, out result))
+			var lineNumber = line.LineNumber;
+			if (cachedLines.TryGetValue (lineNumber, out result)) {
 				return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
+			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
 			task.Wait (100);
 			if (task.IsCompleted) {
-				cachedLines [line] = task.Result;
+				cachedLines [lineNumber] = task.Result;
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
 				Runtime.RunInMainThread (delegate {
 					if (token.IsCancellationRequested)
 						return;
-					cachedLines [line] = t.Result;
+					cachedLines [lineNumber] = t.Result;
 					Document.CommitLineUpdate (line);
 				});
 			});
@@ -1154,11 +1156,10 @@ namespace Mono.TextEditor
 
 		public void ForceInvalidateLine (int lineNr)
 		{
-			DocumentLine line = Document.GetLine (lineNr);
 			LayoutDescriptor descriptor;
-			if (line != null && layoutDict.TryGetValue (line, out descriptor)) {
+			if (lineNr > 0 && layoutDict.TryGetValue (lineNr, out descriptor)) {
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNr);
 			}
 		}
 

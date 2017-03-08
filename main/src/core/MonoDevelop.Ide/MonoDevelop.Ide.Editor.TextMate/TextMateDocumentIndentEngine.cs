@@ -114,8 +114,9 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				DecreaseIndent (ref nextLineIndent);
 				increaseNextLine = false;
 			}
+			string lineText = sourceText.GetTextAt (lineOffset, line.LengthIncludingDelimiter);
 			if (increaseIndentPattern != null) {
-				var match = increaseIndentPattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
+				var match = increaseIndentPattern.Match (lineText);
 				if (match.Success) {
 					IncreaseIndent (ref nextLineIndent);
 					//var matchLen = lineOffset + line.LengthIncludingDelimiter - (match.Index + match.Length);
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			}
 
 			if (indentNextLinePattern != null) {
-				var match = indentNextLinePattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
+				var match = indentNextLinePattern.Match (lineText);
 				if (match.Success) {
 					IncreaseIndent (ref nextLineIndent);
 					increaseNextLine = true;
@@ -134,7 +135,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			}
 
 			if (decreaseIndentPattern != null) {
-				var match = decreaseIndentPattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
+				var match = decreaseIndentPattern.Match (lineText);
 				if (match.Success) {
 					DecreaseIndent (ref indentLevel);
 					//var matchLen = lineOffset + line.LengthIncludingDelimiter - (match.Index + match.Length);
@@ -144,7 +145,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				}
 			}
 			if (unIndentedLinePattern != null) {
-				var match = unIndentedLinePattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
+				var match = unIndentedLinePattern.Match (lineText);
 				if (match.Success)
 					indentLevel = 0;
 			}
