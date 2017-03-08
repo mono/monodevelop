@@ -3307,9 +3307,9 @@ namespace MonoDevelop.Projects
 			// attribute.
 
 			if (globItem.Name != item.Name) {
-				return GenerateItemNameChangedDiff (globItem, item);
+				return GenerateItemNameChangedDiff (item);
 			} else {
-				RemoveExistingRemoveAndIncludeItems (globItem, item);
+				RemoveExistingRemoveAndIncludeItems (item);
 			}
 
 			MSBuildItem updateItem = null;
@@ -3404,14 +3404,14 @@ namespace MonoDevelop.Projects
 			return ExpandedItemAction.None;
 		}
 
-		ExpandedItemAction GenerateItemNameChangedDiff (MSBuildItem globItem, MSBuildItem item)
+		ExpandedItemAction GenerateItemNameChangedDiff (MSBuildItem item)
 		{
-			var existingRemoveItem = globItem.ParentProject.GetAllItems ()
+			var existingRemoveItem = MSBuildProject.GetAllItems ()
 				.FirstOrDefault (i => i.IsRemove && i.Remove == item.Include);
 			if (existingRemoveItem == null)
 				return ExpandedItemAction.AddRemoveAndIncludeItem;
 
-			var existingIncludeItem = globItem.ParentProject.GetAllItems ()
+			var existingIncludeItem = MSBuildProject.GetAllItems ()
 				.FirstOrDefault (i => i.Include == item.Include);
 			if (existingIncludeItem != null) {
 				foreach (var p in existingIncludeItem.Metadata.GetProperties ().ToArray ())
@@ -3423,10 +3423,10 @@ namespace MonoDevelop.Projects
 			return ExpandedItemAction.None;
 		}
 
-		void RemoveExistingRemoveAndIncludeItems (MSBuildItem globItem, MSBuildItem item)
+		void RemoveExistingRemoveAndIncludeItems (MSBuildItem item)
 		{
 			List<MSBuildItem> itemsToDelete = null;
-			foreach (var it in globItem.ParentProject.GetAllItems ()) {
+			foreach (var it in MSBuildProject.GetAllItems ()) {
 				if (it.Remove == item.Include || it.Include == item.Include) {
 					if (itemsToDelete == null)
 						itemsToDelete = new List<MSBuildItem> ();
@@ -3436,7 +3436,7 @@ namespace MonoDevelop.Projects
 
 			if (itemsToDelete != null) {
 				foreach (var it in itemsToDelete)
-					globItem.ParentProject.RemoveItem (it);
+					MSBuildProject.RemoveItem (it);
 			}
 		}
 

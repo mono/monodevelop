@@ -1100,6 +1100,28 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SaveProjectWithImportedWildcardsBuildActionChangedThenCopyToOutputChanged ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcardsBuildActionChangedProjectReloadThenCopyToOutputChanged ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
@@ -1279,6 +1301,33 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+		}
+
+		/// <summary>
+		/// The globs are defined in a file that is imported into the project.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithImportedWildcardsBuildActionChangedBackAgain ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
+			string originalProjectFileText = File.ReadAllText (projFile);
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -2382,5 +2431,13 @@ namespace MonoDevelop.Projects
 
 	class CustomFlavor: ProjectExtension
 	{
+	}
+
+	class SupportImportedProjectFilesDotNetProjectExtension : DotNetProjectExtension
+	{
+		protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return BuildAction.DotNetActions.Contains (buildItem.Name);
+		}
 	}
 }
