@@ -530,11 +530,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			
 			if (!keyHandled)
 				ka = PostProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, descriptor);
+			UpdateLastWordChar ();
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
 				OnWindowClosed (EventArgs.Empty);
