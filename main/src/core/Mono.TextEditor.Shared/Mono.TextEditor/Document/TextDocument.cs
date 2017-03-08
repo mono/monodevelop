@@ -2097,12 +2097,8 @@ namespace Mono.TextEditor
 		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
 			var snapshot = this.currentSnapshot;
-			for (int i = 0; (i < count); ++i)
-			{
-				destination[destinationIndex + i] = snapshot[sourceIndex + i];
-			}
+			this.currentSnapshot.CopyTo(sourceIndex, destination, destinationIndex, count);
 		}
-
 
 		ITextSource ITextSource.CreateSnapshot ()
 		{
@@ -2333,10 +2329,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public void WriteTextTo(TextWriter writer, int offset, int length)
 			{
-				for (int i = 0; (i < length); ++i)
-				{
-					writer.Write(this.span.Snapshot[this.span.Start.Position + +offset + i]);
-				}
+				this.span.Snapshot.Write(writer, new Microsoft.VisualStudio.Text.Span(this.span.Start.Position + offset, length));
 			}
 
 			/// <summary>
