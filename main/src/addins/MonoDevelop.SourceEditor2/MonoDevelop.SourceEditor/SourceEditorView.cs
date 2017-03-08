@@ -759,7 +759,7 @@ namespace MonoDevelop.SourceEditor
 						AlertButton.Cancel,
 						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
 					if (result != AlertButton.Cancel) {
-						this.Document.VsTextDocument.Encoding = MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
+						this.Document.VsTextDocument.Encoding = Encoding.UTF8;
 						this.Document.VsTextDocument.Save();
 					}
 					else {
@@ -856,7 +856,7 @@ namespace MonoDevelop.SourceEditor
 			bool didLoadCleanly;
 			if (!reload && AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
-				this.Document.VsTextDocument.Encoding = loadEncoding ?? MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
+				this.Document.VsTextDocument.Encoding = loadEncoding ?? Encoding.UTF8;
 				didLoadCleanly = false;
 			}
 			else {
