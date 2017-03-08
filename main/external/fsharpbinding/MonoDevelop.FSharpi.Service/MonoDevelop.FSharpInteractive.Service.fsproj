@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.FSharpi.Service</RootNamespace>
     <AssemblyName>MonoDevelop.FSharpInteractive.Service</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
