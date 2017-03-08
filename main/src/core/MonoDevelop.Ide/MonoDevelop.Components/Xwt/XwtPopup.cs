@@ -183,8 +183,8 @@ namespace MonoDevelop.Components
 		void ShowPopupInternal ()
 		{
 			Opacity = 0;
-			Show ();
 			RepositionWindow ();
+			Show ();
 			Opacity = 1;
 		}
 
