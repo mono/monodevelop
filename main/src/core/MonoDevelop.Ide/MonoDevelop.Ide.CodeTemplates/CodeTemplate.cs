@@ -37,6 +37,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Linq;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using MonoDevelop.Projects;
@@ -144,12 +145,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 				var c = editor.GetCharAt (offset);
 				//Only legal characters in template Shortcut
 				//LetterOrDigit make sense
-				//_ to allow underscore naming convention
-				//# is because there are #if templates
-				//~ because disctructor template
-				//@ some Razor templates start with @
 				//in theory we should probably just support LetterOrDigit and _
-				if (!char.IsLetterOrDigit (c) && c != '_' && c != '#' && c != '~' && c != '@') {
+				if (!char.IsLetterOrDigit (c)) {
+					//_ to allow underscore naming convention
+					//# is because there are #if templates
+					//~ because disctructor template
+					//@ some Razor templates start with @
+					if (c == '_' || c == '#' || c == '~' || c == '@')
+						continue;
+
+					// '-' because CSS property names templates include them
+					if (c == '-' && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
+						continue;
+
 					break;
 				}
 			}
@@ -169,6 +177,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
+
+			// HTML snippets include the opening '<', so ensure that we remove the old one if present
+			if (start > 0 && '<' == editor.GetCharAt(start - 1) && DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
+				start -= 1;
+
 			editor.RemoveText (start, offset - start);
 			return start;
 		}
