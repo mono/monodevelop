@@ -73,6 +73,7 @@ namespace MonoDevelop.CodeIssues
 				switch (assemblyName) {
 				//whitelist
 				case "RefactoringEssentials":
+				case "Refactoring Essentials":
 				case "Microsoft.CodeAnalysis.Features":
 				case "Microsoft.CodeAnalysis.VisualBasic.Features":
 				case "Microsoft.CodeAnalysis.CSharp.Features":
