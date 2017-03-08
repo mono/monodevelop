@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp
 			sortOrder = FirstCategory;
 		}
 
-		public override void Initialize (Components.PopoverWindow popupWindow)
+		public override void Initialize (Components.XwtPopup popupWindow)
 		{
 			lastResult = new WorkerResult ();
 		}
