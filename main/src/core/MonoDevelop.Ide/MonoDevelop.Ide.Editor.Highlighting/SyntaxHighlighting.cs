@@ -39,10 +39,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
-				var ln = Document.OffsetToLineNumber (change.Offset);
+				var ln = Document.OffsetToLineNumber (change.NewOffset);
 				if (ln >= stateCache.Count)
 					continue;
-				var line = Document.GetLineByOffset (change.Offset);
+				var line = Document.GetLineByOffset (change.NewOffset);
 				var lastState = GetState (line);
 
 				var high = new Highlighter (this, lastState);

@@ -85,8 +85,8 @@ namespace Mono.TextEditor
 		void TrackDocument_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
-				var startLine = trackDocument.GetLineByOffset (change.Offset);
-				var endLine = trackDocument.GetLineByOffset (change.Offset + change.InsertionLength);
+				var startLine = trackDocument.GetLineByOffset (change.NewOffset);
+				var endLine = trackDocument.GetLineByOffset (change.NewOffset + change.InsertionLength);
 				var lineNumber = startLine.LineNumber;
 				var insertedLines = endLine.LineNumber - lineNumber;
 				try {
