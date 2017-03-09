@@ -399,6 +399,8 @@ namespace Mono.TextEditor
 				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
 					var selection = data.MainSelection;
 					var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
+					var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
 						var lineSegment = data.GetLine (lineNumber);
 						int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
@@ -412,8 +414,10 @@ namespace Mono.TextEditor
 						} else {
 							textToInsert = text;
 						}
-						inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (lineSegment.Offset + insertOffset, 0), textToInsert));
+						inserted = textToInsert.Length;
 					}
+					data.Document.ApplyTextChanges (changes);
 				} else {
 					offset = version.MoveOffsetTo (data.Document.Version, offset);
 					inserted = data.PasteText (offset, text, copyData, ref undo);
