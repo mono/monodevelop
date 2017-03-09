@@ -47,7 +47,26 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         public override string GetText(Span span)
         {
-            return this.content.GetText(span);
+            Tuple<int, IStringRebuilder> cache = this.cachedLeaf;
+            if ((cache == null) || (span.Start < cache.Item1) || (span.End > (cache.Item1 + cache.Item2.Length)))
+            {
+                int offset;
+                IStringRebuilder leaf = this.content.GetLeaf(span.Start, out offset);
+                if (span.End <= offset + leaf.Length)
+                {
+                    cache = new Tuple<int, IStringRebuilder>(offset, leaf);
+
+                    //Since cache is a class, cachedLeaf should update atomically.
+                    this.cachedLeaf = cache;
+                }
+                else
+                {
+                    return this.content.GetText(span);
+                }
+            }
+
+            Span newSpan = new Span(span.Start - cache.Item1, span.Length);
+            return cache.Item2.GetText(newSpan);
         }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
