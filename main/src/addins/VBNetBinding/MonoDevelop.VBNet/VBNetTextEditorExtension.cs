@@ -168,7 +168,7 @@ namespace MonoDevelop.VBNet
 					coloredSegments.Add (whitespaceSegment);
 				}
 
-				return new HighlightedLine (coloredSegments);
+				return new HighlightedLine (line, coloredSegments);
 			}
 
 			private string GetStyleNameFromClassificationType (string classificationType)
