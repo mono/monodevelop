@@ -1068,7 +1068,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			IsDirty = Document.IsDirty;
 			foreach (var change in a.TextChanges) {
-				var location = Document.OffsetToLocation (change.Offset);
+				var location = Document.OffsetToLocation (change.NewOffset);
 
 				int i = 0, lines = 0;
 				while (i != -1 && i < change.RemovedText.Text.Length) {

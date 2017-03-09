@@ -999,17 +999,17 @@ namespace Mono.TextEditor
 				int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 				bool preserve = Caret.PreserveSelection;
 				Caret.PreserveSelection = true;
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					DocumentLine curLine = Document.GetLine (lineNr);
 					int col1 = curLine.GetLogicalColumn (this, startCol) - 1;
 					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol) - 1, curLine.Length);
 					if (col1 >= col2)
 						continue;
-					Remove (curLine.Offset + col1, col2 - col1);
-					
-					if (Caret.Line == lineNr && Caret.Column >= col1)
-						Caret.Column = col1 + 1;
+					changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (curLine.Offset + col1, col2 - col1), ""));
 				}
+				Document.ApplyTextChanges (changes);
 				int column = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
 				MainSelection = selection.WithRange (
 					new DocumentLocation (selection.Anchor.Line, column),

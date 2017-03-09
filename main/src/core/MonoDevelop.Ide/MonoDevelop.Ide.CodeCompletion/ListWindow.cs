@@ -558,6 +558,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void UpdateWordSelection ()
 		{
+			UpdateLastWordChar ();
 			SelectEntry (CurrentPartialWord);
 		}
 

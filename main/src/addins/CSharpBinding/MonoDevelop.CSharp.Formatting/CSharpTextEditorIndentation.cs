@@ -200,16 +200,16 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
-				stateTracker.ResetEngineToPosition (Editor, change.Offset);
+				stateTracker.ResetEngineToPosition (Editor, change.NewOffset);
 				if (wasInVerbatimString == null)
 					return;
 				if (change.RemovalLength != 1 /*|| textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format*/)
 					return;
-				SafeUpdateIndentEngine (Math.Min (Editor.Length, change.Offset + change.InsertionLength + 1));
+				SafeUpdateIndentEngine (Math.Min (Editor.Length, change.NewOffset + change.InsertionLength + 1));
 				if (wasInVerbatimString == true && !stateTracker.IsInsideVerbatimString) {
 					Editor.TextChanging -= HandleTextReplacing;
 					Editor.TextChanged -= HandleTextReplaced;
-					ConvertVerbatimStringToNormal (Editor, change.Offset + change.InsertionLength + 1);
+					ConvertVerbatimStringToNormal (Editor, change.NewOffset + change.InsertionLength + 1);
 					Editor.TextChanging += HandleTextReplacing;
 					Editor.TextChanged += HandleTextReplaced;
 				}
