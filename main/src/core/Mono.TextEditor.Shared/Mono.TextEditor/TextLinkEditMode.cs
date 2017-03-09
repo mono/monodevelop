@@ -333,18 +333,25 @@ namespace Mono.TextEditor
 		void UpdateLinksOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			wasReplaced = true;
+			if (!IsInUpdate) {
+				foreach (var change in e.TextChanges) {
+					int offset = change.Offset - baseOffset;
+					if (!links.Any (link => link.Links.Any (segment => segment.Contains (offset)
+						|| segment.EndOffset == offset))) {
+						SetCaretPosition = false;
+						ExitTextLinkMode ();
+						return;
+					}
+				}
+			}
+
 			foreach (var change in e.TextChanges) {
 				int offset = change.Offset - baseOffset;
 				int delta = change.ChangeDelta;
-				if (!IsInUpdate && !links.Any (link => link.Links.Any (segment => segment.Contains (offset)
-					|| segment.EndOffset == offset))) {
-					SetCaretPosition = false;
-					ExitTextLinkMode ();
-					return;
-				}
 				AdjustLinkOffsets (offset, delta);
-				UpdateTextLinks ();
 			}
+
+			UpdateTextLinks ();
 		}
 
 		void AdjustLinkOffsets (int offset, int delta)
