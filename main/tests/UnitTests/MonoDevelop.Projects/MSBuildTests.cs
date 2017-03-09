@@ -987,6 +987,42 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task LoadProjectWithWildcardsAndExcludesUsingForwardSlashInsteadOfBackslash ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-excludes.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Data2.cs",
+				"p1.txt",
+				"p4.txt",
+				"p5.txt",
+				"text3-1.txt",
+			}, files);
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcardsAndExcludesUsingPropertyPathThatHasTrailingBackslash ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-property-trailing-slash-excludes.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Data2.cs",
+				"p1.txt",
+				"p4.txt",
+				"p5.txt",
+				"text3-1.txt",
+			}, files);
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
@@ -1170,6 +1206,199 @@ namespace MonoDevelop.Projects
 				"text2-1.txt",
 				"text2-2.txt",
 			}, files);
+		}
+
+		/// <summary>
+		/// Tests that an include such as "Properties/**/*.txt" does not throw an ArgumentException
+		/// when the project is saved and UseAdvancedGlobSupport is enabled.
+		/// </summary>
+		[Test]
+		public async Task SaveAdvancedGlobSupportProjectWithForwardSlashWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-forward-slash-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			string newFile = Path.Combine (p.BaseDirectory, "Content", "newfile.txt");
+			File.WriteAllText (newFile, "text");
+			mp.AddFile (newFile, "Content");
+			await mp.SaveAsync (Util.GetMonitor ());
+
+			mp = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
+
+			var files = mp.Files
+				.Where (f => f.CopyToOutputDirectory == FileCopyMode.PreserveNewest)
+				.Select (f => f.FilePath.FileName)
+				.OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"newfile.txt",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+			}, files);
+
+			var itemGroup = mp.MSBuildProject.ItemGroups.LastOrDefault ();
+			Assert.AreEqual (2, mp.MSBuildProject.ItemGroups.Count ());
+			Assert.IsFalse (itemGroup.Items.Any (item => item.Include == @"Content\newfile.txt"));
+			Assert.AreEqual (3, itemGroup.Items.Count ());
+		}
+
+		/// <summary>
+		/// Wildcard files added by imports should be added using the project's
+		/// base directory and not the directory of the import itself.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "Compile")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data\Data1.cs",
+				@"Content\Data\Data2.cs",
+				@"Content\Data3.cs",
+				"Program.cs"
+			}, files);
+		}
+
+		/// <summary>
+		/// Checks the imported wildcard prevents the new .cs file from being
+		/// added to the project file when UseAdvancedGlobSupport is enabled.
+		/// </summary>
+		[Test]
+		public async Task AddCSharpFileToProjectWithImportedCSharpFilesWildcard ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			string newFile = Path.Combine (p.BaseDirectory, "Test.cs");
+			File.WriteAllText (newFile, "class Test { }");
+			mp.AddFile (newFile);
+			await mp.SaveAsync (Util.GetMonitor ());
+
+			mp = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
+			var itemGroup = mp.MSBuildProject.ItemGroups.FirstOrDefault ();
+			Assert.AreEqual (1, mp.MSBuildProject.ItemGroups.Count ());
+			Assert.IsFalse (itemGroup.Items.Any (item => item.Name != "Reference"));
+		}
+
+		/// <summary>
+		/// Checks that the remove applies to items using the root project as the
+		/// starting point.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndItemRemove ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-remove.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data\text2-1.txt",
+				@"Content\Data\text2-2.txt",
+				@"Content\text1-1.txt",
+				@"Content\text1-2.txt"
+			}, files);
+		}
+
+		/// <summary>
+		/// Checks that a remove item defined in another import will affect
+		/// items added by another import.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndSeparateItemRemove ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-separate-remove.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "Compile")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data3.cs",
+				"Program.cs"
+			}, files);
+		}
+
+		/// <summary>
+		/// Checks that the remove applies to items using the root project as the
+		/// starting point.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndItemUpdate ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				@"Content\Data\text2-1.txt",
+				@"Content\Data\text2-2.txt",
+				@"Content\text1-1.txt",
+				@"Content\text1-2.txt"
+			}, files);
+
+			var copyToOutputDirectory = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
+				.Select (item => item.Metadata.GetValue ("CopyToOutputDirectory")).ToArray ();
+			Assert.IsTrue (copyToOutputDirectory.All (propertyValue => propertyValue == "PreserveNewest"));
+		}
+
+		/// <summary>
+		/// Checks that an update item from a separate import affects items that
+		/// have already been included.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithImportedWildcardAndSeparateItemUpdate ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-wildcard-separate-update.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var textFileItems =  mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None").ToArray ();
+			var preserveNewestFiles = textFileItems
+				.Where (item => item.Metadata.GetValue ("CopyToOutputDirectory") == "PreserveNewest")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+			var nonUpdatedTextFiles = textFileItems
+				.Where (item => item.Metadata.GetValue ("CopyToOutputDirectory") != "PreserveNewest")
+				.Select (item => item.Include).OrderBy (f => f).ToArray ();
+
+			Assert.AreEqual (new string [] {
+				@"Content\Data\text2-1.txt",
+				@"Content\Data\text2-2.txt",
+				@"Content\text1-1.txt",
+				@"Content\text1-2.txt"
+			}, preserveNewestFiles);
+
+			Assert.AreEqual (new string [] {
+				@"Extra\No\More\p3.txt",
+				@"Extra\No\p2.txt",
+				@"Extra\p1.txt",
+				@"Extra\Yes\More\p5.txt",
+				@"Extra\Yes\More\p6.txt",
+				@"Extra\Yes\p4.txt",
+				"text3-1.txt",
+				"text3-2.txt"
+			}, nonUpdatedTextFiles);
 		}
 
 		[Test]
@@ -1503,6 +1732,59 @@ namespace MonoDevelop.Projects
 			// Check that the global property is reset
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
+		}
+
+		/// <summary>
+		/// As above but the property is used to import different .targets files
+		/// and MSBuild is used
+		/// </summary>
+		[Test]
+		public async Task BuildWithCustomProps2 ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.RequiresMicrosoftBuild = true;
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.SetValue ("TestProp", "foo");
+			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (foo.targets): foo", res.Errors [0].ErrorText);
+
+			await p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (show.targets): show", res.Errors [0].ErrorText);
+		}
+
+		/// <summary>
+		/// As above but the property has the same as a default global property defined
+		/// by the IDE. This test makes sures the existing global properties are
+		/// restored.
+		/// </summary>
+		[Test]
+		public async Task BuildWithCustomProps3 ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.RequiresMicrosoftBuild = true;
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.SetValue ("BuildingInsideVisualStudio", "false");
+			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (false.targets): false", res.Errors [0].ErrorText);
+
+			await p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed (true.targets): true", res.Errors [0].ErrorText);
 		}
 
 		[Test]

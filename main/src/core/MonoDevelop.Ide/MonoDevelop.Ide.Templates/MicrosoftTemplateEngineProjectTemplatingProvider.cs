@@ -74,6 +74,7 @@ namespace MonoDevelop.Ide.Templates
 
 			//TODO: Uncomment this IF, but also add logic to invalidate/check if new templates were added from newly installed AddOns...
 			//if (!paths.Exists (paths.User.BaseDir) || !paths.Exists (paths.User.FirstRunCookie)) {
+			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
 			var _templateCache = new TemplateCache (environmentSettings);
 			foreach (var scanPath in TemplatesNodes.Select (t => t.ScanPath).Distinct ()) {
 				_templateCache.Scan (scanPath);
