@@ -302,19 +302,9 @@ namespace Mono.TextEditor
 			this.Initialize();
 		}
 
-		public TextDocument Clone()
-		{
-			return new TextDocument(this);
-		}
-
 		private TextDocument(TextDocument doc)
 		{
-			var snapshot = doc.currentSnapshot;
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
-																							snapshot.ContentType);
-
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, doc.FileName);
-			this.VsTextDocument.Encoding = doc.Encoding;
+			this.VsTextDocument = new StubTextDocument(doc.VsTextDocument);
 
 			this.Initialize();
 		}
@@ -2521,6 +2511,102 @@ namespace Mono.TextEditor
 				return result;
 			}
 		}
+	}
+
+	class StubTextDocument : Microsoft.VisualStudio.Text.ITextDocument
+	{
+		public StubTextDocument(Microsoft.VisualStudio.Text.ITextDocument source)
+		{
+			this.Encoding = source.Encoding;
+			this.FilePath = source.FilePath;
+			this.LastContentModifiedTime = source.LastContentModifiedTime;
+			this.LastSavedTime = source.LastSavedTime;
+
+			var snapshot = source.TextBuffer.CurrentSnapshot;
+			this.TextBuffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
+																								 snapshot.ContentType);
+		}
+
+		public Encoding Encoding { get; set; }
+
+		public string FilePath { get; }
+
+		public bool IsDirty { get { return false; } }
+		public bool IsReloading { get { return false; } }
+
+		public DateTime LastContentModifiedTime { get; }
+		public DateTime LastSavedTime { get; }
+		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get; }
+
+		public void Dispose()
+		{
+		}
+
+		#region unimplemented
+		public event EventHandler DirtyStateChanged { add { } remove { } }
+		public event EventHandler<Microsoft.VisualStudio.Text.EncodingChangedEventArgs> EncodingChanged { add { } remove { } }
+		public event EventHandler<Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs> FileActionOccurred { add { } remove { } }
+
+		public Microsoft.VisualStudio.Text.ReloadResult Reload()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Microsoft.VisualStudio.Text.ReloadResult Reload(Microsoft.VisualStudio.Text.EditOptions options)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Rename(string newFilePath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Save()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveAs(string filePath, bool overwrite)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveAs(string filePath, bool overwrite, Microsoft.VisualStudio.Utilities.IContentType newContentType)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveAs(string filePath, bool overwrite, bool createFolder)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveAs(string filePath, bool overwrite, bool createFolder, Microsoft.VisualStudio.Utilities.IContentType newContentType)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveCopy(string filePath, bool overwrite)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SaveCopy(string filePath, bool overwrite, bool createFolder)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetEncoderFallback(EncoderFallback fallback)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void UpdateDirtyState(bool isDirty, DateTime lastContentModifiedTime)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
 	}
 
 	delegate bool ReadOnlyCheckDelegate (int line);
