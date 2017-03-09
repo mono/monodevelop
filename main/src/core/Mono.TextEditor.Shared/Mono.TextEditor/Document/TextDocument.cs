@@ -302,13 +302,6 @@ namespace Mono.TextEditor
 			this.Initialize();
 		}
 
-		private TextDocument(TextDocument doc)
-		{
-			this.VsTextDocument = new StubTextDocument(doc.VsTextDocument);
-
-			this.Initialize();
-		}
-
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
 			return new TextDocument (text) {
@@ -655,17 +648,15 @@ namespace Mono.TextEditor
 
 		public int LocationToOffset (int line, int column)
 		{
-			return LocationToOffset (new DocumentLocation (line, column));
+			if (line > this.LineCount || line < DocumentLocation.MinLine)
+				return -1;
+			DocumentLine documentLine = GetLine(line);
+			return System.Math.Min(Length, documentLine.Offset + System.Math.Max(0, System.Math.Min(documentLine.Length, column - 1)));
 		}
 		
 		public int LocationToOffset (DocumentLocation location)
 		{
-//			if (location.Column < DocumentLocation.MinColumn)
-//				throw new ArgumentException ("column < MinColumn");
-			if (location.Line > this.LineCount || location.Line < DocumentLocation.MinLine)
-				return -1;
-			DocumentLine line = GetLine (location.Line);
-			return System.Math.Min (Length, line.Offset + System.Math.Max (0, System.Math.Min (line.Length, location.Column - 1)));
+			return LocationToOffset(location.Line, location.Column);
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
@@ -2082,31 +2073,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-
-		internal class SnapshotDocument : TextDocument
-		{
-			readonly ITextSourceVersion version;
-			public override ITextSourceVersion Version  {
-				get {
-					return version;
-				}
-			}
-
-
-			public SnapshotDocument (TextDocument doc) : base (doc)
-			{
-				this.version = doc.Version;
-				//HACK ((LazyLineSplitter)splitter).src = this;
-
-				IsReadOnly = true;
-			}
-		}
-
-		public TextDocument CreateDocumentSnapshot ()
-		{
-			return new SnapshotDocument (this);
-		}
-
 		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
 			var snapshot = this.currentSnapshot;
@@ -2125,9 +2091,9 @@ namespace Mono.TextEditor
 			return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, offset, length));
 		}
 
-		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
+		public IReadonlyTextDocument CreateDocumentSnapshot ()
 		{
-			return CreateDocumentSnapshot ();
+			return new SnapshotToReadonlyTextDocument(this.FileName, this.MimeType, this.Encoding, this.currentSnapshot);
 		}
 
 		public void WriteTextTo (TextWriter writer)
@@ -2251,14 +2217,71 @@ namespace Mono.TextEditor
 			}
 		}
 
+		class SnapshotToReadonlyTextDocument : SnapshotSpanToTextSource, IReadonlyTextDocument
+		{
+			public SnapshotToReadonlyTextDocument(string fileName, string mimeType, Encoding encoding, Microsoft.VisualStudio.Text.ITextSnapshot snapshot)
+				: base(encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length))
+			{
+				this.FileName = fileName;
+				this.MimeType = mimeType;
+			}
+
+			public bool IsReadOnly { get { return true; } }
+
+			public FilePath FileName { get; }
+
+			public string MimeType { get; }
+
+			public int LineCount { get { return this.Span.Snapshot.LineCount; } }
+
+			public int LocationToOffset(int line, int column)
+			{
+				if (line > this.LineCount || line < DocumentLocation.MinLine)
+					return -1;
+				IDocumentLine documentLine = GetLineByOffset(line);
+				return System.Math.Min(Length, documentLine.Offset + System.Math.Max(0, System.Math.Min(documentLine.Length, column - 1)));
+			}
+
+			public DocumentLocation OffsetToLocation(int offset)
+			{
+				int lineNr = this.OffsetToLineNumber(offset);
+				if (lineNr < DocumentLocation.MinLine)
+					return DocumentLocation.Empty;
+
+				IDocumentLine line = GetLine(lineNr);
+				var col = System.Math.Max(1, System.Math.Min(line.LengthIncludingDelimiter, offset - line.Offset) + 1);
+				return new DocumentLocation(lineNr, col);
+			}
+
+			public IDocumentLine GetLine(int lineNumber)
+			{
+				var snapshot = this.Span.Snapshot;
+				int snapshotLineNumber = lineNumber - 1;
+				if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
+					return null;
+
+				return new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
+			}
+
+			public IDocumentLine GetLineByOffset(int offset)
+			{
+				var snapshot = this.Span.Snapshot;
+				if (offset < 0 || offset > snapshot.Length)
+					return null;
+
+				var line = snapshot.GetLineFromPosition(offset);
+				return new DocumentLineFromTextSnapshotLine(line);
+			}
+		}
+
 		class SnapshotSpanToTextSource : ITextSource
 		{
-			private readonly Microsoft.VisualStudio.Text.SnapshotSpan span;
+			protected readonly Microsoft.VisualStudio.Text.SnapshotSpan Span;
 
 			public SnapshotSpanToTextSource(Encoding encoding, Microsoft.VisualStudio.Text.SnapshotSpan span)
 			{
 				this.Encoding = encoding;
-				this.span = span;
+				this.Span = span;
 			}
 
 			public ITextSourceVersion Version { get { return null; } }
@@ -2274,13 +2297,13 @@ namespace Mono.TextEditor
 			/// <returns>The length of the text, in characters.</returns>
 			/// <remarks>This is the same as Text.Length, but is more efficient because
 			///  it doesn't require creating a String object.</remarks>
-			public int Length { get { return this.span.Length; } }
+			public int Length { get { return this.Span.Length; } }
 
 			/// <summary>
 			/// Gets the whole text as string.
 			/// </summary>
 			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
-			public string Text { get { return this.span.GetText(); } }
+			public string Text { get { return this.Span.GetText(); } }
 
 			/// <summary>
 			/// Gets a character at the specified position in the document.
@@ -2290,7 +2313,7 @@ namespace Mono.TextEditor
 			/// <returns>The character at the specified position.</returns>
 			/// <remarks>This is the same as Text[offset], but is more efficient because
 			///  it doesn't require creating a String object.</remarks>
-			public char this[int offset] { get { return this.span.Snapshot[offset + this.span.Start.Position]; } }
+			public char this[int offset] { get { return this.Span.Snapshot[offset + this.Span.Start.Position]; } }
 
 			/// <summary>
 			/// Gets a character at the specified position in the document.
@@ -2300,7 +2323,7 @@ namespace Mono.TextEditor
 			/// <returns>The character at the specified position.</returns>
 			/// <remarks>This is the same as Text[offset], but is more efficient because
 			///  it doesn't require creating a String object.</remarks>
-			public char GetCharAt(int offset) { return this.span.Snapshot[offset + this.span.Start.Position]; }
+			public char GetCharAt(int offset) { return this.Span.Snapshot[offset + this.Span.Start.Position]; }
 
 			/// <summary>
 			/// Retrieves the text for a portion of the document.
@@ -2308,12 +2331,12 @@ namespace Mono.TextEditor
 			/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
 			/// <remarks>This is the same as Text.Substring, but is more efficient because
 			///  it doesn't require creating a String object for the whole document.</remarks>
-			public string GetTextAt(int offset, int length) { return this.span.Snapshot.GetText(offset + this.span.Start.Position, length); }
+			public string GetTextAt(int offset, int length) { return this.Span.Snapshot.GetText(offset + this.Span.Start.Position, length); }
 
 			/// <summary>
 			/// Creates a new TextReader to read from this text source.
 			/// </summary>
-			public TextReader CreateReader() { return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.span.Snapshot, this.span.Start, this.span.Length); }
+			public TextReader CreateReader() { return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.Span.Snapshot, this.Span.Start, this.Span.Length); }
 
 			/// <summary>
 			/// Creates a new TextReader to read from this text source.
@@ -2326,7 +2349,7 @@ namespace Mono.TextEditor
 				if ((end < offset) || (end > this.Length))
 					throw new ArgumentOutOfRangeException("length");
 
-				return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.span.Snapshot, this.span.Start + offset, length);
+				return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.Span.Snapshot, this.Span.Start + offset, length);
 			}
 
 			/// <summary>
@@ -2334,7 +2357,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public void WriteTextTo(TextWriter writer)
 			{
-				this.WriteTextTo(writer, 0, this.span.Length);
+				this.WriteTextTo(writer, 0, this.Span.Length);
 			}
 
 			/// <summary>
@@ -2342,7 +2365,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public void WriteTextTo(TextWriter writer, int offset, int length)
 			{
-				this.span.Snapshot.Write(writer, new Microsoft.VisualStudio.Text.Span(this.span.Start.Position + offset, length));
+				this.Span.Snapshot.Write(writer, new Microsoft.VisualStudio.Text.Span(this.Span.Start.Position + offset, length));
 			}
 
 			/// <summary>
@@ -2356,7 +2379,7 @@ namespace Mono.TextEditor
 			{
 				for (int i = 0; (i < count); ++i)
 				{
-					destination[destinationIndex + i] = this.span.Snapshot[this.span.Start.Position + i];
+					destination[destinationIndex + i] = this.Span.Snapshot[this.Span.Start.Position + i];
 				}
 			}
 
@@ -2372,7 +2395,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public ITextSource CreateSnapshot(int offset, int length)
 			{
-				return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(this.span.Snapshot, this.span.Start.Position + offset, length));
+				return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(this.Span.Snapshot, this.Span.Start.Position + offset, length));
 			}
 		}
 
@@ -2511,102 +2534,6 @@ namespace Mono.TextEditor
 				return result;
 			}
 		}
-	}
-
-	class StubTextDocument : Microsoft.VisualStudio.Text.ITextDocument
-	{
-		public StubTextDocument(Microsoft.VisualStudio.Text.ITextDocument source)
-		{
-			this.Encoding = source.Encoding;
-			this.FilePath = source.FilePath;
-			this.LastContentModifiedTime = source.LastContentModifiedTime;
-			this.LastSavedTime = source.LastSavedTime;
-
-			var snapshot = source.TextBuffer.CurrentSnapshot;
-			this.TextBuffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
-																								 snapshot.ContentType);
-		}
-
-		public Encoding Encoding { get; set; }
-
-		public string FilePath { get; }
-
-		public bool IsDirty { get { return false; } }
-		public bool IsReloading { get { return false; } }
-
-		public DateTime LastContentModifiedTime { get; }
-		public DateTime LastSavedTime { get; }
-		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get; }
-
-		public void Dispose()
-		{
-		}
-
-		#region unimplemented
-		public event EventHandler DirtyStateChanged { add { } remove { } }
-		public event EventHandler<Microsoft.VisualStudio.Text.EncodingChangedEventArgs> EncodingChanged { add { } remove { } }
-		public event EventHandler<Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs> FileActionOccurred { add { } remove { } }
-
-		public Microsoft.VisualStudio.Text.ReloadResult Reload()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Microsoft.VisualStudio.Text.ReloadResult Reload(Microsoft.VisualStudio.Text.EditOptions options)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Rename(string newFilePath)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Save()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveAs(string filePath, bool overwrite)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveAs(string filePath, bool overwrite, Microsoft.VisualStudio.Utilities.IContentType newContentType)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveAs(string filePath, bool overwrite, bool createFolder)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveAs(string filePath, bool overwrite, bool createFolder, Microsoft.VisualStudio.Utilities.IContentType newContentType)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveCopy(string filePath, bool overwrite)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SaveCopy(string filePath, bool overwrite, bool createFolder)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SetEncoderFallback(EncoderFallback fallback)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void UpdateDirtyState(bool isDirty, DateTime lastContentModifiedTime)
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
 	}
 
 	delegate bool ReadOnlyCheckDelegate (int line);

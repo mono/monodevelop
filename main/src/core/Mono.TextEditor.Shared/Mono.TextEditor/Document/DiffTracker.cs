@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -103,7 +104,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void SetBaseDocument (TextDocument document)
+		public void SetBaseDocument (IReadonlyTextDocument document)
 		{
 			if (lineStates != null) {
 				foreach (var node in lineStates.tree) {
