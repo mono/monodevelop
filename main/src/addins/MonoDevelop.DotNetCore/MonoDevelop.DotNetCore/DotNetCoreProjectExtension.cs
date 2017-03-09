@@ -371,10 +371,7 @@ namespace MonoDevelop.DotNetCore
 			if (!sdkPaths.Exist)
 				return;
 
-			if (dotNetCoreMSBuildProject.AddInternalSdkImports (project, sdkPaths)) {
-				project.Evaluate ();
-				dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
-			}
+			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
 		/// <summary>
