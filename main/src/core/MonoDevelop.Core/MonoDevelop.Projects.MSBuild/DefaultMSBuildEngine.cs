@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		class ProjectInfo
 		{
+			public ProjectInfo Parent;
 			public MSBuildProject Project;
 			public List<MSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			public List<MSBuildItemEvaluated> EvaluatedItems = new List<MSBuildItemEvaluated> ();
@@ -62,6 +63,13 @@ namespace MonoDevelop.Projects.MSBuild
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
 			public List<GlobInfo> GlobIncludes = new List<GlobInfo> ();
+
+			public MSBuildProject GetRootMSBuildProject ()
+			{
+				if (Parent != null)
+					return Parent.GetRootMSBuildProject ();
+				return Project;
+			}
         }
 
 		class PropertyInfo
@@ -309,10 +317,19 @@ namespace MonoDevelop.Projects.MSBuild
 		static void UpdateItem (ProjectInfo project, MSBuildItem item, string update, bool trueCond, MSBuildItemEvaluated it)
 		{
 			if (IsWildcardInclude (update)) {
-				foreach (var f in GetIncludesForWildcardFilePath (project.Project, update))
-					UpdateEvaluatedItem (project, item, f, trueCond, it);
+				var rootProject = project.GetRootMSBuildProject ();
+				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update))
+					UpdateEvaluatedItemInAllProjects (project, item, f, trueCond, it);
 			} else
-				UpdateEvaluatedItem (project, item, update, trueCond, it);
+				UpdateEvaluatedItemInAllProjects (project, item, update, trueCond, it);
+		}
+
+		static void UpdateEvaluatedItemInAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
+		{
+			do {
+				UpdateEvaluatedItem (project, item, include, trueCond, it);
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void UpdateEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond, MSBuildItemEvaluated it)
@@ -341,10 +358,19 @@ namespace MonoDevelop.Projects.MSBuild
 		static void RemoveItem (ProjectInfo project, MSBuildItem item, string remove, bool trueCond)
 		{
 			if (IsWildcardInclude (remove)) {
-				foreach (var f in GetIncludesForWildcardFilePath (project.Project, remove))
-					RemoveEvaluatedItem (project, item, f, trueCond);
+				var rootProject = project.GetRootMSBuildProject ();
+				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove))
+					RemoveEvaluatedItemFromAllProjects (project, item, f, trueCond);
 			} else
-				RemoveEvaluatedItem (project, item, remove, trueCond);
+				RemoveEvaluatedItemFromAllProjects (project, item, remove, trueCond);
+		}
+
+		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
+		{
+			do {
+				RemoveEvaluatedItem (project, item, include, trueCond);
+				project = project.Parent;
+			} while (project != null);
 		}
 
 		static void RemoveEvaluatedItem (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
@@ -696,7 +722,8 @@ namespace MonoDevelop.Projects.MSBuild
 				context.SetItemContext (file, recursiveDir);
 				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include);
 			};
-			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, 0, func);
+			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
+			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func);
 		}
 
 		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path)
@@ -782,6 +809,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static string ExcludeToRegex (string exclude)
 		{
+			exclude = exclude.Replace ('/', '\\').Replace (@"\\", @"\");
 			var sb = new StringBuilder ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 				var ex = ep.Trim ();
@@ -906,6 +934,7 @@ namespace MonoDevelop.Projects.MSBuild
 						project.TargetsIgnoringCondition.Add (t);
 					}
 					project.ConditionedProperties.Append (p.ConditionedProperties);
+					project.GlobIncludes.AddRange (p.GlobIncludes);
 				}
 				return;
             }
@@ -964,7 +993,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var pref = LoadProject (file);
 			project.ReferencedProjects.Add (pref);
 
-			var prefProject = new ProjectInfo { Project = pref };
+			var prefProject = new ProjectInfo { Project = pref, Parent = project };
 			AddImportedProject (project, import, prefProject);
 
 			var refCtx = new MSBuildEvaluationContext (context);
@@ -1161,9 +1190,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		bool IsIncludedInGlob (string globInclude, string basePath, FilePath file)
 		{
-			if (globInclude == "**" || globInclude.EndsWith ("\\**", StringComparison.Ordinal))
-				globInclude = globInclude + "/*";
-			var subpath = globInclude.Split ('\\');
+			var subpath = SplitWildcardFilePath (globInclude);
 			return IsIncludedInGlob (basePath, file, false, subpath, 0);
 		}
 

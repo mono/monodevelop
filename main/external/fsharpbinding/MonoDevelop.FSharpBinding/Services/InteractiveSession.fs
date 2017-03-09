@@ -16,7 +16,7 @@ type CompletionData = {
     description: string
 }
 
-type InteractiveSession() =
+type InteractiveSession(pathToExe) =
     let (|Completion|_|) (command: string) =
         if command.StartsWith("completion ") then
             let payload = command.[11..]
@@ -52,17 +52,16 @@ type InteractiveSession() =
         else
             None
 
-    let path = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
     let mutable waitingForResponse = false
 
     let fsiProcess =
         let processPid = sprintf " %d" (Process.GetCurrentProcess().Id)
 
         let processName = 
-            if Environment.runningOnMono then Environment.getMonoPath() else path
+            if Environment.runningOnMono then Environment.getMonoPath() else pathToExe
 
         let arguments = 
-            if Environment.runningOnMono then path + processPid else processPid
+            if Environment.runningOnMono then pathToExe + processPid else processPid
 
         let startInfo =
             new ProcessStartInfo
@@ -115,7 +114,7 @@ type InteractiveSession() =
                     | ParameterHints hints ->
                         parameterHintReceivedEvent.Trigger hints
                     | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
-                    
+
                 with 
                 | :? JsonException ->
                     LoggingService.logError "[fsharpi] - error deserializing error stream - %s" de.Data
@@ -137,6 +136,8 @@ type InteractiveSession() =
     member x.TextReceived = textReceived.Publish
     member x.PromptReady = promptReady.Publish
 
+    member x.HasExited() = fsiProcess.HasExited
+
     member x.Kill() =
         if not fsiProcess.HasExited then
             x.SendInput "#q;;"
@@ -151,6 +152,8 @@ type InteractiveSession() =
                 if not fsiProcess.HasExited then
                     LoggingService.logDebug "Interactive: waiting for process exit after kill... %d" (i*200)
                     fsiProcess.WaitForExit(200) |> ignore
+
+    member x.KillNow() = fsiProcess.Kill()
 
     member x.SendInput input =
         for line in String.getLines input do
