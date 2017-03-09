@@ -661,12 +661,12 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation OffsetToLocation (int offset)
 		{
-			int lineNr = this.OffsetToLineNumber (offset);
-			if (lineNr < DocumentLocation.MinLine)
+			IDocumentLine line = this.GetLineByOffset(offset);
+			if (line == null)
 				return DocumentLocation.Empty;
-			DocumentLine line = GetLine (lineNr);
-			var col = System.Math.Max (1, System.Math.Min (line.LengthIncludingDelimiter, offset - line.Offset) + 1);
-			return new DocumentLocation (lineNr, col);
+
+			var col = System.Math.Max(1, System.Math.Min(line.LengthIncludingDelimiter, offset - line.Offset) + 1);
+			return new DocumentLocation(line.LineNumber, col);
 		}
 
 		public string GetLineIndent (int lineNumber)
@@ -2244,13 +2244,12 @@ namespace Mono.TextEditor
 
 			public DocumentLocation OffsetToLocation(int offset)
 			{
-				int lineNr = this.OffsetToLineNumber(offset);
-				if (lineNr < DocumentLocation.MinLine)
+				IDocumentLine line = this.GetLineByOffset(offset);
+				if (line == null)
 					return DocumentLocation.Empty;
 
-				IDocumentLine line = GetLine(lineNr);
 				var col = System.Math.Max(1, System.Math.Min(line.LengthIncludingDelimiter, offset - line.Offset) + 1);
-				return new DocumentLocation(lineNr, col);
+				return new DocumentLocation(line.LineNumber, col);
 			}
 
 			public IDocumentLine GetLine(int lineNumber)
