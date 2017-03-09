@@ -386,7 +386,7 @@ namespace MonoDevelop.Ide.Gui
 					? doc.Window.ViewContent.UntitledName
 					: System.IO.Path.GetFileName (doc.Window.ViewContent.ContentName))),
 				"",
-			 	 AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+				 AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
 		
 		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
@@ -683,7 +683,6 @@ namespace MonoDevelop.Ide.Gui
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
 			document.Editor.Encoding = Encoding.UTF8;
-			document.Editor.UseBOM = true;
 			document.StartReparseThread ();
 			return document;
 		}
@@ -1550,14 +1549,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.project = project;
 		}
-		
+
 		public async Task<bool> Invoke (string fileName)
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
 				string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 				if (binding.CanHandle (fileName, mimeType, project)) {
-					newContent = binding.CreateContent (fileName, mimeType, project);
+					try {
+						newContent = binding.CreateContent (fileName, mimeType, project);
+					} catch (InvalidEncodingException iex) {
+						monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+						return false;
+					} catch (OverflowException) {
+						monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
+						return false;
+					}
 				} else {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}
@@ -1569,9 +1576,9 @@ namespace MonoDevelop.Ide.Gui
 				newContent.Binding = binding;
 				if (project != null)
 					newContent.Project = project;
-				
+
 				Counters.OpenDocumentTimer.Trace ("Loading file");
-				
+
 				try {
 					await newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
@@ -1585,7 +1592,7 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return false;
 			}
-			
+
 			// content got re-used
 			if (newContent.WorkbenchWindow != null) {
 				newContent.WorkbenchWindow.SelectWindow ();
@@ -1598,18 +1605,17 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
 
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
-			
 
 			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
 			if (fileInfo.Line > 0 && ipos != null) {
 				FileSettingsStore.Remove (fileName);
-				ipos.RunWhenLoaded (JumpToLine); 
+				ipos.RunWhenLoaded (JumpToLine);
 			}
-			
+
 			fileInfo.NewContent = newContent;
 			return true;
 		}
-		
+
 		void JumpToLine ()
 		{
 			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));

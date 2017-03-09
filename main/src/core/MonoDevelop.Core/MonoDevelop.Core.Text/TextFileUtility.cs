@@ -41,6 +41,8 @@ namespace MonoDevelop.Core.Text
 		readonly static int maxBomLength = 0;
 		readonly static Encoding[] encodingsWithBom;
 
+		public readonly static Encoding DefaultEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
 		static TextFileUtility ()
 		{
 			var encodings = new List<Encoding> ();

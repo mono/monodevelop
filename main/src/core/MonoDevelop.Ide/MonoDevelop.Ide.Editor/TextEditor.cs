@@ -366,16 +366,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public bool UseBOM {
-			get {
-				return ReadOnlyTextDocument.UseBOM;
-			}
-			set {
-				Runtime.AssertMainThread ();
-				ReadWriteTextDocument.UseBOM = value;
-			}
-		}
-
 		public Encoding Encoding {
 			get {
 				return ReadOnlyTextDocument.Encoding;

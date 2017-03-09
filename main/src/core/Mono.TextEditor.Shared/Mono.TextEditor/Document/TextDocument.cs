@@ -47,12 +47,11 @@ namespace Mono.TextEditor
 {
 	class TextDocument : ITextDocument
 	{
-		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get; }
+		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; }
+		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
 		Microsoft.VisualStudio.Text.ITextSnapshot currentSnapshot;
 
 		bool lineEndingMismatch;
-		bool useBOM;
-		Encoding encoding;
 
 		//HACK ImmutableText buffer;
 		//HACK readonly ILineSplitter splitter;
@@ -66,69 +65,57 @@ namespace Mono.TextEditor
 
 		public string MimeType {
 			get {
-				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(this.TextBuffer.ContentType);
+				var snapshot = this.TextBuffer.CurrentSnapshot;
+				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
 			}
 			set {
-				var newContentType = PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
-				if (value != null)
-				{
-					newContentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (value) ?? newContentType;				}
-				
-				if (this.TextBuffer.ContentType != newContentType) {
+				var newContentType = GetContentTypeFromMimeType(value);
+
+				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					this.TextBuffer.ChangeContentType(newContentType, null);
-					UpdateSyntaxMode ();
-					OnMimeTypeChanged (EventArgs.Empty);
 				}
 			}
 		}
 
-		public event EventHandler MimeTypeChanged;
-
-		protected virtual void OnMimeTypeChanged (EventArgs e)
+		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string mimeType)
 		{
-			EventHandler handler = this.MimeTypeChanged;
-			if (handler != null)
-				handler (this, e);
+			Microsoft.VisualStudio.Utilities.IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType(mimeType);
+			if (contentType == null)
+			{
+				// fallback 1: see if there is a content tyhpe with the same name
+				contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType(mimeType);
+				if (contentType == null)
+				{
+					// No joy, create a content type that, by default, derives from text. This is strictly an error
+					// (there should be mappings between any mime type and any content type).
+					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType(mimeType, new string[] { "text" });
+				}
+			}
+
+			return contentType;
 		}
 
-		FilePath fileName;
+		public event EventHandler MimeTypeChanged;
+
 		public FilePath FileName {
 			get {
-				return fileName;
+				return this.VsTextDocument.FilePath;
 			}
 			set {
-				if (fileName != value) {
-					fileName = value;
-					UpdateSyntaxMode ();
-					OnFileNameChanged (EventArgs.Empty);
+				if (value != this.FileName)
+				{
+					this.VsTextDocument.Rename(value);
 				}
 			}
 		}
 
 		public event EventHandler FileNameChanged;
-
-		protected virtual void OnFileNameChanged (EventArgs e)
-		{
-			EventHandler handler = this.FileNameChanged;
-			if (handler != null)
-				handler (this, e);
-		}
-
-		public bool UseBOM {
-			get {
-				return this.useBOM;
-			}
-			set {
-				this.useBOM = value;
-			}
-		}
-
 		public System.Text.Encoding Encoding {
 			get {
-				return this.encoding;
+				return this.VsTextDocument.Encoding;
 			}
 			set {
-				this.encoding = value;
+				this.VsTextDocument.Encoding = value ?? MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
 			}
 		}
 
@@ -192,14 +179,15 @@ namespace Mono.TextEditor
 			}
 
 			//already up to date
-			if (syntaxModeFileName == fileName && syntaxModeMimeType == this.MimeType) {
+			if (syntaxModeFileName == this.FileName && syntaxModeMimeType == this.MimeType) {
 				return;
 			}
-			syntaxModeFileName = fileName;
+			syntaxModeFileName = this.FileName;
 			syntaxModeMimeType = MimeType;
 
 			InitializeSyntaxMode ();
 		}
+
 
 		internal event EventHandler<SyntaxModeChangeEventArgs> SyntaxModeChanged;
 
@@ -217,23 +205,20 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected TextDocument (bool useBOM, Encoding encoding, string fileName, Microsoft.VisualStudio.Text.ITextBuffer textBuffer)
+		protected void Initialize()
 		{
-			this.useBOM = useBOM;
-			this.encoding = encoding;
-			this.fileName = fileName;
+			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
 
-			this.TextBuffer = textBuffer;
-			this.currentSnapshot = textBuffer.CurrentSnapshot;
-
-			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
+			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
 			this.TextBuffer.Changed += this.OnTextBufferChanged;
+			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
+
+			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccured;
 
 			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
-			this.diffTracker.SetTrackDocument (this);
+			this.diffTracker.SetTrackDocument(this);
 		}
-
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 		{
@@ -242,7 +227,7 @@ namespace Mono.TextEditor
 			cachedText = null;
 			var changes = new List<TextChange> ();
 			foreach (var change in args.Changes) {
-				changes.Add (new TextChange(change.OldPosition, change.NewPosition, change.OldText, change.NewText));
+				changes.Add (new TextChange (change.OldPosition, change.NewPosition, change.OldText, change.NewText));
 				EnsureSegmentIsUnfolded(change.OldPosition, change.NewLength);
 			}
 			bool endUndo = false;
@@ -253,7 +238,7 @@ namespace Mono.TextEditor
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
-      
+
 			if (!isInUndo) {
 				operation = new UndoOperation(textChange);
 				if (currentAtomicOperation != null) {
@@ -274,20 +259,64 @@ namespace Mono.TextEditor
 				OnEndUndo(new UndoOperationEventArgs(operation));
 		}
 
+		void OnTextBufferContentTypeChanged(object sender, Microsoft.VisualStudio.Text.ContentTypeChangedEventArgs args)
+		{
+			this.currentSnapshot = this.TextBuffer.CurrentSnapshot; // Changing the content type changes the snapshot even though there are no text changes.
+
+			UpdateSyntaxMode();
+			this.MimeTypeChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		void OnTextDocumentFileActionOccured(object sender, Microsoft.VisualStudio.Text.TextDocumentFileActionEventArgs args)
+		{
+			if (args.FileActionType == Microsoft.VisualStudio.Text.FileActionTypes.DocumentRenamed)
+			{
+				this.UpdateSyntaxMode();
+				this.FileNameChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
 		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsCollapsed)
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument () : this (string.Empty)
+		public TextDocument(string fileName, string mimeType)
 		{
+			var contentType = GetContentTypeFromMimeType(mimeType);
+
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateAndLoadTextDocument(fileName, contentType ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType);
+
+			this.Initialize();
 		}
 
-		public TextDocument (string text) : this(useBOM: false, encoding: Encoding.Default, fileName: null,
-												 textBuffer: PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(text ?? string.Empty,
-												 PlatformCatalog.Instance.TextBufferFactoryService.InertContentType))
+		public TextDocument (string text = null)
 		{
+			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(text ?? string.Empty,
+																							PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
+
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, string.Empty);
+			this.VsTextDocument.Encoding = MonoDevelop.Core.Text.TextFileUtility.DefaultEncoding;
+
+			this.Initialize();
+		}
+
+		public TextDocument Clone()
+		{
+			return new TextDocument(this);
+		}
+
+		private TextDocument(TextDocument doc)
+		{
+			var snapshot = doc.currentSnapshot;
+			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
+																							snapshot.ContentType);
+
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, doc.FileName);
+			this.VsTextDocument.Encoding = doc.Encoding;
+
+			this.Initialize();
 		}
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
@@ -376,20 +405,25 @@ namespace Mono.TextEditor
 			if (changes == null)
 				throw new ArgumentNullException (nameof (changes));
 
-			var edit = this.TextBuffer.CreateEdit ();
-			foreach (var change in changes)
-				edit.Replace (change.Offset, change.RemovalLength, change.InsertedText.Text);
-			edit.Apply ();
+			using (var edit = this.TextBuffer.CreateEdit())
+			{
+				foreach (var change in changes)
+					edit.Replace(change.Offset, change.RemovalLength, change.InsertedText.Text);
+				edit.Apply();
+			}
 		}
 
 		public void ApplyTextChanges(IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
 		{
 			if (changes == null)
 				throw new ArgumentNullException(nameof(changes));
-			var edit = this.TextBuffer.CreateEdit();
-			foreach (var change in changes)
-				edit.Replace(change.Span.Start, change.Span.Length, change.NewText);
-			edit.Apply();
+
+			using (var edit = this.TextBuffer.CreateEdit())
+			{
+				foreach (var change in changes)
+					edit.Replace(change.Span.Start, change.Span.Length, change.NewText);
+				edit.Apply();
+			}
 		}
 
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -681,9 +715,11 @@ namespace Mono.TextEditor
 
 		public DocumentLine GetLineByOffset (int offset)
 		{
-			if (offset < 0 || offset > this.currentSnapshot.Length)
+			var snapshot = this.currentSnapshot;
+
+			if (offset < 0 || offset > snapshot.Length)
 				return null;
-			var line = this.currentSnapshot.GetLineFromPosition (offset);
+			var line = snapshot.GetLineFromPosition (offset);
 			return new DocumentLineFromTextSnapshotLine(line);
 		}
 
@@ -694,9 +730,11 @@ namespace Mono.TextEditor
 
 		public int OffsetToLineNumber (int offset)
 		{
-			if (offset < 0 || offset > this.currentSnapshot.Length)
+			var snapshot = this.currentSnapshot;
+
+			if (offset < 0 || offset > snapshot.Length)
 				return 0;
-			return this.currentSnapshot.GetLineFromPosition(offset).LineNumber + 1;
+			return snapshot.GetLineFromPosition(offset).LineNumber + 1;
 		}
 		#endregion
 
@@ -2065,20 +2103,12 @@ namespace Mono.TextEditor
 			}
 
 
-			public SnapshotDocument (TextDocument doc) : base (doc.useBOM, doc.encoding, doc.fileName,
-															   CreateBufferFromTextDocument(doc))
+			public SnapshotDocument (TextDocument doc) : base (doc)
 			{
 				this.version = doc.Version;
 				//HACK ((LazyLineSplitter)splitter).src = this;
 
 				IsReadOnly = true;
-			}
-
-			private static Microsoft.VisualStudio.Text.ITextBuffer CreateBufferFromTextDocument(TextDocument doc)
-			{
-				var snapshot = doc.currentSnapshot;
-				return PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer(new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length),
-																						  snapshot.ContentType);
 			}
 		}
 
@@ -2090,23 +2120,19 @@ namespace Mono.TextEditor
 		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
 			var snapshot = this.currentSnapshot;
-			for (int i = 0; (i < count); ++i)
-			{
-				destination[destinationIndex + i] = snapshot[sourceIndex + i];
-			}
+			this.currentSnapshot.CopyTo(sourceIndex, destination, destinationIndex, count);
 		}
-
 
 		ITextSource ITextSource.CreateSnapshot ()
 		{
 			var snapshot = this.currentSnapshot;
-			return new SnapshotSpanToTextSource(this.UseBOM, this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length));
+			return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, 0, snapshot.Length));
 		}
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
 			var snapshot = this.currentSnapshot;
-			return new SnapshotSpanToTextSource(this.UseBOM, this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, offset, length));
+			return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(snapshot, offset, length));
 		}
 
 		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
@@ -2139,11 +2165,12 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
+			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
-			if (snapshotLineNumber < 0 || snapshotLineNumber >= this.currentSnapshot.LineCount)
+			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
 
-			return new DocumentLineFromTextSnapshotLine(this.currentSnapshot.GetLineFromLineNumber(snapshotLineNumber));
+			return new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 
 		internal sealed class DocumentLineFromTextSnapshotLine : DocumentLine
@@ -2238,19 +2265,13 @@ namespace Mono.TextEditor
 		{
 			private readonly Microsoft.VisualStudio.Text.SnapshotSpan span;
 
-			public SnapshotSpanToTextSource(bool useBOM, Encoding encoding, Microsoft.VisualStudio.Text.SnapshotSpan span)
+			public SnapshotSpanToTextSource(Encoding encoding, Microsoft.VisualStudio.Text.SnapshotSpan span)
 			{
-				this.UseBOM = useBOM;
 				this.Encoding = encoding;
 				this.span = span;
 			}
 
 			public ITextSourceVersion Version { get { return null; } }
-
-			/// <summary>
-			/// Determines if a byte order mark was read or is going to be written.
-			/// </summary>
-			public bool UseBOM { get; }
 
 			/// <summary>
 			/// Encoding of the text that was read from or is going to be saved to.
@@ -2302,12 +2323,21 @@ namespace Mono.TextEditor
 			/// <summary>
 			/// Creates a new TextReader to read from this text source.
 			/// </summary>
-			public TextReader CreateReader() { return null; }
+			public TextReader CreateReader() { return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.span.Snapshot, this.span.Start, this.span.Length); }
 
 			/// <summary>
 			/// Creates a new TextReader to read from this text source.
 			/// </summary>
-			public TextReader CreateReader(int offset, int length) { return null; }
+			public TextReader CreateReader(int offset, int length)
+			{
+				if ((offset < 0) || (offset > this.Length))
+					throw new ArgumentOutOfRangeException("offset");
+				int end = offset + length;
+				if ((end < offset) || (end > this.Length))
+					throw new ArgumentOutOfRangeException("length");
+
+				return new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader(this.span.Snapshot, this.span.Start + offset, length);
+			}
 
 			/// <summary>
 			/// Writes the text from this document into the TextWriter.
@@ -2322,10 +2352,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public void WriteTextTo(TextWriter writer, int offset, int length)
 			{
-				for (int i = 0; (i < length); ++i)
-				{
-					writer.Write(this.span.Snapshot[this.span.Start.Position + +offset + i]);
-				}
+				this.span.Snapshot.Write(writer, new Microsoft.VisualStudio.Text.Span(this.span.Start.Position + offset, length));
 			}
 
 			/// <summary>
@@ -2355,7 +2382,7 @@ namespace Mono.TextEditor
 			/// </summary>
 			public ITextSource CreateSnapshot(int offset, int length)
 			{
-				return new SnapshotSpanToTextSource(this.UseBOM, this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(this.span.Snapshot, this.span.Start.Position + offset, length));
+				return new SnapshotSpanToTextSource(this.Encoding, new Microsoft.VisualStudio.Text.SnapshotSpan(this.span.Snapshot, this.span.Start.Position + offset, length));
 			}
 		}
 

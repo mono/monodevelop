@@ -42,11 +42,6 @@ namespace MonoDevelop.Core.Text
 		ITextSourceVersion Version { get; }
 
 		/// <summary>
-		/// Determines if a byte order mark was read or is going to be written.
-		/// </summary>
-		bool UseBOM { get; }
-
-		/// <summary>
 		/// Encoding of the text that was read from or is going to be saved to.
 		/// </summary>
 		Encoding Encoding { get; }

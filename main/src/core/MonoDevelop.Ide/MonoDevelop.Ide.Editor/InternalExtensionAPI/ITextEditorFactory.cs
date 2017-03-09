@@ -31,11 +31,13 @@ namespace MonoDevelop.Ide.Editor
 	interface ITextEditorFactory
 	{
 		ITextDocument CreateNewDocument ();
+		ITextDocument CreateNewDocument (string fileName, string mimeType);
 		ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType);
 
 		IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType);
 
 		ITextEditorImpl CreateNewEditor ();
+		ITextEditorImpl CreateNewEditor (string fileName, string mimeType);
 		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
 
 		string[] GetSyntaxProperties (string mimeType, string name);

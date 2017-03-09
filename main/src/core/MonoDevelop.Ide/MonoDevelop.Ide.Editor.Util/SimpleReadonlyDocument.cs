@@ -372,13 +372,6 @@ namespace MonoDevelop.Ide.Editor.Util
 		}
 
 		/// <inheritdoc/>
-		public bool UseBOM {
-			get {
-				return textSource.UseBOM;
-			}
-		}
-
-		/// <inheritdoc/>
 		public System.Text.Encoding Encoding {
 			get {
 				return textSource.Encoding;

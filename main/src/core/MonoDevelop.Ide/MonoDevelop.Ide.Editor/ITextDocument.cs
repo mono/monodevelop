@@ -55,8 +55,6 @@ namespace MonoDevelop.Ide.Editor
 
 		new string MimeType { get; set; }
 
-		new bool UseBOM { get; set; }
-
 		new Encoding Encoding { get; set; }
 
 		void InsertText (int offset, string text);
