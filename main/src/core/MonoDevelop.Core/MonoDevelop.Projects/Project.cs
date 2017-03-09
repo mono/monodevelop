@@ -3068,8 +3068,7 @@ namespace MonoDevelop.Projects
 		{
 			None,
 			Exclude,
-			AddUpdateItem,
-			AddRemoveAndIncludeItem
+			AddUpdateItem
 		}
 
 		/// <summary>
@@ -3098,10 +3097,10 @@ namespace MonoDevelop.Projects
 				if (expandedList.Modified || loadedProjectItems.Where (i => i.WildcardItem == globItem).Count () != expandedList.Count) {
 					if (UseAdvancedGlobSupport) {
 						// Add remove items if necessary
-						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
+						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include && newItem.ProjectItem.ItemName == globItem.Name))) {
 							var file = removed as ProjectFile;
 							if (file == null || File.Exists (file.FilePath)) {
-								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
+								var removeItem = new MSBuildItem (globItem.Name) { Remove = removed.Include };
 								msproject.AddItem (removeItem);
 							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
@@ -3115,10 +3114,6 @@ namespace MonoDevelop.Projects
 								it.ProjectItem.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it.MSBuildItem, it.MSBuildItem.Include, null);
 								msproject.AddItem (it.MSBuildItem);
 							} else if (it.Action == ExpandedItemAction.AddUpdateItem) {
-								msproject.AddItem (it.MSBuildItem);
-							} else if (it.Action == ExpandedItemAction.AddRemoveAndIncludeItem) {
-								var removeItem = new MSBuildItem (globItem.Name) { Remove = it.MSBuildItem.Include };
-								msproject.AddItem (removeItem);
 								msproject.AddItem (it.MSBuildItem);
 							}
 						}
@@ -3409,7 +3404,7 @@ namespace MonoDevelop.Projects
 			var existingRemoveItem = MSBuildProject.GetAllItems ()
 				.FirstOrDefault (i => i.IsRemove && i.Remove == item.Include);
 			if (existingRemoveItem == null)
-				return ExpandedItemAction.AddRemoveAndIncludeItem;
+				return ExpandedItemAction.AddUpdateItem;
 
 			var existingIncludeItem = MSBuildProject.GetAllItems ()
 				.FirstOrDefault (i => i.Include == item.Include);
