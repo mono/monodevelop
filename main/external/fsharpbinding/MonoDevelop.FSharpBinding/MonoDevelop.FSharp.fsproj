@@ -114,10 +114,10 @@
     <Compile Include="FSharpBraceMatcher.fs" />
     <Compile Include="FSharpDebuggerExpressionResolver.fs" />
     <Compile Include="FSharpSelection.fs" />
-    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
-    <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
-    <EmbeddedResource Include="FSharpStylePolicy.xml" />
-    <EmbeddedResource Include="FSharpBinding.addin.xml" />
+    <AdditionalEmbeddedResource Include="FSharpSyntaxMode.xml" />
+    <AdditionalEmbeddedResource Include="FSharpFormattingPolicy.xml" />
+    <AdditionalEmbeddedResource Include="FSharpStylePolicy.xml" />
+    <AdditionalEmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="paket.references" />
     <Compile Include="Properties\AddinInfo.fs" />
     <Compile Include="HighlightUnusedCode.fs" />
