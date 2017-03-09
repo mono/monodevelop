@@ -613,7 +613,7 @@ namespace MonoDevelop.Projects
 			// Debug info file
 
 			if (conf.DebugSymbols) {
-				string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
+				string mdbFile = GetAssemblyDebugInfoFile (conf.Selector, conf.CompiledOutputName);
 				list.Add (mdbFile);
 			}
 
@@ -714,9 +714,12 @@ namespace MonoDevelop.Projects
 						list.Add (file, copyIfNewer);
 						if (File.Exists (file + ".config"))
 							list.Add (file + ".config", copyIfNewer);
-						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (file);
-						if (File.Exists (mdbFile))
-							list.Add (mdbFile, copyIfNewer);
+						string debugFile = file + ".mdb";
+						if (File.Exists (debugFile))
+							list.Add (debugFile, copyIfNewer);
+						debugFile = Path.ChangeExtension (file, ".pdb");
+						if (File.Exists (debugFile))
+							list.Add (debugFile, copyIfNewer);
 					}
 				}
 				else {
@@ -1103,7 +1106,7 @@ namespace MonoDevelop.Projects
 			if (GeneratesDebugInfoFile && conf != null && conf.DebugSymbols) {
 				string file = GetOutputFileName (configuration);
 				if (file != null) {
-					file = TargetRuntime.GetAssemblyDebugInfoFile (file);
+					file = GetAssemblyDebugInfoFile (configuration, file);
 					var finfo = new FileInfo (file);
 					if (finfo.Exists)  {
 						var debugFileBuildTime = finfo.LastWriteTime;
@@ -1113,6 +1116,25 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return outputBuildTime;
+		}
+
+		public FilePath GetAssemblyDebugInfoFile (ConfigurationSelector configuration)
+		{
+			return GetAssemblyDebugInfoFile (configuration, GetOutputFileName (configuration));
+		}
+
+		public FilePath GetAssemblyDebugInfoFile (ConfigurationSelector configuration, FilePath exeFile)
+		{
+			if (CheckUseMSBuildEngine (configuration)) {
+				var mono = TargetRuntime as MonoTargetRuntime;
+				if (mono != null) {
+					var version = mono.MonoRuntimeInfo?.RuntimeVersion;
+					if (version == null || (version < new Version (4, 9, 0)))
+						return exeFile + ".mdb";
+				}
+				return exeFile.ChangeExtension (".pdb");
+			} else
+				return exeFile + ".mdb";
 		}
 
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)

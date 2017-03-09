@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
 				int lineStartOffset = indent.Editor.GetLineByOffset (insertionOffset).Offset;
-				int formatCharsCount = insertedChars + (lineStartOffset - insertionOffset);
+				int formatCharsCount = insertedChars + (insertionOffset - lineStartOffset);
 				var newText = CSharpFormatter.FormatText (
 					indent.DocumentContext.GetFormattingPolicy (),
 					indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (),

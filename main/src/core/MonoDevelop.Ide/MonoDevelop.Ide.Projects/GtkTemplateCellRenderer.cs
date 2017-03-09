@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Projects
 		const int languageLeftHandPadding = 9;
 		const int iconTextPadding = 9;
 		int groupTemplateHeadingTotalYPadding = 24;
+		int recentTemplateHeadingTotalYPadding = 30;
 		const int groupTemplateHeadingYOffset = 4;
 		const int categoryTextPaddingX = 4;
 
@@ -55,6 +56,7 @@ namespace MonoDevelop.Ide.Projects
 		public string SelectedLanguage { get; set; }
 		public Xwt.Drawing.Image TemplateIcon { get; set; }
 		public string TemplateCategory { get; set; }
+		public bool RenderRecentTemplate { get; set; }
 
 		public GtkTemplateCellRenderer ()
 		{
@@ -65,6 +67,7 @@ namespace MonoDevelop.Ide.Projects
 
 			if (IsYosemiteOrHigher ()) {
 				groupTemplateHeadingTotalYPadding -= 1;
+				recentTemplateHeadingTotalYPadding -= 1;
 			}
 		}
 
@@ -75,7 +78,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool IsLanguageButtonPressed (EventButton button)
 		{
-			return languageRect.Contains ((int)button.X, (int)button.Y);
+			return !RenderRecentTemplate && languageRect.Contains ((int)button.X, (int)button.Y);
 		}
 
 		public Rectangle GetLanguageRect ()
@@ -89,7 +92,7 @@ namespace MonoDevelop.Ide.Projects
 			if (TemplateIcon != null) {
 				height = (int)TemplateIcon.Height + ((int)Ypad * 2);
 			} else {
-				height += groupTemplateHeadingTotalYPadding;
+				height += RenderRecentTemplate ? recentTemplateHeadingTotalYPadding : groupTemplateHeadingTotalYPadding;
 			}
 		}
 
@@ -103,9 +106,9 @@ namespace MonoDevelop.Ide.Projects
 			using (var ctx = CairoHelper.Create (window)) {
 				using (var layout = new Pango.Layout (widget.PangoContext)) {
 
-					Rectangle iconRect = DrawIcon (window, widget, cell_area, flags);
+					Rectangle iconRect = DrawIcon (ctx, widget, cell_area, flags);
 
-					if (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags)) {
+					if (!RenderRecentTemplate && (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags))) {
 						DrawTemplateNameText (window, widget, cell_area, iconRect, Rectangle.Zero, flags);
 						return;
 					}
@@ -119,10 +122,17 @@ namespace MonoDevelop.Ide.Projects
 					languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
 
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
+					if (RenderRecentTemplate)
+						DrawCategoryText (ctx, widget, cell_area, iconRect, languageRect, flags);
 
-					RoundBorder (ctx, languageRect.X, languageRect.Y, languageRect.Width, languageRect.Height);
-					SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToCairoColor ());
-					ctx.Fill ();
+
+					StateType state = StateType.Normal;
+					if (!RenderRecentTemplate) {
+						RoundBorder (ctx, languageRect.X, languageRect.Y, languageRect.Width, languageRect.Height);
+						SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToCairoColor ());
+						ctx.Fill ();
+					} else
+						state = GetState (widget, flags);
 
 					int languageTextX = languageRect.X + languageLeftHandPadding;
 					if (!TemplateHasMultipleLanguages ()) {
@@ -130,7 +140,7 @@ namespace MonoDevelop.Ide.Projects
 					}
 					int languageTextY = languageRect.Y + (languageRect.Height - textHeight) / 2;
 
-					window.DrawLayout (widget.Style.TextGC (StateType.Normal), languageTextX, languageTextY, layout);
+					window.DrawLayout (widget.Style.TextGC (state), languageTextX, languageTextY, layout);
 
 					if (TemplateHasMultipleLanguages ()) {
 						int triangleX = languageTextX + textWidth + languageRightHandPadding;
@@ -162,16 +172,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
+		Rectangle DrawIcon (Cairo.Context ctx, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
 			var img = TemplateIcon;
 			if ((flags & Gtk.CellRendererState.Selected) != 0)
 				img = img.WithStyles ("sel");
-			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
-			}
+			ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 
 			return iconRect;
 		}
@@ -190,9 +198,33 @@ namespace MonoDevelop.Ide.Projects
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				int textY = cell_area.Y + (cell_area.Height - h) / 2;
+				int textY = cell_area.Y + (RenderRecentTemplate ? (2) : (cell_area.Height - h) / 2);
 
 				window.DrawLayout (widget.Style.TextGC (state), iconRect.Right + iconTextPadding, textY, layout);
+			}
+		}
+
+		void DrawCategoryText (Cairo.Context ctx, Widget widget, Rectangle cell_area, Rectangle iconRect, Rectangle languageRect, CellRendererState flags)
+		{
+			StateType state = GetState (widget, flags);
+			var isSelected = state == StateType.Selected || state == StateType.Active;
+
+			using (var layout = new Pango.Layout (widget.PangoContext)) {
+
+				layout.Ellipsize = Pango.EllipsizeMode.End;
+				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2) - iconRect.Width - iconTextPadding - languageRect.Width;
+				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
+				layout.FontDescription = Fonts.FontExtensions.CopyModified (widget.Style.FontDesc, -1);
+
+				layout.SetMarkup (GLib.Markup.EscapeText (TemplateCategory));
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				int textY = cell_area.Y + ((cell_area.Height - h) - 2);
+
+				ctx.MoveTo (iconRect.Right + iconTextPadding, textY);
+				ctx.SetSourceColor ((isSelected ? Styles.BaseSelectionTextColor : Styles.DimTextColor).ToCairoColor ());
+				ctx.ShowLayout (layout);
 			}
 		}
 
@@ -218,11 +250,12 @@ namespace MonoDevelop.Ide.Projects
 
 		string GetSelectedLanguage ()
 		{
-			if (!Template.AvailableLanguages.Any ()) {
+			if (!Template.AvailableLanguages.Any ())
 				return String.Empty;
-			} else if (Template.AvailableLanguages.Contains (SelectedLanguage)) {
+			else if (RenderRecentTemplate)
+				return Template.Language;
+			else if (Template.AvailableLanguages.Contains (SelectedLanguage))
 				return SelectedLanguage;
-			}
 
 			return Template.AvailableLanguages.First ();
 		}
@@ -253,7 +286,7 @@ namespace MonoDevelop.Ide.Projects
 
 		bool TemplateHasMultipleLanguages ()
 		{
-			return Template.AvailableLanguages.Count > 1;
+			return !RenderRecentTemplate && Template.AvailableLanguages.Count > 1;
 		}
 
 		void DrawTriangle (Cairo.Context ctx, int x, int y)
