@@ -68,7 +68,8 @@ namespace Mono.TextEditor
 		{
 			if (lineStates == null)
 				return;
-			foreach (var change in e.TextChanges) {
+			for(int i = e.TextChanges.Count - 1; i >= 0; i--) {
+				var change = e.TextChanges[i];
 				var startLine = trackDocument.GetLineByOffset (change.Offset);
 				var endRemoveLine = trackDocument.GetLineByOffset (change.Offset + change.RemovalLength);
 				if (startLine == null || endRemoveLine == null)

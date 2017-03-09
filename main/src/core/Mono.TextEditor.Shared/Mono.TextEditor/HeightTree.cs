@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 		{
 			Rebuild ();
 			foreach (var change in e.TextChanges) {
-				var lineNumber = this.editor.OffsetToLineNumber (change.Offset);
+				var lineNumber = this.editor.OffsetToLineNumber (change.NewOffset);
 				OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 			}
 		}
