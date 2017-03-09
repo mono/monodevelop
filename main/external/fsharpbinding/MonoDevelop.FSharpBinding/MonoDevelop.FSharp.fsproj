@@ -204,14 +204,17 @@
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -320,7 +323,7 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
+          <Private>False</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -331,7 +334,7 @@
       <ItemGroup>
         <Reference Include="System.Collections.Immutable">
           <HintPath>..\packages\System.Collections.Immutable\lib\netstandard1.0\System.Collections.Immutable.dll</HintPath>
-          <Private>True</Private>
+          <Private>False</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
@@ -342,7 +345,7 @@
       <ItemGroup>
         <Reference Include="System.Reflection.Metadata">
           <HintPath>..\packages\System.Reflection.Metadata\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-          <Private>True</Private>
+          <Private>False</Private>
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
