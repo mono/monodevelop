@@ -252,7 +252,7 @@ namespace Mono.TextEditor
 			InterruptFoldWorker();
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
-			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
+			this.currentSnapshot = args.After;
       
 			if (!isInUndo) {
 				operation = new UndoOperation(textChange);
