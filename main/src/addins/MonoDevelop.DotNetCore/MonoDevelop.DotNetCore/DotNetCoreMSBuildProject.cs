@@ -108,7 +108,6 @@ namespace MonoDevelop.DotNetCore
 				project.ToolsVersion = ToolsVersion;
 
 			if (HasSdk) {
-				project.RemoveInternalElements ();
 				project.ToolsVersion = ToolsVersion;
 			}
 		}
@@ -143,42 +142,6 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (HasSdk)
 				ProjectPackageReference.AddKnownItemAttributes (project);
-		}
-
-		public bool AddInternalSdkImports (MSBuildProject project, DotNetCoreSdkPaths sdkPaths)
-		{
-			return AddInternalSdkImports (project, sdkPaths.MSBuildSDKsPath, sdkPaths.ProjectImportProps, sdkPaths.ProjectImportTargets);
-		}
-
-		public bool AddInternalSdkImports (MSBuildProject project, string sdkPath, string sdkProps, string sdkTargets)
-		{
-			return AddInternalSdkImports (project, sdkPath, new [] { sdkProps }, new [] { sdkTargets });
-		}
-
-		public bool AddInternalSdkImports (
-			MSBuildProject project,
-			string sdkPath,
-			IEnumerable<string> sdkProps,
-			IEnumerable<string> sdkTargets)
-		{
-			if (project.ImportExists (sdkProps.First ()))
-				return false;
-
-			// HACK: The Sdk imports for web projects use the MSBuildSdksPath property to find
-			// other files to import. So we define this in a property group at the top of the
-			// project before the Sdk.props is imported so these other files can be found.
-			MSBuildImport propsImport = null;
-			foreach (string props in sdkProps.Reverse ()) {
-				propsImport = project.AddInternalImport (props, importAtTop: true);
-			}
-
-			foreach (string targets in sdkTargets) {
-				project.AddInternalImport (targets);
-			}
-
-			project.AddInternalPropertyBefore ("MSBuildSdksPath", sdkPath, propsImport);
-
-			return true;
 		}
 
 		public void ReadDefaultCompileTarget (MSBuildProject project)
