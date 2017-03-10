@@ -347,7 +347,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnBeginLoad ()
 		{
-			dotNetCoreMSBuildProject.Sdk = DotNetCoreProjectReader.GetDotNetCoreSdk (Project.FileName);
+			dotNetCoreMSBuildProject.Sdk = Project.MSBuildProject.Sdk;
 			base.OnBeginLoad ();
 		}
 
