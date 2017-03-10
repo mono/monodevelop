@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 
-	public class ActionDelegate : IDisposable
+	public class ActionDelegate
 	{
 		HashSet<AtkCocoa.Actions> actions = new HashSet<AtkCocoa.Actions> ();
 
@@ -125,16 +125,21 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public ActionDelegate (Gtk.Widget widget)
+		{
+			widget.Destroyed += WidgetDestroyed;
+			Owner = widget.Accessible;
+		}
+
+		void WidgetDestroyed (object sender, EventArgs e)
+		{
+			FreeActions ();
+		}
+
 		// Because the allocated memory is passed to unmanaged code where it cannot be freed
 		// we need to keep track of it until the object is finalized, or the actions need to be calculated again
 		IntPtr allocatedActionPtr;
 		IntPtr [] allocatedActionStrings;
-
-		public void Dispose ()
-		{
-			// Clean up the last of the remaining allocated memory
-			FreeActions ();
-		}
 
 		void FreeActions ()
 		{
@@ -177,12 +182,20 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		void AddAction (AtkCocoa.Actions action)
 		{
+			if (owner.GetType () == typeof (Atk.NoOpObject)) {
+				return;
+			}
+
 			actions.Add (action);
 			RegenerateActions ();
 		}
 
 		void RemoveAction (AtkCocoa.Actions action)
 		{
+			if (owner.GetType () == typeof (Atk.NoOpObject)) {
+				return;
+			}
+
 			actions.Remove (action);
 			RegenerateActions ();
 		}

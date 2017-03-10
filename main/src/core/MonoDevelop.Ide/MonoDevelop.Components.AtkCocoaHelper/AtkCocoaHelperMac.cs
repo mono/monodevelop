@@ -384,11 +384,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityRows = rows;
 		}
 
-		public static void SetActionDelegate (this Atk.Object o, ActionDelegate ad)
-		{
-			ad.Owner = o;
-		}
-
 		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
 		{
 			var nsa = GetNSAccessibilityElement (o) as NSAccessibilityElement;

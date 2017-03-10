@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		Xwt.Drawing.Image imageNormal, imageHover;
 		bool mouseOver;
 		string actionLink;
-		ActionDelegate actionHandler;
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
 		public string FontFamily { get; set; }
@@ -76,10 +75,9 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
-			actionHandler = new ActionDelegate ();
+			var actionHandler = new ActionDelegate (this);
 			actionHandler.PerformPress += HandlePress;
 
-			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Role = Atk.Role.Link;
 
 			Accessible.SetTitle (title);
@@ -119,16 +117,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			Update ();
 
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
-		}
-
-		public override void Destroy ()
-		{
-			if (actionHandler != null) {
-				actionHandler.Dispose ();
-				actionHandler = null;
-			}
-
-			base.Destroy ();
 		}
 
 		void UpdateStyle (object sender = null, EventArgs e = null)

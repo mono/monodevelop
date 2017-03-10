@@ -134,10 +134,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetActionDelegate (this Atk.Object o, ActionDelegate ad)
-		{
-		}
-
 		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
 		{
 		}

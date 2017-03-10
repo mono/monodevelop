@@ -84,9 +84,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		ActionDelegate actionHandler;
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
 		{
-			actionHandler = new ActionDelegate ();
+			actionHandler = new ActionDelegate (this);
 			actionHandler.PerformPress += HandlePress;
-			Accessible.SetActionDelegate (actionHandler);
+
 			Accessible.Role = Atk.Role.PushButton;
 			Accessible.SetTitle (title);
 
@@ -111,15 +111,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			UpdateStyle ();
 
 			UpdateActions ();
-		}
-
-		public override void Destroy ()
-		{
-			if (actionHandler != null) {
-				actionHandler.Dispose ();
-				actionHandler = null;
-			}
-			base.Destroy ();
 		}
 
 		void UpdateActions ()

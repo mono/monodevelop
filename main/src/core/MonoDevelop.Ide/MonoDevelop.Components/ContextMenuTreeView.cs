@@ -36,20 +36,8 @@ namespace MonoDevelop.Components
 		internal ActionDelegate ActionHandler { get; private set; }
 		public ContextMenuTreeView ()
 		{
-			ActionHandler = new AtkCocoaHelper.ActionDelegate ();
+			ActionHandler = new ActionDelegate (this);
 			ActionHandler.PerformShowMenu += PerformShowMenu;
-
-			Accessible.SetActionDelegate (ActionHandler);
-		}
-
-		public override void Destroy ()
-		{
-			if (ActionHandler != null) {
-				ActionHandler.Dispose ();
-				ActionHandler = null;
-			}
-
-			base.Destroy ();
 		}
 
 		public ContextMenuTreeView (Gtk.TreeModel model) : base (model)

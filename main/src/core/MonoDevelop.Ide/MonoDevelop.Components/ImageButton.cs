@@ -37,14 +37,12 @@ namespace MonoDevelop.Components
 		bool hasInactiveImage;
 		bool hover;
 		bool pressed;
-		ActionDelegate actionHandler;
 
 		public ImageButton ()
 		{
-			actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			var actionHandler = new ActionDelegate (this);
 			actionHandler.PerformPress += HandlePress;
 
-			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Role = Atk.Role.PushButton;
 
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
@@ -53,15 +51,6 @@ namespace MonoDevelop.Components
 			imageWidget.Accessible.SetShouldIgnore (true);
 			imageWidget.Show ();
 			Add (imageWidget);
-		}
-
-		public override void Destroy ()
-		{
-			if (actionHandler != null) {
-				actionHandler.Dispose ();
-				actionHandler = null;
-			}
-			base.Destroy ();
 		}
 
 		public Xwt.Drawing.Image Image {

@@ -58,7 +58,6 @@ namespace MonoDevelop.Components.Docking
 		DockItem item;
 		bool allowPlaceholderDocking;
 		bool mouseOver;
-		ActionDelegate actionHandler;
 
 		IDisposable subscribedLeaveEvent;
 
@@ -97,11 +96,10 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
-			actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			var actionHandler = new ActionDelegate (this);
 			actionHandler.PerformPress += HandlePress;
 			actionHandler.PerformShowMenu += HandleShowMenu;
 
-			Accessible.SetActionDelegate (actionHandler);
 			Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
 			Accessible.SetSubRole ("XAPadHeader");
 
@@ -117,16 +115,6 @@ namespace MonoDevelop.Components.Docking
 			KeyReleaseEvent += HeaderKeyRelease;
 
 			subscribedLeaveEvent = this.SubscribeLeaveEvent (OnLeave);
-		}
-
-		public override void Destroy ()
-		{
-			if (actionHandler != null) {
-				actionHandler.Dispose ();
-				actionHandler = null;
-			}
-
-			base.Destroy ();
 		}
 
 		public DockVisualStyle VisualStyle {
