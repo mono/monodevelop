@@ -37,7 +37,7 @@ namespace MonoDevelop.DotNetCore
 		List<string> projectImportProps = new List<string> ();
 		List<string> projectImportTargets = new List<string> ();
 
-		public void FindSdkPaths (string sdk)
+		public void FindMSBuildSDKsPath ()
 		{
 			var dotNetCorePath = new DotNetCorePath ();
 			if (dotNetCorePath.IsMissing)
@@ -49,15 +49,23 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			string[] directories = Directory.GetDirectories (sdkRootPath);
-			string sdkDirectory = directories.OrderBy (directory => directory).LastOrDefault ();
-			if (sdkDirectory == null)
+			SdksParentDirectory = directories.OrderBy (directory => directory).LastOrDefault ();
+			if (SdksParentDirectory == null)
 				return;
 
-			MSBuildSDKsPath = Path.Combine (sdkDirectory, "Sdks");
+			MSBuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
 
 			// HACK: Set MSBuildSDKsPath environment variable so MSBuild will find the
 			// SDK files when building and running targets.
 			Environment.SetEnvironmentVariable ("MSBuildSDKsPath", MSBuildSDKsPath + Path.DirectorySeparatorChar);
+		}
+
+		public void FindSdkPaths (string sdk)
+		{
+			FindMSBuildSDKsPath ();
+
+			if (string.IsNullOrEmpty (MSBuildSDKsPath))
+				return;
 
 			if (sdk.Contains (';')) {
 				foreach (string sdkItem in SplitSdks (sdk)) {
@@ -70,7 +78,7 @@ namespace MonoDevelop.DotNetCore
 			Exist = CheckImportsExist ();
 
 			if (Exist) {
-				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (sdkDirectory);
+				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (SdksParentDirectory);
 				Exist = !IsUnsupportedSdkVersion;
 			} else {
 				IsUnsupportedSdkVersion = true;
@@ -80,6 +88,7 @@ namespace MonoDevelop.DotNetCore
 		public bool IsUnsupportedSdkVersion { get; private set; }
 		public bool Exist { get; private set; }
 		public string MSBuildSDKsPath { get; private set; }
+		string SdksParentDirectory { get; set; }
 
 		public IEnumerable<string> ProjectImportProps {
 			get { return projectImportProps; }

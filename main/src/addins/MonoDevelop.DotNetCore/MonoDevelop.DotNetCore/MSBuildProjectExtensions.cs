@@ -32,63 +32,6 @@ namespace MonoDevelop.DotNetCore
 {
 	static class MSBuildProjectExtensions
 	{
-		static readonly string InternalDotNetCoreLabel = "__InternalDotNetCore__";
-
-		public static MSBuildImport AddInternalImport (
-			this MSBuildProject project,
-			string importedProjectFile,
-			bool importAtTop = false,
-			string condition = null)
-		{
-			MSBuildObject before = GetInsertBeforeObject (project, importAtTop);
-			MSBuildImport import = project.AddNewImport (importedProjectFile, condition, before);
-			import.Label = InternalDotNetCoreLabel;
-			return import;
-		}
-
-		static MSBuildObject GetInsertBeforeObject (MSBuildProject project, bool importAtTop)
-		{
-			if (importAtTop) {
-				return project.GetAllObjects ().FirstOrDefault ();
-			}
-
-			// Return an unknown MSBuildItem instead of null so the MSBuildProject adds the import as the last
-			// child in the project.
-			return new MSBuildItem ();
-		}
-
-		public static void AddInternalPropertyBefore (this MSBuildProject project, string name, string value, MSBuildObject beforeItem)
-		{
-			var propertyGroup = project.CreatePropertyGroup ();
-			propertyGroup.Condition = string.Format ("'$({0})' == ''", name);
-			propertyGroup.Label = InternalDotNetCoreLabel;
-			propertyGroup.SetValue (name,value);
-
-			project.AddPropertyGroup (propertyGroup, false, beforeItem);
-		}
-
-		public static void RemoveInternalElements (this MSBuildProject project)
-		{
-			foreach (var element in GetInternalElements (project).ToArray ()) {
-				project.Remove (element);
-			}
-		}
-
-		static IEnumerable<MSBuildObject> GetInternalElements (MSBuildProject project)
-		{
-			return project.GetAllObjects ().OfType<MSBuildElement> ().Where (HasInternalDotNetCoreLabel);
-		}
-
-		static IEnumerable<MSBuildPropertyGroup> GetInternalPropertyGroups (MSBuildProject project)
-		{
-			return project.PropertyGroups.Where (HasInternalDotNetCoreLabel);
-		}
-
-		static bool HasInternalDotNetCoreLabel (MSBuildElement element)
-		{
-			return element.Label == InternalDotNetCoreLabel;
-		}
-
 		public static bool IsOutputTypeDefined (this MSBuildProject project)
 		{
 			return project.HasGlobalProperty ("OutputType");
