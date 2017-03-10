@@ -148,8 +148,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     //
                     // Use StringRebuilders (which allow strings to be concatenated without creating copies of the strings) to assemble the
                     // pieces and then convert the rebuilders to a ReferenceChangeString (which wraps a StringRebuilder) at the end.
-                    IStringRebuilder newRebuilder = aChange._newText.Content;
-                    IStringRebuilder oldRebuilder = aChange._oldText.Content;
+                    StringRebuilder newRebuilder = aChange._newText.Content;
+                    StringRebuilder oldRebuilder = aChange._oldText.Content;
 
                     int aChangeIncrementalDeletions = 0;
                     do

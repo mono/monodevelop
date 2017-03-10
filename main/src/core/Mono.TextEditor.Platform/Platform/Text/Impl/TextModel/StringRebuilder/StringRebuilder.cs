@@ -17,19 +17,28 @@ namespace Microsoft.VisualStudio.Text.Implementation
     /// <summary>
     /// An immutable variation on the StringBuilder class.
     /// </summary>
-    internal interface IStringRebuilder
+    internal abstract class StringRebuilder
     {
-        /// <summary>
-        /// Number of characters in this <see cref="IStringRebuilder"/>.
-        /// </summary>
-        int Length { get; }
+        protected StringRebuilder(int length, int lineBreakCount, int depth)
+        {
+            this.Length = length;
+            this.LineBreakCount = lineBreakCount;
+            this.Depth = depth;
+        }
 
         /// <summary>
-        /// Number of line breaks in this <see cref="IStringRebuilder"/>.
+        /// Number of characters in this <see cref="StringRebuilder"/>.
+        /// </summary>
+        public readonly int Length;
+
+        /// <summary>
+        /// Number of line breaks in this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <remarks>Line breaks consist of any of '\r', '\n', 0x85,
         /// or a "\r\n" pair (which is treated as a single line break).</remarks>
-        int LineBreakCount { get; }
+        public int LineBreakCount;
+
+        public readonly int Depth;
 
         /// <summary>
         /// Get the zero-based line number that contains <paramref name="position"/>.
@@ -37,10 +46,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="position">Position of the character for which to get the line number.</param>
         /// <returns>Number of the line that contains <paramref name="position"/>.</returns>
         /// <remarks>
-        /// Lines are bounded by line breaks and the start and end of this <see cref="IStringRebuilder"/>.
+        /// Lines are bounded by line breaks and the start and end of this <see cref="StringRebuilder"/>.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
-        int GetLineNumberFromPosition(int position);
+        public abstract int GetLineNumberFromPosition(int position);
 
         /// <summary>
         /// Get the LineSpan associated with a zero-based line number.
@@ -48,10 +57,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="lineNumber">Line number for which to get the LineSpan.</param>
         /// <returns>LineSpan that define the given line number.</returns>
         /// <remarks>
-        /// <para>The last "line" in the IStringRebuilder has an implicit line break length of zero.</para>
+        /// <para>The last "line" in the StringRebuilder has an implicit line break length of zero.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lineNumber"/> is less than zero or greater than <see cref="LineBreakCount"/>.</exception>
-        LineSpan GetLineFromLineNumber(int lineNumber);
+        public abstract LineSpan GetLineFromLineNumber(int lineNumber);
 
         /// <summary>
         /// Get the "leaf" node of the string rebuilder that contains position.
@@ -59,7 +68,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="position">position for which to get the leaf.</param>
         /// <param name="offset">number of characters to the left of the leaf.</param>
         /// <returns>leaf node from the string rebuilder.</returns>
-        IStringRebuilder GetLeaf(int position, out int offset);
+        public abstract StringRebuilder GetLeaf(int position, out int offset);
 
         /// <summary>
         /// Character at the given index.
@@ -67,7 +76,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="index">Index to get the character for.</param>
         /// <returns>Character at position <paramref name="index"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero or greater than or equal to <see cref="Length"/>.</exception>
-        char this[int index] { get; }
+        public abstract char this[int index] { get; }
 
         /// <summary>
         /// Get the string that contains all of the characters in the specified span.
@@ -75,12 +84,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="span">Span for which to get the text.</param>
         /// <returns></returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> can contain millions of characters. Be careful what you
+        /// <para>this <see cref="StringRebuilder"/> can contain millions of characters. Be careful what you
         /// ask for: you might get it.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
-        string GetText(Span span);
+        public abstract string GetText(Span span);
 
         /// <summary>
         /// Convert a range of text to a character array.
@@ -93,7 +102,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero or <paramref name="startIndex"/> + <paramref name="length"/> is greater than <see cref="Length"/>.</exception>
-        char[] ToCharArray(int startIndex, int length);
+        public abstract char[] ToCharArray(int startIndex, int length);
 
         /// <summary>
         /// Copy a range of text to a destination character array.
@@ -114,113 +123,113 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or <paramref name="sourceIndex"/> + <paramref name="count"/> is greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="destinationIndex"/> is less than zero or <paramref name="destinationIndex"/> + <paramref name="count"/> is greater than the length of <paramref name="destination"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="destination"/> is null.</exception>
-        void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
+        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
 
         /// <summary>
-        /// Write a substring of the contents of this <see cref="IStringRebuilder"/> to a TextWriter.
+        /// Write a substring of the contents of this <see cref="StringRebuilder"/> to a TextWriter.
         /// </summary>
         /// <param name="writer">TextWriter to use.</param>
         /// <param name="span">Span to write.</param>
         /// <exception cref="ArgumentNullException"><paramref name="writer"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
-        void Write(TextWriter writer, Span span);
+        public abstract void Write(TextWriter writer, Span span);
 
         /// <summary>
-        /// Create a new IStringRebuilder that corresponds to a substring of this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder that corresponds to a substring of this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="span">span that defines the desired substring.</param>
-        /// <returns>A new IStringRebuilder containing the substring.</returns>
+        /// <returns>A new StringRebuilder containing the substring.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
-        IStringRebuilder Substring(Span span);
+        public abstract StringRebuilder Substring(Span span);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to appending text into this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to appending text into this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="text">Text to append.</param>
-        /// <returns>A new IStringRebuilder containing the insertion.</returns>
+        /// <returns>A new StringRebuilder containing the insertion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Append(string text);
+        public abstract StringRebuilder Append(string text);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to appending text into this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to appending text into this <see cref="StringRebuilder"/>.
         /// </summary>
-         /// <param name="text">Text to append.</param>
-        /// <returns>A new IStringRebuilder containing the insertion.</returns>
+        /// <param name="text">Text to append.</param>
+        /// <returns>A new StringRebuilder containing the insertion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Append(IStringRebuilder text);
+        public abstract StringRebuilder Append(StringRebuilder text);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to inserting text into this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to inserting text into this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="position">Position at which to insert.</param>
         /// <param name="text">Text to insert.</param>
-        /// <returns>A new IStringRebuilder containing the insertion.</returns>
+        /// <returns>A new StringRebuilder containing the insertion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Insert(int position, string text);
+        public abstract StringRebuilder Insert(int position, string text);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to inserting text into this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to inserting text into this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="position">Position at which to insert.</param>
         /// <param name="text">Text to insert.</param>
-        /// <returns>A new IStringRebuilder containing the insertion.</returns>
+        /// <returns>A new StringRebuilder containing the insertion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Insert(int position, IStringRebuilder text);
+        public abstract StringRebuilder Insert(int position, StringRebuilder text);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to inserting storage into this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to inserting storage into this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="position">Position at which to insert.</param>
         /// <param name="storage">Storage containing text to insert.</param>
-        /// <returns>A new IStringRebuilder containing the insertion.</returns>
+        /// <returns>A new StringRebuilder containing the insertion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="storage"/> is null.</exception>
-        IStringRebuilder Insert(int position, ITextStorage storage);
+        public abstract StringRebuilder Insert(int position, ITextStorage storage);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to deleting text from this <see cref="IStringRebuilder"/>.
+        /// Create a new StringRebuilder equivalent to deleting text from this <see cref="StringRebuilder"/>.
         /// </summary>
         /// <param name="span">Span of text to delete.</param>
-        /// <returns>A new IStringRebuilder containing the deletion.</returns>
+        /// <returns>A new StringRebuilder containing the deletion.</returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
-        IStringRebuilder Delete(Span span);
+        public abstract StringRebuilder Delete(Span span);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to replacing a contiguous span of characters
+        /// Create a new StringRebuilder equivalent to replacing a contiguous span of characters
         /// with different text.
         /// </summary>
         /// <param name="span">
-        /// Span of text in this <see cref="IStringRebuilder"/> to replace.
+        /// Span of text in this <see cref="StringRebuilder"/> to replace.
         /// </param>
         /// <param name="text">
         /// The new text to replace the old.
@@ -229,19 +238,19 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// A new string rebuilder containing the replacement.
         /// </returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Replace(Span span, string text);
+        public abstract StringRebuilder Replace(Span span, string text);
 
         /// <summary>
-        /// Create a new IStringRebuilder equivalent to replacing a contiguous span of characters
+        /// Create a new StringRebuilder equivalent to replacing a contiguous span of characters
         /// with different text.
         /// </summary>
         /// <param name="span">
-        /// Span of text in this <see cref="IStringRebuilder"/> to replace.
+        /// Span of text in this <see cref="StringRebuilder"/> to replace.
         /// </param>
         /// <param name="text">
         /// The new text to replace the old.
@@ -250,27 +259,25 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// A new string rebuilder containing the replacement.
         /// </returns>
         /// <remarks>
-        /// <para>this <see cref="IStringRebuilder"/> is not modified.</para>
+        /// <para>this <see cref="StringRebuilder"/> is not modified.</para>
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        IStringRebuilder Replace(Span span, IStringRebuilder text);
+        public abstract StringRebuilder Replace(Span span, StringRebuilder text);
 
-        int Depth { get; }
-
-        IStringRebuilder Child(bool rightSide);
+        public abstract StringRebuilder Child(bool rightSide);
 
         /// <summary>
         /// Whether this piece ends with a return character. If this is true and the succeeding
         /// piece StartsWithNewline, then a line break crosses a piece boundary.
         /// </summary>
-        bool EndsWithReturn { get; }
+        public abstract bool EndsWithReturn { get; }
 
         /// <summary>
         /// Whether this piece starts with a newline character. If this is true and the preceeding
         /// piece EndsWithReturn, then a line break crosses a piece boundary.
         /// </summary>
-        bool StartsWithNewLine { get; }
+        public abstract bool StartsWithNewLine { get; }
     }
 }

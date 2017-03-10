@@ -15,10 +15,16 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.Text.Implementation
 {
-    internal abstract class BaseStringRebuilder : IStringRebuilder
+    internal abstract class BaseStringRebuilder : StringRebuilder
     {
+
+        protected BaseStringRebuilder(int length, int lineBreakCount, int depth)
+            : base(length, lineBreakCount, depth)
+        {
+        }
+
         #region Private
-        private IStringRebuilder Assemble(Span left, Span right)
+        private StringRebuilder Assemble(Span left, Span right)
         {
             if (left.Length == 0)
                 return this.Substring(right);
@@ -30,7 +36,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 return BinaryStringRebuilder.Create(this.Substring(left), this.Substring(right));
         }
 
-        private IStringRebuilder Assemble(Span left, IStringRebuilder text, Span right)
+        private StringRebuilder Assemble(Span left, StringRebuilder text, Span right)
         {
             if (text.Length == 0)
                 return Assemble(left, right);
@@ -47,16 +53,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
         }
         #endregion
 
-        #region IStringRebuilder Members
-        public abstract int Length { get; }
-        public abstract int LineBreakCount { get; }
-        public abstract int GetLineNumberFromPosition(int position);
-        public abstract LineSpan GetLineFromLineNumber(int lineNumber);
-        public abstract IStringRebuilder GetLeaf(int position, out int offset);
-        public abstract char this[int index] { get; }
-        public abstract string GetText(Span span);
-
-        public char[] ToCharArray(int startIndex, int length)
+        #region StringRebuilder Members
+        public override char[] ToCharArray(int startIndex, int length)
         {
             if (startIndex < 0)
                 throw new ArgumentOutOfRangeException("startIndex");
@@ -70,11 +68,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return copy;
         }
 
-        public abstract void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
-        public abstract void Write(TextWriter writer, Span span);
-        public abstract IStringRebuilder Substring(Span span);
-
-        public IStringRebuilder Delete(Span span)
+        public override StringRebuilder Delete(Span span)
         {
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
@@ -82,12 +76,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return this.Assemble(Span.FromBounds(0, span.Start), Span.FromBounds(span.End, this.Length));
         }
 
-        public IStringRebuilder Replace(Span span, string text)
+        public override StringRebuilder Replace(Span span, string text)
         {
             return this.Replace(span, SimpleStringRebuilder.Create(text));
         }
 
-        public IStringRebuilder Replace(Span span, IStringRebuilder text)
+        public override StringRebuilder Replace(Span span, StringRebuilder text)
         {
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
@@ -97,22 +91,22 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return this.Assemble(Span.FromBounds(0, span.Start), text, Span.FromBounds(span.End, this.Length));
         }
 
-        public IStringRebuilder Append(string text)
+        public override StringRebuilder Append(string text)
         {
             return this.Insert(this.Length, text);
         }
 
-        public IStringRebuilder Append(IStringRebuilder text)
+        public override StringRebuilder Append(StringRebuilder text)
         {
             return this.Insert(this.Length, text);
         }
 
-        public IStringRebuilder Insert(int position, string text)
+        public override StringRebuilder Insert(int position, string text)
         {
             return this.Insert(position, SimpleStringRebuilder.Create(text));
         }
 
-        public IStringRebuilder Insert(int position, IStringRebuilder text)
+        public override StringRebuilder Insert(int position, StringRebuilder text)
         {
             if ((position < 0) || (position > this.Length))
                 throw new ArgumentOutOfRangeException("position");
@@ -122,17 +116,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return this.Assemble(Span.FromBounds(0, position), text, Span.FromBounds(position, this.Length));
         }
 
-        public IStringRebuilder Insert(int position, ITextStorage storage)
+        public override StringRebuilder Insert(int position, ITextStorage storage)
         {
             return this.Insert(position, SimpleStringRebuilder.Create(storage));
         }
-
-        public abstract int Depth { get; }
-
-        public abstract IStringRebuilder Child(bool rightSide);
-
-        public abstract bool EndsWithReturn { get; }
-        public abstract bool StartsWithNewLine { get; }
         #endregion
     }
 }

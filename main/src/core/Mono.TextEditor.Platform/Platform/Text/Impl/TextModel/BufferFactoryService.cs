@@ -160,7 +160,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 throw new ArgumentNullException("contentType");
             }
 
-            IStringRebuilder content = StringRebuilderFromSnapshotSpan(span);
+            StringRebuilder content = StringRebuilderFromSnapshotSpan(span);
 
             return Make(contentType, content, false);
         }
@@ -202,7 +202,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             {
                 loader = new CompressedTextStorageLoader(reader, (int)length, traceId);
             }
-            IStringRebuilder content = SimpleStringRebuilder.Create(loader);
+            StringRebuilder content = SimpleStringRebuilder.Create(loader);
 
             ITextBuffer buffer = Make(contentType, content, false);
             if (!loader.HasConsistentLineEndings)
@@ -221,7 +221,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return CreateTextBuffer(reader, contentType, -1, "legacy");
         }
 
-        internal static IStringRebuilder StringRebuilderFromSnapshotSpan(SnapshotSpan span)
+        internal static StringRebuilder StringRebuilderFromSnapshotSpan(SnapshotSpan span)
         {
             TextSnapshot snapshot = span.Snapshot as TextSnapshot;
             if (snapshot != null)
@@ -232,7 +232,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             IProjectionSnapshot projectionSnapshot = span.Snapshot as IProjectionSnapshot;
             if (projectionSnapshot != null)
             {
-                IStringRebuilder content = SimpleStringRebuilder.Create(string.Empty);
+                StringRebuilder content = SimpleStringRebuilder.Create(string.Empty);
 
                 foreach (var childSpan in projectionSnapshot.MapToSourceSnapshots(span))
                 {
@@ -247,7 +247,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return SimpleStringRebuilder.Create(span.GetText());
         }
 
-        private TextBuffer Make(IContentType contentType, IStringRebuilder content, bool spurnGroup)
+        private TextBuffer Make(IContentType contentType, StringRebuilder content, bool spurnGroup)
         {
             TextBuffer buffer = new TextBuffer(contentType, content, _textDifferencingSelectorService.DefaultTextDifferencingService, _guardedOperations, spurnGroup);
             RaiseTextBufferCreatedEvent(buffer);

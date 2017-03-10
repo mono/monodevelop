@@ -14,13 +14,13 @@ namespace Microsoft.VisualStudio.Text.Implementation
     {
         #region Private members
         private readonly ITextBuffer textBuffer;
-        private readonly IStringRebuilder content;
+        private readonly StringRebuilder content;
 
-        private Tuple<int, IStringRebuilder> cachedLeaf;
+        private Tuple<int, StringRebuilder> cachedLeaf;
         #endregion
 
         #region Constructors
-        public TextSnapshot(ITextBuffer textBuffer, ITextVersion version, IStringRebuilder content)
+        public TextSnapshot(ITextBuffer textBuffer, ITextVersion version, StringRebuilder content)
           : base(version)
         {
             System.Diagnostics.Debug.Assert(version.Length == content.Length);
@@ -47,26 +47,15 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         public override string GetText(Span span)
         {
-            Tuple<int, IStringRebuilder> cache = this.cachedLeaf;
-            if ((cache == null) || (span.Start < cache.Item1) || (span.End > (cache.Item1 + cache.Item2.Length)))
+            Tuple<int, StringRebuilder> cache = this.UpdateCache(span.Start);
+           
+            int offsetStart = span.Start - cache.Item1;
+            if (offsetStart + span.Length < cache.Item2.Length)
             {
-                int offset;
-                IStringRebuilder leaf = this.content.GetLeaf(span.Start, out offset);
-                if (span.End <= offset + leaf.Length)
-                {
-                    cache = new Tuple<int, IStringRebuilder>(offset, leaf);
-
-                    //Since cache is a class, cachedLeaf should update atomically.
-                    this.cachedLeaf = cache;
-                }
-                else
-                {
-                    return this.content.GetText(span);
-                }
+                return cache.Item2.GetText(new Span(offsetStart, span.Length));
             }
 
-            Span newSpan = new Span(span.Start - cache.Item1, span.Length);
-            return cache.Item2.GetText(newSpan);
+            return this.content.GetText(span);
         }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
@@ -83,17 +72,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         {
             get
             {
-                Tuple<int, IStringRebuilder> cache = this.cachedLeaf;
-                if ((cache == null) || (position < cache.Item1) || (position >= (cache.Item1 + cache.Item2.Length)))
-                {
-                    int offset;
-                    IStringRebuilder leaf = this.content.GetLeaf(position, out offset);
-
-                    cache = new Tuple<int, IStringRebuilder>(offset, leaf);
-
-                    //Since cache is a class, cachedLeaf should update atomically.
-                    this.cachedLeaf = cache;
-                }
+                Tuple<int, StringRebuilder> cache = this.UpdateCache(position);
 
                 return cache.Item2[position - cache.Item1];
             }
@@ -116,12 +95,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         public override int GetLineNumberFromPosition(int position)
         {
-            return this.content.GetLineNumberFromPosition(position); 
+            return this.content.GetLineNumberFromPosition(position);
         }
 
         public override IEnumerable<ITextSnapshotLine> Lines
         {
-            get 
+            get
             {
                 // this is a naive implementation
                 for (int line = 0; line < this.LineCount; ++line)
@@ -144,6 +123,23 @@ namespace Microsoft.VisualStudio.Text.Implementation
         }
         #endregion
 
-        public IStringRebuilder Content { get { return this.content; } }
+        public StringRebuilder Content { get { return this.content; } }
+
+        private Tuple<int, StringRebuilder> UpdateCache(int position)
+        {
+            Tuple<int, StringRebuilder> cache = this.cachedLeaf;
+            if ((cache == null) || (position < cache.Item1) || (position >= (cache.Item1 + cache.Item2.Length)))
+            {
+                int offset;
+                StringRebuilder leaf = this.content.GetLeaf(position, out offset);
+
+                cache = new Tuple<int, StringRebuilder>(offset, leaf);
+
+                //Since cache is a class, cachedLeaf should update atomically.
+                this.cachedLeaf = cache;
+            }
+
+            return cache;
+        }
     }
 }

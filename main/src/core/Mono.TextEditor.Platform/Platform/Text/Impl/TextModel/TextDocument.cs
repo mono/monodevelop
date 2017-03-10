@@ -13,6 +13,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
     using System.Text;
     using Microsoft.VisualStudio.Text.Utilities;
     using Microsoft.VisualStudio.Utilities;
+    using Microsoft.VisualStudio.Text.Editor;
 
     internal partial class TextDocument : ITextDocument
     {
@@ -22,6 +23,13 @@ namespace Microsoft.VisualStudio.Text.Implementation
         private ITextBuffer _textBuffer;
         private Encoding _encoding;
         private string _filePath;
+        //If the user explicitly chooses the encoding, we want to respect their chosen encoding
+        private bool _explicitEncoding;
+
+        //This corresponds to the tools option "Auto-detect UTF-8 encoding"
+        //Unfortunately, we cannot dynamically read the option value without adding a dependency on TextLogic which results in a layering violation.
+        //Therefore we're going to cache this value on creation of the text document and it will persist the lifetime of the document.
+        private bool _attemptUtf8Detection = true;
 
         private DateTime _lastSavedTimeUtc;
         private DateTime _lastModifiedTimeUtc;
@@ -38,7 +46,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         internal TextDocument(ITextBuffer textBuffer, string filePath, DateTime lastModifiedTime, TextDocumentFactoryService textDocumentFactoryService)
             : this(textBuffer, filePath, lastModifiedTime, textDocumentFactoryService, Encoding.UTF8) { }
 
-        internal TextDocument(ITextBuffer textBuffer, string filePath, DateTime lastModifiedTime, TextDocumentFactoryService textDocumentFactoryService, Encoding encoding)
+        internal TextDocument(ITextBuffer textBuffer, string filePath, DateTime lastModifiedTime, TextDocumentFactoryService textDocumentFactoryService, Encoding encoding, bool explicitEncoding = false, bool attemptUtf8Detection = true)
         {
             if (textBuffer == null)
             {
@@ -68,6 +76,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
             _raisingDirtyStateChangedEvent = false;
             _raisingFileActionChangedEvent = false;
             _encoding = encoding;
+            _explicitEncoding = explicitEncoding;
+            _attemptUtf8Detection = attemptUtf8Detection;
 
             // Keep track of when the text buffer has been changed so that we can update the LastContentModifiedTime
             _textBuffer.ChangedHighPriority += TextBufferChangedHandler;
@@ -128,98 +138,152 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return Reload(EditOptions.None);
         }
 
+        private void ReloadBufferFromStream(Stream stream, long fileSize, EditOptions options, Encoding encoding)
+        {
+            using (var streamReader = new EncodedStreamReader.NonStreamClosingStreamReader(stream, encoding, detectEncodingFromByteOrderMarks: false))
+            {
+                TextBuffer concreteBuffer = _textBuffer as TextBuffer;
+                if (concreteBuffer != null)
+                {
+                    ITextStorageLoader loader;
+                    if (fileSize < TextModelOptions.CompressedStorageFileSizeThreshold)
+                    {
+                        loader = new SimpleTextStorageLoader(streamReader, (int)fileSize);
+                    }
+                    else
+                    {
+                        loader = new CompressedTextStorageLoader(streamReader, (int)fileSize, _filePath);
+                    }
+
+                    StringRebuilder newContent = SimpleStringRebuilder.Create(loader);
+                    if (!loader.HasConsistentLineEndings)
+                    {
+                        // leave a sign that line endings are inconsistent. This is rather nasty but for now
+                        // we don't want to pollute the API with this factoid.
+                        concreteBuffer.Properties["InconsistentLineEndings"] = true;
+                    }
+                    else
+                    {
+                        // this covers a really obscure case where on initial load the file had inconsistent line
+                        // endings, but the UI settings were such that it was ignored, and since then the file has
+                        // acquired consistent line endings and the UI settings have also changed.
+                        concreteBuffer.Properties.RemoveProperty("InconsistentLineEndings");
+                    }
+                    // leave a similar sign about the longest line in the buffer.
+                    concreteBuffer.Properties["LongestLineLength"] = loader.LongestLineLength;
+
+                    concreteBuffer.ReloadContent(newContent, options, editTag: this);
+                }
+                else
+                {
+                    // we may hit this path if somebody mocks the text buffer in a test.
+                    using (var edit = _textBuffer.CreateEdit(options, null, editTag: this))
+                    {
+                        if (edit.Replace(new Span(0, edit.Snapshot.Length), streamReader.ReadToEnd()))
+                        {
+                            edit.Apply();
+                        }
+                        else
+                        {
+                            edit.Cancel();
+                        }
+                    }
+                }
+            }
+        }
+
         public ReloadResult Reload(EditOptions options)
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("ITextDocument");
+                throw new ObjectDisposedException(nameof(ITextDocument));
             }
             if (_raisingDirtyStateChangedEvent || _raisingFileActionChangedEvent)
             {
                 throw new InvalidOperationException();
             }
 
+            Encoding newEncoding;
             var beforeSnapshot = _textBuffer.CurrentSnapshot;
-            Encoding newEncoding = null;
-            FallbackDetector fallbackDetector;
+            bool characterSubstitutionsOccurred = false;
 
             try
             {
                 _reloadingFile = true;
 
                 // Load the file and read the contents to the text buffer
-
                 long fileSize;
+
                 using (var stream = TextDocumentFactoryService.OpenFileGuts(_filePath, out _lastModifiedTimeUtc, out fileSize))
                 {
-                    // We want to use the encoding indicated by a BoM if one is present because
-                    // VS9's editor did so. We can't let the StreamReader below detect
-                    // the byte order marks because we still want to be able to detect the
-                    // fallback condition.
-                    bool unused;
-                    newEncoding = EncodedStreamReader.CheckForBoM(stream, isStreamEmpty: out unused);
-
-                    Debug.Assert(newEncoding == null || newEncoding.GetPreamble().Length > 0);
-
-                    // TODO: Consider using the encoder detector extensions as well.
-
-                    if (newEncoding == null)
-                        newEncoding = this.Encoding;
-
-                    fallbackDetector = new FallbackDetector(newEncoding.DecoderFallback);
-                    var modifiedEncoding = (Encoding)newEncoding.Clone();
-                    modifiedEncoding.DecoderFallback = fallbackDetector;
-
-                    using (var streamReader = new StreamReader(stream, modifiedEncoding, detectEncodingFromByteOrderMarks: false))
+                    var detectors = ExtensionSelector.SelectMatchingExtensions(_textDocumentFactoryService.OrderedEncodingDetectors, _textBuffer.ContentType);
+                    
+                    if(_explicitEncoding)
                     {
-                        TextBuffer concreteBuffer = _textBuffer as TextBuffer;
-                        if (concreteBuffer != null)
-                        {
-                            ITextStorageLoader loader;
-                            if (fileSize < TextModelOptions.CompressedStorageFileSizeThreshold)
-                            {
-                                loader = new SimpleTextStorageLoader(streamReader, (int)fileSize);
-                            }
-                            else
-                            {
-                                loader = new CompressedTextStorageLoader(streamReader, (int)fileSize, _filePath);
-                            }
-                            IStringRebuilder newContent = SimpleStringRebuilder.Create(loader);
-                            if (!loader.HasConsistentLineEndings)
-                            {
-                                // leave a sign that line endings are inconsistent. This is rather nasty but for now
-                                // we don't want to pollute the API with this factoid.
-                                concreteBuffer.Properties["InconsistentLineEndings"] = true;
-                            }
-                            else
-                            {
-                                // this covers a really obscure case where on initial load the file had inconsistent line
-                                // endings, but the UI settings were such that it was ignored, and since then the file has
-                                // acquired consistent line endings and the UI settings have also changed.
-                                concreteBuffer.Properties.RemoveProperty("InconsistentLineEndings");
-                            }
-                            // leave a similar sign about the longest line in the buffer.
-                            concreteBuffer.Properties["LongestLineLength"] = loader.LongestLineLength;
+                        // If the user explicitly chose their encoding, we want to respect it.
+                        newEncoding = this.Encoding;
+                    }
+                    else
+                    {
+                        newEncoding = EncodedStreamReader.DetectEncoding(stream, detectors, _textDocumentFactoryService.GuardedOperations);
+                    }
 
-                            concreteBuffer.ReloadContent(newContent, options, editTag: this);
-                        }
-                        else
+                    if (newEncoding == null && _attemptUtf8Detection)
+                    {
+                        try
                         {
-                            // we may hit this path if somebody mocks the text buffer in a test.
-                            using (var edit = _textBuffer.CreateEdit(options, null, editTag: this))
+                            var detectorEncoding = new ExtendedCharacterDetector();
+
+                            ReloadBufferFromStream(stream, fileSize, options, detectorEncoding);
+
+                            if (detectorEncoding.DecodedExtendedCharacters)
                             {
-                                if (edit.Replace(new Span(0, edit.Snapshot.Length), streamReader.ReadToEnd()))
-                                {
-                                    edit.Apply();
-                                }
-                                else
-                                {
-                                    edit.Cancel();
-                                }
+                                // Valid UTF-8 but has bytes that are not merely ASCII.
+                                newEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                            }
+                            else
+                            {
+                                // Valid UTF8 but no extended characters, so it looks like valid ASCII.
+                                // However, we don't use ASCII here because of the following scenario:
+                                // The user with a non-English US system encoding opens a code file that happens to contain ASCII-only contents
+                                // Therefore we'll just use their system encoding.
+                                newEncoding = Encoding.Default;
                             }
                         }
-                        Debug.Assert(streamReader.CurrentEncoding.CodePage == newEncoding.CodePage);
-                        Debug.Assert(streamReader.CurrentEncoding.GetPreamble().Length == newEncoding.GetPreamble().Length);
+                        catch (DecoderFallbackException)
+                        {
+                            // Not valid UTF-8.
+                            // Proceed to the next if block to try the system's default codepage.
+                            // For example, this occurs when you have extended characters like € in a UTF-8 file or ANSI file.
+                            // We reset the stream so we can continue loading with the default system encoding.
+                            Debug.Assert(newEncoding == null);
+                            Debug.Assert(beforeSnapshot.Version.Next == null);
+                            stream.Position = 0;
+                        }
+                    }
+
+                    // If all else didn't work, use system's default encoding.
+                    if (newEncoding == null)
+                    {
+                        newEncoding = Encoding.Default;
+                    }
+
+                    //If there is no "Next" version of the original snapshot, we have not successfully reloaded the document
+                    if(beforeSnapshot.Version.Next == null)
+                    {
+                        //We use this fall back detector to observe whether or not character substitutions 
+                        //occur while we're reading the stream
+                        var fallbackDetector = new FallbackDetector(newEncoding.DecoderFallback);
+                        var modifiedEncoding = (Encoding)newEncoding.Clone();
+                        modifiedEncoding.DecoderFallback = fallbackDetector;
+
+                        Debug.Assert(stream.Position == 0);
+                        ReloadBufferFromStream(stream, fileSize, options, modifiedEncoding);
+
+                        if(fallbackDetector.FallbackOccurred)
+                        {
+                            characterSubstitutionsOccurred = fallbackDetector.FallbackOccurred;
+                        }
                     }
                 }
             }
@@ -242,7 +306,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 // the text changed event (and any subsequent text changed event invoked from an event handler)
                 RaiseFileActionChangedEvent(_lastModifiedTimeUtc, FileActionTypes.ContentLoadedFromDisk, _filePath);
                 this.Encoding = newEncoding;
-                return fallbackDetector.FallbackOccurred ? ReloadResult.SucceededWithCharacterSubstitutions : ReloadResult.Succeeded;
+                return characterSubstitutionsOccurred ? ReloadResult.SucceededWithCharacterSubstitutions : ReloadResult.Succeeded;
             }
             else
             {
@@ -310,11 +374,11 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         public void SaveAs(string filePath, bool overwrite, bool createFolder, IContentType newContentType)
         {
-            if (newContentType == null)
+             if (newContentType == null)
             {
                 throw new ArgumentNullException("newContentType");
             }
-            SaveAs(filePath, overwrite, createFolder);
+             SaveAs(filePath, overwrite, createFolder);
             // content type won't be changed if the save fails (in which case SaveAs will throw an exception)
             _textBuffer.ChangeContentType(newContentType, null);
         }
@@ -396,10 +460,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 Encoding oldEncoding = _encoding;
 
                 _encoding = value;
-
+                
                 if (!_encoding.Equals(oldEncoding))
                 {
-                    _textDocumentFactoryService._guardedOperations.RaiseEvent(this, EncodingChanged, new EncodingChangedEventArgs(oldEncoding, _encoding));
+                    _textDocumentFactoryService.GuardedOperations.RaiseEvent(this, EncodingChanged, new EncodingChangedEventArgs(oldEncoding, _encoding));
                 }
             }
         }
@@ -474,7 +538,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 {
                     _isDirty = newDirtyState;
 
-                    _textDocumentFactoryService._guardedOperations.RaiseEvent(this, DirtyStateChanged);
+                    _textDocumentFactoryService.GuardedOperations.RaiseEvent(this, DirtyStateChanged);
                 }
             }
             finally
@@ -504,12 +568,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     }
                 }
 
-                _textDocumentFactoryService._guardedOperations.RaiseEvent(this, FileActionOccurred, new TextDocumentFileActionEventArgs(filePath, actionTime, actionType));
+               _textDocumentFactoryService.GuardedOperations.RaiseEvent(this, FileActionOccurred, new TextDocumentFileActionEventArgs(filePath, actionTime, actionType));
 
             }
             finally
             {
-                _raisingFileActionChangedEvent = false;
+               _raisingFileActionChangedEvent = false;
             }
         }
 
@@ -525,251 +589,6 @@ namespace Microsoft.VisualStudio.Text.Implementation
         internal bool IsDisposed
         {
             get { return _isDisposed; }
-        }
-
-        internal class FileUtilities
-        {
-            public static void SaveSnapshot(ITextSnapshot snapshot,
-                                            FileMode fileMode,
-                                            Encoding encoding,
-                                            string filePath)
-            {
-                Debug.Assert((fileMode == FileMode.Create) || (fileMode == FileMode.CreateNew));
-
-                //Save the contents of the text buffer to disk.
-
-                string temporaryFilePath = null;
-                try
-                {
-                    FileStream originalFileStream = null;
-                    FileStream temporaryFileStream = FileUtilities.CreateFileStream(filePath, fileMode, out temporaryFilePath, out originalFileStream);
-                    if (originalFileStream == null)
-                    {
-                        //The "normal" scenario: save the snapshot directly to disk. Either:
-                        // there are no hard links to the target file so we can write the snapshot to the temporary and use File.Replace.
-                        // we're creating a new file (in which case, temporaryFileStream is a misnomer: it is the stream for the file we are creating).
-                        try
-                        {
-                            using (StreamWriter streamWriter = new StreamWriter(temporaryFileStream, encoding))
-                            {
-                                snapshot.Write(streamWriter);
-                            }
-                        }
-                        finally
-                        {
-                            //This is somewhat redundant: disposing of streamWriter had the side-effect of disposing of temporaryFileStream
-                            temporaryFileStream.Dispose();
-                            temporaryFileStream = null;
-                        }
-
-                        if (temporaryFilePath != null)
-                        {
-                            //We were saving to the original file and already have a copy of the file on disk.
-                            int remainingAttempts = 3;
-                            do
-                            {
-                                try
-                                {
-                                    //Replace the contents of filePath with the contents of the temporary using File.Replace to
-                                    //preserve the various attributes of the original file.
-                                    File.Replace(temporaryFilePath, filePath, null, true);
-                                    temporaryFilePath = null;
-
-                                    return;
-                                }
-                                catch (FileNotFoundException)
-                                {
-                                    // The target file doesn't exist (someone deleted it after we detected it earlier).
-                                    // This is an acceptable condition so don't throw.
-                                    File.Move(temporaryFilePath, filePath);
-                                    temporaryFilePath = null;
-
-                                    return;
-                                }
-                                catch (IOException)
-                                {
-                                    //There was some other exception when trying to replace the contents of the file
-                                    //(probably because some other process had the file locked).
-                                    //Wait a few ms and try again.
-                                    System.Threading.Thread.Sleep(5);
-                                }
-                            }
-                            while (--remainingAttempts > 0);
-
-                            //We're giving up on replacing the file. Try overwriting it directly (this is essentially the old Dev11 behavior).
-                            //Do not try approach we are using for hard links (copying the original & restoring it if there is a failure) since
-                            //getting here implies something strange is going on with the file system (Git or the like locking files) so we
-                            //want the simplest possible fallback.
-
-                            //Failing here causes the exception to be passed to the calling code.
-                            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                            {
-                                using (StreamWriter streamWriter = new StreamWriter(stream, encoding))
-                                {
-                                    snapshot.Write(streamWriter);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //filePath has hard links so we need to use a different approach to save the file:
-                        // copy the original file to the temporary
-                        // write directly to the original
-                        // restore the original in the event of errors (which could be encoding errors and not disk issues) if there's a problem.
-                        try
-                        {
-                            // Copy the contents of the original file to the temporary.
-                            originalFileStream.CopyTo(temporaryFileStream);
-
-                            //We've got a clean copy, try writing the snapshot directly to the original file
-                            try
-                            {
-                                originalFileStream.Seek(0, SeekOrigin.Begin);
-                                originalFileStream.SetLength(0);
-
-                                //Make sure the StreamWriter is flagged leaveOpen == true. Otherwise disposing of the StreamWriter will dispose of originalFileStream and we need to
-                                //leave originalFileStream open so we can use it to restore the original from the temporary copy we made.
-                                using (var streamWriter = new StreamWriter(originalFileStream, encoding, bufferSize: 1024, leaveOpen: true))        //1024 == the default buffer size for a StreamWriter.
-                                {
-                                    snapshot.Write(streamWriter);
-                                }
-                            }
-                            catch
-                            {
-                                //Restore the original from the temporary copy we made (but rethrow the original exception since we didn't save the file).
-                                temporaryFileStream.Seek(0, SeekOrigin.Begin);
-
-                                originalFileStream.Seek(0, SeekOrigin.Begin);
-                                originalFileStream.SetLength(0);
-
-                                temporaryFileStream.CopyTo(originalFileStream);
-
-                                throw;
-                            }
-                        }
-                        finally
-                        {
-                            originalFileStream.Dispose();
-                            originalFileStream = null;
-
-                            temporaryFileStream.Dispose();
-                            temporaryFileStream = null;
-                        }
-                    }
-                }
-                finally
-                {
-                    if (temporaryFilePath != null)
-                    {
-                        try
-                        {
-                            //We do not need the temporary any longer.
-                            if (File.Exists(temporaryFilePath))
-                            {
-                                File.Delete(temporaryFilePath);
-                            }
-                        }
-                        catch
-                        {
-                            //Failing to clean up the temporary is an ignorable exception.
-                        }
-                    }
-                }
-            }
-
-            private static FileStream CreateFileStream(string filePath, FileMode fileMode, out string temporaryPath, out FileStream originalFileStream)
-            {
-                originalFileStream = null;
-
-                if (File.Exists(filePath))
-                {
-                    // We're writing to a file that already exists. This is an error if we're trying to do a CreateNew.
-                    if (fileMode == FileMode.CreateNew)
-                    {
-                        throw new IOException(filePath + " exists");
-                    }
-
-#if false
-					try
-					{
-						originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-
-						//Even thoug SafeFileHandle is an IDisposable, we don't dispose of it since that closes the strem.
-						var safeHandle = originalFileStream.SafeFileHandle;
-						if (!(safeHandle.IsClosed || safeHandle.IsInvalid))
-						{
-							BY_HANDLE_FILE_INFORMATION fi;
-							if (GetFileInformationByHandle(safeHandle, out fi))
-							{
-								if (fi.NumberOfLinks <= 1)
-								{
-									// The file we're trying to write to doesn't have any hard links ... clear out the originalFileStream
-									// as a clue.
-									originalFileStream.Dispose();
-									originalFileStream = null;
-								}
-							}
-						}
-					}
-					catch
-					{
-						if (originalFileStream != null)
-						{
-							originalFileStream.Dispose();
-							originalFileStream = null;
-						}
-
-						//We were not able to determine whether or not the file had hard links so throw here (aborting the save)
-						//since we don't know how to do it safely.
-						throw;
-					}
-#endif
-
-                    string root = Path.GetDirectoryName(filePath);
-
-                    int count = 0;
-                    while (++count < 20)
-                    {
-                        try
-                        {
-                            temporaryPath = Path.Combine(root, Path.GetRandomFileName() + "~");   //The ~ suffix hides the temporary file from GIT.
-                            return new FileStream(temporaryPath, FileMode.CreateNew, (originalFileStream != null) ? FileAccess.ReadWrite : FileAccess.Write, FileShare.None);
-                        }
-                        catch (IOException)
-                        {
-                            //Ignore IOExceptions ... GetRandomFileName() came up with a duplicate so we need to try again.
-                        }
-                    }
-
-                    Debug.Fail("Unable to create a temporary file");
-                }
-
-                temporaryPath = null;
-                return new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
-            }
-#if false
-			[StructLayout(LayoutKind.Sequential)]
-			struct BY_HANDLE_FILE_INFORMATION
-			{
-				public uint FileAttributes;
-				public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
-				public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
-				public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
-				public uint VolumeSerialNumber;
-				public uint FileSizeHigh;
-				public uint FileSizeLow;
-				public uint NumberOfLinks;
-				public uint FileIndexHigh;
-				public uint FileIndexLow;
-			}
-
-			[DllImport("kernel32.dll", SetLastError = true)]
-			static extern bool GetFileInformationByHandle(
-				Microsoft.Win32.SafeHandles.SafeFileHandle hFile,
-				out BY_HANDLE_FILE_INFORMATION lpFileInformation
-			);
-#endif
         }
     }
 }

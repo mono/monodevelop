@@ -116,7 +116,7 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\Storage\SimpleTextStorageLoader.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\BaseStringRebuilder.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\BinaryStringRebuilder.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\IStringRebuilder.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\StringRebuilder.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\LineSpan.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\SimpleStringRebuilder.cs" />
 

@@ -7,6 +7,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Microsoft.VisualStudio.Text.Implementation
@@ -15,23 +16,24 @@ namespace Microsoft.VisualStudio.Text.Implementation
     {
         #region Private
         private readonly ITextStorage _storage;
-        private readonly Span _textSpan;         //subspan of _storage contained in this SimpleStringRebuilder
-        private readonly Span _lineBreakSpan;    //subspan of _storage.LineBreaks that contains all line breaks in this SimpleStringRebuilder
+        private readonly int _textSpanStart;         //subspan of _storage contained in this SimpleStringRebuilder
+        private readonly int _lineBreakSpanStart;    //subspan of _storage.LineBreaks that contains all line breaks in this SimpleStringRebuilder
+        private int TextSpanEnd { get { return _textSpanStart + this.Length; } }
+        private int LineBreakSpanEnd { get { return _lineBreakSpanStart + this.LineBreakCount; } }
         private readonly bool _startsWithNewLine;
         private readonly bool _endsWithReturn;
 
         private readonly static int[] _emptyLineBreaks = new int[0];
-        private readonly static IStringRebuilder _empty = new SimpleStringRebuilder(string.Empty);
+        private readonly static StringRebuilder _empty = new SimpleStringRebuilder(string.Empty);
 
         private SimpleStringRebuilder(ITextStorage storage)
+            : base(storage.Length, storage.LineBreaks.Length, 0)
         {
             _storage = storage;
-            _textSpan = new Span(0, storage.Length);
-            _lineBreakSpan = new Span(0, _storage.LineBreaks.Length);
-            if (_textSpan.Length > 0)
+            if (this.Length > 0)
             {
-                _startsWithNewLine = storage.IsNewLine(_textSpan.Start);
-                _endsWithReturn = storage.IsReturn(_textSpan.End - 1);
+                _startsWithNewLine = storage.IsNewLine(_textSpanStart);
+                _endsWithReturn = storage.IsReturn(this.TextSpanEnd - 1);
             }
         }
 
@@ -39,59 +41,91 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// Construct a new SimpleStringRebuilder.
         /// </summary>
         private SimpleStringRebuilder(string source)
+            : this(SimpleTextStorage.Create(source))
         {
-            //_storage = new SimpleTextStorage(source);
-            _storage = SimpleTextStorage.Create(source);
-            _textSpan = new Span(0, source.Length);
-            _lineBreakSpan = new Span(0, _storage.LineBreaks.Length);
-            if (source.Length > 0)
-            {
-                _startsWithNewLine = source[0] == '\n';
-                _endsWithReturn = source[source.Length - 1] == '\r';
-            }
         }
 
         /// <summary>
         /// Construct a new SimpleStringRebuilder that is a substring of another string rebuilder.
         /// </summary>
-        private SimpleStringRebuilder(Span span, SimpleStringRebuilder simpleSource)
+        private static SimpleStringRebuilder CreateSubstring(Span span, SimpleStringRebuilder simpleSource)
         {
-            _textSpan = new Span(span.Start + simpleSource._textSpan.Start, span.Length);
-            _storage = simpleSource._storage;
-
-            int firstLineNumber = simpleSource.GetLineNumberFromPosition(span.Start) + simpleSource._lineBreakSpan.Start;
-            int lastLineNumber = simpleSource.GetLineNumberFromPosition(span.End) + simpleSource._lineBreakSpan.Start;
+            int firstLineNumber = simpleSource.GetLineNumberFromPosition(span.Start) + simpleSource._lineBreakSpanStart;
+            int lastLineNumber = simpleSource.GetLineNumberFromPosition(span.End) + simpleSource._lineBreakSpanStart;
 
             //Handle the special case where the end position falls in the middle of a linebreak.
-            if ((lastLineNumber < simpleSource._lineBreakSpan.End) &&
-                (span.End > simpleSource._storage.LineBreaks.StartOfLineBreak(lastLineNumber) - simpleSource._textSpan.Start))
+            if ((lastLineNumber < simpleSource.LineBreakSpanEnd) &&
+                (span.End > simpleSource._storage.LineBreaks.StartOfLineBreak(lastLineNumber) - simpleSource._textSpanStart))
             {
                 ++lastLineNumber;
             }
 
-            if (firstLineNumber == lastLineNumber)
-            {
-                //_lineBreakSpan defaults to 0, which is what we want.
-            }
-            else
-            {
-                _lineBreakSpan = Span.FromBounds(firstLineNumber, lastLineNumber);
-            }
+            return new SimpleStringRebuilder(simpleSource._storage, span.Start + simpleSource._textSpanStart, span.Length, firstLineNumber, lastLineNumber - firstLineNumber);
+        }
 
-            if (_textSpan.Length > 0)
+        private SimpleStringRebuilder(ITextStorage storage, int textSpanStart, int length, int lineBreakSpanStart, int lineBreakCount)
+            : base(length, lineBreakCount, 0)
+        {
+            _storage = storage;
+            _textSpanStart = textSpanStart;
+            _lineBreakSpanStart = lineBreakSpanStart;
+
+            if (this.Length > 0)
             {
-                _startsWithNewLine = _storage.IsNewLine(_textSpan.Start);
-                _endsWithReturn = _storage.IsReturn(_textSpan.End - 1);
+                _startsWithNewLine = _storage.IsNewLine(_textSpanStart);
+                _endsWithReturn = _storage.IsReturn(this.TextSpanEnd - 1);
             }
+        }
+        #endregion
+
+        public static StringRebuilder Create(ITextStorageLoader loader)
+        {
+            if (loader == null)
+                throw new ArgumentNullException("loader");
+
+            StringRebuilder content = _empty;
+            foreach (ITextStorage storage in loader.Load())
+            {
+                content = content.Insert(content.Length, storage);
+            }
+            return content;
+        }
+
+        public static StringRebuilder Create(ITextStorage storage)
+        {
+            if (storage == null)
+                throw new ArgumentNullException("storage");
+
+            return (storage.Length == 0)
+                ? _empty
+                : new SimpleStringRebuilder(storage);
+        }
+
+        public static StringRebuilder Create(string text)
+        {
+            // called when performing simple text insertion or deletion.
+            if (text == null)
+                throw new ArgumentNullException("text");
+
+            return (text.Length == 0)
+                   ? _empty
+                   : new SimpleStringRebuilder(text);
         }
 
         /// <summary>
         /// Consolidate two string rebuilders, taking advantage of the fact that they have already extracted the line breaks.
         /// </summary>
-        private SimpleStringRebuilder(IStringRebuilder left, IStringRebuilder right)
+        public static SimpleStringRebuilder Create(StringRebuilder left, StringRebuilder right)
         {
-            _textSpan = new Span(0, left.Length + right.Length);
-            string text = left.GetText(new Span(0, left.Length)) + right.GetText(new Span(0, right.Length));
+            Debug.Assert(left.Length > 0);
+            Debug.Assert(right.Length > 0);
+
+            int length = left.Length + right.Length;
+            char[] result = new char[length];
+
+            left.CopyTo(0, result, 0, left.Length);
+            right.CopyTo(0, result, left.Length, right.Length);
+            string text = new string(result);
 
             int[] lineBreaks;
             if ((left.LineBreakCount == 0) && (right.LineBreakCount == 0))
@@ -128,87 +162,34 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     LineSpan lineSpan = right.GetLineFromLineNumber(i);
                     lineBreaks[lastLineBreak++] = lineSpan.End + left.Length;
                 }
-
-                _lineBreakSpan = new Span(0, lastLineBreak);
             }
-            _storage = SimpleTextStorage.Create(text, lineBreaks);
-            _startsWithNewLine = left.StartsWithNewLine;
-            _endsWithReturn = right.EndsWithReturn;
-        }
-        #endregion
 
-        public static IStringRebuilder Create(ITextStorageLoader loader)
-        {
-            if (loader == null)
-                throw new ArgumentNullException("loader");
-
-            IStringRebuilder content = _empty;
-            foreach (ITextStorage storage in loader.Load())
-            {
-                content = content.Insert(content.Length, storage);
-            }
-            return content;
-        }
-
-        public static IStringRebuilder Create(ITextStorage storage)
-        {
-            if (storage == null)
-                throw new ArgumentNullException("storage");
-
-            return (storage.Length == 0)
-                ? _empty
-                : new SimpleStringRebuilder(storage);
-        }
-
-        public static IStringRebuilder Create(string text)
-        {
-            // called when performing simple text insertion or deletion.
-            if (text == null)
-                throw new ArgumentNullException("text");
-
-            return (text.Length == 0)
-                   ? _empty
-                   : new SimpleStringRebuilder(text);
-        }
-
-        public static IStringRebuilder Create(IStringRebuilder left, IStringRebuilder right)
-        {
-            return new SimpleStringRebuilder(left, right);
+            return new SimpleStringRebuilder(SimpleTextStorage.Create(text, lineBreaks));
         }
 
         public override string ToString()
         {
-            return _storage.GetText(_textSpan.Start, _textSpan.Length);
+            return _storage.GetText(_textSpanStart, this.Length);
         }
 
-        #region IStringRebuilder Members
-        public override int Length
-        {
-            get { return _textSpan.Length; }
-        }
-
-        public override int LineBreakCount
-        {
-            get { return _lineBreakSpan.Length; }
-        }
-
+        #region StringRebuilder Members
         public override int GetLineNumberFromPosition(int position)
         {
-            if ((position < 0) || (position > _textSpan.Length))
+            if ((position < 0) || (position > this.Length))
                 throw new ArgumentOutOfRangeException("position");
 
             //Convert position to a position relative to the start of _text.
-            if (position == _textSpan.Length)
+            if (position == this.Length)
             {
                 //Handle positions at the end of the span as a special case since otherwise we
                 //return the incorrect value if the last line break extends past the end of _textSpan.
-                return _lineBreakSpan.Length;
+                return this.LineBreakCount;
             }
 
-            position += _textSpan.Start;
+            position += _textSpanStart;
 
-            int start = _lineBreakSpan.Start;
-            int end = _lineBreakSpan.End;
+            int start = _lineBreakSpanStart;
+            int end = this.LineBreakSpanEnd;
 
             while (start < end)
             {
@@ -219,41 +200,41 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     start = middle + 1;
             }
 
-            return start - _lineBreakSpan.Start;
+            return start - _lineBreakSpanStart;
         }
 
         public override LineSpan GetLineFromLineNumber(int lineNumber)
         {
-            if ((lineNumber < 0) || (lineNumber > _lineBreakSpan.Length))
+            if ((lineNumber < 0) || (lineNumber > this.LineBreakCount))
                 throw new ArgumentOutOfRangeException("lineNumber");
 
             ILineBreaks lineBreaks = _storage.LineBreaks;
 
-            int absoluteLineNumber = _lineBreakSpan.Start + lineNumber;
+            int absoluteLineNumber = _lineBreakSpanStart + lineNumber;
 
             int start = (lineNumber == 0)
                         ? 0
-                        : (Math.Min(_textSpan.End, lineBreaks.EndOfLineBreak(absoluteLineNumber - 1)) - _textSpan.Start);
+                        : (Math.Min(this.TextSpanEnd, lineBreaks.EndOfLineBreak(absoluteLineNumber - 1)) - _textSpanStart);
 
             int end;
             int breakLength;
-            if (lineNumber < _lineBreakSpan.Length)
+            if (lineNumber < this.LineBreakCount)
             {
-                end = Math.Max(_textSpan.Start, lineBreaks.StartOfLineBreak(absoluteLineNumber));
-                breakLength = Math.Min(_textSpan.End, lineBreaks.EndOfLineBreak(absoluteLineNumber)) - end;
+                end = Math.Max(_textSpanStart, lineBreaks.StartOfLineBreak(absoluteLineNumber));
+                breakLength = Math.Min(this.TextSpanEnd, lineBreaks.EndOfLineBreak(absoluteLineNumber)) - end;
 
-                end -= _textSpan.Start;
+                end -= _textSpanStart;
             }
             else
             {
-                end = _textSpan.Length;
+                end = this.Length;
                 breakLength = 0;
             }
 
             return new LineSpan(lineNumber, Span.FromBounds(start, end), breakLength);
         }
 
-        public override IStringRebuilder GetLeaf(int position, out int offset)
+        public override StringRebuilder GetLeaf(int position, out int offset)
         {
             offset = 0;
             return this;
@@ -266,7 +247,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 if ((index < 0) || (index >= this.Length))
                     throw new ArgumentOutOfRangeException("index");
 
-                return _storage[index + _textSpan.Start];
+                return _storage[index + _textSpanStart];
             }
         }
 
@@ -275,7 +256,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
 
-            return _storage.GetText(span.Start + _textSpan.Start, span.Length);
+            return _storage.GetText(span.Start + _textSpanStart, span.Length);
         }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
@@ -295,7 +276,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             if ((destinationIndex + count > destination.Length) || (destinationIndex + count < 0))
                 throw new ArgumentOutOfRangeException("count");
 
-            _storage.CopyTo(sourceIndex + _textSpan.Start, destination, destinationIndex, count);
+            _storage.CopyTo(sourceIndex + _textSpanStart, destination, destinationIndex, count);
         }
 
         public override void Write(TextWriter writer, Span span)
@@ -305,10 +286,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
 
-            _storage.Write(writer, span.Start + _textSpan.Start, span.Length);
+            _storage.Write(writer, span.Start + _textSpanStart, span.Length);
         }
 
-        public override IStringRebuilder Substring(Span span)
+        public override StringRebuilder Substring(Span span)
         {
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
@@ -318,15 +299,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
             else if (span.Length == 0)
                 return _empty;
             else
-                return new SimpleStringRebuilder(span, this);
+                return SimpleStringRebuilder.CreateSubstring(span, this);
         }
 
-        public override int Depth
-        {
-            get { return 0; }
-        }
-
-        public override IStringRebuilder Child(bool rightSide)
+        public override StringRebuilder Child(bool rightSide)
         {
             throw new InvalidOperationException();
         }
