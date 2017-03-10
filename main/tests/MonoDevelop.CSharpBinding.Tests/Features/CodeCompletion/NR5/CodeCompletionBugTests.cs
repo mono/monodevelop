@@ -324,14 +324,16 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			try {
 				compilation = project.GetCompilationAsync().Result;
 				var provider = workspace.Services.GetLanguageServices(LanguageNames.CSharp);
-				var service = provider.GetService<ICodeGenerationService>();
+				var factory = new CSharpCodeGenerationServiceFactory ();
+				var languageService = factory.CreateLanguageService (provider);
+				var service = languageService as ICodeGenerationService;
 
 				var ts = compilation.GetTypeSymbol("System", "Object", 0);
 				foreach (var member in ts.GetMembers ()) {
 					var method = member as IMethodSymbol;
 					if (method == null)
 						continue;
-					service.CreateMethodDeclaration(method, CodeGenerationDestination.Unspecified);
+					service.CreateMethodDeclaration(method, CodeGenerationDestination.Unspecified, new CodeGenerationOptions());
 				}
 
 

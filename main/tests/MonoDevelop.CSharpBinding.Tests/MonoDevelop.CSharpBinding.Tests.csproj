@@ -62,6 +62,12 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="System.Composition.TypedParts">
+      <HintPath>..\..\build\bin\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\CodeCompletion\NR5\BrowsableAttributeTests.cs" />

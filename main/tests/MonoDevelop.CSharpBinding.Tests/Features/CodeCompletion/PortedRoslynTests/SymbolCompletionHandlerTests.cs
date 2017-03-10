@@ -366,14 +366,14 @@ class CL {}";
 		public void NamespaceName1 ()
 		{
 			VerifyItemIsAbsent (AddUsingDirectives ("using System;", @"namespace $$"), @"String");
-			VerifyItemIsAbsent (AddUsingDirectives ("using System;", @"namespace $$"), @"System");
+			VerifyItemExists (AddUsingDirectives ("using System;", @"namespace $$"), @"System");
 		}
 
 		[Test]
 		public void NamespaceName2 ()
 		{
 			VerifyItemIsAbsent (@"namespace $$", @"String");
-			VerifyItemIsAbsent (@"namespace $$", @"System");
+			VerifyItemExists (@"namespace $$", @"System");
 		}
 
 		[Test]
