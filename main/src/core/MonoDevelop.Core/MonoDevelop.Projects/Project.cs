@@ -3097,10 +3097,10 @@ namespace MonoDevelop.Projects
 				if (expandedList.Modified || loadedProjectItems.Where (i => i.WildcardItem == globItem).Count () != expandedList.Count) {
 					if (UseAdvancedGlobSupport) {
 						// Add remove items if necessary
-						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include && newItem.ProjectItem.ItemName == globItem.Name))) {
+						foreach (var removed in loadedProjectItems.Where (i => i.WildcardItem == globItem && !expandedList.Any (newItem => newItem.ProjectItem.Include == i.Include))) {
 							var file = removed as ProjectFile;
 							if (file == null || File.Exists (file.FilePath)) {
-								var removeItem = new MSBuildItem (globItem.Name) { Remove = removed.Include };
+								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
 								msproject.AddItem (removeItem);
 							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
@@ -3141,7 +3141,7 @@ namespace MonoDevelop.Projects
 
 		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
-			if (item.IsFromWildcardItem) {
+			if (item.IsFromWildcardItem && item.ItemName == item.WildcardItem.Name) {
 				var globItem = item.WildcardItem;
 				// Store the item in the list of expanded items
 				ExpandedItemList items;
@@ -3203,24 +3203,29 @@ namespace MonoDevelop.Projects
 							// Add an expanded item so a Remove item does not
 							// get added back again.
 							ExpandedItemList items;
-							if (expandedItems.TryGetValue (globItem, out items)) {
-								var einfo = new ExpandedItemInfo {
-									ProjectItem = item,
-									MSBuildItem = it
-								};
-								items.Add (einfo);
+							if (!expandedItems.TryGetValue (globItem, out items))
+								items = expandedItems [globItem] = new ExpandedItemList ();
 
-								if (buildItem == null && item.BackingItem != null && globItem.Name != item.BackingItem.Name) {
-									it.Update = item.Include;
-									sourceItems = new [] { globItem };
-									item.BackingItem = globItem;
-									item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it, globItem.Include, sourceItems);
-									einfo.Action = ExpandedItemAction.AddUpdateItem;
-									items.Modified = true;
-									return;
-								}
+							var einfo = new ExpandedItemInfo {
+								ProjectItem = item,
+								MSBuildItem = it
+							};
+							items.Add (einfo);
+
+							if (buildItem == null && item.BackingItem != null && globItem.Name != item.BackingItem.Name) {
+								it.Update = item.Include;
+								sourceItems = new [] { globItem };
+								item.BackingItem = globItem;
+								item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it, globItem.Include, sourceItems);
+								einfo.Action = ExpandedItemAction.AddUpdateItem;
+								items.Modified = true;
+								return;
 							}
 						}
+					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
+						include = item.Include;
+						var removeItem = new MSBuildItem (item.WildcardItem.Name) { Remove = include };
+						msproject.AddItem (removeItem);
 					}
 				}
 				if (buildItem == null)
@@ -3300,12 +3305,6 @@ namespace MonoDevelop.Projects
 			// This method compares the evaluated item that was used to load a project item with the msbuild
 			// item that has now been saved. If there are changes, it saves the changes in an item with Update
 			// attribute.
-
-			if (globItem.Name != item.Name) {
-				return GenerateItemNameChangedDiff (item);
-			} else {
-				RemoveExistingRemoveAndIncludeItems (item);
-			}
 
 			MSBuildItem updateItem = null;
 			HashSet<MSBuildItem> itemsToDelete = null;
@@ -3397,42 +3396,6 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return ExpandedItemAction.None;
-		}
-
-		ExpandedItemAction GenerateItemNameChangedDiff (MSBuildItem item)
-		{
-			var existingRemoveItem = MSBuildProject.GetAllItems ()
-				.FirstOrDefault (i => i.IsRemove && i.Remove == item.Include);
-			if (existingRemoveItem == null)
-				return ExpandedItemAction.AddUpdateItem;
-
-			var existingIncludeItem = MSBuildProject.GetAllItems ()
-				.FirstOrDefault (i => i.Include == item.Include);
-			if (existingIncludeItem != null) {
-				foreach (var p in existingIncludeItem.Metadata.GetProperties ().ToArray ())
-					existingIncludeItem.Metadata.RemoveProperty (p.Name);
-
-				foreach (var p in item.Metadata.GetProperties ())
-					existingIncludeItem.Metadata.SetValue (p.Name, p.Value);
-			}
-			return ExpandedItemAction.None;
-		}
-
-		void RemoveExistingRemoveAndIncludeItems (MSBuildItem item)
-		{
-			List<MSBuildItem> itemsToDelete = null;
-			foreach (var it in MSBuildProject.GetAllItems ()) {
-				if (it.Remove == item.Include || it.Include == item.Include) {
-					if (itemsToDelete == null)
-						itemsToDelete = new List<MSBuildItem> ();
-					itemsToDelete.Add (it);
-				}
-			}
-
-			if (itemsToDelete != null) {
-				foreach (var it in itemsToDelete)
-					MSBuildProject.RemoveItem (it);
-			}
 		}
 
 		IEnumerable<MSBuildItem> FindUpdateItemsForItem (MSBuildItem globItem, string include)
