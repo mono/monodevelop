@@ -102,6 +102,9 @@
       <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="NuGet.RuntimeModel">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.RuntimeModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
