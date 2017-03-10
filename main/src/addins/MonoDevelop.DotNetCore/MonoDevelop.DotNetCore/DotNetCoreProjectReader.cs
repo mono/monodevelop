@@ -81,7 +81,7 @@ namespace MonoDevelop.DotNetCore
 			return Task.Run (() => {
 				if (CanRead (fileName, typeof(SolutionItem))) {
 					ConfigureMSBuildSDKsPath ();
-					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS15, typeGuid, itemGuid, ctx);
+					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2017, typeGuid, itemGuid, ctx);
 				}
 
 				throw new NotSupportedException ();
