@@ -25,9 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects;
+using NuGet.Commands;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
+using NuGet.RuntimeModel;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -47,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 			packageSpec.Version = GetVersion (project);
 
 			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
+			packageSpec.RuntimeGraph = GetRuntimeGraph (project);
 			AddProjectReferences (packageSpec, project);
 			AddPackageReferences (packageSpec, project);
 			AddPackageTargetFallbacks (packageSpec, project);
@@ -107,9 +110,7 @@ namespace MonoDevelop.PackageManagement
 				}
 
 				string targetFrameworks = properties.GetValue ("TargetFrameworks");
-				if (targetFrameworks != null) {
-					return targetFrameworks.Split (';');
-				}
+				return MSBuildStringUtility.Split (targetFrameworks);
 			}
 
 			return new string[0];
@@ -233,22 +234,13 @@ namespace MonoDevelop.PackageManagement
 
 		static LibraryIncludeFlags GetIncludeFlags (string value, LibraryIncludeFlags defaultValue)
 		{
-			var parts = Split (value);
+			var parts = MSBuildStringUtility.Split (value);
 
 			if (parts.Length > 0) {
 				return LibraryIncludeFlagUtils.GetFlags (parts);
 			} else {
 				return defaultValue;
 			}
-		}
-
-		static string[] Split (string s)
-		{
-			if (!string.IsNullOrEmpty (s)) {
-				return s.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-			}
-
-			return new string[0];
 		}
 
 		static HashSet<NuGetFramework> GetProjectFrameworks (IDotNetProject project)
@@ -270,7 +262,7 @@ namespace MonoDevelop.PackageManagement
 			string frameworksString = item.Metadata.GetValue ("TargetFrameworks");
 
 			if (!string.IsNullOrEmpty(frameworksString)) {
-				frameworks.UnionWith (frameworksString.Split(';'));
+				frameworks.UnionWith (MSBuildStringUtility.Split (frameworksString));
 			}
 
 			return frameworks;
@@ -327,13 +319,25 @@ namespace MonoDevelop.PackageManagement
 		{
 			var properties = project.EvaluatedProperties;
 			if (properties != null) {
-				string fallback = properties.GetValue ("PackageTargetFallback");
-				if (fallback != null) {
-					return fallback.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
-				}
+				return MSBuildStringUtility.Split (properties.GetValue ("PackageTargetFallback"));
 			}
 
 			return new string[0];
+		}
+
+		static RuntimeGraph GetRuntimeGraph (IDotNetProject project)
+		{
+			var runtimes = MSBuildStringUtility.Split (project.EvaluatedProperties.GetValue ("RuntimeIdentifiers"))
+				.Distinct (StringComparer.Ordinal)
+				.Select (rid => new RuntimeDescription (rid))
+				.ToList ();
+
+			var supports = MSBuildStringUtility.Split (project.EvaluatedProperties.GetValue ("RuntimeSupports"))
+				.Distinct (StringComparer.Ordinal)
+				.Select (s => new CompatibilityProfile(s))
+				.ToList ();
+
+			return new RuntimeGraph (runtimes, supports);
 		}
 	}
 }
