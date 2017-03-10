@@ -568,5 +568,19 @@ namespace MonoDevelop.DotNetCore
 		{
 			return new DotNetCoreRunConfiguration (name);
 		}
+
+		/// <summary>
+		/// HACK: Hide certain files that are currently being added to the Solution window.
+		/// </summary>
+		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			if (Project.Loading) {
+				foreach (var file in objs.OfType<ProjectFile> ()) {
+					if (file.FilePath.ShouldBeHidden ())
+						file.Flags = ProjectItemFlags.Hidden;
+				}
+			}
+			base.OnItemsAdded (objs);
+		}
 	}
 }
