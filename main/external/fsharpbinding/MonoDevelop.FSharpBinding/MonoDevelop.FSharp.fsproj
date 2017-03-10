@@ -14,6 +14,9 @@
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
+    <SignAssembly>true</SignAssembly>
+    <OtherFlags>--publicsign</OtherFlags>
+    <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -25,7 +28,7 @@
     <WarningLevel>3</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <StartAction>Program</StartAction>
-    <OtherFlags>--warnon:1182</OtherFlags>
+    <OtherFlags>--publicsign --warnon:1182</OtherFlags>
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build</StartWorkingDirectory>
