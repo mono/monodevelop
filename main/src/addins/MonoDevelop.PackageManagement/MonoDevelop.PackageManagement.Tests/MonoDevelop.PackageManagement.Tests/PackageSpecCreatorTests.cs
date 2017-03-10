@@ -27,9 +27,10 @@
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NUnit.Framework;
+using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
+using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -76,6 +77,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			var fakeOtherProject = new FakeDotNetProject (fileName);
 			fakeOtherProject.Name = projectName;
 			solution.Projects.Add (fakeOtherProject);
+		}
+
+		void AddPackageTargetFallback (string packageTargetFallback)
+		{
+			project.AddPackageTargetFallback (packageTargetFallback);
 		}
 
 		[Test]
@@ -147,6 +153,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (
 				LibraryIncludeFlags.Analyzers | LibraryIncludeFlags.Build | LibraryIncludeFlags.ContentFiles,
 				projectReference.PrivateAssets);
+		}
+
+		[Test]
+		public void CreatePackageSpec_PackageTargetFallback_ImportsAddedToTargetFramework ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			AddPackageTargetFallback (";dotnet5.6;portable-net45+win8;");
+			CreatePackageSpec ();
+
+			var targetFramework = spec.TargetFrameworks.Single ();
+			var fallbackFramework = targetFramework.FrameworkName as FallbackFramework;
+			Assert.AreEqual (2, targetFramework.Imports.Count);
+			Assert.AreEqual ("dotnet5.6", targetFramework.Imports[0].GetShortFolderName ());
+			Assert.AreEqual ("portable-net45+win8", targetFramework.Imports[1].GetShortFolderName ());
+			Assert.IsNotNull (fallbackFramework);
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (2, fallbackFramework.Fallback.Count);
+			Assert.AreEqual ("dotnet5.6", fallbackFramework.Fallback[0].GetShortFolderName ());
+			Assert.AreEqual ("portable-net45+win8", fallbackFramework.Fallback[1].GetShortFolderName ());
 		}
 	}
 }
