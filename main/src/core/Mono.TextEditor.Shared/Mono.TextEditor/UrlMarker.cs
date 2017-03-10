@@ -47,7 +47,6 @@ namespace Mono.TextEditor
 		string style;
 		int startColumn;
 		int endColumn;
-		DocumentLine line;
 		UrlType urlType;
 		TextDocument doc;
 		
@@ -75,10 +74,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public UrlMarker (TextDocument doc, DocumentLine line, string url, UrlType urlType, string style, int startColumn, int endColumn)
+		public UrlMarker (TextDocument doc, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
 			this.doc = doc;
-			this.line = line;
 			this.url = url;
 			this.urlType = urlType;
 			this.style = style;
@@ -89,7 +87,7 @@ namespace Mono.TextEditor
 
 		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			var lineSegment = line.Segment;
+			var lineSegment = LineSegment.Segment;
 			foreach (var change in e.TextChanges) {
 				if (lineSegment.IsInside (change.Offset) || lineSegment.IsInside (change.Offset + change.RemovalLength) ||
 					change.Offset <= lineSegment.Offset && lineSegment.Offset <= change.Offset + change.RemovalLength) {
@@ -104,7 +102,6 @@ namespace Mono.TextEditor
 				doc.TextChanging -= Doc_TextChanging;
 				doc = null;
 			}
-			line = null;
 		}
 		
 		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
@@ -115,8 +112,9 @@ namespace Mono.TextEditor
 			double endXPos = metrics.TextRenderEndPosition;
 			double y = metrics.LineYRenderStartPosition;
 			var layout = metrics.Layout.Layout;
-			int markerStart = line.Offset + startColumn;
-			int markerEnd = line.Offset + endColumn;
+			var lineOffset = LineSegment.Offset;
+			int markerStart = lineOffset + startColumn;
+			int markerEnd = lineOffset + endColumn;
 	
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 

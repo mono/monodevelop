@@ -37,9 +37,9 @@ namespace MonoDevelop.Ide.Editor
 	public static class TextMarkerFactory
 	{
 		#region Line marker
-		public static IUrlTextLineMarker CreateUrlTextMarker (TextEditor editor, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
+		public static IUrlTextLineMarker CreateUrlTextMarker (TextEditor editor, string value, UrlType url, string syntax, int startCol, int endCol)
 		{
-			return editor.TextMarkerFactory.CreateUrlTextMarker (editor, line, value, url, syntax, startCol, endCol);
+			return editor.TextMarkerFactory.CreateUrlTextMarker (editor, value, url, syntax, startCol, endCol);
 		}
 
 		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor, int offset, int length)

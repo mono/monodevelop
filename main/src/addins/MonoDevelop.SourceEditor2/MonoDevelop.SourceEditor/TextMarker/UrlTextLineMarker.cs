@@ -31,13 +31,10 @@ namespace MonoDevelop.SourceEditor
 {
 	class UrlTextLineMarker : UrlMarker, IUrlTextLineMarker
     {
-		readonly IDocumentLine line;
-
-		public UrlTextLineMarker (TextDocument doc, IDocumentLine line, string url, Mono.TextEditor.UrlType urlType, string style, int startColumn, int endColumn) : base (doc, doc.GetLine (line.LineNumber), url, urlType, style, startColumn, endColumn)
+		public UrlTextLineMarker (TextDocument doc,string url, Mono.TextEditor.UrlType urlType, string style, int startColumn, int endColumn) : base (doc, url, urlType, style, startColumn, endColumn)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			this.line = line;
 		}
 		
 		MonoDevelop.Ide.Editor.UrlType IUrlTextLineMarker.UrlType {
@@ -48,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 
 		IDocumentLine ITextLineMarker.Line {
 			get {
-				return line;
+				return LineSegment;
 			}
 		}
     }

@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			foreach (var m in matches) {
 				var startCol = m.Item2.Index;
 				var url = m.Item2.Value;
-				var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, line, url, m.Item1, "url", startCol, startCol + m.Item2.Length);
+				var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, url, m.Item1, "url", startCol, startCol + m.Item2.Length);
 				Editor.AddMarker (line, marker);
 				newSegment.UrlTextMarker.Add (marker);
 			}
