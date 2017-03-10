@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Editor
 					endOffset++;
 				}
 				if (endOffset == offset + 1) {
-					if (endOffset - 1 < editor.Length) {
+					if (endOffset > 0 && endOffset - 1 < editor.Length) {
 						var c = editor.GetCharAt (endOffset - 1);
 						while ((c == '\n' || c == '\r') && endOffset < editor.Length) {
 							c = editor.GetCharAt (endOffset);

@@ -2906,11 +2906,7 @@ namespace Mono.TextEditor
 					isEolFolded = line.EndOffset <= folding.EndOffset;
 				}
 			}
-			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
-			// and the caret position is calculated in DrawLinePart.
-			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
-				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
-			}
+
 
 			bool isEolSelected = 
 				!this.HideSelection && 
@@ -2991,7 +2987,13 @@ namespace Mono.TextEditor
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, lineArea.Height);
 				}
 			}
-			
+
+			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
+			// and the caret position is calculated in DrawLinePart.
+			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
+				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
+			}
+
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				switch (textEditor.Options.ShowWhitespaces) {
 				case ShowWhitespaces.Selection:
