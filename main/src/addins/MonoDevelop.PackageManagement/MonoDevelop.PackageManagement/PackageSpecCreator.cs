@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
 			AddProjectReferences (packageSpec, project);
 			AddPackageReferences (packageSpec, project);
+			AddPackageTargetFallbacks (packageSpec, project);
 
 			return packageSpec;
 		}
@@ -304,6 +305,35 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return false;
+		}
+
+		static void AddPackageTargetFallbacks (PackageSpec packageSpec, IDotNetProject project)
+		{
+			var fallbackList = GetPackageTargetFallbackList (project)
+				.Select (NuGetFramework.Parse)
+				.ToList ();
+			if (!fallbackList.Any ())
+				return;
+
+			var frameworks = GetProjectFrameworks (project);
+			foreach (var framework in frameworks) {
+				var frameworkInfo = packageSpec.GetTargetFramework (framework);
+				frameworkInfo.Imports = fallbackList;
+				frameworkInfo.FrameworkName = new FallbackFramework (frameworkInfo.FrameworkName, fallbackList);
+			}
+		}
+
+		static IEnumerable<string> GetPackageTargetFallbackList (IDotNetProject project)
+		{
+			var properties = project.EvaluatedProperties;
+			if (properties != null) {
+				string fallback = properties.GetValue ("PackageTargetFallback");
+				if (fallback != null) {
+					return fallback.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+				}
+			}
+
+			return new string[0];
 		}
 	}
 }
