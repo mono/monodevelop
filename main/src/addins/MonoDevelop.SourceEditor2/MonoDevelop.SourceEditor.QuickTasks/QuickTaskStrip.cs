@@ -124,6 +124,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
+		ActionDelegate actionHandler;
 		public QuickTaskStrip ()
 		{
 			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Overview);
@@ -135,9 +136,18 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Accessible.SetLabel (GettextCatalog.GetString ("Quick Task Strip"));
 			Accessible.Description = GettextCatalog.GetString ("An overview of the current file's messages, warnings and errors");
 
-			var handler = new ActionDelegate ();
-			handler.PerformShowMenu += PerformShowMenu;
-			Accessible.SetActionDelegate (handler);
+			actionHandler = new ActionDelegate ();
+			actionHandler.PerformShowMenu += PerformShowMenu;
+			Accessible.SetActionDelegate (actionHandler);
+		}
+
+		public override void Destroy ()
+		{
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
+			base.Destroy ();
 		}
 
 		void HandleChanged (object sender, EventArgs e)

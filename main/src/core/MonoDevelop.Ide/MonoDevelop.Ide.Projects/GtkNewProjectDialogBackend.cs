@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		INewProjectDialogController controller;
 		Menu popupMenu;
+		ActionDelegate actionHandler;
 
 		public GtkNewProjectDialogBackend ()
 		{
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Projects
 			nextButton.GrabDefault ();
 
 			// Setup the treeview to be able to have a context menu
-			var actionHandler = new ActionDelegate ();
+			actionHandler = new ActionDelegate ();
 			actionHandler.PerformShowMenu += PerformShowMenu;
 
 			templatesTreeView.Accessible.SetActionDelegate (actionHandler);
@@ -240,6 +241,11 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!controller.IsLastPage)
 				projectConfigurationWidget.Destroy ();
+
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
 
 			base.Destroy ();
 		}

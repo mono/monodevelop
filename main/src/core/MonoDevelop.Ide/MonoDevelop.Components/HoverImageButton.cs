@@ -49,6 +49,7 @@ namespace MonoDevelop.Components
 
         private event EventHandler clicked;
 
+		ActionDelegate actionHandler;
         public event EventHandler Clicked {
             add { clicked += value; }
             remove { clicked -= value; }
@@ -56,7 +57,7 @@ namespace MonoDevelop.Components
 
         public HoverImageButton()
         {
-			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler = new AtkCocoaHelper.ActionDelegate ();
 			Accessible.SetActionDelegate (actionHandler);
 			actionHandler.PerformPress += OnPerformPress;
 
@@ -73,6 +74,16 @@ namespace MonoDevelop.Components
 			al.Add (image);
             Add(al);
         }
+
+		public override void Destroy ()
+		{
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
+
+			base.Destroy ();
+		}
 
         public HoverImageButton(IconSize size, string icon_name) : this(size, new string [] { icon_name })
         {

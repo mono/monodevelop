@@ -42,6 +42,16 @@ namespace MonoDevelop.Components
 			Accessible.SetActionDelegate (ActionHandler);
 		}
 
+		public override void Destroy ()
+		{
+			if (ActionHandler != null) {
+				ActionHandler.Dispose ();
+				ActionHandler = null;
+			}
+
+			base.Destroy ();
+		}
+
 		public ContextMenuTreeView (Gtk.TreeModel model) : base (model)
 		{
 		}

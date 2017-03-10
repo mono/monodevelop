@@ -113,6 +113,15 @@ namespace MonoDevelop.Ide.WelcomePage
 			UpdateActions ();
 		}
 
+		public override void Destroy ()
+		{
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
+			base.Destroy ();
+		}
+
 		void UpdateActions ()
 		{
 			// FIXME: Should the pinning star just be handled by an internal accessible element

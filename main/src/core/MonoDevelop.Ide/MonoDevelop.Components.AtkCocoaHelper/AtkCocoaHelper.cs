@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 
-	public class ActionDelegate
+	public class ActionDelegate : IDisposable
 	{
 		HashSet<AtkCocoa.Actions> actions = new HashSet<AtkCocoa.Actions> ();
 
@@ -125,8 +125,36 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		void RequestActionsHandler (object sender, GLib.SignalArgs args)
+		// Because the allocated memory is passed to unmanaged code where it cannot be freed
+		// we need to keep track of it until the object is finalized, or the actions need to be calculated again
+		IntPtr allocatedActionPtr;
+		IntPtr [] allocatedActionStrings;
+
+		public void Dispose ()
 		{
+			// Clean up the last of the remaining allocated memory
+			FreeActions ();
+		}
+
+		void FreeActions ()
+		{
+			if (allocatedActionStrings != null) {
+				foreach (var ptr in allocatedActionStrings) {
+					Marshal.FreeHGlobal (ptr);
+				}
+				allocatedActionStrings = null;
+			}
+
+			if (allocatedActionPtr != IntPtr.Zero) {
+				Marshal.FreeHGlobal (allocatedActionPtr);
+				allocatedActionPtr = IntPtr.Zero;
+			}
+		}
+
+		void RegenerateActions ()
+		{
+			FreeActions ();
+
 			// +1 so we can add a NULL to terminate the array
 			int actionCount = actions.Count + 1;
 			IntPtr intPtr = Marshal.AllocHGlobal (actionCount * Marshal.SizeOf<IntPtr> ());
@@ -143,7 +171,25 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			Marshal.Copy (actionsPtr, 0, intPtr, actionCount);
 
-			args.RetVal = intPtr;
+			allocatedActionStrings = actionsPtr;
+			allocatedActionPtr = intPtr;
+		}
+
+		void AddAction (AtkCocoa.Actions action)
+		{
+			actions.Add (action);
+			RegenerateActions ();
+		}
+
+		void RemoveAction (AtkCocoa.Actions action)
+		{
+			actions.Remove (action);
+			RegenerateActions ();
+		}
+
+		void RequestActionsHandler (object sender, GLib.SignalArgs args)
+		{
+			args.RetVal = allocatedActionPtr;
 		}
 
 		void PerformCancelHandler (object sender, GLib.SignalArgs args)
@@ -199,16 +245,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void PerformShowMenuHandler (object sender, GLib.SignalArgs args)
 		{
 			performShowMenu?.Invoke (this, args);
-		}
-
-		void AddAction (AtkCocoa.Actions action)
-		{
-			actions.Add (action);
-		}
-
-		void RemoveAction (AtkCocoa.Actions action)
-		{
-			actions.Remove (action);
 		}
 
 		event EventHandler performCancel;

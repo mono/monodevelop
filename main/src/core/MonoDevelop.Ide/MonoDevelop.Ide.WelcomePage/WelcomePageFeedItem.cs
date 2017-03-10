@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		string text, desc, icon, subtitle, linkUrl;
 		Gtk.IconSize iconSize = IconSize.Menu;
 		VBox box;
+		ActionDelegate actionHandler;
 
 		const int MaxCharacters = 200;
 
@@ -151,10 +152,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageFeedItem ()
 		{
-			var actionDelegate = new ActionDelegate ();
-			actionDelegate.PerformPress += PerformPress;
+			actionHandler = new ActionDelegate ();
+			actionHandler.PerformPress += PerformPress;
 
-			Accessible.SetActionDelegate (actionDelegate);
+			Accessible.SetActionDelegate (actionHandler);
 			Accessible.Description = "A news item that opens the full story in a browser when clicked";
 			Accessible.Role = Atk.Role.Link;
 
@@ -192,6 +193,15 @@ namespace MonoDevelop.Ide.WelcomePage
 			Add (box);
 
 			Gui.Styles.Changed += UpdateStyle;
+		}
+
+		public override void Destroy ()
+		{
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
+			base.Destroy ();
 		}
 
 		void UpdateStyle (object sender, EventArgs args)

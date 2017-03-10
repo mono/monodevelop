@@ -133,9 +133,10 @@ namespace MonoDevelop.Components.Docking
 		CrossfadeIcon crossfade;
 		double hoverProgress;
 
+		ActionDelegate actionHandler;
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
-			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler = new AtkCocoaHelper.ActionDelegate ();
 			actionHandler.PerformPress += OnPerformPress;
 
 			Accessible.SetActionDelegate (actionHandler);
@@ -166,6 +167,16 @@ namespace MonoDevelop.Components.Docking
 			Styles.Changed += UpdateStyle;
 
 			Accessible.Name = "DockbarItem";
+		}
+
+		public override void Destroy ()
+		{
+			if (actionHandler != null) {
+				actionHandler.Dispose ();
+				actionHandler = null;
+			}
+
+			base.Destroy ();
 		}
 
 		void IAnimatable.BatchBegin () { }
