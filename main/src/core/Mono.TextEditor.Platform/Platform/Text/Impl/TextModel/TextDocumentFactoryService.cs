@@ -16,21 +16,20 @@ namespace Microsoft.VisualStudio.Text.Implementation
     using Microsoft.VisualStudio.Text.Utilities;
     using Microsoft.VisualStudio.Utilities;
     using System.Diagnostics;
-    using Microsoft.VisualStudio.Text.Editor;
 
     [Export(typeof(ITextDocumentFactoryService))]
     internal sealed partial class TextDocumentFactoryService : ITextDocumentFactoryService
     {
         #region Internal Consumptions
-        
+
         [Import]
-        internal ITextBufferFactoryService BufferFactoryService { get; set; }
+        internal ITextBufferFactoryService _bufferFactoryService { get; set; }
 
         [ImportMany]
-        internal List<Lazy<IEncodingDetector, IEncodingDetectorMetadata>> UnorderedEncodingDetectors { get; set; }
+        internal List<Lazy<IEncodingDetector, IEncodingDetectorMetadata>> _unorderedEncodingDetectors { get; set; }
 
         [Import]
-        internal GuardedOperations GuardedOperations { get; set; }
+        internal GuardedOperations _guardedOperations { get; set; }
 
         #endregion
 
@@ -74,7 +73,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 using (StreamReader reader = new StreamReader(stream, modifiedEncoding, detectEncodingFromByteOrderMarks: false))
                 {
                     System.Diagnostics.Debug.Assert(encoding.CodePage == reader.CurrentEncoding.CodePage);
-                    buffer = ((ITextBufferFactoryService2)BufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
+                    buffer = ((ITextBufferFactoryService2)_bufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
                 }
             }
 
@@ -83,7 +82,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
 #if _DEBUG
             TextUtilities.TagBuffer(buffer, filePath);
 #endif
-            TextDocument textDocument = new TextDocument(buffer, filePath, lastModified, this, encoding, explicitEncoding: true);
+            TextDocument textDocument = new TextDocument(buffer, filePath, lastModified, this, encoding);
 
             RaiseTextDocumentCreated(textDocument);
 
@@ -94,12 +93,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
         {
             if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(filePath));
+                throw new ArgumentNullException("filePath");
             }
 
             if (contentType == null)
             {
-                throw new ArgumentNullException(nameof(contentType));
+                throw new ArgumentNullException("contentType");
             }
 
             characterSubstitutionsOccurred = false;
@@ -116,7 +115,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             {
                 // First, look for a byte order marker and let the encoding detecters
                 // suggest encodings.
-                chosenEncoding = EncodedStreamReader.DetectEncoding(stream, detectors, GuardedOperations);
+                chosenEncoding = EncodedStreamReader.DetectEncoding(stream, detectors, _guardedOperations);
 
                 // If that didn't produce a result, tentatively try to open as UTF 8.
                 if (chosenEncoding == null && attemptUtf8Detection)
@@ -127,7 +126,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
                         using (StreamReader reader = new EncodedStreamReader.NonStreamClosingStreamReader(stream, detectorEncoding, false))
                         {
-                            buffer = ((ITextBufferFactoryService2)BufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
+                            buffer = ((ITextBufferFactoryService2)_bufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
                             characterSubstitutionsOccurred = false;
                         }
 
@@ -139,8 +138,11 @@ namespace Microsoft.VisualStudio.Text.Implementation
                         else
                         {
                             // Valid UTF8 but no extended characters, so it's valid ASCII.
+
                             // We don't use ASCII here because of the following scenario:
-                            // The user with a non-ENU system encoding opens a code file with ASCII-only contents
+                            // The user with a non-ENU system encoding opens a code file with ASCII-only contents,
+                            // 
+
                             chosenEncoding = DefaultEncoding;
                         }
                     }
@@ -158,9 +160,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
                 // If all else didn't work, use system's default encoding.
                 if (chosenEncoding == null)
-                {
                     chosenEncoding = DefaultEncoding;
-                }
 
                 if (buffer == null)
                 {
@@ -173,14 +173,14 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     using (StreamReader reader = new EncodedStreamReader.NonStreamClosingStreamReader(stream, modifiedEncoding, detectEncodingFromByteOrderMarks: false))
                     {
                         Debug.Assert(chosenEncoding.CodePage == reader.CurrentEncoding.CodePage);
-                        buffer = ((ITextBufferFactoryService2)BufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
+                        buffer = ((ITextBufferFactoryService2)_bufferFactoryService).CreateTextBuffer(reader, contentType, fileSize, filePath);
                     }
 
                     characterSubstitutionsOccurred = fallbackDetector.FallbackOccurred;
                 }
             }
 
-            TextDocument textDocument = new TextDocument(buffer, filePath, lastModified, this, chosenEncoding, attemptUtf8Detection: attemptUtf8Detection);
+            TextDocument textDocument = new TextDocument(buffer, filePath, lastModified, this, chosenEncoding);
 
             RaiseTextDocumentCreated(textDocument);
 
@@ -217,7 +217,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             TextDocument document;
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
             {
-                if(document != null && !document.IsDisposed)
+                if (document != null && !document.IsDisposed)
                 {
                     textDocument = document;
                     return true;
@@ -273,9 +273,9 @@ namespace Microsoft.VisualStudio.Text.Implementation
             {
                 if (_orderedEncodingDetectors == null)
                 {
-                    if (UnorderedEncodingDetectors != null)
+                    if (_unorderedEncodingDetectors != null)
                     {
-                        _orderedEncodingDetectors = Orderer.Order(UnorderedEncodingDetectors);
+                        _orderedEncodingDetectors = Orderer.Order(_unorderedEncodingDetectors);
                     }
                     else
                     {
@@ -331,8 +331,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         internal void Initialize(ITextBufferFactoryService bufferFactoryService, List<Lazy<IEncodingDetector, IEncodingDetectorMetadata>> detectors)
         {
-            BufferFactoryService = bufferFactoryService;
-            UnorderedEncodingDetectors = detectors ?? new List<Lazy<IEncodingDetector, IEncodingDetectorMetadata>>();
+            _bufferFactoryService = bufferFactoryService;
+            _unorderedEncodingDetectors = detectors ?? new List<Lazy<IEncodingDetector, IEncodingDetectorMetadata>>();
         }
 
         #endregion
