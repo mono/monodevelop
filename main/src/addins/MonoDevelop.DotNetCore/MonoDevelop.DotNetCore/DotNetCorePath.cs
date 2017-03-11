@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using MonoDevelop.Core;
 
@@ -41,7 +42,9 @@ namespace MonoDevelop.DotNetCore
 
 		string GetDotNetFileName ()
 		{
-			if (!Platform.IsWindows) {
+			if (Platform.IsWindows) {
+				return GetDotNetFileNameOnWindows ();
+			} else {
 				string dotnetFileName = "/usr/local/share/dotnet/dotnet";
 				if (Platform.IsLinux)
 					dotnetFileName = "/usr/share/dotnet/dotnet";
@@ -54,6 +57,33 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			return "dotnet";
+		}
+
+		/// <summary>
+		/// IDE runs as a 32-bit process on Windows. Look for the 64 bit .NET Core SDK
+		/// first by using the ProgramW6432 environment variable. Then fallback to
+		/// looking in Program Files (x86).
+		/// </summary>
+		string GetDotNetFileNameOnWindows ()
+		{
+			const string executableName = "dotnet.exe";
+			string dotnetFileName;
+
+			string programFiles = Environment.GetEnvironmentVariable ("ProgramW6432");
+			if (!string.IsNullOrEmpty (programFiles)) {
+				dotnetFileName = Path.Combine (programFiles, "dotnet", executableName);
+				if (File.Exists (dotnetFileName))
+					return dotnetFileName;
+			}
+
+			programFiles = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
+			dotnetFileName = Path.Combine (programFiles, "dotnet", executableName);
+			if (File.Exists (dotnetFileName))
+				return dotnetFileName;
+
+			IsMissing = true;
+
+			return executableName;
 		}
 	}
 }
