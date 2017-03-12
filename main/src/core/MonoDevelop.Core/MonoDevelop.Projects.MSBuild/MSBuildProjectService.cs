@@ -915,6 +915,8 @@ namespace MonoDevelop.Projects.MSBuild
 			string [] supportedToolsVersions;
 			if ((requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild) && !Platform.IsWindows)
 				supportedToolsVersions = new [] { "15.0"};
+			else if (Platform.IsWindows)
+				supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
 			else
 				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
 
