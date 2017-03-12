@@ -137,26 +137,6 @@
       <Name>MonoDevelop.PackageManagement</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TestBase.fs" />
-    <Compile Include="TestDocument.fs" />
-    <Compile Include="TestWorkbenchWindow.fs" />
-    <Compile Include="TestViewContent.fs" />
-    <Compile Include="TestHelpers.fs" />
-    <Compile Include="DebuggerExpressionResolver.fs" />
-    <Compile Include="CompilerArguments.fs" />
-    <Compile Include="IndentationTrackerTests.fs" />
-    <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
-    <Compile Include="SyntaxHighlighting.fs" />
-    <Compile Include="SemanticHighlighting.fs" />
-    <Compile Include="TestTooltipProvider.fs" />
-    <Compile Include="ProjectTests.fs" />
-    <Compile Include="ProjectCracking.fs" />
-    <Compile Include="GlobalSearch.fs" />
-    <Compile Include="ParsingTests.fs" />
-    <Compile Include="CompletionTests.fs" />
-    <Compile Include="TemplateTests.fs" />
-  </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
@@ -179,6 +159,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestBase.fs" />
+    <Compile Include="TestDocument.fs" />
+    <Compile Include="TestWorkbenchWindow.fs" />
+    <Compile Include="TestViewContent.fs" />
+    <Compile Include="TestHelpers.fs" />
+    <Compile Include="DebuggerExpressionResolver.fs" />
+    <Compile Include="CompilerArguments.fs" />
+    <Compile Include="IndentationTrackerTests.fs" />
+    <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
+    <Compile Include="SyntaxHighlighting.fs" />
+    <Compile Include="SemanticHighlighting.fs" />
+    <Compile Include="TestTooltipProvider.fs" />
+    <Compile Include="ProjectTests.fs" />
+    <Compile Include="ProjectCracking.fs" />
+    <Compile Include="GlobalSearch.fs" />
+    <Compile Include="ParsingTests.fs" />
+    <Compile Include="CompletionTests.fs" />
+    <Compile Include="TemplateTests.fs" />
+    <Compile Include="Interactive.fs" />
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="HighlightUsagesTests.fs" />
     <Compile Include="CopyPaste.fs" />
@@ -194,10 +193,10 @@
     <None Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
+    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
+    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
