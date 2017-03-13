@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         #region ReloadEdit class
         private class ReloadEdit : TextBufferBaseEdit, ISubordinateTextEdit
         {
-            private IStringRebuilder newContent;
+            private StringRebuilder newContent;
             private TextBuffer textBuffer;
             private ITextSnapshot originSnapshot;
             private object editTag;
@@ -127,7 +127,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 this.editTag = editTag;
             }
 
-            public ITextSnapshot ReloadContent(IStringRebuilder newContent)
+            public ITextSnapshot ReloadContent(StringRebuilder newContent)
             {
                 if (this.baseBuffer.IsReadOnlyImplementation(new Span(0, this.originSnapshot.Length), isEdit: true))
                 {
@@ -189,15 +189,15 @@ namespace Microsoft.VisualStudio.Text.Implementation
         #endregion
 
         #region State and Construction
-        IStringRebuilder builder;
+        StringRebuilder builder;
         bool spurnGroup;
 
-        public TextBuffer(IContentType contentType, IStringRebuilder content, ITextDifferencingService textDifferencingService, GuardedOperations guardedOperations)
+        public TextBuffer(IContentType contentType, StringRebuilder content, ITextDifferencingService textDifferencingService, GuardedOperations guardedOperations)
             : this(contentType, content, textDifferencingService, guardedOperations, false)
         {
         }
 
-        public TextBuffer(IContentType contentType, IStringRebuilder content, ITextDifferencingService textDifferencingService, GuardedOperations guardedOperations, bool spurnGroup)
+        public TextBuffer(IContentType contentType, StringRebuilder content, ITextDifferencingService textDifferencingService, GuardedOperations guardedOperations, bool spurnGroup)
             : base(contentType, content.Length, textDifferencingService, guardedOperations)
         {
             // Parameters are validated outside
@@ -216,7 +216,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <param name="editOptions">Options to apply to the edit. Differencing is highly likely to be selected.</param>
         /// <param name="editTag">Arbitrary tag associated with the reload that will appear in event arguments.</param>
         /// <returns></returns>
-        public ITextSnapshot ReloadContent(IStringRebuilder newContent, EditOptions editOptions, object editTag)
+        public ITextSnapshot ReloadContent(StringRebuilder newContent, EditOptions editOptions, object editTag)
         {
             using (ReloadEdit edit = new ReloadEdit(this, this.currentSnapshot, editOptions, editTag))
             {
@@ -224,7 +224,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             }
         }
 
-        internal TextContentChangedEventArgs ApplyReload(IStringRebuilder newContent, EditOptions editOptions, object editTag)
+        internal TextContentChangedEventArgs ApplyReload(StringRebuilder newContent, EditOptions editOptions, object editTag)
         {
             // we construct a normalized change list where the inserted text is a reference string that
             // points "forward" to the next snapshot and whose deleted text is a reference string that points

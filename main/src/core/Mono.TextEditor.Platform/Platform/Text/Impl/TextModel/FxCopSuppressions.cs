@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 [module: SuppressMessage("Microsoft.Naming", 
                          "CA1704:IdentifiersShouldBeSpelledCorrectly", 
                          Scope="type", 
-                         Target="Microsoft.VisualStudio.Text.Implementation.IStringRebuilder", 
+                         Target="Microsoft.VisualStudio.Text.Implementation.StringRebuilder", 
                          MessageId="Rebuilder", 
                          Justification="We have yet to finalize on the name of this object")]
 [module: SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", 
@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 [module: SuppressMessage("Microsoft.Naming", 
                          "CA1710:IdentifiersShouldHaveCorrectSuffix", 
                          Scope="type", 
-                         Target="Microsoft.VisualStudio.Text.Implementation.IStringRebuilder", 
+                         Target="Microsoft.VisualStudio.Text.Implementation.StringRebuilder", 
                          Justification="We have yet to finalize on the name of this object")]
 [module: SuppressMessage("Microsoft.Design", 
                          "CA1020:AvoidNamespacesWithFewTypes", 
@@ -131,7 +131,7 @@ using System.Diagnostics.CodeAnalysis;
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.BufferGroup.#set_Tracing(System.Boolean)", Justification="ToDo: To be looked at")]
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.SimpleStringRebuilder.#Create(System.IO.TextReader)", Justification="ToDo: To be looked at")]
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.SimpleStringRebuilder.#Create(System.IO.TextReader,System.Int32)", Justification="ToDo: To be looked at")]
-[module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.TextBuffer.#.ctor(Microsoft.VisualStudio.Utilities.IContentType,Microsoft.VisualStudio.Text.Implementation.IStringRebuilder,Microsoft.VisualStudio.Text.Differencing.IHierarchicalStringDifferenceService,Microsoft.VisualStudio.Text.Utilities.GuardedOperations)", Justification="ToDo: To be looked at")]
+[module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.TextBuffer.#.ctor(Microsoft.VisualStudio.Utilities.IContentType,Microsoft.VisualStudio.Text.Implementation.StringRebuilder,Microsoft.VisualStudio.Text.Differencing.IHierarchicalStringDifferenceService,Microsoft.VisualStudio.Text.Utilities.GuardedOperations)", Justification="ToDo: To be looked at")]
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.TextChange.#get_NewChangeString()", Justification="ToDo: To be looked at")]
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.TextChange.#get_OldChangeString()", Justification="ToDo: To be looked at")]
 [module: SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode", Scope="member", Target="Microsoft.VisualStudio.Text.Implementation.TextDocument.#.ctor(Microsoft.VisualStudio.Text.ITextBuffer,System.String,System.DateTime,Microsoft.VisualStudio.Text.Implementation.TextDocumentFactoryService)", Justification="ToDo: To be looked at")]

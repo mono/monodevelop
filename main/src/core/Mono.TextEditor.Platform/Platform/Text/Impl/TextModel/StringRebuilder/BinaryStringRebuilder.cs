@@ -17,19 +17,16 @@ using Microsoft.VisualStudio.Text.Utilities;
 
 namespace Microsoft.VisualStudio.Text.Implementation
 {
-    internal sealed class BinaryStringRebuilder : BaseStringRebuilder
+    internal sealed class BinaryStringRebuilder : StringRebuilder
     {
         #region Private
-        private readonly IStringRebuilder _left;
-        private readonly IStringRebuilder _right;
+        private readonly StringRebuilder _left;
+        private readonly StringRebuilder _right;
 
-        private readonly int _depth;
-        private readonly int _length;
-        private readonly int _lineBreakCount;
+        private static StringRebuilder _crlf = SimpleStringRebuilder.Create("\r\n");
 
-        private static IStringRebuilder _crlf = SimpleStringRebuilder.Create("\r\n");
-
-        private BinaryStringRebuilder(IStringRebuilder left, IStringRebuilder right)
+        private BinaryStringRebuilder(StringRebuilder left, StringRebuilder right)
+            : base(left.Length + right.Length, left.LineBreakCount + right.LineBreakCount, 1 + Math.Max(left.Depth, right.Depth))
         {
             Debug.Assert(left.Length > 0);
             Debug.Assert(right.Length > 0);
@@ -37,14 +34,9 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
             _left = left;
             _right = right;
-
-            _depth = 1 + Math.Max(_left.Depth, _right.Depth);
-
-            _length = left.Length + right.Length;
-            _lineBreakCount = left.LineBreakCount + right.LineBreakCount;
         }
 
-        private static IStringRebuilder ConsolidateOrBalanceTreeNode(IStringRebuilder left, IStringRebuilder right)
+        private static StringRebuilder ConsolidateOrBalanceTreeNode(StringRebuilder left, StringRebuilder right)
         {
             if ((left.Length + right.Length < TextModelOptions.StringRebuilderMaxCharactersToConsolidate) &&
                 (left.LineBreakCount + right.LineBreakCount <= TextModelOptions.StringRebuilderMaxLinesToConsolidate))
@@ -56,12 +48,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 return BinaryStringRebuilder.BalanceTreeNode(left, right);
         }
 
-        private static IStringRebuilder BalanceStringRebuilder(IStringRebuilder left, IStringRebuilder right)
+        private static StringRebuilder BalanceStringRebuilder(StringRebuilder left, StringRebuilder right)
         {
             return BinaryStringRebuilder.BalanceTreeNode(left, right);
         }
 
-        private static IStringRebuilder BalanceTreeNode(IStringRebuilder left, IStringRebuilder right)
+        private static StringRebuilder BalanceTreeNode(StringRebuilder left, StringRebuilder right)
         {
             if (left.Depth > right.Depth + 1)
                 return BinaryStringRebuilder.Pivot(left, right, false);
@@ -71,11 +63,11 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 return new BinaryStringRebuilder(left, right);
         }
 
-        private static IStringRebuilder Pivot(IStringRebuilder child, IStringRebuilder other, bool deepOnRightSide)
+        private static StringRebuilder Pivot(StringRebuilder child, StringRebuilder other, bool deepOnRightSide)
         {
             Debug.Assert(child.Depth > 0);  //child's depth is greater than other's depth.
-            IStringRebuilder grandchildOutside = child.Child(deepOnRightSide);
-            IStringRebuilder grandchildInside = child.Child(!deepOnRightSide);
+            StringRebuilder grandchildOutside = child.Child(deepOnRightSide);
+            StringRebuilder grandchildInside = child.Child(!deepOnRightSide);
 
             if (grandchildOutside.Depth >= grandchildInside.Depth)
             {
@@ -95,8 +87,8 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 //                /    \     ...
                 //             other   gcI
 
-                IStringRebuilder newThis;
-                IStringRebuilder newChild;
+                StringRebuilder newThis;
+                StringRebuilder newChild;
                 if (deepOnRightSide)
                 {
                     newThis = BinaryStringRebuilder.ConsolidateOrBalanceTreeNode(other, grandchildInside);
@@ -131,12 +123,12 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 //              other ggcI ggcO   gcO
                 //              ...  ...   ...    ...
                 Debug.Assert(grandchildInside.Depth > 0);  //The inside's grandchild depth is > the outside grandchild's.
-                IStringRebuilder greatgrandchildOutside = grandchildInside.Child(deepOnRightSide);
-                IStringRebuilder greatgrandchildInside = grandchildInside.Child(!deepOnRightSide);
+                StringRebuilder greatgrandchildOutside = grandchildInside.Child(deepOnRightSide);
+                StringRebuilder greatgrandchildInside = grandchildInside.Child(!deepOnRightSide);
 
-                IStringRebuilder newThis;
-                IStringRebuilder newChild;
-                IStringRebuilder newGcI;
+                StringRebuilder newThis;
+                StringRebuilder newChild;
+                StringRebuilder newGcI;
 
                 if (deepOnRightSide)
                 {
@@ -156,7 +148,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         }
         #endregion
 
-        public static IStringRebuilder Create(IStringRebuilder left, IStringRebuilder right)
+        public static StringRebuilder Create(StringRebuilder left, StringRebuilder right)
         {
             if (left == null)
                 throw new ArgumentNullException("left");
@@ -188,21 +180,11 @@ namespace Microsoft.VisualStudio.Text.Implementation
 
         public override string ToString()
         {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, _depth % 2 == 0 ? "({0})({1})" : "[{0}][{1}]",
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture, this.Depth % 2 == 0 ? "({0})({1})" : "[{0}][{1}]",
                                  _left.ToString(), _right.ToString());
         }
 
-        #region IStringRebuilder Members
-        public override int Length
-        {
-            get { return _length; }
-        }
-
-        public override int LineBreakCount
-        {
-            get { return _lineBreakCount; }
-        }
-
+        #region StringRebuilder Members
         public override int GetLineNumberFromPosition(int position)
         {
             if ((position < 0) || (position > this.Length))
@@ -252,7 +234,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             }
         }
 
-        public override IStringRebuilder GetLeaf(int position, out int offset)
+        public override StringRebuilder GetLeaf(int position, out int offset)
         {
             if (position < _left.Length)
             {
@@ -351,7 +333,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             }
         }
 
-        public override IStringRebuilder Substring(Span span)
+        public override StringRebuilder Substring(Span span)
         {
             if (span.End > this.Length)
                 throw new ArgumentOutOfRangeException("span");
@@ -367,12 +349,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                                                     _right.Substring(Span.FromBounds(0, span.End - _left.Length)));
         }
 
-        public override int Depth
-        {
-            get { return _depth; }
-        }
-
-        public override IStringRebuilder Child(bool rightSide)
+        public override StringRebuilder Child(bool rightSide)
         {
             return rightSide ? _right : _left;
         }

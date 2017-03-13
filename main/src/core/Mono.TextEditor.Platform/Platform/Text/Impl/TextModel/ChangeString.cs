@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         public abstract char this[int position] { get; }
         public abstract string Substring(Span span);
 
-        internal abstract IStringRebuilder Content { get; }
+        internal abstract StringRebuilder Content { get; }
 
         public override string ToString()
         {
@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return TextUtilities.ScanForLineCount(this.text);
         }
 
-        internal override IStringRebuilder Content
+        internal override StringRebuilder Content
         {
             get { return SimpleStringRebuilder.Create(this.text); }
         }
@@ -101,7 +101,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
     /// </remarks>
     internal class ReferenceChangeString : ChangeString
     {
-        internal IStringRebuilder builder;
+        internal StringRebuilder builder;
 
         public static ChangeString CreateChangeString(ITextSnapshot snapshot, Span span)
         {
@@ -136,7 +136,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             }
             else
             {
-                IStringRebuilder builder = SimpleStringRebuilder.Create(String.Empty);
+                StringRebuilder builder = SimpleStringRebuilder.Create(String.Empty);
                 for (int i = 0; (i < selected.Length); ++i)
                 {
                     builder = builder.Insert(builder.Length, BufferFactoryService.StringRebuilderFromSnapshotSpan(sourceSpans[selected.Start + i]));
@@ -146,7 +146,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             }
         }
 
-        internal static ChangeString CreateChangeString(IStringRebuilder content)
+        internal static ChangeString CreateChangeString(StringRebuilder content)
         {
             if (content.Length == 0)
             {
@@ -167,7 +167,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         {
         }
 
-        public ReferenceChangeString(IStringRebuilder builder)
+        public ReferenceChangeString(StringRebuilder builder)
         {
             this.builder = builder;
         }
@@ -197,7 +197,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             return this.builder.LineBreakCount;
         }
 
-        internal override IStringRebuilder Content
+        internal override StringRebuilder Content
         {
             get { return this.builder; }
         }

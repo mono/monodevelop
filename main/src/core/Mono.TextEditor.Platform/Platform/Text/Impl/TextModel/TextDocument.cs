@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
                             {
                                 loader = new CompressedTextStorageLoader(streamReader, (int)fileSize, _filePath);
                             }
-                            IStringRebuilder newContent = SimpleStringRebuilder.Create(loader);
+                            StringRebuilder newContent = SimpleStringRebuilder.Create(loader);
                             if (!loader.HasConsistentLineEndings)
                             {
                                 // leave a sign that line endings are inconsistent. This is rather nasty but for now
@@ -691,39 +691,39 @@ namespace Microsoft.VisualStudio.Text.Implementation
                     }
 
 #if false
-					try
-					{
-						originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                    try
+                    {
+                        originalFileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 
-						//Even thoug SafeFileHandle is an IDisposable, we don't dispose of it since that closes the strem.
-						var safeHandle = originalFileStream.SafeFileHandle;
-						if (!(safeHandle.IsClosed || safeHandle.IsInvalid))
-						{
-							BY_HANDLE_FILE_INFORMATION fi;
-							if (GetFileInformationByHandle(safeHandle, out fi))
-							{
-								if (fi.NumberOfLinks <= 1)
-								{
-									// The file we're trying to write to doesn't have any hard links ... clear out the originalFileStream
-									// as a clue.
-									originalFileStream.Dispose();
-									originalFileStream = null;
-								}
-							}
-						}
-					}
-					catch
-					{
-						if (originalFileStream != null)
-						{
-							originalFileStream.Dispose();
-							originalFileStream = null;
-						}
+                        //Even thoug SafeFileHandle is an IDisposable, we don't dispose of it since that closes the strem.
+                        var safeHandle = originalFileStream.SafeFileHandle;
+                        if (!(safeHandle.IsClosed || safeHandle.IsInvalid))
+                        {
+                            BY_HANDLE_FILE_INFORMATION fi;
+                            if (GetFileInformationByHandle(safeHandle, out fi))
+                            {
+                                if (fi.NumberOfLinks <= 1)
+                                {
+                                    // The file we're trying to write to doesn't have any hard links ... clear out the originalFileStream
+                                    // as a clue.
+                                    originalFileStream.Dispose();
+                                    originalFileStream = null;
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        if (originalFileStream != null)
+                        {
+                            originalFileStream.Dispose();
+                            originalFileStream = null;
+                        }
 
-						//We were not able to determine whether or not the file had hard links so throw here (aborting the save)
-						//since we don't know how to do it safely.
-						throw;
-					}
+                        //We were not able to determine whether or not the file had hard links so throw here (aborting the save)
+                        //since we don't know how to do it safely.
+                        throw;
+                    }
 #endif
 
                     string root = Path.GetDirectoryName(filePath);
@@ -749,26 +749,26 @@ namespace Microsoft.VisualStudio.Text.Implementation
                 return new FileStream(filePath, fileMode, FileAccess.Write, FileShare.Read);
             }
 #if false
-			[StructLayout(LayoutKind.Sequential)]
-			struct BY_HANDLE_FILE_INFORMATION
-			{
-				public uint FileAttributes;
-				public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
-				public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
-				public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
-				public uint VolumeSerialNumber;
-				public uint FileSizeHigh;
-				public uint FileSizeLow;
-				public uint NumberOfLinks;
-				public uint FileIndexHigh;
-				public uint FileIndexLow;
-			}
+            [StructLayout(LayoutKind.Sequential)]
+            struct BY_HANDLE_FILE_INFORMATION
+            {
+                public uint FileAttributes;
+                public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
+                public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
+                public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
+                public uint VolumeSerialNumber;
+                public uint FileSizeHigh;
+                public uint FileSizeLow;
+                public uint NumberOfLinks;
+                public uint FileIndexHigh;
+                public uint FileIndexLow;
+            }
 
-			[DllImport("kernel32.dll", SetLastError = true)]
-			static extern bool GetFileInformationByHandle(
-				Microsoft.Win32.SafeHandles.SafeFileHandle hFile,
-				out BY_HANDLE_FILE_INFORMATION lpFileInformation
-			);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            static extern bool GetFileInformationByHandle(
+                Microsoft.Win32.SafeHandles.SafeFileHandle hFile,
+                out BY_HANDLE_FILE_INFORMATION lpFileInformation
+            );
 #endif
         }
     }

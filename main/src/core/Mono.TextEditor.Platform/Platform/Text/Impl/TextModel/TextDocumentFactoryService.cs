@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
     internal sealed partial class TextDocumentFactoryService : ITextDocumentFactoryService
     {
         #region Internal Consumptions
-        
+
         [Import]
         internal ITextBufferFactoryService _bufferFactoryService { get; set; }
 
@@ -217,7 +217,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
             TextDocument document;
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
             {
-                if(document != null && !document.IsDisposed)
+                if (document != null && !document.IsDisposed)
                 {
                     textDocument = document;
                     return true;

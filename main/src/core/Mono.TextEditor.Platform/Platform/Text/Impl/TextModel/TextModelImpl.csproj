@@ -3,7 +3,7 @@
   <PropertyGroup Label="BuildProps">
     <BuildPropsFile>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), Build.props))\Build.props</BuildPropsFile>
   </PropertyGroup>
-  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)') AND '$(VisualStudioDir)'==''" />
+  <Import Project="$(BuildPropsFile)" Condition="'$(BuildProps_Imported)'!='True' AND Exists('$(BuildPropsFile)')" />
   <Import Project="..\Platform.Settings.targets" />
   <Import Project="$(PlatformPath)\Tools\Targets\Platform.Settings.Selector.targets" />
   <PropertyGroup>
@@ -86,11 +86,10 @@
     <Compile Include="Storage\PageManager.cs" />
     <Compile Include="Storage\SimpleTextStorage.cs" />
     <Compile Include="Storage\SimpleTextStorageLoader.cs" />
-    <Compile Include="StringRebuilder\BaseStringRebuilder.cs" />
     <Compile Include="StringRebuilder\BinaryStringRebuilder.cs" />
-    <Compile Include="StringRebuilder\IStringRebuilder.cs" />
     <Compile Include="StringRebuilder\LineSpan.cs" />
     <Compile Include="StringRebuilder\SimpleStringRebuilder.cs" />
+    <Compile Include="StringRebuilder\StringRebuilder.cs" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
