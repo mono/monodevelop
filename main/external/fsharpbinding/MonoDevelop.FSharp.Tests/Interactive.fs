@@ -17,7 +17,7 @@ module Interactive =
       async {
         let (/) a b = Path.Combine(a,b)
         let testDllFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
-        let pathToExe = "\"" + testDllFolder/".."/".."/".."/".."/".."/"build"/"AddIns"/"BackendBindings"/"MonoDevelop.FSharpInteractive.Service.exe\""
+        let pathToExe = "\"" + testDllFolder/".."/".."/".."/".."/".."/"build"/"AddIns"/"FSharpBinding"/"MonoDevelop.FSharpInteractive.Service.exe\""
         let ses = InteractiveSession(pathToExe)
         do! Async.Sleep 1000 // give the process chance to start
         if ses.HasExited() then
