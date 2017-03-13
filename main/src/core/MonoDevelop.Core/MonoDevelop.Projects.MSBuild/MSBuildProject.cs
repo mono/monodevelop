@@ -36,6 +36,7 @@ using MonoDevelop.Projects.Utility;
 using System.Linq;
 using MonoDevelop.Projects.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -189,6 +190,8 @@ namespace MonoDevelop.Projects.MSBuild
 				engineManager = value;
 			}
 		}
+
+		public TargetRuntime TargetRuntime { get; set; } = Runtime.SystemAssemblyService.DefaultRuntime;
 
 		public static Task<MSBuildProject> LoadAsync (string file)
 		{

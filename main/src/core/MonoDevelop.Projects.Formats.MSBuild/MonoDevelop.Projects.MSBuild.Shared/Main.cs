@@ -44,6 +44,9 @@ namespace MonoDevelop.Projects.MSBuild
 		[STAThread]
 		public static void Main (string[] args)
 		{
+			// This is required for MSBuild to properly load the .exe.config configuration file for this executable.
+			Environment.SetEnvironmentVariable ("MSBUILD_EXE_PATH", typeof(MainClass).Assembly.Location);
+
 			RemoteProcessServer server = new RemoteProcessServer ();
 			server.Connect (args, new AssemblyResolver (server));
 		}

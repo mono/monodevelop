@@ -634,6 +634,7 @@
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvent.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLogger.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ImportSearchPathExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
