@@ -36,7 +36,6 @@ using Microsoft.CodeAnalysis.Shared.Utilities;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[Obsolete]
 	public static class NR5CompatibiltyExtensions
 	{
 		/// <summary>
@@ -318,7 +317,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
-	[Obsolete]
 	public static class SignatureComparerMD
 	{
 		public static bool HaveSameSignature (ISymbol symbol1, ISymbol symbol2, bool caseSensitive)
