@@ -32,6 +32,7 @@
       
       <Packages>
         <Package Id="FSharp.Core" Version="4.0.0.1" local="true" /> 
+        <Package Id="System.ValueTuple" Version="4.3.0" local="true" /> 
       </Packages>
       
       <Files>
@@ -1011,7 +1012,6 @@ module Events =
 module BoilerPlateForForm = 
     [<System.STAThread>]
     do ()
-    do System.Windows.Forms.Application.Run()
 #endif
 ]]></UnformattedFile>
       </Files>
