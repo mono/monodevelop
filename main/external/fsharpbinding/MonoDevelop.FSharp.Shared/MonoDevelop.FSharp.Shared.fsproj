@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.FSharp.Shared</RootNamespace>
     <AssemblyName>MonoDevelop.FSharp.Shared</AssemblyName>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
@@ -47,8 +48,6 @@
     <Compile Include="Parser.fs" />
     <Compile Include="KeywordList.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="Completions.fs" />
     <None Include="paket.references" />
