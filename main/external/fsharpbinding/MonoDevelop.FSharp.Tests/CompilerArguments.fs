@@ -104,10 +104,10 @@ type CompilerArgumentsTests() =
     
     [<Test>]
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
-        if not Platform.IsWindows then
+        if Platform.IsMac then
             use testProject = createFSharpProject()
             let _ = testProject.AddReference "mscorlib"
-            let reference = testProject.AddReference "/Users/jason/src/Yaaf.FSharp.Scripting/build/net40/FSharp.Core.dll"
+            let reference = testProject.AddReference "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll"
             let references =
                 CompilerArguments.generateReferences(testProject,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),
