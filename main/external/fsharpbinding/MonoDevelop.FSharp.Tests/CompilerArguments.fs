@@ -107,7 +107,7 @@ type CompilerArgumentsTests() =
         if not Platform.IsWindows then
             use testProject = createFSharpProject()
             let _ = testProject.AddReference "mscorlib"
-            let reference = testProject.AddReference "FSharp.Core.dll"
+            let reference = testProject.AddReference "/Users/jason/src/Yaaf.FSharp.Scripting/build/net40/FSharp.Core.dll"
             let references =
                 CompilerArguments.generateReferences(testProject,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),
