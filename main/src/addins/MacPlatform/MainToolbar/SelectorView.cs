@@ -71,12 +71,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			BezelStyle = NSBezelStyle.TexturedRounded;
 			Title = "";
 
+			var nsa = (INSAccessibility)this;
+			nsa.AccessibilityElement = false;
+
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
 			AddSubview (RealSelectorView);
 
 			// Disguise this NSButton as a group
 			AccessibilityRole = NSAccessibilityRoles.GroupRole;
+
+			// For some reason AddSubview hasn't added RealSelectorView as an accessibility child of SelectorView
+			nsa.AccessibilityChildren = new NSObject [] { RealSelectorView };
 		}
 
 		public override CGSize SizeThatFits (CGSize size)
@@ -356,6 +362,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				FocusRingType = NSFocusRingType.None;
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
+
+				var nsa = (INSAccessibility)this;
+				nsa.AccessibilityIdentifier = "ConfigurationSelector";
+				nsa.AccessibilityLabel = GettextCatalog.GetString ("Configuration Selector");
+				nsa.AccessibilityHelp = GettextCatalog.GetString ("Set the project runtime configuration");
 			}
 
 			void SetVisibleCells (params int[] ids)
