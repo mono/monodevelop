@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Reflection;
@@ -76,6 +77,7 @@ namespace Mono.Debugging.Win32
 		public CorDebuggerSession(char[] badPathChars)
 		{
 			this.badPathChars = badPathChars;
+			ObjectAdapter.BusyStateChanged += (sender, e) => SetBusyState (e);
 			var cancellationToken = helperOperationsCancellationTokenSource.Token;
 			new Thread (() => {
 				try {
@@ -503,14 +505,22 @@ namespace Mono.Debugging.Win32
 				return true;
 
 			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
-				string res = EvaluateExpression (thread, bp.ConditionExpression);
-				if (bp.BreakIfConditionChanges) {
-					if (res == bp.LastConditionValue)
-						return true;
-					bp.LastConditionValue = res;
-				} else {
-					if (res != null && res.ToLower () != "true")
-						return true;
+				try {
+					string res = EvaluateExpression (thread, bp.ConditionExpression);
+					if (bp.BreakIfConditionChanges) {
+						if (res == bp.LastConditionValue)
+							return true;
+						bp.LastConditionValue = res;
+					}
+					else {
+						if (res != null && res.ToLower () != "true")
+							return true;
+					}
+				}
+				catch (EvaluatorException e) {
+					OnDebuggerOutput (false, e.Message);
+					binfo.SetStatus (BreakEventStatus.Invalid, e.Message);
+					return true;
 				}
 			}
 
@@ -1225,6 +1235,11 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
+		protected override void OnCancelAsyncEvaluations ()
+		{
+			ObjectAdapter.CancelAsyncOperations ();
+		}
+
 		protected override void OnNextInstruction ( )
 		{
 			MtaThread.Run (delegate {
@@ -1393,9 +1408,6 @@ namespace Mono.Debugging.Win32
 
 		public CorValue RuntimeInvoke (CorEvaluationContext ctx, CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
 		{
-			if (!ctx.Thread.ActiveChain.IsManaged)
-				throw new EvaluatorException ("Cannot evaluate expression because the thread is stopped in native code.");
-
 			CorValue[] args;
 			if (thisObj == null)
 				args = arguments;
@@ -1711,7 +1723,13 @@ namespace Mono.Debugging.Win32
 				if (j == -1)
 					break;
 				string se = exp.Substring (i + 1, j - i - 1);
-				se = EvaluateExpression (thread, se);
+				try {
+					se = EvaluateExpression (thread, se);
+				}
+				catch (EvaluatorException e) {
+					OnDebuggerOutput (false, e.ToString ());
+					return String.Empty;
+				}
 				sb.Append (exp.Substring (last, i - last));
 				sb.Append (se);
 				last = j + 1;
@@ -1732,9 +1750,12 @@ namespace Mono.Debugging.Win32
 				ctx.Thread = thread;
 				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
 				return val.CreateObjectValue (false).Value;
-			} catch (Exception ex) {
-				OnDebuggerOutput (true, ex.ToString ());
-				return string.Empty;
+			}
+			catch (EvaluatorException e) {
+				throw;
+			}
+			catch (Exception ex) {
+				throw new EvaluatorException (ex.Message);
 			}
 		}
 

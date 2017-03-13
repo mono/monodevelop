@@ -43,6 +43,7 @@ using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElement
 using Microsoft.Samples.Debugging.Extensions;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Mono.Debugging.Win32
 {
@@ -687,6 +688,10 @@ namespace Mono.Debugging.Win32
 		{
 			var ctype = (CorType) GetValueType (ctx, val);
             CorValue obj = GetRealObject(ctx, val);
+			var referenceValue = obj.CastToReferenceValue ();
+			if (referenceValue != null && referenceValue.IsNull)
+				return val;
+
             string tname = GetTypeName(ctx, type);
             string ctypeName = GetValueTypeName (ctx, val);
             if (tname == "System.Object")
@@ -1363,15 +1368,13 @@ namespace Mono.Debugging.Win32
 
 		ValueReference GetHoistedThisReference (CorEvaluationContext cx)
 		{
-			try {
+			return CorDebugUtil.CallHandlingComExceptions (() => {
 				CorValRef vref = new CorValRef (delegate {
 					return cx.Frame.GetArgument (0);
 				});
 				var type = (CorType) GetValueType (cx, vref);
 				return GetHoistedThisReference (cx, type, vref);
-			} catch (Exception) {
-			}
-			return null;
+			}, "GetHoistedThisReference()");
 		}
 
 		ValueReference GetHoistedThisReference (CorEvaluationContext cx, CorType type, object val)
@@ -1449,7 +1452,7 @@ namespace Mono.Debugging.Win32
 			if (mi == null || mi.IsStatic)
 				return null;
 
-			try {
+			return CorDebugUtil.CallHandlingComExceptions (() => {
 				CorValRef vref = new CorValRef (delegate {
 					var result = ctx.Frame.GetArgument (0);
 					if (result.Type == CorElementType.ELEMENT_TYPE_BYREF)
@@ -1458,11 +1461,17 @@ namespace Mono.Debugging.Win32
 				});
 
 				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
-			} catch (Exception e) {
-				ctx.WriteDebuggerError (e);
-				return null;
-			}
+			}, "GetThisReference()");
 		}
+
+		static VariableReference CreateParameterReference (CorEvaluationContext ctx, int paramIndex, string paramName, ObjectValueFlags flags = ObjectValueFlags.Parameter)
+		{
+			CorValRef vref = new CorValRef (delegate {
+				return ctx.Frame.GetArgument (paramIndex);
+			});
+			return new VariableReference (ctx, vref, paramName, flags);
+		}
+
 
 		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext gctx)
 		{
@@ -1474,28 +1483,23 @@ namespace Mono.Debugging.Win32
 						int pos = pi.Position;
 						if (met.IsStatic)
 							pos--;
-						CorValRef vref = null;
-						try {
-							vref = new CorValRef (delegate {
-								return ctx.Frame.GetArgument (pos);
-							});
-						}
-						catch (Exception /*ex*/) {
-						}
-						if (vref != null)
-							yield return new VariableReference (ctx, vref, pi.Name, ObjectValueFlags.Parameter);
+
+						var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, pos, pi.Name),
+							string.Format ("Get parameter {0} of {1}", pi.Name, met.Name));
+						if (parameter != null)
+							yield return parameter;
 					}
 					yield break;
 				}
 			}
 
-			int count = ctx.Frame.GetArgumentCount ();
+			int count = CorDebugUtil.CallHandlingComExceptions (() => ctx.Frame.GetArgumentCount (), "GetArgumentCount()", 0);
 			for (int n = 0; n < count; n++) {
 				int locn = n;
-				var vref = new CorValRef (delegate {
-					return ctx.Frame.GetArgument (locn);
-				});
-				yield return new VariableReference (ctx, vref, "arg_" + (n + 1), ObjectValueFlags.Parameter);
+				var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, locn, "arg_" + (locn + 1)),
+					string.Format ("Get parameter {0}", n));
+				if (parameter != null)
+					yield return parameter;
 			}
 		}
 
@@ -1566,13 +1570,10 @@ namespace Mono.Debugging.Win32
 		{
 			uint offset;
 			CorDebugMappingResult mr;
-			try {
+			return CorDebugUtil.CallHandlingComExceptions (() => {
 				cx.Frame.GetIP (out offset, out mr);
 				return GetLocals (cx, null, (int) offset, false);
-			} catch (Exception e) {
-				cx.WriteDebuggerError (e);
-				return null;
-			}
+			}, "GetLocalVariables()", new ValueReference[0]);
 		}
 		
 		public override ValueReference GetCurrentException (EvaluationContext ctx)
@@ -1580,28 +1581,28 @@ namespace Mono.Debugging.Win32
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			CorValue exception = wctx.Thread.CurrentException;
 
-			try {
-				if (exception != null)
-				{
-					CorHandleValue exceptionHandle = wctx.Session.GetHandle (exception);
-					
-					CorValRef vref = new CorValRef (delegate {
-						return exceptionHandle;
-					});
-					
-					return new VariableReference (ctx, vref, ctx.Options.CurrentExceptionTag, ObjectValueFlags.Variable);
-				}
-				return base.GetCurrentException(ctx);
-			} catch (Exception e) {
-				ctx.WriteDebuggerError (e);
+			if (exception == null)
 				return null;
-			}
+			return CorDebugUtil.CallHandlingComExceptions (() => {
+				CorValRef vref = new CorValRef (delegate {
+					return wctx.Session.GetHandle (exception);
+				});
+				return new VariableReference (ctx, vref, ctx.Options.CurrentExceptionTag, ObjectValueFlags.Variable);
+			}, "Get current exception");
+		}
+
+		static VariableReference CreateLocalVariableReference (CorEvaluationContext ctx, int varIndex, string varName, ObjectValueFlags flags = ObjectValueFlags.Variable)
+		{
+			CorValRef vref = new CorValRef (delegate {
+				return ctx.Frame.GetLocalVariable (varIndex);
+			});
+			return new VariableReference (ctx, vref, varName, flags);
 		}
 
 		IEnumerable<ValueReference> GetLocals (CorEvaluationContext ctx, ISymbolScope scope, int offset, bool showHidden)
 		{
-            if (ctx.Frame.FrameType != CorFrameType.ILFrame)
-                yield break;
+			if (ctx.Frame.FrameType != CorFrameType.ILFrame)
+				yield break;
 
 			if (scope == null) {
 				ISymbolMethod met = ctx.Frame.Function.GetSymbolMethod (ctx.Session);
@@ -1611,10 +1612,10 @@ namespace Mono.Debugging.Win32
 					int count = ctx.Frame.GetLocalVariablesCount ();
 					for (int n = 0; n < count; n++) {
 						int locn = n;
-						CorValRef vref = new CorValRef (delegate {
-							return ctx.Frame.GetLocalVariable (locn);
-						});
-						yield return new VariableReference (ctx, vref, "local_" + (n + 1), ObjectValueFlags.Variable);
+						var localVar = CorDebugUtil.CallHandlingComExceptions (() => CreateLocalVariableReference (ctx, locn, "local_" + (locn + 1)),
+							string.Format ("Get local variable {0}", locn));
+						if (localVar != null)
+							yield return localVar;
 					}
 					yield break;
 				}
@@ -1624,20 +1625,23 @@ namespace Mono.Debugging.Win32
 				if (var.Name == "$site")
 					continue;
 				if (IsClosureReferenceLocal (var)) {
-					int addr = var.AddressField1;
-					var vref = new CorValRef (delegate {
-						return ctx.Frame.GetLocalVariable (addr);
-					});
+					var variableReference = CorDebugUtil.CallHandlingComExceptions (() => {
+						int addr = var.AddressField1;
+						return CreateLocalVariableReference (ctx, addr, var.Name);
+					}, string.Format ("Get local variable {0}", var.Name));
 
-					foreach (var gv in GetHoistedLocalVariables (ctx, new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable))) {
-						yield return gv;
+					if (variableReference != null) {
+						foreach (var gv in GetHoistedLocalVariables (ctx, variableReference)) {
+							yield return gv;
+						}
 					}
 				} else if (!IsGeneratedTemporaryLocal (var) || showHidden) {
-					int addr = var.AddressField1;
-					var vref = new CorValRef (delegate {
-						return ctx.Frame.GetLocalVariable (addr);
-					});
-					yield return new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable);
+					var variableReference = CorDebugUtil.CallHandlingComExceptions (() => {
+						int addr = var.AddressField1;
+						return CreateLocalVariableReference (ctx, addr, var.Name);
+					}, string.Format ("Get local variable {0}", var.Name));
+					if (variableReference != null)
+						yield return variableReference;
 				}
 			}
 
@@ -1695,11 +1699,6 @@ namespace Mono.Debugging.Win32
 
 				foreach (MemberInfo m in mems) {
 					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
-					if (atts.Length == 0) {
-						atts = m.GetCustomAttributes (typeof (CompilerGeneratedAttribute), false);
-						if (atts.Length > 0)
-							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
-					}
 					if (atts.Length > 0) {
 						hasTypeData = true;
 						if (memberData == null)
