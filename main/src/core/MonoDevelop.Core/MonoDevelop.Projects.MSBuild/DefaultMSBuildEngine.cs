@@ -206,6 +206,19 @@ namespace MonoDevelop.Projects.MSBuild
 			context.InitEvaluation (pi.Project);
 			var objects = pi.Project.GetAllObjects ();
 
+			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
+				var list = objects.ToList ();
+				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
+				int index = 0;
+				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
+					var propsPath = $"$(MSBuildSDKsPath)\\{sdkPath}\\Sdk\\Sdk.props";
+					var targetsPath = $"$(MSBuildSDKsPath)\\{sdkPath}\\Sdk\\Sdk.targets";
+					list.Insert (index++, new MSBuildImport { Project = propsPath, Condition = $"Exists('{propsPath}')" });
+					list.Add (new MSBuildImport { Project = targetsPath, Condition = $"Exists('{targetsPath}')" });
+				}
+				objects = list;
+			}
+
 			// If there is a .user project file load it using a fake import item added at the end of the objects list
 			if (File.Exists (pi.Project.FileName + ".user"))
 				objects = objects.Concat (new MSBuildImport {Project = pi.Project.FileName + ".user" });

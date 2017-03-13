@@ -296,7 +296,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": defaultTargets = value; return;
 				case "ToolsVersion": toolsVersion = value; return;
-				case "Sdk": sdk = value; return;
+				case "Sdk": Sdk = value; return;
 			}
 			base.ReadAttribute (name, value);
 		}
@@ -307,7 +307,7 @@ namespace MonoDevelop.Projects.MSBuild
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
 				case "xmlns": return string.IsNullOrEmpty (Namespace) ? null : Namespace;
-				case "Sdk": return sdk;
+				case "Sdk": return Sdk;
 			}
 			return base.WriteAttribute (name);
 		}
@@ -524,11 +524,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string sdk;
+		public string Sdk { get; set; }
 
 		public override string Namespace {
 			get {
-				if (sdk != null)
+				if (Sdk != null)
 					return string.Empty;
 				return Schema;
 			}

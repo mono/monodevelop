@@ -347,7 +347,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnBeginLoad ()
 		{
-			dotNetCoreMSBuildProject.Sdk = DotNetCoreProjectReader.GetDotNetCoreSdk (Project.FileName);
+			dotNetCoreMSBuildProject.Sdk = Project.MSBuildProject.Sdk;
 			base.OnBeginLoad ();
 		}
 
@@ -371,10 +371,7 @@ namespace MonoDevelop.DotNetCore
 			if (!sdkPaths.Exist)
 				return;
 
-			if (dotNetCoreMSBuildProject.AddInternalSdkImports (project, sdkPaths)) {
-				project.Evaluate ();
-				dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
-			}
+			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
 		/// <summary>
@@ -570,6 +567,20 @@ namespace MonoDevelop.DotNetCore
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new DotNetCoreRunConfiguration (name);
+		}
+
+		/// <summary>
+		/// HACK: Hide certain files that are currently being added to the Solution window.
+		/// </summary>
+		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			if (Project.Loading) {
+				foreach (var file in objs.OfType<ProjectFile> ()) {
+					if (file.FilePath.ShouldBeHidden ())
+						file.Flags = ProjectItemFlags.Hidden;
+				}
+			}
+			base.OnItemsAdded (objs);
 		}
 	}
 }
