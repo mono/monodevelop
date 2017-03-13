@@ -44,9 +44,18 @@ type ``Completion Tests``() =
         results |> should contain "RegularExpressions"
 
     [<Test>]
-    member x.``Completes array``() =
-        let results = getCompletions "[||]." true
-        results |> should contain "GetUpperBound"
+    member x.``Completes list``() =
+        let results = getCompletions "[].|" true
+        results |> should contain "Head"
+
+    [<Test>]
+    member x.``Array completion shouldn't contain identifier``() =
+        let results = getCompletions 
+                        """
+                        let x = [1;2;3]
+                        x.[0].|
+                        """ true
+        results |> shouldnot contain "x"
 
     [<Test>]
     member x.``Completes local identifier``() =
