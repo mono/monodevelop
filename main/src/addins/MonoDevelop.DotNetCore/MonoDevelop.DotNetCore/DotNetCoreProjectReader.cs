@@ -79,11 +79,19 @@ namespace MonoDevelop.DotNetCore
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
 			return Task.Run (() => {
-				if (CanRead (fileName, typeof(SolutionItem)))
-					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS15, typeGuid, itemGuid, ctx);
+				if (CanRead (fileName, typeof(SolutionItem))) {
+					ConfigureMSBuildSDKsPath ();
+					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2017, typeGuid, itemGuid, ctx);
+				}
 
 				throw new NotSupportedException ();
 			});
+		}
+
+		void ConfigureMSBuildSDKsPath ()
+		{
+			var paths = new DotNetCoreSdkPaths ();
+			paths.FindMSBuildSDKsPath ();
 		}
 	}
 }
