@@ -86,7 +86,6 @@
     <Compile Include="Storage\PageManager.cs" />
     <Compile Include="Storage\SimpleTextStorage.cs" />
     <Compile Include="Storage\SimpleTextStorageLoader.cs" />
-    <Compile Include="StringRebuilder\BaseStringRebuilder.cs" />
     <Compile Include="StringRebuilder\BinaryStringRebuilder.cs" />
     <Compile Include="StringRebuilder\LineSpan.cs" />
     <Compile Include="StringRebuilder\SimpleStringRebuilder.cs" />

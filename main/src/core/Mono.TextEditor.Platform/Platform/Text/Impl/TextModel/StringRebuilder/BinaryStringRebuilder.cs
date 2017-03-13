@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Text.Utilities;
 
 namespace Microsoft.VisualStudio.Text.Implementation
 {
-    internal sealed class BinaryStringRebuilder : BaseStringRebuilder
+    internal sealed class BinaryStringRebuilder : StringRebuilder
     {
         #region Private
         private readonly StringRebuilder _left;

@@ -12,7 +12,7 @@ using System.IO;
 
 namespace Microsoft.VisualStudio.Text.Implementation
 {
-    internal sealed class SimpleStringRebuilder : BaseStringRebuilder
+    internal sealed class SimpleStringRebuilder : StringRebuilder
     {
         #region Private
         private readonly ITextStorage _storage;

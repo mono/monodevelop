@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </summary>
         /// <remarks>Line breaks consist of any of '\r', '\n', 0x85,
         /// or a "\r\n" pair (which is treated as a single line break).</remarks>
-        public int LineBreakCount;
+        public readonly int LineBreakCount;
 
         public readonly int Depth;
 
@@ -102,7 +102,19 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero or <paramref name="startIndex"/> + <paramref name="length"/> is greater than <see cref="Length"/>.</exception>
-        public abstract char[] ToCharArray(int startIndex, int length);
+        public char[] ToCharArray(int startIndex, int length)
+        {
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException("startIndex");
+
+            if ((length < 0) || (startIndex + length > this.Length) || (startIndex + length < 0))
+                throw new ArgumentOutOfRangeException("length");
+
+            char[] copy = new char[length];
+            this.CopyTo(startIndex, copy, 0, length);
+
+            return copy;
+        }
 
         /// <summary>
         /// Copy a range of text to a destination character array.
@@ -156,7 +168,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Append(string text);
+        public StringRebuilder Append(string text)
+        {
+            return this.Insert(this.Length, text);
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to appending text into this <see cref="StringRebuilder"/>.
@@ -168,7 +183,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Append(StringRebuilder text);
+        public StringRebuilder Append(StringRebuilder text)
+        {
+            return this.Insert(this.Length, text);
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to inserting text into this <see cref="StringRebuilder"/>.
@@ -182,7 +200,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Insert(int position, string text);
+        public StringRebuilder Insert(int position, string text)
+        {
+            return this.Insert(position, SimpleStringRebuilder.Create(text));
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to inserting text into this <see cref="StringRebuilder"/>.
@@ -196,7 +217,15 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Insert(int position, StringRebuilder text);
+        public StringRebuilder Insert(int position, StringRebuilder text)
+        {
+            if ((position < 0) || (position > this.Length))
+                throw new ArgumentOutOfRangeException("position");
+            if (text == null)
+                throw new ArgumentNullException("text");
+
+            return this.Assemble(Span.FromBounds(0, position), text, Span.FromBounds(position, this.Length));
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to inserting storage into this <see cref="StringRebuilder"/>.
@@ -210,7 +239,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is less than zero or greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="storage"/> is null.</exception>
-        public abstract StringRebuilder Insert(int position, ITextStorage storage);
+        public StringRebuilder Insert(int position, ITextStorage storage)
+        {
+            return this.Insert(position, SimpleStringRebuilder.Create(storage));
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to deleting text from this <see cref="StringRebuilder"/>.
@@ -222,7 +254,13 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// <para>This operation can be performed simultaneously on multiple threads.</para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
-        public abstract StringRebuilder Delete(Span span);
+        public StringRebuilder Delete(Span span)
+        {
+            if (span.End > this.Length)
+                throw new ArgumentOutOfRangeException("span");
+
+            return this.Assemble(Span.FromBounds(0, span.Start), Span.FromBounds(span.End, this.Length));
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to replacing a contiguous span of characters
@@ -243,7 +281,10 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Replace(Span span, string text);
+        public StringRebuilder Replace(Span span, string text)
+        {
+            return this.Replace(span, SimpleStringRebuilder.Create(text));
+        }
 
         /// <summary>
         /// Create a new StringRebuilder equivalent to replacing a contiguous span of characters
@@ -264,7 +305,15 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="span"/>.End is greater than <see cref="Length"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is null.</exception>
-        public abstract StringRebuilder Replace(Span span, StringRebuilder text);
+        public StringRebuilder Replace(Span span, StringRebuilder text)
+        {
+            if (span.End > this.Length)
+                throw new ArgumentOutOfRangeException("span");
+            if (text == null)
+                throw new ArgumentNullException("text");
+
+            return this.Assemble(Span.FromBounds(0, span.Start), text, Span.FromBounds(span.End, this.Length));
+        }
 
         public abstract StringRebuilder Child(bool rightSide);
 
@@ -279,5 +328,35 @@ namespace Microsoft.VisualStudio.Text.Implementation
         /// piece EndsWithReturn, then a line break crosses a piece boundary.
         /// </summary>
         public abstract bool StartsWithNewLine { get; }
+
+        #region Private
+        private StringRebuilder Assemble(Span left, Span right)
+        {
+            if (left.Length == 0)
+                return this.Substring(right);
+            else if (right.Length == 0)
+                return this.Substring(left);
+            else if (left.Length + right.Length == this.Length)
+                return this;
+            else
+                return BinaryStringRebuilder.Create(this.Substring(left), this.Substring(right));
+        }
+
+        private StringRebuilder Assemble(Span left, StringRebuilder text, Span right)
+        {
+            if (text.Length == 0)
+                return Assemble(left, right);
+            else if (left.Length == 0)
+                return (right.Length == 0) ? text : BinaryStringRebuilder.Create(text, this.Substring(right));
+            else if (right.Length == 0)
+                return BinaryStringRebuilder.Create(this.Substring(left), text);
+            else if (left.Length < right.Length)
+                return BinaryStringRebuilder.Create(BinaryStringRebuilder.Create(this.Substring(left), text),
+                                                    this.Substring(right));
+            else
+                return BinaryStringRebuilder.Create(this.Substring(left),
+                                                    BinaryStringRebuilder.Create(text, this.Substring(right)));
+        }
+        #endregion
     }
 }
