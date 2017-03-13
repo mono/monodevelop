@@ -9,7 +9,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
-        
+       
 type ``Completion Tests``() =
     let getParseResults (documentContext:DocumentContext, _text) =
         async {
@@ -42,6 +42,11 @@ type ``Completion Tests``() =
     member x.``Completes namespace``() =
         let results = getCompletions "open System.Text.|" true
         results |> should contain "RegularExpressions"
+
+    [<Test>]
+    member x.``Completes array``() =
+        let results = getCompletions "[||]." true
+        results |> should contain "GetUpperBound"
 
     [<Test>]
     member x.``Completes local identifier``() =

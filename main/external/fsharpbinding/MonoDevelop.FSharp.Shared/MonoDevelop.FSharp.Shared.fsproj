@@ -46,8 +46,6 @@
     <Compile Include="Parser.fs" />
     <Compile Include="KeywordList.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="Completions.fs" />
     <None Include="paket.references" />
