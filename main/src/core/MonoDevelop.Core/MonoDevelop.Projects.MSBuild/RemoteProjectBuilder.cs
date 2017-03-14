@@ -51,6 +51,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 
+		List<RemoteProjectBuilder> remoteProjectBuilders = new List<RemoteProjectBuilder> ();
+
 		public RemoteBuildEngine (RemoteProcessConnection connection)
 		{
 			this.connection = connection;
@@ -66,7 +68,21 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<ProjectBuilder> LoadProject (string projectFile)
+		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
+		{
+			var builder = await LoadProject (projectFile).ConfigureAwait (false);
+			var pb = new RemoteProjectBuilder (projectFile, builder, this);
+			lock (remoteProjectBuilders) {
+				remoteProjectBuilders.Add (pb);
+
+				// Unlikely, but it may happen
+				if (IsShuttingDown)
+					pb.Shutdown ();
+			}
+			return pb;
+		}
+
+		async Task<ProjectBuilder> LoadProject (string projectFile)
 		{
 			try {
 				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile})).ProjectId;
@@ -77,8 +93,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 		
-		public async Task UnloadProject (ProjectBuilder builder)
+		internal async Task UnloadProject (RemoteProjectBuilder remoteBuilder, ProjectBuilder builder)
 		{
+			lock (remoteProjectBuilders)
+				remoteProjectBuilders.Remove (remoteBuilder);
+			
 			try {
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = ((ProjectBuilder)builder).ProjectId});
 			} catch (Exception ex) {
@@ -87,6 +106,22 @@ namespace MonoDevelop.Projects.MSBuild
 					throw;
 			}
 		}
+
+		/// <summary>
+		/// Marks this instance as being shutdown, so it should not be used to create new project builders.
+		/// </summary>
+		public void Shutdown ()
+		{
+			lock (remoteProjectBuilders) {
+				if (IsShuttingDown)
+					return;
+				IsShuttingDown = true;
+				foreach (var pb in remoteProjectBuilders)
+					pb.Shutdown ();
+			}
+		}
+
+		public bool IsShuttingDown { get; private set; }
 
 		public async Task CancelTask (int taskId)
 		{
@@ -263,17 +298,13 @@ namespace MonoDevelop.Projects.MSBuild
 		string file;
 		static int lastTaskId;
 
-		internal RemoteProjectBuilder (string file, RemoteBuildEngine engine)
+		internal RemoteProjectBuilder (string file, ProjectBuilder builder, RemoteBuildEngine engine)
 		{
 			this.file = file;
 			this.engine = engine;
+			this.builder = builder;
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
 			packageDependenciesCache = new Dictionary<string, PackageDependency[]> ();
-		}
-
-		internal async Task Load ()
-		{
-			builder = await engine.LoadProject (file).ConfigureAwait (false);
 		}
 
 		public event EventHandler Disconnected;
@@ -474,7 +505,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!MSBuildProjectService.ShutDown && engine != null) {
 				try {
 					if (builder != null)
-						await engine.UnloadProject (builder).ConfigureAwait (false);
+						await engine.UnloadProject (this, builder).ConfigureAwait (false);
 					MSBuildProjectService.ReleaseProjectBuilder (engine);
 				} catch {
 					// Ignore

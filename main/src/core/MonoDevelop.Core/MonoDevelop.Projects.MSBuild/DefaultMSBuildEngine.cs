@@ -952,43 +952,64 @@ namespace MonoDevelop.Projects.MSBuild
 				return;
             }
 
-			// For some reason, Mono can have several extension paths, so we need to try each of them
-			foreach (var ep in MSBuildEvaluationContext.GetApplicableExtensionsPaths ()) {
-				var files = GetImportFiles (project, context, import, ep);
-				if (files == null || files.Length == 0)
-					continue;
+
+			// Try importing the files using the import as is
+
+			bool keepSearching;
+
+			var files = GetImportFiles (project, context, import, null, null, out keepSearching);
+			if (files != null) {
 				foreach (var f in files)
 					ImportFile (project, context, import, f);
-				return;
 			}
 
-			// No import was found
+			// We may need to keep searching if the import was not found, or if the import had a wildcard.
+			// In that case, look in fallback search paths
+
+			if (keepSearching) {
+				foreach (var prop in context.GetProjectImportSearchPaths ()) {
+					if (import.Project.IndexOf ("$(" + prop.Property + ")", StringComparison.OrdinalIgnoreCase) == -1)
+						continue;
+					files = GetImportFiles (project, context, import, prop.Property, prop.Path, out keepSearching);
+					if (files != null) {
+						foreach (var f in files)
+							ImportFile (project, context, import, f);
+					}
+					if (!keepSearching)
+						break;
+				}
+			}
 		}
 
-		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
+		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string pathProperty, string pathPropertyValue, out bool keepSearching)
 		{
-			if (extensionsPath != null) {
+			// This methods looks for targets in location specified by the import, and replacing pathProperty by a specific value.
+
+			if (pathPropertyValue != null) {
 				var tempCtx = new MSBuildEvaluationContext (context);
-				var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+				var mep = MSBuildProjectService.ToMSBuildPath (null, pathPropertyValue);
+				tempCtx.SetPropertyValue (pathProperty, mep);
 				context = tempCtx;
 			}
 
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true)) {
+				keepSearching = false;
 				return null;
+			}
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
 
 			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
-				return File.Exists (path) ? new [] { path } : null;
+				var result = File.Exists (path) ? new [] { path } : null;
+				keepSearching = result == null;
+				return result;
 			}
 			else {
+				keepSearching = true;
 				path = Path.GetDirectoryName (path);
 				if (!Directory.Exists (path))
 					return null;
