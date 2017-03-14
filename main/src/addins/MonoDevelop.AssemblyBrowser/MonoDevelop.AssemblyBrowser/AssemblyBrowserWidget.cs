@@ -1465,17 +1465,17 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 		
-		void Dispose (ITreeNavigator nav)
+		void Dispose<T> (ITreeNavigator nav) where T:class, IDisposable
 		{
 			if (nav == null)
 				return;
-			IDisposable d = nav.DataItem as IDisposable;
+			T d = nav.DataItem as T;
 			if (d != null) 
 				d.Dispose ();
 			if (nav.HasChildren ()) {
 				nav.MoveToFirstChild ();
 				do {
-					Dispose (nav);
+					Dispose<T> (nav);
 				} while (nav.MoveNext ());
 				nav.MoveToParent ();
 			}
@@ -1491,8 +1491,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			if (this.TreeView != null) {
-				//	Dispose (TreeView.GetRootNode ());
-				TreeView.SelectionChanged -= HandleCursorChanged;
+				//	Dispose<IDisposable> (TreeView.GetRootNode ());				Dispose<AssemblyDefinition> (TreeView.GetRootNode ());
 				this.TreeView.Clear ();
 				this.TreeView = null;
 			}
