@@ -369,33 +369,35 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task FileUpdateChangeThenRemoveMetadata2 ()
 		{
-			//var tn = new ProjectTypeNode ();
 			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
-			//MSBuildProjectService.RegisterCustomItemType (tn);
 			WorkspaceObject.RegisterCustomExtension (fn);
 
-			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
-			string originalProjFile = new FilePath (projFile).ChangeName ("glob-import-test-original.csproj");
-			File.Copy (projFile, originalProjFile);
-			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.UseAdvancedGlobSupport = true;
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				string originalProjFile = new FilePath (projFile).ChangeName ("glob-import-test-original.csproj");
+				File.Copy (projFile, originalProjFile);
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
 
-			Assert.AreEqual (3, p.Files.Count);
+				Assert.AreEqual (3, p.Files.Count);
 
-			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
-			f.Metadata.SetValue ("foo", "bar");
+				var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				f.Metadata.SetValue ("foo", "bar");
 
-			await p.SaveAsync (Util.GetMonitor ());
+				await p.SaveAsync (Util.GetMonitor ());
 
-			string projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
 
-			f.Metadata.RemoveProperty ("foo");
+				f.Metadata.RemoveProperty ("foo");
 
-			await p.SaveAsync (Util.GetMonitor ());
+				await p.SaveAsync (Util.GetMonitor ());
 
-			projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
 		}
 
 		[Test]
@@ -441,33 +443,40 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task FileUpdateChangeThenRemoveMetadataAfterReload2 ()
 		{
-			string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
-			string originalProjFile = new FilePath (projFile).ChangeName ("glob-import-test-original.csproj");
-			File.Copy (projFile, originalProjFile);
-			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.UseAdvancedGlobSupport = true;
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
 
-			Assert.AreEqual (3, p.Files.Count);
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				string originalProjFile = new FilePath (projFile).ChangeName ("glob-import-test-original.csproj");
+				File.Copy (projFile, originalProjFile);
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
 
-			var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
-			f.Metadata.SetValue ("foo", "bar");
+				Assert.AreEqual (3, p.Files.Count);
 
-			await p.SaveAsync (Util.GetMonitor ());
+				var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				f.Metadata.SetValue ("foo", "bar");
 
-			string projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
+				await p.SaveAsync (Util.GetMonitor ());
 
-			// Reload the project.
-			p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			p.UseAdvancedGlobSupport = true;
-			f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
 
-			f.Metadata.RemoveProperty ("foo");
+				// Reload the project.
+				p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+				f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
 
-			await p.SaveAsync (Util.GetMonitor ());
+				f.Metadata.RemoveProperty ("foo");
 
-			projectXml = File.ReadAllText (p.FileName);
-			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
 		}
 
 		[Test]
