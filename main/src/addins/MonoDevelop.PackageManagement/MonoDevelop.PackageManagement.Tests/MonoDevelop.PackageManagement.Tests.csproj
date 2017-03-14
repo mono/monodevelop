@@ -106,6 +106,9 @@
     <Reference Include="NuGet.RuntimeModel">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.RuntimeModel.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Commands">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Commands.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
