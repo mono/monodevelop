@@ -136,9 +136,9 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			if (document != null)
 			{
 				var root = document.GetSyntaxRootAsync(cancellationToken).WaitAndGetResult(cancellationToken);
-				var position = EndOffset;
+				var position = EndOffset + 1;
 
-				return root.FindTokenFromEnd(position, includeZeroWidth: false, findInsideTrivia: true).RawKind == this.ClosingTokenKind;
+				return root.FindTokenFromEnd (position, includeZeroWidth: false, findInsideTrivia: true).RawKind == this.ClosingTokenKind;
 			}
 
 			return true;
