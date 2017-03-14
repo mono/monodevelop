@@ -34,19 +34,71 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class MSBuildSearchPathTests: TestBase
 	{
+		public void RegisterSearchPath ()
+		{
+			string extPath = Util.GetSampleProjectPath ("msbuild-search-paths", "extensions-path");
+			MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildExtensionsPath", extPath);
+		}
+
+		public void UnregisterSearchPath ()
+		{
+			string extPath = Util.GetSampleProjectPath ("msbuild-search-paths", "extensions-path");
+			MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildExtensionsPath", extPath);
+		}
+
+		[Test]
+		public async Task CustomTarget ()
+		{
+			try {
+				RegisterSearchPath ();
+				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "ConsoleProject.csproj");
+				DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("TestTarget"));
+			} finally {
+				UnregisterSearchPath ();
+			}
+		}
+
 		[Test]
 		public async Task InjectTarget ()
 		{
-			string extPath = Util.GetSampleProjectPath ("msbuild-search-paths", "extensions-path");
-			MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildExtensionsPath", extPath + Path.DirectorySeparatorChar);
+			try {
+				RegisterSearchPath ();
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
+				Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var project = (Project)sol.Items [0];
+				var res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+			} finally {
+				UnregisterSearchPath ();
+			}
+		}
+
+		[Test]
+		public async Task InjectTargetAfterLoadingProject ()
+		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var project = (Project)sol.Items [0];
-			var res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations[0].Selector);
-			Assert.AreEqual (1, res.BuildResult.WarningCount);
-			Assert.AreEqual ("Works!", res.BuildResult.Errors[0].ErrorText);
+			var res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
+			Assert.AreEqual (0, res.BuildResult.WarningCount);
+			Assert.AreEqual (1, res.BuildResult.ErrorCount);
+
+			try {
+				RegisterSearchPath ();
+				res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+			} finally {
+				UnregisterSearchPath ();
+			}
+
+			res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
+			Assert.AreEqual (0, res.BuildResult.WarningCount);
+			Assert.AreEqual (1, res.BuildResult.ErrorCount);
 		}
 	}
 }
