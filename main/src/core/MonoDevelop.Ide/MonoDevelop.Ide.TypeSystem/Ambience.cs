@@ -30,7 +30,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using Mono.Cecil;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;

@@ -85,6 +85,9 @@ namespace Stetic {
 		
 		public void ClearCache ()
 		{
+			foreach (AssemblyDefinition asm in _assemblies) {
+				asm.Dispose ();
+			}
 			_assemblies.Clear ();
 		}
 

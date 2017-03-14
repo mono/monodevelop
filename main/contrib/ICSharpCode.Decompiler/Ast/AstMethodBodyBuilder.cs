@@ -65,10 +65,10 @@ namespace ICSharpCode.Decompiler.Ast
 				builder.context = context;
 				builder.typeSystem = methodDef.Module.TypeSystem;
 				if (Debugger.IsAttached) {
-					return builder.CreateMethodBody(parameters);
+					return builder.CreateMethodBody(parameters, methodDef);
 				} else {
 					try {
-						return builder.CreateMethodBody(parameters);
+						return builder.CreateMethodBody(parameters, methodDef);
 					} catch (OperationCanceledException) {
 						throw;
 					} catch (Exception ex) {
@@ -80,7 +80,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
-		public BlockStatement CreateMethodBody(IEnumerable<ParameterDeclaration> parameters)
+		public BlockStatement CreateMethodBody(IEnumerable<ParameterDeclaration> parameters, MethodDefinition mref)
 		{
 			if (methodDef.Body == null) {
 				return null;
@@ -99,7 +99,7 @@ namespace ICSharpCode.Decompiler.Ast
 			var localVariables = ilMethod.GetSelfAndChildrenRecursive<ILExpression>().Select(e => e.Operand as ILVariable)
 				.Where(v => v != null && !v.IsParameter).Distinct();
 			Debug.Assert(context.CurrentMethod == methodDef);
-			NameVariables.AssignNamesToVariables(context, astBuilder.Parameters, localVariables, ilMethod);
+			NameVariables.AssignNamesToVariables(context, astBuilder.Parameters, localVariables, ilMethod, methodDef);
 			
 			if (parameters != null) {
 				foreach (var pair in (from p in parameters
@@ -1131,7 +1131,7 @@ namespace ICSharpCode.Decompiler.Ast
 			} else if (operand is Cecil.TypeReference) {
 				return ((Cecil.TypeReference)operand).FullName;
 			} else if (operand is VariableDefinition) {
-				return ((VariableDefinition)operand).Name;
+				return "V_" + ((VariableDefinition)operand).Index;
 			} else if (operand is ParameterDefinition) {
 				return ((ParameterDefinition)operand).Name;
 			} else if (operand is FieldReference) {

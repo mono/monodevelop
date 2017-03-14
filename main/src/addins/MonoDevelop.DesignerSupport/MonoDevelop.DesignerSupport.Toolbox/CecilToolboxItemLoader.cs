@@ -208,7 +208,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		protected static bool ImplementsInterface (Mono.Linker.AssemblyResolver resolver, MC.TypeReference inspect, MC.TypeReference interf)
 		{
 			MC.TypeDefinition currentType = resolver.Resolve (inspect);
-			foreach (MC.TypeReference child in currentType.Interfaces) {
+			foreach (MC.InterfaceImplementation childDefinition in currentType.Interfaces) {
+				var child = childDefinition.InterfaceType;
 				if (child.FullName == interf.FullName)
 					return true;
 				if (ImplementsInterface (resolver, child, interf))

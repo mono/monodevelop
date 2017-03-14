@@ -1531,15 +1531,6 @@ namespace MonoDevelop.AssemblyBrowser
 			base.OnDestroyed ();
 		}
 		
-		static AssemblyDefinition ReadAssembly (string fileName)
-		{
-			ReaderParameters parameters = new ReaderParameters ();
-//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
-			using (var stream = new System.IO.MemoryStream (System.IO.File.ReadAllBytes (fileName))) {
-				return AssemblyDefinition.ReadAssembly (stream, parameters);
-			}
-		}
-		
 
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();

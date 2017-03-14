@@ -119,14 +119,15 @@ namespace MonoDevelop.Debugger.Soft
 				}
 				
 				try {
-					var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (file);
-					if (string.IsNullOrEmpty (asm.Name.Name))
-						throw new InvalidOperationException ("Assembly has no assembly name");
-					
-					AssemblyName name = new AssemblyName (asm.Name.FullName);
-					if (!pathMap.ContainsKey (asm.Name.FullName))
-						pathMap.Add (asm.Name.FullName, file);
-					names.Add (name);
+					using (var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (file)) {
+						if (string.IsNullOrEmpty (asm.Name.Name))
+							throw new InvalidOperationException ("Assembly has no assembly name");
+
+						AssemblyName name = new AssemblyName (asm.Name.FullName);
+						if (!pathMap.ContainsKey (asm.Name.FullName))
+							pathMap.Add (asm.Name.FullName, file);
+						names.Add (name);
+					}
 				} catch (Exception ex) {
 					dsi.LogMessage = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
 						"Debugger will now debug all code, not just user code.", file);

@@ -248,10 +248,6 @@
       <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
       <Name>Mono.Addins.Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>

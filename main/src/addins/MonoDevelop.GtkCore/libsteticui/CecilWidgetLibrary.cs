@@ -94,18 +94,18 @@ namespace Stetic
 			RefreshFromCache ();
 			if (cache_info == null || !File.Exists (filename))
 				return;
-			
-			assembly = AssemblyDefinition.ReadAssembly (filename);
 
-			objects_dirty = false;
-			Load (cache_info.ObjectsDocument);
-			if (objects_dirty)
-				cache_info.WriteObjectsFile ();
-			
-			foreach (string dep in GetLibraryDependencies ()) {
-				WidgetLibrary lib = Registry.GetWidgetLibrary (dep);
-				if (lib != null && !lib.CanGenerateCode)
-					canGenerateCode = false;
+			using (assembly = AssemblyDefinition.ReadAssembly (filename)) {
+				objects_dirty = false;
+				Load (cache_info.ObjectsDocument);
+				if (objects_dirty)
+					cache_info.WriteObjectsFile ();
+
+				foreach (string dep in GetLibraryDependencies ()) {
+					WidgetLibrary lib = Registry.GetWidgetLibrary (dep);
+					if (lib != null && !lib.CanGenerateCode)
+						canGenerateCode = false;
+				}
 			}
 			assembly = null;
 			info_changed = false;
@@ -292,30 +292,30 @@ namespace Stetic
 			string defTargetGtkVersion = info.ObjectsDocument.DocumentElement.GetAttribute ("gtk-version");
 			if (defTargetGtkVersion.Length == 0)
 				defTargetGtkVersion = "2.4";
-			
-			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (filename);
-			
-			foreach (XmlElement elem in info.ObjectsDocument.SelectNodes ("objects/object")) {
-				if (elem.GetAttribute ("internal") == "true" || elem.HasAttribute ("deprecated") || !elem.HasAttribute ("palette-category"))
-					continue;
-					
-				string iconname = elem.GetAttribute ("icon");
-				Gdk.Pixbuf icon = GetEmbeddedIcon (adef, iconname);
-				
-				string targetGtkVersion = elem.GetAttribute ("gtk-version");
-				if (targetGtkVersion.Length == 0)
-					targetGtkVersion = defTargetGtkVersion;
-				
-				ComponentType ct = new ComponentType (app,
-					elem.GetAttribute ("type"),
-					elem.GetAttribute ("label"), 
-					elem.GetAttribute ("type"),
-					elem.GetAttribute ("palette-category"), 
-					targetGtkVersion,
-					filename,
-					icon);
-					
-				list.Add (ct);
+
+			using (AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (filename)) {
+				foreach (XmlElement elem in info.ObjectsDocument.SelectNodes ("objects/object")) {
+					if (elem.GetAttribute ("internal") == "true" || elem.HasAttribute ("deprecated") || !elem.HasAttribute ("palette-category"))
+						continue;
+
+					string iconname = elem.GetAttribute ("icon");
+					Gdk.Pixbuf icon = GetEmbeddedIcon (adef, iconname);
+
+					string targetGtkVersion = elem.GetAttribute ("gtk-version");
+					if (targetGtkVersion.Length == 0)
+						targetGtkVersion = defTargetGtkVersion;
+
+					ComponentType ct = new ComponentType (app,
+						elem.GetAttribute ("type"),
+						elem.GetAttribute ("label"),
+						elem.GetAttribute ("type"),
+						elem.GetAttribute ("palette-category"),
+						targetGtkVersion,
+						filename,
+						icon);
+
+					list.Add (ct);
+				}
 			}
 			
 			return list;

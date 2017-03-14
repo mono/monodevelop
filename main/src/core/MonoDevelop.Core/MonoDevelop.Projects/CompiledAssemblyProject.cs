@@ -82,38 +82,39 @@ namespace MonoDevelop.Projects
 			var tid = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.DefaultRuntime, assemblyPath);
 			if (tid != null)
 				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (tid);
-			
-			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (assemblyPath);
-			MdbReaderProvider mdbProvider = new MdbReaderProvider ();
-			try {
-				ISymbolReader reader = mdbProvider.GetSymbolReader (adef.MainModule, assemblyPath);
-				adef.MainModule.ReadSymbols (reader);
-			} catch {
-				// Ignore
-			}
-			var files = new HashSet<FilePath> ();
-			
-			foreach (TypeDefinition type in adef.MainModule.Types) {
-				foreach (MethodDefinition met in type.Methods) {
-					if (met.HasBody && met.Body.Instructions != null && met.Body.Instructions.Count > 0) {
-						SequencePoint sp = met.Body.Instructions[0].SequencePoint;
-						if (sp != null)
-							files.Add (sp.Document.Url);
+
+			using (AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (assemblyPath)) {
+				MdbReaderProvider mdbProvider = new MdbReaderProvider ();
+				try {
+					ISymbolReader reader = mdbProvider.GetSymbolReader (adef.MainModule, assemblyPath);
+					adef.MainModule.ReadSymbols (reader);
+				} catch {
+					// Ignore
+				}
+				var files = new HashSet<FilePath> ();
+
+				foreach (TypeDefinition type in adef.MainModule.Types) {
+					foreach (MethodDefinition met in type.Methods) {
+						if (met.HasBody && met.Body.Instructions != null && met.Body.Instructions.Count > 0) {
+							SequencePoint sp = met.DebugInformation.GetSequencePoint (met.Body.Instructions [0]);
+							if (sp != null)
+								files.Add (sp.Document.Url);
+						}
 					}
 				}
-			}
 			
-			FilePath rootPath = FilePath.Empty;
-			foreach (FilePath file in files) {
-				AddFile (file, BuildAction.Compile);
-				if (rootPath.IsNullOrEmpty)
-					rootPath = file.ParentDirectory;
-				else if (!file.IsChildPathOf (rootPath))
-					rootPath = FindCommonRoot (rootPath, file);
+				FilePath rootPath = FilePath.Empty;
+				foreach (FilePath file in files) {
+					AddFile (file, BuildAction.Compile);
+					if (rootPath.IsNullOrEmpty)
+						rootPath = file.ParentDirectory;
+					else if (!file.IsChildPathOf (rootPath))
+						rootPath = FindCommonRoot (rootPath, file);
+				}
+				
+				if (!rootPath.IsNullOrEmpty)
+					BaseDirectory = rootPath;
 			}
-			
-			if (!rootPath.IsNullOrEmpty)
-				BaseDirectory = rootPath;
 /*
 			foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
 				if (aref.Name == "mscorlib")

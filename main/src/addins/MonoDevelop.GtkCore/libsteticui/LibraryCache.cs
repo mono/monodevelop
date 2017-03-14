@@ -712,13 +712,14 @@ namespace Stetic {
 			info.Timestamp = File.GetLastWriteTime (info.File).ToUniversalTime ();
 			info.Guid = Guid.NewGuid ();
 			Save ();
-			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (info.File);
-			XmlDocument objects = GetObjectsDoc (resolver, adef, info.File, baseDirectory);
-			if (objects != null) {
-				info.ObjectsDocument = objects;
-				XmlDocument gui = GetGuiDoc (adef);
-				if (gui != null)
-					info.GuiDocument = gui;
+			using (AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (info.File)) {
+				XmlDocument objects = GetObjectsDoc (resolver, adef, info.File, baseDirectory);
+				if (objects != null) {
+					info.ObjectsDocument = objects;
+					XmlDocument gui = GetGuiDoc (adef);
+					if (gui != null)
+						info.GuiDocument = gui;
+				}
 			}
 			info.OnChanged ();
 			return info;

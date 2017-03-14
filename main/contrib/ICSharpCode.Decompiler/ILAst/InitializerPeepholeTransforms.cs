@@ -359,7 +359,7 @@ namespace ICSharpCode.Decompiler.ILAst
 				return false;
 			TypeDefinition td = tr.Resolve();
 			while (td != null) {
-				if (td.Interfaces.Any(intf => intf.Name == "IEnumerable" && intf.Namespace == "System.Collections"))
+				if (td.Interfaces.Select(x => x.InterfaceType).Any(intf => intf.Name == "IEnumerable" && intf.Namespace == "System.Collections"))
 					return true;
 				td = td.BaseType != null ? td.BaseType.Resolve() : null;
 			}
