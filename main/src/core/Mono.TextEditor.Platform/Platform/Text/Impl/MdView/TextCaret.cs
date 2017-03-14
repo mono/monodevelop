@@ -249,7 +249,7 @@ namespace WebToolingAddin
                 col = requestedPosition - snapshotLine.Start + 1;
             }
 
-            _textEditor.SetCaretLocation(line, col);
+            _textEditor.SetCaretLocation(line, col, false, false);
         }
     }
 }
