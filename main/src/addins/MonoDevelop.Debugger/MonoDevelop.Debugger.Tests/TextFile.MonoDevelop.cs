@@ -1,6 +1,6 @@
 ﻿using MDTextFile = MonoDevelop.Projects.Text.TextFile;
 
-namespace MonoDevelop.Debugger.Tests
+namespace Mono.Debugging.Tests
 {
 	public partial class TextFile
 	{

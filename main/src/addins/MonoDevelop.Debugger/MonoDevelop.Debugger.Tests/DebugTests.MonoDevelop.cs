@@ -5,9 +5,10 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Debugger;
 using NUnit.Framework;
 
-namespace MonoDevelop.Debugger.Tests
+namespace Mono.Debugging.Tests
 {
 	public abstract partial class DebugTests
 	{
