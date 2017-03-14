@@ -26,7 +26,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
@@ -34,21 +33,20 @@ using System.Collections.Generic;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Assemblies;
 
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
 {
 	[TestFixture]
-	public abstract class DebugTests
+	public abstract partial class DebugTests
 	{
+		const string TestAppExeName = "MonoDevelop.Debugger.Tests.TestApp.exe";
+		const string TestAppProjectDirName = "MonoDevelop.Debugger.Tests.TestApp";
+
 		readonly ManualResetEvent targetStoppedEvent = new ManualResetEvent (false);
 		readonly string EngineId;
-		DebuggerEngine engine;
 		string TestName = "";
 		TextFile SourceFile;
 
@@ -82,19 +80,16 @@ namespace MonoDevelop.Debugger.Tests
 		[TestFixtureSetUp]
 		public virtual void SetUp ()
 		{
-			foreach (var e in DebuggingService.GetDebuggerEngines ()) {
-				if (e.Id == EngineId) {
-					engine = e;
-					break;
-				}
-			}
-			if (engine == null)
-				Assert.Ignore ("Engine not found: {0}", EngineId);
+			SetUpPartial ();
 		}
+
+		partial void SetUpPartial();
+
 
 		[TestFixtureTearDown]
 		public virtual void TearDown ()
 		{
+			TearDownPartial ();
 			if (Session != null) {
 				Session.Exit ();
 				Session.Dispose ();
@@ -102,86 +97,40 @@ namespace MonoDevelop.Debugger.Tests
 			}
 		}
 
+		partial void TearDownPartial ();
+
+		protected string TargetExePath
+		{
+			get{
+				return Path.Combine (TargetExeDirectory, TestAppExeName);
+			}
+		}
+
 		protected void Start (string test)
 		{
-			TargetRuntime runtime;
+			TestName = test;
+			Session = CreateSession (test);
 
-			switch (EngineId) {
-			case "MonoDevelop.Debugger.Win32":
-				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
-				break;
-			case "Mono.Debugger.Soft":
-				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
-					.OfType<MonoTargetRuntime> ()
-					.OrderByDescending ((o) => {
-					//Attempt to find latest version of Mono registred in IDE and use that for unit tests
-					if (string.IsNullOrWhiteSpace (o.Version) || o.Version == "Unknown")
-						return new Version (0, 0, 0, 0);
-					int indexOfBeforeDetails = o.Version.IndexOf (" (", StringComparison.Ordinal);
-					if (indexOfBeforeDetails == -1)
-						return new Version (0, 0, 0, 0);
-					string hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
-					Version version;
-					if (Version.TryParse (hopefullyVersion, out version)) {
-						return version;
-					} else {
-						return new Version (0, 0, 0, 0);
-					}
-				}).FirstOrDefault ();
-				break;
-			default:
-				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
-				break;
-			}
-
-			if (runtime == null) {
-				Assert.Ignore ("Runtime not found for: {0}", EngineId);
-				return;
-			}
-
-			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version + " " + (IntPtr.Size == 8 ? "64bit" : "32bit"));
-
-			// main/build/tests
-			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
-
-			var cmd = new DotNetExecutionCommand ();
-			cmd.TargetRuntime = runtime;
-			cmd.Command = exe;
-			cmd.Arguments = test;
-
-			if (Platform.IsWindows) {
-				var monoRuntime = runtime as MonoTargetRuntime;
-				if (monoRuntime != null) {
-					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), cmd.Command);
-					psi.UseShellExecute = false;
-					psi.CreateNoWindow = true;
-					System.Diagnostics.Process.Start (psi).WaitForExit ();
-				}
-			}
-
-			var dsi = engine.CreateDebuggerStartInfo (cmd);
+			var dsi = CreateStartInfo (test);
 			var soft = dsi as SoftDebuggerStartInfo;
 
 			if (soft != null) {
-				var assemblyName = AssemblyName.GetAssemblyName (exe);
+				var assemblyName = AssemblyName.GetAssemblyName (TargetExePath);
 
-				soft.UserAssemblyNames = new List<AssemblyName> ();
-				soft.UserAssemblyNames.Add (assemblyName);
+				soft.UserAssemblyNames = new List<AssemblyName> {assemblyName};
 			}
-
-			Session = engine.CreateSession ();
-			var ops = new DebuggerSessionOptions ();
-			ops.ProjectAssembliesOnly = true;
-			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
+			var ops = new DebuggerSessionOptions {
+				ProjectAssembliesOnly = true,
+				EvaluationOptions = EvaluationOptions.DefaultOptions
+			};
 			ops.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
-			path = path.ParentDirectory.ParentDirectory.Combine ("src", "addins", "MonoDevelop.Debugger", "MonoDevelop.Debugger.Tests.TestApp", test + ".cs").FullPath;
-			SourceFile = TextFile.ReadFile (path);
-			TestName = test;
+
+			var sourcePath = Path.Combine (TargetProjectSourceDir, test + ".cs");
+			SourceFile = TextFile.ReadFile (sourcePath);
 			AddBreakpoint ("break");
-			
+
 			var done = new ManualResetEvent (false);
 
 			Session.TargetHitBreakpoint += (sender, e) => {
