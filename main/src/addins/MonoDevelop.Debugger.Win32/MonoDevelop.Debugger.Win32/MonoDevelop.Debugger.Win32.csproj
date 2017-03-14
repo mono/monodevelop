@@ -100,7 +100,7 @@
       <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj">
+    <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj">
       <Project>{74704c00-5861-4f86-920c-865148a175c5}</Project>
       <Name>Mono.Debugging.Win32</Name>
     </ProjectReference>
