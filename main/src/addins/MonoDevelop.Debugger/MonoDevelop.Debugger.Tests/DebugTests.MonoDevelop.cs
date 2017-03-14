@@ -30,6 +30,14 @@ namespace MonoDevelop.Debugger.Tests
 		{
 		}
 
+		FilePath UnitTestsDir
+		{
+			get{
+				FilePath thisAssemblyPath = GetType ().Assembly.Location;
+				return thisAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory.Combine ("external", "debugger-libs", "UnitTests");
+			}
+		}
+
 		protected string TargetExeDirectory
 		{
 			get{
@@ -41,7 +49,7 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			get{
 				FilePath path = TargetExeDirectory;
-				return path.ParentDirectory.ParentDirectory.Combine ("src", "addins", "MonoDevelop.Debugger", TestAppProjectDirName);
+				return UnitTestsDir.Combine (TestAppProjectDirName);
 			}
 		}
 
