@@ -348,11 +348,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
 				}
-				if (match >= 0 && keyChar != '<' && keyChar != ' ') {
-					ResetSizes ();
-					UpdateWordSelection ();
-					return KeyActions.Process;
-				}
+				//if (match >= 0 && keyChar != '<' && keyChar != ' ') {
+				//	ResetSizes ();
+				//	UpdateWordSelection ();
+				//	return KeyActions.CloseWindow | KeyActions.Process;
+				//}
 
 				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {
 					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
