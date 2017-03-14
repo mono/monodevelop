@@ -110,10 +110,16 @@ namespace MonoDevelop.PackageManagement
 
 		public static ProjectPackageReference Create (IMSBuildItemEvaluated evaluatedItem)
 		{
-			return Create (
+			var packageReference = Create (
 				evaluatedItem.Include,
 				evaluatedItem.Metadata.GetValue ("Version")
 			);
+
+			foreach (IMSBuildPropertyEvaluated property in evaluatedItem.Metadata.GetProperties ()) {
+				packageReference.Metadata.SetValue (property.Name, property.Value);
+			}
+
+			return packageReference;
 		}
 
 		public override string ToString ()
