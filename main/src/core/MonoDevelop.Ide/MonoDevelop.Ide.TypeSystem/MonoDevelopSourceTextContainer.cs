@@ -59,25 +59,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
 		}
-
+		object replaceLock = new object ();
 		void HandleTextReplacing (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			var handler = TextChanged;
 			if (handler != null) {
-				var oldText = CurrentText;
-				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
-				var changeRanges = new List<TextChangeRange> ();
-				foreach (var c in e.TextChanges) {
-					var span = new TextSpan (c.Offset, c.RemovalLength);
-					changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
-					changeRanges.Add (new TextChangeRange (span, c.InsertionLength)); 
-				}
-				var newText = oldText.WithChanges (changes);
-				currentText = newText;
-				try {
-					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while text replacing", ex);
+				lock (replaceLock) {
+					var oldText = CurrentText;
+					var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+					var changeRanges = new List<TextChangeRange> ();
+					foreach (var c in e.TextChanges) {
+						var span = new TextSpan (c.Offset, c.RemovalLength);
+						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
+						changeRanges.Add (new TextChangeRange (span, c.InsertionLength));
+					}
+					var newText = oldText.WithChanges (changes);
+					currentText = newText;
+					try {
+						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while text replacing", ex);
+					}
 				}
 			}
 		}
