@@ -772,10 +772,6 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\ikvm\reflect\IKVM.Reflection.csproj">
-      <Project>{4CB170EF-DFE6-4A56-9E1B-A85449E827A7}</Project>
-      <Name>IKVM.Reflection</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.Core.dll.config">

@@ -325,29 +325,15 @@ namespace MonoDevelop.Core.Assemblies
 			
 			fx.RelationsBuilt = true;
 		}
-
-		public static IKVM.Reflection.Universe CreateClosedUniverse ()
-		{
-			const IKVM.Reflection.UniverseOptions ikvmOptions =
-				IKVM.Reflection.UniverseOptions.DisablePseudoCustomAttributeRetrieval |
-				IKVM.Reflection.UniverseOptions.SupressReferenceTypeIdentityConversion |
-				IKVM.Reflection.UniverseOptions.ResolveMissingMembers;
-
-			var universe = new IKVM.Reflection.Universe (ikvmOptions);
-			universe.AssemblyResolve += delegate (object sender, IKVM.Reflection.ResolveEventArgs args) {
-				return ((IKVM.Reflection.Universe)sender).CreateMissingAssembly (args.Name);
-			};
-			return universe;
-		}
 		
 		//FIXME: the fallback is broken since multiple frameworks can have the same corlib
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			if (!File.Exists (file))
 				return TargetFrameworkMoniker.UNKNOWN;
-			var universe = CreateClosedUniverse ();
+			AssemblyDefinition assembly = null;
 			try {
-				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
+				assembly = AssemblyDefinition.ReadAssembly (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
 					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
 				);
@@ -362,7 +348,7 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
 				}
 				if (tr != null) {
-					foreach (var r in assembly.GetReferencedAssemblies ()) {
+					foreach (var r in assembly.MainModule.AssemblyReferences) {
 						if (r.Name == "mscorlib") {
 							TargetFramework compatibleFramework = null;
 							// If there are several frameworks that can run the file, pick one that is installed
@@ -383,7 +369,7 @@ namespace MonoDevelop.Core.Assemblies
 				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
 				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
-				universe.Dispose ();
+				assembly?.Dispose ();
 			}
 			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
