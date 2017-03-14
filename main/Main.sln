@@ -164,13 +164,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.Debugger.Win32", "MonoDevelop.Debugger.Win32", "{8F47F5EC-2F57-4030-B658-7B1002DA90C2}"
 	ProjectSection(SolutionItems) = preProject
-		src\addins\MonoDevelop.Debugger.Win32\eula.rtf = src\addins\MonoDevelop.Debugger.Win32\eula.rtf
-		src\addins\MonoDevelop.Debugger.Win32\README.txt = src\addins\MonoDevelop.Debugger.Win32\README.txt
+		external\debugger-libs\eula.rtf = external\debugger-libs\eula.rtf
+		external\debugger-libs\README.txt = external\debugger-libs\README.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorApi", "src\addins\MonoDevelop.Debugger.Win32\CorApi\CorApi.csproj", "{9FBCC262-10DC-4E84-A5C4-17230BBF8862}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorApi", "external\debugger-libs\CorApi\CorApi.csproj", "{9FBCC262-10DC-4E84-A5C4-17230BBF8862}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorApi2", "src\addins\MonoDevelop.Debugger.Win32\CorApi2\CorApi2.csproj", "{69136056-BFD3-4CEC-BB41-D9991C79593C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorApi2", "external\debugger-libs\CorApi2\CorApi2.csproj", "{69136056-BFD3-4CEC-BB41-D9991C79593C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Win32", "src\addins\MonoDevelop.Debugger.Win32\MonoDevelop.Debugger.Win32\MonoDevelop.Debugger.Win32.csproj", "{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}"
 EndProject
@@ -321,7 +321,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIThreadMonitorDaemon", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.ConnectedServices", "src\addins\MonoDevelop.ConnectedServices\MonoDevelop.ConnectedServices.csproj", "{BF71E2BB-9838-4E0C-B0E7-80559E3909BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "external\debugger-libs\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.DotNetCore", "src\addins\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj", "{6868153E-41EA-43A4-A81A-C1E7256373F7}"
 EndProject
