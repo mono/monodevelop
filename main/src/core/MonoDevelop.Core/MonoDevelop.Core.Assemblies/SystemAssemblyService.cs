@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Threading;
+using Mono.Cecil;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -407,20 +408,20 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<string> GetAssemblyReferences (string fileName)
 		{
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
-					yield break;
+					return Enumerable.Empty<string> ();
 				}
-				foreach (var r in assembly.GetReferencedAssemblies ()) {
-					yield return r.Name;
-				}
+				return assembly.MainModule.AssemblyReferences.Select (x => x.Name);
+			} finally {
+				assembly?.Dispose ();
 			}
 		}
 
-		static ImmutableDictionary<string, bool> referenceDict = ImmutableDictionary<string, bool>.Empty;
+		static Dictionary<string, bool> referenceDict = new Dictionary<string, bool> ();
 
 		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
 		{
@@ -432,21 +433,23 @@ namespace MonoDevelop.Core.Assemblies
 			//if (referenceDict.Count > cacheLimit)
 			//	referenceDict = ImmutableDictionary<string, bool>.Empty
 
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
 					return false;
 				}
-				foreach (var r in assembly.GetReferencedAssemblies ()) {
+				foreach (var r in assembly.MainModule.AssemblyReferences) {
 					if (r.FullName.Equals ("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")) {
-						referenceDict = referenceDict.SetItem (fileName, true);
+						referenceDict [fileName] = true; ;
 						return true;
 					}
 				}
+			} finally {
+				assembly?.Dispose ();
 			}
-			referenceDict = referenceDict.SetItem (fileName, false);
+			referenceDict [fileName] = false;
 			return false;
 		}
 
@@ -493,17 +496,24 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
 					yield break;
 				}
-				foreach (var _r in assembly.GetManifestResourceNames ()) {
-					var r = _r;
-					yield return new ManifestResource (r, () => assembly.GetManifestResourceStream (r));
+				foreach (var r in assembly.MainModule.Resources) {
+					if (r.ResourceType == ResourceType.Embedded) {
+						var er = (EmbeddedResource)r;
+
+						// Explicitly create a capture and query it here so the stream isn't queried after the module is disposed.
+						var rs = er.GetResourceStream ();
+						yield return new ManifestResource (er.Name, () => rs);
+					}
 				}
+			} finally {
+				assembly?.Dispose ();
 			}
 		}
 	}
