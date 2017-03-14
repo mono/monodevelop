@@ -2376,10 +2376,7 @@ namespace Mono.TextEditor
 			/// <param name="count">The number of characters to be copied.</param>
 			public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
 			{
-				for (int i = 0; (i < count); ++i)
-				{
-					destination[destinationIndex + i] = this.Span.Snapshot[this.Span.Start.Position + i];
-				}
+				this.Span.Snapshot.CopyTo(this.Span.Start.Position + sourceIndex, destination, destinationIndex, count);
 			}
 
 			/// <summary>
@@ -2401,7 +2398,7 @@ namespace Mono.TextEditor
 		sealed class SnapshotSpanToTextReader : TextReader
 		{
 			private readonly Microsoft.VisualStudio.Text.SnapshotSpan span;
-			private int index;
+			private int currentPosition;
 			public SnapshotSpanToTextReader(Microsoft.VisualStudio.Text.SnapshotSpan span)
 			{
 				this.span = span;
@@ -2409,31 +2406,80 @@ namespace Mono.TextEditor
 
 			public override int Peek()
 			{
-				if (index >= this.span.Length)
+				if (currentPosition >= this.span.Length)
 					return -1;
-				return this.span.Snapshot[this.span.Start.Position + index];
+				return this.span.Snapshot[this.span.Start.Position + currentPosition];
 			}
 
 			public override int Read()
 			{
-				if (index >= this.span.Length)
+				if (currentPosition >= this.span.Length)
 					return -1;
-				return this.span.Snapshot[this.span.Start.Position + index++];
+				return this.span.Snapshot[this.span.Start.Position + currentPosition++];
 			}
 
-			public override int Read(char[] buffer, int index, int count)
-			{
-				count = System.Math.Min(this.index + count, this.span.Length) - this.index;
-				if (count <= 0)
-					return 0;
+			public override int Read (char[] buffer, int index, int count) {
+				if (currentPosition == -1)
+					throw new ObjectDisposedException("SnapshotSpanToTextReader");
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+				if (index < 0)
+					throw new ArgumentOutOfRangeException("index");
+				if (count < 0)
+					throw new ArgumentOutOfRangeException("count");
+				if (((index + count) < 0) || ((index + count) > buffer.Length))
+					throw new ArgumentOutOfRangeException("count");
 
-				for (int i = 0; (i < count); ++i)
-				{
-					buffer[i] = this.span.Snapshot[this.span.Start.Position + i];
-				}
+				int charactersToRead = System.Math.Min(this.span.Length - currentPosition, count);
+				this.span.Snapshot.CopyTo(this.span.Start.Position + currentPosition, buffer, index, charactersToRead);
+				currentPosition += charactersToRead;
 
-				this.index += count;
-				return count;
+				return charactersToRead;
+			}
+
+			public override int ReadBlock (char[] buffer, int index, int count) {
+				return Read(buffer, index, count);
+			}
+
+			public override string ReadLine () {
+				if (currentPosition == -1)
+					throw new ObjectDisposedException("TextSnapshotToTextReader");
+
+				if (currentPosition >= this.span.Length)
+					return null;
+
+				int position = this.span.Start.Position + currentPosition;
+				var line = this.span.Snapshot.GetLineFromPosition(position);
+				int end = Math.Min(line.End.Position, this.span.End.Position);
+
+				//Handle the case where the current position is between a \r\n without crashing (but returning an empty string instead).
+				string text = (end > position)
+							  ? this.span.Snapshot.GetText(position, end - position)
+							  : string.Empty;
+
+				currentPosition = Math.Min(line.EndIncludingLineBreak.Position, this.span.End.Position) - this.span.Start.Position;
+
+				return text;
+			}
+
+			public override string ReadToEnd () {
+				if (currentPosition == -1)
+					throw new ObjectDisposedException("TextSnapshotToTextReader");
+
+				string text = this.span.Snapshot.GetText(this.span.Start.Position + currentPosition, this.span.Length - currentPosition);
+				currentPosition = this.span.Length;
+
+				return text;
+			}
+
+			public override void Close () {
+				currentPosition = -1;
+				base.Close();
+			}
+
+			protected override void Dispose (bool disposing) {
+				currentPosition = -1;
+				base.Dispose(disposing);
 			}
 		}
 
