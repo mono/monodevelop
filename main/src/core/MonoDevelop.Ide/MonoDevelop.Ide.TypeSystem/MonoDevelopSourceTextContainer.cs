@@ -74,13 +74,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				var newText = oldText.WithChanges (changes);
 				currentText = newText;
-				Task.Run (delegate {
-					try {
-						handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error while text replacing", ex);
-					}
-				});
+				try {
+					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, changeRanges));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while text replacing", ex);
+				}
 			}
 		}
 
