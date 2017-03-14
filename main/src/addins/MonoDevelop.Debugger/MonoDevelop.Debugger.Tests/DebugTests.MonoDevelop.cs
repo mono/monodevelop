@@ -45,9 +45,9 @@ namespace MonoDevelop.Debugger.Tests
 			}
 		}
 
-		protected DebuggerSession CreateSession (string test)
+		protected DebuggerSession CreateSession (string test, string engineId)
 		{
-			switch (EngineId) {
+			switch (engineId) {
 				case "MonoDevelop.Debugger.Win32":
 					runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
 					break;
@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger.Tests
 			}
 
 			if (runtime == null) {
-				Assert.Ignore ("Runtime not found for: {0}", EngineId);
+				Assert.Ignore ("Runtime not found for: {0}", engineId);
 			}
 
 			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version + " " + (IntPtr.Size == 8 ? "64bit" : "32bit"));

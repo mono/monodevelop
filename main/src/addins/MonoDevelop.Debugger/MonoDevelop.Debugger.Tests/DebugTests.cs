@@ -33,8 +33,6 @@ using System.Collections.Generic;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
 
-using MonoDevelop.Projects.Text;
-
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
@@ -77,6 +75,35 @@ namespace MonoDevelop.Debugger.Tests
 			}
 		}
 
+		// TODO: implement in another part of the class
+		#region Partial Definitions
+
+		/// <summary>
+		/// Returns parent directory of target executable
+		/// </summary>
+		//protected string TargetExeDirectory { get { throw new NotImplementedException (); } }
+
+		/// <summary>
+		/// Returns parent directory of target project sources
+		/// </summary>
+		//protected string TargetProjectSourceDir { get { throw new NotImplementedException (); } }
+
+		/// <summary>
+		/// Creates debugger session. The type of session is dependent on <paramref name="engineId"/>
+		/// </summary>
+		/// <param name="test">test name, usually used as entry point method in target exe</param>
+		/// <param name="engineId">the ID of debugger engine</param>
+		//protected DebuggerSession CreateSession (string test, string engineId);
+
+		/// <summary>
+		/// Creates start info to run the app
+		/// </summary>
+		/// <param name="test">test name</param>
+		//protected DebuggerStartInfo CreateStartInfo (string test);
+
+		#endregion
+
+
 		[TestFixtureSetUp]
 		public virtual void SetUp ()
 		{
@@ -109,7 +136,7 @@ namespace MonoDevelop.Debugger.Tests
 		protected void Start (string test)
 		{
 			TestName = test;
-			Session = CreateSession (test);
+			Session = CreateSession (test, EngineId);
 
 			var dsi = CreateStartInfo (test);
 			var soft = dsi as SoftDebuggerStartInfo;

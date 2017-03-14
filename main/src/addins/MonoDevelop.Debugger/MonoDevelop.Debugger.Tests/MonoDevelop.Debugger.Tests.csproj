@@ -49,6 +49,8 @@
     <Compile Include="CorBreakpointsAndSteppingTests.cs" />
     <Compile Include="SdbBreakpointsAndSteppingTests.cs" />
     <Compile Include="AdvancedEvaluationTests.cs" />
+    <Compile Include="TextFile.cs" />
+    <Compile Include="TextFile.MonoDevelop.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">
