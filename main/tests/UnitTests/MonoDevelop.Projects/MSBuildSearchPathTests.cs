@@ -100,5 +100,65 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.BuildResult.WarningCount);
 			Assert.AreEqual (1, res.BuildResult.ErrorCount);
 		}
+
+		[Test]
+		public async Task ProjectUsingSdk ()
+		{
+			string sdkPath = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path");
+			try {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath);
+				
+				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "ProjectUsingSdk.csproj");
+				DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("SdkProp"));
+
+				var res = await p.RunTarget (Util.GetMonitor (false), "SdkTarget", p.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+			} finally {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath);
+			}
+		}
+
+		[Test]
+		public async Task MultipleProjectsUsingSdk ()
+		{
+			string sdkPath1 = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path");
+			string sdkPath2 = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path-2");
+			try {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
+
+				// Load and run the first project
+
+				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "ProjectUsingSdk.csproj");
+				DotNetProject p1 = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+				Assert.AreEqual ("Works!", p1.MSBuildProject.EvaluatedProperties.GetValue ("SdkProp"));
+
+				var res = await p1.RunTarget (Util.GetMonitor (false), "SdkTarget", p1.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+
+				// Load and run the second project
+
+				projectFile = Util.GetSampleProject ("msbuild-search-paths", "ProjectUsingSdk2.csproj");
+				DotNetProject p2 = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+				Assert.AreEqual ("Works!", p2.MSBuildProject.EvaluatedProperties.GetValue ("BarProp"));
+
+				res = await p2.RunTarget (Util.GetMonitor (false), "BarTarget", p2.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+
+				// Try building again the first project
+
+				res = await p1.RunTarget (Util.GetMonitor (false), "SdkTarget", p1.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+
+			} finally {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
+			}
+		}
 	}
 }

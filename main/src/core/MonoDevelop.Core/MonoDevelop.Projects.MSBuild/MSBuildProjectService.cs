@@ -221,6 +221,32 @@ namespace MonoDevelop.Projects.MSBuild
 			return result;
 		}
 
+		/// <summary>
+		/// Finds an SDKs path that contains the specified SDK.
+		/// </summary>
+		internal static string FindSdkPath (TargetRuntime runtime, string sdkName)
+		{
+			string binDir;
+			GetNewestInstalledToolsVersion (runtime, true, out binDir);
+
+			// First of all look in the default SDKs path of the runtime
+
+			var defaultSdksPath = Path.Combine (binDir, "Sdks");
+
+			if (Directory.Exists (Path.Combine (defaultSdksPath, sdkName)))
+				return defaultSdksPath;
+
+			// If not found, look in the registered SDKs search paths
+			
+			foreach (var node in GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath")) {
+				if (Directory.Exists (Path.Combine (node.Path, sdkName)))
+					return node.Path;
+			}
+
+			// SDK not found, just return the default path.
+			return defaultSdksPath;
+		}
+
 		static List<ImportSearchPathExtensionNode> LoadDefaultProjectImportSearchPaths (TargetRuntime runtime)
 		{
 			// Load the default search paths defined in MSBuild.dll.config
@@ -1036,7 +1062,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, string sdksPath, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
 			Version mtv = Version.Parse (minToolsVersion);
 			if (mtv >= new Version (15,0))
@@ -1075,7 +1101,7 @@ namespace MonoDevelop.Projects.MSBuild
 				
 				if (builder != null) {
 					builder.ReferenceCount++;
-					return await builder.CreateRemoteProjectBuilder (file).ConfigureAwait (false);
+					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
 				}
 
 				return await Task.Run (async () => {
@@ -1122,7 +1148,7 @@ namespace MonoDevelop.Projects.MSBuild
 					};
 					if (lockBuilder)
 						builder.Lock ();
-					return await builder.CreateRemoteProjectBuilder (file).ConfigureAwait (false);
+					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
 				});
 			}
 		}

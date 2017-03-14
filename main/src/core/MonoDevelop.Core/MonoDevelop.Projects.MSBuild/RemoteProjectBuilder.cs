@@ -68,9 +68,9 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
+		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile, string sdksPath)
 		{
-			var builder = await LoadProject (projectFile).ConfigureAwait (false);
+			var builder = await LoadProject (projectFile, sdksPath).ConfigureAwait (false);
 			var pb = new RemoteProjectBuilder (projectFile, builder, this);
 			lock (remoteProjectBuilders) {
 				remoteProjectBuilders.Add (pb);
@@ -82,10 +82,10 @@ namespace MonoDevelop.Projects.MSBuild
 			return pb;
 		}
 
-		async Task<ProjectBuilder> LoadProject (string projectFile)
+		async Task<ProjectBuilder> LoadProject (string projectFile, string sdksPath)
 		{
 			try {
-				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile})).ProjectId;
+				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile, SDKsPath = sdksPath })).ProjectId;
 				return new ProjectBuilder (connection, pid);
 			} catch {
 				await CheckDisconnected ();
