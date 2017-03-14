@@ -843,7 +843,7 @@ namespace MonoDevelop.Projects.MSBuild
 							}
 						}
 						else
-							sb.Append ("[^\\\\.]*");
+							sb.Append ("[^\\\\]*");
 					} else if (regexEscapeChars.Contains (c)) {
 						sb.Append ('\\').Append (c);
 					} else

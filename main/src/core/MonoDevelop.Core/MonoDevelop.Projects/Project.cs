@@ -3356,7 +3356,7 @@ namespace MonoDevelop.Projects
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 					foreach (var it in updateItems.Where (i => i.ParentNode != null)) {
 						if (it.Metadata.RemoveProperty (p.Name) && !it.Metadata.GetProperties ().Any ())
-							it.ParentGroup.RemoveItem (it);
+							it.ParentProject.RemoveItem (it);
 					}
 					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
 					if (globItem.Metadata.HasProperty (p.Name)) {
@@ -3369,6 +3369,14 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+
+			if (!evalItem.Metadata.GetProperties ().Any () && !item.Metadata.GetProperties ().Any ()) {
+				updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
+				foreach (var it in updateItems) {
+					if (it.ParentNode != null)
+						it.ParentProject.RemoveItem (it);
+				}
+			}
 			return ExpandedItemAction.None;
 		}
 
@@ -3379,6 +3387,13 @@ namespace MonoDevelop.Projects
 				if (!globItemFound)
 					globItemFound = (it == globItem);
 				else {
+					if (it.Update == include)
+						yield return it;
+				}
+			}
+
+			if (globItemFound && globItem.ParentProject != MSBuildProject) {
+				foreach (var it in MSBuildProject.GetAllItems ()) {
 					if (it.Update == include)
 						yield return it;
 				}

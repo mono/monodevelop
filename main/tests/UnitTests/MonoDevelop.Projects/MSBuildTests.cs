@@ -986,6 +986,33 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// As above but tests that files with a dotted filename (e.g. 'foo.bar.txt') are
+		/// correctly excluded and included.
+		/// </summary>
+		[Test]
+		public async Task LoadProjectWithWildcardsAndExcludes2 ()
+		{
+			FilePath projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-with-excludes.csproj");
+
+			File.WriteAllText (projFile.ParentDirectory.Combine ("file1.include.txt"), string.Empty);
+			File.WriteAllText (projFile.ParentDirectory.Combine ("file2.exclude2.txt"), string.Empty);
+			File.WriteAllText (projFile.ParentDirectory.Combine ("Extra", "No", "file3.include.txt"), string.Empty);
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"Data2.cs",
+				"file1.include.txt",
+				"p1.txt",
+				"p4.txt",
+				"p5.txt",
+				"text3-1.txt",
+			}, files);
+		}
+
 		[Test]
 		public async Task LoadProjectWithWildcardsAndExcludesUsingForwardSlashInsteadOfBackslash ()
 		{
