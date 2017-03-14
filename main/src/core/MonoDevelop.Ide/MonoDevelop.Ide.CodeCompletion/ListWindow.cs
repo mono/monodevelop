@@ -1,4 +1,4 @@
-// ListWindow.cs
+﻿// ListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -385,7 +385,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void UpdateLastWordChar ()
 		{
-			EndOffset = CompletionWidget.CaretOffset;
+			if (CompletionWidget != null)
+				EndOffset = CompletionWidget.CaretOffset;
 		}
 
 		public KeyActions PreProcessKey (KeyDescriptor descriptor)
