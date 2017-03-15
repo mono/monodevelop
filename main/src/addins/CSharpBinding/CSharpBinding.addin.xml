@@ -324,10 +324,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
-		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
 		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
 	</Extension>
