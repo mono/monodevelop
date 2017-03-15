@@ -83,11 +83,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddPackageTargetFallback (packageTargetFallback);
 		}
 
-		void AddPackageTargetFallback (string packageTargetFallback)
-		{
-			project.AddPackageTargetFallback (packageTargetFallback);
-		}
-
 		[Test]
 		public void CreatePackageSpec_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{

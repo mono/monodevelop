@@ -84,9 +84,6 @@ namespace Mono.TextEditor
 			get {
 				return textEditorData.Document;
 			}
-			set {
-				textEditorData.Document = value;
-			}
 		}
 
 		public bool IsDisposed {

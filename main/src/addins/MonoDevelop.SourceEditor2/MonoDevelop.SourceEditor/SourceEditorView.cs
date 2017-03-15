@@ -95,9 +95,6 @@ namespace MonoDevelop.SourceEditor
 			get {
 				return widget?.TextEditor?.Document;
 			}
-			set {
-				widget.TextEditor.Document = value;
-			}
 		}
 
 		public DateTime LastSaveTimeUtc {
