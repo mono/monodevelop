@@ -28,6 +28,7 @@ using System;
 using Gdk;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.Gui;
@@ -85,6 +86,14 @@ namespace MonoDevelop.Ide.Projects
 				global::Mono.Unix.Catalog.GetString ("PREVIEW"));
 
 			CreateFolderTreeViewColumns ();
+
+			// Accessibility
+			previewLabel.Accessible.Name = "projectFolderPreviewLabel";
+			previewLabel.Accessible.SetTitleFor (folderTreeView.Accessible);
+
+			folderTreeView.Accessible.Name = "projectFolderPreviewWidget";
+			folderTreeView.Accessible.Description = GettextCatalog.GetString ("A preview of how the folder will look");
+			folderTreeView.Accessible.SetTitleUIElement (previewLabel.Accessible);
 		}
 
 		void CreateFolderTreeViewColumns ()
