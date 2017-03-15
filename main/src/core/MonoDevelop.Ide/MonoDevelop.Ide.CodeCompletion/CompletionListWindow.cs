@@ -1,4 +1,4 @@
-// CompletionListWindow.cs
+﻿// CompletionListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -818,7 +818,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
+				if (item.HasOverloads && declarationviewwindow != null && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
 					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (facade, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (facade, ref ka, descriptor);

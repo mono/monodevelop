@@ -1,4 +1,4 @@
-//
+﻿//
 // Document.cs
 //
 // Author:
@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Gui
 		Solution adhocSolution;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Project : null); }
+			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -859,6 +859,10 @@ namespace MonoDevelop.Ide.Gui
 						var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
 						if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
 							var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+							var parentSolution = new Solution ();
+							parentSolution.RootFolder.Items.Add (newProject);
+							parentSolution.AddConfiguration ("Debug", true);
+
 							this.adhocProject = newProject;
 
 							newProject.Name = "InvisibleProject";
