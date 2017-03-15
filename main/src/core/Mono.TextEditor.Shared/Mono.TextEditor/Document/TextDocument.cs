@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
 			}
 			set {
-				var newContentType = GetContentTypeFromMimeType(value);
+				var newContentType = value != null ? GetContentTypeFromMimeType(value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					this.TextBuffer.ChangeContentType(newContentType, null);
