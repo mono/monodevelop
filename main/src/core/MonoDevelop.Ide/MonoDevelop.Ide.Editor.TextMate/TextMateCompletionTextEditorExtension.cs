@@ -71,8 +71,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)
 		{
-			inactive |= (DocumentContext.ParsedDocument.Flags & ParsedDocumentFlags.HasCustomCompletionExtension) == ParsedDocumentFlags.HasCustomCompletionExtension;
-
+			if (!inactive && DocumentContext.ParsedDocument != null)
+				inactive = (DocumentContext.ParsedDocument.Flags & ParsedDocumentFlags.HasCustomCompletionExtension) == ParsedDocumentFlags.HasCustomCompletionExtension;
 		}
 
 		internal protected override bool IsActiveExtension ()
