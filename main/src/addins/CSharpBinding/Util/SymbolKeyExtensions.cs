@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		internal static SymbolKey Create(ISymbol symbol, Compilation compilation = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try {
-				var instance = createMethod.Invoke (null, new object [] { symbol, compilation, cancellationToken });
+				var instance = createMethod.Invoke (null, new object [] { symbol, cancellationToken });
 				return new SymbolKey (instance);
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
