@@ -1335,7 +1335,8 @@ namespace MonoDevelop.Projects
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
+					var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1378,7 +1379,8 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, true);
+			var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {

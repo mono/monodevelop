@@ -923,6 +923,17 @@ namespace MonoDevelop.Projects.MSBuild
 				return null;
 		}
 
+		/// <summary>
+		/// Returns a list of SDKs referenced by this project
+		/// </summary>
+		public string[] GetReferencedSDKs ()
+		{
+			if (!string.IsNullOrEmpty (Sdk))
+				return Sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			else
+				return new string [0];
+		}
+
 		XmlNamespaceManager GetNamespaceManagerForProject ()
 		{
 			if (Namespace == Schema)

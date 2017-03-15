@@ -996,7 +996,9 @@ namespace MonoDevelop.Projects.MSBuild
 			project.Imports [import] = pr;
 
 			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true)) {
-				keepSearching = false;
+				// Condition evaluates to false. Keep searching because maybe another value for the path property makes
+				// the condition evaluate to true.
+				keepSearching = true;
 				return null;
 			}
 
@@ -1004,11 +1006,13 @@ namespace MonoDevelop.Projects.MSBuild
 			var fileName = Path.GetFileName (path);
 
 			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
+				// Not a wildcard. Keep searching if the file doesn't exist.
 				var result = File.Exists (path) ? new [] { path } : null;
 				keepSearching = result == null;
 				return result;
 			}
 			else {
+				// Wildcard import. Always keep searching since we want to import all files that match from all search paths.
 				keepSearching = true;
 				path = Path.GetDirectoryName (path);
 				if (!Directory.Exists (path))

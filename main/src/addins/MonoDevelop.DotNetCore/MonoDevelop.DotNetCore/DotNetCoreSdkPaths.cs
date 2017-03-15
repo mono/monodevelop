@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -55,9 +56,7 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
 
-			// HACK: Set MSBuildSDKsPath environment variable so MSBuild will find the
-			// SDK files when building and running targets.
-			Environment.SetEnvironmentVariable ("MSBuildSDKsPath", MSBuildSDKsPath + Path.DirectorySeparatorChar);
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", MSBuildSDKsPath);
 		}
 
 		public void FindSdkPaths (string sdk)
