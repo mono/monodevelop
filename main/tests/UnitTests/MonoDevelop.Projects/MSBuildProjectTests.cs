@@ -1103,6 +1103,48 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (expectedXml, xml);
 		}
 
+		[Test]
+		public void AddRemoveItemBeforeIncludeItemOfTheSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Reference Include=\"System.Xml\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Reference Include=\"System.Xml\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+		}
 
 		/// <summary>
 		/// Remove items should be added before Update items in their own ItemGroup.
@@ -1137,6 +1179,52 @@ namespace MonoDevelop.Projects
 				"  <PropertyGroup>\r\n" +
 				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
 				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+		}
+
+		[Test]
+		public void AddRemoveItemBeforeUpdateItemOfSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text1.txt");
+			updateItem.Update = "Text1.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
 				"  <ItemGroup>\r\n" +
 				"    <None Remove=\"Text2.txt\" />\r\n" +
 				"  </ItemGroup>\r\n" +
@@ -1259,6 +1347,49 @@ namespace MonoDevelop.Projects
 				"  <PropertyGroup>\r\n" +
 				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
 				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+		}
+
+		[Test]
+		public void AddIncludeItemBeforeUpdateItemOfSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text2.txt");
+			updateItem.Update = "Text2.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
 				"  <ItemGroup>\r\n" +
 				"    <None Include=\"Text1.txt\" />\r\n" +
 				"  </ItemGroup>\r\n" +

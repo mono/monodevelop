@@ -897,6 +897,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static bool ShouldInsertItemGroupBefore (MSBuildItem existing, MSBuildItem newItem)
 		{
+			if (existing.Name != newItem.Name)
+				return false;
 			if (newItem.IsInclusion)
 				return existing.IsUpdate;
 			if (newItem.IsRemove)
