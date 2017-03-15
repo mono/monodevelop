@@ -3368,7 +3368,7 @@ namespace MonoDevelop.Projects
 
 			if (itemsToDelete != null) {
 				foreach (var it in itemsToDelete)
-					it.ParentGroup.RemoveItem (it);
+					it.ParentProject.RemoveItem (it);
 			}
 			
 			foreach (var p in evalItem.Metadata.GetProperties ()) {

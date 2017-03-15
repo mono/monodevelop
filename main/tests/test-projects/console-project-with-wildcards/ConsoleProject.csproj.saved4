@@ -39,6 +39,8 @@
     <Content Include="*.txt" />
     <Content Include="Content\*.txt" />
     <Content Include="Content\Data\*.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Remove="Content\text1-1.txt" />
   </ItemGroup>
   <ItemGroup>

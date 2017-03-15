@@ -33,6 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\\*.cs" Exclude="*9.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Update="c2.cs">
       <one>test1</one>
     </Compile>
