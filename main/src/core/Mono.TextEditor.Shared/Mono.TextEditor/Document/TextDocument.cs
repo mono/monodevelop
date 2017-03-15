@@ -2450,14 +2450,14 @@ namespace Mono.TextEditor
 
 				int position = this.span.Start.Position + currentPosition;
 				var line = this.span.Snapshot.GetLineFromPosition(position);
-				int end = Math.Min(line.End.Position, this.span.End.Position);
+				int end = System.Math.Min(line.End.Position, this.span.End.Position);
 
 				//Handle the case where the current position is between a \r\n without crashing (but returning an empty string instead).
 				string text = (end > position)
 							  ? this.span.Snapshot.GetText(position, end - position)
 							  : string.Empty;
 
-				currentPosition = Math.Min(line.EndIncludingLineBreak.Position, this.span.End.Position) - this.span.Start.Position;
+				currentPosition = System.Math.Min(line.EndIncludingLineBreak.Position, this.span.End.Position) - this.span.Start.Position;
 
 				return text;
 			}
