@@ -138,6 +138,9 @@ namespace Mono.TextEditor
 		public static void SelectAll (TextEditorData data)
 		{
 			data.Caret.PreserveSelection = true;
+			data.Caret.AutoScrollToCaret = false;
+			data.Caret.Offset = data.Length;
+			data.Caret.AutoScrollToCaret = true;
 			data.MainSelection = new MonoDevelop.Ide.Editor.Selection (new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn), data.OffsetToLocation (data.Length));
 			data.Caret.PreserveSelection = false;
 		}
