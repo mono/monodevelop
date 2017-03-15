@@ -12,6 +12,7 @@ open MonoDevelop.Components
 open MonoDevelop.Components.Docking
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
+open MonoDevelop.Core.Execution
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
@@ -209,7 +210,9 @@ type FSharpInteractivePad() =
 
     let setupSession() =
         try
-            let pathToExe = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
+            let pathToExe =
+                Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
+                |> ProcessArgumentBuilder.Quote
             let ses = InteractiveSession(pathToExe)
             input.Clear()
             promptReceived <- false

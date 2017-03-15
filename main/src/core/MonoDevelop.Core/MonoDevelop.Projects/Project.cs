@@ -3141,7 +3141,7 @@ namespace MonoDevelop.Projects
 
 		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
-			if (item.IsFromWildcardItem) {
+			if (item.IsFromWildcardItem && item.ItemName == item.WildcardItem.Name) {
 				var globItem = item.WildcardItem;
 				// Store the item in the list of expanded items
 				ExpandedItemList items;
@@ -3199,8 +3199,34 @@ namespace MonoDevelop.Projects
 							item.Write (this, it);
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
+
+							// Add an expanded item so a Remove item does not
+							// get added back again.
+							ExpandedItemList items;
+							if (!expandedItems.TryGetValue (globItem, out items))
+								items = expandedItems [globItem] = new ExpandedItemList ();
+
+							var einfo = new ExpandedItemInfo {
+								ProjectItem = item,
+								MSBuildItem = it
+							};
+							items.Add (einfo);
+
+							if (buildItem == null && item.BackingItem != null && globItem.Name != item.BackingItem.Name) {
+								it.Update = item.Include;
+								sourceItems = new [] { globItem };
+								item.BackingItem = globItem;
+								item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it, globItem.Include, sourceItems);
+								einfo.Action = ExpandedItemAction.AddUpdateItem;
+								items.Modified = true;
+								return;
+							}
+						}
+					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
+						include = item.Include;
+						var removeItem = new MSBuildItem (item.WildcardItem.Name) { Remove = include };
+						msproject.AddItem (removeItem);
 					}
-				}
 				}
 				if (buildItem == null)
 					buildItem = msproject.AddNewItem (item.ItemName, include);
@@ -3356,7 +3382,7 @@ namespace MonoDevelop.Projects
 						updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
 					foreach (var it in updateItems.Where (i => i.ParentNode != null)) {
 						if (it.Metadata.RemoveProperty (p.Name) && !it.Metadata.GetProperties ().Any ())
-							it.ParentGroup.RemoveItem (it);
+							it.ParentProject.RemoveItem (it);
 					}
 					// If this metadata is defined in the glob item, the only option is to exclude the item from the glob.
 					if (globItem.Metadata.HasProperty (p.Name)) {
@@ -3369,6 +3395,14 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+
+			if (!evalItem.Metadata.GetProperties ().Any () && !item.Metadata.GetProperties ().Any ()) {
+				updateItems = FindUpdateItemsForItem (globItem, item.Include).ToList ();
+				foreach (var it in updateItems) {
+					if (it.ParentNode != null)
+						it.ParentProject.RemoveItem (it);
+				}
+			}
 			return ExpandedItemAction.None;
 		}
 
@@ -3379,6 +3413,13 @@ namespace MonoDevelop.Projects
 				if (!globItemFound)
 					globItemFound = (it == globItem);
 				else {
+					if (it.Update == include)
+						yield return it;
+				}
+			}
+
+			if (globItemFound && globItem.ParentProject != MSBuildProject) {
+				foreach (var it in MSBuildProject.GetAllItems ()) {
 					if (it.Update == include)
 						yield return it;
 				}
@@ -3415,7 +3456,7 @@ namespace MonoDevelop.Projects
 			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
 			if (sourceItems != null) {
 				foreach (var s in sourceItems)
-					eit.AddSourceItem (item);
+					eit.AddSourceItem (s);
 			} else
 				eit.AddSourceItem (item);
 			return eit;

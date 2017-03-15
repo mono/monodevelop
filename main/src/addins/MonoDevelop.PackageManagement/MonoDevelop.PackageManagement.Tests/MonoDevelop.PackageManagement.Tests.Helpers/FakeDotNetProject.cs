@@ -179,6 +179,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FakeEvaluatedProperties.PropertiesDictionary["TargetFramework"] = targetFramework;
 		}
+
+		public void AddPackageTargetFallback (string fallback)
+		{
+			FakeEvaluatedProperties.PropertiesDictionary["PackageTargetFallback"] = fallback;
+		}
+
+		public void AddProperty (string name, string value)
+		{
+			FakeEvaluatedProperties.PropertiesDictionary[name] = value;
+		}
 	}
 }
 

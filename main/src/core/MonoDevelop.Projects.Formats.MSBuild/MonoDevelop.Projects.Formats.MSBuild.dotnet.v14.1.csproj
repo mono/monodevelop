@@ -23,7 +23,26 @@
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.14.1</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.14.1</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|x86' ">
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\build\bin\MSBuild\dotnet.14.1</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -63,8 +82,14 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release' ">
     <None Include="app.v15.0.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
+    <None Include="app.v15.0.windows.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
     </None>

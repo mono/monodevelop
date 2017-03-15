@@ -34,5 +34,16 @@ namespace MonoDevelop.DotNetCore
 		{
 			return file.HasExtension (".csproj") || file.HasExtension (".fsproj");
 		}
+
+		/// <summary>
+		/// HACK: Hide certain files in Solution window. The solution's .userprefs
+		/// file is the only file is included properly with the .NET Core MSBuild
+		/// targets.
+		/// </summary>
+		public static bool ShouldBeHidden (this FilePath file)
+		{
+			return file.HasExtension (".userprefs") ||
+				file.FileName == ".DS_Store";
+		}
 	}
 }
