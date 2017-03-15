@@ -110,7 +110,7 @@ namespace Mono.Debugging.Tests
 			return engine.CreateSession ();
 		}
 
-		protected DebuggerStartInfo CreateStartInfo (string test)
+		protected DebuggerStartInfo CreateStartInfo (string test, string engineId)
 		{
 			var cmd = new DotNetExecutionCommand {
 				TargetRuntime = runtime,
