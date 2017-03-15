@@ -1104,21 +1104,26 @@ namespace MonoDevelop.Projects
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
 			WorkspaceObject.RegisterCustomExtension (fn);
-			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
 
-			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			Assert.IsInstanceOf<Project> (p);
-			var mp = (Project)p;
-			mp.UseAdvancedGlobSupport = true;
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
 
-			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
-			f.BuildAction = BuildAction.EmbeddedResource;
-			await p.SaveAsync (Util.GetMonitor ());
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
 
-			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
-			await p.SaveAsync (Util.GetMonitor ());
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+				f.BuildAction = BuildAction.EmbeddedResource;
+				await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+				f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
 		}
 
 		[Test]
@@ -1311,23 +1316,28 @@ namespace MonoDevelop.Projects
 		{
 			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
 			WorkspaceObject.RegisterCustomExtension (fn);
-			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
-			string originalProjectFileText = File.ReadAllText (projFile);
 
-			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-			Assert.IsInstanceOf<Project> (p);
-			var mp = (Project)p;
-			mp.UseAdvancedGlobSupport = true;
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
+				string originalProjectFileText = File.ReadAllText (projFile);
 
-			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
-			var originalBuildAction = f.BuildAction;
-			f.BuildAction = BuildAction.EmbeddedResource;
-			await p.SaveAsync (Util.GetMonitor ());
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
 
-			f.BuildAction = originalBuildAction;
-			await p.SaveAsync (Util.GetMonitor ());
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+				var originalBuildAction = f.BuildAction;
+				f.BuildAction = BuildAction.EmbeddedResource;
+				await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+				f.BuildAction = originalBuildAction;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
 		}
 
 		[Test]
