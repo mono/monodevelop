@@ -30,10 +30,15 @@ namespace MonoDevelop.Projects.Extensions
 {
 	class ImportSearchPathExtensionNode: ExtensionNode
 	{
+		string path;
+
 		[NodeAttribute ("property")]
 		public string Property { get; set; }
 
 		[NodeAttribute ("path")]
-		public new string Path { get; set; }
+		public new string Path {
+			get { return Addin != null ? Addin.GetFilePath (path) : path; }
+			set { path = value; }
+		}
 	}
 }
