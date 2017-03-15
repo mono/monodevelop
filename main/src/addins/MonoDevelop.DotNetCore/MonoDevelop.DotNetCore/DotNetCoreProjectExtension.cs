@@ -561,7 +561,14 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
 		{
-			return BuildAction.DotNetActions.Contains (buildItem.Name);
+			if (!BuildAction.DotNetActions.Contains (buildItem.Name))
+				return false;
+
+			// HACK: Remove any imported items that are not in the EvaluatedItems
+			// This may happen if a condition excludes the item. All items passed to the
+			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
+			return Project.MSBuildProject.EvaluatedItems
+				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
 		}
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
