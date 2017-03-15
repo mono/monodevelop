@@ -36,6 +36,7 @@ using MonoDevelop.Projects.Utility;
 using System.Linq;
 using MonoDevelop.Projects.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -189,6 +190,8 @@ namespace MonoDevelop.Projects.MSBuild
 				engineManager = value;
 			}
 		}
+
+		public TargetRuntime TargetRuntime { get; set; } = Runtime.SystemAssemblyService.DefaultRuntime;
 
 		public static Task<MSBuildProject> LoadAsync (string file)
 		{
@@ -815,8 +818,9 @@ namespace MonoDevelop.Projects.MSBuild
 				if (group != null)
 					return group.AddNewItem (name, include, beforeItem);
 			}
-			MSBuildItemGroup grp = FindBestGroupForItem (name);
-			return grp.AddNewItem (name, include);
+			MSBuildItem it = CreateItem (name, include);
+			AddItem (it);
+			return it;
 		}
 
 		public MSBuildItem CreateItem (string name, string include)
@@ -843,32 +847,63 @@ namespace MonoDevelop.Projects.MSBuild
 					return;
 				}
 			}
-			MSBuildItemGroup grp = FindBestGroupForItem (it.Name);
+			MSBuildItemGroup grp = FindBestGroupForItem (it);
 			grp.AddItem (it);
 		}
 
-		MSBuildItemGroup FindBestGroupForItem (string itemName)
+		MSBuildItemGroup FindBestGroupForItem (MSBuildItem newItem)
 		{
+			string groupId = GetBestGroupId (newItem);
 			MSBuildItemGroup group;
 
 			if (bestGroups == null)
 				bestGroups = new Dictionary<string, MSBuildItemGroup> ();
 			else {
-				if (bestGroups.TryGetValue (itemName, out group))
+				if (bestGroups.TryGetValue (groupId, out group))
 					return group;
 			}
 
+			MSBuildItemGroup insertBefore = null;
 			foreach (MSBuildItemGroup grp in ItemGroups) {
 				foreach (MSBuildItem it in grp.Items) {
-					if (it.Name == itemName) {
-						bestGroups [itemName] = grp;
+					if (ShouldAddItemToGroup (it, newItem)) {
+						bestGroups [groupId] = grp;
 						return grp;
+					} else if (insertBefore == null && ShouldInsertItemGroupBefore (it, newItem)) {
+						insertBefore = grp;
 					}
 				}
 			}
-			group = AddNewItemGroup ();
-			bestGroups [itemName] = group;
+			group = AddNewItemGroup (insertBefore);
+			bestGroups [groupId] = group;
 			return group;
+		}
+
+		static string GetBestGroupId (MSBuildItem it)
+		{
+			if (it.IsRemove)
+				return it.Name + ":Remove";
+			else if (it.IsUpdate)
+				return it.Name + ":Update";
+			return it.Name;
+		}
+
+		static bool ShouldAddItemToGroup (MSBuildItem existingItem, MSBuildItem newItem)
+		{
+			return existingItem.Name == newItem.Name &&
+				existingItem.IsRemove == newItem.IsRemove &&
+				existingItem.IsUpdate == newItem.IsUpdate;
+		}
+
+		static bool ShouldInsertItemGroupBefore (MSBuildItem existing, MSBuildItem newItem)
+		{
+			if (existing.Name != newItem.Name)
+				return false;
+			if (newItem.IsInclusion)
+				return existing.IsUpdate;
+			if (newItem.IsRemove)
+				return existing.IsUpdate || (existing.IsInclusion && !existing.IsWildcardItem);
+			return false;
 		}
 
 		public XmlElement GetProjectExtension (string section)
@@ -886,6 +921,17 @@ namespace MonoDevelop.Projects.MSBuild
 				return elem.SelectSingleNode ("tns:Properties/tns:" + section, GetNamespaceManagerForProject ()) as XmlElement;
 			else
 				return null;
+		}
+
+		/// <summary>
+		/// Returns a list of SDKs referenced by this project
+		/// </summary>
+		public string[] GetReferencedSDKs ()
+		{
+			if (!string.IsNullOrEmpty (Sdk))
+				return Sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			else
+				return new string [0];
 		}
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()

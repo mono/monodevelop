@@ -1,4 +1,4 @@
-﻿//
+//
 // PackageSpecCreatorTests.cs
 //
 // Author:
@@ -65,18 +65,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.PackageReferences.Add (packageReference);
 		}
 
-		void AddProjectReference (string projectName, string fileName)
+		FakeDotNetProject AddProjectReference (string projectName, string fileName, string include)
 		{
 			fileName = fileName.ToNativePath ();
-			var otherProject = new DummyDotNetProject ();
-			otherProject.Name = projectName;
-			otherProject.FileName = fileName;
-			var projectReference = ProjectReference.CreateProjectReference (otherProject);
+			var projectReference = ProjectReference.CreateCustomReference (ReferenceType.Project, include);
 			project.References.Add (projectReference);
 
 			var fakeOtherProject = new FakeDotNetProject (fileName);
 			fakeOtherProject.Name = projectName;
 			solution.Projects.Add (fakeOtherProject);
+
+			return fakeOtherProject;
+		}
+
+		void AddPackageTargetFallback (string packageTargetFallback)
+		{
+			project.AddPackageTargetFallback (packageTargetFallback);
 		}
 
 		void AddPackageTargetFallback (string packageTargetFallback)
@@ -136,8 +140,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
 			AddTargetFramework ("netcoreapp1.0");
 			string referencedProjectFileName = @"d:\projects\MyProject\Lib\Lib.csproj".ToNativePath ();
-			AddProjectReference ("Lib", referencedProjectFileName);
-
+			string include = @"Lib\Lib.csproj".ToNativePath ();
+			var referencedProject = AddProjectReference ("Lib", referencedProjectFileName, include);
+			solution.OnResolveProject = pr => {
+				if (pr.Include == include)
+					return referencedProject;
+				return null;
+			};
 			CreatePackageSpec ();
 
 			var targetFramework = spec.RestoreMetadata.TargetFrameworks.Single ();
@@ -153,6 +162,24 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (
 				LibraryIncludeFlags.Analyzers | LibraryIncludeFlags.Build | LibraryIncludeFlags.ContentFiles,
 				projectReference.PrivateAssets);
+		}
+
+		[Test]
+		public void CreatePackageSpec_OneSharedProjectReference_NoProjectReferencedAddedToPackageSpec ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string referencedProjectFileName = @"d:\projects\MyProject\Lib\Lib.shproj".ToNativePath ();
+			AddProjectReference ("Lib", referencedProjectFileName, @"Lib\Lib.shproj".ToNativePath ());
+
+			CreatePackageSpec ();
+
+			var targetFramework = spec.RestoreMetadata.TargetFrameworks.Single ();
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
 		}
 
 		[Test]

@@ -168,7 +168,7 @@ module Completion =
             None
 
     let (|DoubleDot|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\[[^\[]+\.+$", RegexOptions.Compiled) then
+        if Regex.IsMatch(context.lineToCaret, "\[[^\]]+\.+$", RegexOptions.Compiled) then
             Some DoubleDot
         else
             None
@@ -445,20 +445,21 @@ module Completion =
                     let (idents, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if idents.IsEmpty then
                         let lineWithoutResidue = lineToCaret.[0..column-residue.Length-1]
-                        let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
-                        let tokenToCompletion (token:FSharpTokenInfo) =
-                            let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
-                            CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
-                      
-                        // Add ident completions from the current line
-                        // as the semantic parse might not be up to date
-                        let lineCompletions = 
-                            tokens 
-                            |> List.filter (fun token -> token.TokenName = "IDENT")
-                            |> List.map tokenToCompletion
+                        if not (lineWithoutResidue.EndsWith ".") then
+                            let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
+                            let tokenToCompletion (token:FSharpTokenInfo) =
+                                let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
+                                CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
 
-                        result.AddRange (filterResults lineCompletions residue
-                                         |> Seq.filter(fun r -> not (result.Exists(fun e -> e.DisplayText = r.DisplayText))))
+                            // Add ident completions from the current line
+                            // as the semantic parse might not be up to date
+                            let lineCompletions = 
+                                tokens 
+                                |> List.filter (fun token -> token.TokenName = "IDENT")
+                                |> List.map tokenToCompletion
+
+                            result.AddRange (filterResults lineCompletions residue
+                                             |> Seq.filter(fun r -> not (result.Exists(fun e -> e.DisplayText = r.DisplayText))))
                         result.DefaultCompletionString <- residue
                         result.TriggerWordLength <- residue.Length
 

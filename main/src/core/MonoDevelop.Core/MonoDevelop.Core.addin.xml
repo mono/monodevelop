@@ -160,8 +160,12 @@
 		<ExtensionNode name="Item" customAttributeType="MonoDevelop.Projects.ExportProjectItemTypeAttribute" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportSearchPaths" name = "MSBuild project import search paths">
+		<Description>Allows defining fallback search paths for MSBuild project imports</Description>
+		<ExtensionNode name="SearchPath" type="MonoDevelop.Projects.Extensions.ImportSearchPathExtensionNode" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
-	
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<ModeSet id="Run" _name="Run" />
