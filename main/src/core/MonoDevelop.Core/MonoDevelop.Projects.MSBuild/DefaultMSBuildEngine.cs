@@ -276,7 +276,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
+		void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
 		{
 			// Don't add the result from any item that has an empty include. MSBuild never returns those.
 			if (include == string.Empty)
@@ -321,7 +321,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
+		bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
 		{
 			bool ignoreMetadata = false;
 
@@ -607,7 +607,7 @@ namespace MonoDevelop.Projects.MSBuild
 				Evaluate (project, context, item, evalItems);
 		}
 
-		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
+		IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
 		{
 			var res = Enumerable.Empty<MSBuildItemEvaluated> ();
 
@@ -713,7 +713,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
 		}
 
-		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
+		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
@@ -896,14 +896,21 @@ namespace MonoDevelop.Projects.MSBuild
 				project.Targets.Add (newTarget);
 		}
 
-		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
+		Dictionary<string, ConditionExpression> conditionCache = new Dictionary<string, ConditionExpression> ();
+		bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
 		{
 			try {
 				if (String.IsNullOrEmpty (condition))
 					return true;
 
 				try {
-					ConditionExpression ce = ConditionParser.ParseCondition (condition);
+					ConditionExpression ce;
+					lock (conditionCache) {
+						if (conditionCache == null || !conditionCache.TryGetValue (condition, out ce))
+							ce = ConditionParser.ParseCondition (condition);
+						if (conditionCache != null)
+							conditionCache [condition] = ce;
+					}
 
 					if (!ce.CanEvaluateToBool (context))
 						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
