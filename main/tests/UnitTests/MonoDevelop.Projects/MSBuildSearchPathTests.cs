@@ -160,5 +160,39 @@ namespace MonoDevelop.Projects
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
 			}
 		}
+
+		[Test]
+		public async Task ProjectUsingMultipleSdk ()
+		{
+			// A project that references two SDKs must be assigned an SDKs folder that contains both SDKs
+
+			string sdkPath1 = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path");
+			string sdkPath2 = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path-2");
+			string sdkPath3 = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path-all");
+
+			try {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath3);
+
+				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "ProjectUsingMultiSdk.csproj");
+				DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+
+				var res = await p.RunTarget (Util.GetMonitor (false), "SdkTarget", p.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("SdkProp"));
+
+				res = await p.RunTarget (Util.GetMonitor (false), "BarTarget", p.Configurations [0].Selector);
+				Assert.AreEqual (1, res.BuildResult.WarningCount);
+				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("BarProp"));
+
+			} finally {
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath3);
+}
+		}
 	}
 }

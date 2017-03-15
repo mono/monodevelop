@@ -188,9 +188,11 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <param name="path">The fallback path</param>
 		public static void RegisterProjectImportSearchPath (string propertyName, FilePath path)
 		{
-			importSearchPaths.Add (new ImportSearchPathExtensionNode { Property = propertyName, Path = path });
-			searchPathConfigNeedsUpdate = true;
-			RecycleAllBuilders ().Ignore ();
+			if (!importSearchPaths.Any (sp => sp.Property == propertyName && sp.Path == path)) {
+				importSearchPaths.Add (new ImportSearchPathExtensionNode { Property = propertyName, Path = path });
+				searchPathConfigNeedsUpdate = true;
+				RecycleAllBuilders ().Ignore ();
+			}
 		}
 
 		/// <summary>
@@ -224,27 +226,21 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Finds an SDKs path that contains the specified SDK.
 		/// </summary>
-		internal static string FindSdkPath (TargetRuntime runtime, string sdkName)
+		internal static string FindSdkPath (TargetRuntime runtime, string[] sdks)
 		{
 			string binDir;
 			GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
-			// First of all look in the default SDKs path of the runtime
-
+			// Look for SDKs in the default SDKs path first, and then in the fallback paths
 			var defaultSdksPath = Path.Combine (binDir, "Sdks");
+			var allPaths = Enumerable.Repeat (defaultSdksPath, 1).Concat (GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath").Select (sp => sp.Path));
 
-			if (Directory.Exists (Path.Combine (defaultSdksPath, sdkName)))
-				return defaultSdksPath;
-
-			// If not found, look in the registered SDKs search paths
-			
-			foreach (var node in GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath")) {
-				if (Directory.Exists (Path.Combine (node.Path, sdkName)))
-					return node.Path;
+			foreach (var path in allPaths) {
+				// We need to find a path that contains all required SDKs, since we can only read SDKs from one place for a project.
+				if (sdks.All (sdk => Directory.Exists (Path.Combine (path, sdk))))
+					return path;
 			}
-
-			// SDK not found, just return the default path.
-			return defaultSdksPath;
+			return null;
 		}
 
 		static List<ImportSearchPathExtensionNode> LoadDefaultProjectImportSearchPaths (TargetRuntime runtime)
