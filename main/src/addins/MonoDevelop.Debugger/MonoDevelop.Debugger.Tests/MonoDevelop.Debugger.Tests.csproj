@@ -41,7 +41,7 @@
       <Link>Shared\Placeholder</Link>
     </Compile>
     <Compile Include="DebugTests.MonoDevelop.cs" />
-    <Compile Include="TextFile.MonoDevelop.cs" />
+    <Compile Include="TextFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">

@@ -2,23 +2,13 @@
 
 namespace Mono.Debugging.Tests
 {
-	public partial class TextFile
+	public class TextFile : ITextFile
 	{
 		readonly MDTextFile file;
 
-		TextFile (MDTextFile file)
+		public TextFile (MDTextFile file)
 		{
 			this.file = file;
-		}
-
-		/// <summary>
-		/// Reads file from given path
-		/// </summary>
-		/// <param name="sourcePath"></param>
-		/// <returns></returns>
-		public static TextFile ReadFile (string sourcePath)
-		{
-			return new TextFile(MDTextFile.ReadFile (sourcePath));
 		}
 
 		/// <summary>

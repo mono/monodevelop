@@ -8,6 +8,8 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Debugger;
 using NUnit.Framework;
 
+using MDTextFile = MonoDevelop.Projects.Text.TextFile;
+
 namespace Mono.Debugging.Tests
 {
 	public abstract partial class DebugTests
@@ -119,6 +121,16 @@ namespace Mono.Debugging.Tests
 			};
 			var dsi = engine.CreateDebuggerStartInfo (cmd);
 			return dsi;
+		}
+
+		/// <summary>
+		/// Reads file from given path
+		/// </summary>
+		/// <param name="sourcePath"></param>
+		/// <returns></returns>
+		public static ITextFile ReadFile (string sourcePath)
+		{
+			return new TextFile(MDTextFile.ReadFile (sourcePath));
 		}
 	}
 }
