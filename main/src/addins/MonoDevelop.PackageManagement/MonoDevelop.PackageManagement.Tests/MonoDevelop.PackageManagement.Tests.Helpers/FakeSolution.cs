@@ -83,8 +83,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public IDotNetProject ResolveProject (ProjectReference projectReference)
 		{
+			if (OnResolveProject != null)
+				return OnResolveProject (projectReference);
 			return Projects.FirstOrDefault (project => project.Name == projectReference.Include);
 		}
+
+		public Func<ProjectReference, IDotNetProject> OnResolveProject;
 	}
 }
 

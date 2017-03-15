@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 				frameworkGroups.Add (framework, new List<ProjectRestoreReference> ());
 			}
 
-			var flatReferences = project.References.Where (projectReference => projectReference.ReferenceType == ReferenceType.Project)
+			var flatReferences = project.References.Where (IsProjectReference)
 				.Select (projectReference => GetProjectRestoreReference (projectReference, project));
 
 			// Add project paths
@@ -153,6 +153,17 @@ namespace MonoDevelop.PackageManagement
 					ProjectReferences = frameworkPair.Value
 				});
 			}
+		}
+
+		static bool IsProjectReference (ProjectReference projectReference)
+		{
+			if (projectReference.ReferenceType != ReferenceType.Project)
+				return false;
+
+			if (projectReference.Include != null)
+				return !projectReference.Include.EndsWith (".shproj", StringComparison.OrdinalIgnoreCase);
+
+			return false;
 		}
 
 		static Tuple<List<NuGetFramework>, ProjectRestoreReference> GetProjectRestoreReference (
