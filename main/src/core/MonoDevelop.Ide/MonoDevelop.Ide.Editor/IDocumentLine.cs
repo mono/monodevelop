@@ -97,6 +97,10 @@ namespace MonoDevelop.Ide.Editor
 		/// </returns>
 		public static string GetIndentation (this IDocumentLine line, IReadonlyTextDocument  doc)
 		{
+			if (line == null)
+				throw new ArgumentNullException (nameof (line));
+			if (doc == null)
+				throw new ArgumentNullException (nameof (doc));
 			var result = new StringBuilder ();
 			int offset = line.Offset;
 			int max = Math.Min (offset + line.LengthIncludingDelimiter, doc.Length);

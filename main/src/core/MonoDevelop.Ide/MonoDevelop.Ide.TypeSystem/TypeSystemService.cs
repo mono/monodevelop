@@ -691,6 +691,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
 		{
+			if (ws == null)
+				throw new ArgumentNullException (nameof (ws));
+			if (analysisDocument == null)
+				throw new ArgumentNullException (nameof (analysisDocument));
+			if (editor == null)
+				throw new ArgumentNullException (nameof (editor));
 			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor); 
 		}
 

@@ -33,7 +33,6 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildPropertyGroupEvaluated: MSBuildNode, IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
 		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
-		object sourceItem;
 		MSBuildEngine engine;
 
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
@@ -45,30 +44,27 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			properties.Clear ();
 			this.engine = engine;
-			sourceItem = item;
+			foreach (var propName in engine.GetItemMetadataNames (item)) {
+				var prop = new MSBuildPropertyEvaluated (ParentProject, propName, engine.GetItemMetadata (item, propName), engine.GetEvaluatedItemMetadata (item, propName));
+				properties [propName] = prop;
+			}
 		}
 
 		public bool HasProperty (string name)
 		{
-			if (properties.ContainsKey (name))
-				return true;
-			if (sourceItem != null)
-				return engine.GetItemHasMetadata (sourceItem, name);
-			return false;
+			return properties.ContainsKey (name);
 		}
 
 		public IMSBuildPropertyEvaluated GetProperty (string name)
 		{
 			IMSBuildPropertyEvaluated prop;
-			if (!properties.TryGetValue (name, out prop)) {
-				if (sourceItem != null) {
-					if (engine.GetItemHasMetadata (sourceItem, name)) {
-						prop = new MSBuildPropertyEvaluated (ParentProject, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedItemMetadata (sourceItem, name));
-						properties [name] = prop;
-					}
-				}
-			}
+			properties.TryGetValue (name, out prop);
 			return prop;
+		}
+
+		internal void SetProperty (string key, IMSBuildPropertyEvaluated value)
+		{
+			properties [key] = value;
 		}
 
 		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
@@ -76,16 +72,14 @@ namespace MonoDevelop.Projects.MSBuild
 			this.properties = properties;
 		}
 
-		internal IEnumerable<IMSBuildPropertyEvaluated> GetRegisteredProperties ()
+		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
 		{
 			return properties.Values;
 		}
 
 		internal bool RemoveProperty (string name)
 		{
-			if (properties != null)
-				return properties.Remove (name);
-			return false;
+			return properties.Remove (name);
 		}
 
 		public string GetValue (string name, string defaultValue = null)

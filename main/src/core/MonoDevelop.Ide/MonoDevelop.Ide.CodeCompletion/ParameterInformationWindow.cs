@@ -106,9 +106,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void UpdateStyle ()
 		{
-			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);

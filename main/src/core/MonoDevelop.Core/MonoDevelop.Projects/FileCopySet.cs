@@ -108,6 +108,11 @@ namespace MonoDevelop.Projects
 				return null;
 			}
 		}
+
+		public Dictionary<FilePath, Item>.ValueCollection.Enumerator GetEnumerator ()
+		{
+			return files.Values.GetEnumerator ();
+		}
 		
 		IEnumerator<Item> IEnumerable<Item>.GetEnumerator ()
 		{

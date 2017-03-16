@@ -36,6 +36,7 @@
 	</MimeType>
 	<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
 		<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
+		<File pattern="*.ChangeLog" />
 	</MimeType>
 	<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon">
 		<File pattern="*.exe" />

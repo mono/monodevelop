@@ -126,6 +126,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return ((MSProjectItem)item).GetMetadataValue (name);
 		}
 
+		public override IEnumerable<string> GetItemMetadataNames (object item)
+		{
+			return ((MSProjectItem)item).Metadata.Select (m => m.Name);
+		}
+
 		public override IEnumerable<object> GetEvaluatedItems (object project)
 		{
 			return ((MSProject)project).AllEvaluatedItems;
@@ -181,6 +186,11 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public override ConditionedPropertyCollection GetConditionedProperties (object project)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (object projectInstance, string filePath)
 		{
 			throw new NotImplementedException ();
 		}

@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 
 namespace MonoDevelop.CSharp.Formatting
@@ -367,21 +368,20 @@ namespace MonoDevelop.CSharp.Formatting
 			AddOption (newLineOptions, category, "NewLineForMembersInObjectInit", GettextCatalog.GetString ("Place members in object initializers on new line"), @"void Example()
 {
 	new MyObject {
-		A = 1,
-		B = 2
+		A = 1, B = 2
 	};
 }");
 			AddOption (newLineOptions, category, "NewLineForMembersInAnonymousTypes", GettextCatalog.GetString ("Place members in anonymous types on new line"), @"void Example()
 {
 	var c = new
 	{
-		A = 1,
-		B = 2
+		A = 1, B = 2
 	};
 }");
 			AddOption (newLineOptions, category, "NewLineForClausesInQuery", GettextCatalog.GetString ("Place query expression clauses on new line"), @"void Example()
 {
-	from o in col select o.Foo;
+    var q = from a in e
+            from b in e select a * b;
 }");
 			treeviewNewLines.ExpandAll ();
 			#endregion

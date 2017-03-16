@@ -29,12 +29,13 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ChunkStyle
 	{
-		public string Name { get; set; }
+		public ScopeStack ScopeStack { get; set; }
 		public HslColor Foreground { get; set; }
 		public HslColor Background { get; set; }
 
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public ChunkStyle (ChunkStyle baseStyle)
 		{
-			this.Name = baseStyle.Name;
+			this.ScopeStack = baseStyle.ScopeStack;
 			this.Foreground = baseStyle.Foreground;
 			this.Background = baseStyle.Background;
 			this.FontWeight = baseStyle.FontWeight;
@@ -85,52 +86,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (obj.GetType () != typeof(ChunkStyle))
 				return false;
 			ChunkStyle other = (ChunkStyle)obj;
-			return Name == other.Name && Foreground.Equals (other.Foreground) && Background.Equals (other.Background) && FontWeight == other.FontWeight && FontStyle == other.FontStyle;
+			return ScopeStack == other.ScopeStack && Foreground.Equals (other.Foreground) && Background.Equals (other.Background) && FontWeight == other.FontWeight && FontStyle == other.FontStyle;
 		}
 
 		public override int GetHashCode ()
 		{
 			unchecked {
-				return (Name != null ? Name.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ FontWeight.GetHashCode () ^ FontStyle.GetHashCode ();
+				return (ScopeStack != null ? ScopeStack.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ FontWeight.GetHashCode () ^ FontStyle.GetHashCode ();
 			}
-		}
-
-		internal static ChunkStyle Create (XElement element, Dictionary<string, HslColor> palette)
-		{
-			var result = new ChunkStyle ();
-
-			foreach (var node in element.DescendantNodes ()) {
-				if (node.NodeType == System.Xml.XmlNodeType.Element) {
-					var el = (XElement)node;
-					switch (el.Name.LocalName) {
-					case "name":
-						result.Name = el.Value;
-						break;
-					case "fore":
-						result.Foreground = ColorScheme.ParsePaletteColor (palette, el.Value);
-						break;
-					case "back":
-						result.Background = ColorScheme.ParsePaletteColor (palette, el.Value);
-						break;
-					case "weight":
-						Xwt.Drawing.FontWeight weight;
-						if (!Enum.TryParse<Xwt.Drawing.FontWeight> (el.Value, true, out weight)) 
-							throw new InvalidDataException (el.Value + " is no valid text weight values are: " + string.Join (",", Enum.GetNames (typeof(Xwt.Drawing.FontWeight))) );
-						result.FontWeight = weight;
-						break;
-					case "style":
-						Xwt.Drawing.FontStyle style;
-						if (!Enum.TryParse<Xwt.Drawing.FontStyle> (el.Value, true, out style)) 
-							throw new InvalidDataException (el.Value + " is no valid text weight values are: " + string.Join (",", Enum.GetNames (typeof(Xwt.Drawing.FontStyle))) );
-						result.FontStyle = style;
-						break;
-					default:
-						throw new InvalidDataException ("Invalid element in text color:" + el.Name);
-					}
-				}
-			}
-
-			return result;
 		}
 
 		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
@@ -145,24 +108,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override string ToString ()
 		{
-			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
+			return string.Format ("[ChunkStyle: ScopeStack={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", ScopeStack, Foreground, Background, FontWeight, FontStyle);
 		}
 
-		internal static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
-		{
-			var textColor = new ChunkStyle ();
-			textColor.Name = name;
-			if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
-				textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
-				if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")
-					textColor.Foreground = new HslColor (0, 0, 0);
-			}
-			if (!string.IsNullOrEmpty (vsc.Background) && vsc.Background != "0x02000000")
-				textColor.Background = ColorScheme.ImportVsColor (vsc.Background);
-			if (vsc.BoldFont)
-				textColor.FontWeight = Xwt.Drawing.FontWeight.Bold;
-			return textColor;
-		}
 
 		public ChunkStyle Clone ()
 		{

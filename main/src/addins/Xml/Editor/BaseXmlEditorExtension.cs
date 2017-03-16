@@ -72,7 +72,8 @@ namespace MonoDevelop.Xml.Editor
 		public override bool IsValidInContext (DocumentContext context)
 		{
 			//can only attach if there is not already an attached BaseXmlEditorExtension
-			return context.GetContent<BaseXmlEditorExtension> () == null;
+			var other = context.GetContent<BaseXmlEditorExtension> ();
+			return other == null || other == this;
 		}
 		
 		protected virtual XmlRootState CreateRootState ()
@@ -260,22 +261,23 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Code completion
 
-		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
-		{
-			int pos = completionContext.TriggerOffset;
-			if (pos <= 0)
-				return null;
-			tracker.UpdateEngine ();
-			return HandleCodeCompletion (completionContext, true, default(CancellationToken));
-		}
 
-		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default(CancellationToken))
 		{
-			int pos = completionContext.TriggerOffset;
-			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
-			if (pos > 0 && ch == completionChar) {
+			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
+				int pos = completionContext.TriggerOffset;
+				char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
+				if (pos > 0 && ch == triggerInfo.TriggerCharacter.Value) {
+					tracker.UpdateEngine ();
+					return HandleCodeCompletion (completionContext, false, token);
+				}
+			} else if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand) {
+				int pos = completionContext.TriggerOffset;
+				if (pos <= 0)
+					return null;
 				tracker.UpdateEngine ();
-				return HandleCodeCompletion (completionContext, false, token);
+				return HandleCodeCompletion (completionContext, true, default (CancellationToken));
+
 			}
 			return null;
 		}
@@ -370,41 +372,47 @@ namespace MonoDevelop.Xml.Editor
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
 			     || ((Tracker.Engine.CurrentState is XmlNameState
 			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
-			    Tracker.Engine.CurrentState is XmlTagState)
-			    && (Tracker.Engine.CurrentStateLength == 1 || forced)) {
+			    Tracker.Engine.CurrentState is XmlTagState)) {
 				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-				if (attributedOb == null)
-					return null;
 				
-				//attributes
-				if (attributedOb.Name.IsValid && (forced ||
-					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
-				{
-					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
-					
-					foreach (XAttribute att in attributedOb.Attributes) {
-						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
-					}
-					var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
-					if (result != null) {
-						if (!forced)
-							result.TriggerWordLength = 1;
-						return result;
-					}
+				if (attributedOb == null || !attributedOb.Name.IsValid)
 					return null;
+
+				var currentIsNameStart = XmlNameState.IsValidNameStart (currentChar);
+				var currentIsWhiteSpace = char.IsWhiteSpace (currentChar);
+				var previousIsWhiteSpace = char.IsWhiteSpace (previousChar);
+
+				bool shouldTriggerAttributeCompletion = forced
+					|| (currentIsNameStart && previousIsWhiteSpace)
+					|| currentIsWhiteSpace;
+				if (!shouldTriggerAttributeCompletion)
+					return null;
+
+				var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
+
+				foreach (XAttribute att in attributedOb.Attributes) {
+					existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
+				}
+
+				var result = await GetAttributeCompletions (attributedOb, existingAtts, token);
+				if (result != null) {
+					if (!forced && currentIsNameStart)
+						result.TriggerWordLength = 1;
+					result.AutoSelect = !currentIsWhiteSpace;
+					result.AddKeyHandler (new AttributeKeyHandler());
+					return result;
 				}
 			}
-			
-//			if (Tracker.Engine.CurrentState is XmlRootState) {
-//				if (line < 3) {
-//				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-//			}
 
 			//element completion
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlRootState ||
 				(tracker.Engine.CurrentState is XmlNameState && forced)) {
 				var list = await GetElementCompletions (token);
+				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
+					var encoding = Editor.Encoding.WebName;
+					list.Add ($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>");
+				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
 				return list.Count > 0 ? list : null;
 			}
@@ -418,7 +426,23 @@ namespace MonoDevelop.Xml.Editor
 			return null;
 		}
 
+		class AttributeKeyHandler : ICompletionKeyHandler
+		{
+			public bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				keyAction = KeyActions.None;
+				return false;
+			}
 
+			public bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
+			{
+				if (!listWindow.AutoSelect && char.IsLetterOrDigit (descriptor.KeyChar)) {
+					listWindow.AutoSelect = true;
+				}
+				keyAction = KeyActions.None;
+				return false;
+			}
+		}
 
 		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
 

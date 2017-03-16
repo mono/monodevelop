@@ -151,7 +151,7 @@ namespace MonoDevelop.Refactoring.Rename
 						editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 					}
 				}
-			}));
+			}) { TextLinkPurpose = TextLinkPurpose.Rename });
 		}
 		
 		public class RenameProperties

@@ -27,23 +27,33 @@ using System;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
-using ICSharpCode.NRefactory.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class ClipboardTests : TextEditorTestBase, ITextPasteHandler
+	class ClipboardTests : TextEditorTestBase
 	{
 		#region ITextPasteHandler implementation
-
-		public string FormatPlainText (int offset, string text, byte[] copyData)
+		class TestPasteHandler : TextPasteHandler
 		{
-			return "Hello World";
-		}
+			public override string FormatPlainText (int offset, string text, byte [] copyData)
+			{
+				return "Hello World";
+			}
 
-		public byte[] GetCopyData (ISegment segment)
-		{
-			return null;
+			public override byte [] GetCopyData (int offset, int length)
+			{
+				return null;
+			}
+
+			public override Task PostFomatPastedText (int offset, int length)
+			{
+				return Task.FromResult (true);
+			}
 		}
 
 		#endregion
@@ -57,7 +67,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 
@@ -73,7 +83,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 
@@ -93,7 +103,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 
@@ -107,7 +117,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = VirtualIndentModeTests.CreateData ("");
 			data.Options.DefaultEolMarker = "\n";
-			data.Caret.Location =  new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
+			data.Caret.Location =  new DocumentLocation (1, data.GetVirtualIndentationColumn (1, 1));
 			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "\n\n";
 

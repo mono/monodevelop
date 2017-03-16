@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.Common;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
 
@@ -151,7 +152,12 @@ namespace MonoDevelop.PackageManagement
 
 			var packages = new HashSet<PackageIdentity> (PackageIdentity.Comparer);
 			foreach (NuGetProjectAction action in installActions) {
-				packages.Add (action.PackageIdentity);
+				var buildIntegratedAction = action as BuildIntegratedProjectAction;
+				if (buildIntegratedAction != null) {
+					packages.AddRange (GetPackages (buildIntegratedAction.GetProjectActions ()));
+				} else {
+					packages.Add (action.PackageIdentity);
+				}
 			}
 
 			return packages;

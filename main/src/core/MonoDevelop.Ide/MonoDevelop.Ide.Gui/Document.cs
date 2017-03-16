@@ -56,6 +56,10 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor.TextMate;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -87,7 +91,8 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (analysisDocument == null)
 					return null;
-				return TypeSystemService.GetCodeAnalysisDocument (analysisDocument);
+				
+				return RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
 			}
 		}
  		
@@ -171,12 +176,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
+			if (IsAdHocProject)
+				return;
 			UnsubscibeAnalysisdocument ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
 			});
-
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -721,7 +727,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project project)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
@@ -828,53 +834,56 @@ namespace MonoDevelop.Ide.Gui
 				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
 			}
-			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
+			if (Project != null && !IsUnreferencedSharedProject(Project)) {
 				UnsubscribeRoslynWorkspace ();
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				SubscribeRoslynWorkspace ();
-				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
+				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			} else {
-				CancelEnsureAnalysisDocumentIsOpen ();
 				lock (adhocProjectLock) {
 					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
 						return SpecializedTasks.EmptyTask;
 					}
-					if (Editor != null && Editor.MimeType == "text/x-csharp") {
-						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
-						this.adhocProject = newProject;
 
-						newProject.Name = "InvisibleProject";
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+					if (Editor != null) {
+						var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
+						if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
+							var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+							this.adhocProject = newProject;
 
-						newProject.FileName = "test.csproj";
-						if (!Window.ViewContent.IsUntitled) {
-							adHocFile = Editor.FileName;
-						} else {
-							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
+							newProject.Name = "InvisibleProject";
+							newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+							newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+							newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+
+							newProject.FileName = "test.csproj";
+							if (!Window.ViewContent.IsUntitled) {
+								adHocFile = Editor.FileName;
+							} else {
+								adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
+							}
+
+							newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
+
+							adhocSolution = new Solution ();
+							adhocSolution.AddConfiguration ("", true);
+							adhocSolution.DefaultSolutionFolder.AddItem (newProject);
+							MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
+							return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
+								MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+								if (token.IsCancellationRequested)
+									return;
+								UnsubscribeRoslynWorkspace ();
+								RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
+								SubscribeRoslynWorkspace ();
+								analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
+								TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
+							});
 						}
-
-						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-						adhocSolution = new Solution ();
-						adhocSolution.AddConfiguration ("", true);
-						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
-							MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
-							if (token.IsCancellationRequested)
-								return;
-							UnsubscribeRoslynWorkspace ();
-							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
-							SubscribeRoslynWorkspace ();
-							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, newProject, adHocFile);
-							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
-						});
 					}
 				}
 			}
@@ -1049,20 +1058,16 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 			}
 		}
-		
+
 		public static string[] GetCommentTags (string fileName)
 		{
 			//Document doc = IdeApp.Workbench.ActiveDocument;
-			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (fileName));
+			if (lang.LineComments.Count > 0)
+				return lang.LineComments.ToArray ();
 
-			var result = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
-			if (result != null)
-				return result;
-
-			var start = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
-			var end = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
-			if (start != null && end != null)
-				return new [] { start[0], end[0] };
+			if (lang.BlockComments.Count> 0)
+				return new [] { lang.BlockComments[0].Item1, lang.BlockComments[0].Item2 };
 			return null;
 		}
 

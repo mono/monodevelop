@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
 			this.label4.Yalign = 0F;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("The following add-ins could not be started:");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("The following extensions could not be started:");
 			this.vbox4.Add (this.label4);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label4]));
 			w3.Position = 0;

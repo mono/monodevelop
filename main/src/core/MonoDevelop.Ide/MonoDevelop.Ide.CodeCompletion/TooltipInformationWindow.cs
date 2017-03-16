@@ -256,9 +256,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void SetDefaultScheme ()
 		{
-			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 
 			Theme.SetSchemeColors (scheme);
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();

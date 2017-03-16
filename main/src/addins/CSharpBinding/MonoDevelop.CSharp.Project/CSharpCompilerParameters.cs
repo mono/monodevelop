@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp.Project
 		public override CompilationOptions CreateCompilationOptions ()
 		{
 			var project = (CSharpProject) ParentProject;
-			return new CSharpCompilationOptions (
+			var options = new CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
 				false,
 				null,
@@ -144,6 +144,35 @@ namespace MonoDevelop.CSharp.Project
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
 				strongNameProvider: new DesktopStrongNameProvider ()
 			);
+
+			return options.WithPlatform (GetPlatform ())
+				.WithGeneralDiagnosticOption (TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default)
+				.WithOptimizationLevel (Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug)
+				.WithSpecificDiagnosticOptions (GetSuppressedWarnings ().ToDictionary (
+					suppress => suppress, _ => ReportDiagnostic.Suppress));
+		}
+
+		Microsoft.CodeAnalysis.Platform GetPlatform ()
+		{
+			Microsoft.CodeAnalysis.Platform platform;
+			if (Enum.TryParse (PlatformTarget, true, out platform))
+				return platform;
+
+			return Microsoft.CodeAnalysis.Platform.AnyCpu;
+		}
+
+		IEnumerable<string> GetSuppressedWarnings ()
+		{
+			string warnings = NoWarnings ?? string.Empty;
+			var items = warnings.Split (new [] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Distinct ();
+
+			foreach (string warning in items) {
+				if (warning.StartsWith ("CS", StringComparison.OrdinalIgnoreCase)) {
+					yield return warning;
+				} else {
+					yield return "CS" + warning;
+				}
+			}
 		}
 
 		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)

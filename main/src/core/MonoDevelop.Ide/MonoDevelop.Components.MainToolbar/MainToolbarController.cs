@@ -843,6 +843,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		class ButtonBarButton : IButtonBarButton
 		{
+			CommandInfo lastCmdInfo;
 			MainToolbarController Controller { get; set; }
 			string CommandId { get; set; }
 
@@ -867,7 +868,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public void NotifyPushed ()
 			{
-				IdeApp.CommandService.DispatchCommand (CommandId, null, Controller.lastCommandTarget, CommandSource.MainToolbar);
+				IdeApp.CommandService.DispatchCommand (CommandId, null, Controller.lastCommandTarget, CommandSource.MainToolbar, lastCmdInfo);
 			}
 
 			public void Update ()
@@ -875,10 +876,21 @@ namespace MonoDevelop.Components.MainToolbar
 				if (IsSeparator)
 					return;
 
-				var ci = IdeApp.CommandService.GetCommandInfo (CommandId, new CommandTargetRoute (Controller.lastCommandTarget));
-				if (ci == null)
-					return;
+				if (lastCmdInfo != null) {
+					lastCmdInfo.CancelAsyncUpdate ();
+					lastCmdInfo.Changed -= LastCmdInfoChanged;
+				}
+				
+				lastCmdInfo = IdeApp.CommandService.GetCommandInfo (CommandId, new CommandTargetRoute (Controller.lastCommandTarget));
 
+				if (lastCmdInfo != null) {
+					lastCmdInfo.Changed += LastCmdInfoChanged;
+					Update (lastCmdInfo);
+				}
+			}
+
+			void Update (CommandInfo ci)
+			{
 				if (ci.Icon != Image) {
 					Image = ci.Icon;
 					if (ImageChanged != null)
@@ -903,6 +915,11 @@ namespace MonoDevelop.Components.MainToolbar
 					Title = ci.Text;
 					TitleChanged?.Invoke (this, null);
 				}
+			}
+
+			void LastCmdInfoChanged (object sender, EventArgs e)
+			{
+				Update (lastCmdInfo); 
 			}
 
 			public event EventHandler EnabledChanged;

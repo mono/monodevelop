@@ -168,7 +168,7 @@ module Completion =
             None
 
     let (|DoubleDot|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\[[^\[]+\.+$", RegexOptions.Compiled) then
+        if Regex.IsMatch(context.lineToCaret, "\[[^\]]+\.+$", RegexOptions.Compiled) then
             Some DoubleDot
         else
             None
@@ -187,16 +187,8 @@ module Completion =
             None
 
     let (|LetIdentifier|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=]+$", RegexOptions.Compiled) then
-             let document = new TextDocument(context.lineToCaret)
-             let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
-
-             let documentLine = document.GetLine 1
-
-             let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
-                              |> Seq.map (fun c -> c.Style)   
-                              |> Seq.tryHead
-             chunkStyle |> Option.bind (fun cs -> if cs <> "User Types" then Some LetIdentifier else None)
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=(]+$", RegexOptions.Compiled) then
+             Some LetIdentifier
         else
             None
 
@@ -439,11 +431,12 @@ module Completion =
 
                             if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
                                 LoggingService.logDebug "Completion: got parse results from cache"
+                                return! document.TryGetAst()
                             else
                                 LoggingService.logDebug "Completion: syncing parse results"
                                 // force sync
                                 documentContext.ReparseDocument()
-                            return! document.TryGetAst()
+                                return! document.TryGetAst()
                         })
 
                 let result = CompletionDataList()
@@ -452,20 +445,21 @@ module Completion =
                     let (idents, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if idents.IsEmpty then
                         let lineWithoutResidue = lineToCaret.[0..column-residue.Length-1]
-                        let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
-                        let tokenToCompletion (token:FSharpTokenInfo) =
-                            let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
-                            CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
-                      
-                        // Add ident completions from the current line
-                        // as the semantic parse might not be up to date
-                        let lineCompletions = 
-                            tokens 
-                            |> List.filter (fun token -> token.TokenName = "IDENT")
-                            |> List.map tokenToCompletion
+                        if not (lineWithoutResidue.EndsWith ".") then
+                            let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
+                            let tokenToCompletion (token:FSharpTokenInfo) =
+                                let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
+                                CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
 
-                        result.AddRange (filterResults lineCompletions residue
-                                         |> Seq.filter(fun r -> not (result.Exists(fun e -> e.DisplayText = r.DisplayText))))
+                            // Add ident completions from the current line
+                            // as the semantic parse might not be up to date
+                            let lineCompletions = 
+                                tokens 
+                                |> List.filter (fun token -> token.TokenName = "IDENT")
+                                |> List.map tokenToCompletion
+
+                            result.AddRange (filterResults lineCompletions residue
+                                             |> Seq.filter(fun r -> not (result.Exists(fun e -> e.DisplayText = r.DisplayText))))
                         result.DefaultCompletionString <- residue
                         result.TriggerWordLength <- residue.Length
 
@@ -617,7 +611,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
-type FsiParameterHintingData (tooltip:MonoDevelop.FSharp.Shared.ParameterTooltip) =
+type FsiParameterHintingData (tooltip: MonoDevelop.FSharp.Shared.ParameterTooltip) =
     inherit ParameterHintingData (null)
 
     override x.ParameterCount =
@@ -721,7 +715,7 @@ module ParameterHinting =
             // Try to get typed result - within the specified timeout
             let! methsOpt =
                 async { let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false) )
+                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, (fun() -> false) )
                         match tyRes with
                         | Some tyRes ->
                             let line, col, lineStr = editor.GetLineInfoFromOffset (startOffset)
@@ -786,7 +780,7 @@ type FSharpTextEditorCompletion() =
 
     override x.CompletionLanguage = "F#"
     override x.Initialize() =
-        do x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
+        do x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
         base.Initialize()
 
     /// Provide parameter and method overload information when you type '(', '<' or ','
@@ -804,19 +798,14 @@ type FSharpTextEditorCompletion() =
         base.KeyPress (descriptor)
   
     // Run completion automatically when the user hits '.'
-    override x.HandleCodeCompletionAsync(context, completionChar, token) =
-        if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
+    override x.HandleCodeCompletionAsync(context, _triggerInfo, token) =
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value then
             let computation =
                 Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
-                    
+                        
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
             Task.FromResult null
-
-    /// Completion was triggered explicitly using Ctrl+Space or by the function above
-    override x.CodeCompletionCommand(context) =
-        Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true)
-        |> Async.StartAsTask
 
 
     override x.GetCurrentParameterIndex (startOffset: int, token) =

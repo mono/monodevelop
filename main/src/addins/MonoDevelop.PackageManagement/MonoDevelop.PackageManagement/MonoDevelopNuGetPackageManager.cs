@@ -31,11 +31,11 @@ using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.Common;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement
 				token);
 		}
 
-		public Task<NuGetVersion> GetLatestVersionAsync (
+		public Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,
 			ResolutionContext resolutionContext,
@@ -140,7 +140,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return packageManager.PreviewUpdatePackagesAsync (
 				packageId,
-				nuGetProject,
+				new [] { nuGetProject },
 				resolutionContext,
 				nuGetProjectContext,
 				primarySources,
@@ -158,7 +158,7 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken token)
 		{
 			return packageManager.PreviewUpdatePackagesAsync (
-				nuGetProject,
+				new [] { nuGetProject },
 				resolutionContext,
 				nuGetProjectContext,
 				primarySources,
@@ -178,6 +178,20 @@ namespace MonoDevelop.PackageManagement
 				nuGetProject,
 				packageId,
 				uninstallationContext,
+				nuGetProjectContext,
+				token
+			);
+		}
+
+		public Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync(
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			return packageManager.PreviewBuildIntegratedProjectActionsAsync (
+				(BuildIntegratedNuGetProject)buildIntegratedProject,
+				nuGetProjectActions,
 				nuGetProjectContext,
 				token
 			);
@@ -208,9 +222,9 @@ namespace MonoDevelop.PackageManagement
 			var readmeFilePath = String.Empty;
 
 			if (buildIntegratedProject != null) {
-				var packageFolderPath = BuildIntegratedProjectUtility.GetPackagePathFromGlobalSource (
-					SettingsUtility.GetGlobalPackagesFolder (settings),
-					package);
+				var pathContext = NuGetPathContext.Create (settings);
+				var pathResolver = new FallbackPackagePathResolver (pathContext);
+				string packageFolderPath = pathResolver.GetPackageDirectory (package.Id, package.Version);
 
 				if (Directory.Exists (packageFolderPath)) {
 					readmeFilePath = Path.Combine (packageFolderPath, Constants.ReadmeFileName);

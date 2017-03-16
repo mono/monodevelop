@@ -54,20 +54,21 @@ type FakePad() =
 
     member x.UpdateColors() =
         match view.Child with
-        | :? Gtk.TextView as v ->
-            let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
-            let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", true)
-            let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
-            let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
+        | :? Gtk.TextView as _v ->
+            //let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
+            //let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", true)
+            //let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
+            //let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
 
-            if shouldMatch then
-                v.ModifyText(Gtk.StateType.Normal, themeTextColour)
-                v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
-            else
-                let textColour = PropertyService.Get ("FSharpBinding.TextColorPropName", "#000000") |> ColorHelpers.strToColor
-                let backColour = PropertyService.Get ("FSharpBinding.BaseColorPropName", "#FFFFFF") |> ColorHelpers.strToColor
-                v.ModifyText(Gtk.StateType.Normal, textColour)
-                v.ModifyBase(Gtk.StateType.Normal, backColour)
+            //if shouldMatch then
+            //    v.ModifyText(Gtk.StateType.Normal, themeTextColour)
+            //    v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
+            //else
+            //    let textColour = PropertyService.Get ("FSharpBinding.TextColorPropName", "#000000") |> ColorHelpers.strToColor
+            //    let backColour = PropertyService.Get ("FSharpBinding.BaseColorPropName", "#FFFFFF") |> ColorHelpers.strToColor
+            //    v.ModifyText(Gtk.StateType.Normal, textColour)
+            //    v.ModifyBase(Gtk.StateType.Normal, backColour)
+            ()
         | _ -> ()
 
     member x.UpdateFont() =

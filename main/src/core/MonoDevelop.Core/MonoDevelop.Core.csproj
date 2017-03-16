@@ -564,7 +564,6 @@
     <Compile Include="MonoDevelop.Projects\ExportProjectItemTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProjectInstance.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV12.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineV4.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ExpressionEvaluationException.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildValueType.cs" />
@@ -619,6 +618,8 @@
     <Compile Include="MonoDevelop.Core\ErrorHelper.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Core\StructEqualityComparer.cs" />
+    <Compile Include="MonoDevelop.Projects\SimpleExpressionEvaluator.cs" />
+    <Compile Include="MonoDevelop.Projects\PackageDependency.cs" />
     <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\RemoteBuildEngineMessages.cs">
       <Link>MonoDevelop.Projects.MSBuild\RemoteBuildEngineMessages.cs</Link>
     </Compile>
@@ -633,6 +634,7 @@
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvent.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLogger.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ImportSearchPathExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

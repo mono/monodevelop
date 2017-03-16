@@ -30,7 +30,7 @@ type FSharpResolverProvider() =
                 // Try to get typed result - with the specified timeout
                 let curVersion = doc.Editor.Version
                 let isObsolete =
-                    IsResultObsolete(fun () ->
+                    (fun () ->
                     let doc = IdeApp.Workbench.GetDocument(filename)
                     let newVersion = doc.Editor.Version
                     if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0

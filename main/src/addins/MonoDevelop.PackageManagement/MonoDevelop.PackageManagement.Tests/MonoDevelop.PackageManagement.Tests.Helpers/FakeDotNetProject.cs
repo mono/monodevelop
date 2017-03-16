@@ -167,6 +167,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			IsReferenceStatusRefreshed = true;
 		}
+
+		public List<ProjectPackageReference> PackageReferences = new List<ProjectPackageReference> ();
+
+		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
+
+		public void AddTargetFramework (string targetFramework)
+		{
+			FakeEvaluatedProperties.PropertiesDictionary["TargetFramework"] = targetFramework;
+		}
+
+		public void AddPackageTargetFallback (string fallback)
+		{
+			FakeEvaluatedProperties.PropertiesDictionary["PackageTargetFallback"] = fallback;
+		}
+
+		public void AddProperty (string name, string value)
+		{
+			FakeEvaluatedProperties.PropertiesDictionary[name] = value;
+		}
 	}
 }
 

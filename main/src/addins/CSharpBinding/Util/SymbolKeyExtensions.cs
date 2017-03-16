@@ -65,10 +65,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// through GetOrCreate and not Create.
 		/// </para>
 		/// </summary>
-		internal static SymbolKey Create(ISymbol symbol, Compilation compilation = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static SymbolKey Create(ISymbol symbol, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try {
-				var instance = createMethod.Invoke (null, new object [] { symbol, compilation, cancellationToken });
+				var instance = createMethod.Invoke (null, new object [] { symbol, cancellationToken });
 				return new SymbolKey (instance);
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
@@ -136,7 +136,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	{
 		public static SymbolKey GetSymbolKey(this ISymbol symbol)
 		{
-			return SymbolKey.Create(symbol, null, CancellationToken.None);
+			return SymbolKey.Create(symbol, CancellationToken.None);
 		}
 
 		#if false

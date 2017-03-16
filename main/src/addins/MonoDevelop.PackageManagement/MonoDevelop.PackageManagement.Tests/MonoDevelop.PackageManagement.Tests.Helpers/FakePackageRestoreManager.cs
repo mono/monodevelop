@@ -33,6 +33,7 @@ using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 using NuGet.ProjectManagement;
 using NuGet.Versioning;
 
@@ -106,28 +107,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
-		public Task<PackageRestoreResult> RestoreMissingPackagesAsync (string solutionDirectory, IEnumerable<PackageRestoreData> packages, INuGetProjectContext nuGetProjectContext, CancellationToken token)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public string RestoreMissingPackagesSolutionDirectory;
-		public NuGetProject RestoreMissingPackagesProject;
-		public INuGetProjectContext RestoreMissingPackagesProjectContext;
-		public CancellationToken RestoreMissingPackagesCancellationToken;
-
-		public PackageRestoreResult RestoreResult = new PackageRestoreResult (true);
-
-		public Action BeforeRestoreMissingPackagesAsync = () => { };
-
 		public Task<PackageRestoreResult> RestoreMissingPackagesAsync (
 			string solutionDirectory,
-			NuGetProject nuGetProject,
+			IEnumerable<PackageRestoreData> packages,
 			INuGetProjectContext nuGetProjectContext,
+			PackageDownloadContext downloadContext,
 			CancellationToken token)
 		{
 			RestoreMissingPackagesSolutionDirectory = solutionDirectory;
-			RestoreMissingPackagesProject = nuGetProject;
+			PackagesToBeRestored = packages.ToList ();
 			RestoreMissingPackagesProjectContext = nuGetProjectContext;
 			RestoreMissingPackagesCancellationToken = token;
 
@@ -136,7 +124,23 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return Task.FromResult (RestoreResult);
 		}
 
+		public string RestoreMissingPackagesSolutionDirectory;
+		public INuGetProjectContext RestoreMissingPackagesProjectContext;
+		public CancellationToken RestoreMissingPackagesCancellationToken;
+		public List<PackageRestoreData> PackagesToBeRestored;
+
+		public PackageRestoreResult RestoreResult = new PackageRestoreResult (true, new PackageIdentity[0]);
+
+		public Action BeforeRestoreMissingPackagesAsync = () => { };
+
 		public Task<PackageRestoreResult> RestoreMissingPackagesInSolutionAsync (string solutionDirectory, INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public IEnumerable<PackageRestoreData> GetPackagesRestoreData (
+			string solutionDirectory,
+			Dictionary<PackageReference, List<string>> packageReferencesDict)
 		{
 			throw new NotImplementedException ();
 		}

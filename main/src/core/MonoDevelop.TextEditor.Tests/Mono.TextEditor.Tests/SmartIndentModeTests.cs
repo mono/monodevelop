@@ -27,15 +27,17 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
 	public class SmartIndentModeTests
 	{
-		internal readonly static IIndentationTracker IndentTracker = new TestIndentTracker ();
+		internal readonly static IndentationTracker IndentTracker = new TestIndentTracker ();
 
-		internal class TestIndentTracker : IIndentationTracker
+		internal class TestIndentTracker : IndentationTracker
 		{
 			string indentString;
 
@@ -43,35 +45,11 @@ namespace Mono.TextEditor.Tests
 			{
 				this.indentString = indentString;
 			}
-			
-			#region IIndentationTracker implementation
 
-			public IndentatitonTrackerFeatures SupportedFeatures {
-				get {
-					return IndentatitonTrackerFeatures.All;
-				}
-			}
-
-			public string GetIndentationString (int offset)
+			public override string GetIndentationString (int lineNumber)
 			{
 				return indentString;
 			}
-
-			public string GetIndentationString (int lineNumber, int column)
-			{
-				return indentString;
-			}
-
-			public int GetVirtualIndentationColumn (int offset)
-			{
-				return indentString.Length + 1;
-			}
-
-			public int GetVirtualIndentationColumn (int lineNumber, int column)
-			{
-				return indentString.Length + 1;
-			}
-			#endregion
 		}
 
 		TextEditorData CreateData (string content)

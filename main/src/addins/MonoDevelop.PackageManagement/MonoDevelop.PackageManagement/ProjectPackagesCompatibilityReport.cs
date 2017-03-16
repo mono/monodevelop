@@ -24,14 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
-using System.IO;
-using System.Text;
-using MonoDevelop.Core;
-using NuGet;
 using System.Linq;
+using System.IO;
+using MonoDevelop.Core;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -66,12 +64,12 @@ namespace MonoDevelop.PackageManagement
 
 		void ReportIncompatiblePackages ()
 		{
-			List<IPackage> incompatiblePackages = GetPackagesIncompatibleWithNewProjectTargetFramework ().ToList ();
+			List<PackageIdentity> incompatiblePackages = GetPackagesIncompatibleWithNewProjectTargetFramework ().ToList ();
 			if (incompatiblePackages.Any ()) {
 				writer.WriteLine (GetIncompatiblePackagesWarningMessage ());
 				writer.WriteLine ();
 
-				foreach (IPackage package in incompatiblePackages) {
+				foreach (PackageIdentity package in incompatiblePackages) {
 					writer.WriteLine (package.Id);
 				}
 
@@ -81,25 +79,25 @@ namespace MonoDevelop.PackageManagement
 
 		void ReportPackagesNeedingReinstall ()
 		{
-			List<IPackage> packagesToReinstall = GetCompatiblePackagesNeedingReinstall ().ToList ();
+			List<PackageIdentity> packagesToReinstall = GetCompatiblePackagesNeedingReinstall ().ToList ();
 			if (packagesToReinstall.Any ()) {
 				writer.WriteLine (GetPackageReinstallationWarningMessage ());
 				writer.WriteLine ();
 
-				foreach (IPackage package in packagesToReinstall) {
+				foreach (PackageIdentity package in packagesToReinstall) {
 					writer.WriteLine (package.Id);
 				}
 			}
 		}
 
-		IEnumerable<IPackage> GetPackagesIncompatibleWithNewProjectTargetFramework ()
+		IEnumerable<PackageIdentity> GetPackagesIncompatibleWithNewProjectTargetFramework ()
 		{
 			return packageCompatibilities
 				.Where (packageCompatibility => !packageCompatibility.IsCompatibleWithNewProjectTargetFramework)
 				.Select (packageCompatibility => packageCompatibility.Package);
 		}
 
-		IEnumerable<IPackage> GetCompatiblePackagesNeedingReinstall ()
+		IEnumerable<PackageIdentity> GetCompatiblePackagesNeedingReinstall ()
 		{
 			return packageCompatibilities
 				.Where(packageCompatibility => packageCompatibility.ShouldReinstallPackage)

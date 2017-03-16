@@ -28,6 +28,12 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
+	public enum TextLinkPurpose
+	{
+		Unknown,
+		Rename
+	}
+
 	/// <summary>
 	/// This class contains information the editor needs to initiate the text link mode.
 	/// </summary>
@@ -49,6 +55,8 @@ namespace MonoDevelop.Ide.Editor
 			get;
 			private set;
 		}
+
+		public TextLinkPurpose TextLinkPurpose { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.Ide.Editor.TextLinkModeOptions"/> class.

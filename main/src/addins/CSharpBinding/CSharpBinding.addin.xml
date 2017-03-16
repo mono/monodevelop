@@ -304,7 +304,6 @@
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 
 			<ItemSet id = "Navigate" _label = "Navigate">
-				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"/>
@@ -324,12 +323,8 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
-		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
-		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
+		<Matcher class="MonoDevelop.CSharp.CSharpBraceMatcher" mimeType="text/x-csharp"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">

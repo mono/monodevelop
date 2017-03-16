@@ -50,11 +50,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
-			if (IdeApp.Workbench?.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0) == true) {
+			if (IdeApp.Workbench?.Documents.Any (doc => doc.IsFile && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), fileName) == 0) == true) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
 			} else {
 				try {
-					text = SourceText.From (TextFileUtility.GetText (fileName));
+					if (File.Exists (fileName)) {
+						text = SourceText.From (TextFileUtility.GetText (fileName));
+					} else {
+						text = SourceText.From ("");
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ($"Failed to get file text for {fileName}", e);
 					text = SourceText.From ("");

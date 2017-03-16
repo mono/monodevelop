@@ -26,21 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
+using NuGet.Configuration;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class PackageSourceCollectionAssert
 	{
 		public static void AreEqual (IEnumerable<PackageSource> expectedSources, IEnumerable<PackageSourceViewModel> actualViewModels)
-		{
-			List<string> expectedSourcesAsList = ConvertToStrings (expectedSources);
-			List<string> actualSources = ConvertToStrings (actualViewModels);
-
-			CollectionAssert.AreEqual (expectedSourcesAsList, actualSources);
-		}
-
-		public static void AreEqual (IEnumerable<NuGet.Configuration.PackageSource> expectedSources, IEnumerable<PackageSourceViewModel> actualViewModels)
 		{
 			List<string> expectedSourcesAsList = ConvertToStrings (expectedSources);
 			List<string> actualSources = ConvertToStrings (actualViewModels);
@@ -56,27 +48,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			CollectionAssert.AreEqual (expectedSourcesAsList, actualSourcesAsList);
 		}
 
-		public static void AreEqual (IEnumerable<NuGet.Configuration.PackageSource> expectedSources, IEnumerable<NuGet.Configuration.PackageSource> actualSources)
-		{
-			List<string> expectedSourcesAsList = ConvertToStrings (expectedSources);
-			List<string> actualSourcesAsList = ConvertToStrings (actualSources);
-
-			CollectionAssert.AreEqual (expectedSourcesAsList, actualSourcesAsList);
-		}
-
 		static List<string> ConvertToStrings (IEnumerable<PackageSource> sources)
 		{
-			List<string> convertedSources = new List<string> ();
-			foreach (PackageSource source in sources) {
-				convertedSources.Add (ConvertToString (source));
-			}
-			return convertedSources;
-		}
-
-		static List<string> ConvertToStrings (IEnumerable<NuGet.Configuration.PackageSource> sources)
-		{
 			var convertedSources = new List<string> ();
-			foreach (NuGet.Configuration.PackageSource source in sources) {
+			foreach (PackageSource source in sources) {
 				convertedSources.Add (ConvertToString (source));
 			}
 			return convertedSources;
@@ -92,21 +67,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return "[PackageSource] == Null";
 		}
 
-		static string ConvertToString (NuGet.Configuration.PackageSource source)
-		{
-			if (source != null) {
-				return String.Format ("[PackageSource] Name='{0}', Source='{1}'",
-					source.Name,
-					source.Source);
-			}
-			return "[PackageSource] == Null";
-		}
-
 		static List<string> ConvertToStrings (IEnumerable<PackageSourceViewModel> viewModels)
 		{
 			List<string> convertedSources = new List<string> ();
 			foreach (PackageSourceViewModel viewModel in viewModels) {
-				PackageSource source = viewModel.GetNuGet2PackageSource ();
+				PackageSource source = viewModel.GetPackageSource ();
 				convertedSources.Add (ConvertToString (source));
 			}
 			return convertedSources;

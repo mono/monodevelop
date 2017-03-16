@@ -31,7 +31,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 using Mono.Addins;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -39,16 +41,24 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();
 		static List<AbstractBraceMatcher> braceMatcher = new List<AbstractBraceMatcher> ();
+
+		BraceMatchingResult? currentResult;
+
 		bool isSubscribed;
 		static BraceMatcherTextEditorExtension()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/BraceMatcher", delegate(object sender, ExtensionNodeEventArgs args) {
+				var node = (MimeTypeExtensionNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					braceMatcher.Add ((AbstractBraceMatcher)args.ExtensionObject);
+					var matcher = (AbstractBraceMatcher)node.CreateInstance ();
+					matcher.MimeType = node.MimeType;
+					braceMatcher.Add (matcher);
 					break;
 				case ExtensionChange.Remove:
-					braceMatcher.Remove ((AbstractBraceMatcher)args.ExtensionObject);
+					var toRemove = braceMatcher.FirstOrDefault (m => m.MimeType == node.MimeType);
+					if (toRemove != null)
+						braceMatcher.Remove (toRemove);
 					break;
 				}
 			});
@@ -103,9 +113,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Editor_CaretPositionChanged (sender, e);
 		}
 
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		internal void OnGotoMatchingBrace ()
+		{
+			if (currentResult != null && currentResult.HasValue) {
+				Editor.CaretOffset = currentResult.Value.IsCaretInLeft ? currentResult.Value.RightSegment.Offset : currentResult.Value.LeftSegment.Offset;
+			}
+		}
+
 		void Editor_CaretPositionChanged (object sender, EventArgs e)
 		{
 			Editor.UpdateBraceMatchingResult (null);
+			currentResult = null;
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
@@ -116,10 +136,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var ctx = DocumentContext;
 			var snapshot = Editor.CreateDocumentSnapshot ();
 			Task.Run (async delegate() {
-				BraceMatchingResult? result;
+				BraceMatchingResult? result = null;
 				try {
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
-					if (result == null && caretOffset > 0)
+					if (caretOffset > 0)
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+					if (result == null)
 						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
@@ -147,6 +168,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					if (token.IsCancellationRequested)
 						return;
 					Editor.UpdateBraceMatchingResult (result);
+					currentResult = result;
 				});
 			});
 		}

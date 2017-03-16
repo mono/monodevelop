@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -42,8 +44,9 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (DefaultSourceEditorOptions.Instance.GetColorStyle ().LinkColor.Color, new TextSegment (offset, length))
+		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (null, new TextSegment (offset, length))
 		{
+			this.Color = SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.Link);
 			this.activateLink = activateLink;
 			this.Wave = false;
 		}
@@ -113,13 +116,14 @@ namespace MonoDevelop.SourceEditor
 				if (!Segment.Contains (hoverOffset)) 
 					return; 
 			}
-			this.Color = editor.ColorStyle.LinkColor.Color;
+
+			this.Color = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Link);
 
 			if (!OnlyShowLinkOnHover) {
 				if (editor.TextViewMargin.MarginCursor == textLinkCursor && editor.TextViewMargin.HoveredLine != null) {
 					var hoverOffset = editor.LocationToOffset (editor.TextViewMargin.HoveredLocation);
-					if (Segment.Contains (hoverOffset))
-						this.Color = editor.ColorStyle.ActiveLinkColor.Color;
+					// if (Segment.Contains (hoverOffset))
+					//	this.Color = editorEditorThemle.ActiveLinkColor.Color;
 				}
 			}
 

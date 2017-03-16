@@ -37,8 +37,11 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<IInstallNuGetPackageAction> PendingInstallActionsForProject (DotNetProject project);
 
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
+		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action, bool clearConsole);
 		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
+		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions, bool clearConsole);
 		Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
+		Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions, bool clearConsole);
 
 		void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception);
 		void ShowError (ProgressMonitorStatusMessage progressMessage, string message);

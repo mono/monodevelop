@@ -12,6 +12,7 @@ open MonoDevelop.Components
 open MonoDevelop.Components.Docking
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
+open MonoDevelop.Core.Execution
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
@@ -45,11 +46,6 @@ type KillIntent =
     | Kill
     | NoIntent // Unexpected kill, or from #q/#quit, so we prompt
 
-type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultSourceEditorOptions) =
-    inherit TextEditorOptions()
-    interface Mono.TextEditor.ITextEditorOptions with
-        member x.ColorScheme = options.ColorScheme
-
 type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
     inherit TextLineMarker()
     static let tag = obj()
@@ -63,7 +59,8 @@ type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
 
     interface IExtendingTextLineMarker with
         member x.GetLineHeight editor = editor.LineHeight + image.Height
-        member x.Draw(editor, g, lineNr, lineArea) = ()
+        member x.Draw(_editor, _g, _lineNr, _lineArea) = ()
+        member x.IsSpaceAbove with get() = false
 
 type FsiDocumentContext() =
     inherit DocumentContext()
@@ -213,7 +210,10 @@ type FSharpInteractivePad() =
 
     let setupSession() =
         try
-            let ses = InteractiveSession()
+            let pathToExe =
+                Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
+                |> ProcessArgumentBuilder.Quote
+            let ses = InteractiveSession(pathToExe)
             input.Clear()
             promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
@@ -365,8 +365,8 @@ type FSharpInteractivePad() =
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
             x.SendCommand text
             //advance to the next line
-            if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
-            then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
+            //if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
+            //then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
 
     member x.SendFile() =
         let text = IdeApp.Workbench.ActiveDocument.Editor.Text

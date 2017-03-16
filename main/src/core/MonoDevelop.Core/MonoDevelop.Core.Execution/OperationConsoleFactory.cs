@@ -35,10 +35,11 @@ namespace MonoDevelop.Core.Execution
 	{
 		public class CreateConsoleOptions 
 		{
-			public static readonly CreateConsoleOptions Default = new CreateConsoleOptions { BringToFront = true };
+			public static readonly CreateConsoleOptions Default = new CreateConsoleOptions { BringToFront = true, PauseWhenFinished = true };
 
 			public bool BringToFront { get; private set; }
 			public string Title { get; private set; }
+			public bool PauseWhenFinished { get; private set; }
 
 			CreateConsoleOptions ()
 			{
@@ -48,6 +49,7 @@ namespace MonoDevelop.Core.Execution
 			{
 				this.BringToFront = options.BringToFront;
 				this.Title = options.Title;
+				this.PauseWhenFinished = options.PauseWhenFinished;
 			}
 
 			public CreateConsoleOptions (bool bringToFront)
@@ -70,6 +72,15 @@ namespace MonoDevelop.Core.Execution
 					return this;
 				var result = new CreateConsoleOptions (this);
 				result.Title = title;
+				return result;
+			}
+
+			public CreateConsoleOptions WithPauseWhenFinished (bool pausedWhenFinished)
+			{
+				if (pausedWhenFinished == PauseWhenFinished)
+					return this;
+				var result = new CreateConsoleOptions (this);
+				result.PauseWhenFinished = pausedWhenFinished;
 				return result;
 			}
 		}

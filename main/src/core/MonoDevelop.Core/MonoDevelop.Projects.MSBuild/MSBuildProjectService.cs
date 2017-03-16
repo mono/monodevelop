@@ -44,6 +44,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core.Execution;
+using System.Xml.Linq;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -54,6 +55,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal const string GlobalPropertyProvidersExtensionPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
 		internal const string UnknownMSBuildProjectTypesExtensionPath = "/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes";
 		internal const string MSBuildProjectItemTypesPath = "/MonoDevelop/ProjectModel/MSBuildProjectItemTypes";
+		internal const string MSBuildImportSearchPathsPath = "/MonoDevelop/ProjectModel/MSBuildImportSearchPaths";
 
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
@@ -70,6 +72,10 @@ namespace MonoDevelop.Projects.MSBuild
 		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
 		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
 		static IDictionary<string,TypeExtensionNode> projecItemTypeNodes;
+
+		static Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> defaultImportSearchPaths = new Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> ();
+		static List<ImportSearchPathExtensionNode> importSearchPaths = new List<ImportSearchPathExtensionNode> ();
+		static bool searchPathConfigNeedsUpdate;
 
 		static AsyncCriticalSection buildersLock = new AsyncCriticalSection ();
 
@@ -109,6 +115,8 @@ namespace MonoDevelop.Projects.MSBuild
 				specialCharactersEscaped [specialCharacters [i]] = '%' + escaped;
 				specialCharactersUnescaped [escaped] = specialCharacters [i];
 			}
+
+			CleanCachedMSBuildExes ();
 		}
 
 		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
@@ -119,6 +127,13 @@ namespace MonoDevelop.Projects.MSBuild
 				args.Path == GlobalPropertyProvidersExtensionPath ||
 				args.Path == MSBuildProjectItemTypesPath)
 				LoadExtensionData ();
+
+			if (args.Path == MSBuildImportSearchPathsPath) {
+				searchPathConfigNeedsUpdate = true;
+
+				// Reload all builders since search paths have changed
+				RecycleAllBuilders ().Ignore ();
+			}
 		}
 
 		static void LoadExtensionData ()
@@ -163,6 +178,103 @@ namespace MonoDevelop.Projects.MSBuild
 		internal static void UnregisterCustomProjectItemType (string name)
 		{
 			customProjectItemTypes.Remove (name);
+		}
+
+		/// <summary>
+		/// Registers a custom project import search path. This path will be used as a fallback when evaluating
+		/// an import and targets file is not found using the value assigned by MSBuild to the property.
+		/// </summary>
+		/// <param name="propertyName">Name of the property for which to add a fallback path</param>
+		/// <param name="path">The fallback path</param>
+		public static void RegisterProjectImportSearchPath (string propertyName, FilePath path)
+		{
+			if (!importSearchPaths.Any (sp => sp.Property == propertyName && sp.Path == path)) {
+				importSearchPaths.Add (new ImportSearchPathExtensionNode { Property = propertyName, Path = path });
+				searchPathConfigNeedsUpdate = true;
+				RecycleAllBuilders ().Ignore ();
+			}
+		}
+
+		/// <summary>
+		/// Unregisters a previously registered import search path
+		/// </summary>
+		/// <param name="propertyName">Name of the property for which a fallback path was added.</param>
+		/// <param name="path">The fallback path to remove</param>
+		public static void UnregisterProjectImportSearchPath (string propertyName, FilePath path)
+		{
+			importSearchPaths.RemoveAll (i => i.Property == propertyName && i.Path == path);
+			searchPathConfigNeedsUpdate = true;
+			RecycleAllBuilders ().Ignore ();
+		}
+
+		/// <summary>
+		/// Gets a list of all search paths assigned to properties
+		/// </summary>
+		/// <returns>The search paths</returns>
+		/// <param name="runtime">Runtime for which to get the search paths.</param>
+		/// <param name="includeImplicitImports">If set to <c>true</c>, it returns all search paths, including those registered by
+		/// MSBuild and those registered using RegisterProjectImportSearchPath. If <c>false</c>, it only returns the paths
+		/// registered by RegisterProjectImportSearchPath.</param>
+		internal static IEnumerable<ImportSearchPathExtensionNode> GetProjectImportSearchPaths (TargetRuntime runtime, bool includeImplicitImports)
+		{
+			var result = AddinManager.GetExtensionNodes<ImportSearchPathExtensionNode> (MSBuildImportSearchPathsPath).Concat (importSearchPaths);
+			if (includeImplicitImports)
+				result = LoadDefaultProjectImportSearchPaths (runtime).Concat (result);
+			return result;
+		}
+
+		/// <summary>
+		/// Finds an SDKs path that contains the specified SDK.
+		/// </summary>
+		internal static string FindSdkPath (TargetRuntime runtime, string[] sdks)
+		{
+			string binDir;
+			GetNewestInstalledToolsVersion (runtime, true, out binDir);
+
+			// Look for SDKs in the default SDKs path first, and then in the fallback paths
+			var defaultSdksPath = Path.Combine (binDir, "Sdks");
+			var allPaths = Enumerable.Repeat (defaultSdksPath, 1).Concat (GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath").Select (sp => sp.Path));
+
+			foreach (var path in allPaths) {
+				// We need to find a path that contains all required SDKs, since we can only read SDKs from one place for a project.
+				if (sdks.All (sdk => Directory.Exists (Path.Combine (path, sdk))))
+					return path;
+			}
+			return null;
+		}
+
+		static List<ImportSearchPathExtensionNode> LoadDefaultProjectImportSearchPaths (TargetRuntime runtime)
+		{
+			// Load the default search paths defined in MSBuild.dll.config
+
+			lock (defaultImportSearchPaths) {
+				List<ImportSearchPathExtensionNode> list;
+				if (defaultImportSearchPaths.TryGetValue (runtime, out list))
+					return list;
+
+				list = new List<ImportSearchPathExtensionNode> ();
+				defaultImportSearchPaths [runtime] = list;
+
+				string binDir;
+				GetNewestInstalledToolsVersion (runtime, true, out binDir);
+
+				var configFile = Path.Combine (binDir, "MSBuild.dll.config");
+				if (File.Exists (configFile)) {
+					var doc = XDocument.Load (configFile);
+					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
+					if (projectImportSearchPaths != null) {
+						var os = Platform.IsMac ? "osx" : Platform.IsWindows ? "windows" : "unix";
+						foreach (var searchPaths in projectImportSearchPaths.Elements ("searchPaths")) {
+							var pathOs = (string)searchPaths.Attribute ("os")?.Value;
+							if (!string.IsNullOrEmpty (pathOs) && pathOs != os)
+								continue;
+							foreach (var property in searchPaths.Elements ("property"))
+								list.Add (new ImportSearchPathExtensionNode { Property = property.Attribute ("name").Value, Path = property.Attribute ("value").Value });
+						}
+					}
+				}
+				return list;
+			}
 		}
 
 		static async void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
@@ -251,7 +363,7 @@ namespace MonoDevelop.Projects.MSBuild
 				item.NotifyItemReady ();
 			};
 
-			await item.LoadAsync (monitor, fileName, expectedFormat).ConfigureAwait (false);
+			await item.LoadAsync (monitor, fileName, expectedFormat, itemGuid).ConfigureAwait (false);
 			return item;
 		}
 
@@ -915,6 +1027,8 @@ namespace MonoDevelop.Projects.MSBuild
 			string [] supportedToolsVersions;
 			if ((requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild) && !Platform.IsWindows)
 				supportedToolsVersions = new [] { "15.0"};
+			else if (Platform.IsWindows)
+				supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
 			else
 				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
 
@@ -927,7 +1041,24 @@ namespace MonoDevelop.Projects.MSBuild
 			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
 		}
 
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
+		/// <summary>
+		/// Forces the reload of all project builders
+		/// </summary>
+		/// <remarks>
+		/// This method can be used to discard all currently active project builders, and force the creation
+		/// of new ones. This method is useful when there is a change in the MSBuild options or environment
+		/// that has an effect on all builders. If a builder is running a task, it will be discarded when
+		/// the task ends.
+		/// </remarks>
+		public static async Task RecycleAllBuilders ()
+		{
+			using (await buildersLock.EnterAsync ()) {
+				foreach (var b in builders.GetAllBuilders ())
+					b.Shutdown ();
+			}
+		}
+
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, string sdksPath, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
 			Version mtv = Version.Parse (minToolsVersion);
 			if (mtv >= new Version (15,0))
@@ -953,6 +1084,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (lockBuilder) {
 					foreach (var b in builders.GetBuilders (builderKey)) {
+						if (b.IsShuttingDown)
+							continue;
 						if (b.Lock ()) {
 							builder = b;
 							break;
@@ -960,13 +1093,11 @@ namespace MonoDevelop.Projects.MSBuild
 						b.Unlock ();
 					}
 				} else
-					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
+					builder = builders.GetBuilders (builderKey).FirstOrDefault (b => !b.IsShuttingDown);
 				
 				if (builder != null) {
 					builder.ReferenceCount++;
-					var pb = new RemoteProjectBuilder (file, builder);
-					await pb.Load ();
-					return pb;
+					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
 				}
 
 				return await Task.Run (async () => {
@@ -1013,9 +1144,7 @@ namespace MonoDevelop.Projects.MSBuild
 					};
 					if (lockBuilder)
 						builder.Lock ();
-					var pb = new RemoteProjectBuilder (file, builder);
-					await pb.Load ().ConfigureAwait (false);
-					return pb;
+					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
 				});
 			}
 		}
@@ -1042,9 +1171,33 @@ namespace MonoDevelop.Projects.MSBuild
 
 			return dictionary;;
 		}
-		
+
+#region MSBuild exe file location
+
+		/// <summary>
+		/// Gets the project builder exe to be used to for a specific runtime and tools version
+		/// </summary>
 		static string GetExeLocation (TargetRuntime runtime, string toolsVersion, bool requiresMicrosoftBuild)
 		{
+			// If the builder for the latest MSBuild tools is being requested, return a local copy of the exe.
+			// That local copy is configured to add additional msbuild search paths defined by add-ins.
+
+			var mainExe = GetMSBuildExeLocationInBundle (runtime);
+			var exe = GetExeLocationInBundle (runtime, toolsVersion, requiresMicrosoftBuild);
+			if (exe == mainExe)
+				return GetLocalMSBuildExeLocation (runtime);
+			return exe;
+		}
+
+		static string GetMSBuildExeLocationInBundle (TargetRuntime runtime)
+		{
+			return GetExeLocationInBundle (runtime, "15.0", true);
+		}
+
+		static string GetExeLocationInBundle (TargetRuntime runtime, string toolsVersion, bool requiresMicrosoftBuild)
+		{
+			// Locate the project builder exe in the MD directory
+
 			var builderDir = new FilePath (typeof(MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
 
 			var version = Version.Parse (toolsVersion);
@@ -1063,6 +1216,136 @@ namespace MonoDevelop.Projects.MSBuild
 			
 			throw new InvalidOperationException ("Unsupported MSBuild ToolsVersion '" + version + "'");
 		}
+
+		static string GetLocalMSBuildExeLocation (TargetRuntime runtime)
+		{
+			// Gets a path to the local copy of the project builder for the provided runtime.
+			// If no local copy exists, create one.
+
+			// Builders are copied to a folder inside the cache folder. This folder is cleaned
+			// every time XS is started, removing unused builders. The process id is used
+			// as folder name, so it is easy to check if the folder is currently in use or not.
+
+			var dirId = Process.GetCurrentProcess ().Id.ToString () + "_" + runtime.InternalId;
+			var exesDir = UserProfile.Current.CacheDir.Combine ("MSBuild").Combine (dirId);
+
+			if (!Directory.Exists (exesDir)) {
+				// Copy the builder to the local dir, including the debug file and config file.
+				Directory.CreateDirectory (exesDir);
+				var exe = GetMSBuildExeLocationInBundle (runtime);
+				File.Copy (exe, exesDir.Combine (Path.GetFileName (exe)));
+				var exeMdb = exe + ".mdb";
+				if (File.Exists (exeMdb))
+					File.Copy (exeMdb, exesDir.Combine (Path.GetFileName (exeMdb)));
+				var exePdb = Path.ChangeExtension (exe, ".pdb");
+				if (File.Exists (exePdb))
+					File.Copy (exePdb, exesDir.Combine (Path.GetFileName (exePdb)));
+				var exeConfig = exe + ".config";
+				if (File.Exists (exeConfig))
+					File.Copy (exeConfig, exesDir.Combine (Path.GetFileName (exeConfig + ".original")));
+
+				searchPathConfigNeedsUpdate = true;
+			}
+
+			if (searchPathConfigNeedsUpdate) {
+				// There is already a local copy of the builder, but the config file needs to be updated.
+				searchPathConfigNeedsUpdate = false;
+				UpdateMSBuildExeConfigFile (runtime);
+			}
+			return exesDir.Combine ("MonoDevelop.Projects.Formats.MSBuild.exe");
+		}
+
+		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime)
+		{
+			// Creates an MSBuild config file with the search paths registered by add-ins.
+
+			foreach (var configFile in Directory.GetFiles (Path.GetDirectoryName (GetLocalMSBuildExeLocation (runtime)), "*.config.original")) {
+
+				var localConfigFile = configFile.Substring (0, configFile.Length - 9);
+
+				var doc = XDocument.Load (configFile);
+				var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
+
+				if (toolset != null) {
+					
+					string binDir;
+					GetNewestInstalledToolsVersion (runtime, true, out binDir);
+
+					// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
+					SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, false, true);
+
+					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
+					if (projectImportSearchPaths != null) {
+						var os = Platform.IsMac ? "osx" : Platform.IsWindows ? "windows" : "unix";
+						XElement searchPaths = projectImportSearchPaths.Elements ("searchPaths").FirstOrDefault (sp => sp.Attribute ("os")?.Value == os);
+						if (searchPaths == null) {
+							searchPaths = new XElement ("searchPaths");
+							searchPaths.SetAttributeValue ("os", os);
+							projectImportSearchPaths.Add (searchPaths);
+						}
+						foreach (var path in GetProjectImportSearchPaths (runtime, false))
+							SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
+					}
+					doc.Save (localConfigFile);
+				}
+			}
+		}
+
+		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append, bool insertBefore)
+		{
+			var prop = elem.Elements ("property").FirstOrDefault (p => p.Attribute ("name")?.Value == name);
+			if (prop != null) {
+				var val = prop.Attribute ("value")?.Value;
+				if (append)
+					prop.SetAttributeValue ("value", val + ";" + value);
+				else
+					prop.SetAttributeValue ("value", value);
+			} else {
+				prop = new XElement ("property");
+				prop.SetAttributeValue ("name", name);
+				prop.SetAttributeValue ("value", value);
+				if (insertBefore)
+					elem.AddFirst (prop);
+				else
+					elem.Add (prop);
+			}
+		}
+
+		static void CleanCachedMSBuildExes ()
+		{
+			// Removes local copies of project builders that are not currently being used.
+
+			var exesDir = UserProfile.Current.CacheDir.Combine ("MSBuild");
+			if (!Directory.Exists (exesDir))
+				return;
+			
+			foreach (var dir in Directory.GetDirectories (exesDir)) {
+				// The file name has to parts: <process-id>_<runtime-id>
+				var spid = Path.GetFileName (dir);
+				int i = spid.IndexOf ('_');
+				if (i == -1)
+					continue;
+				spid = spid.Substring (0, i);
+				int pid;
+				if (int.TryParse (Path.GetFileName (spid), out pid)) {
+					try {
+						// If there is a process running with this id it means the builder is still being used
+						if (Process.GetProcessById (pid) != null)
+							continue;
+					} catch {
+						// Ignore
+					}
+					// No process for this id, it should be safe to delete the folder
+					try {
+						Directory.Delete (dir, true);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not delete MSBuild cache folder", ex);
+					}
+				}
+			}
+		}
+
+#endregion
 
 		internal static async void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{

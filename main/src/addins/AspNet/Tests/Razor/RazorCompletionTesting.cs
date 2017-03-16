@@ -60,18 +60,18 @@ namespace MonoDevelop.AspNet.Tests.Razor
 
 			var ctx = GetCodeCompletionContext (isInCSharpContext, ed.View, ed.Extension.hiddenInfo.UnderlyingDocument);
 
+			Task<ICompletionDataList> task;
 			if (isCtrlSpace) {
-				var result = await ed.Extension.CodeCompletionCommand (ctx) as CompletionDataList;
-				TypeSystemServiceTestExtensions.UnloadSolution (solution);
-				return result;
+				task = ed.Extension.HandleCodeCompletionAsync (ctx, CompletionTriggerInfo.CodeCompletionCommand, default (CancellationToken));
 			} else {
-				var task = ed.Extension.HandleCodeCompletionAsync (ctx, ed.EditorText [cursorPosition - 1], default(CancellationToken));
-				TypeSystemServiceTestExtensions.UnloadSolution (solution);
-				if (task != null) {
-					return await task as CompletionDataList;
-				}
-				return null;
+				task = ed.Extension.HandleCodeCompletionAsync (ctx, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, ed.EditorText [cursorPosition - 1]), default (CancellationToken));
 			}
+
+			TypeSystemServiceTestExtensions.UnloadSolution (solution);
+			if (task != null) {
+				return await task as CompletionDataList;
+			}
+			return null;
 		}
 
 		static CodeCompletionContext GetCodeCompletionContext (bool cSharpContext, TestViewContent sev, UnderlyingDocument underlyingDocument)

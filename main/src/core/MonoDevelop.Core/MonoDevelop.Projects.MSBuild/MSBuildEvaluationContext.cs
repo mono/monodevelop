@@ -39,6 +39,7 @@ using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
 using System.Web.UI.WebControls;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -48,6 +49,8 @@ namespace MonoDevelop.Projects.MSBuild
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
 		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
 		List<string> propertiesWithTransformsSorted = new List<string> ();
+		List<ImportSearchPathExtensionNode> searchPaths;
+
 		public Dictionary<string, bool> ExistsEvaluationCache { get; } = new Dictionary<string, bool> ();
 
 		bool allResolved;
@@ -106,7 +109,7 @@ namespace MonoDevelop.Projects.MSBuild
 				string toolsVersion = "15.0";
 				properties.Add ("MSBuildAssemblyVersion", "15.0");
 
-				var toolsPath = Runtime.SystemAssemblyService.DefaultRuntime.GetMSBuildToolsPath (toolsVersion);
+				var toolsPath = (project.TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime).GetMSBuildToolsPath (toolsVersion);
 
 				var frameworkToolsPath = ToolLocationHelper.GetPathToDotNetFramework (TargetDotNetFrameworkVersion.VersionLatest);
 
@@ -120,6 +123,14 @@ namespace MonoDevelop.Projects.MSBuild
 
 				properties.Add ("MSBuildFrameworkToolsPath", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 				properties.Add ("MSBuildFrameworkToolsPath32", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
+
+				// Need to set MSBuildSDKsPath property for ASP.NET Core Web projects.
+				if (project.Sdk != null) {
+					string sdksPath = Environment.GetEnvironmentVariable ("MSBuildSDKsPath");
+					if (sdksPath != null) {
+						properties.Add ("MSBuildSDKsPath", MSBuildProjectService.ToMSBuildPath (null, sdksPath));
+					}
+				}
 
 				if (Platform.IsWindows) {
 					// Taken from MSBuild source:
@@ -160,8 +171,8 @@ namespace MonoDevelop.Projects.MSBuild
 						extensionsPath = extensionsPath32;
 					properties.Add ("MSBuildExtensionsPath", extensionsPath);
 				}
-				else if (!String.IsNullOrEmpty (DefaultExtensionsPath)) {
-					var ep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+				else {
+					var ep = MSBuildProjectService.ToMSBuildPath (null, project.TargetRuntime.GetMSBuildExtensionsPath ());
 					properties.Add ("MSBuildExtensionsPath", ep);
 					properties.Add ("MSBuildExtensionsPath32", ep);
 					properties.Add ("MSBuildExtensionsPath64", ep);
@@ -170,6 +181,22 @@ namespace MonoDevelop.Projects.MSBuild
 				// Environment
 
 				properties.Add ("MSBuildProgramFiles32", MSBuildProjectService.ToMSBuildPath (null, Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86)));
+
+				// Search paths
+
+				searchPaths = MSBuildProjectService.GetProjectImportSearchPaths (project.TargetRuntime, true).ToList ();
+
+				// Custom override of MSBuildExtensionsPath using an env var
+
+				var customExtensionsPath = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
+				if (!string.IsNullOrEmpty (customExtensionsPath)) {
+					if (IsExternalMSBuildExtensionsPath (customExtensionsPath))
+						// This is actually an override of the mono extensions path. Don't replace the default MSBuildExtensionsPath value since
+						// core targets still need to be loaded from there.
+						searchPaths.Insert (0, new ImportSearchPathExtensionNode { Property = "MSBuildExtensionsPath", Path = customExtensionsPath });
+					else
+						properties ["MSBuildExtensionsPath"] = MSBuildProjectService.ToMSBuildPath (null, customExtensionsPath);
+				}
 			}
 		}
 
@@ -177,45 +204,11 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return project; }
 		}
 
-		static string extensionsPath;
-
-		internal static string DefaultExtensionsPath {
-			get {
-				if (extensionsPath == null) {
-					var path = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
-					if (path != null && !IsExternalMSBuildExtensionsPath (path))
-						extensionsPath = path;
-				}
-
-				if (extensionsPath == null) {
-					// NOTE: code from mcs/tools/gacutil/driver.cs
-					PropertyInfo gac = typeof (System.Environment).GetProperty (
-						"GacPath", BindingFlags.Static | BindingFlags.NonPublic);
-
-					if (gac != null) {
-						MethodInfo get_gac = gac.GetGetMethod (true);
-						string gac_path = (string) get_gac.Invoke (null, null);
-						extensionsPath = Path.GetFullPath (Path.Combine (
-							gac_path, Path.Combine ("..", "xbuild")));
-					}
-				}
-				return extensionsPath;
-			}
-		}
-
-		static string macOSXExternalXBuildDir;
-
-		static string DefaultMacOSXExternalXBuildDir {
-			get {
-				if (macOSXExternalXBuildDir == null) {
-					var path = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
-					if (path != null && IsExternalMSBuildExtensionsPath (path))
-						macOSXExternalXBuildDir = path;
-					else
-						macOSXExternalXBuildDir = MacOSXExternalXBuildDir;
-				}
-				return macOSXExternalXBuildDir;
-			}
+		public IEnumerable<ImportSearchPathExtensionNode> GetProjectImportSearchPaths ()
+		{
+			if (parentContext != null)
+				return parentContext.GetProjectImportSearchPaths ();
+			return searchPaths;
 		}
 
 		static bool IsExternalMSBuildExtensionsPath (string path)
@@ -235,20 +228,6 @@ namespace MonoDevelop.Projects.MSBuild
 			// targets path.
 
 			return Platform.IsMac && path.Contains ("Mono.framework/External/xbuild");
-		}
-
-		static string DotConfigExtensionsPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), Path.Combine ("xbuild", "tasks"));
-		const string MacOSXExternalXBuildDir = "/Library/Frameworks/Mono.framework/External/xbuild";
-
-		internal static IEnumerable<string> GetApplicableExtensionsPaths ()
-		{
-			// On windows there is a single extension path, which is already properly defined in the engine
-			if (Platform.IsWindows)
-				yield return null;
-			if (Platform.IsMac)
-				yield return DefaultMacOSXExternalXBuildDir;
-			yield return DotConfigExtensionsPath;
-			yield return DefaultExtensionsPath;
 		}
 
 		internal void SetItemContext (string itemFile, string recursiveDir, IMSBuildPropertyGroupEvaluated metadata = null)
@@ -535,7 +514,13 @@ namespace MonoDevelop.Projects.MSBuild
 				i += 3;
 				return EvaluateMember (type, null, prop, i, out val);
 			}
-			int n = prop.IndexOf ('.');
+
+			int n = prop.IndexOf ('[');
+			if (n > 0) {
+				return EvaluateStringAtIndex (prop, n, out val);
+			}
+
+			n = prop.IndexOf ('.');
 			if (n == -1) {
 				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop));
 				val = GetPropertyValue (prop) ?? string.Empty;
@@ -827,7 +812,32 @@ namespace MonoDevelop.Projects.MSBuild
 			} else
 				flags |= BindingFlags.NonPublic;
 			
-			return type.GetMember (memberName, flags | BindingFlags.Public);
+			return type.GetMember (memberName, flags | BindingFlags.Public | BindingFlags.IgnoreCase);
+		}
+
+		bool EvaluateStringAtIndex (string prop, int i, out object val)
+		{
+			val = null;
+
+			int j = prop.IndexOf (']');
+			if (j == -1)
+				return false;
+
+			if (j < prop.Length - 1 || j - i < 2)
+				return false;
+
+			string indexText = prop.Substring (i + 1, j - (i + 1));
+			int index = -1;
+			if (!int.TryParse (indexText, out index))
+				return false;
+
+			prop = prop.Substring (0, i);
+			string propertyValue = GetPropertyValue (prop) ?? string.Empty;
+			if (propertyValue.Length <= index)
+				return false;
+
+			val = propertyValue.Substring (index, 1);
+			return true;
 		}
 
 		static Tuple<Type, string []> [] supportedTypeMembers = {
