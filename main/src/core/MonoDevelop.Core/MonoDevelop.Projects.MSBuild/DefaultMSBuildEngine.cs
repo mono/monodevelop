@@ -988,7 +988,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (pathPropertyValue != null) {
 				var tempCtx = new MSBuildEvaluationContext (context);
 				var mep = MSBuildProjectService.ToMSBuildPath (null, pathPropertyValue);
-				tempCtx.SetPropertyValue (pathProperty, mep);
+				tempCtx.SetContextualPropertyValue (pathProperty, mep);
 				context = tempCtx;
 			}
 

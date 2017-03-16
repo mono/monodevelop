@@ -327,6 +327,12 @@ namespace MonoDevelop.Projects.MSBuild
 				properties [name] = value;
 		}
 
+		public void SetContextualPropertyValue (string name, string value)
+		{
+			// Sets a properly value only for the scope of this context, not for the scope of the global evaluation operation
+			properties [name] = value;
+		}
+
 		public void ClearPropertyValue (string name)
 		{
 			properties.Remove (name);
