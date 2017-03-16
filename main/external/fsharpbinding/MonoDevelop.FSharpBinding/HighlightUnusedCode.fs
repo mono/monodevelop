@@ -40,11 +40,14 @@ module highlightUnusedCode =
             else
                 None)
 
-    let entityNamespace (ent:FSharpEntity) =
-        if ent.IsFSharpModule then
-            [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
-        else
-            [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+    let entityNamespace (entOpt:FSharpEntity option) =
+        match entOpt with
+        | Some ent ->
+            if ent.IsFSharpModule then
+                [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
+            else
+                [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+        | None -> []
 
     let getOffset (editor:TextEditor) (pos:Range.pos) =
         editor.LocationToOffset (pos.Line, pos.Column+1)
@@ -99,17 +102,26 @@ module highlightUnusedCode =
                 let isQualified = symbolIsFullyQualified editor sym
                 match sym with
                 | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
-                    getPartNamespace sym ent.TryFullName::entityNamespace ent
+                    getPartNamespace sym ent.TryFullName :: entityNamespace (Some ent)
                 | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
-                    getPartNamespace sym (Some f.FullName)::entityNamespace f.DeclaringEntity
+                    getPartNamespace sym (Some f.FullName) :: entityNamespace (Some f.DeclaringEntity)
                 | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
-                    try
-                        getPartNamespace sym (Some mfv.FullName)::entityNamespace mfv.EnclosingEntity
-                    with :? InvalidOperationException -> [None]
+                    getPartNamespace sym (Some mfv.FullName) :: entityNamespace mfv.EnclosingEntitySafe
+                | SymbolUse.Operator op when not (isQualified (Some op.FullName)) ->
+                    getPartNamespace sym (Some op.FullName) :: entityNamespace op.EnclosingEntitySafe
+                | SymbolUse.ActivePattern ap when not (isQualified (Some ap.FullName)) ->
+                    getPartNamespace sym (Some ap.FullName) :: entityNamespace ap.EnclosingEntitySafe
+                | SymbolUse.ActivePatternCase apc when not (isQualified (Some apc.FullName)) ->
+                    getPartNamespace sym (Some apc.FullName) :: entityNamespace apc.Group.EnclosingEntity
+                | SymbolUse.UnionCase uc when not (isQualified (Some uc.FullName)) ->
+                    getPartNamespace sym (Some uc.FullName) :: entityNamespace (Some uc.ReturnType.TypeDefinition)
+                | SymbolUse.Parameter p when not (isQualified (Some p.FullName)) ->
+                    getPartNamespace sym (Some p.FullName) :: entityNamespace (Some p.Type.TypeDefinition)
                 | _ -> [None]
 
             let namespacesInUse =
                 symbols
+                |> Seq.filter (fun s -> not s.IsFromDefinition)
                 |> Seq.collect getPossibleNamespaces
                 |> Seq.choose id
                 |> Set.ofSeq

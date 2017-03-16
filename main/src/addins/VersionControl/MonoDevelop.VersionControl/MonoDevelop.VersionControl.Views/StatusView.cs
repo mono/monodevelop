@@ -812,7 +812,7 @@ namespace MonoDevelop.VersionControl.Views
 				} else
 					opset.AddSeparator ();
 			}
-			IdeApp.CommandService.ShowContextMenu (filelist, evnt, opset, commandChain);
+			filelist.ShowContextMenu (evnt, opset, commandChain);
 		}
 
 		public VersionControlItemList GetSelectedItems ()

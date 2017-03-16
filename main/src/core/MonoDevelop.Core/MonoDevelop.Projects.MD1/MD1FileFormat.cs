@@ -50,8 +50,8 @@ namespace MonoDevelop.Projects.MD1
 
 		public bool CanReadFile (FilePath file, Type expectedType)
 		{
-			string ext = Path.GetExtension (file).ToLower ();
-			return ext == ".mdw" && expectedType.IsAssignableFrom (typeof(WorkspaceItem));
+			string ext = Path.GetExtension (file);
+			return string.Equals (ext, ".mdw", StringComparison.OrdinalIgnoreCase) && expectedType.IsAssignableFrom (typeof(WorkspaceItem));
 		}
 		
 		public bool CanWriteFile (object obj)
@@ -125,8 +125,8 @@ namespace MonoDevelop.Projects.MD1
 
 		public async Task<object> ReadFile (FilePath fileName, Type expectedType, ProgressMonitor monitor)
 		{
-			string ext = Path.GetExtension (fileName).ToLower ();
-			if (ext != ".mdw")
+			string ext = Path.GetExtension (fileName);
+			if (!string.Equals (ext, ".mdw", StringComparison.OrdinalIgnoreCase))
 				throw new ArgumentException ();
 
 			return await ReadWorkspaceItemFile (fileName, monitor);

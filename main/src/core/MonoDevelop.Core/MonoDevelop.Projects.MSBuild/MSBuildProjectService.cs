@@ -43,6 +43,7 @@ using Cecil = Mono.Cecil;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -132,7 +133,7 @@ namespace MonoDevelop.Projects.MSBuild
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (GlobalPropertyProvidersExtensionPath);
 
 			foreach (var gpp in globalPropertyProviders)
-				gpp.GlobalPropertiesChanged -= HandleGlobalPropertyProviderChanged;
+				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
 
 			// Get item type nodes
 
@@ -169,7 +170,7 @@ namespace MonoDevelop.Projects.MSBuild
 			using (await buildersLock.EnterAsync ()) {
 				var gpp = (IMSBuildGlobalPropertyProvider)sender;
 				foreach (var builder in builders.GetAllBuilders ())
-					builder.SetGlobalProperties (gpp.GetGlobalProperties ());
+					await builder.SetGlobalProperties (new Dictionary<string,string> (gpp.GetGlobalProperties ()));
 			}
 		}
 
@@ -230,7 +231,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var node = GetItemTypeNodes ().FirstOrDefault (n => n.CanHandleFile (fileName, typeGuid));
 
 			if (node != null) {
-				item = await node.CreateSolutionItem (monitor, ctx, fileName);
+				item = await node.CreateSolutionItem (monitor, ctx, fileName).ConfigureAwait (false);
 				if (item == null)
 					return null;
 			}
@@ -250,7 +251,7 @@ namespace MonoDevelop.Projects.MSBuild
 				item.NotifyItemReady ();
 			};
 
-			await item.LoadAsync (monitor, fileName, expectedFormat);
+			await item.LoadAsync (monitor, fileName, expectedFormat).ConfigureAwait (false);
 			return item;
 		}
 
@@ -909,8 +910,6 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static bool runLocal = false;
-
 		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
 			string [] supportedToolsVersions;
@@ -965,75 +964,41 @@ namespace MonoDevelop.Projects.MSBuild
 				
 				if (builder != null) {
 					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, builder);
+					var pb = new RemoteProjectBuilder (file, builder);
+					await pb.Load ();
+					return pb;
 				}
 
 				return await Task.Run (async () => {
 					//always start the remote process explicitly, even if it's using the current runtime and fx
 					//else it won't pick up the assembly redirects from the builder exe
 					var exe = GetExeLocation (runtime, toolsVersion, requiresMicrosoftBuild);
-
-					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-					var pinfo = new ProcessStartInfo (exe) {
-						WorkingDirectory = binDir,
-						UseShellExecute = false,
-						CreateNoWindow = true,
-						RedirectStandardError = true,
-						RedirectStandardInput = true,
-					};
-					runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
-
-					Process p = null;
+					RemoteProcessConnection connection = null;
 
 					try {
-						IBuildEngine engine;
-						if (!runLocal) {
-							p = runtime.ExecuteAssembly (pinfo);
+							
+						connection = new RemoteProcessConnection (exe, runtime.GetExecutionHandler ());
+						await connection.Connect ().ConfigureAwait (false);
 
-							// The builder app will write the build engine reference
-							// after reading the process id from the standard input
-							var processStartedSignal = new TaskCompletionSource<bool> ();
-							string responseKey = "[MonoDevelop]";
-							string sref = null;
-							p.ErrorDataReceived += (sender, e) => {
-								if (e.Data == null) {
-									if (string.IsNullOrEmpty (sref))
-										LoggingService.LogError ("The MSBuild builder exited before initializing");
-									return;
-								}
-
-								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
-									sref = e.Data.Substring (responseKey.Length);
-									processStartedSignal.SetResult (true);
-								} else
-									Console.WriteLine (e.Data);
-							};
-							p.BeginErrorReadLine ();
-
-							p.StandardInput.WriteLine (binDir);
-
-							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
-								throw new Exception ("MSBuild process could not be started");
-
-							byte [] data = Convert.FromBase64String (sref);
-							MemoryStream ms = new MemoryStream (data);
-							BinaryFormatter bf = new BinaryFormatter ();
-							engine = (IBuildEngine)bf.Deserialize (ms);
-						} else {
-							var asm = System.Reflection.Assembly.LoadFrom (exe);
-							var t = asm.GetType ("MonoDevelop.Projects.MSBuild.BuildEngine");
-							engine = (IBuildEngine)Activator.CreateInstance (t);
+						var props = GetCoreGlobalProperties (solutionFile);
+						foreach (var gpp in globalPropertyProviders) {
+							foreach (var e in gpp.GetGlobalProperties ())
+								props [e.Key] = e.Value;
 						}
-						engine.SetCulture (GettextCatalog.UICulture);
-						engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
-						foreach (var gpp in globalPropertyProviders)
-							engine.SetGlobalProperties (gpp.GetGlobalProperties ());
-						builder = new RemoteBuildEngine (p, engine);
+						
+						await connection.SendMessage (new InitializeRequest {
+							IdeProcessId = Process.GetCurrentProcess ().Id,
+							BinDir = binDir,
+							CultureName = GettextCatalog.UICulture.Name,
+							GlobalProperties = props
+						}).ConfigureAwait (false);
+
+						builder = new RemoteBuildEngine (connection);
+
 					} catch {
-						if (p != null) {
+						if (connection != null) {
 							try {
-								p.Kill ();
+								connection.Dispose ();
 							} catch {
 							}
 						}
@@ -1043,17 +1008,19 @@ namespace MonoDevelop.Projects.MSBuild
 					builders.Add (builderKey, builder);
 					builder.ReferenceCount = 1;
 					builder.Disconnected += async delegate {
-						using (await buildersLock.EnterAsync ())
+						using (await buildersLock.EnterAsync ().ConfigureAwait (false))
 							builders.Remove (builder);
 					};
 					if (lockBuilder)
 						builder.Lock ();
-					return new RemoteProjectBuilder (file, builder);
+					var pb = new RemoteProjectBuilder (file, builder);
+					await pb.Load ().ConfigureAwait (false);
+					return pb;
 				});
 			}
 		}
 
-		static IDictionary<string,string> GetCoreGlobalProperties (string slnFile)
+		static Dictionary<string,string> GetCoreGlobalProperties (string slnFile)
 		{
 			var dictionary = new Dictionary<string,string> ();
 
@@ -1099,7 +1066,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static async void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
-			using (await buildersLock.EnterAsync ()) {
+			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
 				if (--engine.ReferenceCount != 0)
 					return;
 				builders.Remove (engine);

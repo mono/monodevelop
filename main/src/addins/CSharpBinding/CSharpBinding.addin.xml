@@ -270,13 +270,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
-
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
-<!--	<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" /> -->
-		<Class class = "MonoDevelop.CodeGeneration.RequiredProtocolMemberGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.OptionalProtocolMemberGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PartialGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
@@ -329,10 +324,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
-		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
 		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
 	</Extension>

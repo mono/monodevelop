@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Extensions
 
 		public string HeaderLabel {
 			get {
-				return headerLabel ?? label;
+				return BrandingService.BrandApplicationName (headerLabel ?? label);
 			}
 			set {
 				headerLabel = value;

@@ -178,10 +178,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		/// <summary>
-		/// Given an assembly file name, returns the corresponding debug information file name.
-		/// (.mdb for Mono, .pdb for MS.NET)
-		/// </summary>
+		[Obsolete ("Use DotNetProject.GetAssemblyDebugInfoFile()")]
 		public abstract string GetAssemblyDebugInfoFile (string assemblyPath);
 		
 		/// <summary>
@@ -247,7 +244,6 @@ namespace MonoDevelop.Core.Assemblies
 					return backend;
 				backend = fx.CreateBackendForRuntime (this);
 				if (backend == null) {
-					LoggingService.LogError ("TargetFramework creation fallback for framework: {0}", fx.Name);
 					backend = CreateBackend (fx);
 					if (backend == null)
 						backend = new NotSupportedFrameworkBackend ();

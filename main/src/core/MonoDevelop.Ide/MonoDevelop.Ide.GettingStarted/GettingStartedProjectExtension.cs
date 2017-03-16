@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.GettingStarted
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
 			base.OnInitializeFromTemplate (projectCreateInfo, template);
-			if (template.GetAttribute ("HideGettingStarted")?.ToLower () == "true")
+			if (string.Equals (template.GetAttribute ("HideGettingStarted"), "true", StringComparison.OrdinalIgnoreCase))
 				Project.UserProperties.SetValue ("HideGettingStarted", true);
 			else
 				showGettingStartedOnce = true;

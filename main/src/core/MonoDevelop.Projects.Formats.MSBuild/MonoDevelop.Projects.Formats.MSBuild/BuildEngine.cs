@@ -36,7 +36,7 @@ using System.Globalization;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
+	partial class BuildEngine
 	{
 		static CultureInfo uiCulture = Thread.CurrentThread.CurrentUICulture;
 		readonly Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
@@ -46,7 +46,6 @@ namespace MonoDevelop.Projects.MSBuild
 		public void SetCulture (CultureInfo uiCulture)
 		{
 			BuildEngine.uiCulture = uiCulture;
-
 		}
 
 		public void SetGlobalProperties (IDictionary<string, string> properties)
@@ -56,12 +55,12 @@ namespace MonoDevelop.Projects.MSBuild
 				gp.SetProperty (p.Key, p.Value);
 		}
 
-		public IProjectBuilder LoadProject (string file)
+		public ProjectBuilder LoadProject (string file)
 		{
 			return new ProjectBuilder (this, file);
 		}
 		
-		public void UnloadProject (IProjectBuilder pb)
+		public void UnloadProject (ProjectBuilder pb)
 		{
 			((ProjectBuilder)pb).Dispose ();
 			RemotingServices.Disconnect ((MarshalByRefObject) pb);

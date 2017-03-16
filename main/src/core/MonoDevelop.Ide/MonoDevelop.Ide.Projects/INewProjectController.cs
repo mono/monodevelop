@@ -35,9 +35,11 @@ namespace MonoDevelop.Ide.Projects
 	interface INewProjectDialogController
 	{
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
+		List<SolutionTemplate> RecentTemplates { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
 		string SelectedLanguage { get; set; }
+		bool ShowTemplateSelection { get; set; }
 		FinalProjectConfigurationPage FinalConfiguration { get; }
 		bool IsNewSolution { get; }
 
@@ -60,6 +62,7 @@ namespace MonoDevelop.Ide.Projects
 		Task Create ();
 
 		Image GetImage (SolutionTemplate template);
+		string GetCategoryPathText (SolutionTemplate template);
 
 		IEnumerable<ProjectConfigurationControl> GetFinalPageControls ();
 	}

@@ -1048,6 +1048,10 @@ namespace MonoDevelop.Debugger.Tests
 			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
+			val = Eval ("(int)19.7");
+			Assert.AreEqual ("19", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
 			val = Eval ("(byte)n");
 			Assert.AreEqual ("32", val.Value);
 			Assert.AreEqual ("byte", val.TypeName);
@@ -1385,6 +1389,10 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("2 + 2 == 4");
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("(2 * 1.5f) / 2");
+			Assert.AreEqual ("1.5", val.Value);
+			Assert.AreEqual ("float", val.TypeName);
 		}
 
 		[Test]
@@ -1721,7 +1729,6 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int[,,]", val.TypeName);
 			Assert.IsFalse (val.IsNull);
 
-			IgnoreSoftDebugger ("Randomly fails, tracked as Bug 36712");
 			val = Eval ("nulledByteArray");
 			Assert.AreEqual ("(null)", val.Value);
 			Assert.AreEqual ("byte[]", val.TypeName);

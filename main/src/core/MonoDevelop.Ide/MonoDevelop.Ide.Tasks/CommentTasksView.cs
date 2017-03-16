@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Tasks
 			var file = doc.FileName;
 			Task.Run (async () => {
 				try {
-					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token));
+					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));
 				} catch (TaskCanceledException) {
 				} catch (AggregateException ae) {
 					ae.Flatten ().Handle (x => x is TaskCanceledException);

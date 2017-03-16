@@ -524,11 +524,9 @@ namespace MonoDevelop.SourceEditor
 
 			if (Platform.IsMac) {
 				if (evt == null) {
-					int x, y;
 					var pt = LocationToPoint (this.Caret.Location);
-					TranslateCoordinates (Toplevel, pt.X, pt.Y, out x, out y);
 
-					IdeApp.CommandService.ShowContextMenu (this, x, y, cset, this);
+					IdeApp.CommandService.ShowContextMenu (this, pt.X, pt.Y, cset, this);
 				} else {
 					IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 				}
@@ -649,6 +647,45 @@ namespace MonoDevelop.SourceEditor
 #endregion
 		
 #region Key bindings
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CharRight)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineDown)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineStart)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineUp)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevSubword)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp)]
+		[CommandUpdateHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode)]
+		protected void OnUpdateEditorCommand (CommandInfo info)
+		{
+			// ignore command if the editor has no focus
+			info.Bypass = HasFocus == false;
+		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
 		internal void OnLineEnd ()

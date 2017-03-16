@@ -26,6 +26,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace System
 {
@@ -56,6 +58,115 @@ namespace System
 			}).Count ();
 
 			return found ? index : -1;
+		}
+
+		static TSource MaxValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer, out bool hasValue)
+		{
+			if (source == null)
+				throw new ArgumentNullException (nameof (source));
+
+			TSource result = default (TSource);
+			TCompare value = default (TCompare);
+			hasValue = false;
+			foreach (TSource item in source) {
+				var x = compareSelector (item);
+				if (hasValue) {
+					if (comparer.Compare (x, value) > 0) {
+						value = x;
+						result = item;
+					}
+				} else {
+					value = x;
+					result = item;
+					hasValue = true;
+				}
+			}
+			return result;
+		}
+
+		public static TSource MaxValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
+		{
+			bool hasValue;
+			TSource result = MaxValue (source, compareSelector, Comparer<TCompare>.Default, out hasValue);
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
+		public static TSource MaxValueOrDefault<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
+		{
+			bool hasValue;
+			return MaxValue (source, compareSelector, Comparer<TCompare>.Default, out hasValue);
+		}
+
+		public static TSource MaxValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
+		{
+			bool hasValue;
+			TSource result = MaxValue (source, compareSelector, comparer, out hasValue);
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
+		public static TSource MaxValueOrDefault<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
+		{
+			bool hasValue;
+			return MaxValue (source, compareSelector, comparer, out hasValue);
+		}
+
+		static TSource MinValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer, out bool hasValue)
+		{
+			if (source == null)
+				throw new ArgumentNullException (nameof (source));
+
+			TSource result = default (TSource);
+			TCompare value = default (TCompare);
+			hasValue = false;
+			foreach (TSource item in source) {
+				var x = compareSelector (item);
+				if (hasValue) {
+					if (comparer.Compare (x, value) < 0) {
+						value = x;
+						result = item;
+					}
+				} else {
+					value = x;
+					result = item;
+					hasValue = true;
+				}
+			}
+			return result;
+		}
+
+		public static TSource MinValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
+		{
+			bool hasValue;
+			TSource result = MinValue (source, compareSelector, Comparer<TCompare>.Default, out hasValue);
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
+		public static TSource MinValueOrDefault<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector) where TCompare : IComparable<TCompare>
+		{
+			bool hasValue;
+			return MinValue (source, compareSelector, Comparer<TCompare>.Default, out hasValue);
+		}
+
+		public static TSource MinValue<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
+		{
+			bool hasValue;
+			TSource result = MinValue (source, compareSelector, comparer, out hasValue);
+
+			if (hasValue)
+				return result;
+			throw new InvalidOperationException (string.Format ("{0} contains no elements", nameof (source)));
+		}
+
+		public static TSource MinValueOrDefault<TSource, TCompare> (this IEnumerable<TSource> source, Func<TSource, TCompare> compareSelector, IComparer<TCompare> comparer)
+		{
+			bool hasValue;
+			return MinValue (source, compareSelector, comparer, out hasValue);
 		}
 
 		public static Exception FlattenAggregate (this Exception ex)
@@ -110,6 +221,19 @@ namespace System
 			{
 				return new Dictionary<Key, Value> ();
 			}
+		}
+
+		/// <summary>
+		/// Use this method to explicitly indicate that you don't care
+		/// about the result of an async call
+		/// </summary>
+		/// <param name="task">The task to forget</param>
+		public static void Ignore (this Task task)
+		{
+			task.ContinueWith (t => {
+				if (t.IsFaulted)
+					LoggingService.LogError ("Async operation failed", t.Exception);
+			});
 		}
 	}
 }

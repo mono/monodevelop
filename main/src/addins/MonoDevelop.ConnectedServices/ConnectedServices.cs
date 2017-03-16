@@ -15,7 +15,7 @@ namespace MonoDevelop.ConnectedServices
 	/// <summary>
 	/// Defines a set of constants for the Connected Services addin
 	/// </summary>
-	static class ConnectedServices
+	public static class ConnectedServices
 	{
 		/// <summary>
 		/// The extension point for service providers
@@ -64,8 +64,11 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Displays the service details tab for the given service in the given project
 		/// </summary>
-		public static void OpenServicesTab(DotNetProject project, string serviceId = null)
+		internal static void OpenServicesTab(DotNetProject project, string serviceId)
 		{
+			if (project == null)
+				project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+
 			ConnectedServicesViewContent servicesView = null;
 
 			foreach (var view in IdeApp.Workbench.Documents) {
@@ -80,6 +83,28 @@ namespace MonoDevelop.ConnectedServices
 			servicesView = new ConnectedServicesViewContent (project);
 			servicesView.UpdateContent (serviceId);
 			IdeApp.Workbench.OpenDocument (servicesView, true);
+		}
+
+		/// <summary>
+		/// Displays the service details tab for the given service
+		/// </summary>
+		public static Task OpenServicesTab (this IConnectedService service)
+		{
+			if (service == null)
+				throw new ArgumentNullException (nameof (service));
+
+			return Runtime.RunInMainThread (() => OpenServicesTab (service.Project, service.Id));
+		}
+
+		/// <summary>
+		/// Displays the services gallery tab for the given project
+		/// </summary>
+		public static Task OpenServicesTab (this DotNetProject project)
+		{
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+
+			return Runtime.RunInMainThread (() => OpenServicesTab (project, null));
 		}
 
 		/// <summary>

@@ -1261,7 +1261,7 @@ namespace MonoDevelop.Ide.Gui
 				try {
 //					DateTime t = DateTime.Now;
 
-					await fileStatusLock.WaitAsync ();
+					await fileStatusLock.WaitAsync ().ConfigureAwait (false);
 					if (fileStatus == null)
 						return;
 					List<FilePath> modified = new List<FilePath> (fileStatus.Count);

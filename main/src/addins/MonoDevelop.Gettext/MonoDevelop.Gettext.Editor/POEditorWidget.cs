@@ -184,7 +184,7 @@ namespace MonoDevelop.Gettext
 				string file = foundInStore.GetValue (iter, (int)FoundInColumns.FullFileName) as string;
 				int lineNr = 1;
 				try {
-					lineNr = 1 + int.Parse (line);
+					lineNr = Math.Max(1, int.Parse (line));
 				} catch {
 				}
 				IdeApp.Workbench.OpenDocument (new FileOpenInformation (file, project, lineNr, 1, OpenDocumentOptions.Default));
@@ -752,9 +752,7 @@ namespace MonoDevelop.Gettext
 			if (RegexSearch)
 				return regex.IsMatch (text);
 		
-			if (!IsCaseSensitive)
-				text = text.ToUpper ();
-			int idx = text.IndexOf (filter);
+			int idx = text.IndexOf (filter, IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 			if (idx >= 0) {
 				if (IsWholeWordOnly) {
 					return (idx == 0 || char.IsWhiteSpace (text[idx - 1])) &&
@@ -804,8 +802,6 @@ namespace MonoDevelop.Gettext
 		void UpdateFromCatalog ()
 		{
 			filter = this.searchEntryFilter.Entry.Text;
-			if (!IsCaseSensitive && filter != null)
-				filter = filter.ToUpper ();
 			if (RegexSearch) {
 				try {
 					RegexOptions options = RegexOptions.Compiled;
@@ -1142,9 +1138,11 @@ namespace MonoDevelop.Gettext
 			}
 			
 			if (!CompareTasks (tasks, currentTasks)) {
-				ClearTasks ();
-				currentTasks = tasks;
-				TaskService.Errors.AddRange (tasks);
+				Runtime.RunInMainThread (() => {
+					ClearTasks ();
+					currentTasks = tasks;
+					TaskService.Errors.AddRange (tasks);
+				});
 			}
 		}
 		

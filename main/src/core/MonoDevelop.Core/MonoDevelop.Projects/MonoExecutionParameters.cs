@@ -202,6 +202,8 @@ namespace MonoDevelop.Projects
 				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
 					ops.AppendFormat (argAttr.Name, val).Append (' ');
 			}
+			if (ops.Length > 0)
+				ops.Remove (ops.Length - 1, 1);
 
 			foreach (var kvp in envVarAttributes) {
 				var prop = kvp.Key;
@@ -213,7 +215,7 @@ namespace MonoDevelop.Projects
 				else if ((val is string) && !string.IsNullOrEmpty ((string)val))
 					envVars [envVar.Name] = val.ToString ();
 			}
-			options = ops.ToString ().Trim ();
+			options = ops.ToString ();
 		}
 		
 		object GetValue (object val)
@@ -222,7 +224,9 @@ namespace MonoDevelop.Projects
 			if (etype.IsEnum) {
 				long ival = Convert.ToInt64 (val);
 				bool isFlags = etype.IsDefined (typeof(FlagsAttribute), false);
-				string flags = "";
+				StringBuilder flags = null;
+				if (isFlags)
+					flags = new StringBuilder ();
 				IList names = Enum.GetNames (etype);
 				foreach (FieldInfo f in etype.GetFields ()) {
 					if (!names.Contains (f.Name))
@@ -235,12 +239,12 @@ namespace MonoDevelop.Projects
 					}
 					else if (isFlags && (v & ival) != 0) {
 						if (flags.Length > 0)
-							flags += ",";
-						flags += sval;
+							flags.Append (',');
+						flags.Append (sval);
 					}
 				}
 				if (isFlags)
-					return flags;
+					return flags.ToString ();
 			}
 			return val;
 		}
@@ -260,8 +264,9 @@ namespace MonoDevelop.Projects
 					ops.Append (", ");
 				var nameAttr = localizedDisplayNameAttributes [prop];
 				ops.Append (nameAttr.DisplayName);
-				if (!(pval is bool))
-					ops.Append (": " + GetValue (pval));
+				if (!(pval is bool)) {
+					ops.Append (": ").Append (GetValue (pval));
+				}
 			}
 			return ops.ToString ();
 		}		

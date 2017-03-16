@@ -23,5 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)MSBuildResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSBuildTargetResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Main.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\MonoDevelop.Core\MonoDevelop.Projects.MSBuild\MSBuildEvent.cs">
+      <Link>MSBuildEvent.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

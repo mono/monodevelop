@@ -107,17 +107,17 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 				if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
 					return null;
-				return TextFileUtility.OpenStream (FileName);
+				return TextFileUtility.OpenStream (FileName, out hadBom);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
 			}
 		}
 
-		async Task<Document> SearchDocument ()
+		Task<Document> SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);
-			return await Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
+			return Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
 		}
 
 		Document document;

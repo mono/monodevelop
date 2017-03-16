@@ -326,6 +326,8 @@ namespace MonoDevelop.Components.MainToolbar
 					failedResults.ForEach (failedResult => newResults.Remove (failedResult));
 
 				Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
 					ShowResults (newResults, topResult);
 					isInSearch = false;
 					AnimatedResize ();

@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			TimeSpan sincelast = DateTime.UtcNow - prjtime;
 
 			if (sincelast.Days >= 1)
-				return GettextCatalog.GetPluralString ("Last opened {0} days ago", "Last opened {0} days ago", sincelast.Days, sincelast.Days);
+				return GettextCatalog.GetPluralString ("Last opened {0} day ago", "Last opened {0} days ago", sincelast.Days, sincelast.Days);
 			if (sincelast.Hours >= 1)
 				return GettextCatalog.GetPluralString ("Last opened {0} hour ago", "Last opened {0} hours ago", sincelast.Hours, sincelast.Hours);
 			if (sincelast.Minutes > 0)

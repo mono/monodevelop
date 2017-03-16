@@ -34,8 +34,6 @@ namespace MonoDevelop.Core
 		readonly string id;
 		
 		public static readonly IconId Null = new IconId (null);
-		
-		public static IconNameRequestHandler IconNameRequestHandler;
 
 		public IconId (string id)
 		{
@@ -48,10 +46,6 @@ namespace MonoDevelop.Core
 		
 		public string Name {
 			get {
-				// If the icon is converted to string, fire the icon request event, to ensure that
-				// the icon it represents is loaded.
-				if (IconNameRequestHandler != null)
-					IconNameRequestHandler (id);
 				return id; 
 			}
 		}
@@ -112,7 +106,5 @@ namespace MonoDevelop.Core
 			return this.id == other.id;
 		}
 	}
-	
-	public delegate void IconNameRequestHandler (string id);
 }
 

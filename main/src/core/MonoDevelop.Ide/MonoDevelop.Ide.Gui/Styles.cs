@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color SecondaryBackgroundLighterColor { get; internal set; }
 		public static Color SecondaryBackgroundDarkerColor { get; internal set; }
 		public static Color DimTextColor { get; internal set; }
+		public static string DimTextColorHexString { get; internal set; }
 		public static Color StatusInformationBackgroundColor { get; internal set; }
 		public static Color StatusInformationTextColor { get; internal set; }
 		public static Color StatusWarningBackgroundColor { get; internal set; }
@@ -446,7 +447,8 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
-			DimTextColor = Color.FromName ("#888888");
+			DimTextColorHexString = "#888888";
+			DimTextColor = Color.FromName (DimTextColorHexString);
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
 			InactivePadLabelColor = Color.FromName ("#777777");
@@ -563,7 +565,8 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#484848");
 			SecondaryBackgroundLighterColor = SeparatorColor;
-			DimTextColor = Color.FromName ("#777777");
+			DimTextColorHexString = "#777777";
+			DimTextColor = Color.FromName (DimTextColorHexString);
 			PadBackground = Color.FromName ("#525252");
 			InactivePadBackground = Color.FromName ("#474747");
 			InactivePadLabelColor = Color.FromName ("#999999");

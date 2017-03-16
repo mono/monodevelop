@@ -403,7 +403,7 @@ namespace MonoDevelop.Projects
 		{
 			return Task.Run (async delegate {
 				if (sourceProject == null || sourceProject.IsNewProject) {
-					sourceProject = await MSBuildProject.LoadAsync (FileName);
+					sourceProject = await MSBuildProject.LoadAsync (FileName).ConfigureAwait (false);
 					if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
 						sourceProject.UseMSBuildEngine = false;
 					sourceProject.Evaluate ();
@@ -992,9 +992,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to run the target
 		/// </param>
-		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
+		public Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
+			return ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
 		}
 
 		public bool SupportsTarget (string target)
@@ -1088,7 +1088,6 @@ namespace MonoDevelop.Projects
 		async Task<TargetEvaluationResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (CheckUseMSBuildEngine (configuration)) {
-				LogWriter logWriter = new LogWriter (monitor.Log);
 				var configs = GetConfigurations (configuration);	
 
 				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
@@ -1105,10 +1104,11 @@ namespace MonoDevelop.Projects
 				MSBuildResult result = null;
 				await Task.Run (async delegate {
 
+					bool operationRequiresExclusiveLock = false;
 					TimerCounter buildTimer = null;
 					switch (target) {
-					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
-					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; operationRequiresExclusiveLock = true; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; operationRequiresExclusiveLock = true; break;
 					}
 
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
@@ -1116,11 +1116,15 @@ namespace MonoDevelop.Projects
 
 					bool newBuilderRequested = false;
 
-					RemoteProjectBuilder builder = await GetProjectBuilder ();
-					if (builder.IsBusy) {
+					RemoteProjectBuilder builder = await GetProjectBuilder ().ConfigureAwait (false);
+
+					// If the builder requires an exclusive lock and it is busy, create a new locked builder.
+					// Fast operations that don't require an exclusive lock can use any builder, either locked or not
+
+					if (builder.IsBusy && operationRequiresExclusiveLock) {
 						builder.ReleaseReference ();
 						newBuilderRequested = true;
-						builder = await RequestLockedBuilder ();
+						builder = await RequestLockedBuilder ().ConfigureAwait (false);
 					}
 					else
 						builder.Lock ();
@@ -1132,7 +1136,7 @@ namespace MonoDevelop.Projects
 						targets = new string [] { target };
 					
 					try {
-						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, monitor.Log, new ProxyLogger (this, context.Loggers), context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();
@@ -1146,8 +1150,6 @@ namespace MonoDevelop.Projects
 						if (t2 != null)
 							t2.End ();
 					}
-
-					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 				});
 
 				var br = new BuildResult ();
