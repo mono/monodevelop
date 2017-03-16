@@ -467,7 +467,7 @@ namespace Mono.TextEditor
 			
 			switch (key) {
 			case Gdk.Key.BackSpace:
-				if (link != null && caretOffset == link.PrimaryLink.Offset)
+				if (link != null && caretOffset == link.PrimaryLink.Offset && !IsSomethingSelectedInLink (editor, link.PrimaryLink))
 					return;
 				goto default;
 			case Gdk.Key.space:
@@ -475,7 +475,7 @@ namespace Mono.TextEditor
 					goto default;
 				return;
 			case Gdk.Key.Delete:
-				if (link != null && caretOffset == link.PrimaryLink.EndOffset)
+				if (link != null && caretOffset == link.PrimaryLink.EndOffset && !IsSomethingSelectedInLink (editor, link.PrimaryLink))
 					return;
 				goto default;
 			case Gdk.Key.Tab:
@@ -514,6 +514,11 @@ namespace Mono.TextEditor
 				UpdateTextLink (link);
 			UpdateTextLinks ();
 			Editor.Document.CommitUpdateAll ();*/
+		}
+
+		static bool IsSomethingSelectedInLink (MonoTextEditor editor, ISegment primaryLink)
+		{
+			return editor.IsSomethingSelected && primaryLink.Contains (editor.SelectionRange);
 		}
 
 		ListWindow<string> window;
