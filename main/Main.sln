@@ -299,7 +299,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Packaging", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Packaging.Tests", "src\addins\MonoDevelop.Packaging\MonoDevelop.Packaging.Tests\MonoDevelop.Packaging.Tests.csproj", "{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.1", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.1.csproj", "{7F5B649A-3572-4713-83FD-C28A6AA70445}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild.dotnet.v15.0", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.dotnet.v15.0.csproj", "{7F5B649A-3572-4713-83FD-C28A6AA70445}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PerformanceDiagnostics", "PerformanceDiagnostics", "{19C4CC37-7050-4944-B11F-60F52121B24C}"
 EndProject

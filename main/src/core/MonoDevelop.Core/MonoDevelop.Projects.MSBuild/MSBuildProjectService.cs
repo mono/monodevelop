@@ -1207,7 +1207,7 @@ namespace MonoDevelop.Projects.MSBuild
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 
 			if (useMicrosoftBuild) {
-				toolsVersion = "dotnet." + (version >= new Version (15, 0) ? "14.1" : toolsVersion);
+				toolsVersion = "dotnet." + toolsVersion;
 			}
 
 			var exe = builderDir.Combine (toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
