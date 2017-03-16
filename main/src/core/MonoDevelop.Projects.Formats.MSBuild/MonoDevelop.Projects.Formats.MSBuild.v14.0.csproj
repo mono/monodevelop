@@ -44,17 +44,17 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0">
       <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
-			<Private>False</Private>
+      <Private>False</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0">
       <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Framework.dll</HintPath>
-			<Private>False</Private>
+      <Private>False</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0">
       <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
-			<Private>False</Private>
+      <Private>False</Private>
       <SpecificVersion>True</SpecificVersion>
    </Reference>
   <Reference Include="System.Xml" />
