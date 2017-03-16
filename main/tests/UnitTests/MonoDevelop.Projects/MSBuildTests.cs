@@ -1048,6 +1048,34 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// EnableDefaultItems set to false in project. C# file directly in
+		/// project. The Sdk imports define C# files if EnableDefaultItems is true.
+		/// This test ensures that duplicate files are not added to the project. This
+		/// happens because Project.EvaluatedItemsIgnoringCondition is used when adding
+		/// files to the project.
+		/// </summary>
+		[Test]
+		public async Task LoadDotNetCoreProjectWithDefaultItemsDisabled ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+
+			try {
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				var files = mp.Files.Select (f => f.FilePath.FileName).ToArray ();
+				Assert.AreEqual (new string [] {
+					"Program.cs"
+				}, files);
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
 		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
