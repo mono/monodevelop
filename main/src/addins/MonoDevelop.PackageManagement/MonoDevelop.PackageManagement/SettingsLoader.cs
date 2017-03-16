@@ -33,18 +33,20 @@ namespace MonoDevelop.PackageManagement
 {
 	internal static class SettingsLoader
 	{
-		public static ISettings LoadDefaultSettings (bool reportError = false)
+		public static ISettings LoadDefaultSettings (bool reportError = false, bool throwError = false)
 		{
-			return LoadDefaultSettings (null, reportError);
+			return LoadDefaultSettings (null, reportError, throwError);
 		}
 
-		public static ISettings LoadDefaultSettings (string rootDirectory, bool reportError = false)
+		public static ISettings LoadDefaultSettings (string rootDirectory, bool reportError = false, bool throwError = false)
 		{
 			try {
 				return Settings.LoadDefaultSettings (rootDirectory, null, null);
 			} catch (Exception ex) {
 				if (reportError) {
 					ShowReadNuGetConfigFileError (ex);
+				} else if (throwError) {
+					throw;
 				} else {
 					LoggingService.LogError ("Unable to load global NuGet.Config.", ex);
 				}

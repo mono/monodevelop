@@ -44,6 +44,7 @@ using System.Security.Cryptography;
 using Gdk;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Debugger
 {
@@ -106,7 +107,7 @@ namespace MonoDevelop.Debugger
 			var label = new Label (GettextCatalog.GetString ("{0} not found. Find source file at alternative location.", Path.GetFileName (sf.SourceLocation.FileName)));
 			hbox.TooltipText = sf.SourceLocation.FileName;
 
-			var color = (HslColor)editor.Options.GetColorStyle ().NotificationText.Foreground;
+			var color = SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.NotificationText);
 			label.ModifyFg (StateType.Normal, color);
 
 			int w, h;

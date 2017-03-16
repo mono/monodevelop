@@ -31,17 +31,24 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.TextMate;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	class DefaultCommandTextEditorExtension : TextEditorExtension
 	{
 		#region Commands
-		void ToggleCodeCommentWithBlockComments ()
+		async void ToggleCodeCommentWithBlockComments ()
 		{
-			var blockStarts = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentStart");
-			var blockEnds = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentEnd");
-			if (blockStarts == null || blockEnds == null || blockStarts.Length == 0 || blockEnds.Length == 0)
+			var scope = await Editor.SyntaxHighlighting.GetScopeStackAsync (Editor.CaretOffset, CancellationToken.None);
+			var lang = TextMateLanguage.Create (scope);
+			var lineComments = lang.LineComments.ToArray ();
+			var blockStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
+
+			if (blockStarts.Count == 0 || blockEnds.Count == 0)
 				return;
 
 			string blockStart = blockStarts[0];
@@ -82,12 +89,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		bool TryGetLineCommentTag (out string commentTag)
 		{
-			var lineComments = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "LineComment");
-			if (lineComments == null || lineComments.Length == 0) {
+			var scope = Editor.SyntaxHighlighting.GetScopeStackAsync (Editor.CaretOffset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var lang = TextMateLanguage.Create (scope);
+
+			if (lang.LineComments.Count == 0) {
 				commentTag = null;
 				return false;
 			}
-			commentTag = lineComments [0];
+			commentTag = lang.LineComments [0];
 			return true;
 		}
 
@@ -96,14 +105,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		void OnUpdateToggleComment (CommandInfo info)
 		{
-			var lineComments = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "LineComment");
-			if (lineComments != null && lineComments.Length > 0) {
-				info.Visible = true;
-				return;
-			}
-			var blockStarts = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentStart");
-			var blockEnds = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentEnd");
-			info.Visible = blockStarts != null && blockStarts.Length > 0 && blockEnds != null && blockEnds.Length > 0;
+			var scope = Editor.SyntaxHighlighting.GetScopeStackAsync (Editor.CaretOffset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var lang = TextMateLanguage.Create (scope);
+			info.Visible = lang.LineComments.Count + lang.BlockComments.Count > 0;
 		}
 
 		[CommandHandler (EditCommands.ToggleCodeComment)]

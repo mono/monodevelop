@@ -48,12 +48,12 @@ using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
-using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
 using System.Diagnostics;
 using Xwt.Mac;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -294,7 +294,7 @@ namespace MonoDevelop.MacIntegration
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Policies...");
 			commandManager.GetCommand (HelpCommands.About).Text = GetAboutCommandText ();
 			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GetHideWindowCommandText ();
-			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
+			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Extensions...");
 
 			initedApp = true;
 
@@ -335,7 +335,7 @@ namespace MonoDevelop.MacIntegration
 		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
 		{
 			if (view.Class.Name == "NSPageableTableView")
-					((NSTableView)view).BackgroundColor = Styles.BackgroundColor.ToNSColor ();
+					((NSTableView)view).BackgroundColor = Xwt.Mac.Util.ToNSColor (Styles.BackgroundColor);
 			view.Appearance = appearance;
 
 			foreach (var subview in view.Subviews)
@@ -968,7 +968,9 @@ namespace MonoDevelop.MacIntegration
 			var proc = new Process ();
 
 			var path = bundlePath.Combine ("Contents", "MacOS");
-			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+			//assume renames of mdtool end with "tool"
+			var mdtool = Directory.EnumerateFiles (path, "*tool").Single();
+			var psi = new ProcessStartInfo (mdtool) {
 				CreateNoWindow = true,
 				UseShellExecute = false,
 				WorkingDirectory = path,

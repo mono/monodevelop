@@ -64,6 +64,7 @@ namespace MonoDevelop.Projects
 		string name;
 		SolutionItemExtension itemExtension;
 		MSBuildFileFormat fileFormat;
+		internal string defaultItemId;
 		
 		SolutionItemConfiguration activeConfiguration;
 		SolutionItemConfigurationCollection configurations;
@@ -405,11 +406,12 @@ namespace MonoDevelop.Projects
 			return file.IsNullOrEmpty ? FilePath.Empty : file.ParentDirectory; 
 		}
 
-		internal Task LoadAsync (ProgressMonitor monitor, FilePath fileName, MSBuildFileFormat format)
+		internal Task LoadAsync (ProgressMonitor monitor, FilePath fileName, MSBuildFileFormat format, string itemGuid)
 		{
 			fileFormat = format;
 			FileName = fileName;
 			Name = Path.GetFileNameWithoutExtension (fileName);
+			defaultItemId = itemGuid;
 			return ItemExtension.OnLoad (monitor);
 		}
 

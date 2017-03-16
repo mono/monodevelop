@@ -32,7 +32,6 @@ using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -71,7 +70,13 @@ namespace MonoDevelop.PackageManagement
 			INuGetProjectContext nuGetProjectContext,
 			CancellationToken token);
 
-		Task<NuGetVersion> GetLatestVersionAsync (
+		Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync(
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
+
+		Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,
 			ResolutionContext resolutionContext,

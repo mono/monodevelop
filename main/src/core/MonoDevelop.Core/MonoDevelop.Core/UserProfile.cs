@@ -43,7 +43,8 @@ namespace MonoDevelop.Core
 			"3.0",
 			"4.0",
 			"5.0",
-			"6.0"
+			"6.0",
+			"7.0"
 		};
 		
 		static UserProfile ()
@@ -100,7 +101,9 @@ namespace MonoDevelop.Core
 		
 		internal static UserProfile GetProfile (string profileVersion)
 		{
-			FilePath testProfileRoot = Environment.GetEnvironmentVariable (PROFILE_ENV_VAR);
+			var brandedEnvVar = BrandingService.BrandEnvironmentVariable (PROFILE_ENV_VAR);
+
+			FilePath testProfileRoot = Environment.GetEnvironmentVariable (brandedEnvVar);
 			if (!testProfileRoot.IsNullOrEmpty)
 				return UserProfile.ForTest (profileVersion, testProfileRoot);
 			
@@ -114,7 +117,10 @@ namespace MonoDevelop.Core
 
 		static string GetAppId (string version)
 		{
-			return BrandingService.ProfileDirectoryName + "-" + version;;
+			if (Version.Parse (version).Major < 7) {
+				return BrandingService.ProfileDirectoryName + "-" + version; ;
+			}
+			return System.IO.Path.Combine (BrandingService.ProfileDirectoryName, version);
 		}
 		
 		/// <summary>

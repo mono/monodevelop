@@ -87,7 +87,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ILogger GetLatestVersionLogger;
 		public CancellationToken GetLatestVersionCancellationToken;
 
-		public Task<NuGetVersion> GetLatestVersionAsync (
+		public Task<ResolvedPackage> GetLatestVersionAsync (
 			string packageId,
 			NuGetProject project,
 			ResolutionContext resolutionContext,
@@ -102,7 +102,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			GetLatestVersionLogger = log;
 			GetLatestVersionCancellationToken = token;
 
-			return Task.FromResult (LatestVersion);
+			var resolvedPackage = new ResolvedPackage (LatestVersion, true);
+			return Task.FromResult (resolvedPackage);
 		}
 
 		public List<FakeNuGetProjectAction> InstallActions = new List<FakeNuGetProjectAction> ();
@@ -245,6 +246,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			OpenReadmeFilesWithCancellationToken = token;
 
 			return Task.FromResult (0);
+		}
+
+		public IBuildIntegratedNuGetProject PreviewBuildIntegratedProject;
+		public List<NuGetProjectAction> PreviewBuildIntegratedProjectActions;
+		public INuGetProjectContext PreviewBuildIntegratedContext;
+		public CancellationToken PreviewBuildIntegratedCancellationToken;
+		public BuildIntegratedProjectAction BuildIntegratedProjectAction;
+
+		public Task<BuildIntegratedProjectAction> PreviewBuildIntegratedProjectActionsAsync (
+			IBuildIntegratedNuGetProject buildIntegratedProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			PreviewBuildIntegratedProject = buildIntegratedProject;
+			PreviewBuildIntegratedProjectActions = nuGetProjectActions.ToList ();
+			PreviewBuildIntegratedContext = nuGetProjectContext;
+			PreviewBuildIntegratedCancellationToken = token;
+
+			BeforePreviewUninstallPackagesAsync ();
+
+			return Task.FromResult (BuildIntegratedProjectAction);
 		}
 	}
 }

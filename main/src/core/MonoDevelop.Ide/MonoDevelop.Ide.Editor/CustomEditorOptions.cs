@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Editor
 			set;
 		}
 
-		public string ColorScheme {
+		public string EditorTheme {
 			get;
 			set;
 		}
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public CustomEditorOptions ()
 		{
-			this.ColorScheme = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle;
+			this.EditorTheme = MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName;
 			this.TabSize = this.IndentationSize = 4;
 			this.DefaultEolMarker = "\n";
 		}
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Editor
 			WrapLines = initializeFrom.WrapLines;
 			FontName = initializeFrom.FontName;
 			GutterFontName = initializeFrom.GutterFontName;
-			ColorScheme = initializeFrom.ColorScheme;
+			EditorTheme = initializeFrom.EditorTheme;
 			DefaultEolMarker = initializeFrom.DefaultEolMarker;
 			GenerateFormattingUndoStep = initializeFrom.GenerateFormattingUndoStep;
 			EnableSelectionWrappingKeys = initializeFrom.EnableSelectionWrappingKeys;

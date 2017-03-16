@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.TypeSystem;
 
@@ -46,6 +47,12 @@ namespace MonoDevelop.Ide
 		{
 			public static readonly Task<T> Instance = Task.FromResult<T>(default(T));
 			public static readonly Task<IEnumerable<T>> EmptyEnumerable = Task.FromResult<IEnumerable<T>>(new T[0]);
+		}
+
+		public static T WaitAndGetResult<T> (this Task<T> task, CancellationToken cancellationToken)
+		{
+			task.Wait (cancellationToken);
+			return task.Result;
 		}
 	}
 }

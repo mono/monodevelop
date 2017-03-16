@@ -41,14 +41,14 @@ using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
+using MonoDevelop.Core.Text;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -83,13 +83,22 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return Document.SyntaxMode;
+			}
+			internal set {
+				Document.SyntaxMode = value;
+			} 
+		}
+
+
 		void UpdateSemanticHighlighting ()
 		{
 			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
-
 			if (semanticHighlighting == null) {
 				if (oldSemanticHighighting != null)
-					Document.MimeType = Document.MimeType;
+					Document.SyntaxMode = oldSemanticHighighting.UnderlyingSyntaxMode;
 			} else {
 				if (oldSemanticHighighting == null) {
 					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
@@ -226,11 +235,11 @@ namespace MonoDevelop.SourceEditor
 			base.OptionsChanged (sender, args);
 		}
 
-		protected override string GetIdeColorStyleName ()
+		protected internal override string GetIdeColorStyleName ()
 		{
-			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = Ide.Editor.Highlighting.SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = Ide.Editor.Highlighting.SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = Ide.Editor.Highlighting.SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			return scheme.Name;
 		}
 		
@@ -296,7 +305,7 @@ namespace MonoDevelop.SourceEditor
 						if (isInBlockComment) {
 							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
 								isInBlockComment = false;
-						} else  if (!isInString && !isInChar && pos + 1 < doc.TextLength) {
+						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
 							char nextChar = doc.GetCharAt (pos + 1);
 							if (nextChar == '/')
 								isInLineComment = true;
@@ -328,7 +337,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		protected override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
+		protected internal override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
@@ -477,10 +486,10 @@ namespace MonoDevelop.SourceEditor
 			int start = offset;
 			while (start > 0 && IsIdChar (Document.GetCharAt (start)))
 				start--;
-			while (offset < Document.TextLength && IsIdChar (Document.GetCharAt (offset)))
+			while (offset < Document.Length && IsIdChar (Document.GetCharAt (offset)))
 				offset++;
 			start++;
-			if (offset - start > 0 && start < Document.TextLength)
+			if (offset - start > 0 && start < Document.Length)
 				return Document.GetTextAt (start, offset - start);
 			else
 				return string.Empty;
@@ -509,7 +518,6 @@ namespace MonoDevelop.SourceEditor
 				menuPath = value;
 			}
 		}
-
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
@@ -561,11 +569,11 @@ namespace MonoDevelop.SourceEditor
 		
 #region Templates
 
-		public bool IsTemplateKnown ()
+		public bool IsTemplateKnown (ExtensibleTextEditor instance)
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			bool result = false;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
 					result = true;
 				} else if (template.Shortcut.StartsWith (shortcut)) {
@@ -579,7 +587,7 @@ namespace MonoDevelop.SourceEditor
 		public bool DoInsertTemplate ()
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
 					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;
@@ -595,7 +603,7 @@ namespace MonoDevelop.SourceEditor
 				var result = template.InsertTemplateContents (editor, context);
 
 				var links = result.TextLinks.Select (l => new Mono.TextEditor.TextLink (l.Name) {
-					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList (),
+					Links = l.Links.Select (s => (ISegment)new TextSegment (s.Offset, s.Length)).ToList (),
 					IsEditable = l.IsEditable,
 					IsIdentifier = l.IsIdentifier,
 					GetStringFunc = l.GetStringFunc != null ? (Func<Func<string, string>, Mono.TextEditor.PopupWindow.IListDataProvider<string>>)(arg => new ListDataProviderWrapper (l.GetStringFunc (arg))) : null
@@ -811,12 +819,6 @@ namespace MonoDevelop.SourceEditor
 		internal void OnScrollBottom ()
 		{
 			RunAction (ScrollActions.Bottom);
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
-		internal void OnGotoMatchingBrace ()
-		{
-			RunAction (MiscActions.GotoMatchingBracket);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]

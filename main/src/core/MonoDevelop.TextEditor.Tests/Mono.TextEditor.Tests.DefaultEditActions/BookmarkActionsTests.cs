@@ -31,7 +31,7 @@ using System.Linq;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class BookmarkActionsTests : TextEditorTestBase
+	class BookmarkActionsTests : TextEditorTestBase
 	{
 		internal static TextEditorData Create (string text)
 		{

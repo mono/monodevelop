@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public static FilePath SyntaxModePath {
 			get {
-				return UserProfile.Current.UserDataRoot.Combine ("HighlightingSchemes");
+				return UserProfile.Current.UserDataRoot.Combine ("ColorThemes");
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			if (success)
-				SyntaxModeService.LoadStylesAndModes (SyntaxModePath);
+				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
 		}
 
 		public string Name {
@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.Editor
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
+			editor.FileName = fileName;
 			editor.MimeType = mimeType;
 			editor.GetViewContent ().Project = ownerProject;
 			editor.GetViewContent ().ContentName = fileName;

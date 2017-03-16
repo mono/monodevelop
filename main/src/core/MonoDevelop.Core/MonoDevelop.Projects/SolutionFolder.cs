@@ -218,7 +218,7 @@ namespace MonoDevelop.Projects
 				try {
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName)) {
 						using (var ctx = new SolutionLoadContext (ParentSolution))
-							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx);
+							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx, itemGuid: item.ItemId);
 					}
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {

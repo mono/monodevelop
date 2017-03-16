@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Editor
 		internal static TextEditor CreateTextEditor (string input)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
+			editor.FileName = "a.cs";
 			editor.MimeType = "text/x-csharp";
 
 			var sb = new StringBuilder ();

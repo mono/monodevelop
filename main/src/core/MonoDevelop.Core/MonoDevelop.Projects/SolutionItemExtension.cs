@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects
 		SolutionItemExtension next;
 
 		internal string FlavorGuid { get; set; }
+		internal string ProjectCapability { get; set; }
 		internal string TypeAlias { get; set; }
 		internal string LanguageName { get; set; }
 
@@ -53,20 +54,29 @@ namespace MonoDevelop.Projects
 
 		internal protected override bool SupportsObject (WorkspaceObject item)
 		{
-			var s = item as SolutionItem;
-			if (s == null)
+			if (!base.SupportsObject (item))
+				return false;
+			
+			var p = item as SolutionItem;
+			if (p == null)
 				return false;
 
-			var res = FlavorGuid == null || s.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase));
+			var pr = item as Project;
 
-			if (!res)
-				return false;
+			if (pr != null && ProjectCapability != null) {
+				if (!pr.IsCapabilityMatch (ProjectCapability))
+					return false;
+			}
+			if (FlavorGuid != null) {
+				if (!p.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase)))
+					return false;
+			}
 
-			var p = item as DotNetProject;
-			if (p == null || LanguageName == null)
+			var dnp = item as DotNetProject;
+			if (LanguageName == null || dnp == null)
 				return true;
-
-			return LanguageName == p.LanguageName;
+			
+			return LanguageName == dnp.LanguageName;
 		}
 
 		public SolutionItem Item {

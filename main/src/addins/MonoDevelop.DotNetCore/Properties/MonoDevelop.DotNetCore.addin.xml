@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="DotNetCore" class="MonoDevelop.DotNetCore.DotNetCoreExecutionHandler" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+		<Category id="netcore" name=".NET Core" icon="md-platform-other" insertbefore="other">
+			<Category id="app" name="App">
+				<Category id="general" name="General" />
+				<Category id="aspnet" name="ASP.NET" />
+			</Category>
+			<Category id="library" name="Library">
+				<Category id="general" name="General" />
+			</Category>
+			<Category id="test" name="Tests">
+				<Category id="general" name="General" />
+			</Category>
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Templates">
+		<Template
+			id="Microsoft.Common.Console.CSharp"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-console-project"
+			imageId="md-console-project"
+			category="netcore/app/general"/>
+		<Template
+			id="Microsoft.Common.Console.FSharp"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-console-project"
+			imageId="md-console-project"
+			category="netcore/app/general"/>
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-library-project"
+			imageId="md-library-project"
+			category="multiplat/library/general" />
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-library-project"
+			imageId="md-library-project"
+			category="multiplat/library/general" />
+		<Template
+			id="Microsoft.Test.xUnit.CSharp"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-test-project"
+			imageId="md-test-project"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.xUnit.FSharp"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-test-project"
+			imageId="md-test-project"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Web.Empty.CSharp"
+			_overrideDescription="Creates a new ASP.NET Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-aspnet-empty-project"
+			imageId="md-aspnet-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.Mvc.CSharp"
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-aspnet-empty-project"
+			imageId="md-aspnet-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.Mvc.FSharp"
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-aspnet-empty-project"
+			imageId="md-aspnet-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.WebApi.CSharp"
+			_overrideDescription="Creates a new ASP.NET Web API Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-aspnet-empty-project"
+			imageId="md-aspnet-empty-project"
+			category="netcore/app/aspnet" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="MonoDevelop.DotNetCore.ProjectTemplateWizard" class="MonoDevelop.DotNetCore.Templating.DotNetCoreProjectTemplateWizard" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreFolderNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectNodeBuilderExtension" />
+ 		<NodeBuilder class="MonoDevelop.DotNetCore.ProjXNodeBuilderExtension" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
+		<Class id="DotNetCoreProjectReader" class="MonoDevelop.DotNetCore.DotNetCoreProjectReader" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/UnitTesting/TestProviders">
+		<Class id="DnxTestProvider" class="MonoDevelop.DotNetCore.UnitTesting.DotNetCoreTestProvider" />
+	</Extension>
+
+	<ExtensionPoint path="/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/DotNetCore/ContextMenu/ProjectPad/PackageDependency">
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
+		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
+		<Condition id="FlavorType" value="MonoDevelop.DotNetCore.DotNetCoreProjectExtension">
+			<Panel
+				id="DotNetCoreRuntimeOptionsPanel"
+				replaces="RuntimeOptionsPanel"
+				_label="Runtime Options"
+				class="MonoDevelop.DotNetCore.DotNetCoreRuntimeOptionsPanel" />
+			<Panel
+				id="DotNetCoreRuntimeOptionsPanel"
+				replaces="MSBuildOptionsPanel"
+				_label="Build"
+				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+			<Command id = "MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				defaultHandler = "MonoDevelop.DotNetCore.DotNetMigrateCommandHandler"
+				_label = "Migrate to New Format"
+				description="Migrates old .NET Core project to new format"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition
+			id="ItemType"
+			value="MonoDevelop.DotNetCore.NodeBuilders.DependenciesNode">
+			<CommandItem
+				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+			<SeparatorItem
+				id="DependenciesEditReferenceSeparator" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.Restore" />
+		</Condition>
+		<Condition id="ItemType" value="MonoDevelop.DotNetCore.NodeBuilders.PackageDependenciesNode">
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.Restore" />
+		</Condition>
+		<Condition
+			id="ItemType"
+			value="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNode|MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNode">
+			<CommandItem
+				id="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="MonoDevelop.PackageManagement.Commands.AddPackages" />
+		</Condition>
+		<Condition id="ItemType" value="UnknownProject|Solution">
+			<CommandItem
+				id="MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+			<SeparatorItem
+				id="DotNetMigrateSeparator"
+				insertafter="MonoDevelop.DotNetCore.Commands.DotNetMigrate"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DependenciesNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.PackageDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.TargetFrameworkNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.PackageDependencyNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.ProjectDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.AssemblyDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.SdkDependenciesNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.DotNetCore.NodeBuilders.DotNetCoreProjectReferencesNodeBuilderExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
+		<Class class="MonoDevelop.DotNetCore.DotNetCoreRunConfigurationEditor" runConfigurationType="MonoDevelop.DotNetCore.DotNetCoreRunConfiguration" />
+	</Extension>
+</ExtensionModel>

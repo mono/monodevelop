@@ -66,7 +66,7 @@ namespace MonoDevelop.Deployment.Linux
 			var data = ser.Serialize (this);
 
 			XmlDocument doc = new XmlDocument ();
-			var writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
+			var writer = new XmlConfigurationWriter { Namespace = entry.MSBuildProject.Namespace };
 			var elem = writer.Write (doc, data);
 
 			entry.MSBuildProject.SetMonoDevelopProjectExtension ("Deployment.LinuxDeployData", elem);

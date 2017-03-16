@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -54,18 +56,12 @@ namespace MonoDevelop.SourceEditor
 
 			bool inStringOrComment = false;
 
-			var stack = line.StartSpan.Clone ();
-			var sm = extEditor.Document.SyntaxMode as SyntaxMode;
-			if (sm != null)
-				// extEditor.Caret.Offset - 1 means we care if we were inside string
-				// before typing current char
-				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (extEditor.Document, sm, sm, stack, line.Offset, extEditor.Caret.Offset - 1);
+			var stack = extEditor.SyntaxHighlighting.GetScopeStackAsync (Math.Max (0, extEditor.Caret.Offset - 2), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			foreach (var span in stack) {
-				if (string.IsNullOrEmpty (span.Color))
+				if (string.IsNullOrEmpty (span))
 					continue;
-				if (span.Color.StartsWith ("String", StringComparison.Ordinal) ||
-				    span.Color.StartsWith ("Comment", StringComparison.Ordinal) ||
-				    span.Color.StartsWith ("Xml Attribute Value", StringComparison.Ordinal)) {
+				if (span.Contains ("string") ||
+				    span.Contains ("comment")) {
 					inStringOrComment = true;
 					break;
 				}
@@ -77,7 +73,7 @@ namespace MonoDevelop.SourceEditor
 				char openingBrace = openBrackets [braceIndex];
 
 				int count = 0;
-				foreach (char curCh in ExtensibleTextEditor.GetTextWithoutCommentsAndStrings(extEditor.Document, 0, extEditor.Document.TextLength)) {
+				foreach (char curCh in ExtensibleTextEditor.GetTextWithoutCommentsAndStrings(extEditor.Document, 0, extEditor.Document.Length)) {
 					if (curCh == openingBrace) {
 						count++;
 					} else if (curCh == closingBrace) {

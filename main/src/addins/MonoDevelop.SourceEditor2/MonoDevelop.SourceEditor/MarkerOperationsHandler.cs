@@ -59,10 +59,10 @@ namespace MonoDevelop.SourceEditor
 			if (doc != null) {
 				SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent <SourceEditorView>();
 				if (view != null) {
-					DocumentLocation location = view.TextEditor.Caret.Location;
+					var location = view.TextEditor.Caret.Location;
 					if (location.IsEmpty)
 						return;
-					DocumentLine line = view.Document.GetLine (location.Line);
+					var line = view.Document.GetLine (location.Line);
 					if (line == null || line.Markers == null)
 						return;
 					foreach (TextLineMarker marker in line.Markers) {

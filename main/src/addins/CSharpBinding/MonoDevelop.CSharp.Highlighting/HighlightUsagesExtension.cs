@@ -129,10 +129,12 @@ namespace MonoDevelop.CSharp.Highlighting
 					return result;
 				var root = await resolveResult.Document.GetSyntaxRootAsync (token).ConfigureAwait (false);
 				var doc2 = resolveResult.Document;
-
+				var offset = resolveResult.Offset;
+				if (!root.Span.Contains (offset))
+					return result;
 				foreach (var highlighter in highlighters) {
 					try {
-						foreach (var span in highlighter.GetHighlights (root, resolveResult.Offset, token)) {
+						foreach (var span in highlighter.GetHighlights (root, offset, token)) {
 							result.Add (new MemberReference (span, doc2.FilePath, span.Start, span.Length) {
 								ReferenceUsageType = ReferenceUsageType.Keyword
 							});

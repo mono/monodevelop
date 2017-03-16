@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -81,19 +82,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 					switch (r.Level) {
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
 						severity = GettextCatalog.GetString ("Info");
-						color = editor.Options.GetColorStyle ().UnderlineHint.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
 						break;
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
 						severity = GettextCatalog.GetString ("Warning");
-						color = editor.Options.GetColorStyle ().UnderlineWarning.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineWarning, out color);
 						break;
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
 						severity = GettextCatalog.GetString ("Error");
-						color = editor.Options.GetColorStyle ().UnderlineError.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineError, out color);
 						break;
 					default:
 						severity = "?";
-						color = editor.Options.GetColorStyle ().UnderlineSuggestion.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
 						break;
 					}
 

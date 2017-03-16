@@ -1,12 +1,14 @@
 ﻿using Mono.TextEditor;
 using System;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
 	class SearchInSelectionMarker : TextSegmentMarker
 	{
 
-		public SearchInSelectionMarker (TextSegment textSegment) : base (textSegment)
+		public SearchInSelectionMarker (ISegment textSegment) : base (textSegment)
 		{
 		}
 
@@ -30,12 +32,12 @@ namespace MonoDevelop.SourceEditor
 				uint curIndex = 0, byteIndex = 0;
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
 
-				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}
@@ -45,8 +47,9 @@ namespace MonoDevelop.SourceEditor
 			if (@from <= to) {
 				if (metrics.TextEndOffset < markerEnd)
 					to = metrics.WholeLineWidth + metrics.TextRenderStartPosition;
-				var c1 = editor.Options.GetColorStyle ().PlainText.Background;
-				var c2 = editor.Options.GetColorStyle ().SelectedText.Background;
+				
+				var c1 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
+				var c2 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Selection);
 				cr.SetSourceRGB ((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2);
 				cr.Rectangle (@from, y, to - @from, metrics.LineHeight);
 				cr.Fill ();

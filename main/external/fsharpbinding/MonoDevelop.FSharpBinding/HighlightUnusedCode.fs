@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open System.Linq
 open ExtCore.Control
 open MonoDevelop
 open MonoDevelop.Core
@@ -84,69 +85,74 @@ module highlightUnusedCode =
             maybe {
                 let! ast = context.TryGetAst()
                 let! pd = context.TryGetFSharpParsedDocument()
-                return ast.ParseTree, pd
+                return ast, pd
             }
 
-        ast |> Option.bind (fun (tree, pd) ->
-            let symbols = pd.AllSymbolsKeyed.Values
+        ast |> Option.bind (fun (ast, pd) ->
+            let errors = ast.GetErrors()
+            if errors.Any() then
+                None
+            else
+                let tree = ast.ParseTree
+                let symbols = pd.AllSymbolsKeyed.Values
 
-            let getPartNamespace (sym:FSharpSymbolUse) (fullName:string option) =
-                // given a symbol range such as `Text.ISegment` and a full name
-                // of `MonoDevelop.Core.Text.ISegment`, return `MonoDevelop.Core`
-                fullName |> Option.bind(fun fullName ->
-                    let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
-                    let lengthDiff = fullName.Length - length - 2
-                    Some fullName.[0..lengthDiff])
+                let getPartNamespace (sym:FSharpSymbolUse) (fullName:string option) =
+                    // given a symbol range such as `Text.ISegment` and a full name
+                    // of `MonoDevelop.Core.Text.ISegment`, return `MonoDevelop.Core`
+                    fullName |> Option.bind(fun fullName ->
+                        let length = sym.RangeAlternate.EndColumn - sym.RangeAlternate.StartColumn
+                        let lengthDiff = fullName.Length - length - 2
+                        Some fullName.[0..lengthDiff])
 
-            let getPossibleNamespaces sym =
-                let isQualified = symbolIsFullyQualified editor sym
-                match sym with
-                | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
-                    getPartNamespace sym ent.TryFullName :: entityNamespace (Some ent)
-                | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
-                    getPartNamespace sym (Some f.FullName) :: entityNamespace (Some f.DeclaringEntity)
-                | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
-                    getPartNamespace sym (Some mfv.FullName) :: entityNamespace mfv.EnclosingEntitySafe
-                | SymbolUse.Operator op when not (isQualified (Some op.FullName)) ->
-                    getPartNamespace sym (Some op.FullName) :: entityNamespace op.EnclosingEntitySafe
-                | SymbolUse.ActivePattern ap when not (isQualified (Some ap.FullName)) ->
-                    getPartNamespace sym (Some ap.FullName) :: entityNamespace ap.EnclosingEntitySafe
-                | SymbolUse.ActivePatternCase apc when not (isQualified (Some apc.FullName)) ->
-                    getPartNamespace sym (Some apc.FullName) :: entityNamespace apc.Group.EnclosingEntity
-                | SymbolUse.UnionCase uc when not (isQualified (Some uc.FullName)) ->
-                    getPartNamespace sym (Some uc.FullName) :: entityNamespace (Some uc.ReturnType.TypeDefinition)
-                | SymbolUse.Parameter p when not (isQualified (Some p.FullName)) ->
-                    getPartNamespace sym (Some p.FullName) :: entityNamespace (Some p.Type.TypeDefinition)
-                | _ -> [None]
+                let getPossibleNamespaces sym =
+                    let isQualified = symbolIsFullyQualified editor sym
+                    match sym with
+                    | SymbolUse.Entity ent when not (isQualified ent.TryFullName) ->
+                        getPartNamespace sym ent.TryFullName :: entityNamespace (Some ent)
+                    | SymbolUse.Field f when not (isQualified (Some f.FullName)) -> 
+                        getPartNamespace sym (Some f.FullName) :: entityNamespace (Some f.DeclaringEntity)
+                    | SymbolUse.MemberFunctionOrValue mfv when not (isQualified (Some mfv.FullName)) -> 
+                        getPartNamespace sym (Some mfv.FullName) :: entityNamespace mfv.EnclosingEntitySafe
+                    | SymbolUse.Operator op when not (isQualified (Some op.FullName)) ->
+                        getPartNamespace sym (Some op.FullName) :: entityNamespace op.EnclosingEntitySafe
+                    | SymbolUse.ActivePattern ap when not (isQualified (Some ap.FullName)) ->
+                        getPartNamespace sym (Some ap.FullName) :: entityNamespace ap.EnclosingEntitySafe
+                    | SymbolUse.ActivePatternCase apc when not (isQualified (Some apc.FullName)) ->
+                        getPartNamespace sym (Some apc.FullName) :: entityNamespace apc.Group.EnclosingEntity
+                    | SymbolUse.UnionCase uc when not (isQualified (Some uc.FullName)) ->
+                        getPartNamespace sym (Some uc.FullName) :: entityNamespace (Some uc.ReturnType.TypeDefinition)
+                    | SymbolUse.Parameter p when not (isQualified (Some p.FullName)) ->
+                        getPartNamespace sym (Some p.FullName) :: entityNamespace (Some p.Type.TypeDefinition)
+                    | _ -> [None]
 
-            let namespacesInUse =
-                symbols
-                |> Seq.filter (fun s -> not s.IsFromDefinition)
-                |> Seq.collect getPossibleNamespaces
-                |> Seq.choose id
-                |> Set.ofSeq
+                let namespacesInUse =
+                    symbols
+                    |> Seq.filter (fun s -> not s.IsFromDefinition)
+                    |> Seq.collect getPossibleNamespaces
+                    |> Seq.choose id
+                    |> Set.ofSeq
 
-            let filter list: (string * Range.range) list =
-                let rec filterInner acc list (seenNamespaces: Set<string>) = 
-                    let notUsed namespc =
-                        not (namespacesInUse.Contains namespc) || seenNamespaces.Contains namespc
+                let filter list: (string * Range.range) list =
+                    let rec filterInner acc list (seenNamespaces: Set<string>) = 
+                        let notUsed namespc =
+                            not (namespacesInUse.Contains namespc) || seenNamespaces.Contains namespc
 
-                    match list with 
-                    | (namespc, range)::xs when notUsed namespc -> 
-                        filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
-                    | (namespc, _)::xs ->
-                        filterInner acc xs (seenNamespaces.Add namespc)
-                    | [] -> acc |> List.rev
-                filterInner [] list Set.empty
+                        match list with 
+                        | (namespc, range)::xs when notUsed namespc -> 
+                            filterInner ((namespc, range)::acc) xs (seenNamespaces.Add namespc)
+                        | (namespc, _)::xs ->
+                            filterInner acc xs (seenNamespaces.Add namespc)
+                        | [] -> acc |> List.rev
+                    filterInner [] list Set.empty
 
-            let openStatements = getOpenStatements tree
-            openStatements |> List.map snd |> removeMarkers editor
+                let openStatements = getOpenStatements tree
+                openStatements |> List.map snd |> removeMarkers editor
 
-            let results =
-                let opens = (openStatements |> filter) |> List.map snd
-                opens |> List.append (pd.UnusedCodeRanges |> Option.fill [])
+                let results =
+                    let opens = (openStatements |> filter) |> List.map snd
+                    opens |> List.append (pd.UnusedCodeRanges |> Option.fill [])
 
-            Some results)
+                Some results)
 
     let highlightUnused (editor:TextEditor) (unusedOpenRanges: Range.range list) (previousUnused: Range.range list)=
         previousUnused |> removeMarkers editor

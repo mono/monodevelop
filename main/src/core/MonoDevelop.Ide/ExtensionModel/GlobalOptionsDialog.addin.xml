@@ -28,7 +28,8 @@
 
 	<Section id = "TextEditor" _label = "Text Editor">
 		<Section id = "Formatting" _label = "Formatting" icon="md-prefs-code-formatting" />
-		<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
+		<Section id = "CodeTemplates" _label = "Code Snippets" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
+		<Section id = "LanguageBundles" _label = "Language Bundles" fill="true" class = "MonoDevelop.Ide.Editor.TextMate.TextMateBundleOptionsPanel" />
 	</Section>
 
 	<Section id="SourceCode" _label="Source Code">
@@ -42,10 +43,11 @@
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">
-		<Section id = "LogAgent" _label = "Automated Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" icon="md-prefs-feedback" fill="true" />
-		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" icon="md-prefs-maintenance" />
+		<Condition id = "Branding" value = "MonoDevelop">
+			<Section id = "LogAgent" _label = "Feedback" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" icon="md-prefs-feedback" fill="true" />
+			<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" icon="md-prefs-maintenance" />
+		</Condition>
 	</Section>
 </Extension>
-
 </ExtensionModel>
 

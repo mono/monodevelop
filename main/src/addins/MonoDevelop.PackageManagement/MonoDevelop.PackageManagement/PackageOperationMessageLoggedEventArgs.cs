@@ -27,7 +27,7 @@
 //
 
 using System;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {

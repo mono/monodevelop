@@ -28,64 +28,80 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
-using NuGet;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
+using NuGet.Frameworks;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageCompatibilityChecker
 	{
-		ISolutionPackageRepository packageRepository;
-		List<IPackage> packagesRequiringReinstallation = new List<IPackage> ();
-		PackageReferenceFile packageReferenceFile;
+		List<PackageIdentity> packagesRequiringReinstallation = new List<PackageIdentity> ();
 		List<PackageReference> packageReferences;
 		ProjectPackagesCompatibilityReport compatibilityReport;
-
-		public PackageCompatibilityChecker (ISolution solution)
-			: this (new SolutionPackageRepository (solution))
-		{
-		}
-
-		public PackageCompatibilityChecker (ISolutionPackageRepository packageRepository)
-		{
-			this.packageRepository = packageRepository;
-		}
+		string packageReferenceFileName;
 
 		public string PackageReferenceFileName {
-			get { return packageReferenceFile.FullPath; }
+			get { return packageReferenceFileName; }
 		}
 
-		public void CheckProjectPackages (IDotNetProject project)
+		public async Task CheckProjectPackages (IDotNetProject project)
 		{
-			packageReferenceFile = CreatePackageReferenceFile (project.GetPackagesConfigFilePath ());
-			packageReferences = packageReferenceFile.GetPackageReferences ().ToList ();
+			packageReferenceFileName = project.GetPackagesConfigFilePath ();
 
 			var targetFramework = new ProjectTargetFramework (project);
 			compatibilityReport = new ProjectPackagesCompatibilityReport (targetFramework.TargetFrameworkName);
 
-			foreach (PackageReference packageReference in packageReferences) {
-				IPackage package = packageRepository.Repository.FindPackage (packageReference.Id);
-				if (package != null) {
-					if (PackageNeedsReinstall (project, package, packageReference.TargetFramework)) {
-						packagesRequiringReinstallation.Add (package);
-					}
+			IPackageCompatibilityNuGetProject nugetProject = await GetNuGetProject (project);
+
+			var installedPackages = await nugetProject.GetInstalledPackagesAsync (CancellationToken.None);
+			packageReferences = installedPackages.ToList ();
+
+			foreach (var packageReference in packageReferences) {
+				if (PackageNeedsReinstall (nugetProject, packageReference)) {
+					packagesRequiringReinstallation.Add (packageReference.PackageIdentity);
 				}
 			}
 		}
 
-		protected virtual PackageReferenceFile CreatePackageReferenceFile (string fileName)
+		protected virtual Task<IPackageCompatibilityNuGetProject> GetNuGetProject (IDotNetProject project)
 		{
-			return new PackageReferenceFile (fileName);
+			return Runtime.RunInMainThread (() => {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				var nugetProject = solutionManager.GetNuGetProject (project) as MSBuildNuGetProject;
+				return new PackageCompatibilityNuGetProject (nugetProject) as IPackageCompatibilityNuGetProject;
+			});
 		}
 
-		bool PackageNeedsReinstall (IDotNetProject project, IPackage package, FrameworkName packageTargetFramework)
+		bool PackageNeedsReinstall (IPackageCompatibilityNuGetProject nugetProject, PackageReference packageReference)
 		{
-			var compatibility = new PackageCompatibility (project, package, packageTargetFramework);
+			var targetFramework = nugetProject.TargetFramework;
+			string packageFileName = nugetProject.GetInstalledPackageFilePath (packageReference.PackageIdentity);
+			if (!FileExists (packageFileName))
+				return false;
+
+			var compatibility = CreatePackageCompatibility (targetFramework, packageReference, packageFileName);
 			compatibility.CheckCompatibility ();
 			compatibilityReport.Add (compatibility);
 
 			return compatibility.ShouldReinstallPackage;
+		}
+
+		protected virtual bool FileExists (string fileName)
+		{
+			return File.Exists (fileName);
+		}
+
+		protected virtual PackageCompatibility CreatePackageCompatibility (
+			NuGetFramework targetFramework,
+			PackageReference packageReference,
+			string packageFileName)
+		{
+			return new PackageCompatibility (targetFramework, packageReference, packageFileName);
 		}
 
 		public bool AnyIncompatiblePackages ()
@@ -101,15 +117,37 @@ namespace MonoDevelop.PackageManagement
 		public void MarkPackagesForReinstallation ()
 		{
 			GuiDispatch (() => {
+				var packageReferencesToUpdate = new Dictionary<PackageReference, PackageReference> ();
+
 				foreach (PackageReference packageReference in packageReferences) {
-					bool reinstall = packagesRequiringReinstallation.Any (package => package.Id == packageReference.Id);
-					packageReferenceFile.MarkEntryForReinstallation (
-						packageReference.Id,
-						packageReference.Version,
-						packageReference.TargetFramework,
-						reinstall);
+					bool reinstall = packagesRequiringReinstallation.Any (package => package.Id == packageReference.PackageIdentity.Id);
+
+					if (reinstall != packageReference.RequireReinstallation) {
+						var updatedPackageReference = new PackageReference (
+							packageReference.PackageIdentity,
+							packageReference.TargetFramework,
+							packageReference.IsUserInstalled,
+							packageReference.IsDevelopmentDependency,
+							reinstall);
+						packageReferencesToUpdate.Add (packageReference, updatedPackageReference);
+					}
+				}
+
+				if (packageReferencesToUpdate.Any ()) {
+					UpdatePackageReferences (packageReferenceFileName, packageReferencesToUpdate);
 				}
 			});
+		}
+
+		protected virtual void UpdatePackageReferences (
+			string packageReferenceFileName, 
+			Dictionary<PackageReference, PackageReference> packageReferencesToUpdate)
+		{
+			using (var writer = new PackagesConfigWriter (packageReferenceFileName, createNew: false)) {
+				foreach (var entry in packageReferencesToUpdate) {
+					writer.UpdatePackageEntry (entry.Key, entry.Value);
+				}
+			}
 		}
 
 		public bool PackagesMarkedForReinstallationInPackageReferenceFile ()

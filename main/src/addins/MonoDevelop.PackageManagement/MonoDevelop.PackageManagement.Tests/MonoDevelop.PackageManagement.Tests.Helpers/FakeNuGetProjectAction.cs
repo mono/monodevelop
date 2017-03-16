@@ -38,7 +38,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			NuGetProjectActionType actionType)
 			: base (
 				CreatePackageIdentity (packageId, packageVersion),
-				actionType)
+				actionType,
+				null)
 		{
 		}
 

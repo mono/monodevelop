@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 
@@ -147,6 +149,16 @@ namespace MonoDevelop.PackageManagement
 		public void RefreshReferenceStatus ()
 		{
 			DotNetProject.RefreshReferenceStatus ();
+		}
+
+		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
+		{
+			foreach (var item in DotNetProject.MSBuildProject.GetEvaluatedPackageReferences ()) {
+				yield return item;
+			}
+			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
+				yield return item;
+			}
 		}
 	}
 }

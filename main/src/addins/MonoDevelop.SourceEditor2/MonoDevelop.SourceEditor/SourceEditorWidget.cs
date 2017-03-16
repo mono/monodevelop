@@ -1,4 +1,4 @@
-// SourceEditorWidget.cs
+﻿// SourceEditorWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -40,15 +40,14 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -357,7 +356,8 @@ namespace MonoDevelop.SourceEditor
 			void OptionsChanged (object sender, EventArgs e)
 			{
 				var editor = (Mono.TextEditor.MonoTextEditor)scrolledWindow.Child;
-				scrolledBackground.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
+
+				scrolledBackground.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background));
 			}
 			
 			void RemoveEvents ()
@@ -386,11 +386,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public SourceEditorWidget (SourceEditorView view)
+		public SourceEditorWidget (SourceEditorView view, TextDocument doc)
 		{
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
-			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
+			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance), doc);
 			this.textEditor.TextArea.FocusInEvent += (o, s) => {
 				lastActiveEditor = (ExtensibleTextEditor)((TextArea)o).GetTextEditorData ().Parent;
 				view.FireCompletionContextChanged ();
@@ -491,7 +491,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, Mono.TextEditor.DocumentRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
@@ -500,7 +500,7 @@ namespace MonoDevelop.SourceEditor
 			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
 			
-			var result = new Mono.TextEditor.FoldSegment (document, text, startOffset, endOffset - startOffset, type);
+			var result = new Mono.TextEditor.FoldSegment (text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
@@ -656,7 +656,6 @@ namespace MonoDevelop.SourceEditor
 			splittedTextEditor.EditorExtension = textEditor.EditorExtension;
 			if (textEditor.GetTextEditorData ().HasIndentationTracker)
 				splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
-			splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
 
 			secondsw.SetTextEditor (splittedTextEditor);
 			splitContainer.Add2 (secondsw);
@@ -890,7 +889,7 @@ namespace MonoDevelop.SourceEditor
 			var image = new HoverCloseButton ();
 			hbox.PackStart (image, false, false, 0);
 			var label = new Label (GettextCatalog.GetString ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
-			var color = (HslColor)textEditor.ColorStyle.NotificationText.Foreground;
+			var color = (HslColor)SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationText);
 			label.ModifyFg (StateType.Normal, color);
 
 			int w, h;

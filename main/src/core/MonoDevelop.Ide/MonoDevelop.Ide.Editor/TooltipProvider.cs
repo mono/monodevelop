@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Editor
 				(int)p1.X,
 				(int)p1.Y,
 				(int)w,
-				(int)editor.LineHeight
+				(int)editor.GetLineHeight (startLoc.Line)
 			);
 
 			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);

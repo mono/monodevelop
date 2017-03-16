@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using NuGet.CommandLine;
 using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
@@ -48,45 +49,26 @@ namespace MonoDevelop.PackageManagement
 		{
 			var credentialService = new CredentialService (
 				GetCredentialProviders (),
-				OnError,
 				nonInteractive: false);
 
-			NuGet.HttpClient.DefaultCredentialProvider = new CredentialServiceAdapter (credentialService);
-
 			HttpHandlerResourceV3Extensions.InitializeHttpHandlerResourceV3 (credentialService);
-		}
-
-		void OnError (string message)
-		{
-			PackageManagementServices.PackageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
 		}
 
 		IEnumerable<ICredentialProvider> GetCredentialProviders ()
 		{
 			var credentialProviders = new List<ICredentialProvider>();
 
-			var adapter = new CredentialProviderAdapter (CreateSettingsCredentialProvider ());
-			credentialProviders.Add (adapter);
+			credentialProviders.Add (CreateSettingsCredentialProvider ());
 			credentialProviders.Add (new MonoDevelopCredentialProvider ());
 
 			return credentialProviders;
 		}
 
-		static NuGet.SettingsCredentialProvider CreateSettingsCredentialProvider ()
+		static SettingsCredentialProvider CreateSettingsCredentialProvider ()
 		{
-			NuGet.ISettings settings = LoadSettings ();
-			var packageSourceProvider = new NuGet.PackageSourceProvider (settings);
-			return new NuGet.SettingsCredentialProvider (NuGet.NullCredentialProvider.Instance, packageSourceProvider);
-		}
-
-		static NuGet.ISettings LoadSettings ()
-		{
-			try {
-				return NuGet.Settings.LoadDefaultSettings (null, null, null);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to load NuGet.Config.", ex);
-			}
-			return NuGet.NullSettings.Instance;
+			var settings = SettingsLoader.LoadDefaultSettings ();
+			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
+			return new SettingsCredentialProvider (packageSourceProvider);
 		}
 	}
 }

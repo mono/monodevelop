@@ -89,12 +89,17 @@ namespace MonoDevelop.PackageManagement
 			if (!IsMissing (solutionManager, packageIdentity))
 				return;
 
-			await PackageDownloader.GetDownloadResourceResultAsync (
-				solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
-				packageIdentity,
-				solutionManager.Settings,
-				new LoggerAdapter (context),
-				token);
+			using (var sourceCacheContext = new SourceCacheContext ()) {
+				var downloadContext = new PackageDownloadContext (sourceCacheContext);
+
+				await PackageDownloader.GetDownloadResourceResultAsync (
+					solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
+					packageIdentity,
+					downloadContext,
+					SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings),
+					new LoggerAdapter (context),
+					token);
+			}
 		}
 
 		public static bool IsMissing (

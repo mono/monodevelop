@@ -37,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 		void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions);
 		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
 		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
+		void NotifyProjectReferencesChanged ();
 	}
 }
 

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			this.doc      = doc;
 			this.template = template;
-			this.CompletionText = "test";
+			this.CompletionText = template.Shortcut;
 			this.Icon        = template.Icon;
 			this.DisplayText = template.Shortcut;
 			this.Description = template.Shortcut + Environment.NewLine + GettextCatalog.GetString (template.Description);
