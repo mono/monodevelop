@@ -1,6 +1,7 @@
-
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9D360D43-0C05-49D6-84DB-4E7AB2F38F82}"
 	ProjectSection(MonoDevelopProperties) = preProject
 		BaseDirectory = src\core
@@ -268,7 +269,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "tests\WindowsPlatform.Tests\WindowsPlatform.Tests.csproj", "{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSharpBinding.Tests", "tests\MonoDevelop.CSharpBinding.Tests\MonoDevelop.CSharpBinding.Tests.csproj", "{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5}"
 EndProject
@@ -281,15 +282,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpBinding", "FSharpBind
 		external\fsharpbinding\build.fsx = external\fsharpbinding\build.fsx
 	EndProjectSection
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "external\fsharpbinding\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "external\fsharpbinding\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharpInteractive.Service", "external\fsharpbinding\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "external\fsharpbinding\MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp.Tests", "external\fsharpbinding\MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono.TextEditor.Shared", "src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.shproj", "{FBAAD910-F29B-4AC5-9FC0-27F6EB36C495}"
 EndProject
