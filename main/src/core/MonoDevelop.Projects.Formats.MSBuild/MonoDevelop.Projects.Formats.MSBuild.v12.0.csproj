@@ -13,7 +13,7 @@
 		<XBuild>$(MSBuildToolsPath.ToLower().Contains("xbuild"))</XBuild>
 		<XBuildExtensionsPath Condition=" '$(XBuild)' == 'True' ">$(MSBuildExtensionsPath)</XBuildExtensionsPath>
 		<XBuildExtensionsPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildProgramFiles32)\Mono\lib\mono\xbuild</XBuildExtensionsPath>
-		<XBuildLibPath>$(MSBuildExtensionsPath)\12.0\Bin</XBuildLibPath>
+		<XBuildLibPath>$(XBuildExtensionsPath)\12.0\Bin</XBuildLibPath>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
 		<DebugSymbols>True</DebugSymbols>
