@@ -1,4 +1,4 @@
-{
+﻿{
 	"name": "Light",
 	"version": "1.4.4",
 	"description": "Bright and friendly, just like Xamarin",
@@ -79,8 +79,8 @@
 		{ "name": "Debugger Current Line Marker", "color": "#f8f4a1", "bordercolor": "#f8f4a1" },
 		{ "name": "Debugger Stack Line Marker", "color": "#d0efa9", "bordercolor": "#d0efa9" },
 
-		{ "name": "Primary Link", "color": "chameleon3", "secondcolor": "chameleon2" },
-		{ "name": "Primary Link(Highlighted)", "color": "chameleon3", "secondcolor": "chameleon1" },
+		{ "name": "Primary Link", "color": "#E4D0E2", "secondcolor": "chameleon2" },
+		{ "name": "Primary Link(Highlighted)", "color": "#E4D0E2", "secondcolor": "chameleon1" },
 		{ "name": "Secondary Link", "color": "aluminium2", "secondcolor": "white" },
 		{ "name": "Secondary Link(Highlighted)", "color": "aluminium3", "secondcolor": "aluminium1" },
 
