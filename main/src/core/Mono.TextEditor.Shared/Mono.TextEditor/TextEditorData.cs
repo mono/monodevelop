@@ -272,12 +272,6 @@ namespace Mono.TextEditor
 			get {
 				return document;
 			}
-			set {
-				DetachDocument ();
-				document = value;
-				this.caret.SetDocument (document);
-				AttachDocument ();
-			}
 		}
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
