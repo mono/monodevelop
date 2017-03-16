@@ -775,6 +775,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentClose (DocumentId analysisDocument, string filePath)
 		{
 			try {
+				lock (openDocuments) {
+					var openDoc = openDocuments.FirstOrDefault (d => d.Id == analysisDocument);
+					if (openDoc != null) {
+						openDoc.Dispose ();
+						openDocuments.Remove (openDoc);
+					}
+				}
+				if (!CurrentSolution.ContainsDocument (analysisDocument))
+					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
 				var openDocument = this.openDocuments.FirstOrDefault (w => w.Id == analysisDocument);
