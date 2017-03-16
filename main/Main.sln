@@ -158,11 +158,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests", "src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.Tests\MonoDevelop.Debugger.Tests.csproj", "{174E6044-DD3A-49AB-9A5C-2A1F341B7B4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.TestApp", "src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.Tests.TestApp\MonoDevelop.Debugger.Tests.TestApp.csproj", "{05EDFE55-C8D1-47E4-BB61-0BC809CD82E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.TestApp", "external\debugger-libs\UnitTests\MonoDevelop.Debugger.Tests.TestApp\MonoDevelop.Debugger.Tests.TestApp.csproj", "{05EDFE55-C8D1-47E4-BB61-0BC809CD82E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Gdb", "src\addins\MonoDevelop.Debugger.Gdb\MonoDevelop.Debugger.Gdb.csproj", "{FA15FC26-A7E7-4932-93B7-65FAE6D5DD33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.NonUserCodeTestLib", "src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.Tests.NonUserCodeTestLib\MonoDevelop.Debugger.Tests.NonUserCodeTestLib.csproj", "{8AFA4FB4-BD2D-478F-942B-7AE3451535BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.NonUserCodeTestLib", "external\debugger-libs\UnitTests\MonoDevelop.Debugger.Tests.NonUserCodeTestLib\MonoDevelop.Debugger.Tests.NonUserCodeTestLib.csproj", "{8AFA4FB4-BD2D-478F-942B-7AE3451535BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.Debugger.Win32", "MonoDevelop.Debugger.Win32", "{8F47F5EC-2F57-4030-B658-7B1002DA90C2}"
 	ProjectSection(SolutionItems) = preProject
