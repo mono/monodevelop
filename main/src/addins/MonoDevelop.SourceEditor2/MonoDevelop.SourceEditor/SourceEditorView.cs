@@ -853,7 +853,8 @@ namespace MonoDevelop.SourceEditor
 			bool didLoadCleanly;
 			if (!reload && AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
-				this.Document.VsTextDocument.Encoding = loadEncoding ?? Encoding.UTF8;
+				if (!this.loadedInCtor)
+					this.Document.VsTextDocument.Encoding = loadEncoding ?? Encoding.UTF8;
 				didLoadCleanly = false;
 			}
 			else {
