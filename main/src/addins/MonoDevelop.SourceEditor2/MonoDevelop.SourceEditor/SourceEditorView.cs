@@ -170,30 +170,28 @@ namespace MonoDevelop.SourceEditor
 		bool loadedInCtor = false;
 
 		public SourceEditorView(string fileName, string mimeType)
-			: this(new TextDocument(fileName, mimeType))
+			: this(new DocumentAndLoaded(fileName, mimeType))
 		{
 			FileRegistry.Add(this);
-
-			loadedInCtor = true;
 		}
 
 		public SourceEditorView(IReadonlyTextDocument document = null)
-			: this(CreateTextDocumentFromReadonlyTextDocument(document))
+			: this(new DocumentAndLoaded(document))
 		{
 			if (document != null)
 			{
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
-				Document_MimeTypeChanged(this, EventArgs.Empty);
 			}
 			FileRegistry.Add(this);
 		}
 
-		private SourceEditorView(TextDocument doc)
+		private SourceEditorView(DocumentAndLoaded doc)
 		{
 			Counters.LoadedEditors++;
 
-			widget = new SourceEditorWidget (this, doc);
+			widget = new SourceEditorWidget (this, doc.Document);
+			loadedInCtor = doc.Loaded;
 
 			widget.TextEditor.Document.TextChanged += HandleTextReplaced;
 
@@ -243,31 +241,51 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			// Document.AddAnnotation (this);
+
+			Document_MimeTypeChanged(this, EventArgs.Empty);
 			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
 		}
 
-		private static TextDocument CreateTextDocumentFromReadonlyTextDocument(IReadonlyTextDocument document)
-		{
-			TextDocument doc;
-			if (document != null)
-			{
-				var textDocument = document as TextDocument;
-				if (textDocument != null)
-				{
-					doc = textDocument;
-				}
-				else
-				{
-					// Shouldn't need this but a fallback if someone provides their own implementation of IReadonlyTextDocument
-					doc = new TextDocument(document.Text);
-				}
-			}
-			else
-			{
-				doc = new TextDocument();
+
+		private struct DocumentAndLoaded {
+			public readonly TextDocument Document;
+			public readonly bool Loaded;
+
+			public DocumentAndLoaded (TextDocument document, bool loaded) {
+				this.Document = document;
+				this.Loaded = loaded;
 			}
 
-			return doc;
+			public DocumentAndLoaded (string fileName, string mimeType) {
+				if (AutoSave.AutoSaveExists(fileName)) {
+					// Don't load the document now, let Load() handle it
+					this.Document = new TextDocument();
+					this.Document.MimeType = mimeType;
+					this.Document.FileName = fileName;
+
+					this.Loaded = false;
+				} else {
+					this.Document = new TextDocument(fileName, mimeType);
+
+					this.Loaded = true;
+				}
+			}
+
+			public DocumentAndLoaded (IReadonlyTextDocument document) {
+				if (document != null) {
+					var textDocument = document as TextDocument;
+					if (textDocument != null) {
+						this.Document = textDocument;
+					} else {
+						// Shouldn't need this but a fallback if someone provides their own implementation of IReadonlyTextDocument
+						this.Document = new TextDocument(document.Text);
+					}
+				} else {
+					this.Document = new TextDocument();
+				}
+
+				this.Loaded = false;
+			}
 		}
 
 		void Document_MimeTypeChanged (object sender, EventArgs e)
@@ -851,15 +869,17 @@ namespace MonoDevelop.SourceEditor
 			}
 			// Look for a mime type for which there is a syntax mode
 			bool didLoadCleanly;
-			if (!reload && AutoSave.AutoSaveExists (fileName)) {
-				widget.ShowAutoSaveWarning (fileName);
-				if (!this.loadedInCtor)
+
+			if (this.loadedInCtor) {
+				this.loadedInCtor = false;
+				didLoadCleanly = true;
+			} else {
+				if (!reload && AutoSave.AutoSaveExists(fileName)) {
+					widget.ShowAutoSaveWarning(fileName);
 					this.Document.VsTextDocument.Encoding = loadEncoding ?? Encoding.UTF8;
-				didLoadCleanly = false;
-			}
-			else {
-				if (!this.loadedInCtor)
-				{
+					didLoadCleanly = false;
+				} else {
+
 					UpdateMimeType(fileName);
 
 					string text = null;
@@ -879,11 +899,11 @@ namespace MonoDevelop.SourceEditor
 						document.Text = text;
 						document.DiffTracker.SetBaseDocument(Document.CreateDocumentSnapshot());
 					}
+
+					didLoadCleanly = true;
 				}
-				didLoadCleanly = true;
 			}
 
-			this.loadedInCtor = false;
 			// TODO: Would be much easier if the view would be created after the containers.
 			ContentName = fileName;
 			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
