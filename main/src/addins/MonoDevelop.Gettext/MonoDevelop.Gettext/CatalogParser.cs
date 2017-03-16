@@ -269,7 +269,7 @@ namespace MonoDevelop.Gettext
 								if (line[0] == '\t')
 									line = line.Substring (1);
 								if (line[0] == '"' && line[line.Length - 1] == '"') {
-									str.Append (line.Substring (1, line.Length - 2));
+									str.Append (line, 1, line.Length - 2);
 								} else {
 									if (ReadParam (line, "msgstr[", out dummy)) {
 										pos = dummy.IndexOf (']');

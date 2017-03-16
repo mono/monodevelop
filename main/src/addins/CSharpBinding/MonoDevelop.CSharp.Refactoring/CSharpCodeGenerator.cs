@@ -727,17 +727,17 @@ namespace MonoDevelop.CSharp.Refactoring
 						} else {
 							result.Append ("(");
 							AppendReturnType (result, options, p.Type);
-							result.Append (")" + p.ExplicitDefaultValue);
+							result.Append (")").Append (p.ExplicitDefaultValue);
 						}
 					} else if (p.ExplicitDefaultValue is char) {
-						result.Append ("'" + p.ExplicitDefaultValue + "'");
+						result.Append ("'").Append (p.ExplicitDefaultValue).Append ("'");
 					} else if (p.ExplicitDefaultValue is string) {
-						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue) + "\"");
+						result.Append ("\"").Append (CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue)).Append ("\"");
 					} else if (p.ExplicitDefaultValue is bool) {
 						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
 					} else if (p.ExplicitDefaultValue == null) {
 						if (p.Type.IsValueType && p.Type.SpecialType != SpecialType.System_String) {
-							result.Append ("default(" + p.Type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start) + ")");
+							result.Append ("default(").Append (p.Type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start)).Append (")");
 						} else {
 							result.Append ("null");
 						}

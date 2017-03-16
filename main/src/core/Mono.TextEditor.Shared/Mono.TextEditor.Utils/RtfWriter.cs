@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Utils
 					int color = colorList.IndexOf (foreground);
 					if (curColor != color) {
 						curColor = color;
-						rtfText.Append (@"\cf" + (curColor + 1));
+						rtfText.Append (@"\cf").Append (curColor + 1);
 						appendSpace = true;
 					}
 					AppendRtfText (rtfText, chunk.Text, ref appendSpace);

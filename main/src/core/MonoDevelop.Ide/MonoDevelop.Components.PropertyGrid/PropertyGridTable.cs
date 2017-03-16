@@ -774,7 +774,7 @@ namespace MonoDevelop.Components.PropertyGrid
 						var multiLineValue = string.Join (Environment.NewLine, Enumerable.Range (0, (int)Math.Ceiling ((double)value.Length / chunkLength)).Select (n => string.Concat (value.Skip (n * chunkLength).Take (chunkLength))));
 						s.AppendLine ();
 						s.AppendLine ();
-						s.Append ("Value: " + multiLineValue);
+						s.Append ("Value: ").Append (multiLineValue);
 					}
 				}
 				tooltipWindow.Markup = s.ToString ();

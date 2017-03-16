@@ -440,7 +440,9 @@ namespace MonoDevelop.AssemblyBrowser
 			if (type is GetClassTypeReference) {
 				var r = (GetClassTypeReference)type;
 				var n = r.FullTypeName.TopLevelTypeName;
-				result.Append (n.Namespace + "." + n.Name);
+				result.Append (n.Namespace);
+				result.Append ('.');
+				result.Append (n.Name);
 				return;
 			}
 
@@ -449,7 +451,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 
 			if (type is TypeParameterReference) {
-				result.Append ("`" +((TypeParameterReference)type).Index);
+				result.Append ('`');
+				result.Append (((TypeParameterReference)type).Index);
 			}
 		}
 		
@@ -1079,7 +1082,7 @@ namespace MonoDevelop.AssemblyBrowser
 						case "number":
 							int i = 1;
 							foreach (XmlNode child in node.ChildNodes) {
-								sb.Append ("    <b>" + i++ +"</b> ");
+								sb.Append ("    <b>").Append (i++).Append ("</b> ");
 								OutputNode (sb, child);
 							}
 							break;

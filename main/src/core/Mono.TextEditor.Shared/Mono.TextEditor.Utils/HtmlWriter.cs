@@ -72,11 +72,19 @@ namespace Mono.TextEditor.Utils
 				foreach (var chunk in line) {
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
 					htmlText.Append ("<SPAN style='");
-					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
-						htmlText.Append ("font-weight:" + ((int)chunkStyle.FontWeight) + ";");
-					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
-						htmlText.Append ("font-style:" + chunkStyle.FontStyle.ToString ().ToLower () + ";");
-					htmlText.Append ("color:" + ((HslColor)chunkStyle.Foreground).ToPangoString () + ";");
+					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+						htmlText.Append ("font-weight:");
+						htmlText.Append (((int)chunkStyle.FontWeight).ToString ());
+						htmlText.Append (";");
+					}
+					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+						htmlText.Append ("font-style:");
+						htmlText.Append (chunkStyle.FontStyle.ToString ().ToLower ());
+						htmlText.Append (";");
+					}
+					htmlText.Append ("color:");
+					htmlText.Append (((HslColor)chunkStyle.Foreground).ToPangoString ());
+					htmlText.Append (";");
 					htmlText.Append ("'>");
 					AppendHtmlText (htmlText, chunk.Text, options);
 					htmlText.Append ("</SPAN>");

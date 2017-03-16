@@ -167,7 +167,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 							sb.Append ("$end$");
 							sb.Append (nameBuilder);
 						} else {
-							sb.Append ("$" + nameBuilder + "$");
+							sb.Append ("$");
+							sb.Append (nameBuilder);
+							sb.Append ("$");
 							result.AddVariable (new CodeTemplateVariable (nameBuilder.ToString ()) { Default = nameBuilder.ToString (), IsEditable = true });
 						}
 						nameBuilder.Length = 0;

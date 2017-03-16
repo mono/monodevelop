@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			List<string> gacRoots = new List<string> ();
-			sb.AppendFormat ("\"/out:{0}\"", outputName);
+			sb.AppendFormat ("\"/out:{0}\"", outputName.ToString ());
 			sb.AppendLine ();
 			
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {

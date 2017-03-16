@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide
 					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
 						Version ver;
 						if (key != null && Version.TryParse (key.GetValue (null) as string, out ver))
-							sb.Append ("\tGTK# " + ver);
+							sb.Append ("\tGTK# ").Append (ver);
 					}
 				}
 				if (Platform.IsMac && IsMono ()) {

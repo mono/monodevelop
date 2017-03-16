@@ -472,9 +472,9 @@ namespace Mono.TextEditor
 							result.Append ("\"");
 						}
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
-							result.Append (" weight=\"" + chunkStyle.FontWeight + "\"");
+							result.Append (" weight=\"").Append (chunkStyle.FontWeight.ToString ()).Append ("\"");
 						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
-							result.Append (" style=\"" + chunkStyle.FontStyle + "\"");
+							result.Append (" style=\"").Append (chunkStyle.FontStyle.ToString ()).Append ("\"");
 						if (chunkStyle.Underline)
 							result.Append (" underline=\"single\"");
 						result.Append (">");

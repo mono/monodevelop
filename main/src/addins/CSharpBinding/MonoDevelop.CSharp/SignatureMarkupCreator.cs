@@ -385,7 +385,7 @@ namespace MonoDevelop.CSharp
 			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle,EditorThemeColors.Background), optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
-			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
+			result.Append ("<span foreground=\"").Append (colorString).Append ("\">").Append (" (type parameter)</span>");
 			var tp = t as ITypeParameterSymbol;
 			if (tp != null) {
 				if (!tp.HasConstructorConstraint && !tp.HasReferenceTypeConstraint && !tp.HasValueTypeConstraint && tp.ConstraintTypes.All (IsObjectOrValueType))
@@ -853,7 +853,7 @@ namespace MonoDevelop.CSharp
 
 			result.Append ('(');
 			if (method.ContainingType.TypeKind == TypeKind.Delegate) {
-				result.Append (Highlight ("delegate", GetThemeColor (keywordDeclaration)) + " (");
+				result.Append (Highlight ("delegate", GetThemeColor (keywordDeclaration))).Append (" (");
 				AppendParameterList (result, method.ContainingType.GetDelegateInvokeMethod ().Parameters,
 					false /* formattingOptions.SpaceBeforeConstructorDeclarationParameterComma */,
 					false /* formattingOptions.SpaceAfterConstructorDeclarationParameterComma */);
@@ -943,7 +943,7 @@ namespace MonoDevelop.CSharp
 					result.Append (" ");
 					AppendAccessibility (result, property.GetMethod);
 				}
-				result.Append (Highlight (" get", GetThemeColor (keywordOther)) + ";");
+				result.Append (Highlight (" get", GetThemeColor (keywordOther))).Append (";");
 			}
 
 			if (property.SetMethod != null && IsAccessibleOrHasSourceCode (property.SetMethod)) {
@@ -951,7 +951,7 @@ namespace MonoDevelop.CSharp
 					result.Append (" ");
 					AppendAccessibility (result, property.SetMethod);
 				}
-				result.Append (Highlight (" set", GetThemeColor (keywordOther)) + ";");
+				result.Append (Highlight (" set", GetThemeColor (keywordOther))).Append (";");
 			}
 			result.Append (" }");
 
@@ -1668,7 +1668,10 @@ namespace MonoDevelop.CSharp
 			if (constantValue == null) {
 				if (constantType.IsValueType) {
 					// structs can never be == null, therefore it's the default value.
-					sb.Append (Highlight ("default", GetThemeColor (keywordOther)) + "(" + GetTypeReferenceString (constantType) + ")");
+					sb.Append (Highlight ("default", GetThemeColor (keywordOther)))
+					  .Append ("(")
+					  .Append (GetTypeReferenceString (constantType))
+					  .Append (")");
 				} else {
 					sb.Append (Highlight ("null", GetThemeColor (keywordConstant)));
 				}
@@ -1683,7 +1686,9 @@ namespace MonoDevelop.CSharp
 						if (useNumericalEnumValue) {
 							sb.Append (Highlight (string.Format ("0x{0:X}", field.ConstantValue), GetThemeColor (numericConstants)));
 						} else {
-							sb.Append (GetTypeReferenceString (constantType) + "." + FilterEntityName (field.Name));
+							sb.Append (GetTypeReferenceString (constantType))
+							  .Append (".")
+							  .Append (FilterEntityName (field.Name));
 						}
 						return;
 					}
@@ -1708,13 +1713,18 @@ namespace MonoDevelop.CSharp
 							if (i > 0)
 								sb.Append (" | ");
 							var field = fields [i];
-							sb.Append (GetTypeReferenceString (constantType) + "." + FilterEntityName (field.Name));
+							sb.Append (GetTypeReferenceString (constantType))
+							  .Append (".")
+							  .Append (FilterEntityName (field.Name));
 						}
 						return;
 					}
 				}
 
-				sb.Append ("(" + GetTypeReferenceString (constantType) + ")" + Highlight (constantValue.ToString (), GetThemeColor (numericConstants)));
+				sb.Append ("(")
+				  .Append (GetTypeReferenceString (constantType))
+				  .Append (")")
+				  .Append (Highlight (constantValue.ToString (), GetThemeColor (numericConstants)));
 				return;
 			}
 			sb.Append (Highlight (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (constantValue.ToString ()), GetThemeColor (numericConstants)));
@@ -1774,15 +1784,18 @@ namespace MonoDevelop.CSharp
 					result.Append ("<u>");
 
 				result.Append (Highlight ("int ", GetThemeColor (keywordOther)));
-				result.Append (arrayType.Rank == 1 ? "index" : "i" + (i + 1));
+				if (arrayType.Rank == 1)
+					result.Append ("index");
+				else
+					result.Append ("i").Append (i + 1);
 				if (doHighightParameter)
 					result.Append ("</u>");
 			}
 			result.Append ("]");
 
 			result.Append (" {");
-			result.Append (Highlight (" get", GetThemeColor (keywordOther)) + ";");
-			result.Append (Highlight (" set", GetThemeColor (keywordOther)) + ";");
+			result.Append (Highlight (" get", GetThemeColor (keywordOther))).Append (";");
+			result.Append (Highlight (" set", GetThemeColor (keywordOther))).Append (";");
 			result.Append (" }");
 
 			return result.ToString ();
