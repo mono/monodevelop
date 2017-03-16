@@ -26,8 +26,12 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit
+System_Native.o: System_Native.cpp
+	g++ -std=c++14 -c -Wall -mmacosx-version-min=10.10 -o $@ $<
+monostub.o: monostub.m $(MONOSTUB_EXTRA_SOURCES)
+	gcc -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $<
+monostub: monostub.o System_Native.o
+	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ $^ -framework AppKit
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 	cp monostub ../bin/mdtool
@@ -39,6 +43,7 @@ monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
 clean-local:
 	rm -rf MonoDevelop.app
 	rm -f MonoDevelop*.dmg
+	rm -f *.o
 
 app: monostub monostub-test
 	@echo ""
