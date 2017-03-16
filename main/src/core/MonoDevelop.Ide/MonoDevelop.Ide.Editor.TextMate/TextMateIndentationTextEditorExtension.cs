@@ -59,10 +59,12 @@ namespace MonoDevelop.Ide.Editor.TextMate
 					if (Editor.GetLine (Editor.CaretLine).Length == 0)
 						Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
 				} else {
-					DoReSmartIndent ();
-					var result = base.KeyPress (descriptor);
-					DoReSmartIndent ();
-					return result;
+					using (var undo = Editor.OpenUndoGroup ()) {
+						DoReSmartIndent ();
+						var result = base.KeyPress (descriptor);
+						DoReSmartIndent ();
+						return result;
+					}
 				}
 			}
 			return base.KeyPress (descriptor);
@@ -74,16 +76,14 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				Editor.FixVirtualIndentation ();
 				return;
 			}
-			using (var undo = Editor.OpenUndoGroup ()) {
-				Editor.EnsureCaretIsNotVirtual ();
-				var indent = Editor.GetVirtualIndentationString (Editor.CaretLine);
-				var line = Editor.GetLine (Editor.CaretLine);
-				var actualIndent = line.GetIndentation (Editor);
-				if (actualIndent != indent) {
-					Editor.ReplaceText (line.Offset, actualIndent.Length, indent);
-				}
-				Editor.FixVirtualIndentation ();
+			Editor.EnsureCaretIsNotVirtual ();
+			var indent = Editor.GetVirtualIndentationString (Editor.CaretLine);
+			var line = Editor.GetLine (Editor.CaretLine);
+			var actualIndent = line.GetIndentation (Editor);
+			if (actualIndent != indent) {
+				Editor.ReplaceText (line.Offset, actualIndent.Length, indent);
 			}
+			Editor.FixVirtualIndentation ();
 		}
 	}
 }
