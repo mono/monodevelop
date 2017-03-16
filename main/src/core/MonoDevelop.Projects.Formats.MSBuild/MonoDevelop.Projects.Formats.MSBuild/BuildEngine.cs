@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Build.BuildEngine;
 using System.Globalization;
 
@@ -37,7 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static CultureInfo uiCulture;
+		static CultureInfo uiCulture = Thread.CurrentThread.CurrentUICulture;
 		readonly Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
 
 		internal readonly Engine Engine = new Engine { DefaultToolsVersion = MSBuildConsts.Version };
