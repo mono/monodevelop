@@ -1140,7 +1140,7 @@ namespace MonoDevelop.AssemblyBrowser
 				result.Append ("<big><b>Parameters</b></big>");
 				foreach (XmlNode paraNode in nodes) {
 					result.AppendLine ();
-					result.AppendLine ("  <i>" + paraNode.Attributes["name"].InnerText +  "</i>");
+					result.Append ("  <i>").Append (paraNode.Attributes["name"].InnerText).AppendLine ("</i>");
 					result.Append ("    ");
 					OutputChilds (result, paraNode);
 				}

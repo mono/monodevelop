@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Utils
 				htmlText.AppendLine ("<BODY>"); 
 			}
 
-			htmlText.AppendLine ("<FONT face = '" + options.Font.Family + "'>");
+			htmlText.Append ("<FONT face = '").Append (options.Font.Family).AppendLine ("'>");
 			bool first = true;
 
 			foreach (var line in chunks) {

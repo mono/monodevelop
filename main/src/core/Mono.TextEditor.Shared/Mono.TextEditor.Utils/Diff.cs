@@ -457,13 +457,13 @@ namespace Mono.TextEditor.Utils
 				insStart = System.Math.Max (1, item.InsertStart - (distance != 0 ? distance : item.Context));
 
 				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
-					sb.AppendLine (" " + baseDocument.GetLineText (i, false));
+					sb.Append (" ").AppendLine (baseDocument.GetLineText (i, false));
 				}
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
-					sb.AppendLine ("-" + baseDocument.GetLineText (i, false));
+					sb.Append ("-").AppendLine (baseDocument.GetLineText (i, false));
 				}
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
-					sb.AppendLine ("+" + changedDocument.GetLineText (i, false));
+					sb.Append ("+").AppendLine (changedDocument.GetLineText (i, false));
 				}
 
 				if (qh.Count != 0)
@@ -472,7 +472,7 @@ namespace Mono.TextEditor.Utils
 
 			int remEnd = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + item.Context);
 			for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
-				sb.AppendLine (" " + baseDocument.GetLineText (i, false));
+				sb.AppendLine (" ").AppendLine (baseDocument.GetLineText (i, false));
 			}
 		}
 
@@ -497,8 +497,8 @@ namespace Mono.TextEditor.Utils
 			if (he.Current.IsEmpty)
 				return "";
 
-			sb.AppendLine ("--- " + baseFileName);
-			sb.AppendLine ("+++ " + changedFileName);
+			sb.Append ("--- ").AppendLine (baseFileName);
+			sb.Append ("+++ ").AppendLine (changedFileName);
 
 			current = he.Current;
 
@@ -516,7 +516,7 @@ namespace Mono.TextEditor.Utils
 					remEnd = System.Math.Min (baseDocument.LineCount, next.RemoveStart + next.Removed + next.Context);
 					insEnd = System.Math.Min (changedDocument.LineCount, next.InsertStart + next.Inserted + next.Context);
 				} else {
-					sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+					sb.Append ("@@ -").Append (remStart).Append (",").Append (remEnd - remStart).Append (" +").Append (insStart).Append (",").Append (insEnd - insStart).AppendLine (" @@");
 					WriteHunks (qh, baseDocument, changedDocument, sb);
 
 					remStart = System.Math.Max (1, next.RemoveStart - next.Context);
@@ -530,7 +530,7 @@ namespace Mono.TextEditor.Utils
 			}
 
 			if (qh.Count != 0) {
-				sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+				sb.Append ("@@ -").Append (remStart).Append (",").Append (remEnd - remStart).Append (" +").Append (insStart).Append (",").Append (insEnd - insStart).AppendLine (" @@");
 				WriteHunks (qh, baseDocument, changedDocument, sb);
 			}
 			return sb.ToString ();

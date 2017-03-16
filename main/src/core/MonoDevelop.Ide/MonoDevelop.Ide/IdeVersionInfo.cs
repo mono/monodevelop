@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide
 				sb.Append (GetGtkVersion ());
 				var gtkTheme = GetGtkTheme ();
 				if (!string.IsNullOrEmpty (gtkTheme))
-					sb.AppendLine (" (" + gtkTheme + " theme)");
+					sb.Append (" (").Append (gtkTheme).AppendLine (" theme)");
 				else
 					sb.AppendLine ();
 				if (Platform.IsWindows && !IsMono ()) {

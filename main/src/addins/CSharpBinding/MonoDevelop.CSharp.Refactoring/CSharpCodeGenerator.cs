@@ -451,7 +451,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendIndent (result);
 			bodyStartOffset = result.Length;
 			foreach (var cmt in MonoTouchComments) {
-				result.AppendLine("//" + cmt);
+				result.Append("//").AppendLine (cmt);
 				AppendIndent (result);
 			}
 			result.Append("throw new ");
