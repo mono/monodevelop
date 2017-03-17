@@ -38,6 +38,7 @@ namespace MonoDevelop.Core.Execution
 			public static readonly CreateConsoleOptions Default = new CreateConsoleOptions { BringToFront = true };
 
 			public bool BringToFront { get; private set; }
+			public string Title { get; private set; }
 
 			CreateConsoleOptions ()
 			{
@@ -46,6 +47,7 @@ namespace MonoDevelop.Core.Execution
 			CreateConsoleOptions (CreateConsoleOptions options)
 			{
 				this.BringToFront = options.BringToFront;
+				this.Title = options.Title;
 			}
 
 			public CreateConsoleOptions (bool bringToFront)
@@ -59,6 +61,15 @@ namespace MonoDevelop.Core.Execution
 					return this;
 				var result = new CreateConsoleOptions (this);
 				result.BringToFront = bringToFront;
+				return result;
+			}
+
+			public CreateConsoleOptions WithTitle (string title)
+			{
+				if (title == Title)
+					return this;
+				var result = new CreateConsoleOptions (this);
+				result.Title = title;
 				return result;
 			}
 		}
