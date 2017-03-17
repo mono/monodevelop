@@ -316,6 +316,8 @@ namespace MonoDevelop.Core.Assemblies
 			return GetBackend (fx).GetToolsPaths ();
 		}
 
+		public virtual bool RequiresShutdownAfterEachBuild => false;
+
 		/// <summary>
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>

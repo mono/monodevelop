@@ -963,10 +963,17 @@ namespace MonoDevelop.Projects.MSBuild
 					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
 				
 				if (builder != null) {
+					if (!builder.RequiresRestart) {
 					builder.ReferenceCount++;
 					var pb = new RemoteProjectBuilder (file, builder);
 					await pb.Load ();
 					return pb;
+					} else if (!builder.IsBusy) {
+						using (await buildersLock.EnterAsync())
+							builders.Remove(builder);
+						builder.Dispose();
+						builder = null;
+				}
 				}
 
 				return await Task.Run (async () => {
@@ -1007,6 +1014,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					builders.Add (builderKey, builder);
 					builder.ReferenceCount = 1;
+					builder.RequiresShutdownAfterEachBuild = runtime.RequiresShutdownAfterEachBuild;
 					builder.Disconnected += async delegate {
 						using (await buildersLock.EnterAsync ().ConfigureAwait (false))
 							builders.Remove (builder);
@@ -1020,7 +1028,35 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static Dictionary<string,string> GetCoreGlobalProperties (string slnFile)
+		static Dictionary<IBuildTarget, List<RemoteProjectBuilder>> services = new Dictionary<IBuildTarget, List<RemoteProjectBuilder>>();
+
+		public static void OpenBuilder(IBuildTarget item, RemoteProjectBuilder builder = null) {
+			if (builder == null || builder.RequiresShutdownAfterEachBuild) {
+				List<RemoteProjectBuilder> list;
+				if (!services.TryGetValue(item, out list)) {
+					list = new List<RemoteProjectBuilder>();
+					services.Add(item, list);
+				}
+				list.Add(builder);
+				if (list[0] == null) builder?.AddReference();
+			}
+		}
+
+		public static async Task CloseBuilder(IBuildTarget item, RemoteProjectBuilder builder = null) {
+			if (builder == null || builder.RequiresShutdownAfterEachBuild) {
+				List<RemoteProjectBuilder> list;
+				if (services.TryGetValue(item, out list) && list.Count > 0) {
+					foreach (var b in list) {
+						if (b != null) {
+							if (list[0] == null) b.ReleaseReference();
+							b.Shutdown();
+						}
+					}
+				}
+			}
+		}
+
+		static IDictionary<string,string> GetCoreGlobalProperties (string slnFile)
 		{
 			var dictionary = new Dictionary<string,string> ();
 

@@ -45,6 +45,9 @@ namespace MonoDevelop.Projects.MSBuild
 		static int count;
 		int busy;
 
+		public bool RequiresShutdownAfterEachBuild { get; set; }
+		public bool RequiresRestart => proc != null && proc.HasExited;
+
 		static int loggerIdCounter;
 		Dictionary<int, LoggerInfo> loggers = new Dictionary<int, LoggerInfo> ();
 
@@ -476,6 +479,9 @@ namespace MonoDevelop.Projects.MSBuild
 					Dispose ();
 			}
 		}
+
+		public bool RequiresRestart => engine.RequiresRestart;
+		public bool RequiresShutdownAfterEachBuild => engine.RequiresShutdownAfterEachBuild;
 
 		public void Shutdown ()
 		{

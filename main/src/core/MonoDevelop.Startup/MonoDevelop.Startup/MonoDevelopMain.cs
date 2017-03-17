@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.IO;
+using System.Reflection;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Startup
@@ -36,6 +38,10 @@ namespace MonoDevelop.Startup
 		[STAThread]
 		public static int Main (string[] args)
 		{
+			// set current directory to app's base directory. This is a fix, so MonoDevelop can open files pinned to it in the Windows taskbar.
+			var dir = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+			Environment.CurrentDirectory = dir;
+
 			return IdeStartup.Main (args);
 		}
 	}
