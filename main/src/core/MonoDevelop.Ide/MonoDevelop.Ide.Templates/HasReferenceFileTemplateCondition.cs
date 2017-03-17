@@ -45,9 +45,17 @@ namespace MonoDevelop.Ide.Templates
 			var dnp = proj as DotNetProject;
 			if (dnp != null) {
 				return dnp.References.Where (x => x.ReferenceType != ReferenceType.Project).Any (x => {
+					if (x.StoredReference.Length < reference.Length)
+						return false;
+
 					var trimmed = x.StoredReference.TrimStart ();
-					int commaIndex = trimmed.IndexOf (',');
-					return trimmed.IndexOf (reference, 0, commaIndex, StringComparison.Ordinal) == 0;
+					if (trimmed.Length < reference.Length)
+						return false;
+
+					int letterCount = trimmed.IndexOf (',');
+					if (letterCount == -1)
+						letterCount = reference.Length;
+					return trimmed.IndexOf (reference, 0, letterCount, StringComparison.Ordinal) == 0;
 				});
 			}
 			return false;
