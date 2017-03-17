@@ -179,14 +179,13 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>..\..\..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <!-- NOTE: the NuGet-provided System.Runtime.InteropServices.RuntimeInformation is WIndows-specific however Mono bundles one  -->
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" Condition="'$(OS)'!='Unix'">
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
       <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific -->
+    <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
     </Reference>
