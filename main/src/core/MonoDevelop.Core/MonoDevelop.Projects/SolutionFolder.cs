@@ -648,6 +648,9 @@ namespace MonoDevelop.Projects
 			foreach (var it in toBuild)
 				buildStatus = buildStatus.Add (it, new BuildStatus ());
 
+			// Initialize OpenBuilder to be able to shutdown all xbuild instances after build.
+			foreach (var sln in toBuild.Select(it => it.ParentSolution).Distinct()) MSBuild.MSBuildProjectService.OpenBuilder(sln);
+
 			// Start the build tasks for all itemsw
 
 			foreach (var itemToBuild in toBuild) {
@@ -690,6 +693,9 @@ namespace MonoDevelop.Projects
 			// Wait for all tasks to end
 
 			await Task.WhenAll (buildStatus.Values.Select (bs => bs.Task));
+
+			// Call CloseBuilder to shutdown all xbuild instances after build.
+			foreach (var sln in toBuild.Select(it => it.ParentSolution).Distinct()) MSBuild.MSBuildProjectService.CloseBuilder(sln);
 
 			// Generate the errors in the order they were supposed to build
 

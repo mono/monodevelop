@@ -48,7 +48,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 		public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim (1, 1);
-		
+		public bool RequiresRestart => proc != null && proc.HasExited;
+
 		public RemoteBuildEngine (Process proc, IBuildEngine engine)
 		{
 			this.proc = proc;
@@ -197,6 +198,8 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public event EventHandler Disconnected;
+
+		public bool RequiresRestart => engine.RequiresRestart;
 
 		void CheckDisconnected ()
 		{

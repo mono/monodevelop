@@ -159,6 +159,8 @@ namespace MonoDevelop.Core.Assemblies
 			return base.GetToolPath (fx, toolName);
 		}
 		
+		public override bool RequiresMSBuildShutdownAfterEachBuild => Platform.IsWindows;
+
 		internal protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return Path.Combine (monoDir, "gac");
