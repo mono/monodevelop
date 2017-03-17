@@ -48,6 +48,10 @@
 		<FileTemplate id = "PartialWidgetFileTemplate" resource = "WidgetPartial.xft.xml"/>
 		<FileTemplate id = "PartialActionGroupFileTemplate" resource = "ActionGroupPartial.xft.xml"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType name = "GtkReferenced" class = "MonoDevelop.GtkCore.GtkReferencedTemplateCondition"/>
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding insertbefore = "DefaultDisplayBinding"

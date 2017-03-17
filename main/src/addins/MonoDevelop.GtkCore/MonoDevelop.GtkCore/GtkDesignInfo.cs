@@ -229,7 +229,7 @@ namespace MonoDevelop.GtkCore
 			return pref.StoredReference.StartsWith ("gtk-sharp,", StringComparison.Ordinal);
 		}
 
-		static bool HasGtkReference (DotNetProject project)
+		internal static bool HasGtkReference (DotNetProject project)
 		{
 			if (project.ExtendedProperties.Contains ("GtkReferenceExists"))
 				return (bool)project.ExtendedProperties ["GtkReferenceExists"];
