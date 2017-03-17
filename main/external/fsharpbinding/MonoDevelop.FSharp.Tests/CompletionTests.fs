@@ -69,6 +69,7 @@ type ``Completion Tests``() =
         results |> should contain "completeme"
 
     [<TestCase("let x|")>]
+    [<TestCase("let (x|")>]
     [<TestCase("let! x|")>]
     [<TestCase("let in|")>]
     [<TestCase("let x |")>]
