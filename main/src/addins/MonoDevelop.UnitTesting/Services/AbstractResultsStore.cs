@@ -87,23 +87,25 @@ namespace MonoDevelop.UnitTesting
 				record.Results.Add (result);
 			}
 		}
-		
+
 		public UnitTestResult GetNextResult (string configuration, UnitTest test, DateTime date)
 		{
 			DateTime currentDate = date;
-			TestRecord root = GetRootRecord (configuration, currentDate);
-			if (root == null)
-				root = GetNextRootRecord (configuration, ref currentDate);
-			
-			while (root != null) {
-				TestRecord tr = FindRecord (root, test.StoreRelativeName);
-				if (tr != null && tr.Results != null) {
-					foreach (UnitTestResult res in tr.Results) {
-						if (res.TestDate > date)
-							return res;
+			lock (fileCache) {
+				TestRecord root = GetRootRecord (configuration, currentDate);
+				if (root == null)
+					root = GetNextRootRecord (configuration, ref currentDate);
+
+				while (root != null) {
+					TestRecord tr = FindRecord (root, test.StoreRelativeName);
+					if (tr != null && tr.Results != null) {
+						foreach (UnitTestResult res in tr.Results) {
+							if (res.TestDate > date)
+								return res;
+						}
 					}
+					root = GetNextRootRecord (configuration, ref currentDate);
 				}
-				root = GetNextRootRecord (configuration, ref currentDate);
 			}
 			return null;
 		}
@@ -111,20 +113,22 @@ namespace MonoDevelop.UnitTesting
 		public UnitTestResult GetPreviousResult (string configuration, UnitTest test, DateTime date)
 		{
 			DateTime currentDate = date;
-			TestRecord root = GetRootRecord (configuration, currentDate);
-			if (root == null)
-				root = GetPreviousRootRecord (configuration, ref currentDate);
-			
-			while (root != null) {
-				TestRecord tr = FindRecord (root, test.StoreRelativeName);
-				if (tr != null && tr.Results != null) {
-					for (int n = tr.Results.Count - 1; n >= 0; n--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [n];
-						if (res.TestDate < date)
-							return res;
+			lock (fileCache) {
+				TestRecord root = GetRootRecord (configuration, currentDate);
+				if (root == null)
+					root = GetPreviousRootRecord (configuration, ref currentDate);
+
+				while (root != null) {
+					TestRecord tr = FindRecord (root, test.StoreRelativeName);
+					if (tr != null && tr.Results != null) {
+						for (int n = tr.Results.Count - 1; n >= 0; n--) {
+							UnitTestResult res = (UnitTestResult)tr.Results [n];
+							if (res.TestDate < date)
+								return res;
+						}
 					}
+					root = GetPreviousRootRecord (configuration, ref currentDate);
 				}
-				root = GetPreviousRootRecord (configuration, ref currentDate);
 			}
 			return null;
 		}
@@ -140,21 +144,23 @@ namespace MonoDevelop.UnitTesting
 			DateTime firstDay = new DateTime (startDate.Year, startDate.Month, startDate.Day);
 			
 			DateTime[] dates = GetStoreDates (configuration);
-			
-			foreach (DateTime date in dates) {
-				if (date < firstDay)
-					continue;
-				if (date > endDate)
-					break;
-				
-				TestRecord root = GetRootRecord (configuration, date);
-				if (root == null) continue;
 
-				TestRecord tr = FindRecord (root, test.StoreRelativeName);
-				if (tr != null && tr.Results != null) {
-					foreach (UnitTestResult res in tr.Results) {
-						if (res.TestDate >= startDate && res.TestDate <= endDate)
-							list.Add (res);
+			lock (fileCache) {
+				foreach (DateTime date in dates) {
+					if (date < firstDay)
+						continue;
+					if (date > endDate)
+						break;
+
+					TestRecord root = GetRootRecord (configuration, date);
+					if (root == null) continue;
+
+					TestRecord tr = FindRecord (root, test.StoreRelativeName);
+					if (tr != null && tr.Results != null) {
+						foreach (UnitTestResult res in tr.Results) {
+							if (res.TestDate >= startDate && res.TestDate <= endDate)
+								list.Add (res);
+						}
 					}
 				}
 			}
@@ -166,20 +172,22 @@ namespace MonoDevelop.UnitTesting
 		{
 			ArrayList list = new ArrayList ();
 			DateTime[] dates = GetStoreDates (configuration);
-			
-			for (int n = dates.Length - 1; n >= 0 && list.Count < count; n--) {
-				if (dates [n] > endDate)
-					continue;
-				
-				TestRecord root = GetRootRecord (configuration, dates [n]);
-				if (root == null) continue;
 
-				TestRecord tr = FindRecord (root, test.StoreRelativeName);
-				if (tr != null && tr.Results != null) {
-					for (int m = tr.Results.Count - 1; m >= 0 && list.Count < count; m--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [m];
-						if (res.TestDate <= endDate)
-							list.Add (res);
+			lock (fileCache) {
+				for (int n = dates.Length - 1; n >= 0 && list.Count < count; n--) {
+					if (dates [n] > endDate)
+						continue;
+
+					TestRecord root = GetRootRecord (configuration, dates [n]);
+					if (root == null) continue;
+
+					TestRecord tr = FindRecord (root, test.StoreRelativeName);
+					if (tr != null && tr.Results != null) {
+						for (int m = tr.Results.Count - 1; m >= 0 && list.Count < count; m--) {
+							UnitTestResult res = (UnitTestResult)tr.Results [m];
+							if (res.TestDate <= endDate)
+								list.Add (res);
+						}
 					}
 				}
 			}
@@ -193,21 +201,24 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (!Directory.Exists (basePath))
 				Directory.CreateDirectory (basePath);
-			
-			foreach (DictionaryEntry entry in fileCache) {
-				TestRecord record = (TestRecord) entry.Value;
-				if (!record.Modified)
-					continue;
-				
-				string filePath = Path.Combine (basePath, (string)entry.Key);
-				try {
-					serializer.Serialize (filePath, record);
-					record.Modified = false;
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+
+			lock (fileCache) {
+				foreach (DictionaryEntry entry in fileCache) {
+					TestRecord record = (TestRecord)entry.Value;
+					if (!record.Modified)
+						continue;
+
+					string filePath = Path.Combine (basePath, (string)entry.Key);
+					try {
+						serializer.Serialize (filePath, record);
+						record.Modified = false;
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
 				}
 			}
-			cachedRootList.Clear ();
+			lock (cachedRootList)
+				cachedRootList.Clear ();
 		}
 		
 		TestRecord FindRecord (TestRecord root, string aname)
@@ -313,22 +324,24 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (!Directory.Exists (basePath))
 				return new DateTime [0];
-			
-			DateTime[] res = (DateTime[]) cachedRootList [configuration];
-			if (res != null)
+
+			lock (cachedRootList) {
+				DateTime [] res = (DateTime [])cachedRootList [configuration];
+				if (res != null)
+					return res;
+
+				var dates = new List<DateTime> ();
+				var escapedConfiguration = EscapeFilename (configuration);
+				foreach (string file in Directory.GetFiles (basePath, storeId + "-" + escapedConfiguration + "-*")) {
+					try {
+						DateTime t = ParseFileNameDate (escapedConfiguration, Path.GetFileName (file));
+						dates.Add (t);
+					} catch { }
+				}
+				res = dates.ToArray ();
+				cachedRootList [configuration] = res;
 				return res;
-			
-			var dates = new List<DateTime> ();
-			var escapedConfiguration = EscapeFilename (configuration);
-			foreach (string file in Directory.GetFiles (basePath, storeId + "-" + escapedConfiguration + "-*")) {
-				try {
-					DateTime t = ParseFileNameDate (escapedConfiguration, Path.GetFileName (file));
-					dates.Add (t);
-				} catch { }
 			}
-			res = dates.ToArray ();
-			cachedRootList [configuration] = res;
-			return res;
 		}
 	}
 	
