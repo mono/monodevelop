@@ -163,6 +163,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void ResetSizes ()
 		{
+			UpdateLastWordChar ();
 			list.CompletionString = PartialWord;
 			
 			var allocWidth = Allocation.Width;
