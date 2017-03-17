@@ -1172,7 +1172,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 
 				if (!string.IsNullOrEmpty (description)) {
-					SetAccessibilityHelp (description);
+					SetHelp (description);
 				}
 			}
 		}
@@ -1198,7 +1198,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				usage = null;
 
 				SetTitle (t.Description);
-				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location)));
+				SetHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location)));
 
 				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
 				var y = mode.LineToY (line);
@@ -1219,7 +1219,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				task = null;
 
 				SetTitle (u.UsageType.ToString ());
-				SetAccessibilityHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset)));
+				SetHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset)));
 
 				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);
 				var y = mode.LineToY (line) - 3.0;

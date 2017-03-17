@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 using Mono.TextEditor.Highlighting;
 
-using Mono.TextEditor.AtkCocoaHelper;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 using Gdk; 
 using Gtk;
@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 
 			public override int NumberOfCharacters {
 				get {
-					return Margin.Document.TextLength;
+					return Margin.Document.Length;
 				}
 			}
 
@@ -154,7 +154,7 @@ namespace Mono.TextEditor
 
 			public override Rectangle GetFrameForRange (AtkCocoa.Range range)
 			{
-				ISyntaxMode mode = Margin.Document.SyntaxMode != null && Margin.textEditor.Options.EnableSyntaxHighlighting ? Margin.Document.SyntaxMode : new SyntaxMode (Margin.Document);
+				//ISyntaxHighlighting mode = Margin.Document.SyntaxMode != null && Margin.textEditor.Options.EnableSyntaxHighlighting ? Margin.Document.SyntaxMode : new SyntaxHighlighting(Margin.Document);
 
 				var startLine = Margin.Document.GetLineByOffset (range.Location);
 				var finishLine = Margin.Document.GetLineByOffset (range.Location + range.Length);
@@ -162,7 +162,7 @@ namespace Mono.TextEditor
 				double xPos = Margin.XOffset;
 				double rectangleWidth = 0, rectangleHeight = 0;
 
-				var layout = Margin.CreateLinePartLayout (mode, startLine, startLine.Offset, startLine.Length, -1, -1);
+				var layout = Margin.CreateLinePartLayout (startLine, startLine.Offset, startLine.Length, -1, -1);
 				xPos = layout.Layout.IndexToPos (range.Location - startLine.Offset).X;
 
 				var pos = layout.Layout.IndexToPos ((range.Location - startLine.Offset) + range.Length);

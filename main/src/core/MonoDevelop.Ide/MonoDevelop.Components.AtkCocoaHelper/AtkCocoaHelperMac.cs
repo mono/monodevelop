@@ -91,6 +91,16 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityLabel = label;
 		}
 
+		public static void SetHidden (this Atk.Object o, bool hidden)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityHidden = hidden;
+		}
+
 		public static void SetLabel (this Gtk.CellRenderer r, string label)
 		{
 			var nsa = GetNSAccessibilityElement (r);
@@ -657,14 +667,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AccessibilityLabel = label;
 		}
 
-		public void SetAccessibilityIdentifier (string identifier)
+		public void SetIdentifier (string identifier)
 		{
 			AccessibilityIdentifier = identifier;
 		}
 
-		public void SetAccessibilityHelp (string help)
+		public void SetHelp (string help)
 		{
 			AccessibilityHelp = help;
+		}
+
+		public void SetHidden (bool hidden)
+		{
+			AccessibilityHidden = hidden;
 		}
 
 		// The frame in the parent in Cocoa space.

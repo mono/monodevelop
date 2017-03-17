@@ -39,7 +39,7 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor.Theatrics;
 
-using Mono.TextEditor.AtkCocoaHelper;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 using Gdk;
 using Gtk;

@@ -169,11 +169,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public void SetAccessibilityHelp (string help)
+		public void SetHelp (string help)
 		{
 		}
 
-		public void SetAccessibilityIdentifier (string identifier)
+		public void SetIdentifier (string identifier)
 		{
 		}
 
@@ -190,6 +190,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 
 		public void SetTitle (string title)
+		{
+		}
+
+		public void SetHidden (bool hidden)
 		{
 		}
 

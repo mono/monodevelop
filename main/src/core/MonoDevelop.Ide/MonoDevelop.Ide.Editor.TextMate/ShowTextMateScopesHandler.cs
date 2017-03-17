@@ -56,7 +56,5 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			window.Markup = "<span size=\"larger\" font='" + FontService.MonospaceFontName + "'>" + sb.ToString () + "</span>";
 			editor.ShowTooltipWindow (window);
 		}
-
-		public override string AccessibilityTitle { get { return Title; } }
 	}
 }

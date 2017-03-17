@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 
-using Mono.TextEditor.AtkCocoaHelper;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace Mono.TextEditor
 {

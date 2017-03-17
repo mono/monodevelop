@@ -205,7 +205,7 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			set {
 				tooltip = value;
-				Accessible.SetAccessibilityHelp (string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value));
+				Accessible.SetHelp (string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value));
 			}
 		}
 
@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
 			Accessible.SetGtkParent (strip);
 			Accessible.PerformShowPopupMenu += OnShowMenu;
-			Accessible.SetAccessibilityIdentifier ("DockNotebook.Tab");
+			Accessible.SetIdentifier ("DockNotebook.Tab");
 
 			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
@@ -225,7 +225,7 @@ namespace MonoDevelop.Components.DockNotebook
 			CloseButtonAccessible.SetGtkParent (strip);
 			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;
 			CloseButtonAccessible.SetTitle (Core.GettextCatalog.GetString ("Close document"));
-			CloseButtonAccessible.SetAccessibilityIdentifier ("DockNotebook.Tab.CloseButton");
+			CloseButtonAccessible.SetIdentifier ("DockNotebook.Tab.CloseButton");
 			Accessible.AddAccessibleChild (CloseButtonAccessible);
 
 			this.notebook = notebook;

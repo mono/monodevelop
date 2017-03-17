@@ -407,9 +407,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void SetValue (string value);
 		void SetTitle (string title);
 		void SetLabel (string label);
-		void SetAccessibilityIdentifier (string identifier);
-		void SetAccessibilityHelp (string help);
+		void SetIdentifier (string identifier);
+		void SetHelp (string help);
 		void SetFrameInParent (Gdk.Rectangle rect);
+		void SetHidden (bool hidden);
 	}
 
 	public interface IAccessibilityNavigableStaticText
