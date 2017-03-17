@@ -107,6 +107,8 @@ namespace MonoDevelop.Core.Assemblies
 
 		public bool HasMultitargetingMcs { get; private set; }
 
+		public override bool RequiresShutdownAfterEachBuild => Platform.IsWindows;
+
 		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
 		{
 			//duplicate xbuild's framework folders path logic

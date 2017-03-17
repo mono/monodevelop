@@ -45,6 +45,9 @@ namespace MonoDevelop.Projects.MSBuild
 		static int count;
 		int busy;
 
+		public bool RequiresShutdownAfterEachBuild { get; set; }
+		public bool RequiresRestart => proc != null && proc.HasExited;
+
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 		public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim (1, 1);
@@ -427,6 +430,9 @@ namespace MonoDevelop.Projects.MSBuild
 					Dispose ();
 			}
 		}
+
+		public bool RequiresRestart => engine.RequiresRestart;
+		public bool RequiresShutdownAfterEachBuild => engine.RequiresShutdownAfterEachBuild;
 
 		public void Shutdown ()
 		{

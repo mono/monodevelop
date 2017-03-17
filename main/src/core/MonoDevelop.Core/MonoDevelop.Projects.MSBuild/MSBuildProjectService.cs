@@ -964,8 +964,15 @@ namespace MonoDevelop.Projects.MSBuild
 					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
 				
 				if (builder != null) {
-					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, builder);
+					if (!builder.RequiresRestart) {
+						builder.ReferenceCount++;
+						return new RemoteProjectBuilder(file, builder);
+					} else if (!builder.IsBusy) {
+						using (await buildersLock.EnterAsync())
+							builders.Remove(builder);
+						builder.Dispose();
+						builder = null;
+					}
 				}
 
 				return await Task.Run (async () => {
@@ -1042,6 +1049,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					builders.Add (builderKey, builder);
 					builder.ReferenceCount = 1;
+					builder.RequiresShutdownAfterEachBuild = runtime.RequiresShutdownAfterEachBuild;
 					builder.Disconnected += async delegate {
 						using (await buildersLock.EnterAsync ())
 							builders.Remove (builder);
@@ -1050,6 +1058,34 @@ namespace MonoDevelop.Projects.MSBuild
 						builder.Lock ();
 					return new RemoteProjectBuilder (file, builder);
 				});
+			}
+		}
+
+		static Dictionary<IBuildTarget, List<RemoteProjectBuilder>> services = new Dictionary<IBuildTarget, List<RemoteProjectBuilder>>();
+
+		public static void OpenBuilder(IBuildTarget item, RemoteProjectBuilder builder = null) {
+			if (builder == null || builder.RequiresShutdownAfterEachBuild) {
+				List<RemoteProjectBuilder> list;
+				if (!services.TryGetValue(item, out list)) {
+					list = new List<RemoteProjectBuilder>();
+					services.Add(item, list);
+				}
+				list.Add(builder);
+				if (list[0] == null) builder?.AddReference();
+			}
+		}
+
+		public static async Task CloseBuilder(IBuildTarget item, RemoteProjectBuilder builder = null) {
+			if (builder == null || builder.RequiresShutdownAfterEachBuild) {
+				List<RemoteProjectBuilder> list;
+				if (services.TryGetValue(item, out list) && list.Count > 0) {
+					foreach (var b in list) {
+						if (b != null) {
+							if (list[0] == null) b.ReleaseReference();
+							b.Shutdown();
+						}
+					}
+				}
 			}
 		}
 

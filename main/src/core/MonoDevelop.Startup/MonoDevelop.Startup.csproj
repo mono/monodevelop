@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -122,8 +122,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
   <Target Name="MakeLargeAddressAware" AfterTargets="Build" Condition=" '$(OS)' != 'Unix' ">
     <PropertyGroup>
       <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS150COMNTOOLS)</VsComnTools>
@@ -134,7 +136,6 @@
       <VsComnTools Condition=" '$(VsComnTools)' != '' And !HasTrailingSlash('$(VsComnTools)') ">$(VsComnTools)\</VsComnTools>
       <EditBin Condition=" '$(VsComnTools)' != '' ">$(VsComnTools)..\..\VC\bin\editbin.exe</EditBin>
     </PropertyGroup>
-
-    <Exec Command='"$(EditBin)" /largeaddressaware "$(TargetPath)"' Condition="Exists('$(EditBin)')" />
+    <Exec Command="&quot;$(EditBin)&quot; /largeaddressaware &quot;$(TargetPath)&quot;" Condition="Exists('$(EditBin)')" />
   </Target>
 </Project>
