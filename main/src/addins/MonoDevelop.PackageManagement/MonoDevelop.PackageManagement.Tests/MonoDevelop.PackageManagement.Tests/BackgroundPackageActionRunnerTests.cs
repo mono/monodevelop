@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
-using NuGet;
 using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -61,15 +61,15 @@ namespace MonoDevelop.PackageManagement.Tests
 				instrumentationService);
 		}
 
-		void Run ()
+		void Run (bool clearConsole = true)
 		{
-			RunWithoutBackgroundDispatch ();
+			RunWithoutBackgroundDispatch (clearConsole);
 			runner.ExecuteBackgroundDispatch ();
 		}
 
-		void RunWithoutBackgroundDispatch ()
+		void RunWithoutBackgroundDispatch (bool clearConsole = true)
 		{
-			runner.Run (progressMessage, actions);
+			runner.Run (progressMessage, actions, clearConsole);
 		}
 
 		TestableInstallNuGetPackageAction AddInstallAction ()
@@ -544,6 +544,28 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			AssertUninstallCounterIncrementedForPackage ("Foo", "1.1");
 			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
+		}
+
+		[Test]
+		public void Run_ClearConsoleIsTrue_ProgressMonitorWillClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Run (clearConsole: true);
+
+			Assert.IsTrue (progressMonitorFactory.ClearConsole);
+		}
+
+		[Test]
+		public void Run_ClearConsoleIsFalse_ProgressMonitorWillNotClearConsole ()
+		{
+			CreateRunner ();
+			AddInstallAction ();
+
+			Run (clearConsole: false);
+
+			Assert.IsFalse (progressMonitorFactory.ClearConsole);
 		}
 	}
 }

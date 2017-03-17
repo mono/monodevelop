@@ -35,11 +35,6 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;
@@ -81,7 +76,7 @@ namespace MonoDevelop.SourceEditor
 			if (offset >= editor.Length)
 				return null;
 
-			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
+			if (!DebuggingService.IsPaused)
 				return null;
 
 			StackFrame frame = DebuggingService.CurrentFrame;

@@ -10,16 +10,14 @@ open FsUnit
 
 [<TestFixture>]
 type SemanticHighlighting() =
-    let defaultStyles = SyntaxModeService.DefaultColorStyle
     let getStyle (content : string) =
         let fixedc = content.Replace("§", "")
         let doc = TestHelpers.createDoc fixedc "defined"
-        let style = SyntaxModeService.GetColorStyle "Gruvbox"
         let tsc = SyntaxMode.tryGetTokensSymbolsAndColours doc
 
         let segments =
             doc.Editor.GetLines()
-            |> Seq.map (fun line -> SyntaxMode.getColouredSegment tsc line.LineNumber line.Offset (doc.Editor.GetLineText line) style)
+            |> Seq.map (fun line -> SyntaxMode.getColouredSegment tsc line.LineNumber line.Offset (doc.Editor.GetLineText line))
 
         for line in segments do
             line |> Seq.toList |> List.rev |> List.iteri (fun i seg ->
@@ -46,7 +44,7 @@ type SemanticHighlighting() =
 let sub = (-)
 §let§ add = (+)
 #endif"""
-       getStyle content |> should equal "Excluded Code"
+       getStyle content |> should equal "punctuation.definition.comment.source"
 
     [<Test>]
     member x.Module_is_highlighted() =
@@ -57,7 +55,7 @@ module MyModule =
 module Consumer =
     §MyModule§.someFunc()"""
         let output = getStyle content
-        output |> should equal "User Types"
+        output |> should equal "entity.name.class"
 
     [<Test>]
     member x.Some_is_highlighted() =
@@ -67,7 +65,7 @@ module Consumer =
             let x = §Some§ 1
             """
         let output = getStyle content
-        output |> should equal "User Types(Enums)"
+        output |> should equal "entity.name.class"
 
     [<Test>]
     member x.Type_is_highlighted() =
@@ -77,15 +75,15 @@ open System
 module MyModule =
     let guid = §Guid§.NewGuid()"""
         let output = getStyle content
-        output |> should equal "User Types(Value types)"
+        output |> should equal "entity.name.struct"
 
     [<Test>]
     member x.Add_is_plain_text() =
         let content = "let §add§ = (+)"
-        getStyle content |> should equal "User Method Declaration"
+        getStyle content |> should equal "entity.name.function"
 
-    [<TestCase("let §add§ = (+)", "User Method Declaration")>]
-    [<TestCase("let §simpleBinding§ = 1", "User Field Declaration")>]
+    [<TestCase("let §add§ = (+)", "entity.name.function")>]
+    [<TestCase("let §simpleBinding§ = 1", "entity.name.field")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
         
@@ -95,16 +93,16 @@ module MyModule =
 type Class<§'a§>() = class end
     let _ = new Class<_>()"""
         let output = getStyle content
-        output |> should equal defaultStyles.UserTypesTypeParameters.Name
+        output |> should equal "entity.name.typeparameter"
      
     [<Test>]    
     member x.Type_constraints_are_highlighted() =
-        let content = """type Constrained<'a when §'a§ :> IDisposable> = class end"""
+        let content = "type Constrained<'a when §'a§ :> IDisposable> = class end"
         let output = getStyle content
-        output |> should equal defaultStyles.UserTypesTypeParameters.Name
+        output |> should equal "entity.name.typeparameter"
 
     [<Test>]    
     member x.Static_inlined_type_constraints_are_highlighted() =
-        let content = """let inline test (x: §^a§) (y: ^b) = x + y"""
+        let content = "let inline test (x: §^a§) (y: ^b) = x + y"
         let output = getStyle content
-        output |> should equal defaultStyles.UserTypesTypeParameters.Name
+        output |> should equal "entity.name.typeparameter"

@@ -68,14 +68,26 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (!syntaxToken.Span.IntersectsWith (offset))
 				return null;
-			var symbolInfo = unit.GetSymbolInfo (syntaxToken.Parent, token);
-			var symbol = symbolInfo.Symbol ?? unit.GetDeclaredSymbol (syntaxToken.Parent, token);
+			var node = GetBestFitResolveableNode (syntaxToken.Parent);
+			var symbolInfo = unit.GetSymbolInfo (node, token);
+			var symbol = symbolInfo.Symbol ?? unit.GetDeclaredSymbol (node, token);
 			var tooltipInformation = await CreateTooltip (symbol, syntaxToken, editor, ctx, offset);
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return null;
 			return new TooltipItem (tooltipInformation, syntaxToken.Span.Start, syntaxToken.Span.Length);
 		}
-		
+
+		static SyntaxNode GetBestFitResolveableNode (SyntaxNode node)
+		{
+			// case constructor name : new Foo (); 'Foo' only resolves to the type not to the constructor
+			if (node.Parent.IsKind (SyntaxKind.ObjectCreationExpression)) {
+				var oce = (ObjectCreationExpressionSyntax)node.Parent;
+				if (oce.Type == node)
+					return oce;
+			}
+			return node;
+		}
+
 		static TooltipInformationWindow lastWindow = null;
 
 		static void DestroyLastTooltipWindow ()

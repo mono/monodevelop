@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.MSBuild
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
-
+		internal List<MSBuildProperty> PropertiesAttributeOrder { get; } = new List<MSBuildProperty> ();
 		public MSBuildPropertyGroup ()
 		{
 		}
@@ -61,6 +61,21 @@ namespace MonoDevelop.Projects.MSBuild
 			get {
 				return (MSBuildObject) (ParentNode as MSBuildItem) ?? this;
 			}
+		}
+
+		internal override void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			MSBuildProperty prevSameName;
+			if (properties.TryGetValue (reader.LocalName, out prevSameName))
+				prevSameName.Overwritten = true;
+
+			var prop = new MSBuildProperty ();
+			prop.ParentNode = PropertiesParent;
+			prop.Owner = this;
+			prop.ReadUnknownAttribute (reader, lastAttr);
+			ChildNodes = ChildNodes.Add (prop);
+			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+			PropertiesAttributeOrder.Add (prop);
 		}
 
 		internal override void ReadChildElement (MSBuildXmlReader reader)
@@ -136,6 +151,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return GetProperties ();
 		}
 
+		IEnumerable<IMSBuildPropertyEvaluated> IMSBuildPropertyGroupEvaluated.GetProperties ()
+		{
+			return GetProperties ();
+		}
+
 		IMSBuildPropertyEvaluated IMSBuildPropertyGroupEvaluated.GetProperty (string name)
 		{
 			return GetProperty (name);
@@ -154,6 +174,10 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			MSBuildProperty prop;
 			properties.TryGetValue (name, out prop);
+			if (!string.IsNullOrEmpty (condition) && prop != null && prop.Condition != condition) {
+				// There may be more than one property with the same name and different condition. Try to find the correct one.
+				prop = ChildNodes.OfType<MSBuildProperty> ().FirstOrDefault (pr => pr.Name == name && pr.Condition == condition) ?? prop;
+			}
 			return prop;
 		}
 		
@@ -448,5 +472,7 @@ namespace MonoDevelop.Projects.MSBuild
 		bool HasProperty (string name);
 
 		IMSBuildPropertyEvaluated GetProperty (string name);
+
+		IEnumerable<IMSBuildPropertyEvaluated> GetProperties ();
 	}
 }

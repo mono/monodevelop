@@ -13,21 +13,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	[SuppressMessage("ApiDesign", "RS0011", Justification = "Matching TPL Signatures")]
 	static partial class TaskExtensions
 	{
-		public static T WaitAndGetResult<T>(this Task<T> task, CancellationToken cancellationToken)
-		{
-			#if false  // eventually this will go live for check-in
-			#if DEBUG
-			if (Microsoft.CodeAnalysis.Workspace.PrimaryWorkspace != null &&  // only care if we are in a UI situation.. this keeps normal unit tests from failing                                
-			Thread.CurrentThread.IsThreadPoolThread)
-			{
-			// This check is meant to catch improper waits on background threads when integration tests are run.
-			System.Diagnostics.Debug.Fail("WaitAndGetResult called from thread pool thread.");
-			}
-			#endif
-			#endif
-			task.Wait(cancellationToken);
-			return task.Result;
-		}
+		
 
 		// NOTE(cyrusn): Once we switch over to .Net 4.5 we can make our SafeContinueWith overloads
 		// simply call into task.ContinueWith(..., TaskContinuationOptions.LazyCancellation, ...) as

@@ -37,11 +37,12 @@ using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem
+	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem, IHasDotNetProject
 	{
 		IDotNetProject project;
 		NuGetFramework targetFramework;
 		string projectFullPath;
+		string projectFileFullPath;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageManagementFileService fileService;
 		Action<Action> guiSyncDispatcher;
@@ -82,6 +83,15 @@ namespace MonoDevelop.PackageManagement
 					projectFullPath = GuiSyncDispatch (() => project.BaseDirectory);
 				}
 				return projectFullPath;
+			}
+		}
+
+		public string ProjectFileFullPath {
+			get {
+				if (projectFileFullPath == null) {
+					projectFileFullPath = GuiSyncDispatch (() => project.FileName);
+				}
+				return projectFileFullPath;
 			}
 		}
 
@@ -293,7 +303,7 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public Task ExecuteScriptAsync (PackageIdentity identity, string packageInstallPath, string scriptRelativePath, NuGetProject nuGetProject, bool throwOnFailure)
+		public Task ExecuteScriptAsync (PackageIdentity identity, string packageInstallPath, string scriptRelativePath, bool throwOnFailure)
 		{
 			string message = GettextCatalog.GetString (
 				"WARNING: {0} Package contains PowerShell script '{1}' which will not be run.",
@@ -563,6 +573,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			guiSyncDispatcherFunc (func).Wait ();
 		}
+
+		public dynamic VSProject4 { get; private set; }
 	}
 }
 

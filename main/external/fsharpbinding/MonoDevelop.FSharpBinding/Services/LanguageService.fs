@@ -179,7 +179,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
     member x.GetExtraColorizations() =
         match infoOpt with
-        | Some checkResults -> Some(checkResults.GetExtraColorizationsAlternate())
+        | Some checkResults -> Some(checkResults.GetSemanticClassification(None))
         | None -> None
 
     member x.GetStringFormatterColours() =
@@ -197,14 +197,14 @@ type AllowStaleResults =
 //type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
-type LanguageService(dirtyNotify) as x =
+type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
     /// Not yet sure if this works for scripts.
     let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
     let checkProjectResultsCache = Collections.Generic.Dictionary<string, _>()
 
-    let projectChecked filename =
+    let projectChecked (filename, _) =
         let computation =
             async {
                 let displayname = Path.GetFileName filename
@@ -251,8 +251,8 @@ type LanguageService(dirtyNotify) as x =
         checker.PauseBeforeBackgroundWork <- ServiceSettings.idleBackgroundCheckTime
         checker.BeforeBackgroundFileCheck.Add dirtyNotify
 #if DEBUG
-        checker.FileParsed.Add (fun filename -> LoggingService.logDebug "LanguageService: File parsed: %s" filename)
-        checker.FileChecked.Add (fun filename -> LoggingService.logDebug "LanguageService: File type checked: %s" filename)
+        checker.FileParsed.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File parsed: %s" filename)
+        checker.FileChecked.Add (fun (filename, _) -> LoggingService.logDebug "LanguageService: File type checked: %s" filename)
 #endif
         checker.ProjectChecked.Add projectChecked
         checker
@@ -409,7 +409,7 @@ type LanguageService(dirtyNotify) as x =
                 let fileName = fixFileName(fileName)
                 match options with
                 | Some opts ->
-                    let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, version, src ,opts, obsoleteCheck, null )
+                    let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, version, src ,opts, obsoleteCheck)
 
                     // Construct new typed parse result if the task succeeded
                     let results =
@@ -435,7 +435,7 @@ type LanguageService(dirtyNotify) as x =
     /// Parses and checks the given file in the given project under the given configuration.
     ///Asynchronously returns the results of checking the file.
     member x.GetTypedParseResultWithTimeout(projectFilename, fileName, version:int, src:string, stale, ?timeout, ?obsoleteCheck) =
-        let obs = defaultArg obsoleteCheck (IsResultObsolete(fun () -> false))
+        let obs = defaultArg obsoleteCheck (fun () -> false)
         async {
             let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
             let options = x.GetCheckerOptions(fileName, projectFilename, src)

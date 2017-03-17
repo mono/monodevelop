@@ -141,7 +141,7 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (HelpAboutIconId))
 				HelpAboutIconId = "md-about";
 		}
-		
+
 		public static string GetString (params string[] keyPath)
 		{
 			var el = GetElement (keyPath);
@@ -224,6 +224,16 @@ namespace MonoDevelop.Core
 		public static string BrandApplicationName (string s)
 		{
 			return s.Replace ("MonoDevelop", ApplicationName);
+		}
+
+		public static string BrandApplicationLongName (string s)
+		{
+			return s.Replace ("MonoDevelop", ApplicationLongName);
+		}
+
+		public static string BrandEnvironmentVariable (string envVar)
+		{
+			return envVar.Replace ("MONODEVELOP", ProfileDirectoryName.ToUpper ());
 		}
 
 		public static event EventHandler ApplicationNameChanged;

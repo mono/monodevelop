@@ -127,7 +127,7 @@ namespace MonoDevelop.Projects.MSBuild
 							continue; // xbuild seems to return duplicate items when using wildcards. This is a workaround to avoid the duplicates.
 						MSBuildItem pit;
 						if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
-							xit.SourceItem = pit;
+							xit.AddSourceItem (pit);
 							xit.Condition = pit.Condition;
 							evalItems [key] = xit;
 						}
@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 						MSBuildItem pit;
 						if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
-							xit.SourceItem = pit;
+							xit.AddSourceItem (pit);
 							xit.Condition = pit.Condition;
 							evalItemsNoCond [key] = xit;
 						}
@@ -219,6 +219,11 @@ namespace MonoDevelop.Projects.MSBuild
 		internal ConditionedPropertyCollection GetConditionedProperties ()
 		{
 			return conditionedProperties;
+		}
+
+		public IEnumerable<MSBuildItem> FindGlobItemsIncludingFile (string include)
+		{
+			return engine?.FindGlobItemsIncludingFile (projectInstance, include);
 		}
 	}
 

@@ -72,12 +72,16 @@ namespace MonoDevelop.PackageManagement
 			if (nugetAwareProject != null)
 				return nugetAwareProject.CreateNuGetProject ();
 
+			NuGetProject dotNetCoreProject = DotNetCoreNuGetProject.Create (project);
+			if (dotNetCoreProject != null)
+				return dotNetCoreProject;
+
 			var projectSystem = new MonoDevelopMSBuildNuGetProjectSystem (project, context);
 
 			string projectJsonPath = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);
 
 			if (File.Exists (projectJsonPath)) {
-				return new BuildIntegratedProjectSystem (
+				return new ProjectJsonBuildIntegratedProjectSystem  (
 					projectJsonPath,
 					project.FileName,
 					project,

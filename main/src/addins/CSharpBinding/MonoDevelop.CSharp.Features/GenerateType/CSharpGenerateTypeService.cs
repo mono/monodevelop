@@ -23,6 +23,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateConstructor;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {

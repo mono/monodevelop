@@ -166,9 +166,9 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-				Editor.SetIndentationTracker (null);
+				Editor.IndentationTracker = null;
 			} else {
-				Editor.SetIndentationTracker (new IndentVirtualSpaceManager (Editor, stateTracker));
+				Editor.IndentationTracker = new IndentVirtualSpaceManager (Editor, stateTracker);
 			}
 
 			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
@@ -184,7 +184,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (Editor != null) {
 				Editor.SetTextPasteHandler (null);
 				Editor.OptionsChanged -= HandleTextOptionsChanged;
-				Editor.SetIndentationTracker (null);
+				Editor.IndentationTracker  = null;
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;
 			}
@@ -302,7 +302,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public bool DoInsertTemplate ()
 		{
 			string word = CodeTemplate.GetTemplateShortcutBeforeCaret (Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (CSharpFormatter.MimeType)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == word)
 					return true;
 			}

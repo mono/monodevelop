@@ -177,8 +177,8 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
-		<Description>Syntax modes</Description>
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Bundles" name = "Text editor extension files">
+		<Description>Text editor language bundles</Description>
 		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
 	</ExtensionPoint>
 
@@ -202,7 +202,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/BraceMatcher" name = "Brace matcher">
 		<Description>Algorithm for providing matching braces in a file.</Description>
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Matcher" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/AutoInsertBracketHandler" name = "Automatic bracket handler">
@@ -219,7 +219,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
-		       description = "Graphical add-in setup utility"
+		       description = "Graphical extension setup utility"
 		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
 	</Extension>
 	
@@ -243,7 +243,7 @@
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
 		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
-		<Scheme id="VS14MAC" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
+		<Scheme id="VS14MAC" _name = "Visual Studio (Mixed)" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
 		<Scheme id="VS14MAC2" _name = "Visual Studio (Windows)" resource="KeyBindingSchemeVisualStudio.xml" forMac="true"/>
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
@@ -293,6 +293,10 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.ErrorHandlerTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.AutoInsertBracketTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.HighlightUrlExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
@@ -372,4 +376,8 @@
 		<Description>Setting what languages are supported for user selection.</Description>
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>	
 </ExtensionModel>

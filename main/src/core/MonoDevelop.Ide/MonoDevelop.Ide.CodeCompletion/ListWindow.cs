@@ -186,16 +186,33 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public string CurrentCompletionText {
 			get {
-				if (list.SelectedItem != -1 && list.AutoSelect)
-					return DataProvider.GetCompletionText (list.SelectedItem);
+				if (list.SelectedItemIndex != -1 && list.AutoSelect)
+					return DataProvider.GetCompletionText (list.SelectedItemIndex);
 				return null;
 			}
 		}
 
-		public int SelectedItem {
-			get { return list.SelectedItem; }
+		public ICompletionDataList CompletionDataList {
+			get {
+				return completionDataList;
+			}
 		}
-		
+
+		public CompletionData SelectedItem {
+			get {
+				return SelectedItemIndex >= 0 ? completionDataList [SelectedItemIndex] : null;
+			}
+		}
+
+		public int SelectedItemIndex {
+			get { return list.SelectedItemIndex; }
+		}
+
+		public event EventHandler SelectionChanged {
+			add { list.SelectionChanged += value; }
+			remove { list.SelectionChanged += value; }
+		}
+
 		public bool AutoSelect {
 			get { return list.AutoSelect; }
 			set { list.AutoSelect = value; }
@@ -240,16 +257,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			set {
 				startOffset = value;
-				EndOffset = value + 1;
 			}
 		}
 
 		public int EndOffset {
-			get;
-			set;
+			get {
+				return startOffset + PartialWord.Length;
+			}
 		}
 
-		internal ICompletionWidget CompletionWidget {
+		public ICompletionWidget CompletionWidget {
 			get {
 				return list.CompletionWidget;
 			}
@@ -310,7 +327,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var keyChar = descriptor.KeyChar;
 
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -319,17 +335,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			
-			if (commitChars.Contains (keyChar)) {
-				bool hasMismatches;
+			if (SelectedItemIndex < 0)
+				return KeyActions.Process;
+			var data = DataProvider.GetCompletionData (SelectedItemIndex);
+
+			if (data.IsCommitCharacter (keyChar, PartialWord)) {
 				var curword = PartialWord;
-				int match = FindMatchedEntry (curword, out hasMismatches);
+				int match = FindMatchedEntry (curword);
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
 					if (!text.StartsWith (curword, StringComparison.OrdinalIgnoreCase))
 						match = -1;	 
-				}
-				if (match >= 0 && !hasMismatches && keyChar != '<' && keyChar != ' ') {
+				}    
+				if (match >= 0 && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
 					return KeyActions.Process;
@@ -348,12 +366,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
 						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-							list.SelectedItem = item;
+							list.SelectedItemIndex = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
 					}
 				} else {
-					var selectedItem = list.SelectedItem;
+					var selectedItem = list.SelectedItemIndex;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
 					var text = DataProvider.GetText (selectedItem);
@@ -476,6 +494,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 //				// AltGr
 //				return KeyActions.Process;
 			}
+			var data = SelectedItem;
+
 			if (descriptor.KeyChar == '\0')
 				return KeyActions.Process;
 
@@ -485,19 +505,28 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (char.IsDigit (descriptor.KeyChar) && string.IsNullOrEmpty (CurrentCompletionText))
 			    return KeyActions.CloseWindow | KeyActions.Process;
 
+			if (data != null && data.MuteCharacter (descriptor.KeyChar, PartialWord)) {
+				if (data.IsCommitCharacter (descriptor.KeyChar, PartialWord)) {
+					return KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
+				} 
+				return KeyActions.CloseWindow | KeyActions.Ignore;
+			}
+
+
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
 			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
 				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
 						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-							list.SelectedItem = item;
+							list.SelectedItemIndex = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
 					}
 				} else {
-					var selectedItem = list.SelectedItem;
-					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
+					var selectedItem = list.SelectedItemIndex;
+					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount) {
 						return KeyActions.CloseWindow;
+					}
 					if (DataProvider.GetText (selectedItem).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
@@ -580,71 +609,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		protected int FindMatchedEntry (string partialWord, out bool hasMismatches)
+		protected int FindMatchedEntry (string partialWord)
 		{
-			// default - word with highest match rating in the list.
-			hasMismatches = true;
-			int idx = -1;
-
-			StringMatcher matcher = null;
-			if (!string.IsNullOrEmpty (partialWord)) {
-				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
-				string bestWord = null;
-				int bestRank = int.MinValue;
-				int bestIndex = 0;
-				int bestIndexPriority = int.MinValue;
-				for (int i = 0; i < list.filteredItems.Count; i++) {
-					int index = list.filteredItems [i];
-					var data = DataProvider.GetCompletionData (index);
-					if (bestIndexPriority > data.PriorityGroup)
-						continue;
-					string text = data.DisplayText;
-					int rank;
-					if (!matcher.CalcMatchRank (text, out rank))
-						continue;
-					if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
-						bestWord = text;
-						bestRank = rank;
-						bestIndex = i;
-						bestIndexPriority = data.PriorityGroup;
-					}
-				}
-
-				if (bestWord != null) {
-					idx = bestIndex;
-					hasMismatches = false;
-					// exact match found.
-					if (string.Compare (bestWord, partialWord ?? "", true) == 0)
-						return idx;
-				}
-			}
-
-			CompletionData currentData;
-			int bestMruIndex;
-			if (idx >= 0) {
-				currentData = completionDataList [list.filteredItems [idx]];
-				bestMruIndex = cache.GetIndex (currentData);
-			} else {
-				bestMruIndex = int.MaxValue;
-				currentData = null;
-			}
-			for (int i = 0; i < list.filteredItems.Count; i++) {
-				var mruData = completionDataList [list.filteredItems [i]];
-				int curMruIndex = cache.GetIndex (mruData);
-				if (curMruIndex == 1)
-					continue;
-				if (curMruIndex < bestMruIndex) {
-					int r1 = 0, r2 = 0;
-					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
-						if (r1 >= r2 || PartialWord.Length == 0 ||  PartialWord.Length == 1 && mruData.DisplayText[0] == PartialWord[0]) {
-							bestMruIndex = curMruIndex;
-							idx = i;
-							currentData = mruData;
-						}
-					}
-				}
-			}
-			return idx;
+			if (completionDataList == null)
+				return -1;
+			return completionDataList.FindMatchedEntry (completionDataList, cache, partialWord, list.filteredItems);
 		}
 
 		void SelectEntry (int n)
@@ -664,9 +633,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.Selection = 0;
 				return;
 			}*/
-			bool hasMismatches;
 			
-			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
+			int matchedIndex = FindMatchedEntry (s);
 //			ResetSizes ();
 			SelectEntry (matchedIndex);
 		}

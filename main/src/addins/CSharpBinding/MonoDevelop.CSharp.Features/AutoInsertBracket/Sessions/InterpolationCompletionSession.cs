@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using Roslyn.Utilities;
 

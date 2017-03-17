@@ -69,6 +69,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public string Title { get; set; }
 
+		public bool IsListed { get; set; }
+
 		public Task<IEnumerable<VersionInfo>> GetVersionsAsync ()
 		{
 			throw new NotImplementedException ();

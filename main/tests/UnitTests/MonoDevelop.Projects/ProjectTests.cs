@@ -996,6 +996,79 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (lib.FastCheckNeedsBuild (cs));
 			Assert.IsFalse (app.FastCheckNeedsBuild (cs));
 		}
+
+		[Test]
+		public async Task WriteAndReadEnvironmentVariableProperty ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			var config = (ProjectConfiguration)p.Configurations ["Debug"];
+			config.EnvironmentVariables.Add ("Test1", "Test1Value");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = (DotNetProject) sol.Items [0];
+			config = (ProjectConfiguration)p.Configurations ["Debug"];
+
+			var doc = new XmlDocument ();
+			doc.Load (p.FileName);
+			var propertyGroup = doc.DocumentElement.ChildNodes [1];
+			var environmentVariablesProperty = propertyGroup.ChildNodes.OfType<XmlElement> ().Last ();
+			var environmentVariablesChildProperty = environmentVariablesProperty.ChildNodes.OfType<XmlElement> ().First ();
+			var variableProperty = environmentVariablesChildProperty.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1Value", config.EnvironmentVariables ["Test1"]);
+			Assert.AreEqual ("EnvironmentVariables", environmentVariablesProperty.Name);
+			Assert.IsFalse (environmentVariablesProperty.HasAttribute ("xmlns"));
+			Assert.IsFalse (environmentVariablesChildProperty.HasAttribute ("xmlns"));
+			Assert.IsFalse (variableProperty.HasAttribute ("xmlns"));
+		}
+
+		[Test]
+		public async Task WriteAndReadEnvironmentVariablePropertyForSdkProject ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+
+			string xml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <OutputType>Exe</OutputType>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <PropertyGroup Condition=\" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' \">\r\n" +
+				"    <Value1>true</Value1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+			File.WriteAllText (p.FileName, xml);
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = (DotNetProject) sol.Items [0];
+			var config = (ProjectConfiguration)p.Configurations ["Debug"];
+			config.EnvironmentVariables.Add ("Test1", "Test1Value");
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			p = (DotNetProject) sol.Items [0];
+			config = (ProjectConfiguration)p.Configurations ["Debug"];
+
+			var doc = new XmlDocument ();
+			doc.Load (p.FileName);
+			var propertyGroup = doc.DocumentElement.ChildNodes [1];
+			var environmentVariablesProperty = (XmlElement)propertyGroup.ChildNodes [1];
+			var environmentVariablesChildProperty = environmentVariablesProperty.ChildNodes.OfType<XmlElement> ().First ();
+			var variableProperty = environmentVariablesChildProperty.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1Value", config.EnvironmentVariables ["Test1"]);
+			Assert.AreEqual ("EnvironmentVariables", environmentVariablesProperty.Name);
+			Assert.IsFalse (environmentVariablesProperty.HasAttribute ("xmlns"));
+			Assert.IsFalse (environmentVariablesChildProperty.HasAttribute ("xmlns"));
+			Assert.IsFalse (variableProperty.HasAttribute ("xmlns"));
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension

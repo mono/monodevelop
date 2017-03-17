@@ -26,12 +26,12 @@
 using System;
 using NUnit.Framework;
 using System.Linq;
-using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class BlockSelectionModeTests : TextEditorTestBase
+	class BlockSelectionModeTests : TextEditorTestBase
 	{
 		[Test]
 		public void TestInsertAtCaret ()
@@ -218,7 +218,7 @@ namespace Mono.TextEditor.Tests
 
 			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 
-			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			var clipboard = Gtk.Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
 			ClipboardActions.Paste (data);

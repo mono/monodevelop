@@ -28,6 +28,8 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -44,8 +46,11 @@ namespace MonoDevelop.Components.Commands
 		bool useMarkup;
 		bool bypass;
 		bool checkedInconsistent;
+		Task updateTask;
+		CancellationTokenSource cancellationTokenSource;
 		internal object UpdateHandlerData;
-		
+		CommandArrayInfo arrayInfo;
+
 		internal CommandInfo (Command cmd)
 		{
 			text = cmd.Text;
@@ -77,47 +82,47 @@ namespace MonoDevelop.Components.Commands
 		
 		public string Text {
 			get { return text; }
-			set { text = value; }
+			set { text = value; NotifyChanged (); }
 		}
 		
 		public IconId Icon {
 			get { return icon; }
-			set { icon = value; }
+			set { icon = value; NotifyChanged (); }
 		}
 		
 		public string AccelKey {
 			get { return accelKey; }
-			set { accelKey = value; }
+			set { accelKey = value; NotifyChanged (); }
 		}
 		
 		public string Description {
 			get { return description; }
-			set { description = value; }
+			set { description = value; NotifyChanged (); }
 		}
 		
 		public bool Enabled {
 			get { return enabled; }
-			set { enabled = value; }
+			set { enabled = value; NotifyChanged (); }
 		}
 		
 		public bool Visible {
 			get { return visible; }
-			set { visible = value; }
+			set { visible = value; NotifyChanged (); }
 		}
 		
 		public bool Checked {
 			get { return checkd; }
-			set { checkd = value; }
+			set { checkd = value; NotifyChanged (); }
 		}
 		
 		public bool CheckedInconsistent {
 			get { return checkedInconsistent; }
-			set { checkedInconsistent = value; }
+			set { checkedInconsistent = value; NotifyChanged (); }
 		}
 		
 		public bool UseMarkup {
 			get { return useMarkup; }
-			set { useMarkup = value; }
+			set { useMarkup = value; NotifyChanged (); }
 		}
 		
 		// When set in an update handler, the command manager will ignore this handler method
@@ -128,7 +133,15 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public CommandArrayInfo ArrayInfo {
-			get; internal set;
+			get {
+				return arrayInfo;
+			}
+			set {
+				arrayInfo = value;
+				if (value != null)
+					value.ParentCommandInfo = this;
+				
+			}
 		}
 		
 		public object DataItem {
@@ -142,6 +155,49 @@ namespace MonoDevelop.Components.Commands
 		public bool HandlesItem (object item)
 		{
 			return item == DataItem || Object.Equals (item, DataItem);
+		}
+
+		internal void NotifyChanged ()
+		{
+			Changed?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Changed;
+
+		public bool IsUpdatingAsynchronously {
+			get { return updateTask != null || (arrayInfo != null && arrayInfo.IsUpdatingAsynchronously); }
+		}
+
+		public CancellationToken AsyncUpdateCancellationToken {
+			get {
+				if (cancellationTokenSource == null)
+					cancellationTokenSource = new CancellationTokenSource ();
+				return cancellationTokenSource.Token;
+			}
+		}
+
+		public void SetUpdateTask (Task task)
+		{
+			updateTask = task;
+		}
+
+		internal Task UpdateTask {
+			get { return updateTask; }
+		}
+
+		internal void CancelAsyncUpdate ()
+		{
+			if (cancellationTokenSource != null)
+				cancellationTokenSource.Cancel ();
+		}
+
+		internal CommandArrayInfo ParentCommandArrayInfo { get; set; }
+
+		object sourceTarget;
+
+		internal object SourceTarget {
+			get { return sourceTarget ?? ParentCommandArrayInfo?.ParentCommandInfo?.SourceTarget; }
+			set { sourceTarget = value; }
 		}
 	}
 }

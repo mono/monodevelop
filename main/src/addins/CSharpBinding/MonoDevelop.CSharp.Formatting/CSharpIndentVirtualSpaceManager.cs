@@ -37,7 +37,13 @@ namespace MonoDevelop.CSharp.Formatting
 		readonly TextEditor data;
 		readonly CacheIndentEngine stateTracker;
 
-		public IndentVirtualSpaceManager(TextEditor data, CacheIndentEngine stateTracker)
+        public override IndentationTrackerFeatures SupportedFeatures { 
+            get {
+                return IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
+            }
+        }
+
+        public IndentVirtualSpaceManager(TextEditor data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;

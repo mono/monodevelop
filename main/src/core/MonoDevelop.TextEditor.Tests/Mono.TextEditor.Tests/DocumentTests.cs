@@ -74,7 +74,7 @@ namespace Mono.TextEditor.Tests
 			"\n";
 			
 			document.Text = top;
-			document.Insert (top.Length, text);
+			document.InsertText (top.Length, text);
 			Assert.AreEqual (top + text, document.Text);
 		}
 		
@@ -95,14 +95,14 @@ namespace Mono.TextEditor.Tests
 			"1\n" +
 			"\n";
 			document.Text = top + testText;
-			document.Remove (0, top.Length);
+			document.RemoveText (0, top.Length);
 			Assert.AreEqual (document.Text, testText);
 			
-			document.Remove (0, document.TextLength);
-			DocumentLine line = document.GetLine (1);
+			document.RemoveText (0, document.Length);
+			var line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
 			Assert.AreEqual (0, line.LengthIncludingDelimiter);
-			Assert.AreEqual (0, document.TextLength);
+			Assert.AreEqual (0, document.Length);
 			Assert.AreEqual (1, document.LineCount);
 		}
 		
@@ -114,14 +114,14 @@ namespace Mono.TextEditor.Tests
 			string top    = "1234567890";
 			document.Text = top;
 			
-			Assert.AreEqual (document.GetLine (1).LengthIncludingDelimiter, document.TextLength);
+			Assert.AreEqual (document.GetLine (1).LengthIncludingDelimiter, document.Length);
 			
-			document.Remove(0, document.TextLength);
+			document.RemoveText(0, document.Length);
 			
-			DocumentLine line = document.GetLine (1);
+			var line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
 			Assert.AreEqual(0, line.LengthIncludingDelimiter);
-			Assert.AreEqual(0, document.TextLength);
+			Assert.AreEqual(0, document.Length);
 			Assert.AreEqual(1, document.LineCount);
 		}
 		
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Tests
 
 			document.Text = top;
 
-			document.Insert (top.Length, testText);
+			document.InsertText (top.Length, testText);
 
 			DocumentLine line = document.GetLine (document.LineCount);
 
@@ -148,7 +148,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var document = new Mono.TextEditor.TextDocument ();
 			for (int i = 0; i < 100; i++) {
-				document.Insert (0, new string ('c', i) + Environment.NewLine);
+				document.InsertText (0, new string ('c', i) + Environment.NewLine);
 			}
 			Assert.AreEqual (101, document.LineCount);
 			for (int i = 0; i < 100; i++) {
@@ -159,7 +159,7 @@ namespace Mono.TextEditor.Tests
 			
 			for (int i = 0; i < 100; i++) {
 				DocumentLine line = document.GetLine (1);
-				document.Remove (line.Length, line.DelimiterLength);
+				document.RemoveText (line.Length, line.DelimiterLength);
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}
@@ -172,7 +172,7 @@ namespace Mono.TextEditor.Tests
 			for (int i = 1; i < 1000; i++) {
 				var text = new string ('a', i);
 				document.Text = text;
-				Assert.AreEqual (i, document.TextLength);
+				Assert.AreEqual (i, document.Length);
 				Assert.AreEqual (text, document.Text);
 			}
 		}

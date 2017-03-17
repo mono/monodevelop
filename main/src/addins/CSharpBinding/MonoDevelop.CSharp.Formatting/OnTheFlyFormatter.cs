@@ -100,32 +100,52 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
-					var caretOffset = editor.CaretOffset;
-
-					int delta = 0;
-					foreach (var change in newTree.GetChanges (syntaxTree)) {
-						if (!exact && change.Span.Start >= caretOffset)
-							continue;
-						if (exact && !span.Contains (change.Span.Start))
-							continue;
-						var newText = change.NewText;
-						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
-						delta = delta - change.Span.Length + newText.Length;
-					}
-					if (startOffset < caretOffset) {
-						var caretEndOffset = caretOffset + delta;
-						if (0 <= caretEndOffset && caretEndOffset < editor.Length)
-							editor.CaretOffset = caretEndOffset;
-						if (editor.CaretColumn == 1) {
-							if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
-								editor.CaretLine--;
-							editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
-						}
-					}
+					ApplyNewTree (editor, startOffset, exact, span, syntaxTree, newTree);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}
 			}
 		}
-	}
+
+		internal static void ApplyNewTree (TextEditor editor, int startOffset, bool exact, TextSpan span, Microsoft.CodeAnalysis.SyntaxTree syntaxTree, Microsoft.CodeAnalysis.SyntaxTree newTree)
+		{
+			var caretOffset = editor.CaretOffset;
+			var caretEndOffset = caretOffset;
+			using (var undo = editor.OpenUndoGroup ()) {
+
+				int delta = 0;
+				foreach (var change in newTree.GetChanges (syntaxTree)) {
+					if (!exact && change.Span.Start >= caretOffset)
+						continue;
+					if (exact && !span.Contains (change.Span.Start))
+						continue;
+					var newText = change.NewText;
+					var length = change.Span.Length;
+					var changeEnd = delta + change.Span.End - 1;
+					if (changeEnd < editor.Length && changeEnd >= 0 && editor.GetCharAt (changeEnd) == '\r')
+						length--;
+					var replaceOffset = delta + change.Span.Start;
+					editor.ReplaceText (replaceOffset, length, newText);
+					delta = delta - length + newText.Length;
+					if (change.Span.Start < caretOffset) {
+						if (change.Span.End < caretOffset) {
+							caretEndOffset += newText.Length - length;
+						} else {
+							caretEndOffset = replaceOffset;
+						}
+					}
+				}
+			}
+
+			if (startOffset < caretOffset) {
+				if (0 <= caretEndOffset && caretEndOffset < editor.Length)
+					editor.CaretOffset = caretEndOffset;
+				if (editor.CaretColumn == 1) {
+					if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
+						editor.CaretLine--;
+					editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+				}
+			}
+		}
+}
 }

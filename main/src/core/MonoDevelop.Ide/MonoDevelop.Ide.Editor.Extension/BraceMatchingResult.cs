@@ -29,6 +29,11 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Flags]
+	public enum BraceMatchingProperties {
+		None   = 0,
+		Hidden = 1
+	}
 	public struct BraceMatchingResult
 	{
 		public ISegment LeftSegment { get; }
@@ -37,7 +42,9 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsCaretInLeft { get; }
 
-		public BraceMatchingResult (ISegment leftSegment, ISegment rightSegment, bool isCaretInLeft) : this ()
+		public BraceMatchingProperties BraceMatchingProperties { get; }
+
+		public BraceMatchingResult (ISegment leftSegment, ISegment rightSegment, bool isCaretInLeft, BraceMatchingProperties properties = BraceMatchingProperties.None) : this ()
 		{
 			if (leftSegment == null)
 				throw new ArgumentNullException (nameof (leftSegment));
@@ -46,6 +53,7 @@ namespace MonoDevelop.Ide.Editor
 			LeftSegment = leftSegment;
 			RightSegment = rightSegment;
 			IsCaretInLeft = isCaretInLeft;
+			BraceMatchingProperties = properties;
 		}
 	}
 }

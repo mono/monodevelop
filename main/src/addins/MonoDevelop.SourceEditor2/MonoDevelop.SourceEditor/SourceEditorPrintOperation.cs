@@ -29,6 +29,8 @@ using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -62,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
-			style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (settings.ColorScheme);
+			style = SyntaxHighlightingService.GetEditorTheme (settings.EditorTheme);
 			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);
@@ -92,76 +94,78 @@ namespace MonoDevelop.SourceEditor
 		double pageWidth, pageHeight;
 		
 		Pango.Layout layout;
-		Mono.TextEditor.Highlighting.ColorScheme style;
+		Ide.Editor.Highlighting.EditorTheme style;
 		
 		string headerText;
 		string footerText;
 		
 		protected override void OnDrawPage (PrintContext context, int pageNr)
 		{
-			using (var cr = context.CairoContext) {
-				double xPos = 0, yPos = 0;
+			// TODO:
+			//using (var cr = context.CairoContext) {
+			//	double xPos = 0, yPos = 0;
 			
-				PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
+			//	PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
 			
-				int startLine = pageNr * linesPerPage;
-				int endLine = Math.Min (startLine + linesPerPage - 1, doc.LineCount);
+			//	int startLine = pageNr * linesPerPage;
+			//	int endLine = Math.Min (startLine + linesPerPage - 1, doc.LineCount);
 			
-				//FIXME: use proper 1-layout-per-line
-				for (int i = startLine; i < endLine; i++) {
-					var line = doc.GetLine (i + 1);
-					if (!settings.UseHighlighting) {
-						string text = doc.GetTextAt (line);
-						text = text.Replace ("\t", new string (' ', settings.TabSize));
+			//	//FIXME: use proper 1-layout-per-line
+			//	for (int i = startLine; i < endLine; i++) {
+			//		var line = doc.GetLine (i + 1);
+			//		if (!settings.UseHighlighting) {
+			//			string text = doc.GetTextAt (line);
+			//			text = text.Replace ("\t", new string (' ', settings.TabSize));
 					
-						layout.SetText (text);
-						cr.MoveTo (xPos, yPos);
-						Pango.CairoHelper.ShowLayout (cr, layout);
+			//			layout.SetText (text);
+			//			cr.MoveTo (xPos, yPos);
+			//			Pango.CairoHelper.ShowLayout (cr, layout);
 					
-						yPos += lineHeight;
-						continue;
-					}
+			//			yPos += lineHeight;
+			//			continue;
+			//		}
 					
-					var startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.LengthIncludingDelimiter);
-					foreach (Chunk chunk in startChunk) {
-						var chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
-						string text = doc.GetTextAt (chunk);
-						text = text.Replace ("\t", new string (' ', settings.TabSize));
-						layout.SetText (text);
+			//		var startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.LengthIncludingDelimiter);
+			//		foreach (Chunk chunk in startChunk) {
+			//			var chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
+			//			string text = doc.GetTextAt (chunk);
+			//			text = text.Replace ("\t", new string (' ', settings.TabSize));
+			//			layout.SetText (text);
 					
-						var atts = ResetAttributes ();
-					
-						atts.Insert (new Pango.AttrForeground ((ushort)(chunkStyle.Foreground.R * ushort.MaxValue), (ushort)(chunkStyle.Foreground.G * ushort.MaxValue), (ushort)(chunkStyle.Foreground.B * ushort.MaxValue)));
-					
-						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
-							atts.Insert (new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight));
-						}
-						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
-							atts.Insert (new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle));
-						}
-						if (chunkStyle.Underline) {
-							atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
-						}
-					
-						cr.MoveTo (xPos, yPos);
-						Pango.CairoHelper.ShowLayout (cr, layout);
-					
-						int wout, hout;
-						layout.GetSize (out wout, out hout);
-						double w = wout / Pango.Scale.PangoScale;
-						
-						xPos += w;
-					
-						if (w > pageWidth)
-							break;
-					}
+			//			var atts = ResetAttributes ();
 
-					xPos = 0;
-					yPos += lineHeight;
-				}
+			//			var foreground = (Cairo.Color)chunkStyle.Foreground;
+			//			atts.Insert (new Pango.AttrForeground ((ushort)(foreground.R * ushort.MaxValue), (ushort)(foreground.G * ushort.MaxValue), (ushort)(foreground.B * ushort.MaxValue)));
+					
+			//			if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+			//				atts.Insert (new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight));
+			//			}
+			//			if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+			//				atts.Insert (new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle));
+			//			}
+			//			if (chunkStyle.Underline) {
+			//				atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
+			//			}
+					
+			//			cr.MoveTo (xPos, yPos);
+			//			Pango.CairoHelper.ShowLayout (cr, layout);
+					
+			//			int wout, hout;
+			//			layout.GetSize (out wout, out hout);
+			//			double w = wout / Pango.Scale.PangoScale;
+						
+			//			xPos += w;
+					
+			//			if (w > pageWidth)
+			//				break;
+			//		}
+
+			//		xPos = 0;
+			//		yPos += lineHeight;
+			//	}
 			
-				PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
-			}
+			//	PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
+			//}
 		}
 		
 		Pango.AttrList ResetAttributes ()
@@ -297,7 +301,7 @@ namespace MonoDevelop.SourceEditor
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");
-			ColorScheme = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle;
+			EditorTheme = MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName;
 			HeaderSeparatorWeight = FooterSeparatorWeight = 0.5;
 			HeaderPadding = FooterPadding = 6;
 			UseHighlighting = true;
@@ -306,7 +310,7 @@ namespace MonoDevelop.SourceEditor
 		public bool UseHighlighting { get; private set; }
 		public Pango.FontDescription Font { get; private set; }
 		public int TabSize { get; private set; }
-		public string ColorScheme { get; private set; }
+		public string EditorTheme { get; private set; }
 		
 		public string HeaderFormat { get; private set; }
 		public string FooterFormat { get; private set; }

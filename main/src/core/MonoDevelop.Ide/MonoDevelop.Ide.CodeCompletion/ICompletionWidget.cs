@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	interface ICompletionWidget
+	public interface ICompletionWidget
 	{
 		CodeCompletionContext CurrentCodeCompletionContext
 		{

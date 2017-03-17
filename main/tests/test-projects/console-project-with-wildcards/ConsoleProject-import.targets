@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Content\**\*.cs" />
+    <Content Include="*.txt" />
+    <Content Include="Content\*.txt" />
+    <Content Include="Content\Data\*.txt" />
+  </ItemGroup>
+</Project>

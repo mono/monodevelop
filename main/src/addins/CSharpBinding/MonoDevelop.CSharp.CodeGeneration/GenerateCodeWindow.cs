@@ -97,7 +97,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			treeviewSelection.Submit += delegate {
 				if (curInitializeObject != null) {
-					curInitializeObject.GenerateCode ();
+					curInitializeObject.GenerateCode (treeviewSelection);
 					curInitializeObject = null;
 				}
 				Destroy ();
