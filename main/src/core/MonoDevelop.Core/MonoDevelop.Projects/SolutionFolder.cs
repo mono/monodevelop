@@ -649,6 +649,9 @@ namespace MonoDevelop.Projects
 				buildStatus = buildStatus.Add (it, new BuildStatus ());
 
 			// Start the build tasks for all itemsw
+			var solutions = sortedItems.Select(it => it.ParentSolution).Distinct();
+				
+			foreach (var solution in solutions) MSBuild.MSBuildProjectService.OpenBuilder(solution);
 
 			foreach (var itemToBuild in toBuild) {
 				if (monitor.CancellationToken.IsCancellationRequested)
@@ -676,8 +679,8 @@ namespace MonoDevelop.Projects
 					if (!ignoreFailed && (refStatus.Any (bs => bs.Failed) || t.IsFaulted)) {
 						myStatus.Failed = true;
 					} else {
-						using (await slotScheduler.GetTaskSlot ())
-							myStatus.Result = await buildAction (myMonitor, item);
+						using (await slotScheduler.GetTaskSlot())
+							myStatus.Result = await buildAction(myMonitor, item);
 						myStatus.Failed = myStatus.Result != null && myStatus.Result.ErrorCount > 0;
 					}
 					myMonitor.Dispose ();
@@ -692,6 +695,8 @@ namespace MonoDevelop.Projects
 			await Task.WhenAll (buildStatus.Values.Select (bs => bs.Task));
 
 			// Generate the errors in the order they were supposed to build
+
+			foreach (var solution in solutions) MSBuild.MSBuildProjectService.CloseBuilder(solution);
 
 			foreach (var it in toBuild) {
 				BuildStatus bs;

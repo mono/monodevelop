@@ -10,6 +10,11 @@
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
     <BaseIntermediateOutputPath>obj\14.0</BaseIntermediateOutputPath>
+    <XBuild>$(MSBuildToolsPath.ToLower().Contains("xbuild"))</XBuild>
+    <XBuildExtensionsPath Condition=" '$(XBuild)' == 'True' ">$(MSBuildExtensionsPath)</XBuildExtensionsPath>
+    <XBuildExtensionsPath Condition=" '$(XBuild)' != 'True' ">$(MSBuildProgramFiles32)\Mono\lib\xbuild</XBuildExtensionsPath>
+    <XBuildLibPath>$(XBuildExtensionsPath)\14.0\bin</XBuildLibPath>
+   <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
@@ -36,10 +41,22 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0" />
-    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0" />
-    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0" />
-    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.Build.Engine, Version=14.0.0.0">
+      <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Engine.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0">
+      <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Framework.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0">
+      <HintPath Condition=" '$(XBuild)' != 'True' ">$(XBuildLibPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>True</SpecificVersion>
+   </Reference>
+  <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
