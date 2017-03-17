@@ -388,7 +388,7 @@ namespace Mono.TextEditor
 				return ConvertToPangoMarkup (str, replaceTabs);
 			}
 			// TODO : EditorTheme
-			int indentLength = 4; //SyntaxMode.GetIndentLength (Document, offset, length, false);
+			int indentLength = -1;
 			int curOffset = offset;
 
 			StringBuilder result = new StringBuilder ();
@@ -396,6 +396,12 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
+				if (removeIndent) {
+					var curIndent = line.GetIndentation (Document).Length;
+					if (indentLength < 0)
+						indentLength = curIndent;
+					curOffset += System.Math.Min (curIndent, indentLength);
+				}
 
 				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
@@ -436,8 +442,6 @@ namespace Mono.TextEditor
 				}
 
 				curOffset = line.EndOffsetIncludingDelimiter;
-				if (removeIndent)
-					curOffset += indentLength;
 				if (result.Length > 0 && curOffset < offset + length)
 					result.AppendLine ();
 			}
