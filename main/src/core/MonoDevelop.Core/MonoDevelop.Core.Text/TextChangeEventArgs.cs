@@ -167,14 +167,14 @@ namespace MonoDevelop.Core.Text
 		{
 			int changeDelta = 0;
 			foreach (var change in TextChanges) {
-				if (offset >= change.Offset && offset <= change.Offset + change.RemovalLength) {
-					changeDelta += change.ChangeDelta;
-					break;
-				} else if (offset > change.Offset) {
-					changeDelta += change.ChangeDelta;
-				} else {
+				if (offset <= change.Offset + change.RemovalLength) {
+					if (offset >= change.Offset) {
+						changeDelta = changeDelta - (offset - change.Offset) + change.InsertionLength;
+					}
 					break;
 				}
+
+				changeDelta += change.ChangeDelta;
 			}
 
 			return offset + changeDelta;
