@@ -201,9 +201,16 @@ namespace MonoDevelop.GtkCore
 		static bool steticDisabled = !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISABLE_STETIC"));
 		public static bool SupportsDesigner (Project project)
 		{
-			if (steticDisabled) {
-				return false;
+			return SupportsDesigner (project, true);
+		}
+
+		internal static bool SupportsDesigner (Project project, bool shouldCheckSteticDisabled)
+		{
+			if (shouldCheckSteticDisabled) {
+				if (steticDisabled)
+					return false;
 			}
+
 			DotNetProject dnp = project as DotNetProject;
 			return dnp != null && HasGtkReference (dnp) && SupportsRefactoring (dnp);
 		}
