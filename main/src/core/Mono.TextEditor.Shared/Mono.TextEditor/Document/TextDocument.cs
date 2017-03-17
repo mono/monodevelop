@@ -998,7 +998,7 @@ namespace Mono.TextEditor
 				}
 				if (keyUndo.Changes != null) {
 					foreach (var kchange in keyUndo.Changes) {
-						if (kchange.OldPosition + 1 != change.OldPosition || !char.IsLetterOrDigit (change.NewText [0])) {
+						if (kchange.OldPosition + 1 != change.OldPosition || change.NewLength == 0 || !char.IsLetterOrDigit (change.NewText [0])) {
 							keyUndo.IsClosed = true;
 							undoStack.Push (keyUndo);
 							keyUndo = new KeyboardStackUndo ();
