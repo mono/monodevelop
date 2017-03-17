@@ -119,23 +119,6 @@ namespace MonoDevelop.Core.Text
 				return InsertionLength - RemovalLength;
 			}
 		}
-
-		/// <summary>
-		/// Gets the new offset where the specified offset moves after this document change.
-		/// </summary>
-		public int GetNewOffset(int offset)
-		{
-			if (offset >= this.Offset && offset <= this.Offset + this.RemovalLength) {
-//				if (movementType == AnchorMovementType.BeforeInsertion)
-//					return this.Offset;
-//				else
-					return this.Offset + this.InsertionLength;
-			} else if (offset > this.Offset) {
-				return offset + this.InsertionLength - this.RemovalLength;
-			} else {
-				return offset;
-			}
-		}
 	}
 
 	/// <summary>
@@ -182,10 +165,19 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public virtual int GetNewOffset(int offset)
 		{
+			int changeDelta = 0;
 			foreach (var change in TextChanges) {
-				offset = change.GetNewOffset (offset);
+				if (offset <= change.Offset + change.RemovalLength) {
+					if (offset >= change.Offset) {
+						changeDelta = changeDelta - (offset - change.Offset) + change.InsertionLength;
+					}
+					break;
+				}
+
+				changeDelta += change.ChangeDelta;
 			}
-			return offset;
+
+			return offset + changeDelta;
 		}
 
 		/// <summary>
