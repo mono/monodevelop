@@ -290,7 +290,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
-		public static void SetTabs (this Atk.Object o, AccessibilityElementProxy [] tabs)
+		public static void SetTabs (this Atk.Object o, params AccessibilityElementProxy [] tabs)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -300,7 +300,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityTabs = tabs;
 		}
 
-		public static void SetTabs (this Atk.Object o, Atk.Object [] tabs)
+		public static void SetTabs (this Atk.Object o, params Atk.Object [] tabs)
 		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
@@ -463,6 +463,32 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				newLinkedElements [length] = (NSObject)linkedNSA;
 			} else {
 				newLinkedElements = new NSObject [] { (NSObject)linkedNSA };
+			}
+
+			nsa.AccessibilityLinkedUIElements = newLinkedElements;
+		}
+
+		public static void AddLinkedUIElement (this Atk.Object o, params Atk.Object [] linked)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			var current = nsa.AccessibilityLinkedUIElements;
+
+			int length = current != null ? current.Length : 0;
+			var newLinkedElements = new NSObject [length + linked.Length];
+
+			if (current != null) {
+				Array.Copy (current, newLinkedElements, length);
+			}
+
+			int idx = length;
+			foreach (var e in linked) {
+				var nsaLinked = GetNSAccessibilityElement (e);
+				newLinkedElements [idx] = (NSObject) nsaLinked;
+				idx++;
 			}
 
 			nsa.AccessibilityLinkedUIElements = newLinkedElements;

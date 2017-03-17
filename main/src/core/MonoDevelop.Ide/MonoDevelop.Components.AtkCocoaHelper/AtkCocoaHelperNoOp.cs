@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetAccessibilityDescription (this Gtk.CellRenderer r, string description)
+		public static void SetDescription (this Gtk.CellRenderer r, string description)
 		{
 		}
 
@@ -54,19 +54,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetAccessibilityDocument (this Atk.Object o, string documentUrl)
+		public static void SetDocument (this Atk.Object o, string documentUrl)
 		{
 		}
 
-		public static void SetAccessibilityFilename (this Atk.Object o, string filename)
+		public static void SetFilename (this Atk.Object o, string filename)
 		{
 		}
 
-		public static void SetAccessibilityIsMainWindow (this Atk.Object o, bool isMainWindow)
+		public static void SetIsMainWindow (this Atk.Object o, bool isMainWindow)
 		{
 		}
 
-		public static void SetAccessibilityMainWindow (this Atk.Object o, Atk.Object mainWindow)
+		public static void SetMainWindow (this Atk.Object o, Atk.Object mainWindow)
 		{
 		}
 
@@ -126,11 +126,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void SetAccessibilityColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
+		public static void SetColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
 		{
 		}
 
-		public static void SetAccessibilityRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
+		public static void SetRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
 		{
 		}
 
@@ -146,7 +146,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
-		public static void AddAccessibleLinkedUIElement (this Atk.Object o, Atk.Object linked)
+		public static void AddLinkedUIElement (this Atk.Object o, Atk.Object linked)
+		{
+		}
+
+		public static void AddLinkedUIElement (this Atk.Object o, params Atk.Object [] linked)
 		{
 		}
 	}
