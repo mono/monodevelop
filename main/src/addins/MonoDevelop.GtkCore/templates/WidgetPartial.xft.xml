@@ -13,10 +13,7 @@
 	
 	<Conditions>
 		<PartialTypeSupport Requirement="Enabled" />
-	</Conditions>
-	
-	<Conditions>
-		<PartialTypeSupport Requirement="Enabled" />
+		<GtkReferenced />
 	</Conditions>
 	
 	<TemplateFiles>
