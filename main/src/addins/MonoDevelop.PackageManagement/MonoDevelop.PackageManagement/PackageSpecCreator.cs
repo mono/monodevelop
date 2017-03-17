@@ -24,8 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Commands;
+using NuGet.Common;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
@@ -36,12 +38,12 @@ namespace MonoDevelop.PackageManagement
 {
 	static class PackageSpecCreator
 	{
-		public static PackageSpec CreatePackageSpec (DotNetProject project)
+		public static PackageSpec CreatePackageSpec (DotNetProject project, ILogger logger)
 		{
-			return CreatePackageSpec (new DotNetProjectProxy (project));
+			return CreatePackageSpec (new DotNetProjectProxy (project), logger);
 		}
 
-		public static PackageSpec CreatePackageSpec (IDotNetProject project)
+		public static PackageSpec CreatePackageSpec (IDotNetProject project, ILogger logger)
 		{
 			var packageSpec = new PackageSpec (GetTargetFrameworks (project));
 			packageSpec.FilePath = project.FileName;
@@ -50,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageSpec.RestoreMetadata = CreateRestoreMetadata (packageSpec, project);
 			packageSpec.RuntimeGraph = GetRuntimeGraph (project);
-			AddProjectReferences (packageSpec, project);
+			AddProjectReferences (packageSpec, project, logger);
 			AddPackageReferences (packageSpec, project);
 			AddPackageTargetFallbacks (packageSpec, project);
 
@@ -116,7 +118,7 @@ namespace MonoDevelop.PackageManagement
 			return new string[0];
 		}
 
-		static void AddProjectReferences (PackageSpec spec, IDotNetProject project)
+		static void AddProjectReferences (PackageSpec spec, IDotNetProject project, ILogger logger)
 		{
 			// Add groups for each spec framework
 			var frameworkGroups = new Dictionary<NuGetFramework, List<ProjectRestoreReference>> ();
@@ -124,8 +126,9 @@ namespace MonoDevelop.PackageManagement
 				frameworkGroups.Add (framework, new List<ProjectRestoreReference> ());
 			}
 
-			var flatReferences = project.References.Where (projectReference => projectReference.ReferenceType == ReferenceType.Project)
-				.Select (projectReference => GetProjectRestoreReference (projectReference, project));
+			var flatReferences = project.References.Where (IsProjectReference)
+				.Select (projectReference => GetProjectRestoreReference (projectReference, project, logger))
+				.Where (projectReference => projectReference != null);
 
 			// Add project paths
 			foreach (var frameworkPair in flatReferences) {
@@ -155,13 +158,29 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		static bool IsProjectReference (ProjectReference projectReference)
+		{
+			if (projectReference.ReferenceType != ReferenceType.Project)
+				return false;
+
+			if (projectReference.Include != null)
+				return !projectReference.Include.EndsWith (".shproj", StringComparison.OrdinalIgnoreCase);
+
+			return false;
+		}
+
 		static Tuple<List<NuGetFramework>, ProjectRestoreReference> GetProjectRestoreReference (
 			ProjectReference item,
-			IDotNetProject project)
+			IDotNetProject project,
+			ILogger logger)
 		{
 			var frameworks = GetFrameworks (project).ToList ();
 
 			var referencedProject = project.ParentSolution.ResolveProject (item);
+			if (referencedProject == null) {
+				logger.LogWarning (GettextCatalog.GetString ("WARNING: Unable to resolve project '{0}' referenced by '{1}'.", item.Include, project.Name));
+				return null;
+			}
 
 			var reference = new ProjectRestoreReference () {
 				ProjectPath = referencedProject.FileName,

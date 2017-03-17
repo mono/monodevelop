@@ -203,7 +203,7 @@ namespace MonoDevelop.PackageManagement
 				return new [] { existingPackageSpec };
 			}
 
-			PackageSpec packageSpec = await CreateProjectPackageSpec ();
+			PackageSpec packageSpec = await CreateProjectPackageSpec (context);
 
 			if (context != null) {
 				AddToCache (context, packageSpec);
@@ -223,15 +223,15 @@ namespace MonoDevelop.PackageManagement
 			return packageSpec;
 		}
 
-		async Task<PackageSpec> CreateProjectPackageSpec ()
+		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = await Runtime.RunInMainThread (() => CreateProjectPackageSpec (project));
+			PackageSpec packageSpec = await Runtime.RunInMainThread (() => CreateProjectPackageSpec (project, context));
 			return packageSpec;
 		}
 
-		static PackageSpec CreateProjectPackageSpec (DotNetProject project)
+		static PackageSpec CreateProjectPackageSpec (DotNetProject project, DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project);
+			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context.Logger);
 			return packageSpec;
 		}
 

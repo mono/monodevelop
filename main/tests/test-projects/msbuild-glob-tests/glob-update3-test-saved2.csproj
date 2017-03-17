@@ -33,7 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\\*.cs" Exclude="*9.cs">
-	  <base>one</base>
+      <base>one</base>
       <foo>bar</foo>
     </Compile>
   </ItemGroup>

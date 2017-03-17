@@ -1335,7 +1335,8 @@ namespace MonoDevelop.Projects
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
+					var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1378,7 +1379,8 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, true);
+			var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
@@ -3141,7 +3143,7 @@ namespace MonoDevelop.Projects
 
 		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
-			if (item.IsFromWildcardItem) {
+			if (item.IsFromWildcardItem && item.ItemName == item.WildcardItem.Name) {
 				var globItem = item.WildcardItem;
 				// Store the item in the list of expanded items
 				ExpandedItemList items;
@@ -3199,8 +3201,34 @@ namespace MonoDevelop.Projects
 							item.Write (this, it);
 							if (it.Metadata.GetProperties ().Count () == 0)
 								buildItem = globItem;
+
+							// Add an expanded item so a Remove item does not
+							// get added back again.
+							ExpandedItemList items;
+							if (!expandedItems.TryGetValue (globItem, out items))
+								items = expandedItems [globItem] = new ExpandedItemList ();
+
+							var einfo = new ExpandedItemInfo {
+								ProjectItem = item,
+								MSBuildItem = it
+							};
+							items.Add (einfo);
+
+							if (buildItem == null && item.BackingItem != null && globItem.Name != item.BackingItem.Name) {
+								it.Update = item.Include;
+								sourceItems = new [] { globItem };
+								item.BackingItem = globItem;
+								item.BackingEvalItem = CreateFakeEvaluatedItem (msproject, it, globItem.Include, sourceItems);
+								einfo.Action = ExpandedItemAction.AddUpdateItem;
+								items.Modified = true;
+								return;
+							}
+						}
+					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
+						include = item.Include;
+						var removeItem = new MSBuildItem (item.WildcardItem.Name) { Remove = include };
+						msproject.AddItem (removeItem);
 					}
-				}
 				}
 				if (buildItem == null)
 					buildItem = msproject.AddNewItem (item.ItemName, include);
@@ -3342,7 +3370,7 @@ namespace MonoDevelop.Projects
 
 			if (itemsToDelete != null) {
 				foreach (var it in itemsToDelete)
-					it.ParentGroup.RemoveItem (it);
+					it.ParentProject.RemoveItem (it);
 			}
 			
 			foreach (var p in evalItem.Metadata.GetProperties ()) {
@@ -3430,7 +3458,7 @@ namespace MonoDevelop.Projects
 			((MSBuildPropertyGroupEvaluated)eit.Metadata).SetProperties (md);
 			if (sourceItems != null) {
 				foreach (var s in sourceItems)
-					eit.AddSourceItem (item);
+					eit.AddSourceItem (s);
 			} else
 				eit.AddSourceItem (item);
 			return eit;

@@ -44,10 +44,12 @@ namespace MonoDevelop.Projects.MSBuild
 		readonly ProjectCollection engine;
 		readonly string file;
 		readonly BuildEngine buildEngine;
+		readonly string sdksPath;
 
-		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
+		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file, string sdksPath)
 		{
 			this.file = file;
+			this.sdksPath = sdksPath;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			Refresh ();
@@ -65,6 +67,8 @@ namespace MonoDevelop.Projects.MSBuild
 				Project project = null;
 				Dictionary<string, string> originalGlobalProperties = null;
 				try {
+					if (sdksPath != null)
+						Environment.SetEnvironmentVariable ("MSBuildSDKsPath", sdksPath);
 					project = SetupProject (configurations);
 					InitLogger (logWriter);
 
@@ -78,12 +82,16 @@ namespace MonoDevelop.Projects.MSBuild
 						loggers = new ILogger[] { logger };
 					}
 
-					if (globalProperties != null) {
+					if (globalProperties != null || sdksPath != null) {
 						originalGlobalProperties = new Dictionary<string, string> ();
 						foreach (var p in project.GlobalProperties)
 							originalGlobalProperties [p.Key] = p.Value;
-						foreach (var p in globalProperties)
-							project.SetGlobalProperty (p.Key, p.Value);
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.SetGlobalProperty (p.Key, p.Value);
+						}
+						if (sdksPath != null)
+							project.SetGlobalProperty ("MSBuildSDKsPath", sdksPath);
 						project.ReevaluateIfNecessary ();
 					}
 

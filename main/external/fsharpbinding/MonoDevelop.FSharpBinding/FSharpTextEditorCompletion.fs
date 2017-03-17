@@ -187,7 +187,7 @@ module Completion =
             None
 
     let (|LetIdentifier|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=(]+$", RegexOptions.Compiled) then
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=:]+$", RegexOptions.Compiled) then
              Some LetIdentifier
         else
             None

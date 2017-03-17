@@ -1049,6 +1049,34 @@ namespace MonoDevelop.Projects
 			}, files);
 		}
 
+		/// <summary>
+		/// EnableDefaultItems set to false in project. C# file directly in
+		/// project. The Sdk imports define C# files if EnableDefaultItems is true.
+		/// This test ensures that duplicate files are not added to the project. This
+		/// happens because Project.EvaluatedItemsIgnoringCondition is used when adding
+		/// files to the project.
+		/// </summary>
+		[Test]
+		public async Task LoadDotNetCoreProjectWithDefaultItemsDisabled ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+
+			try {
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				var files = mp.Files.Select (f => f.FilePath.FileName).ToArray ();
+				Assert.AreEqual (new string [] {
+					"Program.cs"
+				}, files);
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
 		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
@@ -1082,6 +1110,290 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsAfterBuildActionChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			// Changing the text1-1.txt. file to EmbeddedResource should result in the following
+			// being added:
+			//
+			// <Content Remove="Content\text1-1.txt" />
+			// <EmbeddedResource Include="Content\text1-1.txt" />
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithImportedWildcardsBuildActionChangedThenCopyToOutputChanged ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+				f.BuildAction = BuildAction.EmbeddedResource;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedProjectReloadThenCopyToOutputChanged ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChangedRemoved ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.CopyToOutputDirectory = FileCopyMode.None;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+		}
+
+		/// <summary>
+		/// If an MSBuild item has a property on loading then if all the properties are removed the 
+		/// project file when saved will still have an end element. So this test uses a different
+		/// .saved5 file compared with the previous test and includes the extra end tag for the
+		/// EmbeddedResource.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedThenCopyToOutputChangedRemovedAfterReload ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.CopyToOutputDirectory = FileCopyMode.None;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved5")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgain ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+			string originalProjectFileText = File.ReadAllText (projFile);
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgainAfterReload ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+			string originalProjectFileText = File.ReadAllText (projFile);
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+		}
+
+		/// <summary>
+		/// Changed BuildAction include has an CopyToOutputDirectory property. After reverting
+		/// the BuildAction the Remove and Include item should be removed but an Update
+		/// item should be added with the CopyToOutputDirectory property.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgain2 ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsBuildActionChangedBackAgainAfterReload2 ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			var originalBuildAction = f.BuildAction;
+			f.BuildAction = BuildAction.EmbeddedResource;
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.BuildAction = originalBuildAction;
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+
+			// Save again to make sure another Update item is not added.
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+		}
+
+		/// <summary>
+		/// The globs are defined in a file that is imported into the project.
+		/// </summary>
+		[Test]
+		public async Task SaveProjectWithImportedWildcardsBuildActionChangedBackAgain ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-import.csproj");
+				string originalProjectFileText = File.ReadAllText (projFile);
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+				var originalBuildAction = f.BuildAction;
+				f.BuildAction = BuildAction.EmbeddedResource;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f.BuildAction = originalBuildAction;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
 		}
 
 		[Test]
@@ -1814,6 +2126,39 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Something failed (true.targets): true", res.Errors [0].ErrorText);
 		}
 
+		/// <summary>
+		/// Tests that the MSBuildSDKsPath property is set when building a project.
+		/// This is used by Microsoft.NET.Sdk.Web .NET Core projects when importing
+		/// other MSBuild .targets and .props.
+		/// </summary>
+		[Test]
+		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
+
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+
+			try {
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				p.RequiresMicrosoftBuild = true;
+
+				p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
+					OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
+				};
+				var res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+				var buildResult = res.BuildResult;
+
+				Assert.AreEqual (1, buildResult.Errors.Count);
+				string expectedMessage = string.Format ("Something failed (test-import.targets): {0}", sdksPath);
+				Assert.AreEqual (expectedMessage, buildResult.Errors [0].ErrorText);
+
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
 		[Test]
 		public async Task CopyConfiguration ()
 		{
@@ -2185,5 +2530,13 @@ namespace MonoDevelop.Projects
 
 	class CustomFlavor: ProjectExtension
 	{
+	}
+
+	class SupportImportedProjectFilesDotNetProjectExtension : DotNetProjectExtension
+	{
+		protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
+		{
+			return BuildAction.DotNetActions.Contains (buildItem.Name);
+		}
 	}
 }

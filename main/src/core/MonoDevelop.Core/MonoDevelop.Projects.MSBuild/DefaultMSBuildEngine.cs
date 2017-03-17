@@ -393,7 +393,7 @@ namespace MonoDevelop.Projects.MSBuild
 			project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
 		}
 
-		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
+		void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
 		{
 			// Don't add the result from any item that has an empty include. MSBuild never returns those.
 			if (include == string.Empty)
@@ -435,7 +435,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
+		bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
 		{
 			bool ignoreMetadata = false;
 
@@ -726,7 +726,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.IndexOf ('*') != -1;
 		}
 
-		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path)
+		IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path)
 		{
 			var subpath = SplitWildcardFilePath (path);
 		
@@ -861,7 +861,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
 		}
 
-		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
+		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
@@ -952,43 +952,68 @@ namespace MonoDevelop.Projects.MSBuild
 				return;
             }
 
-			// For some reason, Mono can have several extension paths, so we need to try each of them
-			foreach (var ep in MSBuildEvaluationContext.GetApplicableExtensionsPaths ()) {
-				var files = GetImportFiles (project, context, import, ep);
-				if (files == null || files.Length == 0)
-					continue;
+
+			// Try importing the files using the import as is
+
+			bool keepSearching;
+
+			var files = GetImportFiles (project, context, import, null, null, out keepSearching);
+			if (files != null) {
 				foreach (var f in files)
 					ImportFile (project, context, import, f);
-				return;
 			}
 
-			// No import was found
+			// We may need to keep searching if the import was not found, or if the import had a wildcard.
+			// In that case, look in fallback search paths
+
+			if (keepSearching) {
+				foreach (var prop in context.GetProjectImportSearchPaths ()) {
+					if (import.Project.IndexOf ("$(" + prop.Property + ")", StringComparison.OrdinalIgnoreCase) == -1)
+						continue;
+					files = GetImportFiles (project, context, import, prop.Property, prop.Path, out keepSearching);
+					if (files != null) {
+						foreach (var f in files)
+							ImportFile (project, context, import, f);
+					}
+					if (!keepSearching)
+						break;
+				}
+			}
 		}
 
-		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
+		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string pathProperty, string pathPropertyValue, out bool keepSearching)
 		{
-			if (extensionsPath != null) {
+			// This methods looks for targets in location specified by the import, and replacing pathProperty by a specific value.
+
+			if (pathPropertyValue != null) {
 				var tempCtx = new MSBuildEvaluationContext (context);
-				var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
-				tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+				var mep = MSBuildProjectService.ToMSBuildPath (null, pathPropertyValue);
+				tempCtx.SetContextualPropertyValue (pathProperty, mep);
 				context = tempCtx;
 			}
 
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true)) {
+				// Condition evaluates to false. Keep searching because maybe another value for the path property makes
+				// the condition evaluate to true.
+				keepSearching = true;
 				return null;
+			}
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
 
 			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
-				return File.Exists (path) ? new [] { path } : null;
+				// Not a wildcard. Keep searching if the file doesn't exist.
+				var result = File.Exists (path) ? new [] { path } : null;
+				keepSearching = result == null;
+				return result;
 			}
 			else {
+				// Wildcard import. Always keep searching since we want to import all files that match from all search paths.
+				keepSearching = true;
 				path = Path.GetDirectoryName (path);
 				if (!Directory.Exists (path))
 					return null;
@@ -1045,14 +1070,21 @@ namespace MonoDevelop.Projects.MSBuild
 				project.Targets.Add (newTarget);
 		}
 
-		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
+		Dictionary<string, ConditionExpression> conditionCache = new Dictionary<string, ConditionExpression> ();
+		bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
 		{
 			try {
 				if (String.IsNullOrEmpty (condition))
 					return true;
 
 				try {
-					ConditionExpression ce = ConditionParser.ParseCondition (condition);
+					ConditionExpression ce;
+					lock (conditionCache) {
+						if (conditionCache == null || !conditionCache.TryGetValue (condition, out ce))
+							ce = ConditionParser.ParseCondition (condition);
+						if (conditionCache != null)
+							conditionCache [condition] = ce;
+					}
 
 					if (!ce.CanEvaluateToBool (context))
 						throw new InvalidProjectFileException (String.Format ("Can not evaluate \"{0}\" to bool.", condition));
