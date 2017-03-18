@@ -425,8 +425,8 @@ namespace MonoDevelop.Components.MainToolbar
 					foreach (var item in confs) {
 						string config = item.OriginalId;
 						if (config == name) {
-							IdeApp.Workspace.ActiveConfigurationId = config;
 							ToolbarView.ActiveConfiguration = item;
+							UpdateBuildConfiguration ();
 							selected = true;
 							break;
 						}
@@ -434,7 +434,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					if (!selected) {
 						ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.First ();
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
+						UpdateBuildConfiguration ();
 					}
 				}
 			} finally {
