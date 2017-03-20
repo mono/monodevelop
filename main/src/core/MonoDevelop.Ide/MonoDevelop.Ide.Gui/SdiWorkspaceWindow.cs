@@ -809,10 +809,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		protected virtual async System.Threading.Tasks.Task OnClosing (WorkbenchWindowEventArgs e)
+		protected virtual async Task OnClosing (WorkbenchWindowEventArgs e)
 		{
 			if (Closing != null) {
-				await Closing (this, e);
+				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ())
+					await handler (this, e);
 			}
 		}
 
