@@ -388,7 +388,38 @@ namespace Mono.TextEditor
 			}
 			return result.ToString ();
 		}
-		
+
+		static int CalcIndentLength (string indent)
+		{
+			int result = 0;
+			foreach (var ch in indent) {
+				if (ch == '\t') {
+					result = result - result % DefaultSourceEditorOptions.Instance.TabSize + DefaultSourceEditorOptions.Instance.TabSize;
+				} else {
+					result++;
+				}
+			}
+			return result;
+		}
+
+
+		static int CalcOffset (string indent, int indentLength)
+		{
+			int result = 0;
+			int offset = 0;
+			foreach (var ch in indent) {
+				if (ch == '\t') {
+					result = result - result % DefaultSourceEditorOptions.Instance.TabSize + DefaultSourceEditorOptions.Instance.TabSize;
+				} else {
+					result++;
+				}
+				if (result > indentLength)
+					return offset;
+				offset++;
+			}
+			return offset;
+		}
+
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
 			var mode = Document.SyntaxMode;
@@ -410,10 +441,13 @@ namespace Mono.TextEditor
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 				if (removeIndent) {
-					var curIndent = line.GetIndentation (Document).Length;
-					if (indentLength < 0)
+					var indentString = line.GetIndentation (Document);
+					var curIndent = CalcIndentLength (indentString);
+					if (indentLength < 0) {
 						indentLength = curIndent;
-					curOffset += System.Math.Min (curIndent, indentLength);
+					} else {
+						curOffset += CalcOffset (indentString, System.Math.Min (curIndent, indentLength));
+					}
 				}
 
 				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
@@ -424,7 +458,7 @@ namespace Mono.TextEditor
 						chunkStyle.FontWeight != FontWeight.Normal;
 					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 
 						chunkStyle.FontStyle != FontStyle.Normal;
-					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
+					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline) ||
 							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
 					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Foreground) != TextViewMargin.GetPixel (chunkStyle.Foreground);
 					if (setColor || setBold || setItalic || setUnderline) {
