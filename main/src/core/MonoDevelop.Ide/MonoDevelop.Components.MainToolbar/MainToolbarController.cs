@@ -425,8 +425,8 @@ namespace MonoDevelop.Components.MainToolbar
 					foreach (var item in confs) {
 						string config = item.OriginalId;
 						if (config == name) {
-							IdeApp.Workspace.ActiveConfigurationId = config;
 							ToolbarView.ActiveConfiguration = item;
+							UpdateBuildConfiguration ();
 							selected = true;
 							break;
 						}
@@ -434,7 +434,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					if (!selected) {
 						ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.First ();
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
+						UpdateBuildConfiguration ();
 					}
 				}
 			} finally {
@@ -547,16 +547,16 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged -= HandleStartupItemChanged;
-				currentSolution.Saved -= HandleUpdateCombosWidthDelay;
-				currentSolution.EntrySaved -= HandleUpdateCombosWidthDelay;
+				currentSolution.Saved -= HandleSolutionSaved;
+				currentSolution.EntrySaved -= HandleSolutionEntrySaved;
 			}
 
 			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged += HandleStartupItemChanged;
-				currentSolution.Saved += HandleUpdateCombosWidthDelay;
-				currentSolution.EntrySaved += HandleUpdateCombosWidthDelay;
+				currentSolution.Saved += HandleSolutionSaved;
+				currentSolution.EntrySaved += HandleSolutionEntrySaved;
 			}
 
 			TrackStartupProject ();
@@ -589,17 +589,16 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		bool updatingCombos;
-		void HandleUpdateCombosWidthDelay (object sender, EventArgs e)
+		void HandleSolutionSaved (object sender, EventArgs e)
 		{
-			if (!updatingCombos) {
-				updatingCombos = true;
-				GLib.Timeout.Add (100, () => {
-					updatingCombos = false;
-					UpdateCombos ();
-					return false;
-				});
-			}
+			UpdateCombos ();
+		}
+
+		void HandleSolutionEntrySaved (object sender, SolutionItemSavedEventArgs e)
+		{
+			// Skip the per-project update when a solution is being saved. The solution Saved callback will do the final update.
+			if (!e.SavingSolution)
+				HandleSolutionSaved (sender, e);
 		}
 
 		void HandleStartupItemChanged (object sender, EventArgs e)
