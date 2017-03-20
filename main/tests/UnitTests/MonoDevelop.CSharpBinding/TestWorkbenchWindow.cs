@@ -32,6 +32,7 @@ using System.Collections;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -79,9 +80,9 @@ namespace MonoDevelop.CSharpBinding
 			set {}
 		}
 		
-		public bool CloseWindow (bool force)
+		public Task<bool> CloseWindow (bool force)
 		{
-			return true;
+			return Task.FromResult (true);
 		}
 		
 		public void SelectWindow ()
@@ -120,7 +121,7 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		public event EventHandler DocumentChanged;
-		public event WorkbenchWindowEventHandler Closing;
+		public event WorkbenchWindowAsyncEventHandler Closing;
 		public event WorkbenchWindowEventHandler Closed;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 		public event EventHandler ViewsChanged;
