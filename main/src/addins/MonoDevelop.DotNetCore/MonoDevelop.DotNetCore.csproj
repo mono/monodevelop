@@ -137,6 +137,7 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\SdkDependenciesNodeBuilder.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfigurationEditor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkInstalledCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
