@@ -1,11 +1,9 @@
 ﻿namespace MonoDevelopTests
 
 open System
-open Microsoft.FSharp.Compiler.SourceCodeServices
 open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
-open Mono.TextEditor.Highlighting
 open FsUnit
 
 [<TestFixture>]
@@ -106,3 +104,14 @@ type Class<§'a§>() = class end
         let content = "let inline test (x: §^a§) (y: ^b) = x + y"
         let output = getStyle content
         output |> should equal "entity.name.typeparameter"
+
+    [<Test>]
+    member x.``Computation expression is highlighted as a keyword``() =
+        let content = """
+        module ComputationExpressions
+        let x2 = §query§ { for i in 0 .. 100 do
+                         where (i = 0)
+                         select (i,i) }
+        """
+        let output = getStyle content
+        output |> should equal "keyword.other.source"
