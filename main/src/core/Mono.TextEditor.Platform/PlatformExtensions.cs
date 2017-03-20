@@ -5,6 +5,7 @@
 using System;
 
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Platform
 {
@@ -13,6 +14,11 @@ namespace Microsoft.VisualStudio.Platform
         public static ITextBuffer GetPlatformTextBuffer(this MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
             return textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
+        }
+
+        public static ITextView GetPlatformTextView(this MonoDevelop.Ide.Editor.TextEditor textEditor)
+        {
+            return textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().TextView;
         }
 
         public static MonoDevelop.Ide.Editor.ITextDocument GetTextEditor(this ITextBuffer textBuffer)

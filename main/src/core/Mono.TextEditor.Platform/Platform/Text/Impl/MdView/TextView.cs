@@ -18,14 +18,15 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using Mono.TextEditor;
 using Microsoft.VisualStudio.Platform;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     public class TextView : IWpfTextView
     {
         #region Private Members
-        private TextEditor _textEditor;
+        private TextEditorData _textEditorData;
 
         ITextBuffer _textBuffer;
         //		ITextSnapshot _textSnapshot;
@@ -76,9 +77,9 @@ namespace WebToolingAddin
         /// <param name="roles">Roles for this view.</param>
         /// <param name="parentOptions">Parent options for this view.</param>
         /// <param name="factoryService">Our handy text editor factory service.</param>
-        internal TextView(TextEditor textEditor, ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
+        internal TextView(TextEditorData textEditor, ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
         {
-            _textEditor = textEditor;
+            _textEditorData = textEditor;
 
             _roles = roles;
 
@@ -113,10 +114,10 @@ namespace WebToolingAddin
 
             //_editorFormatMap = _factoryService.EditorFormatMapService.GetEditorFormatMap(this);
 
-            _selection = new TextSelection(_textEditor, this);
+            _selection = new TextSelection(_textEditorData, this);
 
             // Create caret
-            _caret = new TextCaret(_textEditor, this);
+            _caret = new TextCaret(_textEditorData, this);
 
             //			this.Loaded += OnLoaded;
 
@@ -133,8 +134,6 @@ namespace WebToolingAddin
             //_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
             _hasInitializeBeenCalled = true;
-
-            _textEditor.SyntaxHighlighting = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(_textBuffer);
         }
 
         public ITextCaret Caret
@@ -416,7 +415,7 @@ namespace WebToolingAddin
         {
             IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
 
-            var guiDoc = IdeApp.Workbench.GetDocument(_textEditor.FileName);
+            var guiDoc = IdeApp.Workbench.GetDocument(_textEditorData.FileName);
             guiDoc.Closed += GuiDoc_Closed;
         }
 
@@ -516,7 +515,7 @@ namespace WebToolingAddin
 
             if (!_isClosed)
             {
-                bool newHasAggregateFocus = (IdeApp.Workbench.ActiveDocument?.Editor == _textEditor);
+                bool newHasAggregateFocus = (IdeApp.Workbench.ActiveDocument?.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData() == _textEditorData);
                 if (newHasAggregateFocus != _hasAggregateFocus)
                 {
                     _hasAggregateFocus = newHasAggregateFocus;
@@ -561,4 +560,3 @@ namespace WebToolingAddin
         }
     }
 }
-

@@ -11,21 +11,22 @@ using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
+using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    public class TextSelection : ITextSelection
+    internal class TextSelection : ITextSelection
     {
-        private TextEditor _textEditor;
+        private TextEditorData _textEditorData;
         private ITextView _textView;
 
-        public TextSelection(TextEditor textEditor, ITextView textView)
+        public TextSelection(TextEditorData textEditorData, ITextView textView)
         {
-            _textEditor = textEditor;
+            _textEditorData = textEditorData;
             _textView = textView;
 
-            _textEditor.SelectionChanged += OnSelectionChanged;
+            _textEditorData.SelectionChanged += OnSelectionChanged;
         }
 
         void OnSelectionChanged(object s, EventArgs args)
@@ -51,9 +52,9 @@ namespace WebToolingAddin
         {
             get
             {
-                int offset = _textEditor.SelectionLeadOffset;
+                int offset = _textEditorData.SelectionLead;
                 if (offset == -1)
-                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
+                    offset = _textEditorData.SelectionRange.Offset;  // Selection is empty
 
                 SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
@@ -66,9 +67,9 @@ namespace WebToolingAddin
         {
             get
             {
-                int offset = _textEditor.SelectionAnchorOffset;
+                int offset = _textEditorData.SelectionAnchor;
                 if (offset == -1)
-                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
+                    offset = _textEditorData.SelectionRange.Offset;  // Selection is empty
 
                 SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
@@ -81,7 +82,7 @@ namespace WebToolingAddin
         {
             get
             {
-                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditor.SelectionRange.EndOffset);
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditorData.SelectionRange.EndOffset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
 
                 return virtualPoint;
@@ -121,14 +122,13 @@ namespace WebToolingAddin
         {
             get
             {
-                return _textEditor.SelectionMode == SelectionMode.Normal ? TextSelectionMode.Stream : TextSelectionMode.Box;
-
+                return _textEditorData.SelectionMode == SelectionMode.Normal
+                       ? TextSelectionMode.Stream
+                       : TextSelectionMode.Box;
             }
             set
             {
-                // TODO: MONO: Not sure what to do here as there isn't a SetSelectionMode on the editor. I see an internal
-                //  IEditorActionHost.SwitchCaretMode method, but I can't get to that. 
-                // _textEditor.SetSelectionMode = (value == TextSelectionMode.Stream ? SelectionMode.Normal : SelectionMode.Block);
+                _textEditorData.SelectionMode = (value == TextSelectionMode.Stream ? SelectionMode.Normal : SelectionMode.Block);
             }
         }
 
@@ -136,10 +136,10 @@ namespace WebToolingAddin
         {
             get
             {
-                if (_textEditor.SelectionMode == SelectionMode.Normal)
+                if (_textEditorData.SelectionMode == SelectionMode.Normal)
                 {
-                    int start = _textEditor.SelectionRange.Offset;
-                    int len = _textEditor.SelectionRange.Length;
+                    int start = _textEditorData.SelectionRange.Offset;
+                    int len = _textEditorData.SelectionRange.Length;
 
                     SnapshotSpan selectedRange = new SnapshotSpan(_textView.TextSnapshot, start, len);
                     return new NormalizedSnapshotSpanCollection(selectedRange);
@@ -147,12 +147,12 @@ namespace WebToolingAddin
                 else
                 {
                     IList<SnapshotSpan> spans = new List<SnapshotSpan>();
-                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in _textEditor.Selections)
+                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in _textEditorData.Selections)
                     {
                         for (int curLineIndex = curSelection.MinLine; curLineIndex <= curSelection.MaxLine; curLineIndex++)
                         {
-                            int start = _textEditor.LocationToOffset(curLineIndex, curSelection.Start.Column);
-                            int end = _textEditor.LocationToOffset(curLineIndex, curSelection.End.Column);
+                            int start = _textEditorData.LocationToOffset(curLineIndex, curSelection.Start.Column);
+                            int end = _textEditorData.LocationToOffset(curLineIndex, curSelection.End.Column);
 
                             spans.Add(new SnapshotSpan(_textView.TextSnapshot, start, end - start));
                         }
@@ -167,7 +167,7 @@ namespace WebToolingAddin
         {
             get
             {
-                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditor.SelectionRange.Offset);
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditorData.SelectionRange.Offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
 
                 return virtualPoint;
@@ -202,7 +202,7 @@ namespace WebToolingAddin
 
         public void Clear()
         {
-            _textEditor.ClearSelection();
+            _textEditorData.ClearSelection();
         }
 
         public VirtualSnapshotSpan? GetSelectionOnTextViewLine(ITextViewLine line)
@@ -212,7 +212,7 @@ namespace WebToolingAddin
 
         public void Select(VirtualSnapshotPoint anchorPoint, VirtualSnapshotPoint activePoint)
         {
-            _textEditor.SetSelection(anchorPoint.Position, activePoint.Position);
+            _textEditorData.SetSelection(anchorPoint.Position, activePoint.Position);
         }
 
         public void Select(SnapshotSpan selectionSpan, bool isReversed)

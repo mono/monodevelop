@@ -12,33 +12,33 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     public class TextCaret : ITextCaret
     {
-        private TextEditor _textEditor;
+        private TextEditorData _textEditorData;
         private ITextView _textView;
 
         private VirtualSnapshotPoint _insertionPoint;
         private PositionAffinity _caretAffinity;
 
-        public TextCaret(TextEditor textEditor, ITextView textView)
+        internal TextCaret(TextEditorData textEditorData, ITextView textView)
         {
-            _textEditor = textEditor;
+            _textEditorData = textEditorData;
             _textView = textView;
 
             // Set up initial values
             _caretAffinity = PositionAffinity.Successor;
             _insertionPoint = new VirtualSnapshotPoint(new SnapshotPoint(_textView.TextSnapshot, 0));
 
-            textEditor.Carets[0].PositionChanged += ImmediateCaretPositionChanged;
+            _textEditorData.Caret.PositionChanged += ImmediateCaretPositionChanged;
         }
 
         void ImmediateCaretPositionChanged(object sender, CaretLocationEventArgs args)
         {
             // MD doesn't fire textEditor.CaretPositionChanged until after the command has gone completely through the command chain. 
             //   Too much VS stuff depends on it getting updated earlier, so we'll use this event which fires earlier.
-            int position = _textEditor.CaretOffset;
+            int position = _textEditorData.Caret.Offset;
             VirtualSnapshotPoint vsp = new VirtualSnapshotPoint(_textView.TextSnapshot, position);
             
             _insertionPoint = vsp;
@@ -83,7 +83,7 @@ namespace WebToolingAddin
             {
                 ITextSnapshotLine snapshotLine = _textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(Position.BufferPosition);
 
-                return _textEditor.CaretColumn > snapshotLine.Length + 1;
+                return _textEditorData.Caret.Column > snapshotLine.Length + 1;
             }
         }
 
@@ -166,7 +166,7 @@ namespace WebToolingAddin
 
         public void EnsureVisible()
         {
-            _textEditor.ScrollTo(_textEditor.CaretLocation);
+            _textEditorData.ScrollTo(_textEditorData.Caret.Location);
         }
 
         public CaretPosition MoveTo(SnapshotPoint bufferPosition)
@@ -246,11 +246,10 @@ namespace WebToolingAddin
             }
             else 
             {
-                col = requestedPosition - snapshotLine.Start + 1;
+                col = requestedPosition - snapshotLine.Start.Position + 1;
             }
 
-            _textEditor.SetCaretLocation(line, col, false, false);
+            _textEditorData.Caret.Location = new MonoDevelop.Ide.Editor.DocumentLocation(line, col);
         }
     }
 }
-
