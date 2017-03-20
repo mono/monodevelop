@@ -871,6 +871,7 @@ namespace MonoDevelop.SourceEditor
 					this.Document.VsTextDocument.Encoding = loadEncoding;
 
 					text = ProcessLoadText(text);
+					document.IsTextSet = false;
 					if (reload) {
 						document.ReplaceText(0, Document.Length, text);
 						document.DiffTracker.Reset();

@@ -338,8 +338,11 @@ namespace Mono.TextEditor
 				this.ReplaceText(0, this.currentSnapshot.Length, value);
 				ClearUndoBuffer ();
 				IsReadOnly = tmp;
+				IsTextSet = true;
 			}
 		}
+
+		internal bool IsTextSet { get; set; }
 
 		public void InsertText (int offset, string text)
 		{
@@ -396,7 +399,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void ApplyTextChanges(IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
 		{
 			if (changes == null)
 				throw new ArgumentNullException(nameof(changes));

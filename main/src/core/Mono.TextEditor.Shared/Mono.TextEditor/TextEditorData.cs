@@ -277,6 +277,19 @@ namespace Mono.TextEditor
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			caret.UpdateCaretPosition (e);
+
+			if (Options.TabsToSpaces && document.IsTextSet) {
+				string tabReplacement = new string (' ', Options.TabSize);
+				var newChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+				foreach (var change in e.TextChanges) {
+					string replaceText = change.InsertedText.Text.Replace ("\t", tabReplacement);
+					if (replaceText.Length != change.InsertedText.Length) {
+						newChanges.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (change.NewOffset, change.InsertionLength), replaceText)); 
+					}
+				}
+				if (newChanges.Count > 0)
+					document.ApplyTextChanges (newChanges);
+			}
 		}
 
 
