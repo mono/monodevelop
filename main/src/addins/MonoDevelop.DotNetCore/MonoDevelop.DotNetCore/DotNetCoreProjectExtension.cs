@@ -370,8 +370,7 @@ namespace MonoDevelop.DotNetCore
 			if (!HasSdk)
 				return;
 
-			sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
+			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 			if (!sdkPaths.Exist)
 				return;
 

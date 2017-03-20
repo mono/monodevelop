@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreSdkInstalledCondition.cs
+// DotNetCoreSdk.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,15 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
+using System;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSdkInstalledCondition : ConditionType
+	static class DotNetCoreSdk
 	{
-		public override bool Evaluate (NodeElement conditionNode)
+		static DotNetCoreSdk ()
 		{
-			return DotNetCoreSdk.IsInstalled;
+			var sdkPaths = new DotNetCoreSdkPaths ();
+			sdkPaths.FindMSBuildSDKsPath ();
+
+			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
+			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
+		}
+
+		public static bool IsInstalled { get; private set; }
+		public static string MSBuildSDKsPath { get; private set; }
+
+		internal static void EnsureInitialized ()
+		{
+		}
+
+		public static DotNetCoreSdkPaths FindSdkPaths (string sdk)
+		{
+			var sdkPaths = new DotNetCoreSdkPaths ();
+			sdkPaths.MSBuildSDKsPath = MSBuildSDKsPath;
+			sdkPaths.FindSdkPaths (sdk);
+
+			return sdkPaths;
 		}
 	}
 }
