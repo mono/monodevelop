@@ -38,6 +38,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -443,17 +444,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool CloseWindow (bool force)
+		public Task<bool> CloseWindow (bool force)
 		{
 			return CloseWindow (force, false);
 		}
 
-		public bool CloseWindow (bool force, bool animate)
+		public async Task<bool> CloseWindow (bool force, bool animate)
 		{
 			bool wasActive = workbench.ActiveWorkbenchWindow == this;
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
 			args.Cancel = false;
-			OnClosing (args);
+			await OnClosing (args);
 			if (args.Cancel)
 				return false;
 			
@@ -808,10 +809,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		protected virtual void OnClosing (WorkbenchWindowEventArgs e)
+		protected virtual async System.Threading.Tasks.Task OnClosing (WorkbenchWindowEventArgs e)
 		{
 			if (Closing != null) {
-				Closing (this, e);
+				await Closing (this, e);
 			}
 		}
 
@@ -830,7 +831,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closed;
-		public event WorkbenchWindowEventHandler Closing;
+		public event WorkbenchWindowAsyncEventHandler Closing;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
 }
