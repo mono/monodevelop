@@ -1632,6 +1632,59 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (itemGroup.Items.Any (item => item.Name != "Reference"));
 		}
 
+		[Test]
+		public async Task DeleteFileAndThenAddNewFileToProjectWithSingleFileAndImportedCSharpFilesWildcard ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-imported-wildcard", "ConsoleProject-imported-wildcard.csproj");
+				string originalProjectFileText = File.ReadAllText (projFile);
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				var f = mp.Files.Single ();
+				Assert.AreEqual ("Program.cs", f.FilePath.FileName);
+				string fileToDelete = f.FilePath;
+				File.Delete (fileToDelete);
+				mp.Files.Remove (f);
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string newFile = Path.Combine (p.BaseDirectory, "Test.cs");
+				File.WriteAllText (newFile, "class Test { }");
+				mp.AddFile (newFile);
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				// Second save was triggering a null reference.
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				var savedProjFileText = File.ReadAllText (projFile);
+				Assert.AreEqual (originalProjectFileText, savedProjFileText);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task DeleteAllFilesIncludingWildcardItems ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project)p;
+			mp.UseAdvancedGlobSupport = true;
+
+			mp.Files.Clear ();
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved7")), File.ReadAllText (p.FileName));
+		}
+
 		/// <summary>
 		/// Checks that the remove applies to items using the root project as the
 		/// starting point.
