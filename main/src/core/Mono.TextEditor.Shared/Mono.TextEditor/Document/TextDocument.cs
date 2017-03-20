@@ -240,7 +240,7 @@ namespace Mono.TextEditor
 			this.currentSnapshot = args.After;
 
 			if (!isInUndo) {
-				operation = new UndoOperation(textChange);
+				operation = new UndoOperation(args);
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add(operation);
 				} else {
@@ -338,8 +338,11 @@ namespace Mono.TextEditor
 				this.ReplaceText(0, this.currentSnapshot.Length, value);
 				ClearUndoBuffer ();
 				IsReadOnly = tmp;
+				IsTextSet = true;
 			}
 		}
+
+		internal bool IsTextSet { get; set; }
 
 		public void InsertText (int offset, string text)
 		{
@@ -396,7 +399,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void ApplyTextChanges(IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
 		{
 			if (changes == null)
 				throw new ArgumentNullException(nameof(changes));
@@ -722,11 +725,13 @@ namespace Mono.TextEditor
 		#region Undo/Redo operations
 		internal class UndoOperation
 		{
-			TextChangeEventArgs args;
+			readonly int beforeVersionNumber;
+			readonly int afterVersionNumber;
+			Microsoft.VisualStudio.Text.INormalizedTextChangeCollection changes;
 
-			public virtual TextChangeEventArgs Args {
+			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
-					return args;
+					return changes;
 				}
 			}
 			
@@ -739,29 +744,40 @@ namespace Mono.TextEditor
 			{
 			}
 
-			public UndoOperation (TextChangeEventArgs args)
+			public UndoOperation (Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
 			{
-				this.args = args;
+				this.beforeVersionNumber = args.BeforeVersion.VersionNumber;
+				this.afterVersionNumber = args.AfterVersion.VersionNumber;
+
+				this.changes = args.Changes;
 			}
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				var changes = new List<TextChange>();
-				foreach (var change in args.TextChanges)
-					changes.Add(new TextChange(change.NewOffset, change.InsertedText, change.RemovedText));
+				if (this.Changes.Count > 0) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+						foreach (var change in this.changes)
+							edit.Replace(change.NewPosition, change.NewLength, change.OldText);
 
-				doc.ApplyTextChanges(changes);
+						edit.Apply();
+					}
+				}
+
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				var changes = new List<TextChange>();
-				foreach (var change in args.TextChanges.Reverse())
-					changes.Add(new TextChange(change.Offset, change.RemovedText, change.InsertedText));
+				if (this.Changes.Count > 0) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+						foreach (var change in this.changes)
+							edit.Replace(change.OldPosition, change.OldLength, change.NewText);
 
-				doc.ApplyTextChanges(changes);
+						edit.Apply();
+					}
+				}
+
 				if (fireEvent)
 					OnRedoDone ();
 			}
@@ -797,8 +813,8 @@ namespace Mono.TextEditor
 					return operations;
 				}
 			}
-			
-			public override TextChangeEventArgs Args {
+
+			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
 					return null;
 				}
@@ -864,9 +880,9 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public override TextChangeEventArgs Args {
+			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
-					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
+					return operations.Count > 0 ? operations [operations.Count - 1].Changes : null;
 				}
 			}
 		}
@@ -885,7 +901,7 @@ namespace Mono.TextEditor
 					op = ((AtomicUndoOperation)op).Operations.FirstOrDefault ();
 				if (op == null)
 					return -1;
-				return ((UndoOperation)op).Args.TextChanges.Select (c => c.Offset).Min ();
+				return ((UndoOperation)op).Changes[0].OldPosition;
 			}
 		}
 
@@ -898,7 +914,7 @@ namespace Mono.TextEditor
 					op = ((AtomicUndoOperation)op).Operations.FirstOrDefault ();
 				if (op == null)
 					return -1;
-				return ((UndoOperation)op).Args.TextChanges.Select (c => c.Offset).Min ();
+				return ((UndoOperation)op).Changes[0].NewPosition;
 			}
 		}
 
@@ -967,12 +983,12 @@ namespace Mono.TextEditor
 			if (undoStack.Count == 0)
 				return;
 			UndoOperation top = undoStack.Pop ();
-			if (top.Args == null) {
+			if (top.Changes == null) {
 				undoStack.Push (top);
 				return;
 			}
-			foreach (var change in top.Args.TextChanges) {
-				if (change == null || change.InsertedText == null || change.InsertionLength != 1 || (top is KeyboardStackUndo && ((KeyboardStackUndo)top).IsClosed)) {
+			foreach (var change in top.Changes) {
+				if (change.NewLength != 1 || (top is KeyboardStackUndo && ((KeyboardStackUndo)top).IsClosed)) {
 					undoStack.Push (top);
 					continue;
 				}
@@ -983,9 +999,9 @@ namespace Mono.TextEditor
 					undoStack.Push (keyUndo);
 					keyUndo = new KeyboardStackUndo ();
 				}
-				if (keyUndo.Args != null) {
-					foreach (var kchange in keyUndo.Args.TextChanges) {
-						if (kchange.Offset + 1 != change.Offset || !char.IsLetterOrDigit (change.InsertedText [0])) {
+				if (keyUndo.Changes != null) {
+					foreach (var kchange in keyUndo.Changes) {
+						if (kchange.OldPosition + 1 != change.OldPosition || change.NewLength == 0 || !char.IsLetterOrDigit (change.NewText [0])) {
 							keyUndo.IsClosed = true;
 							undoStack.Push (keyUndo);
 							keyUndo = new KeyboardStackUndo ();

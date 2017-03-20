@@ -51,12 +51,14 @@ namespace WebToolingAddin
         {
             get
             {
-                if (_textEditor.SelectionAnchorOffset > 0)
-                {
-                    return Start;
-                }
+                int offset = _textEditor.SelectionLeadOffset;
+                if (offset == -1)
+                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
-                return End;
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
+                VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
+
+                return virtualPoint;
             }
         }
 
@@ -64,12 +66,14 @@ namespace WebToolingAddin
         {
             get
             {
-                if (_textEditor.SelectionAnchorOffset < 0)
-                {
-                    return Start;
-                }
+                int offset = _textEditor.SelectionAnchorOffset;
+                if (offset == -1)
+                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
-                return End;
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
+                VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
+
+                return virtualPoint;
             }
         }
 
