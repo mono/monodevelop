@@ -835,7 +835,7 @@ namespace MonoDevelop.Projects
 			OnItemModified (e);
 		}
 		
-		internal void NotifyItemSaved (object sender, SolutionItemEventArgs e)
+		internal void NotifyItemSaved (object sender, SolutionItemSavedEventArgs e)
 		{
 			OnItemSaved (e);
 		}
@@ -976,7 +976,7 @@ namespace MonoDevelop.Projects
 				ItemModified (this, e);
 		}
 		
-		void OnItemSaved (SolutionItemEventArgs e)
+		void OnItemSaved (SolutionItemSavedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntrySaved (e);
