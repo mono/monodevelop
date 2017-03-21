@@ -147,11 +147,10 @@ namespace MonoDevelop.Components.AutoTest
 		public void ExitApp ()
 		{
 			Sync (delegate {
-				try {
-					IdeApp.Exit ();
-				} catch (Exception e) {
-					Console.WriteLine (e);
-				}
+				IdeApp.Exit ().ContinueWith ((arg) => {
+					if (arg.IsFaulted)
+						Console.WriteLine (arg.Exception);
+				});
 				return true;
 			});
 		}
