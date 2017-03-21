@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.cs
 //
 // Author:
@@ -100,8 +100,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (asm == null)
 						continue;
 					assemblies.Add (asm);
-				} catch (Exception) {
-					LoggingService.LogError ("Error - can't load host service assembly: " + asmName);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error - can't load host service assembly: " + asmName, ex);
 				}
 			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
