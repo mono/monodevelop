@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using MonoDevelop.Ide.Editor;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     public class TextSelection : ITextSelection
     {
@@ -231,4 +231,3 @@ namespace WebToolingAddin
         }
     }
 }
-

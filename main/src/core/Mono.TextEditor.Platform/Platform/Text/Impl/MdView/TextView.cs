@@ -20,7 +20,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Platform;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     public class TextView : IWpfTextView
     {
@@ -134,7 +134,7 @@ namespace WebToolingAddin
 
             _hasInitializeBeenCalled = true;
 
-            _textEditor.SyntaxHighlighting = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(_textBuffer);
+            //_textEditor.SyntaxHighlighting = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(_textBuffer);
         }
 
         public ITextCaret Caret
@@ -415,14 +415,6 @@ namespace WebToolingAddin
         private void SubscribeToEvents()
         {
             IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
-
-            var guiDoc = IdeApp.Workbench.GetDocument(_textEditor.FileName);
-            guiDoc.Closed += GuiDoc_Closed;
-        }
-
-        void GuiDoc_Closed(object sender, EventArgs e)
-        {
-            Close();
         }
 
         void Workbench_ActiveDocumentChanged(object sender, EventArgs e)
