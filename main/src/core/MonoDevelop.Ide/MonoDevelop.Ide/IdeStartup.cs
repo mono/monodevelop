@@ -44,6 +44,7 @@ using Mono.Unix;
 using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Instrumentation;
@@ -116,7 +117,7 @@ namespace MonoDevelop.Ide
 
 			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
-			RuntimeAddin.AssemblyLoad(p.ParentDirectory.Combine("Xwt.Gtk.dll"));
+			SystemAssemblyService.AssemblyLoad(p.ParentDirectory.Combine("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
@@ -627,7 +628,7 @@ namespace MonoDevelop.Ide
 				foreach (var path in paths) {
 					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
 					if (File.Exists (file)) {
-						Assembly asm = RuntimeAddin.AssemblyLoad(file);
+						Assembly asm = SystemAssemblyService.AssemblyLoad(file);
 						var t = asm.GetType (type, true);
 						var c = Activator.CreateInstance (t) as IdeCustomizer;
 						if (c == null)
