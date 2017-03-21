@@ -2920,16 +2920,20 @@ namespace Mono.TextEditor
 				lineArea.Y,
 				textEditor.Allocation.Width - lx,
 				lineArea.Height);
-			
+
+
 			LayoutWrapper wrapper = null;
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					wrapper = GetLayout (line);
+					int remainingLineWidth, ph;
+					wrapper.GetPixelSize (out remainingLineWidth, out ph);
+
 					if (lineNr == textEditor.MainSelection.Start.Line && line.Length == 0 && textEditor.MainSelection.Start.Column > 1) {
 						// position already skipped virtual space layout
 					} else  {
-						var eolStartX = System.Math.Floor (position);
+						var eolStartX = System.Math.Floor (position + remainingLineWidth);
 						lineArea = new Cairo.Rectangle (
 							eolStartX,
 							lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
