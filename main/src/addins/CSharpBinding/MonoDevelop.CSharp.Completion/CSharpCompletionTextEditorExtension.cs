@@ -47,7 +47,6 @@ using Mono.Addins;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide;
@@ -154,7 +153,6 @@ namespace MonoDevelop.CSharp.Completion
 					snippets = newSnippets;
 					return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
 				};
-				NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
 			}

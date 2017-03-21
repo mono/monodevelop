@@ -226,9 +226,6 @@
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\MonoNameConventionPolicy.xml">
-      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -323,13 +320,6 @@
     <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionEditRuleDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionRule.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFeaturesTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindReferencesHandler.cs" />
