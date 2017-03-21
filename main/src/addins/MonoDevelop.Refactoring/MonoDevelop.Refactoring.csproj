@@ -343,9 +343,4 @@
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
   </ItemGroup>
-
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
-    <Copy SourceFiles="..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
-  </Target>
-  </Project>
+</Project>
