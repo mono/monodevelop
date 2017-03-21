@@ -50,8 +50,6 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
-		public readonly Microsoft.VisualStudio.Text.Editor.ITextView TextView;
-
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
@@ -970,8 +968,6 @@ namespace MonoDevelop.Ide.Editor
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
 
-			this.TextView.Close();
-
 			base.Dispose (disposing);
 		}
 
@@ -1040,8 +1036,6 @@ namespace MonoDevelop.Ide.Editor
 
 			FileNameChanged += TextEditor_FileNameChanged;
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
-
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this) as Microsoft.VisualStudio.Text.Editor.ITextView;
 		}
 
 		void TextEditor_FileNameChanged (object sender, EventArgs e)
