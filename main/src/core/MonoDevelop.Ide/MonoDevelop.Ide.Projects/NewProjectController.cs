@@ -333,7 +333,10 @@ namespace MonoDevelop.Ide.Projects
 		{
 			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
 			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
-			recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().ToList ();
+			if (IsNewSolution)
+				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().Where ((t) => t.IsMatch (SolutionTemplateVisibility.NewSolution)).ToList ();
+			else
+				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().ToList ();
 		}
 
 		Predicate<SolutionTemplate> GetTemplateFilter ()

@@ -413,7 +413,7 @@ namespace MonoDevelop.MacIntegration
 				{
 					// We can only attempt to quit safely if all windows are GTK windows and not modal
 					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ();
+						e.UserCancelled = !IdeApp.Exit ().Result; // FIXME: could this block in rare cases?
 						e.Handled = true;
 						return;
 					}
