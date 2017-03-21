@@ -222,7 +222,7 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Features.2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
