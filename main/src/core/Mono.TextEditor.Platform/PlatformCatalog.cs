@@ -89,7 +89,8 @@ namespace Microsoft.VisualStudio.Platform
                     try
                     {
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = Assembly.LoadFrom(assemblyFilePath);
+                        var assemblyName = AssemblyName.GetAssemblyName(assemblyFilePath);
+                        var assembly = Assembly.Load(assemblyName);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)
@@ -100,7 +101,10 @@ namespace Microsoft.VisualStudio.Platform
             }
 
             //Create the CompositionContainer with the parts in the catalog
-            CompositionContainer container = new CompositionContainer(catalog);
+            CompositionContainer container = new CompositionContainer(catalog,
+                                                                      CompositionOptions.DisableSilentRejection |
+                                                                      CompositionOptions.IsThreadSafe |
+                                                                      CompositionOptions.ExportCompositionService);
 
             return container;
         }
