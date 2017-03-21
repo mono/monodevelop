@@ -7,6 +7,7 @@ file_extensions:
 scope: source.fs
 variables:
   modifiers: 'static|abstract|default|override|public|extern|internal|mutable|rec|inline|private'
+  typemodifiers: 'public|private|internal'
 contexts:
   main:
     - include: functions2
@@ -47,6 +48,11 @@ contexts:
         3: source.fs
 
   namespaces:
+    - match: '(namespace)\s+(rec)\b(.*)'
+      captures:
+        1: keyword.source.fs
+        2: keyword.source.fs
+        3: source.fs
     - match: '(namespace|open)\b(.*)'
       captures:
         1: keyword.source.fs
@@ -81,6 +87,12 @@ contexts:
       scope: entity.name.class
     - match: '\b([A-Z][\w]*)\b'
       scope: entity.name.class
+    - match: '(module|type|and)(\s+)({{typemodifiers}})\s+(\w+|``[^`]+``)'
+      captures: 
+        1: keyword.source.fs
+        2: source.fs
+        3: keyword.source.fs
+        4: entity.name.class
     - match: '(module|type|and)(\s+)(\w+|``[^`]+``)'
       captures: 
         1: keyword.source.fs
@@ -221,7 +233,7 @@ contexts:
   keywords2:
     - match: '\b(do!|use!|yield!|return!|let!)'
       scope: keyword.source.fs
-    - match: '\b({{modifiers}}|async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|finally|let|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|function|do|use|module|and|return|new|ref|not|yield")\b'
+    - match: '\b({{modifiers}}|async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|finally|let|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in|namespace|open|override|fun|function|do|use|and|return|new|ref|not|yield")\b'
       scope: keyword.source.fs
     - match: '\b(true|false|null)\b'
       scope: constant.language.source.fs
