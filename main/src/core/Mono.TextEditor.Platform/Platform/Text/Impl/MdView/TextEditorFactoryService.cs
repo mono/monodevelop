@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
     [Export(typeof(ITextEditorFactoryService))]
-    public sealed class TextEditorFactoryService : ITextEditorFactoryService
+    internal sealed class TextEditorFactoryService : ITextEditorFactoryService
     {
         [Import]
         internal GuardedOperations GuardedOperations { get; set; }
