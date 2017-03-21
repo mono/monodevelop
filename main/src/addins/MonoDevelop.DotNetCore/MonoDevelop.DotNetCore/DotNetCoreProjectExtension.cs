@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -558,6 +559,13 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (!BuildAction.DotNetActions.Contains (buildItem.Name))
 				return false;
+
+			if (IsFSharpSdkProject ()) {
+				// Ignore imported F# files. F# files are defined in the main project.
+				// This prevents duplicate F# files when a new project is first created.
+				if (buildItem.Include.EndsWith (".fs", StringComparison.OrdinalIgnoreCase))
+					return false;
+			}
 
 			// HACK: Remove any imported items that are not in the EvaluatedItems
 			// This may happen if a condition excludes the item. All items passed to the
