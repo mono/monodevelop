@@ -131,8 +131,12 @@ namespace MonoDevelop.DotNetCore
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			FilePath outputFileName = GetOutputFileName (configuration);
+			FilePath outputFileName;
 			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
+			if (dotnetCoreRunConfiguration?.StartAction == AssemblyRunConfiguration.StartActions.Program)
+				outputFileName = dotnetCoreRunConfiguration.StartProgram;
+			else
+				outputFileName = GetOutputFileName (configuration);
 
 			return new DotNetCoreExecutionCommand (
 				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,

@@ -177,9 +177,9 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
 
     member x.CheckResults = infoOpt
 
-    member x.GetExtraColorizations() =
+    member x.GetExtraColorizations(range) =
         match infoOpt with
-        | Some checkResults -> Some(checkResults.GetSemanticClassification(None))
+        | Some checkResults -> Some(checkResults.GetSemanticClassification(range))
         | None -> None
 
     member x.GetStringFormatterColours() =
