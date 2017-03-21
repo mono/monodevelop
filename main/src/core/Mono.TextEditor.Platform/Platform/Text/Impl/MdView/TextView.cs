@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
-using Mono.TextEditor;
 using Microsoft.VisualStudio.Platform;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
@@ -26,7 +25,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     public class TextView : IWpfTextView
     {
         #region Private Members
-        private TextEditorData _textEditorData;
+        private TextEditor _textEditor;
 
         ITextBuffer _textBuffer;
         //		ITextSnapshot _textSnapshot;
@@ -77,9 +76,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         /// <param name="roles">Roles for this view.</param>
         /// <param name="parentOptions">Parent options for this view.</param>
         /// <param name="factoryService">Our handy text editor factory service.</param>
-        internal TextView(TextEditorData textEditor, ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
+        internal TextView(TextEditor textEditor, ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
         {
-            _textEditorData = textEditor;
+            _textEditor = textEditor;
 
             _roles = roles;
 
@@ -114,10 +113,10 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
             //_editorFormatMap = _factoryService.EditorFormatMapService.GetEditorFormatMap(this);
 
-            _selection = new TextSelection(_textEditorData, this);
+            _selection = new TextSelection(_textEditor, this);
 
             // Create caret
-            _caret = new TextCaret(_textEditorData, this);
+            _caret = new TextCaret(_textEditor, this);
 
             //			this.Loaded += OnLoaded;
 
@@ -134,6 +133,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             //_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
             _hasInitializeBeenCalled = true;
+
+            //_textEditor.SyntaxHighlighting = TagBasedSyntaxHighlighting.CreateSyntaxHighlighting(_textBuffer);
         }
 
         public ITextCaret Caret
@@ -414,14 +415,6 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         private void SubscribeToEvents()
         {
             IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
-
-            var guiDoc = IdeApp.Workbench.GetDocument(_textEditorData.FileName);
-            guiDoc.Closed += GuiDoc_Closed;
-        }
-
-        void GuiDoc_Closed(object sender, EventArgs e)
-        {
-            Close();
         }
 
         void Workbench_ActiveDocumentChanged(object sender, EventArgs e)
@@ -515,7 +508,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
             if (!_isClosed)
             {
-                bool newHasAggregateFocus = (IdeApp.Workbench.ActiveDocument?.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData() == _textEditorData);
+                bool newHasAggregateFocus = (IdeApp.Workbench.ActiveDocument?.Editor == _textEditor);
                 if (newHasAggregateFocus != _hasAggregateFocus)
                 {
                     _hasAggregateFocus = newHasAggregateFocus;
@@ -560,3 +553,4 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
     }
 }
+

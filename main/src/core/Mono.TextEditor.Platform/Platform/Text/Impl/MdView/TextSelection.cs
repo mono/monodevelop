@@ -11,22 +11,21 @@ using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    internal class TextSelection : ITextSelection
+    public class TextSelection : ITextSelection
     {
-        private TextEditorData _textEditorData;
+        private TextEditor _textEditor;
         private ITextView _textView;
 
-        public TextSelection(TextEditorData textEditorData, ITextView textView)
+        public TextSelection(TextEditor textEditor, ITextView textView)
         {
-            _textEditorData = textEditorData;
+            _textEditor = textEditor;
             _textView = textView;
 
-            _textEditorData.SelectionChanged += OnSelectionChanged;
+            _textEditor.SelectionChanged += OnSelectionChanged;
         }
 
         void OnSelectionChanged(object s, EventArgs args)
@@ -52,9 +51,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                int offset = _textEditorData.SelectionLead;
+                int offset = _textEditor.SelectionLeadOffset;
                 if (offset == -1)
-                    offset = _textEditorData.SelectionRange.Offset;  // Selection is empty
+                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
                 SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
@@ -67,9 +66,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                int offset = _textEditorData.SelectionAnchor;
+                int offset = _textEditor.SelectionAnchorOffset;
                 if (offset == -1)
-                    offset = _textEditorData.SelectionRange.Offset;  // Selection is empty
+                    offset = _textEditor.SelectionRange.Offset;  // Selection is empty
 
                 SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
@@ -82,7 +81,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditorData.SelectionRange.EndOffset);
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditor.SelectionRange.EndOffset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
 
                 return virtualPoint;
@@ -122,13 +121,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                return _textEditorData.SelectionMode == SelectionMode.Normal
-                       ? TextSelectionMode.Stream
-                       : TextSelectionMode.Box;
+                return _textEditor.SelectionMode == SelectionMode.Normal ? TextSelectionMode.Stream : TextSelectionMode.Box;
+
             }
             set
             {
-                _textEditorData.SelectionMode = (value == TextSelectionMode.Stream ? SelectionMode.Normal : SelectionMode.Block);
+                // TODO: MONO: Not sure what to do here as there isn't a SetSelectionMode on the editor. I see an internal
+                //  IEditorActionHost.SwitchCaretMode method, but I can't get to that. 
+                // _textEditor.SetSelectionMode = (value == TextSelectionMode.Stream ? SelectionMode.Normal : SelectionMode.Block);
             }
         }
 
@@ -136,10 +136,10 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                if (_textEditorData.SelectionMode == SelectionMode.Normal)
+                if (_textEditor.SelectionMode == SelectionMode.Normal)
                 {
-                    int start = _textEditorData.SelectionRange.Offset;
-                    int len = _textEditorData.SelectionRange.Length;
+                    int start = _textEditor.SelectionRange.Offset;
+                    int len = _textEditor.SelectionRange.Length;
 
                     SnapshotSpan selectedRange = new SnapshotSpan(_textView.TextSnapshot, start, len);
                     return new NormalizedSnapshotSpanCollection(selectedRange);
@@ -147,12 +147,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 else
                 {
                     IList<SnapshotSpan> spans = new List<SnapshotSpan>();
-                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in _textEditorData.Selections)
+                    foreach (MonoDevelop.Ide.Editor.Selection curSelection in _textEditor.Selections)
                     {
                         for (int curLineIndex = curSelection.MinLine; curLineIndex <= curSelection.MaxLine; curLineIndex++)
                         {
-                            int start = _textEditorData.LocationToOffset(curLineIndex, curSelection.Start.Column);
-                            int end = _textEditorData.LocationToOffset(curLineIndex, curSelection.End.Column);
+                            int start = _textEditor.LocationToOffset(curLineIndex, curSelection.Start.Column);
+                            int end = _textEditor.LocationToOffset(curLineIndex, curSelection.End.Column);
 
                             spans.Add(new SnapshotSpan(_textView.TextSnapshot, start, end - start));
                         }
@@ -167,7 +167,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             get
             {
-                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditorData.SelectionRange.Offset);
+                SnapshotPoint snapshotPoint = new SnapshotPoint(_textView.TextSnapshot, _textEditor.SelectionRange.Offset);
                 VirtualSnapshotPoint virtualPoint = new VirtualSnapshotPoint(snapshotPoint);
 
                 return virtualPoint;
@@ -202,7 +202,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public void Clear()
         {
-            _textEditorData.ClearSelection();
+            _textEditor.ClearSelection();
         }
 
         public VirtualSnapshotSpan? GetSelectionOnTextViewLine(ITextViewLine line)
@@ -212,7 +212,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public void Select(VirtualSnapshotPoint anchorPoint, VirtualSnapshotPoint activePoint)
         {
-            _textEditorData.SetSelection(anchorPoint.Position, activePoint.Position);
+            _textEditor.SetSelection(anchorPoint.Position, activePoint.Position);
         }
 
         public void Select(SnapshotSpan selectionSpan, bool isReversed)
@@ -231,4 +231,3 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
     }
 }
-

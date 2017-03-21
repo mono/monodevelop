@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
     [Export(typeof(ITextEditorFactoryService))]
-    internal sealed class TextEditorFactoryService : ITextEditorFactoryService
+    public sealed class TextEditorFactoryService : ITextEditorFactoryService
     {
         [Import]
         internal GuardedOperations GuardedOperations { get; set; }
@@ -100,18 +100,18 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                                      PredefinedTextViewRoles.Structured,
                                                                                      PredefinedTextViewRoles.Zoomable);
 
-        public IWpfTextView CreateTextView(Mono.TextEditor.TextEditorData textEditorData, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
+        public IWpfTextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
-            if (textEditorData == null)
+            if (textEditor == null)
             {
-                throw new ArgumentNullException("textEditorData");
+                throw new ArgumentNullException("textEditor");
             }
 
             if (roles == null) {
                 roles = _defaultRoles;
             }
 
-            ITextBuffer textBuffer = textEditorData.Document.TextBuffer;
+            ITextBuffer textBuffer = textEditor.GetPlatformTextBuffer();
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
 
             ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
@@ -123,8 +123,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                              this.GuardedOperations,
                              this) ?? new VacuousTextViewModel(dataModel);
 
-            TextView view = new TextView(textEditorData, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
-            view.Properties.AddProperty(typeof(Mono.TextEditor.TextEditorData), textEditorData);
+            TextView view = new TextView(textEditor, viewModel, roles ?? this.DefaultRoles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+            view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
             this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
 

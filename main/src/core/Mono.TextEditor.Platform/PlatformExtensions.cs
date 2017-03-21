@@ -18,12 +18,17 @@ namespace Microsoft.VisualStudio.Platform
 
         public static ITextView GetPlatformTextView(this MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
-            return textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().TextView;
+            return textEditor.TextView;
         }
 
         public static MonoDevelop.Ide.Editor.ITextDocument GetTextEditor(this ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetProperty<MonoDevelop.Ide.Editor.ITextDocument>(typeof(MonoDevelop.Ide.Editor.ITextDocument));
+        }
+
+        public static MonoDevelop.Ide.Editor.ITextDocument GetTextEditor (this ITextView textView)
+        {
+            return textView.Properties.GetProperty<MonoDevelop.Ide.Editor.TextEditor>(typeof(MonoDevelop.Ide.Editor.TextEditor));
         }
     }
 }
