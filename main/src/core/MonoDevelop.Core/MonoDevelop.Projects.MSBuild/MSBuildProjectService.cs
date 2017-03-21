@@ -1,4 +1,4 @@
-// MSBuildProjectService.cs
+﻿// MSBuildProjectService.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -1025,10 +1025,8 @@ namespace MonoDevelop.Projects.MSBuild
 		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
 			string [] supportedToolsVersions;
-			if ((requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild) && !Platform.IsWindows)
+			if (requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild || Platform.IsWindows)
 				supportedToolsVersions = new [] { "15.0"};
-			else if (Platform.IsWindows)
-				supportedToolsVersions = new [] { "15.0", "14.0", "12.0", "4.0" };
 			else
 				supportedToolsVersions = new [] { "14.0", "12.0", "4.0" };
 
@@ -1273,6 +1271,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 					// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
 					SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, false, true);
+
+					//this must match MSBuildBinPath w/MSBuild15
+					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, false, true);
 
 					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
 					if (projectImportSearchPaths != null) {
