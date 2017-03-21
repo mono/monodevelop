@@ -184,17 +184,11 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (!IdeApp.Preferences.BuildBeforeExecuting && !IsDotNetCoreInstalled ()) {
+			if (!IdeApp.Preferences.BuildBeforeExecuting && DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
-		}
-
-		bool IsDotNetCoreInstalled ()
-		{
-			var dotNetCorePath = new DotNetCorePath ();
-			return !dotNetCorePath.IsMissing;
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
