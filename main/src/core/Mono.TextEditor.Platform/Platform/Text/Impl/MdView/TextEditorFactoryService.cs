@@ -5,7 +5,7 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace WebToolingAddin
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
     [Export(typeof(ITextEditorFactoryService))]
-    internal sealed class TextEditorFactoryService : ITextEditorFactoryService
+    public sealed class TextEditorFactoryService : ITextEditorFactoryService
     {
         [Import]
         internal GuardedOperations GuardedOperations { get; set; }
@@ -82,11 +82,33 @@ namespace WebToolingAddin
 
         public event EventHandler<TextViewCreatedEventArgs> TextViewCreated;
 
-        public IWpfTextView CreateTextView(MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
+        private readonly static ITextViewRoleSet _noRoles = new TextViewRoleSet(new string[0]);
+
+        private readonly static ITextViewRoleSet _allRoles = RolesFromParameters(PredefinedTextViewRoles.Analyzable,
+                                                                                 PredefinedTextViewRoles.Debuggable,
+                                                                                 PredefinedTextViewRoles.Document,
+                                                                                 PredefinedTextViewRoles.Editable,
+                                                                                 PredefinedTextViewRoles.Interactive,
+                                                                                 PredefinedTextViewRoles.Structured,
+                                                                                 PredefinedTextViewRoles.Zoomable,
+                                                                                 PredefinedTextViewRoles.PrimaryDocument);
+
+        private readonly static ITextViewRoleSet _defaultRoles = RolesFromParameters(PredefinedTextViewRoles.Analyzable,
+                                                                                     PredefinedTextViewRoles.Document,
+                                                                                     PredefinedTextViewRoles.Editable,
+                                                                                     PredefinedTextViewRoles.Interactive,
+                                                                                     PredefinedTextViewRoles.Structured,
+                                                                                     PredefinedTextViewRoles.Zoomable);
+
+        public IWpfTextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
         {
             if (textEditor == null)
             {
-                throw new ArgumentNullException("textBuffer");
+                throw new ArgumentNullException("textEditor");
+            }
+
+            if (roles == null) {
+                roles = _defaultRoles;
             }
 
             ITextBuffer textBuffer = textEditor.GetPlatformTextBuffer();
@@ -111,19 +133,12 @@ namespace WebToolingAddin
 
         public ITextViewRoleSet NoRoles
         {
-            get { return new TextViewRoleSet(new string[0]); }
+            get { return _noRoles; }
         }
 
         public ITextViewRoleSet AllPredefinedRoles
         {
-            get { return CreateTextViewRoleSet(PredefinedTextViewRoles.Analyzable, 
-                                               PredefinedTextViewRoles.Debuggable,
-                                               PredefinedTextViewRoles.Document,
-                                               PredefinedTextViewRoles.Editable,
-                                               PredefinedTextViewRoles.Interactive,
-                                               PredefinedTextViewRoles.Structured,
-                                               PredefinedTextViewRoles.Zoomable,
-                                               PredefinedTextViewRoles.PrimaryDocument); }
+            get { return _allRoles; }
         }
 
         public ITextViewRoleSet DefaultRoles
@@ -131,12 +146,7 @@ namespace WebToolingAddin
             // notice that Debuggable and PrimaryDocument are excluded!
             get
             {
-                return CreateTextViewRoleSet(PredefinedTextViewRoles.Analyzable,
-                                             PredefinedTextViewRoles.Document,
-                                             PredefinedTextViewRoles.Editable,
-                                             PredefinedTextViewRoles.Interactive,
-                                             PredefinedTextViewRoles.Structured,
-                                             PredefinedTextViewRoles.Zoomable);
+                return _defaultRoles;
             }
         }
 
@@ -146,6 +156,11 @@ namespace WebToolingAddin
         }
 
         public ITextViewRoleSet CreateTextViewRoleSet(params string[] roles)
+        {
+            return new TextViewRoleSet(roles);
+        }
+
+        private static ITextViewRoleSet RolesFromParameters (params string[] roles)
         {
             return new TextViewRoleSet(roles);
         }
