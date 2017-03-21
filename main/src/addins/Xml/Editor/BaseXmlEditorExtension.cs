@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BaseXmlEditorExtension.cs
 // 
 // Author:
@@ -53,6 +53,7 @@ using System.Threading;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -1189,14 +1190,16 @@ namespace MonoDevelop.Xml.Editor
 			} else {
 				using (Editor.OpenUndoGroup ()) {
 					if (Editor.IsSomethingSelected) {
-						//end variable is also used because inserting start deselectes text and Editor.SelectionRange.EndOffset becomes invalid
-						var end = Editor.SelectionRange.EndOffset + 4;//+4 equals "<!--" inserted in next line
-						Editor.InsertText (Editor.SelectionRange.Offset, "<!--");
-						Editor.InsertText (end, "-->");
+						Editor.ApplyTextChanges (new [] {
+							new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan(Editor.SelectionRange.Offset, 0), "<!--"),
+							new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan(Editor.SelectionRange.EndOffset, 0), "-->")
+						});
 					} else {
 						var currentLine = Editor.GetLine (Editor.CaretLine);
-						Editor.InsertText (currentLine.Offset, "<!--");
-						Editor.InsertText (currentLine.EndOffset, "-->");//currentLine.EndOffset updates automaticlly
+						Editor.ApplyTextChanges (new [] {
+							new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan(currentLine.Offset, 0), "<!--"),
+							new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan(currentLine.EndOffset, 0), "-->")
+						});
 					}
 				}
 			}

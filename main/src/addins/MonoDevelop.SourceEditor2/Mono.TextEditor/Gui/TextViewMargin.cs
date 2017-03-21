@@ -2921,40 +2921,19 @@ namespace Mono.TextEditor
 				textEditor.Allocation.Width - lx,
 				lineArea.Height);
 
-			if (textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.Length)) {
-				DocumentLocation start = textEditor.MainSelection.Anchor;
-				DocumentLocation end = textEditor.MainSelection.Lead;
-				DocumentLocation visStart = textEditor.LogicalToVisualLocation (start);
-				DocumentLocation visEnd = textEditor.LogicalToVisualLocation (end);
-				
-				double x1 = this.ColumnToX (line, visStart.Column);
-				double x2 = this.ColumnToX (line, visEnd.Column);
-				if (x1 > x2) {
-					var tmp = x1;
-					x1 = x2;
-					x2 = tmp;
-				}
-				x1 += correctedXOffset - textEditor.HAdjustment.Value;
-				x2 += correctedXOffset - textEditor.HAdjustment.Value;
 
-				if (x2 > lineArea.X && BackgroundRenderer == null)  {
-					if (x1 - lineArea.X > 0) {
-						DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
-						lineArea = new Cairo.Rectangle (x1, lineArea.Y, lineArea.Width, lineArea.Height);
-					}
-					DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), false);
-					lineArea = new Cairo.Rectangle (x2, lineArea.Y, textEditor.Allocation.Width - lineArea.X, lineArea.Height);
-				}
-			}
 			LayoutWrapper wrapper = null;
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					wrapper = GetLayout (line);
+					int remainingLineWidth, ph;
+					wrapper.GetPixelSize (out remainingLineWidth, out ph);
+
 					if (lineNr == textEditor.MainSelection.Start.Line && line.Length == 0 && textEditor.MainSelection.Start.Column > 1) {
 						// position already skipped virtual space layout
 					} else  {
-						var eolStartX = System.Math.Floor (position);
+						var eolStartX = System.Math.Floor (position + remainingLineWidth);
 						lineArea = new Cairo.Rectangle (
 							eolStartX,
 							lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
