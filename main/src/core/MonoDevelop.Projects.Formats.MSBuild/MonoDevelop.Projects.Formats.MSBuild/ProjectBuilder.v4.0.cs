@@ -82,12 +82,16 @@ namespace MonoDevelop.Projects.MSBuild
 						loggers = new ILogger[] { logger };
 					}
 
-					if (globalProperties != null) {
+					if (globalProperties != null || sdksPath != null) {
 						originalGlobalProperties = new Dictionary<string, string> ();
 						foreach (var p in project.GlobalProperties)
 							originalGlobalProperties [p.Key] = p.Value;
-						foreach (var p in globalProperties)
-							project.SetGlobalProperty (p.Key, p.Value);
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.SetGlobalProperty (p.Key, p.Value);
+						}
+						if (sdksPath != null)
+							project.SetGlobalProperty ("MSBuildSDKsPath", sdksPath);
 						project.ReevaluateIfNecessary ();
 					}
 

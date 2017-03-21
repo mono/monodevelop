@@ -328,10 +328,7 @@ src/addins/MonoDevelop.GtkCore/Makefile
 src/addins/MonoDevelop.GtkCore/libstetic/Makefile
 src/addins/MonoDevelop.GtkCore/libsteticui/Makefile
 src/addins/TextTemplating/Makefile
-src/addins/TextTemplating/Mono.TextTemplating/Makefile
-src/addins/TextTemplating/TextTransform/Makefile
 src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
-src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 src/addins/AspNet/Makefile
 src/addins/MonoDevelop.Autotools/Makefile
 src/addins/MonoDevelop.DesignerSupport/Makefile

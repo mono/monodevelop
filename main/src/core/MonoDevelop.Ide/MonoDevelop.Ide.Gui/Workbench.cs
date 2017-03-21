@@ -142,9 +142,9 @@ namespace MonoDevelop.Ide.Gui
 			Present ();
 		}
 		
-		internal bool Close ()
+		internal async Task<bool> Close ()
 		{
-			return workbench.Close();
+			return await workbench.Close();
 		}
 
 		public ImmutableList<Document> Documents {
@@ -584,7 +584,7 @@ namespace MonoDevelop.Ide.Gui
 							}
 							return doc;
 						} else {
-							if (!doc.Close ())
+							if (!await doc.Close ())
 								return doc;
 							break;
 						}
@@ -842,7 +842,7 @@ namespace MonoDevelop.Ide.Gui
 			return pad;
 		}
 		
-		async void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
+		async Task OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
 		{
 			var window = (IWorkbenchWindow) sender;
 			var viewContent = window.ViewContent;
