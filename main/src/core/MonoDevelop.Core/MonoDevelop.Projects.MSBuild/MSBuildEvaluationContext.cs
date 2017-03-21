@@ -124,9 +124,9 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildFrameworkToolsPath", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 				properties.Add ("MSBuildFrameworkToolsPath32", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 
-				// Need to set MSBuildSDKsPath property for ASP.NET Core Web projects.
 				if (project.Sdk != null) {
-					string sdksPath = Environment.GetEnvironmentVariable ("MSBuildSDKsPath");
+					string sdksPath = MSBuildProjectService.FindSdkPath(project.TargetRuntime, project.GetReferencedSDKs());
+
 					if (sdksPath != null) {
 						properties.Add ("MSBuildSDKsPath", MSBuildProjectService.ToMSBuildPath (null, sdksPath));
 					}
