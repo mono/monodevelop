@@ -23,18 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
-using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 {
@@ -46,12 +47,16 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 			var document = context.Document;
 			var textSpan = context.Span;
 			var cancellationToken = context.CancellationToken;
+
 			if (document.Project.Solution.Workspace.Kind == WorkspaceKind.MiscellaneousFiles) {
 				return;
 			}
-			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-			if (model.IsFromGeneratedCode (cancellationToken))
+
+			if (document.IsGeneratedCode()) {
 				return;
+			}
+
+			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			var root = await document.GetCSharpSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (textSpan.Start >= root.FullSpan.Length)
 				return;
@@ -67,9 +72,9 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 			}
 
 			context.RegisterRefactoring (
-				new DocumentChangeAction (node.Span, DiagnosticSeverity.Info,
-										 GettextCatalog.GetString ("Sort usings"),
-										 (t) => OrganizeImportsCommandHandler.SortUsingsAsync (document, t)));
+				new CodeAction.DocumentChangeAction (
+					GettextCatalog.GetString ("Sort usings"),
+					(t) => OrganizeImportsCommandHandler.SortUsingsAsync (document, t)));
 		}
 	}
 
@@ -81,12 +86,16 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 			var document = context.Document;
 			var textSpan = context.Span;
 			var cancellationToken = context.CancellationToken;
+
 			if (document.Project.Solution.Workspace.Kind == WorkspaceKind.MiscellaneousFiles) {
 				return;
 			}
-			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-			if (model.IsFromGeneratedCode (cancellationToken))
+
+			if (document.IsGeneratedCode ()) {
 				return;
+			}
+
+			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			var root = await document.GetCSharpSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (textSpan.Start >= root.FullSpan.Length)
 				return;
@@ -101,9 +110,9 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 			}
 
 			context.RegisterRefactoring (
-				new DocumentChangeAction (node.Span, DiagnosticSeverity.Info,
-										 GettextCatalog.GetString ("Sort and remove usings"),
-										 (t) => SortAndRemoveImportsCommandHandler.SortAndRemoveAsync (document, t)));
+				new CodeAction.DocumentChangeAction (
+					GettextCatalog.GetString ("Sort and remove usings"),
+					(t) => SortAndRemoveImportsCommandHandler.SortAndRemoveAsync (document, t)));
 		}
 	}
 

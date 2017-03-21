@@ -55,7 +55,6 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
-using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.Completion
 {

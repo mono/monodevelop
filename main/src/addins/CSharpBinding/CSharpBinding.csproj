@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -101,11 +101,6 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj">
-      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>RefactoringEssentials</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
@@ -456,30 +451,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="MonoDevelop.CSharp.Parser\" />
-    <Folder Include="MonoDevelop.CSharp.Resolver\" />
-    <Folder Include="MonoDevelop.CSharp.Highlighting\" />
-    <Folder Include="MonoDevelop.CSharp.Formatting\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\" />
-    <Folder Include="MonoDevelop.CSharp.Project\" />
-    <Folder Include="MonoDevelop.CSharp\" />
-    <Folder Include="MonoDevelop.CSharp.Completion\" />
-    <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
-    <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
-    <Folder Include="MonoDevelop.CSharp.Tooltips\" />
-    <Folder Include="MonoDevelop.CSharp.UnitTests\" />
     <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
-    <Folder Include="MonoDevelop.JSon\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
-    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\" />
-    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\" />
-    <Folder Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
-    <Folder Include="MonoDevelop.CSharp.Navigation\" />
   </ItemGroup>
 </Project>

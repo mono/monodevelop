@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.OrganizeImports;
 using Microsoft.CodeAnalysis.RemoveUnnecessaryImports;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.OrganizeImports;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -93,8 +93,6 @@ namespace MonoDevelop.CSharp.Refactoring
 
 	class OrganizeImportsCommandHandler : CommandHandler
 	{
-		internal static readonly CSharpOrganizeImportsService service = new CSharpOrganizeImportsService ();
-
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)
 		{
 			var ad = doc.AnalysisDocument;
@@ -105,14 +103,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				ad.Project.Solution.Workspace.ApplyDocumentChanges (newDocument, CancellationToken.None);
 
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while sotring usings", e);
+				LoggingService.LogError ("Error while sorting usings", e);
 			}
 		}
 
 		internal static async Task<Document> SortUsingsAsync (Document ad, CancellationToken token)
 		{
+			var service = ad.GetLanguageService<IOrganizeImportsService> ();
 			var policy = IdeApp.Workbench.ActiveDocument.GetFormattingPolicy ();
-			Console.WriteLine (policy.PlaceSystemDirectiveFirst);
 			return await service.OrganizeImportsAsync (ad, policy != null ? policy.PlaceSystemDirectiveFirst : true, token);
 		}
 
