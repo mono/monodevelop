@@ -38,6 +38,8 @@
 			icon="md-console-project"
 			imageId="md-console-project"
 			category="netcore/app/general"/>
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -54,6 +56,8 @@
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."

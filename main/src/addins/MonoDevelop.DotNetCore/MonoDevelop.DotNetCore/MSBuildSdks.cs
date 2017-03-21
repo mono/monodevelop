@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreSdkInstalledCondition.cs
+// MSBuildSdks.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,37 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
+using System.IO;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSdkInstalledCondition : ConditionType
+	/// <summary>
+	/// .NET Core SDKs that ship with MSBuild.
+	/// </summary>
+	static class MSBuildSdks
 	{
-		public override bool Evaluate (NodeElement conditionNode)
+		static MSBuildSdks ()
 		{
-			if (DotNetCoreSdk.IsInstalled)
-				return true;
+			TargetRuntime runtime = IdeApp.Preferences.DefaultTargetRuntime;
+			string binPath = runtime.GetMSBuildBinPath ("15.0");
+			string sdksPath = Path.Combine (binPath, "Sdks");
 
-			if (MSBuildSdks.Installed)
-				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
-
-			return false;
+			if (Directory.Exists (sdksPath)) {
+				Installed = true;
+				MSBuildSDKsPath = sdksPath;
+			}
 		}
 
-		/// <summary>
-		/// .NET Standard library projects do not require the .NET Core runtime.
-		/// </summary>
-		static bool RequiresRuntime (NodeElement conditionNode)
-		{
-			string value = conditionNode.GetAttribute ("requiresRuntime");
-			if (string.IsNullOrEmpty (value))
-				return true;
-
-			bool result = true;
-			if (bool.TryParse (value, out result))
-				return result;
-
-			return true;
-		}
+		public static bool Installed { get; private set; }
+		public static string MSBuildSDKsPath { get; private set; }
 	}
 }

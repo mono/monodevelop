@@ -140,6 +140,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkInstalledCondition.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdk.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntime.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\MSBuildSdks.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
