@@ -79,7 +79,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\build\bin\</OutputPath>
-    <DefineConstants>DEBUG;WIN32</DefineConstants>
+    <DefineConstants>DEBUG;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
@@ -88,21 +88,6 @@
     </Execution>
     <NoWarn>1591;1573</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\bin\</OutputPath>
-    <DefineConstants>WIN32</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
