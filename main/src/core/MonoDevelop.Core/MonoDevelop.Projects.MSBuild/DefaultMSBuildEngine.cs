@@ -85,6 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public MSBuildItem Item;
 			public string Include;
 			public Regex ExcludeRegex;
+			public bool Condition;
 		}
 
 		#region implemented abstract members of MSBuildEngine
@@ -411,7 +412,7 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 			} else if (IsWildcardInclude (include)) {
-				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, ExcludeRegex = excludeRegex });
+				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, ExcludeRegex = excludeRegex, Condition = trueCond });
 				foreach (var eit in ExpandWildcardFilePath (project, context, item, include)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
@@ -1222,7 +1223,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var pi = (ProjectInfo)projectInstance;
 			string filePath = MSBuildProjectService.FromMSBuildPath (pi.Project.BaseDirectory, include);
-			foreach (var g in pi.GlobIncludes) {
+			foreach (var g in pi.GlobIncludes.Where (g => g.Condition)) {
 				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath)) {
 					if (g.ExcludeRegex != null) {
 						if (g.ExcludeRegex.IsMatch (include))
