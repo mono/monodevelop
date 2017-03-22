@@ -62,26 +62,6 @@ namespace Microsoft.VisualStudio.Platform
             AggregateCatalog catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new AssemblyCatalog(typeof(PlatformCatalog).Assembly));
 
-            // Add other assemblies from which we expect to get MEF objects
-            // TODO: add some mechanism to allow these to be updated at runtime.
-            string[] assemblyNames =
-                {
-                "Microsoft.VisualStudio.Text.Logic"
-                };
-
-            foreach (string assemblyName in assemblyNames)
-            {
-                try
-                {
-                    var assembly = Assembly.Load(assemblyName);
-                    catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-                }
-                catch (Exception e)
-                {
-                    LoggingService.LogError("Workspace can't load assembly " + assemblyName + " to host mef services.", e);
-                }
-            }
-
             foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
             {
                 var assemblyNode = node as AssemblyExtensionNode;
