@@ -2130,6 +2130,7 @@ namespace MonoDevelop.Projects
 		/// and MSBuild is used
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps2 ()
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
@@ -2157,6 +2158,7 @@ namespace MonoDevelop.Projects
 		/// restored.
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps3 ()
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
@@ -2184,6 +2186,7 @@ namespace MonoDevelop.Projects
 		/// other MSBuild .targets and .props.
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
 		{
 			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
