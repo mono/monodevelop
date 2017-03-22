@@ -199,7 +199,8 @@ namespace MonoDevelop.Ide.Projects
 		void UpdateDefaultSettings ()
 		{
 			UpdateDefaultGitSettings ();
-			PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			if (IsNewSolution)
+				PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			PropertyService.Set (SelectedLanguagePropertyName, GetLanguageForTemplateProcessing ());
 			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
 			DefaultSelectedTemplate = GetDefaultSelectedTemplateId ();
