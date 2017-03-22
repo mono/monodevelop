@@ -2335,7 +2335,7 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (Project)sol.Items [0];
-			Assert.AreEqual (sol.ItemDirectory.ToString () + "/", p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
+			Assert.AreEqual (sol.ItemDirectory.ToString () + Path.DirectorySeparatorChar, p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
 		}
 
 		[Test]
