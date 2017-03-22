@@ -80,18 +80,12 @@ namespace MonoDevelop.DotNetCore
 		{
 			return Task.Run (() => {
 				if (CanRead (fileName, typeof(SolutionItem))) {
-					ConfigureMSBuildSDKsPath ();
+					DotNetCoreSdk.EnsureInitialized ();
 					return MSBuildProjectService.LoadItem (monitor, fileName, MSBuildFileFormat.VS2017, typeGuid, itemGuid, ctx);
 				}
 
 				throw new NotSupportedException ();
 			});
-		}
-
-		void ConfigureMSBuildSDKsPath ()
-		{
-			var paths = new DotNetCoreSdkPaths ();
-			paths.FindMSBuildSDKsPath ();
 		}
 	}
 }

@@ -91,8 +91,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 
 		protected override void OnCreateTests ()
 		{
-			var dotNetCorePath = new DotNetCorePath ();
-			if (dotNetCorePath.IsMissing) {
+			if (DotNetCoreRuntime.IsMissing) {
 				LoggingService.LogError (".NET Core not installed.");
 				Status = TestStatus.LoadError;
 				testPlatformAdapter.HasDiscoveryFailed = true;
@@ -104,7 +103,6 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				string assemblyFileName = GetAssemblyFileName ();
 				if (File.Exists (assemblyFileName)) {
 					Status = TestStatus.Loading;
-					testPlatformAdapter.DotNetCorePath = dotNetCorePath;
 					testPlatformAdapter.StartDiscovery (assemblyFileName);
 				}
 			}

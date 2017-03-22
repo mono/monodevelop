@@ -58,7 +58,6 @@ namespace MonoDevelop.Ide.Projects
 		const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
 		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
 		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
-		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
 		const string NewSolutionLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
 		const string NewSolutionLastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
 		const string NewProjectLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.AddNewProjectLastSelectedCategoryPath";
@@ -194,21 +193,14 @@ namespace MonoDevelop.Ide.Projects
 			SetDefaultLocation ();
 			SetDefaultGitSettings ();
 			SelectedLanguage = PropertyService.Get (SelectedLanguagePropertyName, "C#");
-			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = GetDefaultCreateProjectDirectorySetting ();
-		}
-
-		bool GetDefaultCreateProjectDirectorySetting ()
-		{
-			if (IsNewSolution) {
-				return PropertyService.Get (CreateProjectSubDirectoryPropertyName, true);
-			}
-			return PropertyService.Get (CreateProjectSubDirectoryInExistingSolutionPropertyName, true);
+			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = PropertyService.Get (CreateProjectSubDirectoryPropertyName, true);
 		}
 
 		void UpdateDefaultSettings ()
 		{
 			UpdateDefaultGitSettings ();
-			UpdateDefaultCreateProjectDirectorySetting ();
+			if (IsNewSolution)
+				PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
 			PropertyService.Set (SelectedLanguagePropertyName, GetLanguageForTemplateProcessing ());
 			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
 			DefaultSelectedTemplate = GetDefaultSelectedTemplateId ();
@@ -254,15 +246,6 @@ namespace MonoDevelop.Ide.Projects
 				return SelectedTemplate.Id;
 			}
 			return null;
-		}
-
-		void UpdateDefaultCreateProjectDirectorySetting ()
-		{
-			if (IsNewSolution) {
-				PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
-			} else {
-				PropertyService.Set (CreateProjectSubDirectoryInExistingSolutionPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
-			}
 		}
 
 		void SetDefaultLocation ()
