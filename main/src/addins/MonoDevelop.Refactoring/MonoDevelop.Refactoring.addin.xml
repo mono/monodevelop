@@ -1,4 +1,7 @@
 <ExtensionModel>
+	<Runtime>
+		<Import assembly="RefactoringEssentials.dll" />
+	</Runtime>
 	
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">

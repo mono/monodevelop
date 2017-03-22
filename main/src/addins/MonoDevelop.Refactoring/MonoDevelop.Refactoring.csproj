@@ -292,7 +292,7 @@
     <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
