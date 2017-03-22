@@ -343,7 +343,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> autoInsertMatchingBracket = ConfigurationProperty.Create ("AutoInsertMatchingBracket", false);
+		ConfigurationProperty<bool> autoInsertMatchingBracket = ConfigurationProperty.Create ("AutoInsertMatchingBracket", true);
 		public bool AutoInsertMatchingBracket {
 			get {
 				return autoInsertMatchingBracket;
