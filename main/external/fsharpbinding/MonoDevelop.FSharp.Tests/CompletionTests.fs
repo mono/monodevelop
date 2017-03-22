@@ -4,12 +4,11 @@ open System
 open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.Completion
-open Mono.TextEditor
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
-       
+
 type ``Completion Tests``() =
     let getParseResults (documentContext:DocumentContext, _text) =
         async {
@@ -45,8 +44,18 @@ type ``Completion Tests``() =
 
     [<Test>]
     member x.``Completes list``() =
-        let results = getCompletions "[].|" true
+        let results = getCompletions "[].|" false
         results |> should contain "Head"
+
+    [<Test>]
+    member x.``Completes application``() =
+        let results = getCompletions "System.DateTime(2000,1,1).|" false
+        results |> should contain "Day"
+
+    [<Test>]
+    member x.``Completes application property``() =
+        let results = getCompletions "System.IO.File.Open(\"path\", System.IO.FileMode.Open).SafeFileHandle.|" false
+        results |> should contain "Close"
 
     [<Test>]
     member x.``Array completion shouldn't contain identifier``() =
@@ -56,6 +65,11 @@ type ``Completion Tests``() =
                         x.[0].|
                         """ true
         results |> shouldnot contain "x"
+
+    [<Test>]
+    member x.``Does not contain identifier``() =
+        let results = getCompletions "DateTime(2000,1,1).Day D|" true
+        results |> shouldnot contain "Day"
 
     [<Test>]
     member x.``Completes local identifier``() =
@@ -208,7 +222,7 @@ type ``Completion Tests``() =
     [<TestCase(@"#r ""c:\\some\\path", @"c:\some\path")>]
     member x.``Accepts path completions``(input, expected) =
         let doc = TestHelpers.createDoc input "defined"
-       
+
         let completionContext =  {
             completionChar = 'x'
             lineToCaret = input
