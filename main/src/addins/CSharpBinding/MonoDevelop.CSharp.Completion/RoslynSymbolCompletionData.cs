@@ -465,7 +465,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool IsObsolete (ISymbol symbol)
 		{
-			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" && attr.AttributeClass.ContainingNamespace.GetFullName () == "System");
+			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" || attr.AttributeClass.Name == "ObsoletedAttribute" || attr.AttributeClass.Name == "DeprecatedAttribute");
 		}
 
 
