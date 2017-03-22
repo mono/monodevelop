@@ -538,43 +538,30 @@ namespace MonoDevelop.Projects
 			return results.ToArray ();
 		}
 
-		object evaluatedCompileItemsLock = new object ();
-		string evaluatedCompileItemsConfiguration;
-		TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask;
+		bool evaluatedCoreCompileDependencies;
+		readonly TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile[]> ();
 
 		/// <summary>
 		/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
 		/// </summary>
 		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			var config = GetConfiguration (configuration);
-			if (config == null)
-				return new ProjectFile [0];
-
-			// Check if there is already a task for getting the items for the provided configuration
-
-			TaskCompletionSource<ProjectFile []> currentTask = null;
-			bool startTask = false;
-
-			lock (evaluatedCompileItemsLock) {
-				if (evaluatedCompileItemsConfiguration != config.Id) {
-					// The configuration changed or query not yet done
-					evaluatedCompileItemsConfiguration = config.Id;
-					evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile []> ();
-					startTask = true;
+			ProjectFile[] result = null;
+			lock (evaluatedCompileItemsTask) {
+				if (!evaluatedCoreCompileDependencies) {
+					result = new ProjectFile[0];
+					evaluatedCoreCompileDependencies = true;
 				}
-				currentTask = evaluatedCompileItemsTask;
 			}
 
-			if (startTask) {
+			if (result != null) {
 				var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
 
 				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
-					currentTask.SetResult (new ProjectFile [0]);
-					return currentTask.Task.Result;
+					evaluatedCompileItemsTask.SetResult (new ProjectFile [0]);
+					return evaluatedCompileItemsTask.Task.Result;
 				}
 
-				ProjectFile [] result = null;
 				var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
 				try {
 					// evaluate the Compile targets
@@ -591,17 +578,10 @@ namespace MonoDevelop.Projects
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 				}
-				currentTask.SetResult (result ?? new ProjectFile [0]);
+				evaluatedCompileItemsTask.SetResult (result);
 			}
 
-			return await currentTask.Task;
-		}
-
-		void ResetCachedCompileItems ()
-		{
-			lock (evaluatedCompileItemsLock) {
-				evaluatedCompileItemsConfiguration = null;
-			}
+			return await evaluatedCompileItemsTask.Task;
 		}
 
 		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
