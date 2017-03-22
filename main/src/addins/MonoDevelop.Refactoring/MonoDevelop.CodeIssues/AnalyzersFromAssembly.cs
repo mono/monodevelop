@@ -95,6 +95,13 @@ namespace MonoDevelop.CodeIssues
 				if (notPortedYetAttribute!= null) {
 					continue;
 				}
+
+				//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
+				//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
+				if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
+					type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
+					continue;
+
 				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
 					try {
