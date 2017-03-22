@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 		{
 			caret.UpdateCaretPosition (e);
 
-			if (Options.TabsToSpaces && document.IsTextSet) {
+			if (Options.TabsToSpaces && document.IsTextSet && !document.IsInUndo) {
 				string tabReplacement = new string (' ', Options.TabSize);
 				var newChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
 				foreach (var change in e.TextChanges) {
