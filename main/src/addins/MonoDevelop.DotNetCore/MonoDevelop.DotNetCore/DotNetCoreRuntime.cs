@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreExecutionCommand.cs
+// DotNetCoreRuntime.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
-
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	static class DotNetCoreRuntime
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		static DotNetCoreRuntime ()
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
-
-			Command = DotNetCoreRuntime.FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
+			var path = new DotNetCorePath ();
+			IsInstalled = !path.IsMissing;
+			FileName = path.FileName;
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
+		public static string FileName { get; private set; }
 
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
-		public string LaunchURL { get; set; }
-		public string ApplicationURL { get; set; }
-		public PipeTransportSettings PipeTransport { get; set; }
+		public static bool IsInstalled { get; private set; }
+
+		public static bool IsMissing {
+			get { return !IsInstalled; }
+		}
 	}
 }

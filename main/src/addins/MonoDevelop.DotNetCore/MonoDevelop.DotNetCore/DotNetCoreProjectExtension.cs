@@ -184,17 +184,11 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (!IdeApp.Preferences.BuildBeforeExecuting && !IsDotNetCoreInstalled ()) {
+			if (DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
-		}
-
-		bool IsDotNetCoreInstalled ()
-		{
-			var dotNetCorePath = new DotNetCorePath ();
-			return !dotNetCorePath.IsMissing;
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
@@ -274,7 +268,7 @@ namespace MonoDevelop.DotNetCore
 			if (!IdeApp.IsInitialized)
 				return;
 
-			if (HasSdk && !sdkPaths.Exist) {
+			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
 		}
@@ -307,7 +301,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
-			} else if (HasSdk && !sdkPaths.Exist) {
+			} else if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				return CreateDotNetCoreSdkRequiredBuildResult (sdkPaths.IsUnsupportedSdkVersion);
 			}
 			return null;
@@ -370,8 +364,7 @@ namespace MonoDevelop.DotNetCore
 			if (!HasSdk)
 				return;
 
-			sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
+			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 			if (!sdkPaths.Exist)
 				return;
 
@@ -461,9 +454,7 @@ namespace MonoDevelop.DotNetCore
 
 		public bool IsDotNetCoreSdkInstalled ()
 		{
-			if (sdkPaths != null)
-				return sdkPaths.Exist;
-			return true;
+			return DotNetCoreSdk.IsInstalled || MSBuildSdks.Installed;
 		}
 
 		public bool IsUnsupportedDotNetCoreSdkInstalled ()

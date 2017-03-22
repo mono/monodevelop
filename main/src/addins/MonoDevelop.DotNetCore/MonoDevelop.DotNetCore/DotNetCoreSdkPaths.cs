@@ -37,6 +37,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		List<string> projectImportProps = new List<string> ();
 		List<string> projectImportTargets = new List<string> ();
+		string msbuildSDKsPath;
 
 		public void FindMSBuildSDKsPath ()
 		{
@@ -54,15 +55,13 @@ namespace MonoDevelop.DotNetCore
 			if (SdksParentDirectory == null)
 				return;
 
-			MSBuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
+			msbuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
 
 			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", MSBuildSDKsPath);
 		}
 
 		public void FindSdkPaths (string sdk)
 		{
-			FindMSBuildSDKsPath ();
-
 			if (string.IsNullOrEmpty (MSBuildSDKsPath))
 				return;
 
@@ -86,7 +85,17 @@ namespace MonoDevelop.DotNetCore
 
 		public bool IsUnsupportedSdkVersion { get; private set; }
 		public bool Exist { get; private set; }
-		public string MSBuildSDKsPath { get; private set; }
+
+		public string MSBuildSDKsPath {
+			get { return msbuildSDKsPath; }
+			internal set {
+				msbuildSDKsPath = value;
+				if (!string.IsNullOrEmpty (msbuildSDKsPath)) {
+					SdksParentDirectory = Path.GetDirectoryName (msbuildSDKsPath);
+				}
+			}
+		}
+
 		string SdksParentDirectory { get; set; }
 
 		public IEnumerable<string> ProjectImportProps {

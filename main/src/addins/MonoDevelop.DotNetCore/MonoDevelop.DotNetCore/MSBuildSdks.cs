@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreExecutionCommand.cs
+// MSBuildSdks.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using System.IO;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	/// <summary>
+	/// .NET Core SDKs that ship with MSBuild.
+	/// </summary>
+	static class MSBuildSdks
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		static MSBuildSdks ()
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
+			TargetRuntime runtime = IdeApp.Preferences.DefaultTargetRuntime;
+			string binPath = runtime.GetMSBuildBinPath ("15.0");
+			string sdksPath = Path.Combine (binPath, "Sdks");
 
-			Command = DotNetCoreRuntime.FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
+			if (Directory.Exists (sdksPath)) {
+				Installed = true;
+				MSBuildSDKsPath = sdksPath;
+			}
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
-
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
-		public string LaunchURL { get; set; }
-		public string ApplicationURL { get; set; }
-		public PipeTransportSettings PipeTransport { get; set; }
+		public static bool Installed { get; private set; }
+		public static string MSBuildSDKsPath { get; private set; }
 	}
 }
