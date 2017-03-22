@@ -1131,7 +1131,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1151,7 +1151,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1175,7 +1175,7 @@ namespace MonoDevelop.Projects
 				f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 				await p.SaveAsync (Util.GetMonitor ());
 
-				Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -1202,7 +1202,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1223,7 +1223,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.None;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		/// <summary>
@@ -1254,7 +1254,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.None;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved5")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved5"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1329,7 +1329,7 @@ namespace MonoDevelop.Projects
 			f.BuildAction = originalBuildAction;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1355,12 +1355,12 @@ namespace MonoDevelop.Projects
 			f.BuildAction = originalBuildAction;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 
 			// Save again to make sure another Update item is not added.
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		/// <summary>
