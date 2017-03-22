@@ -607,12 +607,13 @@ namespace FormatSelectionTest
 		{
 			await Simulate ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t\t\t}$\r\n", (content, ext) => {
 				content.Data.Options = new CustomEditorOptions {
-					IndentStyle = IndentStyle.Virtual
+					IndentStyle = IndentStyle.Virtual,
+					DefaultEolMarker = "\r\n"
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'}', '}', Gdk.ModifierType.None));
 
 				var newText = content.Text;
-				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
+				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
 			});
 		}
 
