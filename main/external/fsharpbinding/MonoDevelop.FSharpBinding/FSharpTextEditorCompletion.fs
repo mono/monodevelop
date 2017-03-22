@@ -410,7 +410,6 @@ module Completion =
             | None -> return result
         }
 
-    let parser = FSharpParser()
     let getCompletions context =
         async {
             try
