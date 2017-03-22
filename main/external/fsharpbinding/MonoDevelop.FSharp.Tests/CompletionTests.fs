@@ -9,6 +9,8 @@ open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
 
+type ParseBeforeCompletion = Parse | NoParse
+
 type ``Completion Tests``() =
     let getParseResults (documentContext:DocumentContext, _text) =
         async {
@@ -21,10 +23,9 @@ type ``Completion Tests``() =
             failwith "Input must contain a |"
         let input = input.Remove(offset, 1)
         let doc = 
-            if parse then
-                TestHelpers.createDoc input "defined"
-            else
-                TestHelpers.createDocWithoutParsing input "defined"
+            match parse with
+            | Parse -> TestHelpers.createDoc input "defined"
+            | NoParse -> TestHelpers.createDocWithoutParsing input "defined"
 
         let editor = doc.Editor
         editor.CaretOffset <- offset
@@ -39,22 +40,22 @@ type ``Completion Tests``() =
 
     [<Test>]
     member x.``Completes namespace``() =
-        let results = getCompletions "open System.Text.|" true
+        let results = getCompletions "open System.Text.|" Parse
         results |> should contain "RegularExpressions"
 
     [<Test>]
     member x.``Completes list``() =
-        let results = getCompletions "[].|" false
+        let results = getCompletions "[].|" NoParse
         results |> should contain "Head"
 
     [<Test>]
     member x.``Completes application``() =
-        let results = getCompletions "System.DateTime(2000,1,1).|" false
+        let results = getCompletions "System.DateTime(2000,1,1).|" NoParse
         results |> should contain "Day"
 
     [<Test>]
     member x.``Completes application property``() =
-        let results = getCompletions "System.IO.File.Open(\"path\", System.IO.FileMode.Open).SafeFileHandle.|" false
+        let results = getCompletions "System.IO.File.Open(\"path\", System.IO.FileMode.Open).SafeFileHandle.|" NoParse
         results |> should contain "Close"
 
     [<Test>]
@@ -63,12 +64,12 @@ type ``Completion Tests``() =
                         """
                         let x = [1;2;3]
                         x.[0].|
-                        """ true
+                        """ Parse
         results |> shouldnot contain "x"
 
     [<Test>]
     member x.``Does not contain identifier``() =
-        let results = getCompletions "DateTime(2000,1,1).Day D|" true
+        let results = getCompletions "DateTime(2000,1,1).Day D|" Parse
         results |> shouldnot contain "Day"
 
     [<Test>]
@@ -78,7 +79,7 @@ type ``Completion Tests``() =
                         module mymodule =
                             let completeme = 1
                             let x = compl|
-                        """ true
+                        """ Parse
                         
         results |> should contain "completeme"
 
@@ -101,7 +102,7 @@ type ``Completion Tests``() =
     [<TestCase("[ for i in 0 .|. 99")>]
     [<TestCase("for s|")>]
     member x.``Empty completions``(input: string) =
-        let results = getCompletions input true
+        let results = getCompletions input Parse
         results |> should be Empty
 
     [<TestCase("let x = s|")>]
@@ -109,58 +110,58 @@ type ``Completion Tests``() =
     [<TestCase("let x (y:strin|")>]
     [<TestCase("member x.Something (y:strin|")>]
     member x.``Not empty completions``(input: string) =
-        let results = getCompletions input true
+        let results = getCompletions input Parse
         results |> shouldnot be Empty
 
     [<Test>]
     member x.``Keywords don't appear after dot``() =
-        let results = getCompletions @"let x = string.l|" true
+        let results = getCompletions @"let x = string.l|" Parse
         results |> shouldnot contain "let"
 
     [<Test>]
     member x.``Keywords appear after whitespace``() =
-        let results = getCompletions @" l|" true
+        let results = getCompletions @" l|" Parse
         results |> should contain "let"
 
     [<Test>]
     member x.``Keywords appear at start of line``() =
-        let results = getCompletions @" l|"true
+        let results = getCompletions @" l|" Parse
         results |> should contain "let"
 
     [<Test>]
     member x.``Keywords appear at column 0``() =
-        let results = getCompletions @"o|"true
+        let results = getCompletions @"o|" Parse
         results |> should contain "open"
 
     [<Test>]
     member x.``Keywords can be parameters``() =
-        let results = getCompletions @"let x = new System.IO.FileInfo(n|" true
+        let results = getCompletions @"let x = new System.IO.FileInfo(n|" Parse
         results |> should contain "null"
 
     [<Test>]
     member x.``Completes modifiers``() =
-        let results = getCompletions @"let mut|" true
+        let results = getCompletions @"let mut|" Parse
         results |> should contain "mutable"
 
     [<Test>]
     member x.``Completes idents without parse results``() =
-        let results = getCompletions @"let add first second = f|" false
+        let results = getCompletions @"let add first second = f|" NoParse
         results |> should contain "first"
 
     [<Test>]
     member x.``Does not complete long idents without parse results``() =
-        let results = getCompletions @"let add first second = first.|" false
+        let results = getCompletions @"let add first second = first.|" NoParse
         results |> shouldnot contain "first"
 
     [<Test>]
     member x.``Does not complete current residue without parse results``() =
-        let results = getCompletions @"let add first second = z|" false
+        let results = getCompletions @"let add first second = z|" NoParse
         results |> shouldnot contain "z"
 
      
     [<Test>]
     member x.``Completes lambda``() =
-        let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|" true
+        let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|" Parse
         results |> should contain "ToString"
         results |> shouldnot contain "mutable"
 
@@ -174,7 +175,7 @@ type ``Completion Tests``() =
                         module s =
                             let height = 10
                             let x = rectangle(he|
-                        """ true
+                        """ Parse
         results |> should contain "height"
 
     [<Test>]
@@ -184,7 +185,7 @@ type ``Completion Tests``() =
                         (*
                         Li|
                         *)
-                        """ true
+                        """ Parse
         results |> should be Empty
 
     [<Test>]
@@ -193,12 +194,12 @@ type ``Completion Tests``() =
                         """
                         (*
                         Li|
-                        """ true
+                        """ Parse
         results |> should be Empty
 
     [<Test>]
     member x.``Does not complete inside single line comment``() =
-        let results = getCompletions "// Li|" true
+        let results = getCompletions "// Li|" Parse
         results |> should be Empty
 
     [<Test>]
@@ -212,7 +213,7 @@ type ``Completion Tests``() =
               inherit TestAttribute()
             [<t|
             """
-        let results = getCompletions input true
+        let results = getCompletions input Parse
         results |> should contain "Test"
         results |> should contain "TestCase"
         results |> shouldnot contain "Array"
