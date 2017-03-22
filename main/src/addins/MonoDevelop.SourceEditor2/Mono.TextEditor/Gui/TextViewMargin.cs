@@ -2228,17 +2228,24 @@ namespace Mono.TextEditor
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
-			// TODO : EditorTheme
-			int indentLength = 4; // SyntaxMode.GetIndentLength (Document, previewSegment.Offset, previewSegment.Length, false);
+			int indentLength = -1;
 
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
+				var indentString = line.GetIndentation (Document);
+				var curIndent = TextEditorData.CalcIndentLength (indentString);
+				if (indentLength < 0) {
+					indentLength = curIndent;
+				} else {
+					curOffset += TextEditorData.CalcOffset (indentString, System.Math.Min (curIndent, indentLength));
+				}
+
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.Length - curOffset);
 				textBuilder.Append (lineText);
 				textBuilder.AppendLine ();
-				curOffset = line.EndOffsetIncludingDelimiter + indentLength;
+				curOffset = line.EndOffsetIncludingDelimiter;
 			}
 
 			codeSegmentEditorWindow.Text = textBuilder.ToString ();
