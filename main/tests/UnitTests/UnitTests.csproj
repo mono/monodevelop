@@ -300,6 +300,7 @@
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
