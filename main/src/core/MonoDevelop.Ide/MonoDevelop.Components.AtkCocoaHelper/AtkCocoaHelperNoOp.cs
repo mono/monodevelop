@@ -167,7 +167,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public event EventHandler PerformRaise;
 		public event EventHandler PerformShowAlternateUI;
 		public event EventHandler PerformShowDefaultUI;
-		public event EventHandler PerformShowPopupMenu;
+		public event EventHandler PerformShowMenu;
 
 		public void AddAccessibleChild (IAccessibilityElementProxy child)
 		{

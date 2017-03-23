@@ -263,123 +263,167 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		event EventHandler performCancel;
 		public event EventHandler PerformCancel {
 			add {
+				if (performCancel == null) {
+					AddAction (AtkCocoa.Actions.AXCancel);
+				}
 				performCancel += value;
-				AddAction (AtkCocoa.Actions.AXCancel);
 			}
 			remove {
 				performCancel -= value;
-				RemoveAction (AtkCocoa.Actions.AXCancel);
+				if (performCancel == null) {
+					RemoveAction (AtkCocoa.Actions.AXCancel);
+				}
 			}
 		}
 
 		event EventHandler performConfirm;
 		public event EventHandler PerformConfirm {
 			add {
+				if (performConfirm == null) {
+					AddAction (AtkCocoa.Actions.AXConfirm);
+				}
 				performConfirm += value;
-				AddAction (AtkCocoa.Actions.AXConfirm);
 			}
 			remove {
 				performConfirm -= value;
-				RemoveAction (AtkCocoa.Actions.AXConfirm);
+				if (performConfirm == null) {
+					RemoveAction (AtkCocoa.Actions.AXConfirm);
+				}
 			}
 		}
 		event EventHandler performDecrement;
 		public event EventHandler PerformDecrement {
 			add {
+				if (performDecrement == null) {
+					AddAction (AtkCocoa.Actions.AXDecrement);
+				}
 				performDecrement += value;
-				AddAction (AtkCocoa.Actions.AXDecrement);
 			}
 			remove {
 				performDecrement -= value;
-				RemoveAction (AtkCocoa.Actions.AXDecrement);
+				if (performDecrement == null) {
+					RemoveAction (AtkCocoa.Actions.AXDecrement);
+				}
 			}
 		}
 		event EventHandler performDelete;
 		public event EventHandler PerformDelete {
 			add {
+				if (performDelete == null) {
+					AddAction (AtkCocoa.Actions.AXDelete);
+				}
 				performDelete += value;
-				AddAction (AtkCocoa.Actions.AXDelete);
 			}
 			remove {
 				performDelete -= value;
-				RemoveAction (AtkCocoa.Actions.AXDelete);
+				if (performDelete == null) {
+					RemoveAction (AtkCocoa.Actions.AXDelete);
+				}
 			}
 		}
 		event EventHandler performIncrement;
 		public event EventHandler PerformIncrement {
 			add {
+				if (performIncrement == null) {
+					AddAction (AtkCocoa.Actions.AXIncrement);
+				}
 				performIncrement += value;
-				AddAction (AtkCocoa.Actions.AXIncrement);
 			}
 			remove {
 				performIncrement -= value;
-				RemoveAction (AtkCocoa.Actions.AXIncrement);
+				if (performIncrement == null) {
+					RemoveAction (AtkCocoa.Actions.AXIncrement);
+				}
 			}
 		}
 		event EventHandler performPick;
 		public event EventHandler PerformPick {
 			add {
+				if (performPick == null) {
+					AddAction (AtkCocoa.Actions.AXPick);
+				}
 				performPick += value;
-				AddAction (AtkCocoa.Actions.AXPick);
 			}
 			remove {
 				performPick -= value;
-				RemoveAction (AtkCocoa.Actions.AXPick);
+				if (performPick == null) {
+					RemoveAction (AtkCocoa.Actions.AXPick);
+				}
 			}
 		}
 		event EventHandler performPress;
 		public event EventHandler PerformPress {
 			add {
+				if (performPress == null) {
+					AddAction (AtkCocoa.Actions.AXPress);
+				}
 				performPress += value;
-				AddAction (AtkCocoa.Actions.AXPress);
 			}
 			remove {
 				performPress -= value;
-				AddAction (AtkCocoa.Actions.AXPress);
+				if (performPress == null) {
+					RemoveAction (AtkCocoa.Actions.AXPress);
+				}
 			}
 		}
 		event EventHandler performRaise;
 		public event EventHandler PerformRaise {
 			add {
+				if (performRaise == null) {
+					AddAction (AtkCocoa.Actions.AXRaise);
+				}
 				performRaise += value;
-				AddAction (AtkCocoa.Actions.AXRaise);
 			}
 			remove {
 				performRaise -= value;
-				RemoveAction (AtkCocoa.Actions.AXRaise);
+				if (performRaise == null) {
+					RemoveAction (AtkCocoa.Actions.AXRaise);
+				}
 			}
 		}
 		event EventHandler performShowAlternateUI;
 		public event EventHandler PerformShowAlternateUI {
 			add {
+				if (performShowAlternateUI == null) {
+					AddAction (AtkCocoa.Actions.AXShowAlternateUI);
+				}
 				performShowAlternateUI += value;
-				AddAction (AtkCocoa.Actions.AXShowAlternateUI);
 			}
 			remove {
 				performShowAlternateUI -= value;
-				RemoveAction (AtkCocoa.Actions.AXShowAlternateUI);
+				if (performShowAlternateUI == null) {
+					RemoveAction (AtkCocoa.Actions.AXShowAlternateUI);
+				}
 			}
 		}
 		event EventHandler performShowDefaultUI;
 		public event EventHandler PerformShowDefaultUI {
 			add {
+				if (performShowDefaultUI == null) {
+					AddAction (AtkCocoa.Actions.AXShowDefaultUI);
+				}
 				performShowDefaultUI += value;
-				AddAction (AtkCocoa.Actions.AXShowDefaultUI);
 			}
 			remove {
 				performShowDefaultUI -= value;
-				RemoveAction (AtkCocoa.Actions.AXShowDefaultUI);
+				if (performShowDefaultUI == null) {
+					RemoveAction (AtkCocoa.Actions.AXShowDefaultUI);
+				}
 			}
 		}
 		event EventHandler performShowMenu;
 		public event EventHandler PerformShowMenu {
 			add {
+				if (performShowMenu == null) {
+					AddAction (AtkCocoa.Actions.AXShowMenu);
+				}
 				performShowMenu += value;
-				AddAction (AtkCocoa.Actions.AXShowMenu);
 			}
 			remove {
 				performShowMenu -= value;
-				RemoveAction (AtkCocoa.Actions.AXShowMenu);
+				if (performShowMenu == null) {
+					RemoveAction (AtkCocoa.Actions.AXShowMenu);
+				}
 			}
 		}
 	}
@@ -397,7 +441,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		event EventHandler PerformRaise;
 		event EventHandler PerformShowAlternateUI;
 		event EventHandler PerformShowDefaultUI;
-		event EventHandler PerformShowPopupMenu;
+		event EventHandler PerformShowMenu;
 
 		void SetGtkParent (Gtk.Widget realParent);
 		void SetFrameInGtkParent (Gdk.Rectangle frame);
