@@ -33,75 +33,6 @@ namespace MonoDevelop.Components
 {
 	public class CellRendererImage: Gtk.CellRenderer
 	{
-		/*
-		static GLib.GType myType = GLib.GType.None;
-		public static new GLib.GType GType {
-			get {
-				if (myType == GLib.GType.None) {
-					myType = GLib.Object.RegisterGType (typeof (CellRendererImage));
-				}
-				return myType;
-			}
-		}
-
-		class CellRendererImageAccessible : AtkCocoaHelper.AtkCellRendererProxy
-		{
-			static GLib.GType myType = GLib.GType.None;
-			public static new GLib.GType GType {
-				get {
-					if (myType == GLib.GType.None) {
-						myType = GLib.Object.RegisterGType (typeof (CellRendererImageAccessible));
-					}
-					return myType;
-				}
-			}
-
-			public CellRendererImageAccessible ()
-			{
-				Accessible.SetRole (AtkCocoaHelper.Roles.AXImage);
-			}
-		}
-
-		class CellRendererImageAccessibleFactory : Atk.ObjectFactory
-		{
-			static GLib.GType myType = GLib.GType.None;
-			public static new GLib.GType GType {
-				get {
-					if (myType == GLib.GType.None) {
-						myType = GLib.Object.RegisterGType (typeof (CellRendererImageAccessibleFactory));
-					}
-					return myType;
-				}
-			}
-
-			public CellRendererImageAccessibleFactory ()
-			{
-			}
-
-			public CellRendererImageAccessibleFactory (IntPtr handle) : base (handle)
-			{
-				Console.WriteLine ("Created CellRendererImageAccessibleFactory");
-			}
-
-			protected override Atk.Object OnCreateAccessible (GLib.Object obj)
-			{
-				Console.WriteLine ("OnCreateAccessible");
-				return new CellRendererImageAccessible ();
-			}
-
-			protected override GLib.GType OnGetAccessibleType ()
-			{
-				Console.WriteLine ("OnGetAccessibleType");
-				return CellRendererImageAccessible.GType;
-			}
-
-			protected override void OnInvalidate ()
-			{
-				Console.WriteLine ("OnInvalidate");
-			}
-		}
-		*/
-
 		Image image;
 		Image imageOpen;
 		Image imageClosed;
@@ -113,16 +44,6 @@ namespace MonoDevelop.Components
 		/// null values for object that are not of subclasses of GLib.Object
 		/// </summary>
 		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("md-empty", Gtk.IconSize.Menu);
-
-		/*
-		static CellRendererImage ()
-		{
-			Atk.Registry registry = Atk.Global.DefaultRegistry;
-			var fakeFactory = new CellRendererImageAccessibleFactory ();
-
-			registry.SetFactoryType (GType, CellRendererImageAccessibleFactory.GType);
-		}
-*/
 
 		public CellRendererImage ()
 		{
