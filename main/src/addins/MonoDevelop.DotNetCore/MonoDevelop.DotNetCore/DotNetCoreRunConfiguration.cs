@@ -43,6 +43,7 @@ namespace MonoDevelop.DotNetCore
 		protected override void Initialize (Project project)
 		{
 			base.Initialize (project);
+			ExternalConsole = true;
 			if (project.GetFlavor<DotNetCoreProjectExtension> ()?.IsWeb ?? false && string.IsNullOrEmpty (ApplicationURL)) {
 				var tcpListner = new TcpListener (IPAddress.Loopback, 0);
 				tcpListner.Start ();
