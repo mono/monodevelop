@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsCreateProjectDirectoryInsideSolutionDirectoryEnabled {
-			get { return HasProjects; }
+			get { return HasProjects && IsNewSolution; }
 		}
 
 		public bool IsGitIgnoreEnabled {

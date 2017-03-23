@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 		{
 			caret.UpdateCaretPosition (e);
 
-			if (Options.TabsToSpaces && document.IsTextSet) {
+			if (Options.TabsToSpaces && document.IsTextSet && !document.IsInUndo) {
 				string tabReplacement = new string (' ', Options.TabSize);
 				var newChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
 				foreach (var change in e.TextChanges) {
@@ -389,7 +389,7 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		static int CalcIndentLength (string indent)
+		internal static int CalcIndentLength (string indent)
 		{
 			int result = 0;
 			foreach (var ch in indent) {
@@ -403,7 +403,7 @@ namespace Mono.TextEditor
 		}
 
 
-		static int CalcOffset (string indent, int indentLength)
+		internal static int CalcOffset (string indent, int indentLength)
 		{
 			int result = 0;
 			int offset = 0;
@@ -431,7 +431,6 @@ namespace Mono.TextEditor
 					str = str.TrimStart (' ', '\t');
 				return ConvertToPangoMarkup (str, replaceTabs);
 			}
-			// TODO : EditorTheme
 			int indentLength = -1;
 			int curOffset = offset;
 

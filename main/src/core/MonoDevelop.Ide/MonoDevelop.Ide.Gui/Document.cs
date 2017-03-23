@@ -522,9 +522,9 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		public bool Close ()
+		public async Task<bool> Close ()
 		{
-			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
+			return await ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
 
 		protected override void OnSaved (EventArgs e)

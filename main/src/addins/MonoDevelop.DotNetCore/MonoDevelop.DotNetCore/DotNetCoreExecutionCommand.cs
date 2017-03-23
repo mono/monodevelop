@@ -36,7 +36,7 @@ namespace MonoDevelop.DotNetCore
 			OutputPath = outputPath;
 			DotNetArguments = arguments;
 
-			Command = new DotNetCorePath ().FileName;
+			Command = DotNetCoreRuntime.FileName;
 			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
 

@@ -48,6 +48,7 @@ namespace MonoDevelop.DotNetCore
 				tcpListner.Start ();
 				ApplicationURL = $"http://localhost:{((IPEndPoint)tcpListner.LocalEndpoint).Port}";
 				tcpListner.Stop ();
+				EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
 			}
 		}
 

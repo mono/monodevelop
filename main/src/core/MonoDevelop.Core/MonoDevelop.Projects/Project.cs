@@ -3134,8 +3134,11 @@ namespace MonoDevelop.Projects
 			// Remove unused items
 
 			foreach (var it in unusedItems) {
-				if (it.ParentGroup != null) // It may already have been deleted
-					msproject.RemoveItem (it);
+				if (it.ParentGroup != null) { // It may already have been deleted
+					// Remove wildcard item if it is not imported.
+					if (!it.IsWildcardItem || it.ParentProject == msproject)
+						msproject.RemoveItem (it);
+				}
 				loadedItems.Remove (it);
 			}
 			loadedProjectItems = new HashSet<ProjectItem> (Items);

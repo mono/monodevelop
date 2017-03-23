@@ -91,6 +91,23 @@ contexts:
           scope: constant.character.verbatim.escape.source.cs
         - match: '"'
           pop: true
+    - match: '\$@"'
+      scope: string.quoted.other.interpolated.verbatim.source.cs
+      push:
+        - match: '""'
+          scope: constant.character.interpolated.verbatim.escape.source.cs
+        - match: '")'
+          pop: true
+        - match: '({)'
+          captures:
+            1: string.quoted.other.interpolated.verbatim.source.cs
+          push:
+            - meta_content_scope: source.cs
+            - match: '(})'
+              captures:
+                1: string.quoted.other.interpolated.verbatim.source.cs
+              pop: true
+            - include: main
     - match: '\$"'
       scope: string.quoted.other.interpolated.source.cs
       push:

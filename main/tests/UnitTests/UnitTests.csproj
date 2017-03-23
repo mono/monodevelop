@@ -150,11 +150,6 @@
       <Name>MonoDevelop.TextTemplating</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
-      <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
-      <Name>Mono.TextTemplating</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
       <Project>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</Project>
       <Name>MonoDevelop.Deployment.Linux</Name>

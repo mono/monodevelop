@@ -58,7 +58,6 @@ namespace MonoDevelop.Projects
 
 		int loading;
 		ItemCollection<SolutionItem> dependencies = new ItemCollection<SolutionItem> ();
-		SolutionItemEventArgs thisItemArgs;
 		FileStatusTracker<SolutionItemEventArgs> fileStatusTracker;
 		FilePath fileName;
 		string name;
@@ -83,7 +82,6 @@ namespace MonoDevelop.Projects
 			TypeGuid = MSBuildProjectService.GetTypeGuidForItem (this);
 
 			fileFormat = MSBuildFileFormat.DefaultFormat;
-			thisItemArgs = new SolutionItemEventArgs (this);
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += OnConfigurationAddedToCollection;
 			configurations.ConfigurationRemoved += OnConfigurationRemovedFromCollection;
@@ -445,7 +443,7 @@ namespace MonoDevelop.Projects
 			try {
 				fileStatusTracker.BeginSave ();
 				await OnSave (monitor);
-				OnSaved (thisItemArgs);
+				OnSaved (new SolutionItemSavedEventArgs (this, ParentSolution, SavingSolution));
 			} finally {
 				fileStatusTracker.EndSave ();
 			}
@@ -1216,7 +1214,7 @@ namespace MonoDevelop.Projects
 			base.OnNameChanged (e);
 		}
 		
-		protected virtual void OnSaved (SolutionItemEventArgs args)
+		protected virtual void OnSaved (SolutionItemSavedEventArgs args)
 		{
 			if (Saved != null)
 				Saved (this, args);
@@ -1476,7 +1474,7 @@ namespace MonoDevelop.Projects
 			// Do nothing by default
 		}
 
-		public event SolutionItemEventHandler Saved;
+		public event SolutionItemSavedEventHandler Saved;
 
 		/// <summary>
 		/// Occurs when the object is being disposed
