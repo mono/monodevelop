@@ -126,7 +126,7 @@ type FSharpProject() as self =
             | [_single, items] when items = sortedItems -> false
             | _ -> true
 
-        if needsSort then
+        if needsSort && sortedItems.Length > 0 then
             let newGroup = project.AddNewItemGroup()
 
             for item in sortedItems do
