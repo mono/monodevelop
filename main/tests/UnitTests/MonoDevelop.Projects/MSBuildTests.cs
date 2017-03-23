@@ -1132,7 +1132,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1152,7 +1152,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1176,7 +1176,7 @@ namespace MonoDevelop.Projects
 				f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 				await p.SaveAsync (Util.GetMonitor ());
 
-				Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -1203,7 +1203,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved4")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1224,7 +1224,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.None;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved3")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		/// <summary>
@@ -1255,7 +1255,7 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.None;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved5")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved5"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1330,7 +1330,7 @@ namespace MonoDevelop.Projects
 			f.BuildAction = originalBuildAction;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		[Test]
@@ -1356,12 +1356,12 @@ namespace MonoDevelop.Projects
 			f.BuildAction = originalBuildAction;
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 
 			// Save again to make sure another Update item is not added.
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved6")), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
 		}
 
 		/// <summary>
@@ -2131,6 +2131,7 @@ namespace MonoDevelop.Projects
 		/// and MSBuild is used
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps2 ()
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
@@ -2158,6 +2159,7 @@ namespace MonoDevelop.Projects
 		/// restored.
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps3 ()
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
@@ -2185,6 +2187,7 @@ namespace MonoDevelop.Projects
 		/// other MSBuild .targets and .props.
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
 		{
 			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
@@ -2333,7 +2336,7 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (Project)sol.Items [0];
-			Assert.AreEqual (sol.ItemDirectory.ToString () + "/", p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
+			Assert.AreEqual (sol.ItemDirectory.ToString () + Path.DirectorySeparatorChar, p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
 		}
 
 		[Test]

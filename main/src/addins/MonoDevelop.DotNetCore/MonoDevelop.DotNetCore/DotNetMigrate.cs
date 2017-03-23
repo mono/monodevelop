@@ -77,14 +77,13 @@ namespace MonoDevelop.DotNetCore
 				projectFile = project.FileName;
 				migrationFile = Path.Combine (Path.GetDirectoryName (projectFile), "project.json");
 			}
-			var dotnetPath = new DotNetCorePath ();
-			if (dotnetPath.IsMissing) {
+			if (DotNetCoreRuntime.IsMissing) {
 				monitor.ReportError (GettextCatalog.GetString (".NET Core is not installed"));
 				return false;
 			}
 
 			var process = Runtime.ProcessService.StartProcess (
-				dotnetPath.FileName,
+				DotNetCoreRuntime.FileName,
 				$"migrate \"{migrationFile}\"",
 				Path.GetDirectoryName (migrationFile),
 				monitor.Log,

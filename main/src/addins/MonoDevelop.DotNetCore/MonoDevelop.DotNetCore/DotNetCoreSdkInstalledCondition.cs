@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreExecutionCommand.cs
+// DotNetCoreSdkInstalledCondition.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
+using Mono.Addins;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreExecutionCommand : ProcessExecutionCommand
+	class DotNetCoreSdkInstalledCondition : ConditionType
 	{
-		public DotNetCoreExecutionCommand (string directory, string outputPath, string arguments)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			WorkingDirectory = directory;
-			OutputPath = outputPath;
-			DotNetArguments = arguments;
+			if (DotNetCoreSdk.IsInstalled)
+				return true;
 
-			Command = DotNetCoreRuntime.FileName;
-			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
+			if (MSBuildSdks.Installed)
+				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
+
+			return false;
 		}
 
-		public string OutputPath { get; private set; }
-		public string DotNetArguments { get; private set; }
+		/// <summary>
+		/// .NET Standard library projects do not require the .NET Core runtime.
+		/// </summary>
+		static bool RequiresRuntime (NodeElement conditionNode)
+		{
+			string value = conditionNode.GetAttribute ("requiresRuntime");
+			if (string.IsNullOrEmpty (value))
+				return true;
 
-		public bool PauseConsoleOutput { get; set; }
-		public bool ExternalConsole { get; set; }
-		public bool LaunchBrowser { get; set; }
-		public string LaunchURL { get; set; }
-		public string ApplicationURL { get; set; }
-		public PipeTransportSettings PipeTransport { get; set; }
+			bool result = true;
+			if (bool.TryParse (value, out result))
+				return result;
+
+			return true;
+		}
 	}
 }

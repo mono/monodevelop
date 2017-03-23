@@ -5,21 +5,19 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.IO
-open System.Diagnostics
 open System.Collections.Generic
 open System.Text.RegularExpressions
 open System.Threading.Tasks
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
+open MonoDevelop.Core.Text
 open MonoDevelop.Ide
+open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.CodeCompletion
-open Mono.TextEditor
-open Mono.TextEditor.Highlighting
+open MonoDevelop.Ide.TypeSystem
 open ExtCore.Control
 
 type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
@@ -412,7 +410,7 @@ module Completion =
             | None -> return result
         }
 
-    let getCompletions context  =
+    let getCompletions context =
         async {
             try
                 let { 
@@ -421,6 +419,7 @@ module Completion =
                     documentContext = documentContext
                     lineToCaret = lineToCaret
                     completionChar = completionChar
+                    editor = editor
                     } = context
 
                 let typedParseResults =
@@ -428,15 +427,19 @@ module Completion =
                         maybe {
                             let! document = documentContext.TryGetFSharpParsedDocument()
                             let! location = document.ParsedLocation
-
-                            if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
+                            let trimmedLine = lineToCaret.TrimEnd()
+                            let reparse = trimmedLine.EndsWith("->") || trimmedLine.Contains(").") || trimmedLine.EndsWith("].")
+                            if location.Line = context.line && not reparse then
                                 LoggingService.logDebug "Completion: got parse results from cache"
                                 return! document.TryGetAst()
                             else
                                 LoggingService.logDebug "Completion: syncing parse results"
                                 // force sync
-                                documentContext.ReparseDocument()
-                                return! document.TryGetAst()
+                                let projectFile = documentContext.Project |> function null -> document.FileName| proj -> proj.FileName.ToString()
+                                let ast = languageService.ParseAndCheckFileInProject(projectFile, document.FileName, 0, editor.Text, true)
+                                          |> Async.RunSynchronously
+                                document.Ast <- ast
+                                return ast
                         })
 
                 let result = CompletionDataList()
@@ -478,8 +481,6 @@ module Completion =
 
                         let data = getCompletionData symbols isInAttribute
                         result.AddRange (filterResults data residue)
-
-                        addIdentCompletions()
 
                         if completionChar <> '.' && result.Count > 0 then
                             LoggingService.logDebug "Completion: residue %s" residue
