@@ -147,5 +147,21 @@ namespace MonoDevelop.Projects
 				tcs.TrySetResult (null);
 			}
 		}
+
+		[Test ()]
+		public async Task FilesWithConfigurationCondition ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project-with-conditioned-file.csproj");
+			var project = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
+			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations ["Debug|x86"].Selector);
+
+			Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Conditioned.cs"));
+
+			sourceFiles = await project.GetSourceFilesAsync (project.Configurations ["Release|x86"].Selector);
+
+			Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "Conditioned.cs"));
+		}
 	}
 }
