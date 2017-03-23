@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Editor.Highlighting;
 
 using Microsoft.VisualStudio.Text;
@@ -70,7 +69,7 @@ namespace Microsoft.VisualStudio.Platform
                     try
                     {
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = SystemAssemblyService.AssemblyLoad(assemblyFilePath);
+                        var assembly = MonoDevelop.Core.Platform.AssemblyLoad(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)

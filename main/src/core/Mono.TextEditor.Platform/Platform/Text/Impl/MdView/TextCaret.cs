@@ -14,7 +14,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    public class TextCaret : ITextCaret
+    internal class TextCaret : ITextCaret
     {
         private TextEditor _textEditor;
         private ITextView _textView;
