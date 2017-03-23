@@ -87,7 +87,7 @@ type FSharpFormatter()  =
                         let col = editor.CaretColumn
                         editor.ReplaceText(0, input.Length, result)
                         editor.SetCaretLocation (line, col, false))
-                    StringTextSource (trimIfNeeded input result)
+                    StringTextSource result
                 with exn ->
                     LoggingService.LogError("**Fantomas**: Error occured: {0}", exn.Message)
                     StringTextSource input
