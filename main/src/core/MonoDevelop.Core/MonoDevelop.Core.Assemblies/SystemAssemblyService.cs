@@ -276,15 +276,6 @@ namespace MonoDevelop.Core.Assemblies
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
 		}
 
-		public static Assembly AssemblyLoad (string asmPath) {
-			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
-				var asmName = AssemblyName.GetAssemblyName(asmPath);
-				return Assembly.Load(asmName);
-			}
-
-			return Assembly.LoadFrom(asmPath);
-		}
-
 		void CreateFrameworks ()
 		{
 			frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();

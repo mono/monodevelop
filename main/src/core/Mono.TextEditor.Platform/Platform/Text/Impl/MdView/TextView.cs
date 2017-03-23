@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.Platform;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    public class TextView : IWpfTextView
+    internal class TextView : IWpfTextView
     {
         #region Private Members
         private TextEditor _textEditor;

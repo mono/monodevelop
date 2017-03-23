@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
-		public readonly Microsoft.VisualStudio.Text.Editor.ITextView TextView;
+		public Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; }
 
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 

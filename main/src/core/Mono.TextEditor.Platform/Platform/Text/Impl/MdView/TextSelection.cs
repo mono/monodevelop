@@ -15,7 +15,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    public class TextSelection : ITextSelection
+    internal class TextSelection : ITextSelection
     {
         private TextEditor _textEditor;
         private ITextView _textView;
