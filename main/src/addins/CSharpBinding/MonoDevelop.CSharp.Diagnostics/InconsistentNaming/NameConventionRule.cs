@@ -126,6 +126,21 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			};
 		}
 
+		public bool Equals (NameConventionRule other)
+		{
+			var empty = new string [0];
+			return (RequiredPrefixes ?? empty).SetEquals (other.RequiredPrefixes ?? empty) &&
+					  (AllowedPrefixes ?? empty).SetEquals (other.AllowedPrefixes ?? empty) &&
+					  (RequiredSuffixes ?? empty).SetEquals (other.RequiredSuffixes ?? empty) &&
+					  (ForbiddenPrefixes ?? empty).SetEquals (other.ForbiddenPrefixes ?? empty) &&
+					  (ForbiddenSuffixes ?? empty).SetEquals (other.ForbiddenSuffixes ?? empty) &&
+					  AffectedEntity == other.AffectedEntity &&
+					  VisibilityMask == other.VisibilityMask &&
+					  NamingStyle == other.NamingStyle &&
+					  IncludeInstanceMembers == other.IncludeInstanceMembers &&
+					  IncludeStaticEntities == other.IncludeStaticEntities;
+		}
+
 		public string GetPreview ()
 		{
 			return wrappedRule.GetPreview ();

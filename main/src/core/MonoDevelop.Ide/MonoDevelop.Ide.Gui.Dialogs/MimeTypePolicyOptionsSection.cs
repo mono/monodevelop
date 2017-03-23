@@ -218,6 +218,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (PolicySet set in panelData.GetSupportedPolicySets ()) {
 				if (polSet != null && polSet.Name == set.Name)
 					continue;
+				if (IsCustomUserPolicy && set.Name == "Default") // There is already the System Default entry
+					continue;
 				store.AppendValues (set.Name, set);
 				setsInCombo.Add (set);
 			}
