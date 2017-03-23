@@ -375,6 +375,24 @@ namespace MonoDevelop.Projects
 			return ItemExtension.OnGetReferencedItems (configuration);
 		}
 
+		public T [] GetReferencedExtensionsFromFlavor<T> (string projectTypeName, ConfigurationSelector configuration) where T : ProjectExtension
+		{
+			var extensions = new List<T> ();
+			var projects = ParentSolution.GetAllProjects ();
+			var extensionFlavor = Type.GetType (projectTypeName, true);
+
+			foreach (var p in projects) {
+				if (p == this
+					|| !p.GetReferencedItems (configuration).Contains (this))
+					continue;
+
+				T extension = p.GetService (extensionFlavor) as T;
+				if (extension != null)
+					extensions.Add (extension);
+			}
+			return extensions.ToArray ();
+		}
+
 		protected virtual IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 		{
 			return dependencies;
