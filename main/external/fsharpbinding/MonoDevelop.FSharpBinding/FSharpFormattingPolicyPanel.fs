@@ -5,7 +5,7 @@ open MonoDevelop.Ide.Gui.Dialogs
 
 type FSharpFormattingPolicyPanel() =
     inherit MimeTypePolicyOptionsPanel<FSharpFormattingPolicy>()
-    let mutable policy = FSharpFormattingPolicy()
+    let mutable policy = DefaultFSharpFormatting.policy
     let mutable panel = new FSharpFormattingPolicyPanelWidget()
     override __.CreatePanelWidget() =
         panel <- new FSharpFormattingPolicyPanelWidget()
@@ -13,7 +13,8 @@ type FSharpFormattingPolicyPanel() =
         Control.op_Implicit panel
 
     override __.LoadFrom(p : FSharpFormattingPolicy) =
-        policy <- p.Clone()
+        let formats = p.Formats |> function null -> ResizeArray<FSharpFormattingSettings>() | _ -> ResizeArray<FSharpFormattingSettings>(p.Formats)
+        policy <- { p with DefaultFormat=p.DefaultFormat; Formats=formats }
         panel.SetFormat(policy)
 
     override __.GetPolicy() =
