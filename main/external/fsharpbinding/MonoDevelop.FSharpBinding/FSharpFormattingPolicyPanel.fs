@@ -13,7 +13,7 @@ type FSharpFormattingPolicyPanel() =
         Control.op_Implicit panel
 
     override __.LoadFrom(p : FSharpFormattingPolicy) =
-        let formats = p.Formats |> function null -> ResizeArray<FSharpFormattingSettings>() | _ -> p.Formats
+        let formats = p.Formats |> function null -> ResizeArray<FSharpFormattingSettings>() | _ -> ResizeArray<FSharpFormattingSettings>(p.Formats)
         policy <- { p with DefaultFormat=p.DefaultFormat; Formats=formats }
         panel.SetFormat(policy)
 
