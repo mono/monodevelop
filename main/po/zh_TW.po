@@ -498,7 +498,7 @@ msgid ""
 msgstr ""
 "無法將 ({0}) {1} 編譯成 .resources。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -523,7 +523,7 @@ msgid ""
 msgstr ""
 "無法使用 {1} 產生 '{0}' 文化特性 (Culture) 的衛星組件。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

@@ -519,7 +519,7 @@ msgid ""
 msgstr ""
 "Nepodařilo se zkompilovat ({0}) {1} do .resources. \n"
 "Důvod: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -545,7 +545,7 @@ msgid ""
 msgstr ""
 "Satelitní sestavení pro jazykovou verzi {0} s {1} se nedají vygenerovat.\n"
 "Důvod: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

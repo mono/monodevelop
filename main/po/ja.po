@@ -522,7 +522,7 @@ msgid ""
 msgstr ""
 "({0}) {1} を .resources にコンパイルできません。\n"
 "理由: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -548,7 +548,7 @@ msgid ""
 msgstr ""
 "{1} で '{0}' カルチャのサテライト アセンブリを生成できません\n"
 "理由: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"
