@@ -45,8 +45,6 @@ using System.Linq;
 using MonoDevelop.Ide.Tasks;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("MonoDevelop.UnitTesting")]
-
 namespace MonoDevelop.Ide.Gui.Components
 {
 	public partial class ExtensibleTreeView : Control, ICommandRouter

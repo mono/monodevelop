@@ -30,6 +30,7 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
 using System.Threading.Tasks;

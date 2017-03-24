@@ -24,17 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
-using System.Collections;
-using System.Reflection;
-using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.DotNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
     <NuGetUrl>https://dotnet.myget.org/F/templating/api/v2/package/</NuGetUrl>
     <TemplatesVersion>1.0.0-beta1-20170223-126</TemplatesVersion>
@@ -198,6 +199,10 @@
     <EmbeddedResource Include="Properties\MonoDevelop.DotNetCore.addin.xml">
       <LogicalName>MonoDevelop.DotNetCore.addin.xml</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DotNetCore.Debugger" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

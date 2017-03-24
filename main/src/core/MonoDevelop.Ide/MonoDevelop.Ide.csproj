@@ -1,4 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
     <RootNamespace>MonoDevelop.Ide</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -169,9 +170,11 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -184,6 +187,10 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.TemplateEngine.Abstractions">
@@ -260,10 +267,6 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
-      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>RefactoringEssentials</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -9246,7 +9249,6 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\NSObjectResult.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTemporaryStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
@@ -9254,13 +9256,6 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionKeyHandler.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NR5CompatibiltyExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectCacheHostServiceFactory.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCacheService.cs">
-      <DependentUpon>MonoDevelopProjectCacheHostServiceFactory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MonoDevelop.Ide.TypeSystem\DocumentTrackingService.cs">
-      <DependentUpon>MonoDevelopProjectCacheHostServiceFactory.cs</DependentUpon>
-    </Compile>
     <Compile Include="MonoDevelop.Components.AutoTest.Results\ObjectResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
@@ -9383,6 +9378,9 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionSelectionStatus.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\GlobalOptionPersister.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TextPolicyDocumentOptionsProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProjectTemplatingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineSolutionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProcessedTemplateResult.cs" />
@@ -9429,47 +9427,8 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
   <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Platform" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />
-  </Target>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
-    <Folder Include="MonoDevelop.Ide.Execution\" />
-    <Folder Include="MonoDevelop.Ide.Extensions\" />
-    <Folder Include="MonoDevelop.Ide.CustomTools\" />
-    <Folder Include="MonoDevelop.Components.Extensions\" />
-    <Folder Include="MonoDevelop.Components.Theming\" />
-    <Folder Include="MonoDevelop.Components.Docking\" />
-    <Folder Include="MonoDevelop.Ide.Gui\" />
-    <Folder Include="MonoDevelop.Ide.Desktop\" />
-    <Folder Include="MonoDevelop.Ide.Projects\" />
-    <Folder Include="MonoDevelop.Ide\" />
-    <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
-    <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
-    <Folder Include="MonoDevelop.Ide.Navigation\" />
-    <Folder Include="MonoDevelop.Components.AutoTest\" />
-    <Folder Include="MonoDevelop.Ide.Fonts\" />
-    <Folder Include="MonoDevelop.Ide.Codons\" />
-    <Folder Include="ExtensionModel\" />
-    <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.Ide.WelcomePage\" />
-    <Folder Include="branding\" />
-    <Folder Include="MonoDevelop.Components.MainToolbar\" />
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
-    <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
-    <Folder Include="MonoDevelop.Ide.TextEditing\" />
-    <Folder Include="MonoDevelop.Components.DockNotebook\" />
-    <Folder Include="MonoDevelop.Components\Windows\" />
-    <Folder Include="MonoDevelop.Ide.GettingStarted\" />
-    <Folder Include="MonoDevelop.Ide.Gui.Wizard\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\IL\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ChangeLog\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Yaml\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CgShader\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\T4\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\ASP\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
@@ -9488,4 +9447,38 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MacPlatform" />
+    <InternalsVisibleTo Include="WindowsPlatform" />
+    <InternalsVisibleTo Include="MonoDevelop.Debugger" />
+    <InternalsVisibleTo Include="MonoDevelop.DesignerSupport" />
+    <InternalsVisibleTo Include="Ide.Tests" />
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
+    <InternalsVisibleTo Include="Xamarin.OSXEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.Xml" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="Xamarin.Ide" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
+    <InternalsVisibleTo Include="MonoDevelop.AssemblyBrowser" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="Xamarin.Sketches" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
+    <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />
+  </Target>
 </Project>

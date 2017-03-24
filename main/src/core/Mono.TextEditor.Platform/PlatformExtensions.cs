@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.Platform
     {
         public static ITextBuffer GetPlatformTextBuffer(this MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
-            return textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
+            return textEditor.TextView.TextBuffer;
         }
 
         public static ITextView GetPlatformTextView(this MonoDevelop.Ide.Editor.TextEditor textEditor)

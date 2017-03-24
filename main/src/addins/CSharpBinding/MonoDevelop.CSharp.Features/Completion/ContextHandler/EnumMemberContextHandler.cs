@@ -27,18 +27,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis.Recommendations;
-using Microsoft.CodeAnalysis;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {

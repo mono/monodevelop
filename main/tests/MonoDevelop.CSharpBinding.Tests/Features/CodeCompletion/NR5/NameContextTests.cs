@@ -36,7 +36,9 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 		public void TestNamespaceName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$namespace n$");
-			AssertEmpty(provider);
+			AssertExists (provider, "System");
+			AssertExists (provider, "Microsoft");
+			Assert.AreEqual (2, provider.Count);
 		}
 
 		[Test]
@@ -299,6 +301,7 @@ class Foo
 		/// Bug 16491 - Wrong completion on multiple parameter lambdas
 		/// </summary>
 		[Test]
+		[Ignore ("https://github.com/dotnet/roslyn/issues/17697")]
 		public void TestBug16491 ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"
@@ -317,6 +320,7 @@ class Foo
 		}
 
 		[Test]
+		[Ignore ("https://github.com/dotnet/roslyn/issues/17697")]
 		public void TestBug16491Case2 ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"

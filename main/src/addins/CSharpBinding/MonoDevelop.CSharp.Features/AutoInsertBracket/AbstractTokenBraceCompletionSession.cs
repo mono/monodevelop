@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractTokenBraceCompletionSession.cs
 //
 // Author:
@@ -23,12 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using MonoDevelop.Ide.Editor;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
 
@@ -52,22 +52,21 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		readonly char closingChar;
 
 		protected AbstractTokenBraceCompletionSession (DocumentContext ctx,
-		                                               int openingTokenKind, int closingTokenKind, char ch)
+													   int openingTokenKind, int closingTokenKind, char ch)
 		{
 			this.closingChar = ch;
 			this.ctx = ctx;
 			this.OpeningTokenKind = openingTokenKind;
 			this.ClosingTokenKind = closingTokenKind;
 		}
-	
-		public virtual bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+
+		public virtual bool CheckOpeningPoint (TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
 		{
 			var snapshot = CurrentSnapshot;
 			var position = StartOffset;
-			var token = FindToken(snapshot, position, cancellationToken);
+			var token = FindToken (snapshot, position, cancellationToken);
 
-			if (!IsValidToken(token))
-			{
+			if (!IsValidToken (token)) {
 				return false;
 			}
 
@@ -85,10 +84,10 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		public override void BeforeType (char ch, out bool handledCommand)
 		{
 			handledCommand = false;
-			if (!CheckIsValid() || ch != this.closingChar) {
+			if (!CheckIsValid () || ch != this.closingChar) {
 				return;
 			}
-			if (AllowOverType (default(CancellationToken))) {
+			if (AllowOverType (default (CancellationToken))) {
 				Editor.CaretOffset++;
 				this.endOffset = this.startOffset = 0;
 				handledCommand = true;
@@ -112,29 +111,28 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			}
 		}
 
-		protected bool IsValidToken(SyntaxToken token)
+		protected bool IsValidToken (SyntaxToken token)
 		{
 			return token.Parent != null && !(token.Parent is SkippedTokensTriviaSyntax);
 		}
 
-		public virtual void AfterStart(CancellationToken cancellationToken)
+		public virtual void AfterStart (CancellationToken cancellationToken)
 		{
 		}
 
-		public virtual void AfterReturn(CancellationToken cancellationToken)
+		public virtual void AfterReturn (CancellationToken cancellationToken)
 		{
 		}
 
-		public virtual bool AllowOverType(CancellationToken cancellationToken)
+		public virtual bool AllowOverType (CancellationToken cancellationToken)
 		{
-			return CheckCurrentPosition(cancellationToken) && CheckClosingTokenKind(cancellationToken);
+			return CheckCurrentPosition (cancellationToken) && CheckClosingTokenKind (cancellationToken);
 		}
 
-		protected bool CheckClosingTokenKind(CancellationToken cancellationToken)
+		protected bool CheckClosingTokenKind (CancellationToken cancellationToken)
 		{
 			var document = Document;
-			if (document != null)
-			{
+			if (document != null) {
 				var root = document.GetSyntaxRootAsync(cancellationToken).WaitAndGetResult(cancellationToken);
 				var position = EndOffset + 1;
 
@@ -144,14 +142,13 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			return true;
 		}
 
-		protected bool CheckCurrentPosition(CancellationToken cancellationToken)
+		protected bool CheckCurrentPosition (CancellationToken cancellationToken)
 		{
 			var document = Document;
-			if (document != null)
-			{
+			if (document != null) {
 				// make sure auto closing is called from a valid position
-				var tree = document.GetSyntaxTreeAsync(cancellationToken).WaitAndGetResult(cancellationToken);
-				return !tree.IsInNonUserCode(Editor.CaretOffset, cancellationToken);
+				var tree = document.GetSyntaxTreeAsync (cancellationToken).WaitAndGetResult (cancellationToken);
+				return !tree.IsInNonUserCode (Editor.CaretOffset, cancellationToken);
 			}
 
 			return true;
@@ -159,8 +156,8 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 
 		internal static SyntaxToken FindToken (SyntaxTree snapshot, int position, CancellationToken cancellationToken)
 		{
-			var root = snapshot.GetRootAsync(cancellationToken).WaitAndGetResult(CancellationToken.None);
-			return root.FindToken(position, findInsideTrivia: true);
+			var root = snapshot.GetRootAsync (cancellationToken).WaitAndGetResult (CancellationToken.None);
+			return root.FindToken (position, findInsideTrivia: true);
 		}
 	}
 }

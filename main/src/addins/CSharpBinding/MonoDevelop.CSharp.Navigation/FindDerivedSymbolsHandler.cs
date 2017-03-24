@@ -23,25 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.CSharp.Navigation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
-using System.Threading;
-using MonoDevelop.Core;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.FindSymbols;
-using ICSharpCode.NRefactory6.CSharp;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Refactoring;
-using System.Runtime.CompilerServices;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using MonoDevelop.CSharp.Navigation;
 
 namespace MonoDevelop.CSharp.Refactoring
 {

@@ -168,6 +168,15 @@ namespace MonoDevelop.Ide.Desktop
 				yield return mimeType;
 			}
 		}
+
+		public string GetMimeTypeForRoslynLanguage (string language)
+		{
+			foreach (MimeTypeNode mt in mimeTypeNodes) {
+				if (mt.RoslynName == language)
+					return mt.Id;
+			}
+			return null;
+		}
 		
 		public Xwt.Drawing.Image GetIconForFile (string filename)
 		{

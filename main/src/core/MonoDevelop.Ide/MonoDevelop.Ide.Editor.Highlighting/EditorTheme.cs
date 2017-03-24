@@ -270,11 +270,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			else
 			{
-				foreach(var newScope in scope) {
+				depth = 0;
+				while (!scope.IsEmpty) {
 					var result = expr.MatchesStack (scope, ref matchingKey);
 					if (result.Item1) {
 						return true;
 					}
+					scope = scope.Pop ();
 					depth++;
 				}
 			}

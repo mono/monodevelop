@@ -39,11 +39,13 @@ namespace MonoDevelop.DotNetCore
 		{
 			TargetRuntime runtime = IdeApp.Preferences.DefaultTargetRuntime;
 			string binPath = runtime.GetMSBuildBinPath ("15.0");
-			string sdksPath = Path.Combine (binPath, "Sdks");
+			if (binPath != null) {
+				string sdksPath = Path.Combine(binPath, "Sdks");
 
-			if (Directory.Exists (sdksPath)) {
-				Installed = true;
-				MSBuildSDKsPath = sdksPath;
+				if (Directory.Exists(sdksPath)) {
+					Installed = true;
+					MSBuildSDKsPath = sdksPath;
+				}
 			}
 		}
 

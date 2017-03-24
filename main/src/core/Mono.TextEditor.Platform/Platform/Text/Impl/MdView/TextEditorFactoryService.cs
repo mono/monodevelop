@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 roles = _defaultRoles;
             }
 
-            ITextBuffer textBuffer = textEditor.GetPlatformTextBuffer();
+            ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
 
             ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory

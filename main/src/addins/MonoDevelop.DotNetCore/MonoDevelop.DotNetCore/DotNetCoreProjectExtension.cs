@@ -100,7 +100,10 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
+			// Do not read the project header when re-evaluating to prevent the
+			// ToolsVersion that was initially read from the project being changed.
+			if (!Project.IsReevaluating)
+				dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
 			base.OnReadProjectHeader (monitor, msproject);
 		}
 

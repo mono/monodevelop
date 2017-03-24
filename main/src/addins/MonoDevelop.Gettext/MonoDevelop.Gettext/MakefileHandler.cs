@@ -74,7 +74,7 @@ namespace MonoDevelop.Gettext
 			
 			string mt;
 			if (ctx.MakefileType == MakefileType.AutotoolsMakefile)
-				mt = "Makefile.am.template";
+				mt = "Makefile_am.template";
 			else
 				mt = "Makefile.template";
 

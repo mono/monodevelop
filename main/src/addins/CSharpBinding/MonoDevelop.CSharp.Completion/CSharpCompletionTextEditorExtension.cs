@@ -25,41 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
 
-using MonoDevelop.Debugger;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Components.Commands;
-
-using MonoDevelop.CSharp.Formatting;
-
+using ICSharpCode.NRefactory6.CSharp;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.Text;
 
-using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide.Editor;
-using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
-using System.Xml;
-using ICSharpCode.NRefactory6.CSharp;
-using MonoDevelop.Refactoring;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MonoDevelop.Ide;
 using Mono.Addins;
-using System.Reflection;
-using System.Runtime.ExceptionServices;   
+using MonoDevelop.CodeGeneration;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Debugger;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
-using RefactoringEssentials;
-using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
-using RefactoringEssentials.CSharp.Diagnostics;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -157,7 +152,6 @@ namespace MonoDevelop.CSharp.Completion
 					snippets = newSnippets;
 					return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
 				};
-				NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
 			}

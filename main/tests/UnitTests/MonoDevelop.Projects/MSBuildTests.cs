@@ -38,6 +38,7 @@ using MonoDevelop.Projects.MSBuild;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Projects
 {
@@ -251,8 +252,8 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
 			CSharpCompilerParameters cparams = (CSharpCompilerParameters)conf.CompilationParameters;
-			Assert.AreEqual (LangVersion.Default, cparams.LangVersion);
-			cparams.LangVersion = LangVersion.Version5;
+			Assert.AreEqual (LanguageVersion.Default, cparams.LangVersion);
+			cparams.LangVersion = LanguageVersion.CSharp5;
 			Assert.IsTrue (cparams.UnsafeCode);
 			cparams.UnsafeCode = false;
 
@@ -1071,6 +1072,36 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (new string [] {
 					"Program.cs"
 				}, files);
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
+		[Test]
+		public async Task AddFileToDotNetCoreProjectWithDefaultItemsDisabled ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+
+			try {
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				var files = mp.Files.Select (f => f.FilePath.FileName).ToArray ();
+				Assert.AreEqual (new string [] {
+					"Program.cs"
+				}, files);
+
+				string newFile = mp.Files[0].FilePath.ChangeName ("NewFile");
+				File.WriteAllText (newFile, string.Empty);
+				mp.AddFile (newFile);
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				var itemGroup = mp.MSBuildProject.ItemGroups.LastOrDefault ();
+				Assert.IsTrue (itemGroup.Items.Any (item => item.Include == "NewFile.cs"));
+				Assert.AreEqual (2, itemGroup.Items.Count ());
 			} finally {
 				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
 			}
