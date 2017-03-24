@@ -1116,6 +1116,8 @@ namespace MonoDevelop.Projects
 
 					bool newBuilderRequested = false;
 
+					var runtime = TargetRuntime;
+
 					RemoteProjectBuilder builder = await GetProjectBuilder ();
 					if (builder.IsBusy) {
 						builder.ReleaseReference ();
@@ -1130,13 +1132,15 @@ namespace MonoDevelop.Projects
 						targets = target.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 					else
 						targets = new string [] { target };
-					
+
+					if (runtime.RequiresMSBuildShutdownAfterEachBuild) MSBuildProjectService.OpenBuilder((IBuildTarget)ParentSolution ?? this, builder);
 					try {
 						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();
-						if (newBuilderRequested) {
+						if (runtime.RequiresMSBuildShutdownAfterEachBuild) MSBuildProjectService.CloseBuilder((IBuildTarget)ParentSolution ?? this, builder);
+						else if (newBuilderRequested) {
 							// Dispose the builder after a while, so that it can be reused
 							#pragma warning disable 4014
 							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
@@ -1256,12 +1260,18 @@ namespace MonoDevelop.Projects
 		string lastSlnFileName;
 		AsyncCriticalSection builderLock = new AsyncCriticalSection ();
 
+		private TargetRuntime TargetRuntime {
+			get {
+				//FIXME: we can't really have per-project runtimes, has to be per-solution
+				var ap = this as IAssemblyProject;
+				return ap != null ? ap.TargetRuntime : Runtime.SystemAssemblyService.CurrentRuntime;
+			}
+		}
+
 		internal async Task<RemoteProjectBuilder> GetProjectBuilder ()
 		{
-			//FIXME: we can't really have per-project runtimes, has to be per-solution
-			TargetRuntime runtime = null;
-			var ap = this as IAssemblyProject;
-			runtime = ap != null ? ap.TargetRuntime : Runtime.SystemAssemblyService.CurrentRuntime;
+
+			var runtime = TargetRuntime;
 
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
@@ -1270,8 +1280,8 @@ namespace MonoDevelop.Projects
 
 			using (await builderLock.EnterAsync ()) {
 				bool refAdded = false;
-				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
-					if (projectBuilder != null && refAdded) {
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile || projectBuilder.RequiresRestart) {
+					if (projectBuilder != null && refAdded && !projectBuilder.RequiresRestart) {
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
