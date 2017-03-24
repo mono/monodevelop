@@ -1,4 +1,4 @@
-//
+﻿//
 // GlobalOptionPersister.cs
 //
 // Author:
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (optionKey.Option == FormattingOptions.NewLine) {
-				value = GetTextPolicyForLanguage (optionKey.Language).EolMarker;
+				value = GetTextPolicyForLanguage (optionKey.Language).GetEolMarker ();
 				return true;
 			}
 
