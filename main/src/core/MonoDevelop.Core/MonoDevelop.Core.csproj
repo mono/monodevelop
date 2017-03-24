@@ -12,6 +12,9 @@
     <RootNamespace>MonoDevelop.Core</RootNamespace>
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
+    <ConfigureScript>$(MSBuildProjectDirectory)\..\..\..\..\scripts\configure.cs</ConfigureScript>
+    <ConfigureScriptExe>$(MSBuildProjectDirectory)\..\..\..\..\scripts\configure.exe</ConfigureScriptExe>
+    <FullBuildInfo>fullbuildinfo</FullBuildInfo>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
@@ -781,11 +784,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
+    <MakeDir Directories="$(FullBuildInfo)" />
+    <Csc Sources="$(ConfigureScript)" OutputAssembly="$(ConfigureScriptExe)" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" Condition="!Exists('$(ConfigureScriptExe)')" />
+    <Exec Command="$(MonoLauncher)$(ConfigureScriptExe) gen-buildinfo $(FullBuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />
     <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
     <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <RemoveDir Directories="$(FullBuildInfo)" />
   </Target>
 </Project>
