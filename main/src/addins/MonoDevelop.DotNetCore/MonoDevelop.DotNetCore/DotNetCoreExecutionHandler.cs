@@ -29,9 +29,10 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System;
 using System.Linq;
+using System.Net;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Sockets;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -81,15 +82,40 @@ namespace MonoDevelop.DotNetCore
 				launchUri = new Uri (appUri, launchUri);
 			}
 
-			//Try to connect every 50ms while process is running
+			// Try to connect every 50ms while process is running
+			// Give up after 2 minutes
+			TimeSpan maximumWaitTime = TimeSpan.FromMinutes (2);
+			var waitStartTime = DateTime.UtcNow;
+
 			while (!processTask.IsCompleted) {
-				await Task.Delay (50);
-				using (var tcpClient = new TcpClient ()) {
-					try {
-						tcpClient.Connect (launchUri.Host, launchUri.Port);
-						break;
-					} catch {
+				
+				var currentTime = DateTime.UtcNow;
+				if (currentTime - waitStartTime > maximumWaitTime) {
+					LoggingService.LogWarning ("Failed to launch browser because no response was ever received from the launch url.");
+					return;
+				}
+
+				await Task.Delay (TimeSpan.FromMilliseconds(50));
+
+				HttpWebRequest httpRequest = null;
+				try {
+					httpRequest = WebRequest.CreateHttp (launchUri);
+					httpRequest.Timeout = (int) TimeSpan.FromSeconds (30).TotalMilliseconds;
+				} catch (NotSupportedException) {
+					LoggingService.LogWarning ("Failed to launch browser because launch url is not an http or https request.");
+					return;
+				} catch (SecurityException) {
+					LoggingService.LogWarning ("Failed to launch browser because caller does not have permission to connect to the requested URI or a URI that the request is redirected to.");
+					return;
+				}
+
+				try {
+					using (var response = WebRequestHelper.GetResponse (() => httpRequest)) {
+						if (response != null) {
+							break;
+						}
 					}
+				} catch {
 				}
 			}
 
