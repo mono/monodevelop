@@ -731,6 +731,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public override void OpenDocument (DocumentId documentId, bool activate = true)
+		{
+			var doc = GetDocument (documentId);
+			if (doc != null) {
+				var mdProject = GetMonoProject (doc.Project);
+				if (doc != null) {
+					IdeApp.Workbench.OpenDocument (doc.FilePath, mdProject, activate);
+				}
+			}
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
