@@ -1166,7 +1166,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (mdProject == null)
 					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
 			}
+
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
 			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
