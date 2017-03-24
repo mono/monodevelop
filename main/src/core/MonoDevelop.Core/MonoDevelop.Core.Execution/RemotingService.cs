@@ -80,7 +80,7 @@ namespace MonoDevelop.Core.Execution
 				ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
 				
 				// Register the TCP channel too. It is used for communication of Mono -> .NET. The IPC channel
-				// has interoperabilitu issues.
+				// has interoperability issues.
 				
 				// Don't reuse tcp channels registered by add-ins. That's not supported.
 				ch = ChannelServices.GetChannel ("tcp");
