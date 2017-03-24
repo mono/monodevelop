@@ -45,7 +45,7 @@ exit_with_message (char *reason, char *argv0)
 	[alert release];
 
 	if (answer == NSAlertFirstButtonReturn) {
-		NSString *mono_download_url = @"http://www.go-mono.com/mono-downloads/download.html";
+		NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 		CFURLRef url = CFURLCreateWithString (NULL, (CFStringRef) mono_download_url, NULL);
 		LSOpenCFURLRef (url, NULL);
 		CFRelease (url);
@@ -262,7 +262,7 @@ int main (int argc, char **argv)
 	}
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"4.3";
+	NSString *req_mono_version = @"4.8";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 	bool need64Bit = false;

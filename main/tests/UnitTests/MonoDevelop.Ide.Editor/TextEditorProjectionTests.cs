@@ -41,6 +41,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using ICSharpCode.NRefactory.CSharp;
 using Gtk;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
-			options.ColorScheme = "Tango";
+			options.EditorTheme = "Tango";
 			editor.Options = options;
 			editor.Text = "1234567890";
 
@@ -109,8 +110,8 @@ namespace MonoDevelop.Ide.Editor
 			projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
 			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
 
-			var markup = editor.GetPangoMarkup (0, editor.Length);
-			var color = "#75507B";
+			var markup = editor.GetMarkup (0, editor.Length, new MarkupOptions (MarkupFormat.Pango));
+			var color = "#3363a4";
 			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#222222\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#222222\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#222222\">0</span>", markup);
 		}
 
@@ -125,7 +126,7 @@ namespace MonoDevelop.Ide.Editor
 				for (int i = 0; i < segment.Length; i++) {
 					char ch = base.editor.GetCharAt (segment.Offset + i);
 					if (ch == '1' || ch == '5' || ch == '9')
-						yield return new ColoredSegment (segment.Offset + i, 1, ColorScheme.UserTypesKey);
+						yield return new ColoredSegment (segment.Offset + i, 1, new ScopeStack ("keyword"));
 				}
 			}
 
@@ -139,7 +140,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
-			options.ColorScheme = "Tango";
+			options.EditorTheme = "Tango";
 			editor.Options = options;
 			editor.Text = "12345678901234567890";
 
@@ -160,12 +161,9 @@ namespace MonoDevelop.Ide.Editor
 			var originalContext = new Document (tww);
 			var projectedEditor = projection.CreateProjectedEditor (originalContext);
 			TestCompletionExtension orignalExtension;
-			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) });
+			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (editor)  } });
 			TestCompletionExtension projectedExtension;
-			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) });
-
-			orignalExtension.CompletionWidget = new EmptyCompletionWidget (editor);
-			projectedExtension.CompletionWidget = new EmptyCompletionWidget (projectedEditor);
+			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (projectedEditor) } });
 
 			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
 			editor.CaretOffset = 1;
@@ -177,7 +175,7 @@ namespace MonoDevelop.Ide.Editor
 			Assert.IsTrue (projectedExtension.CompletionRun);
 
 			editor.CaretOffset = 15;
-
+			CompletionWindowManager.HideWindow ();
 			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
 			Assert.IsTrue (orignalExtension.CompletionRun);
 		}
@@ -191,7 +189,7 @@ namespace MonoDevelop.Ide.Editor
 				Editor = editor;
 			}
 
-			public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+			public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, System.Threading.CancellationToken token)
 			{
 				CompletionRun = true;
 				var list = new CompletionDataList ();

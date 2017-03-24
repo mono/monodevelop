@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Util;
 using System.Linq;
 using MonoDevelop.Core;
 using Pango;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Refactoring
 {
@@ -54,10 +55,12 @@ namespace MonoDevelop.Refactoring
 		int indentLength;
 		FontDescription fontDescription;
 
-		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, CodeAction codeAction)
+		static RefactoringPreviewTooltipWindow currentPreviewWindow;
+
+		RefactoringPreviewTooltipWindow (TextEditor editor, CodeAction codeAction)
 		{
 			this.editor = editor;
-			this.documentContext = documentContext;
+			this.documentContext = documentContext = editor.DocumentContext;
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
@@ -69,7 +72,22 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		internal async void RequestPopup (Xwt.Rectangle rect)
+		public static void ShowPreviewTooltip (TextEditor editor, CodeAction fix, Xwt.Rectangle rect)
+		{
+			HidePreviewTooltip ();
+			currentPreviewWindow = new RefactoringPreviewTooltipWindow (editor, fix);
+			currentPreviewWindow.RequestPopup (rect);
+		}
+
+		public static void HidePreviewTooltip ()
+		{
+			if (currentPreviewWindow != null) {
+				currentPreviewWindow.Destroy ();
+				currentPreviewWindow = null;
+			}
+		}
+
+		async void RequestPopup (Xwt.Rectangle rect)
 		{
 			var token = popupSrc.Token;
 
@@ -212,9 +230,10 @@ namespace MonoDevelop.Refactoring
 
 		protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 		{
-			var style = editor.Options.GetColorStyle ();
+			var style = editor.Options.GetEditorTheme ();
 			g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-			g.SetSourceColor (style.PlainText.Background);
+
+			g.SetSourceColor (SyntaxHighlightingService.GetColor (style, EditorThemeColors.Background));
 			g.Fill ();
 
 			int y = verticalTextSpace / 2;
@@ -260,17 +279,18 @@ namespace MonoDevelop.Refactoring
 
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffRemoved.Background);
+
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffRemovedBackground));
 					g.Fill ();
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffRemoved.Foreground);
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffRemoved));
 					DrawTextLine (g, editor, i, ref y);
 				}
 
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffAddedd.Background);
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffAddedBackground));
 					g.Fill ();
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffAddedd.Foreground);
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffAdded));
 					DrawTextLine (g, changedDocument, i, ref y);
 				}
 

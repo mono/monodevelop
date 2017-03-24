@@ -161,9 +161,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return false;
-			if (descriptor.KeyChar != '\0') {
-				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
-			}
 			return wnd.PreProcessKeyEvent (descriptor);
 		}
 

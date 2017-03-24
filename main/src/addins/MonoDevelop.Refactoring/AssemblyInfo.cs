@@ -7,7 +7,3 @@ using System.Reflection;
 [assembly: AssemblyDescription ("Provides refactoring support to MonoDevelop")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("X11")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("FSharpBinding")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.CSharpBinding")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.PackageManagement")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.MonoDroid")]

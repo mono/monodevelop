@@ -77,9 +77,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			return string.Format("[SearchResult: FileProvider={0}, Offset={1}, Length={2}]", FileProvider, Offset, Length);
 		}
 
-		public virtual AmbientColor GetBackgroundMarkerColor (ColorScheme style)
+		public virtual Components.HslColor GetBackgroundMarkerColor (EditorTheme style)
 		{
-			return style.SearchResult;
+			return SyntaxHighlightingService.GetColor (style, EditorThemeColors.FindHighlight);;
 		}
 	}
 }

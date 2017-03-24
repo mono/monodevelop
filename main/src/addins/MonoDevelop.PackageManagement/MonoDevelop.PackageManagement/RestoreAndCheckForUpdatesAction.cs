@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -57,6 +58,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
+			solutionManager.ClearProjectCache ();
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
 			if (AnyProjectsUsingPackagesConfig ()) {
@@ -67,10 +69,8 @@ namespace MonoDevelop.PackageManagement
 				);
 			}
 
-			if (AnyProjectsUsingProjectJson ()) {
-				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (
-					solutionManager.CreateSourceRepositoryProvider (),
-					solutionManager.Settings);
+			if (AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()) {
+				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 			}
 
 			if (AnyNuGetAwareProjects ()) {
@@ -83,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 			return nugetProjects.Any (project => !(project is BuildIntegratedNuGetProject));
 		}
 
-		bool AnyProjectsUsingProjectJson ()
+		bool AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()
 		{
 			return GetBuildIntegratedNuGetProjects ().Any ();
 		}
@@ -163,11 +163,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (restoreManager != null) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
-					await restoreManager.RestoreMissingPackagesAsync (
-						solutionManager.SolutionDirectory,
-						packagesToRestore,
-						new NuGetProjectContext (),
-						cancellationToken);
+					using (var cacheContext = new SourceCacheContext ()) {
+						var downloadContext = new PackageDownloadContext (cacheContext);
+						await restoreManager.RestoreMissingPackagesAsync (
+							solutionManager.SolutionDirectory,
+							packagesToRestore,
+							new NuGetProjectContext (),
+							downloadContext,
+							cancellationToken);
+					}
 				}
 			}
 

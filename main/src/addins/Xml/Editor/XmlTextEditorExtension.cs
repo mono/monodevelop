@@ -72,9 +72,8 @@ namespace MonoDevelop.Xml.Editor
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetDefaultSchema ();
-			
-			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (string.IsNullOrEmpty (Editor.MimeType) || Editor.MimeType == "text/plain") {
+
+			if (string.IsNullOrEmpty (Editor.MimeType) || Editor.MimeType == "text/plain" || Editor.MimeType == "application/octet-stream") {
 				Editor.MimeType = ApplicationXmlMimeType;
 				DocumentContext.ReparseDocument ();
 			}
@@ -125,7 +124,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		protected override async Task<CompletionDataList> GetElementCompletions (CancellationToken token)
 		{
-			var list = new CompletionDataList ();
+			CompletionDataList list = null;
 			var path = GetElementPath ();
 
 			if (path.Elements.Count > 0) {
@@ -137,14 +136,17 @@ namespace MonoDevelop.Xml.Editor
 
 					var completionData = await schema.GetChildElementCompletionData (path, token);
 					if (completionData != null)
-						list.AddRange (completionData);
+						list = completionData;
 				}
 
 			} else if (defaultSchemaCompletionData != null) {
-				list.AddRange (await defaultSchemaCompletionData.GetElementCompletionData (defaultNamespacePrefix, token));
+				list = await defaultSchemaCompletionData.GetElementCompletionData (defaultNamespacePrefix, token);
 
 			} else if (inferredCompletionData != null) {
-				list.AddRange (await inferredCompletionData.GetElementCompletionData (token));
+				list = await inferredCompletionData.GetElementCompletionData (token);
+			}
+			if (list == null) {
+				list = new CompletionDataList ();
 			}
 			AddMiscBeginTags (list);
 			return list;

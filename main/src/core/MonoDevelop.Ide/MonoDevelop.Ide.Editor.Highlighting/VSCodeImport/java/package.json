@@ -1,0 +1,22 @@
+{
+	"name": "java",
+	"version": "0.1.0",
+	"publisher": "vscode",
+	"engines": { "vscode": "*" },
+	"scripts": {
+		"update-grammar": "node ../../build/npm/update-grammar.js textmate/java.tmbundle Syntaxes/Java.plist ./syntaxes/java.json"
+	},
+	"contributes": {
+		"languages": [{
+			"id": "java",
+			"extensions": [ ".java", ".jav" ],
+			"aliases": [ "Java", "java" ],
+			"configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "java",
+			"scopeName": "source.java",
+			"path": "./syntaxes/java.json"
+		}]
+	}
+}

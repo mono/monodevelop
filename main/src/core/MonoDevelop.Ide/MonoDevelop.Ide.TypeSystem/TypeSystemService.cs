@@ -131,32 +131,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IntitializeTrackedProjectHandling ();
 		}
-/*
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					outputTrackedProjects.Add (node);
-					break;
-				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (node);
-					break;
-				}
-			});
-
-		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
-
-		static bool IsOutputTracked (DotNetProject project)
-		{
-			foreach (var projectType in project.GetProjectTypes ()) {
-				if (outputTrackedProjects.Any (otp => otp.ProjectType != null && string.Equals (otp.ProjectType, projectType, StringComparison.OrdinalIgnoreCase))) {
-					return true;
-				}
-			}
-			return outputTrackedProjects.Any (otp => otp.LanguageName != null && string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase));
-		}
-
-*/
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
@@ -192,7 +166,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static Task<ParsedDocument> ParseFile (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
-				throw new ArgumentNullException ("options");
+				throw new ArgumentNullException (nameof(options));
 			if (options.FileName == null)
 				throw new ArgumentNullException ("options.FileName");
 
@@ -243,7 +217,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static async Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
-				throw new ArgumentNullException ("options");
+				throw new ArgumentNullException (nameof(options));
 			if (options.FileName == null)
 				throw new ArgumentNullException ("fileName");
 
@@ -387,7 +361,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static string GetCacheDirectory (Project project, bool forceCreation = false)
 		{
 			if (project == null)
-				throw new ArgumentNullException ("project");
+				throw new ArgumentNullException (nameof(project));
 			return GetCacheDirectory (project.FileName, forceCreation);
 		}
 
@@ -403,7 +377,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static string GetCacheDirectory (string fileName, bool forceCreation = false)
 		{
 			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
+				throw new ArgumentNullException (nameof(fileName));
 			object locker;
 			bool newLock;
 			lock (cacheLocker) {
@@ -573,7 +547,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void SerializeObject (string path, object obj)
 		{
 			if (obj == null)
-				throw new ArgumentNullException ("obj");
+				throw new ArgumentNullException (nameof(obj));
 
 			var t = Counters.ParserService.ObjectSerialized.BeginTiming (path);
 			try {
@@ -648,9 +622,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void StoreExtensionObject (string cacheDir, object extensionObject)
 		{
 			if (cacheDir == null)
-				throw new ArgumentNullException ("cacheDir");
+				throw new ArgumentNullException (nameof(cacheDir));
 			if (extensionObject == null)
-				throw new ArgumentNullException ("extensionObject");
+				throw new ArgumentNullException (nameof(extensionObject));
 			var fileName = Path.GetTempFileName ();
 			SerializeObject (fileName, extensionObject);
 			var cacheFile = Path.Combine (cacheDir, extensionObject.GetType ().FullName + ".cache");
@@ -691,6 +665,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
 		{
+			if (ws == null)
+				throw new ArgumentNullException (nameof (ws));
+			if (analysisDocument == null)
+				throw new ArgumentNullException (nameof (analysisDocument));
+			if (editor == null)
+				throw new ArgumentNullException (nameof (editor));
 			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor); 
 		}
 
@@ -699,7 +679,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
-				throw new ArgumentNullException ("project");
+				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null) {
@@ -712,7 +692,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (docId == null)
-				throw new ArgumentNullException ("docId");
+				throw new ArgumentNullException (nameof(docId));
 			foreach (var w in workspaces) {
 				var documentId = w.GetDocument (docId, cancellationToken);
 				if (documentId != null) {
@@ -725,7 +705,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.Project project)
 		{
 			if (project == null)
-				throw new ArgumentNullException ("project");
+				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
 				var documentId = w.GetMonoProject (project);
 				if (documentId != null) {

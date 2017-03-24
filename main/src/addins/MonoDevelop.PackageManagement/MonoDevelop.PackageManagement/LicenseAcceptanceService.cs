@@ -27,24 +27,12 @@
 //
 
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class LicenseAcceptanceService : ILicenseAcceptanceService
 	{
-		public bool AcceptLicenses (IEnumerable<IPackage> packages)
-		{
-			var licenses = packages
-				.Select (package => new NuGetPackageLicense (package))
-				.ToList ();
-			
-			return AcceptLicenses (licenses);
-		}
-
 		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
 		{
 			if (Runtime.IsMainThread) {

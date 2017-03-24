@@ -30,9 +30,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.Shared.Extensions;
-using Roslyn.Utilities;
 using MonoDevelop.Ide.Editor;
-using ICSharpCode.NRefactory6.CSharp;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {

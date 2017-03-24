@@ -28,6 +28,7 @@ NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelPro
 #       see: https://github.com/kzu/NuGet.Restore
 restore-packages:
 	@$(NUGET_RESTORE)
+	msbuild /t:Restore external/RefactoringEssentials/RefactoringEssentials.2017/RefactoringEssentials.csproj
 
 vcrevision:
 	touch vcrevision

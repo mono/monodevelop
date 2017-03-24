@@ -71,14 +71,6 @@ namespace MonoDevelop.PackageManagement
 			}
 			return null;
 		}
-
-		public NuGet.PackageSource GetNuGet2PackageSource ()
-		{
-			return new NuGet.PackageSource (Source, Name, IsEnabled) {
-				UserName = UserName,
-				Password = Password
-			};
-		}
 		
 		public string Name { get; set; }
 		

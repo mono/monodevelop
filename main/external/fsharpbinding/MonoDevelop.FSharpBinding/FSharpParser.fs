@@ -98,7 +98,7 @@ type FSharpParser() =
                          if file = "" then None else Some file
 
     let isObsolete filename version (token:CancellationToken) =
-        SourceCodeServices.IsResultObsolete(fun () ->
+        (fun () ->
             let shortFilename = Path.GetFileName filename
             try
                 if not token.IsCancellationRequested then
@@ -139,12 +139,12 @@ type FSharpParser() =
                 async {
                     match tryGetFilePath fileName proj with
                     | Some filePath ->
-                        LoggingService.LogDebug ("FSharpParser: Running ParseAndCheckFileInProject for {0}", shortFilename)
+                        LoggingService.logDebug "FSharpParser: Running ParseAndCheckFileInProject for %s" shortFilename
                         let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                         let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken
                         try
                             let! pendingParseResults = Async.StartChild(languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete), ServiceSettings.maximumTimeout)
-                            LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
+                            LoggingService.logDebug "FSharpParser: Parse and check results retrieved on %s" shortFilename
                             let defines = CompilerArguments.getDefineSymbols filePath proj
                             let! results = pendingParseResults
                             //if you ever want to see the current parse tree

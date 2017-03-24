@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.VersionControl.Views
 {
 	[ToolboxItem (true)]
-	public class ComparisonWidget : EditorCompareWidgetBase
+	class ComparisonWidget : EditorCompareWidgetBase
 	{
 		internal DropDownBox originalComboBox, diffComboBox;
 		
@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected internal override MonoTextEditor MainEditor {
+		internal override MonoTextEditor MainEditor {
 			get {
 				return editors[1];
 			}
@@ -93,7 +93,7 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 			info.Updated += OnInfoUpdated;
-			MainEditor.Document.ReadOnly = false;
+			MainEditor.Document.IsReadOnly = false;
 			base.OnSetVersionControlInfo (info);
 		}
 
@@ -263,7 +263,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 				}
 				widget.RemoveLocal (((MonoTextEditor)box.Tag).GetTextEditorData ());
-				((MonoTextEditor)box.Tag).Document.ReadOnly = true;
+				((MonoTextEditor)box.Tag).Document.IsReadOnly = true;
 				if (n == 1) {
 					box.SetItem (GettextCatalog.GetString ("Base"), null, new object());
 					if (((MonoTextEditor)box.Tag) == widget.editors[0]) {

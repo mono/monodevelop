@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -137,11 +138,11 @@ namespace MonoDevelop.Ide.Templates
 			return null;
 		}
 
-		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
+		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			IProjectTemplatingProvider provider = GetTemplatingProviderForTemplate (template);
 			if (provider != null) {
-				var result = provider.ProcessTemplate (template, config, parentFolder);
+				var result = await provider.ProcessTemplate (template, config, parentFolder);
 				if (result.WorkspaceItems.Any ())
 					RecentTemplates.AddTemplate (template);
 				return result;

@@ -529,6 +529,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (summaryEnd < 0)
 								summaryEnd = ret.Length;
 							break;
+						case "member":
 						case "summary":
 							var summary = options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							if (!IsEmptyDocumentation (summary)) {

@@ -44,9 +44,9 @@ type FSharpConsoleView() as x =
     let buffer = textView.Buffer
     let inputBeginMark = buffer.CreateMark (null, buffer.EndIter, true)
 
-    let getTextTag (chunkStyle:ChunkStyle) =
-        new TextTag (chunkStyle.Name,
-                    Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground)
+    //let getTextTag (chunkStyle:ChunkStyle) =
+    //    new TextTag (chunkStyle.Name)
+    //                Foreground=ColorScheme.ColorToMarkup chunkStyle.Foreground)
 
     let mutable lastLineState = 0L //used as last lines state
     let mutable tempState = 0L //used as the last stet for an in process line
@@ -56,7 +56,7 @@ type FSharpConsoleView() as x =
         // Get defined directives
         let defines = defines |> Option.map (fun (s:string) -> s.Split([| ' '; ';'; ',' |], StringSplitOptions.RemoveEmptyEntries) |> List.ofSeq)
         // Create source tokenizer
-        let sourceTok = SourceTokenizer(defaultArg defines ["INTERACTIVE";"EDITING"], file)
+        let sourceTok = FSharpSourceTokenizer(defaultArg defines ["INTERACTIVE";"EDITING"], file)
         // Parse lines using the tokenizer
         let tokenizer = sourceTok.CreateLineTokenizer(line)
         let rec parseLine state =
@@ -154,34 +154,34 @@ type FSharpConsoleView() as x =
     let addDisposable =
         disposables.Add
 
-    let updateColors() =
-        let addTag (k:Tags) v =
-            tags.Add(k,v)
-            buffer.TagTable.Add v
+    //let updateColors() =
+    //    let addTag (k:Tags) v =
+    //        tags.Add(k,v)
+    //        buffer.TagTable.Add v
 
-        let scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
-        tags |> Seq.iter (fun (KeyValue(_k,v)) -> buffer.TagTable.Remove(v); v.Dispose())
-        tags.Clear()
-        addTag Tags.Keyword (getTextTag scheme.KeywordTypes)
-        addTag Tags.User (getTextTag scheme.UserTypes)
-        addTag Tags.String (getTextTag scheme.String)
-        addTag Tags.Comment (getTextTag scheme.CommentTags)
-        addTag Tags.Inactive (getTextTag scheme.ExcludedCode)
-        addTag Tags.Number (getTextTag scheme.Number)
-        addTag Tags.Operator (getTextTag scheme.Punctuation)
-        addTag Tags.Preprocessor (getTextTag scheme.Preprocessor)
-        addTag Tags.PlainText (getTextTag scheme.PlainText)
-        addTag Tags.Freezer (new TextTag ("Freezer", Editable = false))
+    //    let scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
+    //    tags |> Seq.iter (fun (KeyValue(_k,v)) -> buffer.TagTable.Remove(v); v.Dispose())
+    //    tags.Clear()
+    //    addTag Tags.Keyword (getTextTag scheme.KeywordTypes)
+    //    addTag Tags.User (getTextTag scheme.UserTypes)
+    //    addTag Tags.String (getTextTag scheme.String)
+    //    addTag Tags.Comment (getTextTag scheme.CommentTags)
+    //    addTag Tags.Inactive (getTextTag scheme.ExcludedCode)
+    //    addTag Tags.Number (getTextTag scheme.Number)
+    //    addTag Tags.Operator (getTextTag scheme.Punctuation)
+    //    addTag Tags.Preprocessor (getTextTag scheme.Preprocessor)
+    //    addTag Tags.PlainText (getTextTag scheme.PlainText)
+    //    addTag Tags.Freezer (new TextTag ("Freezer", Editable = false))
 
-    do updateColors()
-       x.Add (textView)
-       x.ShowAll ()
+    //do updateColors()
+    //   x.Add (textView)
+    //   x.ShowAll ()
 
     member x.InitialiseEvents() =
         disposables.Add(
             IdeApp.Preferences.ColorScheme.Changed.Subscribe
               (fun _ (eventArgs:EventArgs) ->
-                    updateColors()
+                    //updateColors()
                     x.ShowAll()))
 
         let handleKeyPressDelegate =

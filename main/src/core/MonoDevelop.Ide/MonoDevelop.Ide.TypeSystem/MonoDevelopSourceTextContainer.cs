@@ -64,7 +64,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			var handler = TextChanged;
 			if (handler != null) {
 				var oldText = CurrentText;
-				var newText = oldText.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
+				var insertedText = e.InsertedText.Text;
+				if (e.RemovalLength == 0 && string.IsNullOrEmpty (insertedText))
+					return;
+				var newText = oldText.Replace (e.Offset, e.RemovalLength, insertedText);
 				currentText = newText;
 				try {
 					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));

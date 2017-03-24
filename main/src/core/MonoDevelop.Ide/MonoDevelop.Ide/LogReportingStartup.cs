@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide
 				if (!ShouldPromptToOptIn && enabled.GetValueOrDefault ()) {
 					if (willShutdown) {
 						message = GettextCatalog.GetString (
-							"Details of this error have been automatically sent to Xamarin for analysis.");
+							"Details of this error have been automatically sent to Microsoft for analysis.");
 						message += GettextCatalog.GetString (" {0} will now close.", BrandingService.ApplicationName);
 						MessageService.ShowError (null, title, message, ex, false, AlertButton.Ok);
 					}
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide
 				}
 
 				message = GettextCatalog.GetString (
-					"Details of errors, along with anonymous installation information, can be sent to Xamarin to " +
+					"Details of errors, along with anonymous usage information, can be sent to Microsoft to " +
 					"help improve {0}. Do you wish to send this information?", BrandingService.ApplicationName);
 				var result = MessageService.ShowError (null, title, message, ex, false, doNotSend, sendOnce, alwaysSend);
 

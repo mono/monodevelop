@@ -26,10 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -86,26 +89,14 @@ namespace MonoDevelop.PackageManagement
 			string solutionDirectory,
 			IEnumerable<PackageRestoreData> packages,
 			INuGetProjectContext nuGetProjectContext,
+			PackageDownloadContext downloadContext,
 			CancellationToken token)
 		{
 			return restoreManager.RestoreMissingPackagesAsync (
 				solutionDirectory,
 				packages,
 				nuGetProjectContext,
-				token
-			);
-		}
-
-		public Task<PackageRestoreResult> RestoreMissingPackagesAsync (
-			string solutionDirectory,
-			NuGetProject nuGetProject,
-			INuGetProjectContext nuGetProjectContext,
-			CancellationToken token)
-		{
-			return restoreManager.RestoreMissingPackagesAsync (
-				solutionDirectory,
-				nuGetProject,
-				nuGetProjectContext,
+				downloadContext,
 				token
 			);
 		}
@@ -120,6 +111,38 @@ namespace MonoDevelop.PackageManagement
 				nuGetProjectContext,
 				token
 			);
+		}
+
+		public IEnumerable<PackageRestoreData> GetPackagesRestoreData (
+			string solutionDirectory,
+			Dictionary<PackageReference, List<string>> packageReferencesDict)
+		{
+			return restoreManager.GetPackagesRestoreData (solutionDirectory, packageReferencesDict);
+		}
+	}
+
+	internal static class PackageRestoreManagerExtensions
+	{
+		public static async Task<PackageRestoreResult> RestoreMissingPackagesAsync (
+			this IPackageRestoreManager restoreManager,
+			string solutionDirectory,
+			NuGetProject nuGetProject,
+			INuGetProjectContext nuGetProjectContext,
+			PackageDownloadContext downloadContext,
+			CancellationToken token)
+		{
+			var installedPackages = await nuGetProject.GetInstalledPackagesAsync (token);
+			var nuGetProjectName = NuGetProject.GetUniqueNameOrName (nuGetProject);
+			var projectNames = new[] { nuGetProjectName };
+
+			var packages = installedPackages.Select (package => new PackageRestoreData (package, projectNames, isMissing: true));
+
+			return await restoreManager.RestoreMissingPackagesAsync (
+				solutionDirectory,
+				packages,
+				nuGetProjectContext,
+				downloadContext,
+				token);
 		}
 	}
 }

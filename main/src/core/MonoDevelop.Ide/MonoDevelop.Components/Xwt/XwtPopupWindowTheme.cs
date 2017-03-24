@@ -243,12 +243,12 @@ namespace MonoDevelop.Components
 			Font = Font.SystemFont.WithWeight (FontWeight.Normal);
 		}
 
-		public void SetSchemeColors (ColorScheme scheme)
+		public void SetSchemeColors (EditorTheme scheme)
 		{
-			BackgroundColor = ((Cairo.Color)scheme.TooltipText.Background).ToXwtColor ();
-			PagerTextColor = ((Cairo.Color)scheme.TooltipPagerText.Color).ToXwtColor ();
-			PagerBackgroundColor = ((Cairo.Color)scheme.TooltipPager.Color).ToXwtColor ();
-			PagerTriangleColor = ((Cairo.Color)scheme.TooltipPagerTriangle.Color).ToXwtColor ();
+			BackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipBackground);
+			PagerTextColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerText);
+			PagerBackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPager);
+			PagerTriangleColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerTriangle);
 		}
 
 		void EmitRedrawNeeded ()

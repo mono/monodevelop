@@ -34,6 +34,7 @@ using System.Threading;
 using MonoDevelop.Components;
 using Mono.TextEditor;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.VersionControl.Views
@@ -373,7 +374,7 @@ namespace MonoDevelop.VersionControl.Views
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, SelectedRevision.GetPrevious ());
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, SelectedRevision);
 						
-						diffView.ComparisonWidget.DiffEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (line, 1);
+						diffView.ComparisonWidget.DiffEditor.Caret.Location = new DocumentLocation (line, 1);
 						diffView.ComparisonWidget.DiffEditor.CenterToCaret ();
 					});
 					break;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ProjectGuid>{F218643D-2E74-4309-820E-206A54B7133F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,7 +15,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -120,14 +121,8 @@
     <Reference Include="NuGet.Client">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Client.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.DependencyResolver">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Commands.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
@@ -146,11 +141,12 @@
     <Reference Include="NuGet.Indexing">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Credentials">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -159,7 +155,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AggregateExceptionErrorMessage.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ConfigSettingsFileSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DelegateCommand.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FileConflictResolver.cs" />
@@ -167,18 +162,15 @@
     <Compile Include="MonoDevelop.PackageManagement\ICommand.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IFolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ILicenseAcceptanceService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPropertyService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
@@ -199,13 +191,10 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessageLoggedEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSourceConverter.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryPath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
@@ -275,8 +264,6 @@
     <Compile Include="MonoDevelop.PackageManagement\SolutionProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IDotNetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISettingsProvider.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
@@ -301,7 +288,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestoredEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />
@@ -310,8 +296,6 @@
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
@@ -331,7 +315,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectJsonBuildIntegratedProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
@@ -399,12 +383,39 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreTask.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReference.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetCoreNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IHasDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInDotNetCoreProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetCorePath.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\LoggingProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetCoreFrameworkCompatibility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesLoadErrorWidget.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesLoadErrorWidget.UI.cs">
+      <DependentUpon>PackageSourcesLoadErrorWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement\GlobalNuGetConfigFilePath.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetConfigFileChangedMonitor.cs" />
+    <Compile Include="NuGet.Credentials\CredentialService.cs" />
+    <Compile Include="NuGet.Credentials\ICredentialProvider.cs" />
+    <Compile Include="NuGet.Credentials\CredentialResponse.cs" />
+    <Compile Include="NuGet.Credentials\CredentialStatus.cs" />
+    <Compile Include="NuGet.Credentials\ProviderException.cs" />
+    <Compile Include="NuGet.Credentials\DefaultCredentialsCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPackageFilesReader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageFilesReader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPackageCompatibilityNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSpecCreator.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetAwareProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildNuGetImportGenerator.cs" />
     <Compile Include="MonoDevelop.PackageManagement\GlobalPackagesExtractor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetAwareProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetAwareProjectPackageRestoreManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IHasDotNetProject.cs" />
+    <Compile Include="NuGet.Commands\MSBuildRestoreResult.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
+    <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -483,6 +494,54 @@
     <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel%402x.png">
       <LogicalName>prefs-package-source-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16.png">
+      <LogicalName>framework-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16%402x.png">
+      <LogicalName>framework-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark.png">
+      <LogicalName>framework-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark%402x.png">
+      <LogicalName>framework-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark~sel.png">
+      <LogicalName>framework-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~dark~sel%402x.png">
+      <LogicalName>framework-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~sel.png">
+      <LogicalName>framework-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\framework-16~sel%402x.png">
+      <LogicalName>framework-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16.png">
+      <LogicalName>nuget-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16%402x.png">
+      <LogicalName>nuget-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark.png">
+      <LogicalName>nuget-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark%402x.png">
+      <LogicalName>nuget-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark~sel.png">
+      <LogicalName>nuget-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~dark~sel%402x.png">
+      <LogicalName>nuget-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~sel.png">
+      <LogicalName>nuget-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\nuget-16~sel%402x.png">
+      <LogicalName>nuget-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-48.png">
@@ -510,7 +569,6 @@
       <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -551,6 +609,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
     <Folder Include="NuGet.PackageManagement.UI\" />
+    <Folder Include="NuGet.Commands\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
@@ -559,4 +618,14 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Cmdlets" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Extensions" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

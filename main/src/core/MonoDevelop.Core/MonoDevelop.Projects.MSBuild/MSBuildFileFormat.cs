@@ -51,9 +51,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
 		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
 		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
+		public static readonly MSBuildFileFormat VS2017 = new MSBuildFileFormatVS15 ();
 
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
+			yield return VS2017;
 			yield return VS2012;
 			yield return VS2010;
 			yield return VS2008;
@@ -366,6 +368,34 @@ namespace MonoDevelop.Projects.MSBuild
 		protected override bool SupportsToolsVersion (string version)
 		{
 			return version == "4.0" || version == "12.0" || version == "14.0";
+		}
+	}
+
+	class MSBuildFileFormatVS15: MSBuildFileFormat
+	{
+		public override string Id {
+			get { return "MSBuild15"; }
+		}
+
+		public override Version Version {
+			get { return new Version ("2017"); }
+		}
+
+		public override string DefaultToolsVersion {
+			get { return "15.0"; }
+		}
+
+		public override string SlnVersion {
+			get { return "15.00"; }
+		}
+
+		public override string ProductDescription {
+			get { return "Visual Studio 2017"; }
+		}
+
+		protected override bool SupportsToolsVersion (string version)
+		{
+			return version == "15.0";
 		}
 	}
 }

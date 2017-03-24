@@ -3,7 +3,6 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.PackageManagement.dll" />
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
-		<Import assembly="NuGet.Core.dll" />
 		<Import assembly="NuGet.Packaging.Core.Types.dll" />
 		<Import assembly="NuGet.Packaging.dll" />
 	</Runtime>
@@ -108,8 +107,10 @@
 		<StockIcon stockid="md-nuget-package-source" resource="package-source-32.png" size="Dnd" />
 		<StockIcon stockid="md-prefs-package" resource="prefs-package-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-package-source" resource="prefs-package-source-16.png" size="Menu" />
+		<StockIcon stockid="md-package-dependency" resource="nuget-16.png" />
+		<StockIcon stockid="md-framework-dependency" resource="framework-16.png" />
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="NuGetPackageManagement" _label="NuGet" insertafter="VersionControl">
 			<Section id="General" _label="General" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" icon="md-prefs-package" />

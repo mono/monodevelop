@@ -27,6 +27,7 @@
 //
 //
 using System;
+using System.IO;
 
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -59,8 +60,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PackStart (mbox.ToGtkWidget (), false, false, 0);
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Version"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Version")),
+				MarginTop = 6,
 			});
 			infoBox.PackStart (new Xwt.Label () {
 				Text = IdeVersionInfo.MonoDevelopVersion,
@@ -68,38 +69,67 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			});
 
 			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("License"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("License")),
+				MarginTop = 6,
 			});
 			var cbox = new Xwt.HBox () {
 				Spacing = 0,
 				MarginLeft = 12
 			};
-			cbox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("License is available at ")
-			});
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("http://xamarin.com/xamarin-studio-license"),
-				Uri = new Uri ("http://xamarin.com/xamarin-studio-license")
-			});
+			var linkLabel = new Xwt.Label {
+				Markup = "<span underline='true'>License Terms</span>",
+				Cursor = Xwt.CursorType.Hand,
+			};
+			if (IdeTheme.UserInterfaceTheme == Theme.Light)
+				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
+			
+			linkLabel.ButtonReleased += (sender, e) => {
+				var binDir = System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetEntryAssembly ().Location);
+				string licensePath = System.IO.Path.Combine (binDir, "branding", "License.txt");
+				if (Platform.IsMac) {
+					var appDir = System.IO.Path.GetFullPath (System.IO.Path.Combine (binDir, "..", "..", "..", "..", ".."));
+					if (appDir.EndsWith (".app", StringComparison.Ordinal)) {
+						licensePath = System.IO.Path.Combine (appDir, "Contents", "License.txt");
+					}
+				}
+				if (!File.Exists (licensePath)) {
+					MessageService.ShowError ("License file is missing");
+				} else {
+					DesktopService.OpenFile (licensePath);
+				}
+			};
+			cbox.PackStart (linkLabel);
 			infoBox.PackStart (cbox);
 
-			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Copyright"),
-				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
-			});
-			cbox = new Xwt.HBox () {
-				Spacing = 0,
+			linkLabel = new Xwt.Label {
+				Markup = string.Format ("<span underline='true'>{0}</span>", GettextCatalog.GetString ("Privacy Statement")),
+				Cursor = Xwt.CursorType.Hand,
 				MarginLeft = 12
 			};
-			cbox.PackStart (new Xwt.Label ("© 2011-" + DateTime.Now.Year + " "));
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("Xamarin Inc."),
-				Uri = new Uri ("http://www.xamarin.com")
-			});
-			infoBox.PackStart (cbox);
+
+			//TODO: factor out
+			const string PRIVACY_URL = "https://go.microsoft.com/fwlink/?LinkID=824704";
+
+			if (IdeTheme.UserInterfaceTheme == Theme.Light)
+				linkLabel.Markup = string.Format ("<span color='#5C2D91'>{0}</span>", linkLabel.Markup);
+			linkLabel.ButtonReleased += (sender, e) => DesktopService.ShowUrl (PRIVACY_URL);
+			infoBox.PackStart (linkLabel);
+
 			infoBox.PackStart (new Xwt.Label () {
-				Text = "© 2004-" + DateTime.Now.Year + " MonoDevelop contributors",
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Copyright")),
+				MarginTop = 6,
+			});
+
+			infoBox.PackStart (new Xwt.Label () {
+				Text = (DateTime.Now.Year == 2016 ? "© 2016" : "© 2016–" + DateTime.Now.Year) + " Microsoft Corp.",
+				MarginLeft = 12
+			});
+			infoBox.PackStart (new Xwt.Label () {
+				Text = "© 2004–" + DateTime.Now.Year + " Xamarin Inc.",
+				MarginLeft = 12
+			});
+			infoBox.PackStart (new Xwt.Label () {
+				Text = "© 2004–" + DateTime.Now.Year + " MonoDevelop contributors",
 				MarginLeft = 12
 			});
 

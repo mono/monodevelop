@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.MSBuild
 				gp.SetProperty (p.Key, p.Value);
 		}
 
-		public ProjectBuilder LoadProject (string file)
+		public ProjectBuilder LoadProject (string file, string sdksPath)
 		{
 			return new ProjectBuilder (this, file);
 		}

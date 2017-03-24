@@ -218,7 +218,7 @@ namespace MonoDevelop.Projects
 				try {
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName)) {
 						using (var ctx = new SolutionLoadContext (ParentSolution))
-							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx);
+							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx, itemGuid: item.ItemId);
 					}
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {
@@ -835,7 +835,7 @@ namespace MonoDevelop.Projects
 			OnItemModified (e);
 		}
 		
-		internal void NotifyItemSaved (object sender, SolutionItemEventArgs e)
+		internal void NotifyItemSaved (object sender, SolutionItemSavedEventArgs e)
 		{
 			OnItemSaved (e);
 		}
@@ -976,7 +976,7 @@ namespace MonoDevelop.Projects
 				ItemModified (this, e);
 		}
 		
-		void OnItemSaved (SolutionItemEventArgs e)
+		void OnItemSaved (SolutionItemSavedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntrySaved (e);

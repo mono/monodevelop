@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -73,11 +74,21 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal IMSBuildItemEvaluated BackingEvalItem { get; set; }
+		IMSBuildItemEvaluated backingEvalItem;
+		internal IMSBuildItemEvaluated BackingEvalItem {
+			get { return backingEvalItem; }
+			set {
+				backingEvalItem = value;
+				var source = backingEvalItem?.SourceItems.FirstOrDefault ();
+				IsFromWildcardItem = source != null && source.IsWildcardItem;
+			}
+		}
 
-		internal bool IsFromWildcardItem {
+		internal bool IsFromWildcardItem { get; private set; }
+
+		internal MSBuildItem WildcardItem {
 			get {
-				return BackingItem != null && BackingItem.IsWildcardItem;
+				return backingEvalItem?.SourceItems.FirstOrDefault ();
 			}
 		}
 
@@ -113,12 +124,12 @@ namespace MonoDevelop.Projects
 
 			if (buildItem.SourceItem != null) {
 				HashSet<string> knownProps = GetKnownMetadata ();
-				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
+				foreach (var prop in buildItem.Metadata.GetProperties ()) {
 					if (!knownProps.Contains (prop.Name)) {
 						if (metadata == null)
 							metadata = new ProjectItemMetadata (project.MSBuildProject);
 						// Get the evaluated value for the original metadata property
-						var p = new ItemMetadataProperty (prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue);
+						var p = new ItemMetadataProperty (prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue) { Condition = prop.Condition };
 						p.ParentProject = project.MSBuildProject;
 						metadata.AddProperty (p);
 					}
@@ -136,10 +147,10 @@ namespace MonoDevelop.Projects
 
 			if (metadata != null) {
 				metadata.SetProject (buildItem.ParentProject);
-				foreach (var prop in metadata.GetProperties ()) {
+				foreach (MSBuildProperty prop in metadata.GetProperties ()) {
 					// Use the UnevaluatedValue because if the property has changed, UnevaluatedValue will contain
 					// the new value, and if not, it will contain the old unevaluated value
-					buildItem.Metadata.SetValue (prop.Name, prop.UnevaluatedValue);
+					buildItem.Metadata.SetValue (prop.Name, prop.UnevaluatedValue, condition:prop.Condition);
 				}
 			}
 		}

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Common;
 using NuGet.Indexing;
+using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 
 namespace NuGet.PackageManagement.UI

@@ -109,7 +109,18 @@ namespace MonoDevelop.Ide.Desktop
 				if (mt != null)
 					return mt.Id;
 			}
-			return OnGetMimeTypeForUri (uri) ?? "application/octet-stream";
+			var mime = OnGetMimeTypeForUri (uri);
+			if (mime != null) {
+				return mime;
+			}
+
+			try {
+				if (Path.IsPathRooted (uri) && File.Exists (uri) && !Core.Text.TextFileUtility.IsBinary (uri)) {
+					return "text/plain";
+				}
+			} catch (IOException) {}
+
+			return "application/octet-stream";
 		}
 
 		public string GetMimeTypeDescription (string mimeType)
@@ -156,6 +167,15 @@ namespace MonoDevelop.Ide.Desktop
 				}
 				yield return mimeType;
 			}
+		}
+
+		public string GetMimeTypeForRoslynLanguage (string language)
+		{
+			foreach (MimeTypeNode mt in mimeTypeNodes) {
+				if (mt.RoslynName == language)
+					return mt.Id;
+			}
+			return null;
 		}
 		
 		public Xwt.Drawing.Image GetIconForFile (string filename)

@@ -27,7 +27,6 @@ using System;
 using MonoDevelop.MacInterop;
 using AppKit;
 using MonoDevelop.Components;
-using Mono.TextEditor;
 using MonoDevelop.Components.Extensions;
 using Xwt.GtkBackend;
 

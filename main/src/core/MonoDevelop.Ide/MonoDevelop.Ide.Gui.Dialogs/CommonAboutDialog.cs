@@ -91,8 +91,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					notebook.Page = 0;
 				}
 			};
-
-			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
+			backButton.HasDefault = backButton.CanDefault = true;
 
 			ShowAll ();
 		}

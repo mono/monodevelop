@@ -138,6 +138,14 @@ namespace MonoDevelop.Configuration
             CompatVersion = SystemUtil.Grep(versionTxt, "CompatVersion=(.*)");
 			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)", true);
 
+			var customSource = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATEINFO_SOURCE_URL");
+			if (!string.IsNullOrEmpty (customSource))
+				SourceUrl = customSource;
+
+			var customLabel = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATEINFO_LABEL");
+			if (!string.IsNullOrEmpty (customLabel))
+				ProductVersionText = customLabel;
+
             Version ver = new Version(Version);
             int vbuild = ver.Build != -1 ? ver.Build : 0;
             var cd = GetVersionCommitDistance(MonoDevelopPath);
@@ -157,7 +165,7 @@ namespace MonoDevelop.Configuration
 
 			if (pinfo.AppId != null) {
 				var content = pinfo.AppId + " " + ReleaseId;
-				if (SourceUrl != null)
+				if (!string.IsNullOrEmpty (SourceUrl))
 					content += "\nsource-url:" + SourceUrl;
 				File.WriteAllText (Path.Combine (targetDir, "updateinfo"), content);
 			}

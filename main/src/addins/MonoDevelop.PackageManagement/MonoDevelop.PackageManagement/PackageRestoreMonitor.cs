@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -75,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 		void LogFailure (string projectName, Exception exception)
 		{
 			packageManagementEvents.OnPackageOperationMessageLogged (
-				NuGet.MessageLevel.Info,
+				MessageLevel.Info,
 				GettextCatalog.GetString ("Package restore failed for project {0}: {1}"),
 				projectName,
 				exception.Message);

@@ -36,17 +36,19 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public partial class SearchAndReplaceWidget : Bin
+	partial class SearchAndReplaceWidget : Bin
 	{
 		const char historySeparator = '\n';
 		const int  historyLimit = 20;
 		const string seachHistoryProperty = "MonoDevelop.FindReplaceDialogs.FindHistory";
 		const string replaceHistoryProperty = "MonoDevelop.FindReplaceDialogs.ReplaceHistory";
 		static Xwt.Drawing.Image SearchEntryFilterImage = Xwt.Drawing.Image.FromResource ("find-options-22x32.png");
-		public TextSegment SelectionSegment {
+		public ISegment SelectionSegment {
 			get;
 			set;
 		}
@@ -141,7 +143,7 @@ namespace MonoDevelop.SourceEditor
 			return "(" + nextShortcut + ")";
 		}
 		
-		public SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
+		internal SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -320,7 +322,7 @@ namespace MonoDevelop.SourceEditor
 			SetSearchPattern (SearchAndReplaceOptions.SearchPattern);
 			textEditor.HighlightSearchPattern = true;
 			textEditor.TextViewMargin.RefreshSearchMarker ();
-			if (textEditor.Document.ReadOnly) {
+			if (textEditor.Document.IsReadOnly) {
 				buttonSearchMode.Visible = false;
 				IsReplaceMode = false;
 			}
@@ -623,7 +625,7 @@ But I leave it in in the case I've missed something. Mike
 				foreach (Widget widget in replaceWidgets) {
 					widget.Visible = isReplaceMode;
 				}
-				if (textEditor.Document.ReadOnly)
+				if (textEditor.Document.IsReadOnly)
 					buttonSearchMode.Visible = false;
 			}
 		}
@@ -632,8 +634,12 @@ But I leave it in in the case I've missed something. Mike
 		{
 			base.OnFocusChildSet (widget);
 			var mainResult = textEditor.TextViewMargin.MainSearchResult;
-			textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid &&
-				textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+			if (mainResult != null) {
+				textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid () &&
+					textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+			} else {
+				textEditor.TextViewMargin.HideSelection = false;
+			}
 			
 			if (textEditor.TextViewMargin.HideSelection)
 				textEditor.QueueDraw ();
@@ -809,7 +815,7 @@ But I leave it in in the case I've missed something. Mike
 				int resultIndex = 0;
 				int foundIndex = -1;
 				int caretOffset = textEditor.Caret.Offset;
-				TextSegment foundSegment = TextSegment.Invalid;
+				ISegment foundSegment = TextSegment.Invalid;
 				foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
 					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
 						foundIndex = resultIndex + 1;
@@ -857,7 +863,7 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.SearchPattern = searchPattern;
 		}
 
-		public static SearchResult FindNext (MonoTextEditor textEditor)
+		internal static SearchResult FindNext (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);

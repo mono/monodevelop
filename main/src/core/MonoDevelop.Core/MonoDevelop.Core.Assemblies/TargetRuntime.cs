@@ -63,7 +63,9 @@ namespace MonoDevelop.Core.Assemblies
 		ComposedAssemblyContext composedAssemblyContext;
 		ITimeTracker timer;
 		TargetFramework[] customFrameworks = new TargetFramework[0];
-		
+
+		static int internalIdCounter;
+
 		protected bool ShuttingDown { get; private set; }
 		
 		public TargetRuntime ()
@@ -72,6 +74,8 @@ namespace MonoDevelop.Core.Assemblies
 			composedAssemblyContext = new ComposedAssemblyContext ();
 			composedAssemblyContext.Add (Runtime.SystemAssemblyService.UserAssemblyContext);
 			composedAssemblyContext.Add (assemblyContext);
+
+			InternalId = Interlocked.Increment (ref internalIdCounter);
 			
 			Runtime.ShuttingDown += delegate {
 				ShuttingDown = true;
@@ -140,6 +144,12 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns 'true' if this runtime is the one currently running MonoDevelop.
 		/// </summary>
 		public abstract bool IsRunning { get; }
+
+		/// <summary>
+		/// Internal id, to be used at run time
+		/// </summary>
+		/// <value>The internal identifier.</value>
+		internal int InternalId { get; private set; }
 		
 		public virtual IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
 		{
@@ -178,10 +188,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		/// <summary>
-		/// Given an assembly file name, returns the corresponding debug information file name.
-		/// (.mdb for Mono, .pdb for MS.NET)
-		/// </summary>
+		[Obsolete ("Use DotNetProject.GetAssemblyDebugInfoFile()")]
 		public abstract string GetAssemblyDebugInfoFile (string assemblyPath);
 		
 		/// <summary>
