@@ -47,6 +47,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -1140,6 +1141,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			switch (feature) {
 			case ApplyChangesKind.AddDocument:
+			case ApplyChangesKind.RemoveDocument:
 			case ApplyChangesKind.ChangeDocument:
 				return true;
 			default:
@@ -1190,6 +1192,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			this.OnDocumentAdded (info);
+		}
+
+		protected override void ApplyDocumentRemoved (DocumentId documentId)
+		{
+			var document = GetDocument (documentId);
+			var mdProject = GetMonoProject (documentId.ProjectId);
+			if (document != null && mdProject != null) {
+				FilePath filePath = document.FilePath;
+				var projectFile = mdProject.Files.GetFile (filePath);
+				if (projectFile != null) {
+					FileService.DeleteFile (filePath);
+					//this will fire a OnDocumentRemoved event via OnFileRemoved
+					mdProject.Files.Remove (projectFile);
+					tryApplyState_changedProjects.Add (mdProject);
+				}
 			}
 		}
 
