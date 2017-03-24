@@ -570,7 +570,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (document, descriptor.KeyChar)) {
 					var caretPosition = Editor.CaretOffset;
 					var token = CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default(CancellationToken)).Result;
-					if (token.IsMissing || !service.ValidSingleOrMultiCharactersTokenKind (descriptor.KeyChar, token.Kind ()) || token.IsKind (SyntaxKind.EndOfFileToken, SyntaxKind.None))
+					if (token.IsMissing || !service.ValidSingleOrMultiCharactersTokenKind (descriptor.KeyChar, token.Kind ()) || token.IsKind (SyntaxKind.EndOfFileToken) || token.IsKind (SyntaxKind.None))
 						return;
 					if (CSharpEditorFormattingService.TokenShouldNotFormatOnTypeChar (token))
 						return;
@@ -602,7 +602,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default (CancellationToken)).ConfigureAwait (false);
 			if (token.IsMissing || !token.Parent.IsKind (SyntaxKind.ElseDirectiveTrivia))
 				return;
-			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			var tokenRange = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
 			
@@ -628,7 +628,7 @@ namespace MonoDevelop.CSharp.Formatting
 			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
 			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn (token))
 				return;
-			var tokenRange = FormattingRangeHelper.FindAppropriateRange (token);
+			var tokenRange = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals (tokenRange.Value.Item2))
 				return;
 			var value = tokenRange.Value;

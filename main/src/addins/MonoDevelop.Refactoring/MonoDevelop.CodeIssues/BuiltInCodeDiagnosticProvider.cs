@@ -1,4 +1,4 @@
-﻿//
+//
 // BuiltInCodeDiagnosticProvider.cs
 //
 // Author:
@@ -53,7 +53,7 @@ namespace MonoDevelop.CodeIssues
 					try {
 						result.AddAssembly (asm);
 					} catch (Exception e) {
-						LoggingService.LogError ("error while loading diagnostics in " + asm.FullName, e);
+						LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
 					}
 				}
 				return result;
@@ -62,14 +62,14 @@ namespace MonoDevelop.CodeIssues
 
 		internal static CodeDiagnosticDescriptor GetCodeDiagnosticDescriptor (string diagnosticId)
 		{
-			foreach (var builtInDescriptor in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDecsriptorsAsync (null).Result) {
+			foreach (var builtInDescriptor in GetBuiltInCodeDiagnosticDescriptorsAsync (null).Result) {
 				if (builtInDescriptor.GetProvider ().SupportedDiagnostics.Any (diagnostic => diagnosticId == diagnostic.Id))
 					return builtInDescriptor;
 			}
 			return null;
 		}
 
-		internal async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeDiagnosticDecsriptorsAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
+		internal async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeDiagnosticDescriptorsAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			builtInDiagnostics.Wait (cancellationToken);
 			var diags = await builtInDiagnostics;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 
 		public override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken)
 		{
-			return GetBuiltInCodeDiagnosticDecsriptorsAsync (language, false, cancellationToken);
+			return GetBuiltInCodeDiagnosticDescriptorsAsync (language, false, cancellationToken);
 		}
 
 		public override Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken))

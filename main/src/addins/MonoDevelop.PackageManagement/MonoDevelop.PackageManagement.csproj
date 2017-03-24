@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ProjectGuid>{F218643D-2E74-4309-820E-206A54B7133F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,7 +15,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -141,7 +142,7 @@
       <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable">
@@ -568,7 +569,6 @@
       <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -618,4 +618,14 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore" />
+    <InternalsVisibleTo Include="MonoDevelop.DotNetCore.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Cmdlets" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Extensions" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.Packaging" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
