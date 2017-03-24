@@ -41,27 +41,22 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighli
         /// </summary>
         private void HighlightRelatedKeywords(SyntaxNode node, List<TextSpan> spans)
         {
-            node.TypeSwitch(
-                (YieldStatementSyntax statement) =>
-                {
-                    spans.Add(
-                        TextSpan.FromBounds(
-                            statement.YieldKeyword.SpanStart,
-                            statement.ReturnOrBreakKeyword.Span.End));
+			var statement = node as YieldStatementSyntax;
+			if (statement != null) {
+				spans.Add (
+					TextSpan.FromBounds (
+						statement.YieldKeyword.SpanStart,
+						statement.ReturnOrBreakKeyword.Span.End));
 
-                    spans.Add(EmptySpan(statement.SemicolonToken.Span.End));
-                },
-                _ =>
-                {
-                    foreach (var child in node.ChildNodes())
-                    {
-                        // Only recurse if we have anything to do
-                        if (!child.IsReturnableConstruct())
-                        {
-                            HighlightRelatedKeywords(child, spans);
-                        }
-                    }
-                });
+				spans.Add (EmptySpan (statement.SemicolonToken.Span.End));
+			} else {
+				foreach (var child in node.ChildNodes ()) {
+					// Only recurse if we have anything to do
+					if (!child.IsReturnableConstruct ()) {
+						HighlightRelatedKeywords (child, spans);
+					}
+				}
+			}
         }
     }
 }

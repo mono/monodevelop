@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.Projects
 			solutionNameTextBox.Sensitive = projectConfiguration.IsSolutionNameEnabled;
 			projectNameTextBox.Sensitive = projectConfiguration.IsProjectNameEnabled;
 			createProjectWithinSolutionDirectoryCheckBox.Sensitive = projectConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled;
-			createProjectWithinSolutionDirectoryCheckBox.Active = projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory;
+			createProjectWithinSolutionDirectoryCheckBox.Active = projectConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled ? projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory : true;
 			useGitCheckBox.Sensitive = projectConfiguration.IsUseGitEnabled;
 			useGitCheckBox.Active = projectConfiguration.UseGit;
 			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;

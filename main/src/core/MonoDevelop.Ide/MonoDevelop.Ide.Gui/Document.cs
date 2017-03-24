@@ -60,6 +60,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.TextMate;
 using MonoDevelop.Core.Assemblies;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -516,9 +517,9 @@ namespace MonoDevelop.Ide.Gui
 			await UpdateParseDocument ();
 		}
 		
-		public bool Close ()
+		public async Task<bool> Close ()
 		{
-			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
+			return await ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
 
 		protected override void OnSaved (EventArgs e)
@@ -828,11 +829,11 @@ namespace MonoDevelop.Ide.Gui
 					doc = null;
 				}
 				if (doc != null)
-					return SpecializedTasks.EmptyTask;
+					return Task.CompletedTask;
 			}
 			if (Editor == null) {
 				UnsubscibeAnalysisdocument ();
-				return SpecializedTasks.EmptyTask;
+				return Task.CompletedTask;
 			}
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
 				UnsubscribeRoslynWorkspace ();
@@ -846,7 +847,7 @@ namespace MonoDevelop.Ide.Gui
 				lock (adhocProjectLock) {
 					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
-						return SpecializedTasks.EmptyTask;
+						return Task.CompletedTask;
 					}
 
 					if (Editor != null) {
@@ -887,7 +888,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
-			return SpecializedTasks.EmptyTask;
+			return Task.CompletedTask;
 		}
 
 		void UnsubscribeRoslynWorkspace ()

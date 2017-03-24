@@ -140,7 +140,8 @@ type SyntaxHighlighting() =
     [<TestCase("module A$=$", "source.fs")>]
     [<TestCase("let $defaultKeyword$ =", "entity.name.field")>]
     [<TestCase("addButton (\"$gtk-save$\"", "string.quoted.double.source.fs")>]
-
+    [<TestCase(@"namespace $rec$ MonoDevelop", "keyword.source.fs")>]
+    [<TestCase(@"$type$ internal SomeType", "keyword.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 

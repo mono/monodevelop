@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MsNetTargetRuntime.cs
 //  
 // Author:
@@ -153,6 +153,15 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
+			//FIXME doing this properly involves COM now
+			var programFilesX86 = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
+			foreach (var edition in new[] { "Enterprise", "Professional", "Community" }) {
+				string path = Path.Combine (programFilesX86, "Microsoft Visual Studio", "2017", edition, "MSBuild", "15.0", "Bin");
+				if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
+					return path;
+				}
+			}
+
 			using (RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + toolsVersion, false)) {
 				if (msb != null) {
 					string path = msb.GetValue ("MSBuildToolsPath") as string;
@@ -165,14 +174,7 @@ namespace MonoDevelop.Core.Assemblies
 
 		public override string GetMSBuildToolsPath (string toolsVersion)
 		{
-			using (RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + toolsVersion, false)) {
-				if (msb != null) {
-					string path = msb.GetValue ("MSBuildToolsPath") as string;
-					if (path != null && Directory.Exists (path))
-						return path;
-				}
-				return null;
-			}
+			return GetMSBuildBinPath (toolsVersion);
 		}
 		
 		public override string GetMSBuildExtensionsPath ()

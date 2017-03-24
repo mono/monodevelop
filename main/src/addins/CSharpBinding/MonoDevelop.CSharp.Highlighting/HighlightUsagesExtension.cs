@@ -23,27 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.FindInFiles;
-using System.Threading;
-using MonoDevelop.SourceEditor;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
-using Microsoft.CodeAnalysis.FindSymbols;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading.Tasks;
 using System.Collections.Immutable;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Editor.Extension;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using ICSharpCode.NRefactory6.CSharp;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Roslyn.Utilities;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Highlighting
 {

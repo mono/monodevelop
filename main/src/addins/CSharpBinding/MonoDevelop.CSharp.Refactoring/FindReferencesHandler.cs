@@ -25,22 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.Threading;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
-using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.FindInFiles;
-using MonoDevelop.Ide.Tasks;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.CSharp.Highlighting;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {

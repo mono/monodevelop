@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			 
 			// compilerArguments.AllowUnsafeBlocks = par.UnsafeCode;
-			compilerArguments = compilerArguments.WithLanguageVersion (ConvertLanguageVersion (par.LangVersion));
+			compilerArguments = compilerArguments.WithLanguageVersion (par.LangVersion);
 //			compilerArguments.CheckForOverflow = par.GenerateOverflowChecks;
 
 //			compilerArguments.WarningLevel = par.WarningLevel;
@@ -137,27 +137,6 @@ namespace MonoDevelop.CSharp.Parser
 //			}
 			
 			return compilerArguments;
-		}
-		
-		internal static Microsoft.CodeAnalysis.CSharp.LanguageVersion ConvertLanguageVersion (LangVersion ver)
-		{
-			switch (ver) {
-			case LangVersion.ISO_1:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
-			case LangVersion.ISO_2:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
-			case LangVersion.Version3:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
-			case LangVersion.Version4:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
-			case LangVersion.Version5:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
-			case LangVersion.Version6:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
-			case LangVersion.Default:
-				break;
-			}
-			return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 		}
 	}
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+
+	<!-- force Roslyn compiler -->
+	<PropertyGroup Condition="'$(OS)'=='Unix' And '$(MSBuildProjectExtension)'=='.csproj'">
+		<_MonoBinDir>$(MSBuildBinPath)\..\..\..\4.5\</_MonoBinDir>
+		<CscToolExe>csc.exe</CscToolExe>
+		<CscToolPath>$(_MonoBinDir)</CscToolPath>
+		<DebugType>portable</DebugType>
+		<CscDebugFileExt>.pdb</CscDebugFileExt>
+		<_DebugFileExt>.pdb</_DebugFileExt>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Deterministic>True</Deterministic>
+		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
+		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<!-- C# only -->
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+		<Deterministic>True</Deterministic>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+</Project>

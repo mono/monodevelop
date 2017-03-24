@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
+
+	<ConditionType id="DotNetCoreSdkInstalled" type="MonoDevelop.DotNetCore.DotNetCoreSdkInstalledCondition" />
+
 	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="DotNetCore" class="MonoDevelop.DotNetCore.DotNetCoreExecutionHandler" />
 	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 		<Category id="netcore" name=".NET Core" icon="md-platform-other" insertbefore="other">
 			<Category id="app" name="App">
@@ -19,6 +23,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Templates">
+		<Condition id="DotNetCoreSdkInstalled">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
 			_overrideDescription="Creates a new .NET Core console project."
@@ -33,6 +38,8 @@
 			icon="md-console-project"
 			imageId="md-console-project"
 			category="netcore/app/general"/>
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -49,6 +56,8 @@
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
@@ -91,6 +100,7 @@
 			icon="md-aspnet-empty-project"
 			imageId="md-aspnet-empty-project"
 			category="netcore/app/aspnet" />
+		</Condition>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.AspNet</AssemblyName>
     <RootNamespace>MonoDevelop.AspNet</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -91,11 +92,6 @@
       <Name>MonoDevelop.TextTemplating</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
-      <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
-      <Name>Mono.TextTemplating</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Xml\MonoDevelop.Xml.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.Xml</Name>
@@ -156,6 +152,10 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>..\..\..\packages\Mono.TextTemplating.1.3.0\lib\net45\Mono.TextTemplating.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -569,6 +569,10 @@
     <Content Include="Html\Schemas\xhtml1-transitional.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -46,6 +46,7 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Templates;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -395,9 +396,9 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Exits MonoDevelop. Returns false if the user cancels exiting.
 		/// </summary>
-		public static bool Exit ()
+		public static async Task<bool> Exit ()
 		{
-			if (workbench.Close ()) {
+			if (await workbench.Close ()) {
 				Gtk.Application.Quit ();
 				isMainRunning = false;
 				return true;
@@ -414,9 +415,9 @@ namespace MonoDevelop.Ide
 		/// Starts a new MonoDevelop instance in a new process and 
 		/// stops the current MonoDevelop instance.
 		/// </remarks>
-		public static bool Restart (bool reopenWorkspace = false)
+		public static async Task<bool> Restart (bool reopenWorkspace = false)
 		{
-			if (Exit ()) {
+			if (await Exit ()) {
 				try {
 					DesktopService.RestartIde (reopenWorkspace);
 				} catch (Exception ex) {

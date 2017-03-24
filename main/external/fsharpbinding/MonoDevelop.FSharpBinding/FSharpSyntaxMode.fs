@@ -254,11 +254,8 @@ module Patterns =
         | _ -> None
 
     let (|ComputationExpression|_|) ts =
-        match ts with
-        | IdentifierSymbol symbolUse ->
-            match symbolUse with
-            | SymbolUse.ComputationExpression _ -> Some symbolUse.Symbol.DisplayName
-            | _ -> None
+        match ts.ExtraColorInfo with
+        | Some(_range, extra) when extra = SemanticClassificationType.ComputationExpression -> Some ts
         | _ -> None
 
     module SyntaxMode =
@@ -338,7 +335,7 @@ module Patterns =
                 let! checkResults = pd.TryGetAst()
                 let! tokens = pd.Tokens 
                 let symbolsInFile = pd.AllSymbolsKeyed
-                let colourisations = checkResults.GetExtraColorizations()
+                let colourisations = checkResults.GetExtraColorizations None
                 let formatters = checkResults.GetStringFormatterColours()
                 return tokens, symbolsInFile, colourisations, formatters }
 

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -99,7 +100,10 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
+			// Do not read the project header when re-evaluating to prevent the
+			// ToolsVersion that was initially read from the project being changed.
+			if (!Project.IsReevaluating)
+				dotNetCoreMSBuildProject.ReadProjectHeader (msproject);
 			base.OnReadProjectHeader (monitor, msproject);
 		}
 
@@ -131,8 +135,12 @@ namespace MonoDevelop.DotNetCore
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			FilePath outputFileName = GetOutputFileName (configuration);
+			FilePath outputFileName;
 			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
+			if (dotnetCoreRunConfiguration?.StartAction == AssemblyRunConfiguration.StartActions.Program)
+				outputFileName = dotnetCoreRunConfiguration.StartProgram;
+			else
+				outputFileName = GetOutputFileName (configuration);
 
 			return new DotNetCoreExecutionCommand (
 				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
@@ -180,17 +188,11 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (!IdeApp.Preferences.BuildBeforeExecuting && !IsDotNetCoreInstalled ()) {
+			if (DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
 			return base.OnExecute (monitor, context, configuration, runConfiguration);
-		}
-
-		bool IsDotNetCoreInstalled ()
-		{
-			var dotNetCorePath = new DotNetCorePath ();
-			return !dotNetCorePath.IsMissing;
 		}
 
 		Task ShowCannotExecuteDotNetCoreApplicationDialog ()
@@ -270,7 +272,7 @@ namespace MonoDevelop.DotNetCore
 			if (!IdeApp.IsInitialized)
 				return;
 
-			if (HasSdk && !sdkPaths.Exist) {
+			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
 		}
@@ -303,7 +305,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
-			} else if (HasSdk && !sdkPaths.Exist) {
+			} else if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				return CreateDotNetCoreSdkRequiredBuildResult (sdkPaths.IsUnsupportedSdkVersion);
 			}
 			return null;
@@ -366,8 +368,7 @@ namespace MonoDevelop.DotNetCore
 			if (!HasSdk)
 				return;
 
-			sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
+			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 			if (!sdkPaths.Exist)
 				return;
 
@@ -457,9 +458,7 @@ namespace MonoDevelop.DotNetCore
 
 		public bool IsDotNetCoreSdkInstalled ()
 		{
-			if (sdkPaths != null)
-				return sdkPaths.Exist;
-			return true;
+			return DotNetCoreSdk.IsInstalled || MSBuildSdks.Installed;
 		}
 
 		public bool IsUnsupportedDotNetCoreSdkInstalled ()
@@ -469,32 +468,9 @@ namespace MonoDevelop.DotNetCore
 			return false;
 		}
 
-		// HACK: The FSharp.NET.Core.Sdk.targets defines the path to dotnet using:
-		// <_DotNetHostExecutableDirectory>$(MSBuildExtensionsPath)/../..</_DotNetHostExecutableDirectory>
-		// MSBuildExtensionsPath points to MSBuild supplied with Mono so building FSharp
-		// projects fails using this path since dotnet does not ship with Mono. The
-		// _DotNetHostExecutableDirectory cannot be overridden so as a workaround for
-		// F# projects the MSBuildExtensionsPath is redefined to point to the .NET Core
-		// SDK folder.
-		protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
-		{
-			if (target == ProjectService.BuildTarget) {
-				if (IsFSharpSdkProject ()) {
-					OverrideMSBuildExtensionsPathToFixBuild (context);
-				}
-			}
-			return base.OnRunTarget (monitor, target, configuration, context);
-		}
-
 		bool IsFSharpSdkProject ()
 		{
 			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
-		}
-
-		void OverrideMSBuildExtensionsPathToFixBuild (TargetEvaluationContext context)
-		{
-			string path = Path.GetFullPath (Path.Combine (sdkPaths.MSBuildSDKsPath, ".."));
-			context.GlobalProperties.SetValue ("MSBuildExtensionsPath", path);
 		}
 
 		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
@@ -563,6 +539,13 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (!BuildAction.DotNetActions.Contains (buildItem.Name))
 				return false;
+
+			if (IsFSharpSdkProject ()) {
+				// Ignore imported F# files. F# files are defined in the main project.
+				// This prevents duplicate F# files when a new project is first created.
+				if (buildItem.Include.EndsWith (".fs", StringComparison.OrdinalIgnoreCase))
+					return false;
+			}
 
 			// HACK: Remove any imported items that are not in the EvaluatedItems
 			// This may happen if a condition excludes the item. All items passed to the

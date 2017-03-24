@@ -25,14 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion

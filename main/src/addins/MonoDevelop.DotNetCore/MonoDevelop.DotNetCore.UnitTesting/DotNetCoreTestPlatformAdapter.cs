@@ -82,8 +82,6 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			DiscoveryFailed?.Invoke (this, new EventArgs ());
 		}
 
-		public DotNetCorePath DotNetCorePath { get; set; } = new DotNetCorePath ();
-
 		public void StartDiscovery (string testAssemblyPath)
 		{
 			try {
@@ -97,7 +95,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		{
 			this.testAssemblyPath = testAssemblyPath;
 
-			if (DotNetCorePath.IsMissing) {
+			if (DotNetCoreRuntime.IsMissing) {
 				throw new ApplicationException (".NET Core is not installed.");
 			}
 
@@ -132,7 +130,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 		ProcessWrapper StartDotNetProcess (int port)
 		{
 			return Runtime.ProcessService.StartProcess (
-				DotNetCorePath.FileName,
+				DotNetCoreRuntime.FileName,
 				GetVSTestArguments (port),
 				null,
 				DotNetCoreProcessExited);

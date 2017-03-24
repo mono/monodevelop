@@ -26,14 +26,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using System.Threading;
-using System.CodeDom;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.TypeSystem;
-using System.Security.Cryptography;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						filterMethod.Add (method.OverriddenMethod);
 					if (filterMethod.Contains (method))
 						continue;
-					if (addedMethods.Any (added => SignatureComparer.HaveSameSignature (method, added, true)))
+					if (addedMethods.Any (added => SignatureComparer.Instance.HaveSameSignature (method, added, true)))
 						continue;
 					if (method.IsAccessibleWithin (within)) {
 						if (info.Symbol != null) {
@@ -186,9 +186,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			var usedNamespaces = new List<string> ();
 			foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
-				usedNamespaces.Add (un.GetFullName ());
+				usedNamespaces.Add (MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (un));
 			}
-			var enclosingNamespaceName = semanticModel.GetEnclosingNamespace (node.SpanStart, cancellationToken).GetFullName ();
+			var enclosingNamespaceName = MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (semanticModel.GetEnclosingNamespace (node.SpanStart, cancellationToken));
 
 			var stack = new Stack<INamespaceOrTypeSymbol> ();
 			stack.Push (semanticModel.Compilation.GlobalNamespace);
@@ -201,7 +201,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (currentNs != null) {
 
 					foreach (var member in currentNs.GetNamespaceMembers ()) {
-						var currentNsName = member.GetFullName ();
+						var currentNsName = MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (member);
 						if (usedNamespaces.Any (u => u.StartsWith (currentNsName, StringComparison.Ordinal)) ||
 							enclosingNamespaceName == currentNsName ||
 							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			foreach (var cand in semanticModel.LookupSymbols (node.SpanStart).OfType<INamedTypeSymbol> ()) {
 				if (cand.TypeParameters.Length == 0)
 					continue;
-				if (cand.Name == typeName || cand.GetFullName () == typeName)
+				if (cand.Name == typeName || MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (cand) == typeName)
 					result.AddData(factory.CreateTypeParameterDataProvider(cand));
 			}
 
@@ -316,7 +316,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var addedProperties = new List<IPropertySymbol> ();
 			for (;type != null; type = type.BaseType) {
 				foreach (var indexer in type.GetMembers ().OfType<IPropertySymbol> ().Where (p => p.IsIndexer)) {
-					if (addedProperties.Any (added => SignatureComparer.HaveSameSignature (indexer, added, true)))
+					if (addedProperties.Any (added => SignatureComparer.Instance.HaveSameSignature (indexer, added, true)))
 						continue;
 
 					if (indexer.IsAccessibleWithin (within)) {

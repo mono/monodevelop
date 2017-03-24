@@ -29,6 +29,7 @@ using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
+using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NUnit.Framework;
 
@@ -40,9 +41,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		PackageSpec spec;
 		FakeDotNetProject project;
 		FakeSolution solution;
+		PackageManagementEvents packageManagementEvents;
+		PackageManagementLogger logger;
 
 		void CreateProject (string name, string fileName = @"d:\projects\MyProject\MyProject.csproj")
 		{
+			packageManagementEvents = new PackageManagementEvents ();
+			logger = new PackageManagementLogger (packageManagementEvents);
 			solution = new FakeSolution ();
 			project = new FakeDotNetProject (fileName.ToNativePath ());
 			project.ParentSolution = solution;
@@ -56,7 +61,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageSpec ()
 		{
-			spec = PackageSpecCreator.CreatePackageSpec (project);
+			spec = PackageSpecCreator.CreatePackageSpec (project, logger);
 		}
 
 		void AddPackageReference (string id, string version)
@@ -174,6 +179,34 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
 			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
+		}
+
+		[Test]
+		public void CreatePackageSpec_OneProjectReferenceWhichCannotBeResolved_WarningLoggedAndNoProjectReferencedAddedToPackageSpec ()
+		{
+			CreateProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			AddTargetFramework ("netcoreapp1.0");
+			string referencedProjectFileName = @"d:\projects\MyProject\Lib\Lib.csproj".ToNativePath ();
+			string include = @"Lib\Lib.csproj".ToNativePath ();
+			AddProjectReference ("Lib", referencedProjectFileName, include);
+			solution.OnResolveProject = pr => {
+				return null;
+			};
+			PackageOperationMessage messageLogged = null;
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
+				messageLogged = e.Message;
+			};
+			CreatePackageSpec ();
+
+			var targetFramework = spec.RestoreMetadata.TargetFrameworks.Single ();
+			string expectedMessage = string.Format ("WARNING: Unable to resolve project '{0}' referenced by 'MyProject'.", include);
+			Assert.AreEqual ("MyProject", spec.Name);
+			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
+			Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			Assert.AreEqual (".NETCoreApp,Version=v1.0", targetFramework.FrameworkName.ToString ());
+			Assert.AreEqual (expectedMessage, messageLogged.ToString ());
+			Assert.AreEqual (MessageLevel.Warning, messageLogged.Level);
 			Assert.AreEqual (0, targetFramework.ProjectReferences.Count);
 		}
 

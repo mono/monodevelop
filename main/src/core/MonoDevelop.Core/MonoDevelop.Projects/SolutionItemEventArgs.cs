@@ -62,10 +62,32 @@ namespace MonoDevelop.Projects
 			this.entry = entry;
 		}
 	}
+
+	public delegate void SolutionItemSavedEventHandler (object sender, SolutionItemSavedEventArgs e);
+
+	public class SolutionItemSavedEventArgs : SolutionItemEventArgs
+	{
+		bool savingSolution;
+
+		public SolutionItemSavedEventArgs (SolutionFolderItem item, Solution parentSolution, bool savingSolution) : base (item, parentSolution)
+		{
+			this.savingSolution = savingSolution;
+		}
+
+		public bool SavingSolution {
+			get { return savingSolution; }
+		}
+
+		/// <summary>
+		/// When Reloading is true, it returns the original solution item that is being reloaded
+		/// </summary>
+		/// <value>The replaced item.</value>
+		public SolutionFolderItem ReplacedItem { get; internal set; }
+	}
 	
 	public delegate void SolutionItemChangeEventHandler (object sender, SolutionItemChangeEventArgs e);
-	
-	public class SolutionItemChangeEventArgs: SolutionItemEventArgs
+
+	public class SolutionItemChangeEventArgs : SolutionItemEventArgs
 	{
 		bool reloading;
 		

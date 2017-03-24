@@ -55,10 +55,12 @@ namespace MonoDevelop.Refactoring
 		int indentLength;
 		FontDescription fontDescription;
 
-		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, CodeAction codeAction)
+		static RefactoringPreviewTooltipWindow currentPreviewWindow;
+
+		RefactoringPreviewTooltipWindow (TextEditor editor, CodeAction codeAction)
 		{
 			this.editor = editor;
-			this.documentContext = documentContext;
+			this.documentContext = documentContext = editor.DocumentContext;
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
@@ -70,7 +72,22 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		internal async void RequestPopup (Xwt.Rectangle rect)
+		public static void ShowPreviewTooltip (TextEditor editor, CodeAction fix, Xwt.Rectangle rect)
+		{
+			HidePreviewTooltip ();
+			currentPreviewWindow = new RefactoringPreviewTooltipWindow (editor, fix);
+			currentPreviewWindow.RequestPopup (rect);
+		}
+
+		public static void HidePreviewTooltip ()
+		{
+			if (currentPreviewWindow != null) {
+				currentPreviewWindow.Destroy ();
+				currentPreviewWindow = null;
+			}
+		}
+
+		async void RequestPopup (Xwt.Rectangle rect)
 		{
 			var token = popupSrc.Token;
 
