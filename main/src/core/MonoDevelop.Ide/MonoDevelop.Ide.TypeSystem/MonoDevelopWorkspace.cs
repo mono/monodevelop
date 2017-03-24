@@ -63,7 +63,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		readonly MonoDevelop.Projects.Solution monoDevelopSolution;
 		object addLock = new object();
 		bool added;
-		bool internalChanges;
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
@@ -778,13 +777,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
 		{
-			try {
-				internalChanges = true;
 				this.projectChanges = projectChanges;
 				base.ApplyProjectChanges (projectChanges);
-			} finally {
-				internalChanges = false;
-			}
 		}
 
 		protected override void OnDocumentTextChanged (Document document)
@@ -1252,8 +1246,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 					var projectFile = fargs.ProjectFile;
@@ -1281,8 +1273,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 					var projectId = GetProjectId (project);
@@ -1320,8 +1310,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileRenamedEventInfo fargs in args) {
 					var projectFile = fargs.ProjectFile;
@@ -1373,8 +1361,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 					return;
 				var project = sender as MonoDevelop.Projects.DotNetProject;
