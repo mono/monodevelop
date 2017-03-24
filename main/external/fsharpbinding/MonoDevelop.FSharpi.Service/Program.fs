@@ -15,7 +15,7 @@ module CompletionServer =
         let outStream = Console.Out
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
 
-        let editorPid = Int32.Parse argv.[0]
+        let editorPid = if argv.Length > 0 then Some (Int32.Parse argv.[0]) else None
         // This flag makes fsi send the SERVER-PROMPT> prompt
         // once it's output the header
         let fsiServerArg = sprintf "--fsi-server:%s " server
@@ -98,12 +98,15 @@ module CompletionServer =
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(fsi, true)
 
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
-        // Add a watch on the editor PID. If it goes away we will self terminate.
 
-        let editorProcess = Process.GetProcessById(editorPid)
+        // Add a watch on the editor PID. If it goes away we will self terminate.
+        let editorProcess = editorPid |> Option.bind(fun pid -> Some (Process.GetProcessById pid))
+
         let rec main(currentInput) =
-            if editorProcess.HasExited then 
-                Process.GetCurrentProcess().Kill()
+            editorProcess 
+            |> Option.iter(fun editor ->
+                if editor.HasExited then 
+                    Process.GetCurrentProcess().Kill())
 
             let parseInput() =
                 async {

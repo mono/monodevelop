@@ -8,5 +8,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription ("Provides the core services of the MonoDevelop platform")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT/X11")]
-
-[assembly: InternalsVisibleTo("UnitTests")]

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -32,6 +33,7 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -62,7 +64,17 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (fileName == null)
 				return null;
-			return Path.Combine (autoSavePath, MonoDevelop.Ide.TypeSystem.PersistenceServiceFactory.GetMD5 (fileName) + ".sav");
+			return Path.Combine (autoSavePath, GetMD5 (fileName) + ".sav");
+		}
+
+		static MD5 md5 = MD5.Create ();
+		static string GetMD5 (string data)
+		{
+			var result = new StringBuilder();
+			foreach (var b in md5.ComputeHash (Encoding.ASCII.GetBytes (data))) {
+				result.Append(b.ToString("X2"));
+			}
+			return result.ToString();
 		}
 
 		/// <summary>

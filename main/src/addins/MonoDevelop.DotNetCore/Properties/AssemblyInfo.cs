@@ -43,6 +43,3 @@ using System.Runtime.CompilerServices;
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
 [assembly: AssemblyVersion ("1.0.0.0")]
-
-[assembly: InternalsVisibleTo ("MonoDevelop.DotNetCore.Tests")]
-[assembly: InternalsVisibleTo ("DotNetCore.Debugger")]

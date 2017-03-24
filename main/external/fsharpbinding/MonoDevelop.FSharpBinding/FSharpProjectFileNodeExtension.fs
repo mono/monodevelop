@@ -27,15 +27,15 @@ type FSharpProjectNodeCommandHandler() =
     member x.MoveNodes (moveToNode: ProjectFile) (movingNode:ProjectFile) position =
         let projectFile = movingNode.Project.FileName.ToString()
 
-        let descendantsNamed name ancestor =
+        let descendantsNamed ns name ancestor =
             ///partially apply the default namespace of msbuild to xs
-            let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
+            let xd = xs ns
             descendants (xd name) ancestor
 
         // If the "Compile" element contains a "Link" element then it is a linked file,
         // so use that value for comparison when finding the node.
-        let nodeName (node:XElement) =
-          let link = node |> descendantsNamed "Link" |> firstOrNone
+        let nodeName ns (node:XElement) =
+          let link = node |> descendantsNamed ns "Link" |> firstOrNone
           match link with
           | Some l -> l.Value
           | None -> node |> attributeValue "Include"
@@ -44,15 +44,16 @@ type FSharpProjectNodeCommandHandler() =
         use file = IO.File.Open(projectFile, FileMode.Open)
         let xdoc = XElement.Load(file)
         file.Close()
-
+        let defaultNamespace = xdoc.GetDefaultNamespace().NamespaceName
+        let descendantsByNamespace = descendantsNamed defaultNamespace
         //get movable nodes from the project file
-        let movableNodes = (descendantsNamed "Compile" xdoc).
-                            Concat(descendantsNamed "EmbeddedResource" xdoc).
-                            Concat(descendantsNamed "Content" xdoc).
-                            Concat(descendantsNamed "None" xdoc)
+        let movableNodes = (descendantsByNamespace "Compile" xdoc).
+                            Concat(descendantsByNamespace "EmbeddedResource" xdoc).
+                            Concat(descendantsByNamespace "Content" xdoc).
+                            Concat(descendantsByNamespace "None" xdoc)
 
         let findByIncludeFile name seq =
-            seq |> where (fun elem -> nodeName elem = name )
+            seq |> where (fun elem -> nodeName defaultNamespace elem = name )
                 |> firstOrNone
 
         let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
@@ -70,7 +71,7 @@ type FSharpProjectNodeCommandHandler() =
         | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
             moving.Remove()
             //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
-            moving |> descendantsNamed "DependentUpon" |> Seq.iter (fun node -> node.Remove())
+            moving |> descendantsByNamespace "DependentUpon" |> Seq.iter (fun node -> node.Remove())
             //get the add function using the position
             let add = addFunction moveTo position
             add(moving)

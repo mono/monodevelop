@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.cs
 //
 // Author:
@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public class MonoDevelopWorkspace : Workspace
 	{
+		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
+
 		readonly static HostServices services;
 		internal readonly WorkspaceId Id;
 
@@ -71,8 +73,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static string[] mefHostServices = new [] {
 			"Microsoft.CodeAnalysis.Workspaces",
+			//FIXME: this does not load yet. We should provide alternate implementations of its services.
+			//"Microsoft.CodeAnalysis.Workspaces.Desktop",
+			"Microsoft.CodeAnalysis.Features",
+			"Microsoft.CodeAnalysis.CSharp",
 			"Microsoft.CodeAnalysis.CSharp.Workspaces",
-			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
+			"Microsoft.CodeAnalysis.CSharp.Features",
+			"Microsoft.CodeAnalysis.VisualBasic",
+			"Microsoft.CodeAnalysis.VisualBasic.Workspaces",
+			"Microsoft.CodeAnalysis.VisualBasic.Features",
 		};
 
 		internal static HostServices HostServices {
@@ -84,14 +93,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			List<Assembly> assemblies = new List<Assembly> ();
+			assemblies.Add (typeof (MonoDevelopWorkspace).Assembly);
 			foreach (var asmName in mefHostServices) {
 				try {
 					var asm = Assembly.Load (asmName);
 					if (asm == null)
 						continue;
 					assemblies.Add (asm);
-				} catch (Exception) {
-					LoggingService.LogError ("Error - can't load host service assembly: " + asmName);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error - can't load host service assembly: " + asmName, ex);
 				}
 			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
@@ -107,7 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				}
 			}
-			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
+			services = MefHostServices.Create (assemblies);
 		}
 
 		/// <summary>
@@ -119,7 +129,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, ServiceLayer.Desktop)
+		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (services, "MonoDevelop")
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();

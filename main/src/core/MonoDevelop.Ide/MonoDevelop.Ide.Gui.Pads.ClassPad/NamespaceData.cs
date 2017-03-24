@@ -37,7 +37,9 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using Project = MonoDevelop.Projects.Project;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -111,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			//			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 
-			builder.AddChildren (namesp.GetAllTypes ()
+			builder.AddChildren (namesp.GetAllTypes (CancellationToken.None)
 								 .Where (type => !publicOnly || type.DeclaredAccessibility == Accessibility.Public)
 								 .Select (type => new ClassData (project, type)));
 		}

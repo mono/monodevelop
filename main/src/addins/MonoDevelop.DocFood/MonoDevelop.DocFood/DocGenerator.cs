@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.DocFood
 {
@@ -260,11 +261,11 @@ namespace MonoDevelop.DocFood
 						}
 						break;
 					case "paramCount":
-						var parameters = member.GetParameters ();
+						var parameters = GetParameters (member);
 						result |= Int32.Parse (val) == parameters.Length;
 						break;
 					case "parameter":
-						parameters = member.GetParameters ();
+						parameters = GetParameters (member);
 						string[] par = val.Split(':');
 						int idx = Int32.Parse (par[0]);
 						string name = par[1];
@@ -330,7 +331,7 @@ namespace MonoDevelop.DocFood
 			
 			if (member is IPropertySymbol || member is IMethodSymbol) {
 				this.currentType = "parameter";
-				foreach (var p in member.GetParameters ()) {
+				foreach (var p in GetParameters (member)) {
 					curName = p.Name;
 					this.member = member;
 					SplitWords (p, p.Name);
@@ -439,9 +440,11 @@ namespace MonoDevelop.DocFood
 			tags ["ReturnType"] = returnType != null ? "<see cref=\"" + returnType.GetDocumentationCommentId () + "\"/>" : "";
 			tags ["Member"] = "<see cref=\"" + member.Name + "\"/>";
 
-			
-			if (member is IPropertySymbol || member is IMethodSymbol) {
-				var parameters = member.GetParameters ();
+
+			var property = member as IPropertySymbol;
+			var method = member as IMethodSymbol;
+			if (property != null || method != null) {
+				var parameters = property != null? property.Parameters : method.Parameters;
 				var parameterNames = new List<string> (from p in parameters select p.Name);
 				tags ["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
 				StringBuilder paramList = new StringBuilder ();
@@ -461,7 +464,6 @@ namespace MonoDevelop.DocFood
 					tags ["Parameter" + i + ".Name"] = "<c>" + parameters [i].Name + "</c>";
 				}
 				
-				var property = member as IPropertySymbol;
 				if (property != null) {
 					var hasPublicGetter = property.GetMethod != null && property.GetMethod.DeclaredAccessibility != Accessibility.Private;
 					var hasPublicSetter = property.SetMethod != null && property.SetMethod.DeclaredAccessibility != Accessibility.Private;
@@ -976,11 +978,17 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 
+		static ImmutableArray<IParameterSymbol> GetParameters (ISymbol symbol)
+		{
+			return (symbol as IPropertySymbol)?.Parameters
+				?? (symbol as IMethodSymbol)?.Parameters
+				?? ImmutableArray<IParameterSymbol>.Empty;
+		}
 
 		public void Set (string name, string parameterName, string doc)
 		{
 			if (name.StartsWith ("param", StringComparison.Ordinal) && name.Length > "param".Length) {
-				var parameters = member.GetParameters ();
+				var parameters = GetParameters (member);
 				var idx = int.Parse (name.Substring ("param".Length));
 				parameterName = idx < parameters.Length ? parameters [idx].Name : "unknown";
 				name = "param";

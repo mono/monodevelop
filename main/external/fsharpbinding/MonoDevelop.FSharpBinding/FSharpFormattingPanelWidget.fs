@@ -11,7 +11,8 @@ type FSharpFormattingPolicyPanelWidget() =
     inherit Gtk.Bin()
 
     let store = new ListStore (typedefof<string>, typedefof<FSharpFormattingSettings>)
-    let mutable policy = FSharpFormattingPolicy()
+
+    let mutable policy = DefaultFSharpFormatting.policy
     let mutable vbox2 : Gtk.VBox = null
     let mutable hbox1 : Gtk.HBox = null
     let mutable boxScopes : Gtk.VBox = null
