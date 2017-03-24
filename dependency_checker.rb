@@ -3,7 +3,7 @@ require 'pp'
 NOT_INSTALLED_VERSION="-1"
 
 XAMARIN_MAC_MIN_VERSION="2.3"
-XAMARIN_MAC_VERSION=lambda { product_version ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/bin/mmp") }
+XAMARIN_MAC_VERSION=lambda { product_version ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/Version") }
 XAMARIN_MAC_URL="http://www.xamarin.com"
 
 MONO_MIN_VERSION="4.2"
@@ -33,10 +33,9 @@ def mono_version(binary)
 	end
 end
 
-def product_version(binary)
-	if File.exist?("#{binary}")
-		version = `#{binary} --version`
-		return version.split(' ')[1]
+def product_version(version_file)
+	if File.exist?(version_file)
+		return File.open(version_file, 'rb') { |f| f.read }
 	else
 		return NOT_INSTALLED_VERSION
 	end

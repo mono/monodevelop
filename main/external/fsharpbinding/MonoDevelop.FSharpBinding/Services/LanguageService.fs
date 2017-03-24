@@ -276,7 +276,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-
+    member x.Checker = checker
 
     member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]
@@ -350,7 +350,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             let referencedProjectOptions =
                 referencedProject
                 |> getReferencedProjects
-                |> Seq.fold (fun (acc) reference ->
+                |> Seq.fold (fun acc reference ->
                                  match getOptions reference with
                                  | Some outFile, opts  -> (outFile, opts) :: acc
                                  | None,_ -> acc) ([])

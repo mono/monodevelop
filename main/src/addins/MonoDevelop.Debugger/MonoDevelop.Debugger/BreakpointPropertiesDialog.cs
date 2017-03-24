@@ -221,6 +221,9 @@ namespace MonoDevelop.Debugger
 				case BreakpointType.Catchpoint:
 					stopOnException.Active = true;
 					entryExceptionType.SetFocus ();
+					entryExceptionType.Text = "System.Exception";
+					entryExceptionType.SelectionStart = 0;
+					entryExceptionType.SelectionLength = entryExceptionType.TextLength;
 					break;
 				}
 			}

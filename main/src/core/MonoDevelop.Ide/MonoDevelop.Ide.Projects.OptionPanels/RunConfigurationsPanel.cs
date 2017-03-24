@@ -35,7 +35,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Components;
 using System.Linq;
-using RefactoringEssentials.CSharp.Diagnostics;
 using Xwt.Backends;
 using Xwt;
 

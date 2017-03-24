@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.ConnectedServices</RootNamespace>
     <AssemblyName>MonoDevelop.ConnectedServices</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,8 +39,8 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Cairo" />
-	<Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-	<Reference Include="System.Collections.Immutable">
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -79,12 +80,8 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RefactoringEssentials">
-      <HintPath>..\..\..\..\build\bin\RefactoringEssentials.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -171,12 +168,7 @@
       <LogicalName>MonoDevelop.ConnectedServices.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui.SolutionPad\" />
-    <Folder Include="DebugService\" />
-    <Folder Include="CommandHandlers\" />
-    <Folder Include="Gui.ServicesTab\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="ReadMe.md" />
     <None Include="packages.config" />

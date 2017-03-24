@@ -8,5 +8,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription ("A MonoDevelop addin for using version control systems like Subversion")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("LGPL")]
-[assembly: InternalsVisibleTo ("UnitTests")]
-[assembly: InternalsVisibleTo ("MonoDevelop.MacDev")]

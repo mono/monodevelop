@@ -35,8 +35,8 @@ using NUnit.Framework;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.CodeGeneration;
 using System.Collections.Immutable;
-using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
 

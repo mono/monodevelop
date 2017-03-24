@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Options;
@@ -83,7 +84,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (formatLastStatementOnly) {
 						var root = syntaxTree.GetRoot ();
 						var token = root.FindToken (endOffset);
-						var tokens = ICSharpCode.NRefactory6.CSharp.FormattingRangeHelper.FindAppropriateRange (token);
+						var tokens = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 						if (tokens.HasValue) {
 							span = new TextSpan (tokens.Value.Item1.SpanStart, tokens.Value.Item2.Span.End - tokens.Value.Item1.SpanStart);
 						} else {
