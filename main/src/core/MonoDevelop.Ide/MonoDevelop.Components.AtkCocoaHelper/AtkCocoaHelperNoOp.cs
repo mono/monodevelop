@@ -219,20 +219,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public Gtk.Widget GtkParent {
-			set {
-			}
-		}
-
-		public Gdk.Rectangle FrameInGtkParent {
-			set {
-			}
-		}
-
-		public Gdk.Rectangle FrameInParent {
-			set {
-			}
-		}
+		public Gtk.Widget GtkParent { get; set; }
+		public Gdk.Rectangle FrameInGtkParent { get; set; }
+		public Gdk.Rectangle FrameInParent { get; set; }
 
 		public void AddAccessibleChild (IAccessibilityElementProxy child)
 		{

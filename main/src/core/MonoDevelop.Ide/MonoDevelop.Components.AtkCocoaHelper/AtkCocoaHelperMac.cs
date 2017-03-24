@@ -607,20 +607,29 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 
 		public Gtk.Widget GtkParent {
+			get {
+				return realProxyElement.GtkParent;
+			}
 			set {
-				realProxyElement.SetGtkParent (value);
+				realProxyElement.GtkParent = value;
 			}
 		}
 
 		public Gdk.Rectangle FrameInGtkParent {
+			get {
+				return realProxyElement.FrameInGtkParent;
+			}
 			set {
-				realProxyElement.SetFrameInGtkParent (value);
+				realProxyElement.FrameInGtkParent = value;
 			}
 		}
 
 		public Gdk.Rectangle FrameInParent {
+			get {
+				return realProxyElement.FrameInParent;
+			}
 			set {
-				realProxyElement.SetFrameInParent (value);
+				realProxyElement.FrameInParent = value;
 			}
 		}
 
@@ -1026,16 +1035,24 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		// The real parent is the Widget that ultimately this object will belong to
 		// It is used to convert the frame
-		public void SetGtkParent (Gtk.Widget realParent)
-		{
-			parent = realParent;
-			parentElement = AtkCocoaMacExtensions.GetNSAccessibilityElement (parent.Accessible);
+		public Gtk.Widget GtkParent {
+			get {
+				return parent;
+			}
+			set {
+				parent = value;
+				parentElement = AtkCocoaMacExtensions.GetNSAccessibilityElement (parent.Accessible);
+			}
 		}
 
 		// The frame inside the GtkWidget parent, in Gtk coordinate space
-		public void SetFrameInGtkParent (Rectangle frame)
-		{
-			realFrame = frame;
+		public Rectangle FrameInGtkParent {
+			get {
+				return realFrame;
+			}
+			set {
+				realFrame = value;
+			}
 		}
 
 		public void AddAccessibleChild (IAccessibilityElementProxy child)
@@ -1093,9 +1110,15 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		// The frame in the parent in Cocoa space.
 		// FIXME: Can this be calculated when setting GtkFrame?
-		public void SetFrameInParent (Rectangle rect)
-		{
-			AccessibilityFrameInParentSpace = new CGRect (rect.X, rect.Y, rect.Width, rect.Height);
+		Rectangle frameInParent;
+		public Rectangle FrameInParent {
+			get {
+				return frameInParent;
+			}
+			set {
+				frameInParent = value;
+				AccessibilityFrameInParentSpace = new CGRect (value.X, value.Y, value.Width, value.Height);
+			}
 		}
 
 		protected void GetCoordsInWindow (Gtk.Widget widget, out int x, out int y)

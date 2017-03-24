@@ -443,9 +443,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		event EventHandler PerformShowDefaultUI;
 		event EventHandler PerformShowMenu;
 
-		Gtk.Widget GtkParent { set; }
-		Gdk.Rectangle FrameInGtkParent { set; }
-		Gdk.Rectangle FrameInParent { set; }
+		Gtk.Widget GtkParent { get; set; }
+		Gdk.Rectangle FrameInGtkParent { get; set; }
+		Gdk.Rectangle FrameInParent { get; set; }
 
 		void AddAccessibleChild (IAccessibilityElementProxy child);
 		void SetRole (string role, string description = null);
