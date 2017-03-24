@@ -174,7 +174,11 @@ namespace MonoDevelop.Ide.Editor
 				y = geometry.Top;
 			
 			xwtWindow.Location = new Xwt.Point(x, y);
-			xwtWindow.Show ();
+			var gtkWindow = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeWindow (xwtWindow) as Gtk.Window;
+			if (gtkWindow != null)
+				gtkWindow.ShowAll ();
+			else
+				xwtWindow.Show ();
 		}
 
 		protected bool IsDisposed {
