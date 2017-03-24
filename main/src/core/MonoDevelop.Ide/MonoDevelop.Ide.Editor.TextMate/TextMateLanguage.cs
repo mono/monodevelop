@@ -64,14 +64,14 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		string GetCommentStartString (int num)
 		{
-			if (num > 1)
+			if (num > 0)
 				return "TM_COMMENT_START_" + (num + 1);
 			return "TM_COMMENT_START";
 		}
 
 		string GetCommentEndString (int num)
 		{
-			if (num > 1)
+			if (num > 0)
 				return "TM_COMMENT_END_" + (num + 1);
 			return "TM_COMMENT_END";
 		}
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			lineComments = new List<string> ();
 			blockComments = new List<Tuple<string, string>> ();
-			int i = 1;
+			int i = 0;
 			while (true) {
 				string start, end;
 				if (!ShellVariables.TryGetValue (GetCommentStartString (i), out start))
