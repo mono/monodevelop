@@ -79,6 +79,10 @@ namespace MonoDevelop.CodeActions
 		{
 			var menu = new CodeFixMenu ();
 
+			if (editor.DocumentContext.AnalysisDocument == null) {
+				return menu;
+			}
+
 			int mnemonic = 1;
 			bool addedSeparator = false;
 
