@@ -284,38 +284,23 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal static DataNode DiffSerialize (Type policyType, object policy, string scope, bool keepDeletedNodes = false)
 		{
-			string minSetId = null;
-			int min = Int32.MaxValue;
 			DataNode node = null;
 			DataItem baseNode = null;
-			string baseScope = null;
-			
+
 			if (policy is UnknownPolicy)
 				return ((UnknownPolicy)policy).Data;
 			
 			DataNode raw = RawSerialize (policyType, policy);
 			
 			if (policy != null) {
-				//find the policy with the fewest differences
-				foreach (PolicySet set in sets) {
-					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
-						if (!set.SupportsDiffSerialize (sp))
-							continue;
-						DataNode baseline = RawSerialize (policyType, sp.Policy);
-						int size = 0;
-						DataNode tempNode = ExtractOverlay (baseline, raw, ref size);
-						if (size < min) {
-							minSetId = set.Id;
-							min = size;
-							node = tempNode;
-							baseNode = baseline as DataItem;
-							baseScope = sp.Scope;
-						}
-					}
-				}
+				// Always diff-serialize against the default instance of the policy. Much safer than
+				// diffing against sets, which can change or not be present
+				baseNode = RawSerialize (policyType, Activator.CreateInstance (policyType)) as DataItem;
+				int size = 0;
+				node = ExtractOverlay (baseNode, raw, ref size);
 			} else {
-				minSetId = "null";
 				node = raw;
+				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", "null"));
 			}
 			
 			if (node != null) {
@@ -332,10 +317,6 @@ namespace MonoDevelop.Projects.Policies
 					}
 					node = baseNode;
 				}
-
-				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", minSetId));
-				if (baseScope != null)
-					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", baseScope));
 				raw = node;
 			}
 			if (scope != null)
