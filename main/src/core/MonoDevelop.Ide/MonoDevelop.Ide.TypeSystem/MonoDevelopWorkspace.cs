@@ -372,6 +372,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
+			internal DocumentId GetOrCreateDocumentId (string name, ProjectData previous)
+			{
+				if (previous != null) {
+					var oldId = previous.GetDocumentId (name);
+					if (oldId != null) {
+						AddDocumentId (oldId, name);
+						return oldId;
+					}
+				}
+				return GetOrCreateDocumentId (name);
+			}
+
 			internal DocumentId GetOrCreateDocumentId (string name)
 			{
 				lock (documentIdMap) {
@@ -381,6 +393,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						documentIdMap [name] = result;
 					}
 					return result;
+				}
+			}
+
+			internal void AddDocumentId (DocumentId id, string name)
+			{
+				lock (documentIdMap) {
+					documentIdMap[name] = id;
 				}
 			}
 			
@@ -432,7 +451,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var projectId = GetOrCreateProjectId (p);
+
+			//when reloading e.g. after a save, preserve document IDs
+			var oldProjectData = GetProjectData (projectId);
 			var projectData = CreateProjectData (projectId);
+
 			var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 			if (token.IsCancellationRequested)
 				return null;
@@ -447,7 +470,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (token.IsCancellationRequested)
 				return null;
 			var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
-			var documents = CreateDocuments (projectData, p, token, sourceFiles);
+			var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
 			if (documents == null)
 				return null;
 			var info = ProjectInfo.Create (
@@ -528,7 +551,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 		}
 
-		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
+		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)
 		{
 			var documents = new List<DocumentInfo> ();
 			var additionalDocuments = new List<DocumentInfo> ();
@@ -539,18 +562,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
+
 				SourceCodeKind sck;
 				if (TypeSystemParserNode.IsCompileableFile (f, out sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
+					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
+					if (!duplicates.Add (id))
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
+					var id = projectData.GetOrCreateDocumentId (f.Name, projectData);
+					if (!duplicates.Add (id))
+						continue;
+					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 
-					if (duplicates.Add (projectData.GetOrCreateDocumentId (f.Name))) {
-						additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
-					}
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
-						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
+						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
+						if (!duplicates.Add (projectedId))
 							continue;
 						documents.Add (projectedDocument);
 					}
