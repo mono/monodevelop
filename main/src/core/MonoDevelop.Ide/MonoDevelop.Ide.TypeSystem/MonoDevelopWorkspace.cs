@@ -765,21 +765,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return document;
 		}
 
-		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 		ProjectChanges projectChanges;
-
-		public override bool TryApplyChanges (Solution newSolution)
-		{
-			lock (changedFiles)
-				changedFiles.Clear ();
-			return base.TryApplyChanges (newSolution);
-		}
-
-		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
-		{
-				this.projectChanges = projectChanges;
-				base.ApplyProjectChanges (projectChanges);
-		}
 
 		protected override void OnDocumentTextChanged (Document document)
 		{
@@ -843,8 +829,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
+		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
+		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		{
+			tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
+		}
 
-		protected override async void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
 			if (document == null)
@@ -866,13 +857,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
 				return;
 			}
+
 			SourceText formerText;
-			lock (changedFiles) {
-				if (changedFiles.TryGetValue (filePath, out formerText)) {
+			lock (tryApplyState_documentTextChangedContents) {
+				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out formerText)) {
 					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
 						return;
 				}
-				changedFiles [filePath] = text;
+				tryApplyState_documentTextChangedContents[filePath] = text;
 			}
 
 			SourceText oldFile;
@@ -1048,11 +1040,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				}
-				await Runtime.RunInMainThread (() => {
-						if (IdeApp.Workbench != null)
-						foreach (var w in IdeApp.Workbench.Documents)
-							w.StartReparseThread ();
-				});
 			}
 		}
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
@@ -1102,6 +1089,53 @@ namespace MonoDevelop.Ide.TypeSystem
 			return delta;
 		}
 
+		// used to pass additional state from Apply* to TryApplyChanges so it can batch certain operations such as saving projects
+		HashSet<MonoDevelop.Projects.Project> tryApplyState_changedProjects = new HashSet<MonoDevelop.Projects.Project> ();
+		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
+		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
+
+		public override bool TryApplyChanges (Solution newSolution)
+		{
+			// this is supported on the main thread only
+			// see https://github.com/dotnet/roslyn/pull/18043
+			// as a result, we can assume that the things it calls are _also_ main thread only
+			Runtime.AssertMainThread ();
+
+			try {
+				var ret = base.TryApplyChanges (newSolution);
+
+				if (tryApplyState_documentTextChangedTasks.Count > 0) {
+					Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
+						try {
+							t.Wait ();
+						}
+						catch (Exception ex) {
+							LoggingService.LogError ("Error applying changes to documents", ex);
+						}
+						if (IdeApp.Workbench != null) {
+							var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
+							foreach (var w in IdeApp.Workbench.Documents) {
+								if (w.IsFile && changedFiles.Contains (w.FileName)) {
+									w.StartReparseThread ();
+								}
+							}
+						}
+					}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+				}
+
+				if (tryApplyState_changedProjects.Count > 0) {
+					IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
+				}
+
+				return ret;
+			}
+			finally {
+				tryApplyState_documentTextChangedContents.Clear ();
+				tryApplyState_documentTextChangedTasks.Clear ();
+				tryApplyState_changedProjects.Clear ();
+			}
+		}
+
 		public override bool CanApplyChange (ApplyChangesKind feature)
 		{
 			switch (feature) {
@@ -1111,6 +1145,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			default:
 				return false;
 			}
+		}
+
+		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
+		{
+			this.projectChanges = projectChanges;
+			base.ApplyProjectChanges (projectChanges);
 		}
 
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
@@ -1142,11 +1182,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (mdProject != null) {
+				var data = GetProjectData (id.ProjectId);
+				data.AddDocumentId (info.Id, path);
 				var file = new MonoDevelop.Projects.ProjectFile (path);
-				Application.Invoke (delegate {
-					mdProject.Files.Add (file);
-					IdeApp.ProjectOperations.SaveAsync (mdProject);
-				});
+				mdProject.Files.Add (file);
+				tryApplyState_changedProjects.Add (mdProject);
+			}
+
+			this.OnDocumentAdded (info);
 			}
 		}
 
