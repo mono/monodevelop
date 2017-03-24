@@ -171,6 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += delegate {
 				UnsubscibeAnalysisdocument ();
+				UnloadAdhocProject();
 			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
