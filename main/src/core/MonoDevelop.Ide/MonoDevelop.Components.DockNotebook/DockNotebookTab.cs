@@ -62,8 +62,8 @@ namespace MonoDevelop.Components.DockNotebook
 				cocoaFrame.Width = value.Width;
 				cocoaFrame.Height = value.Height;
 
-				Accessible.SetFrameInParent (cocoaFrame);
-				Accessible.SetFrameInGtkParent (value);
+				Accessible.FrameInParent = cocoaFrame;
+				Accessible.FrameInGtkParent = value;
 				allocation = value;
 			}
 		}
@@ -84,10 +84,10 @@ namespace MonoDevelop.Components.DockNotebook
 				cocoaFrame.Width = (int) value.Width;
 				cocoaFrame.Height = (int) value.Height;
 
-				CloseButtonAccessible.SetFrameInParent (cocoaFrame);
+				CloseButtonAccessible.FrameInParent = cocoaFrame;
 
 				Gdk.Rectangle realFrame = new Gdk.Rectangle ((int) value.X, (int) value.Y, (int) value.Width, (int) value.Height);
-				CloseButtonAccessible.SetFrameInGtkParent (realFrame);
+				CloseButtonAccessible.FrameInGtkParent = realFrame;
 				closeButtonActiveArea = value;
 			}
 		}
@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.DockNotebook
 				} else {
 					accTitle = Text ?? Markup;
 				}
-				Accessible.SetTitle (accTitle);
+				Accessible.Title = accTitle;
 			}
 		}
 
@@ -149,8 +149,8 @@ namespace MonoDevelop.Components.DockNotebook
 					accTitle = value;
 				}
 
-				Accessible.SetTitle (accTitle);
-				CloseButtonAccessible.SetTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+				Accessible.Title = accTitle;
+				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
 
 				strip.Update ();
 			}
@@ -172,8 +172,8 @@ namespace MonoDevelop.Components.DockNotebook
 					accTitle = value;
 				}
 
-				Accessible.SetTitle (accTitle);
-				CloseButtonAccessible.SetTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+				Accessible.Title = accTitle;
+				CloseButtonAccessible.Title = string.Format (Core.GettextCatalog.GetString ("Close {0}"), value);
 
 				strip.Update ();
 			}
@@ -205,27 +205,27 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			set {
 				tooltip = value;
-				Accessible.SetHelp (string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value));
+				Accessible.Help = string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value);
 			}
 		}
 
 		internal DockNotebookTab (DockNotebook notebook, TabStrip strip)
 		{
-			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
 			Accessible.PerformPress += OnPressTab;
 			// FIXME Should Role descriptions be translated?
 			Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
-			Accessible.SetGtkParent (strip);
+			Accessible.GtkParent = strip;
 			Accessible.PerformShowMenu += OnShowMenu;
-			Accessible.SetIdentifier ("DockNotebook.Tab");
+			Accessible.Identifier = "DockNotebook.Tab";
 
-			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			CloseButtonAccessible = AccessibilityElementProxy.ButtonElementProxy ();
 			CloseButtonAccessible.PerformPress += OnPressCloseButton;
 			CloseButtonAccessible.SetRole (AtkCocoa.Roles.AXButton);
-			CloseButtonAccessible.SetGtkParent (strip);
+			CloseButtonAccessible.GtkParent = strip;
 			CloseButtonAccessible.PerformShowMenu += OnShowMenu;
-			CloseButtonAccessible.SetTitle (Core.GettextCatalog.GetString ("Close document"));
-			CloseButtonAccessible.SetIdentifier ("DockNotebook.Tab.CloseButton");
+			CloseButtonAccessible.Title = Core.GettextCatalog.GetString ("Close document");
+			CloseButtonAccessible.Identifier = "DockNotebook.Tab.CloseButton";
 			Accessible.AddAccessibleChild (CloseButtonAccessible);
 
 			this.notebook = notebook;

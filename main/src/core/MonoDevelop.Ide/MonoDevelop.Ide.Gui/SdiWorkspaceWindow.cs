@@ -622,7 +622,7 @@ namespace MonoDevelop.Ide.Gui
 			var tab = new Tab (subViewToolbar, label) {
 				Tag = viewContent
 			};
-			tab.Accessible.SetHelp (viewContent.TabAccessibilityDescription);
+			tab.Accessible.Help = viewContent.TabAccessibilityDescription;
 			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {

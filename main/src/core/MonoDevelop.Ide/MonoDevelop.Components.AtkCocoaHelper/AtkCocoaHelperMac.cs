@@ -297,7 +297,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityTabs = tabs;
+			nsa.AccessibilityTabs = ConvertToRealProxyArray (tabs);
 		}
 
 		public static void SetTabs (this Atk.Object o, params Atk.Object [] tabs)
@@ -361,6 +361,23 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
 		}
 
+		static RealAccessibilityElementProxy [] ConvertToRealProxyArray (AccessibilityElementProxy [] proxies)
+		{
+			var realProxies = new RealAccessibilityElementProxy [proxies.Length];
+			int idx = 0;
+			foreach (var p in proxies) {
+				var rp = p.Proxy as RealAccessibilityElementProxy;
+				if (rp == null) {
+					throw new Exception ($"Invalid type {p.GetType ()} in accessibleChildren");
+				}
+
+				realProxies [idx] = rp;
+				idx++;
+			}
+
+			return realProxies;
+		}
+
 		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
@@ -369,7 +386,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityChildren = children;
+			nsa.AccessibilityChildren = ConvertToRealProxyArray (children);
 		}
 
 		public static void SetColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
@@ -380,7 +397,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityColumns = columns;
+			nsa.AccessibilityColumns = ConvertToRealProxyArray (columns);
 		}
 
 		public static void SetRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
@@ -391,7 +408,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityRows = rows;
+			nsa.AccessibilityRows = ConvertToRealProxyArray (rows);
 		}
 
 		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
@@ -401,7 +418,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityAddChildElement (child);
+			var p = child.Proxy as RealAccessibilityElementProxy;
+			if (p == null) {
+				throw new Exception ($"Invalid proxy child type {p.GetType ()}");
+			}
+			nsa.AccessibilityAddChildElement (p);
 		}
 
 		public static void RemoveAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
@@ -417,7 +438,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			var idx = children.IndexOf (child);
+			var p = child.Proxy as RealAccessibilityElementProxy;
+			if (p == null) {
+				throw new Exception ($"Invalid proxy child type {p.GetType ()}");
+			}
+
+			var idx = children.IndexOf (p);
 			if (idx == -1) {
 				return;
 			}
@@ -443,7 +469,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityChildren = children;
+			nsa.AccessibilityChildren = ConvertToRealProxyArray (children);
 		}
 
 		public static void AddLinkedUIElement (this Atk.Object o, Atk.Object linked)
@@ -487,7 +513,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			int idx = length;
 			foreach (var e in linked) {
 				var nsaLinked = GetNSAccessibilityElement (e);
-				newLinkedElements [idx] = (NSObject) nsaLinked;
+				newLinkedElements [idx] = (NSObject)nsaLinked;
 				idx++;
 			}
 
@@ -495,7 +521,320 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 
-	public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility, IAccessibilityElementProxy
+	public class AccessibilityElementProxy : IAccessibilityElementProxy
+	{
+		RealAccessibilityElementProxy realProxyElement;
+		internal object Proxy {
+			get {
+				return realProxyElement;
+			}
+			private set {
+				realProxyElement = value as RealAccessibilityElementProxy;
+			}
+		}
+
+		public AccessibilityElementProxy () : this (new RealAccessibilityElementProxy ())
+		{
+		}
+
+		AccessibilityElementProxy (NSAccessibilityElement realProxy)
+		{
+			Proxy = realProxy;
+		}
+
+		public static AccessibilityElementProxy ButtonElementProxy ()
+		{
+			return new AccessibilityElementProxy (new RealAccessibilityElementButtonProxy ());
+		}
+
+		public static AccessibilityElementProxy TextElementProxy ()
+		{
+			return new AccessibilityElementProxy (new RealAccessibilityElementNavigableStaticTextProxy ());
+		}
+
+		public string Identifier {
+			get {
+				return realProxyElement.AccessibilityIdentifier;
+			}
+			set {
+				realProxyElement.AccessibilityIdentifier = value;
+			}
+		}
+
+		public string Help {
+			get {
+				return realProxyElement.AccessibilityHelp;
+			}
+			set {
+				realProxyElement.AccessibilityHelp = value;
+			}
+		}
+
+		public string Label {
+			get {
+				return realProxyElement.AccessibilityLabel;
+			}
+			set {
+				realProxyElement.AccessibilityLabel = value;
+			}
+		}
+
+		public string Title {
+			get {
+				return realProxyElement.AccessibilityTitle;
+			}
+			set {
+				realProxyElement.AccessibilityTitle = value;
+			}
+		}
+
+		public string Value {
+			get {
+				return (NSString)realProxyElement.AccessibilityValue;
+			}
+			set {
+				realProxyElement.AccessibilityValue = new NSString (value);
+			}
+		}
+
+		public bool Hidden {
+			get {
+				return realProxyElement.AccessibilityHidden;
+			}
+			set {
+				realProxyElement.AccessibilityHidden = value;
+			}
+		}
+
+		public Gtk.Widget GtkParent {
+			set {
+				realProxyElement.SetGtkParent (value);
+			}
+		}
+
+		public Gdk.Rectangle FrameInGtkParent {
+			set {
+				realProxyElement.SetFrameInGtkParent (value);
+			}
+		}
+
+		public Gdk.Rectangle FrameInParent {
+			set {
+				realProxyElement.SetFrameInParent (value);
+			}
+		}
+
+		public void AddAccessibleChild (IAccessibilityElementProxy child)
+		{
+			var proxy = (AccessibilityElementProxy)child;
+			var realChild = proxy.realProxyElement;
+
+			realProxyElement.AccessibilityAddChildElement (realChild);
+		}
+
+		public void SetRole (string role, string description = null)
+		{
+			realProxyElement.SetRole (role, description);
+		}
+
+		public void SetRole (AtkCocoa.Roles role, string description = null)
+		{
+			realProxyElement.SetRole (role, description);
+		}
+
+		public event EventHandler PerformCancel {
+			add {
+				realProxyElement.PerformCancel += value;
+			}
+			remove {
+				realProxyElement.PerformCancel -= value;
+			}
+		}
+		public event EventHandler PerformConfirm {
+			add {
+				realProxyElement.PerformConfirm += value;
+			}
+			remove {
+				realProxyElement.PerformConfirm -= value;
+			}
+		}
+		public event EventHandler PerformDecrement {
+			add {
+				realProxyElement.PerformDecrement += value;
+			}
+			remove {
+				realProxyElement.PerformDecrement -= value;
+			}
+		}
+		public event EventHandler PerformDelete {
+			add {
+				realProxyElement.PerformDelete += value;
+			}
+			remove {
+				realProxyElement.PerformDelete -= value;
+			}
+		}
+		public event EventHandler PerformIncrement {
+			add {
+				realProxyElement.PerformIncrement += value;
+			}
+			remove {
+				realProxyElement.PerformIncrement -= value;
+			}
+		}
+		public event EventHandler PerformPick {
+			add {
+				realProxyElement.PerformPick += value;
+			}
+			remove {
+				realProxyElement.PerformPick -= value;
+			}
+		}
+		public event EventHandler PerformPress {
+			add {
+				realProxyElement.PerformPress += value;
+			}
+			remove {
+				realProxyElement.PerformPress -= value;
+			}
+		}
+		public event EventHandler PerformRaise {
+			add {
+				realProxyElement.PerformRaise += value;
+			}
+			remove {
+				realProxyElement.PerformRaise -= value;
+			}
+		}
+		public event EventHandler PerformShowAlternateUI {
+			add {
+				realProxyElement.PerformShowAlternateUI += value;
+			}
+			remove {
+				realProxyElement.PerformShowAlternateUI -= value;
+			}
+		}
+		public event EventHandler PerformShowDefaultUI {
+			add {
+				realProxyElement.PerformShowDefaultUI += value;
+			}
+			remove {
+				realProxyElement.PerformShowDefaultUI -= value;
+			}
+		}
+		public event EventHandler PerformShowMenu {
+			add {
+				realProxyElement.PerformShowMenu += value;
+			}
+			remove {
+				realProxyElement.PerformShowMenu -= value;
+			}
+		}
+
+		// For Navigable Text elements
+		public Func<string> Contents {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.Contents = value;
+			}
+		}
+		public Func<int> NumberOfCharacters {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.NumberOfCharacters = value;
+			}
+		}
+		public Func<int> InsertionPointLineNumber {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.InsertionPointLineNumber = value;
+			}
+		}
+		public Func<AtkCocoa.Range, Rectangle> FrameForRange {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetFrameForRange = value;
+			}
+		}
+		public Func<int, int> LineForIndex {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetLineForIndex = value;
+			}
+		}
+		public Func<int, AtkCocoa.Range> RangeForLine {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetRangeForLine = value;
+			}
+		}
+		public Func<AtkCocoa.Range, string> StringForRange {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetStringForRange = value;
+			}
+		}
+		public Func<int, AtkCocoa.Range> RangeForIndex {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetRangeForLine = value;
+			}
+		}
+		public Func<int, AtkCocoa.Range> StyleRangeForIndex {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetStyleRangeForIndex = value;
+			}
+		}
+		public Func<Point, AtkCocoa.Range> RangeForPosition {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetRangeForPosition = value;
+			}
+		}
+	}
+
+	class RealAccessibilityElementProxy : NSAccessibilityElement, INSAccessibility
 	{
 		event EventHandler performCancel;
 		public event EventHandler PerformCancel {
@@ -848,7 +1187,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			foreach (var o in AccessibilityChildren) {
-				var proxy = o as AccessibilityElementProxy;
+				var proxy = o as RealAccessibilityElementProxy;
 				if (proxy == null) {
 					throw new Exception ($"Unsupported type {o.GetType ()} inside AccessibilityElementProxy");
 				}
@@ -1008,7 +1347,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 
-	public class AccessibilityElementButtonProxy : AccessibilityElementProxy, INSAccessibilityButton
+	class RealAccessibilityElementButtonProxy : RealAccessibilityElementProxy, INSAccessibilityButton
 	{
 		public override bool AccessibilityPerformPress ()
 		{
@@ -1016,31 +1355,40 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 	}
 
-	public abstract class AccessibilityElementNavigableStaticTextProxy : AccessibilityElementProxy, INSAccessibilityNavigableStaticText, IAccessibilityNavigableStaticText
+	class RealAccessibilityElementNavigableStaticTextProxy : RealAccessibilityElementProxy, INSAccessibilityNavigableStaticText
 	{
 		string INSAccessibilityStaticText.AccessibilityValue {
 			get {
-				return Value;
+				if (Contents == null) {
+					return base.AccessibilityValue as NSString;
+				}
+
+				return Contents ();
 			}
 		}
 
 		public override nint AccessibilityInsertionPointLineNumber {
 			get {
-				return InsertionPointLineNumber;
+				return InsertionPointLineNumber ();
 			}
 		}
 
 		public override nint AccessibilityNumberOfCharacters {
 			get {
-				return NumberOfCharacters;
+				return NumberOfCharacters ();
 			}
 		}
 
-		public abstract int NumberOfCharacters { get; }
-
-		public abstract int InsertionPointLineNumber { get; }
-
-		public abstract string Value { get; }
+		public Func<string> Contents { get; set; }
+		public Func<int> NumberOfCharacters { get; set; }
+		public Func<int> InsertionPointLineNumber { get; set; }
+		public Func<AtkCocoa.Range, Rectangle> GetFrameForRange { get; set; }
+		public Func<int, int> GetLineForIndex { get; set; }
+		public Func<int, AtkCocoa.Range> GetRangeForLine { get; set; }
+		public Func<AtkCocoa.Range, string> GetStringForRange { get; set; }
+		public Func<int, AtkCocoa.Range> GetRangeForIndex { get; set; }
+		public Func<int, AtkCocoa.Range> GetStyleRangeForIndex { get; set; }
+		public Func<Point, AtkCocoa.Range> GetRangeForPosition { get; set; }
 
 		// Returned frame is in screen coordinate space
 		[Export ("accessibilityFrameForRange:")]
@@ -1106,41 +1454,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			var point = new Point ((int)position.X, (int)position.Y);
 			var realRange = GetRangeForPosition (point);
 			return new NSRange (realRange.Location, realRange.Length);
-		}
-
-		public virtual Rectangle GetFrameForRange (AtkCocoa.Range range)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual int GetLineForIndex (int index)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual AtkCocoa.Range GetRangeForLine (int line)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual string GetStringForRange (AtkCocoa.Range range)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual AtkCocoa.Range GetRangeForIndex (int index)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual AtkCocoa.Range GetStyleRangeForIndex (int index)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public virtual AtkCocoa.Range GetRangeForPosition (Point position)
-		{
-			throw new NotImplementedException ();
 		}
 	}
 }

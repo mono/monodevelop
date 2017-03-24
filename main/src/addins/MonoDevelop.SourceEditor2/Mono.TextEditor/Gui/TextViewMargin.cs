@@ -130,29 +130,42 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		class TextViewMarginAccessibilityProxy : AccessibilityElementNavigableStaticTextProxy
+		class TextViewMarginAccessibilityProxy 
 		{
+			public AccessibilityElementProxy Accessible { get; private set; }
 			public TextViewMargin Margin { get; set; }
 
-			public override int InsertionPointLineNumber {
-				get {
-					return Margin.Caret.Line;
-				}
+			public TextViewMarginAccessibilityProxy ()
+			{
+				Accessible = AccessibilityElementProxy.TextElementProxy ();
+				Accessible.Contents = GetContents;
+				Accessible.InsertionPointLineNumber = GetInsertionPointLineNumber;
+				Accessible.NumberOfCharacters = GetNumberOfCharacters;
+				Accessible.FrameForRange = GetFrameForRange;
+				Accessible.LineForIndex = GetLineForIndex;
+				Accessible.RangeForLine = GetRangeForLine;
+				Accessible.StringForRange = GetStringForRange;
+				Accessible.RangeForIndex = GetRangeForIndex;
+				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
+				Accessible.RangeForPosition = GetRangeForPosition;
 			}
 
-			public override int NumberOfCharacters {
-				get {
-					return Margin.Document.Length;
-				}
+			int GetInsertionPointLineNumber ()
+			{
+				return Margin.Caret.Line;
 			}
 
-			public override string Value {
-				get {
-					return Margin.Document.Text;
-				}
+			int GetNumberOfCharacters ()
+			{
+				return Margin.Document.Length;
 			}
 
-			public override Rectangle GetFrameForRange (AtkCocoa.Range range)
+			string GetContents ()
+			{
+				return Margin.Document.Text;
+			}
+
+			Rectangle GetFrameForRange (AtkCocoa.Range range)
 			{
 				//ISyntaxHighlighting mode = Margin.Document.SyntaxMode != null && Margin.textEditor.Options.EnableSyntaxHighlighting ? Margin.Document.SyntaxMode : new SyntaxHighlighting(Margin.Document);
 
@@ -179,12 +192,12 @@ namespace Mono.TextEditor
 				return new Rectangle ((int)((xPos / Pango.Scale.PangoScale) + Margin.XOffset), (int)y, (int)rectangleWidth, (int)rectangleHeight);
 			}
 
-			public override int GetLineForIndex (int index)
+			int GetLineForIndex (int index)
 			{
 				return Margin.Document.GetLineByOffset (index).LineNumber;
 			}
 
-			public override AtkCocoa.Range GetRangeForIndex (int index)
+			AtkCocoa.Range GetRangeForIndex (int index)
 			{
 				// Check if the glyph at offset really is just 1 char wide
 				var c = Margin.Document.GetCharAt (index);
@@ -200,14 +213,14 @@ namespace Mono.TextEditor
 				return new AtkCocoa.Range { Location = index, Length = length };
 			}
 
-			public override AtkCocoa.Range GetRangeForLine (int lineNo)
+			AtkCocoa.Range GetRangeForLine (int lineNo)
 			{
 				var line = Margin.Document.GetLine (lineNo);
 
 				return new AtkCocoa.Range { Location = line.Offset, Length = line.Length };
 			}
 
-			public override AtkCocoa.Range GetRangeForPosition (Gdk.Point position)
+			AtkCocoa.Range GetRangeForPosition (Gdk.Point position)
 			{
 				var location = Margin.PointToLocation (position.X, position.Y);
 
@@ -215,27 +228,27 @@ namespace Mono.TextEditor
 				return new AtkCocoa.Range { Location = Margin.Document.LocationToOffset (location), Length = 1 };
 			}
 
-			public override string GetStringForRange (AtkCocoa.Range range)
+			string GetStringForRange (AtkCocoa.Range range)
 			{
 				string orig = Margin.Document.GetTextAt (range.Location, range.Length);
 
 				return orig;
 			}
 
-			public override AtkCocoa.Range GetStyleRangeForIndex (int index)
+			AtkCocoa.Range GetStyleRangeForIndex (int index)
 			{
 				// FIXME: this should be the range of text with the same style as index
 				return GetRangeForIndex (index);
 			}
 		}
 
-		AccessibilityElementProxy accessible;
+		TextViewMarginAccessibilityProxy accessible;
 		public override AccessibilityElementProxy Accessible {
 			get {
 				if (accessible == null) {
-					accessible = (AccessibilityElementProxy) new TextViewMarginAccessibilityProxy ();
+					accessible = new TextViewMarginAccessibilityProxy ();
 				}
-				return accessible;
+				return accessible.Accessible;
 			}
 		}
 
@@ -246,7 +259,7 @@ namespace Mono.TextEditor
 
 			// Overwrite the default margin role
 			Accessible.SetRole (AtkCocoa.Roles.AXTextArea);
-			((TextViewMarginAccessibilityProxy)Accessible).Margin = this;
+			accessible.Margin = this;
 
 			this.textEditor = textEditor;
 

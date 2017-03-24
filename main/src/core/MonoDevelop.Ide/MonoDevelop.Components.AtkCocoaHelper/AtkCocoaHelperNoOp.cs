@@ -157,6 +157,95 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 	public class AccessibilityElementProxy : IAccessibilityElementProxy
 	{
+		public AccessibilityElementProxy ()
+		{
+		}
+
+		public static AccessibilityElementProxy ButtonElementProxy ()
+		{
+			return new AccessibilityElementProxy ();
+		}
+
+		public static AccessibilityElementProxy TextElementProxy ()
+		{
+			return new AccessibilityElementProxy ();
+		}
+
+		public string Identifier {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+
+		public string Help {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+
+		public string Label {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+
+		public string Title {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+
+		public string Value {
+			get {
+				return null;
+			}
+			set {
+			}
+		}
+
+		public bool Hidden {
+			get {
+				return false;
+			}
+			set {
+			}
+		}
+
+		public Gtk.Widget GtkParent {
+			set {
+			}
+		}
+
+		public Gdk.Rectangle FrameInGtkParent {
+			set {
+			}
+		}
+
+		public Gdk.Rectangle FrameInParent {
+			set {
+			}
+		}
+
+		public void AddAccessibleChild (IAccessibilityElementProxy child)
+		{
+		}
+
+		public void SetRole (string role, string description = null)
+		{
+		}
+
+		public void SetRole (AtkCocoa.Roles role, string description = null)
+		{
+		}
+
 		public event EventHandler PerformCancel;
 		public event EventHandler PerformConfirm;
 		public event EventHandler PerformDecrement;
@@ -169,112 +258,46 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public event EventHandler PerformShowDefaultUI;
 		public event EventHandler PerformShowMenu;
 
-		public void AddAccessibleChild (IAccessibilityElementProxy child)
-		{
-		}
-
-		public void SetHelp (string help)
-		{
-		}
-
-		public void SetIdentifier (string identifier)
-		{
-		}
-
-		public void SetLabel (string label)
-		{
-		}
-
-		public void SetRole (AtkCocoa.Roles role, string description = null)
-		{
-		}
-
-		public void SetRole (string role, string description = null)
-		{
-		}
-
-		public void SetTitle (string title)
-		{
-		}
-
-		public void SetHidden (bool hidden)
-		{
-		}
-
-		public void SetValue (string value)
-		{
-		}
-
-		public void SetFrameInParent (Rectangle rect)
-		{
-		}
-
-		public void SetFrameInGtkParent (Rectangle frame)
-		{
-		}
-
-		public void SetGtkParent (Widget realParent)
-		{
-		}
-	}
-
-	public class AccessibilityElementButtonProxy
-	{
-	}
-
-	public abstract class AccessibilityElementNavigableStaticTextProxy : IAccessibilityNavigableStaticText
-	{
-		public int InsertionPointLineNumber {
-			get {
-				throw new NotImplementedException ();
+		// For Navigable Text elements
+		public Func<string> Contents {
+			set {
 			}
 		}
-
-		public int NumberOfCharacters {
-			get {
-				throw new NotImplementedException ();
+		public Func<int> NumberOfCharacters {
+			set {
 			}
 		}
-
-		public string Value {
-			get {
-				throw new NotImplementedException ();
+		public Func<int> InsertionPointLineNumber {
+			set {
 			}
 		}
-
-		public Rectangle GetFrameForRange (AtkCocoa.Range range)
-		{
-			throw new NotImplementedException ();
+		public Func<AtkCocoa.Range, Rectangle> FrameForRange {
+			set {
+			}
 		}
-
-		public int GetLineForIndex (int index)
-		{
-			throw new NotImplementedException ();
+		public Func<int, int> LineForIndex {
+			set {
+			}
 		}
-
-		public AtkCocoa.Range GetRangeForIndex (int index)
-		{
-			throw new NotImplementedException ();
+		public Func<int, AtkCocoa.Range> RangeForLine {
+			set {
+			}
 		}
-
-		public AtkCocoa.Range GetRangeForLine (int line)
-		{
-			throw new NotImplementedException ();
+		public Func<AtkCocoa.Range, string> StringForRange {
+			set {
+			}
 		}
-
-		public AtkCocoa.Range GetRangeForPosition (Point position)
-		{
-			throw new NotImplementedException ();
+		public Func<int, AtkCocoa.Range> RangeForIndex {
+			set {
+			}
 		}
-
-		public string GetStringForRange (AtkCocoa.Range range)
-		{
-			throw new NotImplementedException ();
+		public Func<int, AtkCocoa.Range> StyleRangeForIndex {
+			set {
+			}
 		}
-
-		public AtkCocoa.Range GetStyleRangeForIndex (int index)
-		{
-			throw new NotImplementedException ();
+		public Func<Point, AtkCocoa.Range> RangeForPosition {
+			set {
+			}
 		}
 	}
 }

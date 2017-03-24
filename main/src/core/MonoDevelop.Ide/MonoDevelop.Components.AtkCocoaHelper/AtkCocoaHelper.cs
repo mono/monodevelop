@@ -443,47 +443,31 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		event EventHandler PerformShowDefaultUI;
 		event EventHandler PerformShowMenu;
 
-		void SetGtkParent (Gtk.Widget realParent);
-		void SetFrameInGtkParent (Gdk.Rectangle frame);
+		Gtk.Widget GtkParent { set; }
+		Gdk.Rectangle FrameInGtkParent { set; }
+		Gdk.Rectangle FrameInParent { set; }
+
 		void AddAccessibleChild (IAccessibilityElementProxy child);
 		void SetRole (string role, string description = null);
 		void SetRole (AtkCocoa.Roles role, string description = null);
-		void SetValue (string value);
-		void SetTitle (string title);
-		void SetLabel (string label);
-		void SetIdentifier (string identifier);
-		void SetHelp (string help);
-		void SetFrameInParent (Gdk.Rectangle rect);
-		void SetHidden (bool hidden);
+
+		string Value { get; set; }
+		string Title { get; set; }
+		string Label { get; set; }
+		string Identifier { get; set; }
+		string Help { get; set; }
+		bool Hidden { get; set; }
+
+		// For Navigable Static Text
+		Func<string> Contents { set; }
+		Func<int> NumberOfCharacters { set; }
+		Func<int> InsertionPointLineNumber { set; }
+		Func<AtkCocoa.Range, Gdk.Rectangle> FrameForRange { set; }
+		Func<int, int> LineForIndex { set; }
+		Func<int, AtkCocoa.Range> RangeForLine { set; }
+		Func<AtkCocoa.Range, string> StringForRange { set; }
+		Func<int, AtkCocoa.Range> RangeForIndex { set; }
+		Func<int, AtkCocoa.Range> StyleRangeForIndex { set; }
+		Func<Gdk.Point, AtkCocoa.Range> RangeForPosition { set; }
 	}
-
-	public interface IAccessibilityNavigableStaticText
-	{
-		int NumberOfCharacters { get; }
-		int InsertionPointLineNumber { get; }
-		string Value { get; }
-
-		// Returns frame in Gtk.Widget parent space.
-		Gdk.Rectangle GetFrameForRange (AtkCocoa.Range range);
-		int GetLineForIndex (int index);
-		AtkCocoa.Range GetRangeForLine (int line);
-		string GetStringForRange (AtkCocoa.Range range);
-		AtkCocoa.Range GetRangeForIndex (int index);
-		AtkCocoa.Range GetStyleRangeForIndex (int index);
-		AtkCocoa.Range GetRangeForPosition (Gdk.Point position);
-	}
-
-	/*
-	public abstract class AtkCellRendererProxy : Atk.Object
-	{
-		public AccessibilityElementProxy Accessible { get; private set; }
-		protected AtkCellRendererProxy ()
-		{
-			Accessible = new AccessibilityElementProxy ();
-
-			// Set the element as secret data on the Atk.Object so AtkCocoa can do something with it
-			AtkCocoaHelper.SetNSAccessibilityElement (this, Accessible);
-		}
-	}
-*/
 }

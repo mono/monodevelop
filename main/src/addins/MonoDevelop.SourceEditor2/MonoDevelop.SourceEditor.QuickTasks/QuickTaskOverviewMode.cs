@@ -1119,47 +1119,50 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		public AccessibilityElementProxy[] UpdateAccessibility ()
 		{
 			List<AccessibilityElementProxy> allyChildren = new List<AccessibilityElementProxy> ();
-			allyChildren.Add (new QuickTaskOverviewAccessible (parentStrip, this));
+			allyChildren.Add (new QuickTaskOverviewAccessible (parentStrip, this).Accessible);
 
 			foreach (var t in AllTasks) {
-				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, t));
+				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, t).Accessible);
 			}
 
 			foreach (var u in AllUsages) {
-				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, u));
+				allyChildren.Add (new QuickTaskAccessible (parentStrip, this, u).Accessible);
 			}
 
 			return allyChildren.ToArray ();
 		}
 
 
-		class QuickTaskOverviewAccessible : AccessibilityElementButtonProxy
+		class QuickTaskOverviewAccessible 
 		{
+			public AccessibilityElementProxy Accessible { get; private set; }
+
 			QuickTaskStrip strip;
 			QuickTaskOverviewMode mode;
 
 			public QuickTaskOverviewAccessible (QuickTaskStrip parentStrip, QuickTaskOverviewMode parentMode)
 			{
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+
 				// Set the accessibility parent as the strip to make the A11y tree easier.
 				strip = parentStrip;
-				SetGtkParent (parentStrip);
+				Accessible.GtkParent = parentStrip;
 
 				mode = parentMode;
 
 				var frameInParent = new Gdk.Rectangle (0, 0, strip.Allocation.Width, (int)mode.IndicatorHeight);
-				SetFrameInGtkParent (frameInParent);
+				Accessible.FrameInGtkParent = frameInParent;
+				Accessible.FrameInParent = new Gdk.Rectangle (0, strip.Allocation.Height - (int)mode.IndicatorHeight, strip.Allocation.Width, (int)mode.IndicatorHeight);
 
-				// FIXME: Can we not do this in AccessibilityElementProxy?
-				SetFrameInParent (new Gdk.Rectangle (0, strip.Allocation.Height - (int)mode.IndicatorHeight, strip.Allocation.Width, (int)mode.IndicatorHeight));
-
-				AccessibilityIdentifier = "MainWindow.QuickTaskStrip.Indicator";
+				Accessible.Identifier = "MainWindow.QuickTaskStrip.Indicator";
 				UpdateAccessibilityDetails ();
+
+				Accessible.PerformPress += PerformPress;
 			}
 
-			public override bool AccessibilityPerformPress ()
+			public void PerformPress (object sender, EventArgs args)
 			{
 				strip.GotoTask (strip.SearchNextTask (mode.GetHoverMode ()));
-				return true;
 			}
 
 			internal void UpdateAccessibilityDetails ()
@@ -1168,17 +1171,18 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 				mode.GetIndicatorStrings (out label, out description);
 				if (!string.IsNullOrEmpty (label)) {
-					SetLabel (label);
+					Accessible.Label = label;
 				}
 
 				if (!string.IsNullOrEmpty (description)) {
-					SetHelp (description);
+					Accessible.Help = description;
 				}
 			}
 		}
 
-		class QuickTaskAccessible : AccessibilityElementButtonProxy
+		class QuickTaskAccessible 
 		{
+			public AccessibilityElementProxy Accessible { get; private set; }
 			QuickTaskStrip strip;
 			QuickTaskOverviewMode mode;
 			QuickTask task;
@@ -1186,10 +1190,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode)
 			{
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
 				strip = parent;
-				SetGtkParent (parent);
+				Accessible.GtkParent = parent;
 
 				mode = parentMode;
+
+				Accessible.PerformPress += PerformPress;
 			}
 
 			public QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode, QuickTask t) : this (parent, parentMode)
@@ -1197,20 +1204,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				task = t;
 				usage = null;
 
-				SetTitle (t.Description);
-				SetHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location)));
+				Accessible.Title = t.Description;
+				Accessible.Help = string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location));
 
 				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
 				var y = mode.LineToY (line);
 				var frameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2);
-				SetFrameInGtkParent (frameInParent);
+				Accessible.FrameInGtkParent = frameInParent;
 
-				// FIXME: Can we not do this in AccessibilityElementProxy?
 				int halfParentHeight = strip.Allocation.Height / 2;
 				float dy = (float)y - halfParentHeight;
 
 				y = (int)(halfParentHeight - dy);
-				SetFrameInParent (new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2));
+				Accessible.FrameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2);
 			}
 
 			public QuickTaskAccessible (QuickTaskStrip parent, QuickTaskOverviewMode parentMode, Usage u) : this (parent, parentMode)
@@ -1218,31 +1224,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				usage = u;
 				task = null;
 
-				SetTitle (u.UsageType.ToString ());
-				SetHelp (string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset)));
+				Accessible.Title = u.UsageType.ToString ();
+				Accessible.Help = string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset));
 
 				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);
 				var y = mode.LineToY (line) - 3.0;
 				var frameInParent = new Gdk.Rectangle (0, (int)y, 5, 6);
-				SetFrameInGtkParent (frameInParent);
+				Accessible.FrameInGtkParent = frameInParent;
 
-				// FIXME: Can we not do this in AccessibilityElementProxy?
 				int halfParentHeight = strip.Allocation.Height / 2;
 				float dy = (float)y - halfParentHeight;
 
 				y = (int)(halfParentHeight - dy);
-				SetFrameInParent (new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 6));
+				Accessible.FrameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 6);
 
 			}
 
-			public override bool AccessibilityPerformPress ()
+			public void PerformPress (object sender, EventArgs args)
 			{
 				if (task != null) {
 					strip.GotoTask (task);
 				} else {
 					strip.GotoUsage (usage);
 				}
-				return true;
 			}
 		}
 #endregion

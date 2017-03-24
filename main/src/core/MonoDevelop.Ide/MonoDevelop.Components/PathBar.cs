@@ -80,8 +80,9 @@ namespace MonoDevelop.Components
 
 		PathEntry ()
 		{
-			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
-			Accessible.AccessibilityIdentifier = "Breadcrumb";
+			//Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.Identifier = "Breadcrumb";
 			Accessible.PerformPress += OnPerformShowMenu;
 		}
 
@@ -95,7 +96,7 @@ namespace MonoDevelop.Components
 			this.Markup = markup;
 
 			// FIXME: Remove markup from this string?
-			Accessible.AccessibilityLabel = markup;
+			Accessible.Label = markup;
 		}
 		
 		public override bool Equals (object obj)
@@ -214,13 +215,13 @@ namespace MonoDevelop.Components
 
 			foreach (var entry in leftPath) {
 				elements [idx] = entry.Accessible;
-				entry.Accessible.SetGtkParent (this);
+				entry.Accessible.GtkParent = this;
 				entry.PerformShowMenu += PerformShowMenu;
 				idx++;
 			}
 			foreach (var entry in rightPath) {
 				elements [idx] = entry.Accessible;
-				entry.Accessible.SetGtkParent (this);
+				entry.Accessible.GtkParent = this;
 				entry.PerformShowMenu += PerformShowMenu;
 				idx++;
 			}
@@ -299,7 +300,7 @@ namespace MonoDevelop.Components
 			int height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
 			Gdk.Rectangle rect = new Gdk.Rectangle (x, y, width, height);
 
-			entry.Accessible.SetFrameInGtkParent (rect);
+			entry.Accessible.FrameInGtkParent = rect;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
