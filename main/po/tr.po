@@ -516,7 +516,7 @@ msgid ""
 msgstr ""
 "({0}) {1} öğesi .resources olarak derlenemiyor. \n"
 "Neden: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -542,7 +542,7 @@ msgid ""
 msgstr ""
 "'{0}' kültürünün uydu derlemeleri {1} ile oluşturulamıyor.\n"
 "Neden: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

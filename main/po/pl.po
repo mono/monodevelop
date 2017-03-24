@@ -518,7 +518,7 @@ msgid ""
 msgstr ""
 "Nie można skompilować ({0}) {1} do elementu .resources. \n"
 "Przyczyna: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -544,7 +544,7 @@ msgid ""
 msgstr ""
 "Nie można wygenerować zestawów satelickich dla kultury „{0}” za pomocą {1}.\n"
 "Przyczyna: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

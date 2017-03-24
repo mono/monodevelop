@@ -506,7 +506,7 @@ msgid ""
 msgstr ""
 "无法将({0}) {1} 编译到 .resources。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -531,7 +531,7 @@ msgid ""
 msgstr ""
 "无法使用 {1} 为“{0}”区域性生成附属程序集。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 # 翻译为内容吧。 感觉具体点。
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109

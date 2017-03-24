@@ -523,7 +523,7 @@ msgid ""
 msgstr ""
 "Non è possibile compilare ({0}) {1} in file con estensione resources. \n"
 "Motivo: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -551,7 +551,7 @@ msgstr ""
 "Non è possibile generare gli assembly satellite per le impostazioni cultura "
 "'{0}' con {1}.\n"
 "Motivo: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

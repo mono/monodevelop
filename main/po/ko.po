@@ -516,7 +516,7 @@ msgid ""
 msgstr ""
 "({0}) {1}을(를) .resources로 컴파일할 수 없습니다. \n"
 "이유: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -542,7 +542,7 @@ msgid ""
 msgstr ""
 "{1}을(를) 사용하여 '{0}' 문화권의 위성 어셈블리를 생성할 수 없습니다.\n"
 "이유: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

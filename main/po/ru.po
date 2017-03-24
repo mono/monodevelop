@@ -523,7 +523,7 @@ msgid ""
 msgstr ""
 "Не удается скомпилировать ({0}) {1} в файл RESOURCES. \n"
 "Причина: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -552,7 +552,7 @@ msgstr ""
 "Не удается создать вспомогательные сборки для языка и региональных "
 "параметров \"{0}\" с помощью {1}.\n"
 "Причина: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

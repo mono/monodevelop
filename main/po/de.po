@@ -522,7 +522,7 @@ msgid ""
 msgstr ""
 "({0}) {1} kann nicht in eine RESOURCES-Datei kompiliert werden. \n"
 "Ursache: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -549,7 +549,7 @@ msgstr ""
 "Es können keine Satellitenassemblys für die Kultur '{0}' mit {1} generiert "
 "werden.\n"
 "Ursache: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"

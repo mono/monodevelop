@@ -524,7 +524,7 @@ msgid ""
 msgstr ""
 "Não é possível compilar ({0}) {1} para .resources. \n"
 "Motivo: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -550,7 +550,7 @@ msgid ""
 msgstr ""
 "Não é possível gerar assemblies satélite para a cultura '{0}' com o {1}.\n"
 "Motivo: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"
