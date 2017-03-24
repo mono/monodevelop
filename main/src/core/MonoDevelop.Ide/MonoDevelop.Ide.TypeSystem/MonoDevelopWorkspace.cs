@@ -426,11 +426,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return data.GetDocumentId (name);
 		}
 
-		public override bool CanApplyChange (ApplyChangesKind feature)
-		{
-			return true;
-		}
-
 		void UnloadMonoProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
@@ -792,11 +787,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
-		{
-			base.ApplyAdditionalDocumentAdded (info, text);
-		}
-
 		protected override void OnDocumentTextChanged (Document document)
 		{
 			base.OnDocumentTextChanged (document);
@@ -1116,6 +1106,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			return delta;
+		}
+
+		public override bool CanApplyChange (ApplyChangesKind feature)
+		{
+			switch (feature) {
+			case ApplyChangesKind.AddDocument:
+			case ApplyChangesKind.ChangeDocument:
+				return true;
+			default:
+				return false;
+			}
 		}
 
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
