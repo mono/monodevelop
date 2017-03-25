@@ -1095,7 +1095,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
 
-		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
+		public override bool TryApplyChanges (Solution newSolution)
 		{
 			// this is supported on the main thread only
 			// see https://github.com/dotnet/roslyn/pull/18043
@@ -1103,7 +1103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Runtime.AssertMainThread ();
 
 			try {
-				var ret = base.TryApplyChanges (newSolution, progressTracker);
+				var ret = base.TryApplyChanges (newSolution);
 
 				if (tryApplyState_documentTextChangedTasks.Count > 0) {
 					Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
