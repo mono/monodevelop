@@ -1095,7 +1095,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
 
-		public override bool TryApplyChanges (Solution newSolution)
+		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
 		{
 			// this is supported on the main thread only
 			// see https://github.com/dotnet/roslyn/pull/18043
@@ -1103,7 +1103,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Runtime.AssertMainThread ();
 
 			try {
-				var ret = base.TryApplyChanges (newSolution);
+				var ret = base.TryApplyChanges (newSolution, progressTracker);
 
 				if (tryApplyState_documentTextChangedTasks.Count > 0) {
 					Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
@@ -1200,16 +1200,27 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var document = GetDocument (documentId);
 			var mdProject = GetMonoProject (documentId.ProjectId);
-			if (document != null && mdProject != null) {
-				FilePath filePath = document.FilePath;
-				var projectFile = mdProject.Files.GetFile (filePath);
-				if (projectFile != null) {
-					FileService.DeleteFile (filePath);
-					//this will fire a OnDocumentRemoved event via OnFileRemoved
-					mdProject.Files.Remove (projectFile);
-					tryApplyState_changedProjects.Add (mdProject);
-				}
+			if (document == null || mdProject == null) {
+				return;
 			}
+
+			FilePath filePath = document.FilePath;
+			var projectFile = mdProject.Files.GetFile (filePath);
+			if (projectFile == null) {
+				return;
+			}
+
+			//force-close the old doc even if it's dirty
+			var openDoc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.IsFile && filePath.Equals (d.FileName));
+			if (openDoc != null && openDoc.IsDirty) {
+				openDoc.Save ();
+				((Gui.SdiWorkspaceWindow)openDoc.Window).CloseWindow (true, true).Wait ();
+			}
+
+			//this will fire a OnDocumentRemoved event via OnFileRemoved
+			mdProject.Files.Remove (projectFile);
+			FileService.DeleteFile (filePath);
+			tryApplyState_changedProjects.Add (mdProject);
 		}
 
 		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
