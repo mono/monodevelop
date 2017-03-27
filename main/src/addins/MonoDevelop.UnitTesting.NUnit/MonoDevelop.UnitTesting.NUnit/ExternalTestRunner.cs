@@ -59,6 +59,11 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			return connection.Connect ();
 		}
 
+		public Task Disconnect ()
+		{
+			return connection.Disconnect ();
+		}
+
 		public async Task<UnitTestResult> Run (IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
 		{
 			this.listener = listener;
