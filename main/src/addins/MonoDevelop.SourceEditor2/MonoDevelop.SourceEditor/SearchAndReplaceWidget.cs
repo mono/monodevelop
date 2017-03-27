@@ -789,50 +789,59 @@ But I leave it in in the case I've missed something. Mike
 		
 		void UpdateResultInformLabel ()
 		{
-			if (string.IsNullOrEmpty (SearchPattern)) {
-				resultInformLabel.Text = "";
-				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
-				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
-				return;
-			}
-			
-			//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
-			string errorMsg;
-			bool valid = textEditor.SearchEngine.IsValidPattern (SearchAndReplaceOptions.SearchPattern, out errorMsg);
-			//	error |= !valid;
-			
-			if (!valid) {
-				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
-			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
-			}
-			
-			if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
-				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
-				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
-				resultInformLabel.ModifyFg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
-			} else {
-				int resultIndex = 0;
-				int foundIndex = -1;
-				int caretOffset = textEditor.Caret.Offset;
-				ISegment foundSegment = TextSegment.Invalid;
-				foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
-					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
-						foundIndex = resultIndex + 1;
-						foundSegment = searchResult;
-						break;
-					}
-					resultIndex++;
+			try {
+				var entry = searchEntry.Entry;
+				if (entry == null) {
+					LoggingService.LogError ("SearchAndReplaceWidget.UpdateResultInformLabel called with null entry.");
+					return;
 				}
-				if (foundIndex != -1) {
-					resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), foundIndex, textEditor.TextViewMargin.SearchResultMatchCount);
+				if (string.IsNullOrEmpty (SearchPattern)) {
+					resultInformLabel.Text = "";
+					resultInformLabelEventBox.ModifyBg (StateType.Normal, entry.Style.Base (entry.State));
+					resultInformLabel.ModifyFg (StateType.Normal, entry.Style.Foreground (StateType.Insensitive));
+					return;
+				}
+
+				//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
+				string errorMsg;
+				bool valid = textEditor.SearchEngine.IsValidPattern (SearchAndReplaceOptions.SearchPattern, out errorMsg);
+				//	error |= !valid;
+
+				if (!valid) {
+					IdeApp.Workbench.StatusBar.ShowError (errorMsg);
 				} else {
-					resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", textEditor.TextViewMargin.SearchResultMatchCount), textEditor.TextViewMargin.SearchResultMatchCount);
+					IdeApp.Workbench.StatusBar.ShowReady ();
 				}
-				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
-				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
-				textEditor.TextViewMargin.HideSelection = FocusChild == table;
-				textEditor.TextViewMargin.MainSearchResult = foundSegment;
+
+				if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
+					//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
+					resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+					resultInformLabel.ModifyFg (StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
+				} else {
+					int resultIndex = 0;
+					int foundIndex = -1;
+					int caretOffset = textEditor.Caret.Offset;
+					ISegment foundSegment = TextSegment.Invalid;
+					foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
+						if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
+							foundIndex = resultIndex + 1;
+							foundSegment = searchResult;
+							break;
+						}
+						resultIndex++;
+					}
+					if (foundIndex != -1) {
+						resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), foundIndex, textEditor.TextViewMargin.SearchResultMatchCount);
+					} else {
+						resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", textEditor.TextViewMargin.SearchResultMatchCount), textEditor.TextViewMargin.SearchResultMatchCount);
+					}
+					resultInformLabelEventBox.ModifyBg (StateType.Normal, entry.Style.Base (entry.State));
+					resultInformLabel.ModifyFg (StateType.Normal, entry.Style.Foreground (StateType.Insensitive));
+					textEditor.TextViewMargin.HideSelection = FocusChild == table;
+					textEditor.TextViewMargin.MainSearchResult = foundSegment;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while updating result inform label.", ex);
 			}
 		}
 		
