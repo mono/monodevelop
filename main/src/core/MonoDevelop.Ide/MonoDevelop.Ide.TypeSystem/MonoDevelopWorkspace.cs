@@ -1143,6 +1143,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			case ApplyChangesKind.AddDocument:
 			case ApplyChangesKind.RemoveDocument:
 			case ApplyChangesKind.ChangeDocument:
+			//HACK: we don't actually support adding and removing metadata references from project
+			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
+			case ApplyChangesKind.AddMetadataReference:
+			case ApplyChangesKind.RemoveMetadataReference:
 				return true;
 			default:
 				return false;
