@@ -363,6 +363,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		static RealAccessibilityElementProxy [] ConvertToRealProxyArray (AccessibilityElementProxy [] proxies)
 		{
+			if (proxies == null) {
+				return null;
+			}
+
 			var realProxies = new RealAccessibilityElementProxy [proxies.Length];
 			int idx = 0;
 			foreach (var p in proxies) {
