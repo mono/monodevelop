@@ -234,6 +234,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="Default" _name="Default" allowDiffSerialize="true">
+		<!-- Policies registered in the Default policy set are considered the default for the Ide.
+			 Those policies will be used when no specific options are set
+		-->
+		</PolicySet>
 		<PolicySet id="VisualStudio" _name="Microsoft Visual Studio" allowDiffSerialize="true">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
