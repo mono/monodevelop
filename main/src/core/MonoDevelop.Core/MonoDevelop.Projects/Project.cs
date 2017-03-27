@@ -581,7 +581,7 @@ namespace MonoDevelop.Projects
 					var ctx = new TargetEvaluationContext ();
 					ctx.ItemsToEvaluate.Add ("Compile");
 
-					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
+					var evalResult = await this.RunTarget (monitor, dependsList, config.Selector, ctx);
 					if (evalResult != null && evalResult.Items != null) {
 						result = evalResult
 							.Items
