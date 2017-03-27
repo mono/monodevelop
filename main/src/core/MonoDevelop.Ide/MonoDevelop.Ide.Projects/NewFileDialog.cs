@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
@@ -79,8 +80,49 @@ namespace MonoDevelop.Ide.Projects
 
 			nameEntry.GrabFocus ();
 
-		}
+			// Accessibility
+			Accessible.Name = "NewFileDialog";
+			Accessible.Description = GettextCatalog.GetString ("Add a new file to the project");
 
+			okButton.Accessible.Name = "NewFileDialog.OkButton";
+			okButton.Accessible.Description = GettextCatalog.GetString ("Create the new file and close the dialog");
+
+			cancelButton.Accessible.Name = "NewFileDialog.CancelButton";
+			cancelButton.Accessible.Description = GettextCatalog.GetString ("Close the dialog without creating a new file");
+
+			catView.Accessible.Name = "NewFileDialog.CategoryView";
+			catView.Accessible.Description = GettextCatalog.GetString ("Select a category for the new file");
+			catView.Accessible.SetTitle (GettextCatalog.GetString ("Categories"));
+
+			labelTemplateTitle.Accessible.Name = "NewFileDialog.TemplateTitleLabel";
+			labelTemplateTitle.Accessible.Description = GettextCatalog.GetString ("The name of the selected template");
+
+			infoLabel.Accessible.Name = "NewFileDialog.InfoLabel";
+			infoLabel.Accessible.Description = GettextCatalog.GetString ("The description of the selected template");
+
+			iconView.Accessible.Name = "NewFileDialog.TemplateList";
+			iconView.Accessible.Description = GettextCatalog.GetString ("Select a template for the new file");
+			iconView.Accessible.SetTitle (GettextCatalog.GetString ("Templates"));
+
+			nameEntry.Accessible.Name = "NewFileDialog.NameEntry";
+			nameEntry.Accessible.Description = GettextCatalog.GetString ("Enter the name of the new file");
+			nameEntry.Accessible.SetTitleUIElement (label1.Accessible);
+
+			label1.Accessible.Name = "NewFileDialog.NameLabel";
+			label1.Accessible.SetTitleFor (nameEntry.Accessible);
+
+			projectAddCheckbox.Accessible.Name = "NewFileDialog.AddCheckbox";
+			projectAddCheckbox.Accessible.Description = GettextCatalog.GetString ("Select whether to add this new file to an existing project");
+			projectAddCheckbox.Accessible.AddLinkedUIElement (projectAddCombo.Accessible);
+
+			projectAddCombo.Accessible.Name = "NewFileDialog.AddProjectCombo";
+			projectAddCombo.Accessible.Description = GettextCatalog.GetString ("Select which project to add the file to");
+			projectAddCombo.Accessible.SetTitleUIElement (projectAddCombo.Accessible);
+
+			projectFolderEntry.Accessible.Name = "NewFileDialog.ProjectFolderEntry";
+			projectFolderEntry.Accessible.Description = GettextCatalog.GetString ("Select which the project folder to add the file");
+			projectFolderEntry.Accessible.SetLabel (GettextCatalog.GetString ("Project Folder"));
+		}
 
 		void InitializeView ()
 		{

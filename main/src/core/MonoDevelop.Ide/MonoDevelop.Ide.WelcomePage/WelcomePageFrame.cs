@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Reflection;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -48,8 +49,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageFrame (Gtk.Widget w)
 		{
+			Accessible.Name = "WelcomePageFrame";
 			welcomePage = w;
 			VBox box = new VBox ();
+			box.Accessible.SetShouldIgnore (true);
+
 			box.Show ();
 			projectBar = new WelcomePageProjectBar ();
 			box.PackStart (projectBar, false, false, 0);
@@ -134,6 +138,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageProjectBar ()
 		{
+			Accessible.Name = "WelcomePageProjectBar";
 			SetPadding (3, 3, 12, 12);
 			GradientBackground = false;
 			BackgroundColor = MonoDevelop.Ide.Gui.Styles.BaseBackgroundColor.ToGdkColor ();
@@ -141,6 +146,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			HBox box = new HBox (false, 6);
 			box.PackStart (messageLabel = new Gtk.Label () { Xalign = 0 }, true, true, 0);
 			backButton = new Gtk.Button ();
+			backButton.Accessible.Name = "WelcomePageProjectBar.BackButton";
 			box.PackEnd (backButton, false, false, 0);
 
 			backButton.Clicked += delegate {

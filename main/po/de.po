@@ -22,7 +22,6 @@ msgid "{0} External Console"
 msgstr "Externe {0}-Konsole"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:231
-#, fuzzy
 msgid "The application could not be started"
 msgstr "Die Anwendung konnte nicht gestartet werden."
 
@@ -117,7 +116,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:243
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:313
-#, fuzzy
 msgid ""
 "The project '{0}' is referencing the file '{1}' which is located outside the "
 "project directory."
@@ -347,7 +345,6 @@ msgid "Custom command working directory does not exist"
 msgstr "Arbeitsverzeichnis für benutzerdefinierten Befehl ist nicht vorhanden."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CustomCommand.cs:312
-#, fuzzy
 msgid "Custom command failed (exit code: {0})"
 msgstr "Fehler bei benutzerdefiniertem Befehl (Exitcode: {0})"
 
@@ -518,7 +515,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:294
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:297
-#, fuzzy
 msgid ""
 "Unable to compile ({0}) {1} to .resources. \n"
 "Reason: \n"
@@ -526,7 +522,7 @@ msgid ""
 msgstr ""
 "({0}) {1} kann nicht in eine RESOURCES-Datei kompiliert werden. \n"
 "Ursache: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -545,7 +541,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:390
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:393
-#, fuzzy
 msgid ""
 "Unable to generate satellite assemblies for '{0}' culture with {1}.\n"
 "Reason: \n"
@@ -554,7 +549,7 @@ msgstr ""
 "Es können keine Satellitenassemblys für die Kultur '{0}' mit {1} generiert "
 "werden.\n"
 "Ursache: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"
@@ -841,7 +836,6 @@ msgid "HelpAboutIcon"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ExecutionTarget.cs:218
-#, fuzzy
 msgid "Multiple"
 msgstr "Mehrzeilig"
 
@@ -871,7 +865,6 @@ msgid "Cleaning: {0} ({1})"
 msgstr "{0} ({1}) wird bereinigt"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceSerializationExtension.cs:70
-#, fuzzy
 msgid "Could not load workspace item: {0}"
 msgstr "Arbeitsbereichselement konnte nicht geladen werden: {0}"
 
@@ -880,17 +873,14 @@ msgid "Start the project with arguments '{0}' and environment variables '{1}'"
 msgstr "Projekt mit Argumenten \"{0}\" und Umgebungsvariablen \"{1}\" starten"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:78
-#, fuzzy
 msgid "Start the project with arguments '{0}'"
 msgstr "Projekt mit Argumenten \"{0}\" starten"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:80
-#, fuzzy
 msgid "Start the project with environment variables '{0}'"
 msgstr "Projekt mit Umgebungsvariablen \"{0}\" starten"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:82
-#, fuzzy
 msgid "Start the project"
 msgstr "Projekt starten"
 
@@ -905,17 +895,14 @@ msgstr ""
 "\"{2}\" ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:90
-#, fuzzy
 msgid "Run {0} with arguments '{1}'"
 msgstr "\"{0}\" mit Argumenten \"{1}\" ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:92
-#, fuzzy
 msgid "Run {0} with environment variables '{1}'"
 msgstr "\"{0}\" mit Umgebungsvariablen \"{1}\" ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:94
-#, fuzzy
 msgid "Run {0}"
 msgstr "\"{0}\" ausführen"
 
@@ -1125,7 +1112,6 @@ msgstr ""
 "und den gesamten Benutzercode auf IL-Überprüfbarkeit."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:338
-#, fuzzy
 msgid ""
 "Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
 "assemblies, 'program' entry point assembly, 'assembly' specifies an "
@@ -1484,7 +1470,6 @@ msgid "Optimizations"
 msgstr "Optimierungen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MultiItemSolutionRunConfiguration.cs:103
-#, fuzzy
 msgid "No projects selected to run"
 msgstr "Projekt zu ausgewählter Projektmappe hinzufügen"
 
@@ -1495,23 +1480,19 @@ msgstr ""
 "ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:66
-#, fuzzy
 msgid "Run with arguments '{0}'"
 msgstr "Mit Argumenten \"{0}\" ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:68
-#, fuzzy
 msgid "Run with environment variables '{0}''"
 msgstr "Mit Umgebungsvariablen \"{0}\" ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:70
-#, fuzzy
 msgid "Run with no additional arguments"
 msgstr "Ohne zusätzliche Argumente ausführen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:169
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
-#, fuzzy
 msgid "Profile"
 msgstr "Profil"
 
@@ -1541,7 +1522,6 @@ msgstr ""
 "Sie müssen Visual Studio oder Xamarin Studio auf dem Mac verwenden."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:276
-#, fuzzy
 msgid ""
 "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need "
 "to use Xamarin Studio on Mac."
@@ -2277,7 +2257,6 @@ msgid "Delete the selection"
 msgstr "Auswahl löschen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:67
-#, fuzzy
 msgid "Re_name..."
 msgstr "Umbe_nennen..."
 
@@ -2338,12 +2317,10 @@ msgid "Indent selected lines of code"
 msgstr "Ausgewählte Codezeilen einziehen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:108
-#, fuzzy
 msgid "_Indent"
 msgstr "E_inziehen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:109
-#, fuzzy
 msgid "Indent Selection"
 msgstr "Auswahl einziehen"
 
@@ -2352,12 +2329,10 @@ msgid "Unindent selected lines of code"
 msgstr "Einzug ausgewählter Codezeilen aufheben"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:116
-#, fuzzy
 msgid "_Unindent"
 msgstr "Nicht ein_ziehen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:117
-#, fuzzy
 msgid "Unindent Selection"
 msgstr "Auswahl nicht einziehen"
 
@@ -2366,12 +2341,10 @@ msgid "Convert the selected text to uppercase"
 msgstr "Ausgewählten Text in Großbuchstaben umwandeln"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:121
-#, fuzzy
 msgid "Upper_case"
 msgstr "Großbu_chstaben"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:122
-#, fuzzy
 msgid "Uppercase Selection"
 msgstr "Auswahl: Großbuchstaben"
 
@@ -2380,22 +2353,18 @@ msgid "Convert the selected text to lowercase"
 msgstr "Ausgewählten Text in Kleinbuchstaben umwandeln"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:125
-#, fuzzy
 msgid "_Lowercase"
 msgstr "K_leinbuchstaben"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:126
-#, fuzzy
 msgid "Lowercase Selection"
 msgstr "Auswahl: Kleinbuchstaben"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:128
-#, fuzzy
 msgid "Remove trailing whitespace"
 msgstr "Nachstehende Leerzeichen entfernen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:129
-#, fuzzy
 msgid "_Remove Trailing Whitespace"
 msgstr "Nachstehende Lee_rzeichen entfernen"
 
@@ -2416,7 +2385,6 @@ msgid "_Sort Lines"
 msgstr "Zeilen _sortieren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:138
-#, fuzzy
 msgid "_GUID (Globally Unique Identifier)"
 msgstr "_GUID (Globally Unique Identifier)"
 
@@ -2425,7 +2393,6 @@ msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "GUID (Globally Unique Identifier) einfügen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:140
-#, fuzzy
 msgid "Inserts a Guid at caret position"
 msgstr "Fügt eine GUID an der Position der Einfügemarke ein."
 
@@ -2461,7 +2428,6 @@ msgid "Standard _Header"
 msgstr "_Standardheader"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:163
-#, fuzzy
 msgid "Insert Standard Header"
 msgstr "Standardheader einfügen"
 
@@ -2471,12 +2437,10 @@ msgstr "Benutzerdefinierten Header am Dateianfang hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:168
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
-#, fuzzy
 msgid "Enable _Folding"
 msgstr "_Faltung aktivieren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:169
-#, fuzzy
 msgid "Enable/Disable Code Folding"
 msgstr "Codefaltung aktivieren/deaktivieren"
 
@@ -2660,7 +2624,6 @@ msgid "Add existing file to the project"
 msgstr "Vorhandene Datei zum Projekt hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:260
-#, fuzzy
 msgid "_Include in Project"
 msgstr "_In Projekt einschließen"
 
@@ -2795,7 +2758,6 @@ msgid "Convert selected solution to another format"
 msgstr "Ausgewählte Projektmappe in ein anderes Format konvertieren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:351
-#, fuzzy
 msgid "Convert Solution Format..."
 msgstr "Projektmappenformat konvertieren..."
 
@@ -2863,7 +2825,6 @@ msgid "Save A_ll"
 msgstr "A_lle speichern"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:407
-#, fuzzy
 msgid "New _Solution..."
 msgstr "Neue _Projektmappe..."
 
@@ -2872,7 +2833,6 @@ msgid "Create a new solution"
 msgstr "Neue Projektmappe erstellen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:414
-#, fuzzy
 msgid "New _Workspace..."
 msgstr "Neuer _Arbeitsbereich..."
 
@@ -2911,7 +2871,6 @@ msgid "C_lose"
 msgstr "_Schließen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:442
-#, fuzzy
 msgid "Close Workspace Item"
 msgstr "Arbeitsbereichselement schließen"
 
@@ -2971,12 +2930,10 @@ msgid "_Clear"
 msgstr "_Löschen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:475
-#, fuzzy
 msgid "Clear Recent Files"
 msgstr "Zuletzt verwendete Dateien löschen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:477
-#, fuzzy
 msgid "Clear recent files list"
 msgstr "Liste zuletzt verwendeter Dateien löschen"
 
@@ -2985,12 +2942,10 @@ msgid "Recent Pro_jects"
 msgstr "Zuletzt verwendete _Projekte"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:485
-#, fuzzy
 msgid "Clear Recent Solutions"
 msgstr "Zuletzt verwendete Projektmappen löschen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:487
-#, fuzzy
 msgid "Clear recent solutions list"
 msgstr "Liste zuletzt verwendeter Projektmappen löschen"
 
@@ -3031,7 +2986,6 @@ msgid "Reveal in Finder"
 msgstr "Im Finder zeigen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:508
-#, fuzzy
 msgid "Reveals the file in Finder"
 msgstr "Zeigt die Datei im Finder an"
 
@@ -3069,7 +3023,6 @@ msgid "Copy the file path to the clipboard"
 msgstr "Dateipfad in die Zwischenablage kopieren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:533
-#, fuzzy
 msgid "C_opy File Path"
 msgstr "Dateipfad k_opieren"
 
@@ -3094,7 +3047,6 @@ msgid "Layout List"
 msgstr "Layoutliste"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:553
-#, fuzzy
 msgid "Save Curre_nt Layout..."
 msgstr "Aktuelles La_yout speichern..."
 
@@ -3128,7 +3080,6 @@ msgid "Set full screen mode"
 msgstr "Vollbildmodus festlegen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:575
-#, fuzzy
 msgid "S_witch Maximized/Normal View"
 msgstr "Ma_ximierte/Normale Ansicht umschalten"
 
@@ -3244,17 +3195,14 @@ msgid "Resets zoom to default"
 msgstr "Standardzoom wiederherstellen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:652
-#, fuzzy
 msgid "Two Columns"
 msgstr "Zwei Spalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:653
-#, fuzzy
 msgid "Two Editor Columns"
 msgstr "Zwei Editor-Spalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:659
-#, fuzzy
 msgid "One Column"
 msgstr "Eine Spalte"
 
@@ -3279,17 +3227,14 @@ msgid "Focus current document"
 msgstr "Fokus auf aktuelles Dokument"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:682
-#, fuzzy
 msgid "Center and Focus Document"
 msgstr "Dokument zentrieren und in Fokus setzen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:683
-#, fuzzy
 msgid "_Cursor Position"
 msgstr "_Cursorposition"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:686
-#, fuzzy
 msgid "Focus and center current document"
 msgstr "Aktuelles Dokument in Fokus setzen und zentrieren"
 
@@ -3309,7 +3254,6 @@ msgid "Manage add-ins"
 msgstr "Add-Ins verwalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:700
-#, fuzzy
 msgid "_Add-ins..."
 msgstr "_Add-Ins..."
 
@@ -3319,7 +3263,6 @@ msgstr "Toolliste"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:707
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
-#, fuzzy
 msgid "Edit Custom Tools..."
 msgstr "Benutzerdefinierte Tools bearbeiten..."
 
@@ -3380,13 +3323,11 @@ msgstr "Zum vorherigen Dokument wechseln"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:780
-#, fuzzy
 msgid "Switch to next pad"
 msgstr "Zum nächsten Bereich wechseln"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:786
-#, fuzzy
 msgid "Switch to previous pad"
 msgstr "Zum vorherigen Bereich wechseln"
 
@@ -3412,7 +3353,6 @@ msgid "Show tip of the day"
 msgstr "Tipp des Tages anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
-#, fuzzy
 msgid "Open Log Directory"
 msgstr "Stammverzeichnis"
 
@@ -3503,7 +3443,6 @@ msgid "Search backwards for the same text with emacs behavior"
 msgstr "Rückwärts nach demselben Text suchen (Emacs-Verhalten)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:863
-#, fuzzy
 msgid "Find Next Like Selection"
 msgstr "Nächste Zeichenfolge wie in Auswahl suchen"
 
@@ -3512,7 +3451,6 @@ msgid "Search forwards for the selected text"
 msgstr "Vorwärts nach ausgewähltem Text suchen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:868
-#, fuzzy
 msgid "Find Previous Like Selection"
 msgstr "Vorherige Zeichenfolge wie in Auswahl suchen"
 
@@ -3537,7 +3475,6 @@ msgid "Search for and replace text in all files of a directory"
 msgstr "Text in allen Dateien eines Verzeichnisses suchen und ersetzen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:888
-#, fuzzy
 msgid "_Type..."
 msgstr "_Typ..."
 
@@ -3582,12 +3519,10 @@ msgid "Go to previous bookmark"
 msgstr "Gehe zu vorheriger Textmarke"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:916
-#, fuzzy
 msgid "Pre_vious"
 msgstr "_Zurück"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:917
-#, fuzzy
 msgid "Go to Previous Bookmark"
 msgstr "Gehe zu vorheriger Textmarke"
 
@@ -3600,7 +3535,6 @@ msgid "Ne_xt"
 msgstr "_Weiter"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
-#, fuzzy
 msgid "Go to Next Bookmark"
 msgstr "Gehe zu nächster Textmarke"
 
@@ -3609,17 +3543,14 @@ msgid "Clear bookmarks"
 msgstr "Textmarken löschen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
-#, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "_Textmarke umschalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:929
-#, fuzzy
 msgid "_Line..."
 msgstr "Zei_le..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:930
-#, fuzzy
 msgid "Go to Line..."
 msgstr "Gehe zu Zeile..."
 
@@ -3628,7 +3559,6 @@ msgid "Go to a specific line"
 msgstr "Zu einer bestimmten Zeile wechseln"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:936
-#, fuzzy
 msgid "Find Like Selection"
 msgstr "Zeichenfolge wie in Auswahl suchen"
 
@@ -3637,7 +3567,6 @@ msgid "Uses the current selection as find string"
 msgstr "Verwendet die aktuelle Auswahl als Suchzeichenfolge"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
-#, fuzzy
 msgid "Replace Like Selection"
 msgstr "Zeichenfolge wie in Auswahl ersetzen"
 
@@ -3652,7 +3581,6 @@ msgid "Text Editor"
 msgstr "Text-Editor"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:949
-#, fuzzy
 msgid "Show Code Completion"
 msgstr "Codevervollständigung anzeigen"
 
@@ -3661,18 +3589,15 @@ msgid "Toggle Completion Suggestion Mode"
 msgstr "Modus für automatische Vorschläge umschalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
-#, fuzzy
 msgid "Inserts a template"
 msgstr "Vorlage einfügen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:957
-#, fuzzy
 msgid "_Template..."
 msgstr "_Vorlage..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:958
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:113
-#, fuzzy
 msgid "Insert Template..."
 msgstr "Vorlage einfügen..."
 
@@ -3685,7 +3610,6 @@ msgid "_Surround With..."
 msgstr "_Umgeben mit..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:962
-#, fuzzy
 msgid "Surround Selection With..."
 msgstr "Auswahl umschließen mit..."
 
@@ -3754,7 +3678,6 @@ msgid "Scroll page down"
 msgstr "Seite nach unten scrollen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
-#, fuzzy
 msgid "Scroll to top"
 msgstr "Bildlauf zur obersten Zeile"
 
@@ -3791,13 +3714,11 @@ msgid "Show Parameter List"
 msgstr "Parameterliste anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1023
-#, fuzzy
 msgid "Matching _Brace"
 msgstr "_Übereinstimmende Klammer"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1024
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
-#, fuzzy
 msgid "Go to Matching Brace"
 msgstr "Gehe zu übereinstimmender Klammer"
 
@@ -3879,7 +3800,6 @@ msgid "Switch caret mode"
 msgstr "Textcursormodus umschalten"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1069
-#, fuzzy
 msgid "Switch between insert and overwrite caret modes"
 msgstr "Schaltet den Textcursor zwischen Einfüge- und Überschreibmodus um."
 
@@ -3904,7 +3824,6 @@ msgid "Move caret to EOL and insert new line"
 msgstr "Textcursor an das Zeilenende verschieben und neue Zeile einfügen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
-#, fuzzy
 msgid "Complete current statement"
 msgstr "Aktuelle Anweisung vervollständigen"
 
@@ -3945,7 +3864,6 @@ msgid "Swaps the characters on either side of the caret"
 msgstr "Vertauscht die Zeichen auf beiden Seiten des Textcursors"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1108
-#, fuzzy
 msgid "Toggle Block Selection Mode"
 msgstr "Blockauswahlmodus ein/aus"
 
@@ -3974,7 +3892,6 @@ msgstr ""
 "Animiert den Textcursor des Text-Editors, um ihn besser erkennbar zu machen."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
-#, fuzzy
 msgid "Hide Current Message"
 msgstr "Aktuelle Meldung ausblenden"
 
@@ -3983,22 +3900,18 @@ msgid "Show/Hide current Inline Message"
 msgstr "Aktuelle Inlinemeldung ein-/ausblenden"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1127
-#, fuzzy
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "Schaltet die Sichtbarkeit der aktuellen Inlinemeldung um."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
-#, fuzzy
 msgid "_None"
 msgstr "_Keine"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
-#, fuzzy
 msgid "Show/Hide Inline Messages"
 msgstr "Inlinemeldungen ein-/ausblenden"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
-#, fuzzy
 msgid "Toggles the visibility of Inline Messages"
 msgstr "Schaltet die Sichtbarkeit von Inlinemeldungen um."
 
@@ -4187,7 +4100,6 @@ msgstr "Codeanalyse"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:83
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:87
-#, fuzzy
 msgid "Run Configurations"
 msgstr "Laufzeitkonfigurationen"
 
@@ -4213,7 +4125,6 @@ msgid "_Format"
 msgstr "_Format"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:89
-#, fuzzy
 msgid "_Insert"
 msgstr "E_infügen"
 
@@ -4227,7 +4138,6 @@ msgid "Layout"
 msgstr "Layout"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:118
-#, fuzzy
 msgid "Inline _Messages"
 msgstr "Inline_meldungen"
 
@@ -4288,7 +4198,6 @@ msgid "Mono Project"
 msgstr "Mono-Projekt"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:281
-#, fuzzy
 msgid "Report Problem..."
 msgstr "Problem melden..."
 
@@ -4309,7 +4218,6 @@ msgid "XML document"
 msgstr "XML-Dokument"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:22
-#, fuzzy
 msgid "PNG resource"
 msgstr "PNG-Ressource"
 
@@ -4326,7 +4234,6 @@ msgid "Glade File"
 msgstr "Glade-Datei"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:34
-#, fuzzy
 msgid "Manifest File"
 msgstr "Manifestdatei"
 
@@ -4448,7 +4355,6 @@ msgid "Visual Studio"
 msgstr "Visual Studio"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:247
-#, fuzzy
 msgid "Visual Studio (Windows)"
 msgstr "Visual Studio (Windows)"
 
@@ -4461,12 +4367,10 @@ msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:250
-#, fuzzy
 msgid "Xcode"
 msgstr "Xcode"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:251
-#, fuzzy
 msgid "Visual Studio Code"
 msgstr "Visual Studio Code"
 
@@ -4557,12 +4461,10 @@ msgid "LGPL 3 License"
 msgstr "LGPL 3-Lizenz"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppManifest.xft.xml:4
-#, fuzzy
 msgid "App Manifest"
 msgstr "App-Manifest"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppManifest.xft.xml:8
-#, fuzzy
 msgid "Creates a Windows app manifest."
 msgstr "Erstellt ein Windows-App-Manifest."
 
@@ -4674,12 +4576,10 @@ msgstr "Codeanalyse ausführen für {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:79
-#, fuzzy
 msgid "Start tool {0}"
 msgstr "Tool \"{0}\" starten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:102
-#, fuzzy
 msgid "Add Custom Tool..."
 msgstr "Benutzerdefiniertes Tool hinzufügen..."
 
@@ -4693,12 +4593,10 @@ msgid "Switch to layout '{0}'"
 msgstr "Zum Layout '{0}' wechseln"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:198
-#, fuzzy
 msgid "_Delete “{0}” Layout"
 msgstr "_Layout '{0}' löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:207
-#, fuzzy
 msgid "Are you sure you want to delete the “{0}” layout?"
 msgstr "Möchten Sie das Layout '{0}' wirklich löschen?"
 
@@ -4733,32 +4631,26 @@ msgid "Pads"
 msgstr "Bereiche"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:96
-#, fuzzy
 msgid "Change Targets"
 msgstr "Änderungen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:226
-#, fuzzy
 msgid "PCL {0} - not installed"
 msgstr "{0} (Nicht installiert)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:228
-#, fuzzy
 msgid "PCL {0}"
 msgstr "{0} bereinigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:242
-#, fuzzy
 msgid "Current Profile:"
 msgstr "Aktuelles Profil:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:246
-#, fuzzy
 msgid "Target Frameworks:"
 msgstr "Zielframeworks:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:409
-#, fuzzy
 msgid "Test Error"
 msgstr "Testfehler"
 
@@ -4787,7 +4679,6 @@ msgstr ""
 "Kontrollkästchen aktivieren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:568
-#, fuzzy
 msgid "The following frameworks have been implicitly selected:"
 msgstr "Die folgenden Frameworks wurden implizit ausgewählt:"
 
@@ -4859,7 +4750,6 @@ msgid "Error loading template {0} for language {1}"
 msgstr "Fehler beim Laden der Vorlage {0} für Programmiersprache {1}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:331
-#, fuzzy
 msgid "Solution template doesn't have any project templates"
 msgstr "Die Projektmappenvorlage weist keine Projektvorlagen auf."
 
@@ -4870,7 +4760,6 @@ msgstr ""
 "In der CodeDom-basierten Vorlage wurde keine Programmiersprache definiert."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:71
-#, fuzzy
 msgid "The language '{0}' does not have support for CodeDom."
 msgstr "CodeDom wird von der Programmiersprache '{0}' nicht unterstützt."
 
@@ -4879,7 +4768,6 @@ msgid "File already exists"
 msgstr "Datei bereits vorhanden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:200
-#, fuzzy
 msgid ""
 "File {0} already exists.\n"
 "Do you want to overwrite the existing file or add it to the project?"
@@ -4888,12 +4776,10 @@ msgstr ""
 "Möchten Sie die vorhandene Datei überschreiben oder dem Projekt hinzufügen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:246
-#, fuzzy
 msgid "File name not provided in template"
 msgstr "In der Vorlage wurde kein Dateiname angegeben."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:371
-#, fuzzy
 msgid "Language '{0}' not found"
 msgstr "Die Programmiersprache '{0}' wurde nicht gefunden."
 
@@ -4916,7 +4802,6 @@ msgid "All changes made to the document will be permanently lost."
 msgstr "Alle vorgenommenen Dokumentänderungen gehen unwiderruflich verloren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:527
-#, fuzzy
 msgid "Disable _Folding"
 msgstr "_Faltung deaktivieren"
 
@@ -4995,7 +4880,6 @@ msgid "License"
 msgstr "Lizenz"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:79
-#, fuzzy
 msgid "License is available at "
 msgstr "Lizenz ist verfügbar unter "
 
@@ -5294,7 +5178,6 @@ msgstr ""
 "entfernen', wenn Sie sie nur aus der aktuellen Projektmappe entfernen möchten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:201
-#, fuzzy
 msgid ""
 "The directory and any files it contains will be permanently removed from "
 "your hard disk. "
@@ -5358,7 +5241,6 @@ msgid "ApplicationIconId"
 msgstr "ApplicationIconId"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:480
-#, fuzzy
 msgid "View (Pads)"
 msgstr "Ansicht (Bereiche)"
 
@@ -5743,7 +5625,6 @@ msgid "Delete Task"
 msgstr "Aufgabe löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:66
-#, fuzzy
 msgid "{0} <span size='small'>(Unavailable)</span>"
 msgstr "{0} <span size='small'>(Nicht verfügbar)</span>"
 
@@ -5791,7 +5672,6 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:589
-#, fuzzy
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
 msgstr ""
@@ -5803,12 +5683,10 @@ msgid "This key combination is already bound to command '{0}'"
 msgstr "Diese Tastenkombination ist bereits an den Befehl '{0}' gebunden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:788
-#, fuzzy
 msgid "Conflicts:"
 msgstr "Konflikte:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:796
-#, fuzzy
 msgid "Duplicates:"
 msgstr "Duplikate:"
 
@@ -6037,7 +5915,6 @@ msgid "The following add-ins could not be started:"
 msgstr "Die folgenden Add-Ins konnten nicht gestartet werden:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:78
-#, fuzzy
 msgid "Tools (Custom)"
 msgstr "Tools (benutzerdefiniert)"
 
@@ -6072,7 +5949,6 @@ msgid "_Command:"
 msgstr "_Befehl:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:210
-#, fuzzy
 msgid "Key Binding:"
 msgstr "Tastenzuordnung:"
 
@@ -6104,13 +5980,11 @@ msgstr "(Standard)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:117
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs:145
-#, fuzzy
 msgid "These preferences will take effect next time you start {0}"
 msgstr "Diese Einstellungen werden beim nächsten Start von {0} wirksam."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:118
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/SdkLocationPanel.cs:137
-#, fuzzy
 msgid "Restart {0}"
 msgstr "{0} neu starten"
 
@@ -6391,7 +6265,6 @@ msgid "Searching..."
 msgstr "Wird gesucht..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:130
-#, fuzzy
 msgid "Search cancelled"
 msgstr "Suche abgebrochen"
 
@@ -6621,7 +6494,6 @@ msgid "Search Result"
 msgstr "Suchergebnis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:111
-#, fuzzy
 msgid "Search operation canceled"
 msgstr "Suchvorgang abgebrochen"
 
@@ -6649,7 +6521,6 @@ msgid "Custom Parameters..."
 msgstr "Benutzerdefinierte Parameter..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:494
-#, fuzzy
 msgid "Custom Configuration..."
 msgstr "Benutzerdefinierte Konfiguration..."
 
@@ -6766,7 +6637,6 @@ msgid "Console input not supported"
 msgstr "Konsoleneingabe wird nicht unterstützt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:890
-#, fuzzy
 msgid ""
 "Console input is not supported when using the {0} output console. If your "
 "application needs to read data from the standard input, please set the 'Run "
@@ -6891,7 +6761,6 @@ msgid "The key combination ({0}, {1}) is not a command."
 msgstr "Die Tastenkombination ({0}, {1}) ist kein Befehl."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/CommandManager.cs:517
-#, fuzzy
 msgid "The key combination ({0}) has conflicts."
 msgstr "Die Tastenkombination ({0}) verursacht Konflikte."
 
@@ -6963,7 +6832,6 @@ msgid "Undock"
 msgstr "Ausdocken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:772
-#, fuzzy
 msgid "There was an error saving the changes"
 msgstr "Fehler beim Umbenennen der Datei."
 
@@ -7001,7 +6869,6 @@ msgid "Summary"
 msgstr "Zusammenfassung"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:436
-#, fuzzy
 msgid "No completions found"
 msgstr "Keine Vervollständigungen gefunden"
 
@@ -7161,7 +7028,6 @@ msgid "_Overwrite file"
 msgstr "_Datei überschreiben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:93
-#, fuzzy
 msgid "Add existing file"
 msgstr "Vorhandene Datei hinzufügen"
 
@@ -7249,7 +7115,6 @@ msgid "A configuration with the name '{0}' already exists."
 msgstr "Eine Konfiguration mit dem Namen '{0}' ist bereits vorhanden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewFileDialog.cs:486
-#, fuzzy
 msgid "Error creating file"
 msgstr "Fehler beim Erstellen der Datei"
 
@@ -7498,23 +7363,19 @@ msgid "Clean successful."
 msgstr "Bereinigung erfolgreich."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1223
-#, fuzzy
 msgid "Clean canceled."
 msgstr "Fehler bei der Bereinigung."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1229
-#, fuzzy
 msgid "Clean: "
 msgstr "Bereinigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1314
-#, fuzzy
 msgid "Rebuilding... (Clean)"
 msgstr "Neuerstellung... (Bereinigen)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1326
-#, fuzzy
 msgid "Rebuilding... (Build)"
 msgstr "Neuerstellung... (Erstellung)"
 
@@ -7523,7 +7384,6 @@ msgid "Outdated Build"
 msgstr "Veralteter Build"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1391
-#, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
 "compiled. Do you want to continue?"
@@ -7578,7 +7438,6 @@ msgid "Adding files..."
 msgstr "Dateien werden hinzugefügt..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1816
-#, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Im Projekt ist bereits ein Link mit dem Namen \"{0}\" vorhanden."
 
@@ -7591,7 +7450,6 @@ msgstr ""
 "Berechtigungen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1932
-#, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Im Projekt ist bereits eine Datei mit dem Namen \"{0}\" vorhanden."
 
@@ -8024,7 +7882,6 @@ msgid "The resource naming policy has changed"
 msgstr "Die Benennungsrichtlinie für Ressourcen wurde geändert."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:84
-#, fuzzy
 msgid ""
 "Changing the resource naming policy may cause run-time errors if the code "
 "using resources is not properly updated. There are two options:\n"
@@ -8050,12 +7907,10 @@ msgstr ""
 "verwenden die neue Richtlinie."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:85
-#, fuzzy
 msgid "Update Identifiers"
 msgstr "Bezeichner aktualisieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:86
-#, fuzzy
 msgid "Keep Current Identifiers"
 msgstr "Aktuelle Bezeichner beibehalten"
 
@@ -8381,7 +8236,6 @@ msgid "Online Templates"
 msgstr "Onlinevorlagen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:121
-#, fuzzy
 msgid "Search…"
 msgstr "Suchen..."
 
@@ -8432,7 +8286,6 @@ msgid "The file {0} already exists. Do you want to replace it?"
 msgstr "Die Datei '{0}' ist bereits vorhanden. Ersetzen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs:130
-#, fuzzy
 msgid "The policy file could not be saved"
 msgstr "Die Richtliniendatei konnte nicht gespeichert werden."
 
@@ -8565,17 +8418,14 @@ msgstr "Ordner auswählen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/XmlCodeDomReader.cs:61
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/XmlCodeDomReader.cs:82
-#, fuzzy
 msgid "Property '{0}' not found in type '{1}'."
 msgstr "Die Eigenschaft '{0}' wurde in Typ '{1}' nicht gefunden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/XmlCodeDomReader.cs:121
-#, fuzzy
 msgid "Add method not found in {0}"
 msgstr "Die Add-Methode wurde in {0} nicht gefunden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/XmlCodeDomReader.cs:154
-#, fuzzy
 msgid "Type not found for element: {0}"
 msgstr "Typ wurde für das Element nicht gefunden: {0}"
 
@@ -8840,7 +8690,6 @@ msgid "Target Framework"
 msgstr "Zielframework"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
-#, fuzzy
 msgid ".NET Standard Platform:"
 msgstr "Zielplattform:"
 
@@ -8851,12 +8700,10 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
-#, fuzzy
 msgid ".NET Portable:"
 msgstr ".NET Portable-Teilmenge"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:157
-#, fuzzy
 msgid "Change..."
 msgstr "Änderungen"
 
@@ -8881,12 +8728,10 @@ msgid "Commands"
 msgstr "Befehle"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageSection.cs:154
-#, fuzzy
 msgid "{0} could not be opened"
 msgstr "{0} konnte nicht geöffnet werden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageSection.cs:155
-#, fuzzy
 msgid "Do you want to remove the reference to it from the Recent list?"
 msgstr ""
 "Möchten Sie den Verweis darauf aus der Liste 'Zuletzt verwendet' entfernen?"
@@ -8907,7 +8752,6 @@ msgstr "Vor {0} Tagen"
 
 # msgstr[1] "{0} Fehler"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:216
-#, fuzzy
 msgid "{0} week ago"
 msgid_plural "{0} weeks ago"
 msgstr[0] "Vor {0} Wochen"
@@ -9078,27 +8922,22 @@ msgid "Use MSBuild build engine (unsupported for this project type)"
 msgstr "MSBuild-Buildmodul verwenden (für diesen Projekttyp nicht unterstützt)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:160
-#, fuzzy
 msgid "Gathering class information"
 msgstr "Klasseninformationen werden zusammengestellt..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:887
-#, fuzzy
 msgid "Insert Field"
 msgstr "Feld einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:890
-#, fuzzy
 msgid "Insert Method"
 msgstr "Methode einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:893
-#, fuzzy
 msgid "Insert Property"
 msgstr "Eigenschaft einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:896
-#, fuzzy
 msgid "Insert Code"
 msgstr "Code einfügen"
 
@@ -9162,7 +9001,6 @@ msgstr ""
 "Der Name darf kein Programmiersprachen-Schlüsselwort enthalten."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:679
-#, fuzzy
 msgid ""
 "Directory {0} already exists.\n"
 "Do you want to continue creating the project?"
@@ -9209,7 +9047,6 @@ msgid "Create a .gitignore file to ignore inessential files."
 msgstr "Erstellt eine GITIGNORE-Datei, um unwesentliche Dateien zu ignorieren."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs:130
-#, fuzzy
 msgid "Create a project directory within the solution directory."
 msgstr ""
 "Erstellt ein Projektverzeichnis innerhalb des Projektmappenverzeichnisses."
@@ -9234,12 +9071,10 @@ msgid "Services"
 msgstr "Dienste"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:65
-#, fuzzy
 msgid "E_rrors"
 msgstr "Fehle_r"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:71
-#, fuzzy
 msgid "_Errors and Warnings"
 msgstr "F_ehler und Warnungen"
 
@@ -9248,7 +9083,6 @@ msgid "Illegal characters used in location."
 msgstr "Unzulässige Zeichen in Speicherpfad."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:151
-#, fuzzy
 msgid ""
 "Illegal solution name.\n"
 "Only use letters, digits, '.' or '_'."
@@ -9293,47 +9127,39 @@ msgid "Enable Code Analysis on Build"
 msgstr "Codeanalyse für Build aktivieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Extension/DefaultCommandTextEditorExtension.cs:264
-#, fuzzy
 msgid "_Hide Current Message"
 msgstr "_Aktuelle Meldung ausblenden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor.Extension/DefaultCommandTextEditorExtension.cs:264
-#, fuzzy
 msgid "_Show Hidden Message"
 msgstr "Au_sgeblendete Meldung anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:159
-#, fuzzy
 msgid "Run Configuration: {0}"
 msgstr "Laufzeitkonfigurationen:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:189
-#, fuzzy
 msgid "New"
 msgstr "Neu..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:193
-#, fuzzy
 msgid "Duplicate"
 msgstr "Duplizieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:265
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:251
-#, fuzzy
 msgid "Duplicate Configuration"
 msgstr "Konfiguration duplizieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:291
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:277
-#, fuzzy
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "Möchten Sie die Konfiguration \"{0}\" entfernen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:352
-#, fuzzy
 msgid "The name can't be empty"
 msgstr "Der Name darf nicht leer sein."
 
@@ -9342,50 +9168,41 @@ msgid "This name is already in use"
 msgstr "Dieser Name wird bereits verwendet."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:55
-#, fuzzy
 msgid "User-specific configuration"
 msgstr "Benutzerspezifische Konfiguration"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:87
-#, fuzzy
 msgid "Start Action"
 msgstr "Startaktion"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:90
-#, fuzzy
 msgid "Start project"
 msgstr "Projekt starten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:91
-#, fuzzy
 msgid "Start external program:"
 msgstr "Externes Programm starten:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:80
-#, fuzzy
 msgid "Run in directory:"
 msgstr "Im Verzeichnis ausführen:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:120
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:95
-#, fuzzy
 msgid "Run on external console"
 msgstr "Auf externer Konsole ausführen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:121
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:96
-#, fuzzy
 msgid "Pause console output"
 msgstr "Konsolenausgabe anhalten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
-#, fuzzy
 msgid "Execute in .NET Runtime:"
 msgstr "In .NET-Laufzeit ausführen:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:133
-#, fuzzy
 msgid "Mono runtime settings:"
 msgstr "Einstellungen für Mono-Laufzeit:"
 
@@ -9394,37 +9211,30 @@ msgid "..."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:137
-#, fuzzy
 msgid "Default settings"
 msgstr "Standardeinstellungen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:143
-#, fuzzy
 msgid "Advanced"
 msgstr "Erweitert"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:164
-#, fuzzy
 msgid "(Default runtime)"
 msgstr "(Standardlaufzeit)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:172
-#, fuzzy
 msgid "Mono Runtime Settings"
 msgstr "Einstellungen für Mono-Laufzeit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:54
-#, fuzzy
 msgid "Execution Mode Selector"
 msgstr "Ausführungsmodusauswahl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:62
-#, fuzzy
 msgid "Run Configurations:"
 msgstr "Laufzeitkonfigurationen:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:67
-#, fuzzy
 msgid "Execution Modes:"
 msgstr "Ausführungsmodi:"
 
@@ -9433,12 +9243,10 @@ msgid "Catalan"
 msgstr "Katalanisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:60
-#, fuzzy
 msgid "Chinese - China"
 msgstr "Chinesisch - China"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:61
-#, fuzzy
 msgid "Chinese - Taiwan"
 msgstr "Chinesisch - Taiwan"
 
@@ -9471,7 +9279,6 @@ msgid "English"
 msgstr "Englisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:69
-#, fuzzy
 msgid "Hungarian"
 msgstr "Ungarisch"
 
@@ -9480,12 +9287,10 @@ msgid "Indonesian"
 msgstr "Indonesisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:71
-#, fuzzy
 msgid "Italian"
 msgstr "Italienisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:74
-#, fuzzy
 msgid "Polish"
 msgstr "Polnisch"
 
@@ -9498,7 +9303,6 @@ msgid "Portuguese - Brazil"
 msgstr "Portugiesisch - Brasilien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:77
-#, fuzzy
 msgid "Russian"
 msgstr "Russisch"
 
@@ -9515,12 +9319,10 @@ msgid "Swedish"
 msgstr "Schwedisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/RunWithCustomParametersDialog.cs:51
-#, fuzzy
 msgid "Custom Parameters"
 msgstr "Benutzerdefinierte Parameter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationPanel.cs:71
-#, fuzzy
 msgid "Run Configuration"
 msgstr "Laufzeitkonfigurationen"
 
@@ -9531,7 +9333,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:84
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:335
-#, fuzzy
 msgid "Finish"
 msgstr "Beendet"
 
@@ -9543,7 +9344,6 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:161
-#, fuzzy
 msgid "Back"
 msgstr "_Zurück"
 
@@ -9648,7 +9448,6 @@ msgid "_Update Solution"
 msgstr "_Projektmappe aktualisieren"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:153
-#, fuzzy
 msgid "_Publish in Version Control..."
 msgstr "_In Versionskontrolle veröffentlichen..."
 
@@ -9674,12 +9473,10 @@ msgid "Create _Patch"
 msgstr "_Patch erstellen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:178
-#, fuzzy
 msgid "Add to Ignore List"
 msgstr "Zur Liste 'Ignorieren' hinzufügen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:181
-#, fuzzy
 msgid "Remove from Ignore List"
 msgstr "Aus Liste 'Ignorieren' entfernen"
 
@@ -9688,22 +9485,18 @@ msgid "Resolve Conflicts"
 msgstr "Konflikte auflösen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:190
-#, fuzzy
 msgid "_Copy Revision"
 msgstr "_Revision kopieren"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:192
-#, fuzzy
 msgid "_Show Diff"
 msgstr "Unter_schied anzeigen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:194
-#, fuzzy
 msgid "S_how Log"
 msgstr "_Protokoll anzeigen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:196
-#, fuzzy
 msgid "Show _Blame Before"
 msgstr "_Blame vorher anzeigen"
 
@@ -9764,7 +9557,6 @@ msgid "Commit message:"
 msgstr "Commit-Nachricht:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:279
-#, fuzzy
 msgid "{0} Status"
 msgstr "{0} Status"
 
@@ -9869,7 +9661,6 @@ msgid "Repository"
 msgstr "Repository"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:71
-#, fuzzy
 msgid "_Checkout"
 msgstr "Aus_checken"
 
@@ -9967,7 +9758,6 @@ msgid "Initial check-in of module {0}"
 msgstr "Erstes Einchecken des Moduls {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:40
-#, fuzzy
 msgid "_Publish"
 msgstr "_Veröffentlichen"
 
@@ -10017,7 +9807,6 @@ msgid "Update operation completed."
 msgstr "Vorgang 'Aktualisieren' abgeschlossen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:22
-#, fuzzy
 msgid "Invalid URL"
 msgstr "Ungültige URL"
 
@@ -10039,7 +9828,6 @@ msgid "Modified"
 msgstr "Geändert"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:191
-#, fuzzy
 msgid "Renamed"
 msgstr "Umbenannt"
 
@@ -10204,7 +9992,6 @@ msgid "./yourfile.ext"
 msgstr "./yourfile.ext"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:78
-#, fuzzy
 msgid "Some additional changes on another file of the project."
 msgstr "Einige zusätzliche Änderungen an einer anderen Projektdatei."
 
@@ -10254,14 +10041,12 @@ msgstr "_Versionskontroll-Richtlinie"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:79
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:85
-#, fuzzy
 msgid "Loading…"
 msgstr "Wird geladen..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:102
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:239
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:261
-#, fuzzy
 msgid "Local"
 msgstr "Lokal"
 
@@ -10280,7 +10065,6 @@ msgstr ""
 "{1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:193
-#, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "Revision {0}\"t{1}\"t{2}"
 
@@ -10301,7 +10085,6 @@ msgid "Retrieving history"
 msgstr "Verlauf wird abrufen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.cs:605
-#, fuzzy
 msgid "Email: {0}{1}{2}"
 msgstr "E-Mail: {0}{1}{2}"
 
@@ -10365,12 +10148,10 @@ msgid "(revision {0})"
 msgstr "(Revision {0})"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:163
-#, fuzzy
 msgid "Show Next (Difference)"
 msgstr "Nächstes Element anzeigen (Differenz)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:179
-#, fuzzy
 msgid "Show Previous (Difference)"
 msgstr "Vorheriges Element anzeigen (Differenz)"
 
@@ -10435,18 +10216,15 @@ msgid "Operation"
 msgstr "Vorgang"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:332
-#, fuzzy
 msgid "(Revert to revision {0})"
 msgstr "(Auf Revision {0} zurücksetzen)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:340
-#, fuzzy
 msgid "(Revert revision {0})"
 msgstr "(Revision {0} zurücksetzen)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:409
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:443
-#, fuzzy
 msgid "Error while getting revision text."
 msgstr "Fehler beim Abrufen des Revisionstexts."
 
@@ -10456,7 +10234,6 @@ msgid "The file may not be part of the working copy."
 msgstr "Die Datei ist möglicherweise nicht Teil der Arbeitskopie."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:420
-#, fuzzy
 msgid "Error while getting previous revision."
 msgstr "Fehler beim Abrufen der vorherigen Revision."
 
@@ -10466,7 +10243,6 @@ msgstr " Binärdateien sind unterschiedlich."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:460
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:461
-#, fuzzy
 msgid "Revision {0}"
 msgstr "Revision {0}"
 
@@ -10641,7 +10417,6 @@ msgstr ""
 "werden."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs:116
-#, fuzzy
 msgid "<b>Reason</b>"
 msgstr "<b>Ursache</b>"
 
@@ -10734,22 +10509,18 @@ msgid "Receiving and indexing objects"
 msgstr "Objekte werden empfangen und indiziert."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:196
-#, fuzzy
 msgid "Checking out files"
 msgstr "Dateien werden ausgecheckt."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:228
-#, fuzzy
 msgid "Applying stash"
 msgstr "Stash wird angewendet."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:249
-#, fuzzy
 msgid "Popping stash"
 msgstr "'pop' wird für Stash ausgeführt."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:275
-#, fuzzy
 msgid "Stashing changes"
 msgstr "Stash wird für Änderungen ausgeführt."
 
@@ -10758,14 +10529,12 @@ msgid "Updating"
 msgstr "Wird aktualisiert"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:645
-#, fuzzy
 msgid "Unable to authorize credentials for the repository."
 msgstr ""
 "Anmeldeinformationen für das Repository können nicht autorisiert werden."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:647
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:649
-#, fuzzy
 msgid "Not a valid git repository."
 msgstr "Kein gültiges Git-Repository."
 
@@ -10799,7 +10568,6 @@ msgid "Rebasing"
 msgstr "Rebase wird ausgeführt"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:773
-#, fuzzy
 msgid "Cherry-picking {0} - {1}/{2}"
 msgstr "Cherry-Picking {0} - {1}/{2}"
 
@@ -10824,7 +10592,6 @@ msgid "Updating solution"
 msgstr "Projektmappe wird aktualisiert"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1457
-#, fuzzy
 msgid "Moving files"
 msgstr "Dateien werden verschoben."
 
@@ -10870,7 +10637,6 @@ msgid "Merging branch '{0}'..."
 msgstr "Branch '{0}' wird zusammengeführt..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:117
-#, fuzzy
 msgid "Branch switch failed"
 msgstr "Fehler beim Wechseln des Branch"
 
@@ -10917,7 +10683,6 @@ msgid "Merge Conflict Resolution"
 msgstr "Auflösen von Zusammenführungskonflikten"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs:34
-#, fuzzy
 msgid "A merge conflict has been detected in file <b>SomeFile.txt</b>"
 msgstr ""
 "In der Datei <b>SomeFile.txt</b> wurde ein Zusammenführungskonflikt erkannt."
@@ -10947,12 +10712,10 @@ msgid "Tracking"
 msgstr "Nachverfolgung"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:90
-#, fuzzy
 msgid "Remote Source / Branch"
 msgstr "Remotequelle/-branch"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:91
-#, fuzzy
 msgid "Url"
 msgstr "URL"
 
@@ -10981,7 +10744,6 @@ msgid "Are you sure you want to delete the remote '{0}'?"
 msgstr "Möchten Sie den Remote-{0} wirklich löschen?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:375
-#, fuzzy
 msgid "Fetching remote..."
 msgstr "Remoteabruf..."
 
@@ -11111,7 +10873,6 @@ msgid "Username:"
 msgstr "Benutzername:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/CredentialsDialog.cs:59
-#, fuzzy
 msgid "Passphrase:"
 msgstr "Passphrase:"
 
@@ -11124,7 +10885,6 @@ msgid "Credentials required for the repository: {0}"
 msgstr "Anmeldeinformationen sind für das Repository erforderlich: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.CredentialsDialog.cs:47
-#, fuzzy
 msgid "<b>{0}</b>"
 msgstr "<b>{0}</b>"
 
@@ -11210,7 +10970,6 @@ msgid "Author name:"
 msgstr "Name des Autors:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCommitDialogExtension.cs:148
-#, fuzzy
 msgid "Not configured"
 msgstr "Nicht konfiguriert"
 
@@ -11219,12 +10978,10 @@ msgid "Name not configured"
 msgstr "Name ist nicht konfiguriert"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCommitDialogExtension.cs:152
-#, fuzzy
 msgid "Email not configured"
 msgstr "E-Mail nicht konfiguriert"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitCommitDialogExtension.cs:189
-#, fuzzy
 msgid ""
 "When using Git, it is not recommended to surpass the character count of {0} "
 "in the first line of the commit message"
@@ -11292,18 +11049,15 @@ msgstr "Vorgang abgebrochen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1184
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:483
-#, fuzzy
 msgid "(unavailable)"
 msgstr "(nicht verfügbar)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1248
-#, fuzzy
 msgid "The operation was interrupted"
 msgstr "Der Vorgang wurde unterbrochen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1268
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:695
-#, fuzzy
 msgid "{0} KBytes"
 msgstr "{0} KB"
 
@@ -11312,7 +11066,6 @@ msgid "{0:0.0} MBytes"
 msgstr "{0:0.00} MB"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1272
-#, fuzzy
 msgid "{0} MBytes"
 msgstr "{0} MB"
 
@@ -11453,12 +11206,10 @@ msgid "Get annotations {0}"
 msgstr "Anmerkungen abrufen {0}"
 
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:72
-#, fuzzy
 msgid "Go to Download Page"
 msgstr "Gehe zu Downloadseite"
 
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:74
-#, fuzzy
 msgid "The Subversion add-in could not be initialized"
 msgstr "Das Add-In für die Subversion konnte nicht initialisiert werden."
 
@@ -11475,7 +11226,6 @@ msgid "{0:0.00} MBytes"
 msgstr "{0:0.00} MB"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:60
-#, fuzzy
 msgid "Designer (Gtk#)"
 msgstr "Designer (Gtk#)"
 
@@ -11504,7 +11254,6 @@ msgid "Edit Project Icons..."
 msgstr "Projektsymbole bearbeiten..."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml:78
-#, fuzzy
 msgid "GTK# Support Settings..."
 msgstr "GTK#-Supporteinstellungen..."
 
@@ -12878,7 +12627,6 @@ msgid "Add Items..."
 msgstr "Elemente hinzufügen..."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:103
-#, fuzzy
 msgid "Add Toolbox Items..."
 msgstr "Toolboxelemente hinzufügen..."
 
@@ -13645,12 +13393,10 @@ msgid "Web Service References"
 msgstr "Webdienstverweise"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences/Library.cs:74
-#, fuzzy
 msgid "Service: {0}"
 msgstr "Dienst: {0}"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences/Library.cs:77
-#, fuzzy
 msgid "Discovery document"
 msgstr "Discovery-Dokument"
 
@@ -13668,7 +13414,6 @@ msgstr ""
 "Die aktuelle Laufzeitumgebung für Ihr Projekt ist auf Version 1.0 festgelegt."
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:31
-#, fuzzy
 msgid "Web Service is not supported in this version."
 msgstr "Der Webdienst wird in dieser Version nicht unterstützt."
 
@@ -13683,7 +13428,6 @@ msgid "_Switch to .NET 2.0"
 msgstr "_Zu .NET 2.0 wechseln"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:52
-#, fuzzy
 msgid "The web reference could not be added"
 msgstr "Der Webverweis konnte nicht hinzugefügt werden."
 
@@ -13696,12 +13440,10 @@ msgid "Are you sure you want to delete the web service reference '{0}'?"
 msgstr "Möchten Sie den Webdienstverweis '{0}' wirklich löschen?"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:123
-#, fuzzy
 msgid "Deleted Web Reference {0}"
 msgstr "Webverweis {0} wurde gelöscht."
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:143
-#, fuzzy
 msgid "Deleted all Web References"
 msgstr "Alle Webverweise wurden gelöscht."
 
@@ -13862,7 +13604,6 @@ msgid "Creates an empty C# class library"
 msgstr "Erstellt eine leere C#-Klassenbibliothek."
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:14
-#, fuzzy
 msgid "Show Code _Generation"
 msgstr "Code_generierung anzeigen"
 
@@ -13873,12 +13614,10 @@ msgid "Code Navigation"
 msgstr "Codenavigation"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:23
-#, fuzzy
 msgid "_Find Reference Usages"
 msgstr "_Verweisverwendungen suchen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:27
-#, fuzzy
 msgid "Extension Methods"
 msgstr "Erweiterungsmethoden"
 
@@ -13887,17 +13626,14 @@ msgid "Find Extension Methods"
 msgstr "Erweiterungsmethoden suchen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:31
-#, fuzzy
 msgid "Base Symbols"
 msgstr "Basissymbole"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:32
-#, fuzzy
 msgid "Find Base Symbols"
 msgstr "Basissymbole suchen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:35
-#, fuzzy
 msgid "Derived Symbols"
 msgstr "Abgeleitete Symbole"
 
@@ -13908,22 +13644,18 @@ msgid "Find Derived Symbols"
 msgstr "Abgeleitete Symbole suchen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:39
-#, fuzzy
 msgid "Member Overloads"
 msgstr "Memberüberladungen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:40
-#, fuzzy
 msgid "Find Member Overloads"
 msgstr "Memberüberladungen suchen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:43
-#, fuzzy
 msgid "Implementing Members"
 msgstr "Member werden implementiert."
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:44
-#, fuzzy
 msgid "Find Implementing Members"
 msgstr "Implementierende Member suchen"
 
@@ -13942,22 +13674,18 @@ msgstr "Refactory-Vorgänge"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:64
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:91
-#, fuzzy
 msgid "_Sort Usings"
 msgstr "Using-Direktiven _sortieren"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:68
-#, fuzzy
 msgid "_Remove Unused Usings"
 msgstr "Nicht verwendete Using-Di_rektiven entfernen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:72
-#, fuzzy
 msgid "R_emove and Sort"
 msgstr "_Entfernen und Sortieren"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:73
-#, fuzzy
 msgid "Remove Unused and Sort (Usings)"
 msgstr "Nicht verwendete entfernen und sortieren (Using-Direktiven)"
 
@@ -14006,7 +13734,6 @@ msgid "Name Conventions"
 msgstr "Namenskonventionen"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:311
-#, fuzzy
 msgid "Navigate"
 msgstr "Navigieren"
 
@@ -14015,7 +13742,6 @@ msgid "Portable Library"
 msgstr "Portable Bibliothek"
 
 #: ../src/addins/CSharpBinding/templates/PortableLibrary.xpt.xml:13
-#, fuzzy
 msgid ""
 "Creates a C# library that can be used in Windows, Mac, Silverlight, Windows "
 "Phone, Xamarin.iOS and Xamarin.Android."
@@ -14217,12 +13943,10 @@ msgid "Indent open and close braces"
 msgstr "Öffnende und schließende geschweifte Klammern einziehen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:202
-#, fuzzy
 msgid "Indent switch sections"
 msgstr "switch-Abschnitte einziehen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:213
-#, fuzzy
 msgid "Indent case sections"
 msgstr "case-Abschnitte einziehen"
 
@@ -14323,7 +14047,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:436
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:449
-#, fuzzy
 msgid "Insert space within argument list parentheses"
 msgstr "Leerzeichen zwischen runden Klammern um Argumentliste einfügen"
 
@@ -14451,7 +14174,6 @@ msgid "No region"
 msgstr "Keine Region"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs:65
-#, fuzzy
 msgid "Creates new method"
 msgstr "Erstellt eine neue Methode"
 
@@ -14515,13 +14237,11 @@ msgstr ""
 "Wählen Sie das Ereignis aus, für das die Methode generiert werden soll."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:465
-#, fuzzy
 msgid "Type can not be resolved."
 msgstr "Typ kann nicht aufgelöst werden."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:973
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
-#, fuzzy
 msgid "(keyword)"
 msgstr "(Schlüsselwort)"
 
@@ -14592,7 +14312,6 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1446
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1451
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1456
-#, fuzzy
 msgid "Form"
 msgstr "Formular"
 
@@ -14619,7 +14338,6 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1261
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1340
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1431
-#, fuzzy
 msgid "Query Form"
 msgstr "Abfrageformular"
 
@@ -14647,7 +14365,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:996
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1215
-#, fuzzy
 msgid "expression {0} type"
 msgstr "expression {0} type"
 
@@ -14746,7 +14463,6 @@ msgid "Classes are declared using the keyword {0}."
 msgstr "Klassen werden mit dem Schlüsselwort '{0}' deklariert."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1039
-#, fuzzy
 msgid "[attributes] [modifiers] {0} type declarators;"
 msgstr "[Attribute] [Modifizierer] {0} Typdeklaratoren;"
 
@@ -14769,7 +14485,6 @@ msgstr ""
 "einschließenden Iterationsanweisung, in der sie auftritt."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1053
-#, fuzzy
 msgid "{0} (Type)"
 msgstr "{0} (Typ)"
 
@@ -14865,7 +14580,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1095
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1168
-#, fuzzy
 msgid ""
 "{0} (expression)\n"
 "  statement1\n"
@@ -14902,7 +14616,6 @@ msgstr ""
 "[Attribute] [Modifizierer] {0} Typmembername {{ accessor-declarations }};"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1106
-#, fuzzy
 msgid "Specifies an event."
 msgstr "Gibt ein Ereignis an."
 
@@ -15157,7 +14870,6 @@ msgstr ""
 "eine neue Elementsequenz aus zwei Quellsequenzen."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1226
-#, fuzzy
 msgid "{0} range-variable = expression"
 msgstr "{0} range-variable = Ausdruck"
 
@@ -15275,7 +14987,6 @@ msgid "{0} IMyInterface&lt;{1} T&gt; {}"
 msgstr "{0} IMeineSchnittstelle&lt;{1} T&gt; {}"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1275
-#, fuzzy
 msgid "{0} parameter-name"
 msgstr "{0} parameter-name"
 
@@ -15319,7 +15030,6 @@ msgstr ""
 "ein Argument verwendet. Die Anzahl der Argumente ist variabel."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1297
-#, fuzzy
 msgid "[modifiers] {0} type-declaration"
 msgstr "[Modifizierer] {0} type-declaration"
 
@@ -15332,7 +15042,6 @@ msgstr ""
 "die Definition in mehrere Dateien aufgeteilt werden."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1301
-#, fuzzy
 msgid "{0} method-declaration"
 msgstr "{0} method-declaration"
 
@@ -15416,7 +15125,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1335
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
-#, fuzzy
 msgid "{0} [expression];"
 msgstr "{0} [Ausdruck];"
 
@@ -15429,7 +15137,6 @@ msgstr ""
 "ist, und gibt die Steuerung an die aufrufende Methode zurück."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1340
-#, fuzzy
 msgid "{0} return-type"
 msgstr "{0} return-type"
 
@@ -15452,7 +15159,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1354
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
-#, fuzzy
 msgid "{0} (type)"
 msgstr "{0} (Typ)"
 
@@ -15619,7 +15325,6 @@ msgstr ""
 "überschrieben werden kann."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1421
-#, fuzzy
 msgid "{0} declaration"
 msgstr "{0} Deklaration"
 
@@ -15634,7 +15339,6 @@ msgstr ""
 "Thread geändert werden kann."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1431
-#, fuzzy
 msgid "{0} condition"
 msgstr "{0} Bedingung"
 
@@ -15673,7 +15377,6 @@ msgstr ""
 "query-clauses {0} Bedingung [Abfrageklauseln]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1446
-#, fuzzy
 msgid ""
 "{0} {1}\n"
 "\n"
@@ -15695,7 +15398,6 @@ msgstr ""
 "Accessor oder ein Operator ein Iterator ist."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1451
-#, fuzzy
 msgid "{0} (expression) statement"
 msgstr "{0} (Ausdruck) Anweisung"
 
@@ -15708,7 +15410,6 @@ msgstr ""
 "ein angegebener Ausdruck False ergibt."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1456
-#, fuzzy
 msgid "{0}(identifier)"
 msgstr "{0}(Bezeichner)"
 
@@ -15723,7 +15424,6 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1481
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1484
-#, fuzzy
 msgid "Constraint"
 msgstr "Einschränkung"
 
@@ -16214,7 +15914,6 @@ msgid "Analyzing project"
 msgstr "Projekt wird analysiert"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Features/Completion/ContextHandler/DelegateCreationContextHandler.cs:166
-#, fuzzy
 msgid "Delegate Handlers"
 msgstr "Delegathandler"
 
@@ -16267,32 +15966,26 @@ msgid "symbol ({0})"
 msgstr "Symbol ({0})"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:33
-#, fuzzy
 msgid "Generate constructor '{0}({1})'"
 msgstr "Konstruktor '{0}({1})' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:34
-#, fuzzy
 msgid "Generate field assigning constructor '{0}({1})'"
 msgstr "Feldzuweisungskonstruktor '{0}({1})' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:35
-#, fuzzy
 msgid "Generate delegating constructor '{0}({1})'"
 msgstr "Delegierenden Konstruktor '{0}({1})' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:37
-#, fuzzy
 msgid "Generate enum member '{0}' in '{1}'"
 msgstr "Enumerationsmember '{0}' in '{1}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:38
-#, fuzzy
 msgid "Generate constructor in '{0}'"
 msgstr "Konstruktor in '{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:40
-#, fuzzy
 msgid "Generate abstract method '{0}' in '{1}'"
 msgstr "Abstrakte Methode in '{0}' in '{1}' generieren"
 
@@ -16301,42 +15994,34 @@ msgid "Generate abstract property '{0}' in '{1}'"
 msgstr "Abstrakte Eigenschaft in '{0}' in '{1}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:42
-#, fuzzy
 msgid "Generate property '{1}.{0}'"
 msgstr "Eigenschaft '{1}.{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:43
-#, fuzzy
 msgid "Generate method '{1}.{0}'"
 msgstr "Methode '{1}.{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:45
-#, fuzzy
 msgid "Generate all"
 msgstr "Alle generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:47
-#, fuzzy
 msgid "Generate constant '{0}' in '{1}'"
 msgstr "Konstante '{0}' in '{1}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:48
-#, fuzzy
 msgid "Generate read-only property '{1}.{0}'"
 msgstr "Schreibgeschützte Eigenschaft '{1}.{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:49
-#, fuzzy
 msgid "Generate read-only field '{1}.{0}'"
 msgstr "Schreibgeschütztes Feld '{1}.{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:50
-#, fuzzy
 msgid "Generate field '{0}' in '{1}'"
 msgstr "Feld '{0}' in '{1}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:51
-#, fuzzy
 msgid "Generate local '{0}'"
 msgstr "Lokales '{0}' generieren"
 
@@ -16347,42 +16032,34 @@ msgid "Implement interface"
 msgstr "Schnittstelle implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:54
-#, fuzzy
 msgid "Implement interface abstractly"
 msgstr "Schnittstelle abstrakt implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:55
-#, fuzzy
 msgid "Implement interface explicitly"
 msgstr "Schnittstelle explizit implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:56
-#, fuzzy
 msgid "Implement interface explicitly with Dispose pattern"
 msgstr "Schnittstelle explizit mit Dispose-Muster implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:57
-#, fuzzy
 msgid "Implement interface through '{0}'"
 msgstr "Schnittstelle über '{0}' implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:58
-#, fuzzy
 msgid "Implement interface with Dispose pattern"
 msgstr "Schnittstelle mit Dispose-Muster implementieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:60
-#, fuzzy
 msgid "Generate implicit conversion operator in '{0}'"
 msgstr "Impliziten Konversionsoperator in '{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:61
-#, fuzzy
 msgid "Generate explicit conversion operator in '{0}'"
 msgstr "Expliziten Konversionsoperator in '{0}' generieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:63
-#, fuzzy
 msgid "Generate {0} for '{1}' in '{2}'"
 msgstr "{0} für '{1}' in '{2}' generieren"
 
@@ -16391,22 +16068,18 @@ msgid "Generate {0} for '{1}' in '{2}' (new file)"
 msgstr "{0} für '{1}' in '{2}' generieren (neue Datei)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:65
-#, fuzzy
 msgid "Global Namespace"
 msgstr "Globaler Namespace"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:66
-#, fuzzy
 msgid "Generate new type..."
 msgstr "Neuen Typ generieren..."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:67
-#, fuzzy
 msgid "To detect redundant calls"
 msgstr "Dient zur Erkennung redundanter Aufrufe."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:78
-#, fuzzy
 msgid "Introduce constant for '{0}'"
 msgstr "Konstante für '{0}' bereitstellen"
 
@@ -16415,7 +16088,6 @@ msgid "Introduce constant for all occurrences of '{0}'"
 msgstr "Konstante für alle Vorkommen von '{0}' bereitstellen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:80
-#, fuzzy
 msgid "Introduce field for '{0}'"
 msgstr "Feld für '{0}' bereitstellen"
 
@@ -16424,17 +16096,14 @@ msgid "Introduce field for all occurrences of '{0}'"
 msgstr "Feld für alle Vorkommen von '{0}' bereitstellen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:82
-#, fuzzy
 msgid "Introduce local constant for '{0}'"
 msgstr "Lokale Konstante für '{0}' bereitstellen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:83
-#, fuzzy
 msgid "Introduce local constant for all occurrences of '{0}'"
 msgstr "Lokale Konstante für alle Vorkommen von '{0}' bereitstellen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:84
-#, fuzzy
 msgid "Introduce local for '{0}'"
 msgstr "Lokales Element für '{0}' bereitstellen"
 
@@ -16455,17 +16124,14 @@ msgid "_Organize Usings"
 msgstr "Using-Direktiven _organisieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:90
-#, fuzzy
 msgid "Remove _and Sort Usings"
 msgstr "_Using-Direktiven entfernen und sortieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:92
-#, fuzzy
 msgid "_Remove Unnecessary Usings"
 msgstr "Nicht benötigte Using-Di_rektiven entfernen"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/Resources.cs:93
-#, fuzzy
 msgid "Encapsulate fields (and use property)"
 msgstr "Felder kapseln (und Eigenschaft verwenden)"
 
@@ -16488,7 +16154,6 @@ msgid "Sort usings"
 msgstr "Using-Direktiven sortieren"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/UsingRefactorings/SortImportsCodeRefactoringProvider.cs:112
-#, fuzzy
 msgid "Sort and remove usings"
 msgstr "Using-Direktiven sortieren und entfernen"
 
@@ -16556,12 +16221,10 @@ msgstr ""
 "um eine vollständige Erläuterung zu erhalten."
 
 #: ../src/addins/MonoDevelop.DocFood/DocFood.addin.xml:13
-#, fuzzy
 msgid "Documentation _Comments"
 msgstr "Do_kumentationskommentare"
 
 #: ../src/addins/MonoDevelop.DocFood/DocFood.addin.xml:14
-#, fuzzy
 msgid "Insert Documentation Comments"
 msgstr "Dokumentationskommentare einfügen"
 
@@ -17064,12 +16727,10 @@ msgid "_Elements:"
 msgstr "_Elemente:"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/ValidateActionCodeRefactoringProvider.cs:91
-#, fuzzy
 msgid "Validate regular expression"
 msgstr "Regulären Ausdruck überprüfen"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit.addin.xml:8
-#, fuzzy
 msgid "_Regular Expressions Toolkit"
 msgstr "Toolkit für _reguläre Ausdrücke"
 
@@ -17995,7 +17656,6 @@ msgid "Can't save file - access denied"
 msgstr "Kann Datei nicht speichern - Zugriff verweigert"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1450
-#, fuzzy
 msgid "Insert Breakpoint"
 msgstr "Haltepunkt einfügen"
 
@@ -18044,22 +17704,18 @@ msgstr ""
 "({1}) abweichen."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:911
-#, fuzzy
 msgid "Convert to {0} line endings"
 msgstr "In {0}-Zeilenenden konvertieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:912
-#, fuzzy
 msgid "Convert all files to {0} line endings"
 msgstr "Konvertiert alle Dateien in {0}-Zeilenenden."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:913
-#, fuzzy
 msgid "Keep {0} line endings"
 msgstr "{0}-Zeilenenden beibehalten"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:914
-#, fuzzy
 msgid "Keep {0} line endings in all files"
 msgstr "{0}-Zeilenenden in allen Dateien beibehalten"
 
@@ -18120,12 +17776,10 @@ msgstr ""
 "werden?)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:164
-#, fuzzy
 msgid "Loading error"
 msgstr "Ladefehler"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:174
-#, fuzzy
 msgid "Loading error: {0}"
 msgstr "Fehler beim Laden: {0}"
 
@@ -18144,7 +17798,6 @@ msgid "Visual Studio .NET settings"
 msgstr "Visual Studio .NET-Einstellungen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:260
-#, fuzzy
 msgid "Highlighting with the same name already exists. Remove {0} first."
 msgstr ""
 "Es ist bereits eine Hervorhebung mit demselben Namen vorhanden. Entfernen "
@@ -18344,7 +17997,6 @@ msgid "Interpret tab _keystroke as reindent command"
 msgstr "Drücken der TAB-TASTE als Befehl für neuen Einzug interpretieren"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
-#, fuzzy
 msgid "Backspace removes indentation"
 msgstr "Rücktaste entfernt Einzug"
 
@@ -18365,7 +18017,6 @@ msgid "Page %N of %Q"
 msgstr "Seite %N von %Q"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:80
-#, fuzzy
 msgid "Edit Color Scheme"
 msgstr "Farbschema bearbeiten"
 
@@ -18563,7 +18214,6 @@ msgid "Show _Minimap"
 msgstr "_Minikarte anzeigen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:112
-#, fuzzy
 msgid "Surround With..."
 msgstr "Umgeben mit..."
 
@@ -18710,7 +18360,6 @@ msgid "Can't load:"
 msgstr "Kann nicht geladen werden:"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:18
-#, fuzzy
 msgid "_Assembly Browser"
 msgstr "_Assembly-Browser"
 
@@ -20391,13 +20040,11 @@ msgstr "Stapelüberwachung"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:530
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:553
-#, fuzzy
 msgid "Stack trace:"
 msgstr "Stapelüberwachung:"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:619
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:634
-#, fuzzy
 msgid "Can't get source code location for : {0}"
 msgstr "Quellcodestandort für \"{0}\" kann nicht abgerufen werden."
 
@@ -20422,12 +20069,10 @@ msgid " ({0} passed, {1} failed, {2} not run)"
 msgstr "({0} erfolgreich, {1} fehlerhaft, {2} nicht ausgeführt)"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestChart.cs:95
-#, fuzzy
 msgid "Successful tests"
 msgstr "Erfolgreiche Tests"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestChart.cs:97
-#, fuzzy
 msgid "Ignored tests"
 msgstr "Ignorierte Tests"
 
@@ -20441,20 +20086,17 @@ msgstr "Testergebnisse"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:196
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:221
-#, fuzzy
 msgid "_Run All"
 msgstr "Alle ausfüh_ren"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:200
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:225
-#, fuzzy
 msgid "_Debug All"
 msgstr "Alle _debuggen"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:204
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:217
 #: ../src/addins/MonoDevelop.UnitTesting/Services/AbstractUnitTestEditorExtension.cs:252
-#, fuzzy
 msgid "_Select in Test Pad"
 msgstr "In Testbereich au_swählen"
 
@@ -20464,7 +20106,6 @@ msgid "_Debug"
 msgstr "_Debuggen"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/UnitTestingRunConfiguration.cs:40
-#, fuzzy
 msgid "Runs the unit tests of the project"
 msgstr "Führt die Komponententests des Projekts durch."
 
@@ -20555,7 +20196,6 @@ msgid "Policies..."
 msgstr "Richtlinien..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:297
-#, fuzzy
 msgid "Add-ins..."
 msgstr "Add-Ins..."
 
@@ -20606,7 +20246,6 @@ msgid "Credentials Required"
 msgstr "Anmeldeinformationen erforderlich"
 
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:996
-#, fuzzy
 msgid "Cancel operation"
 msgstr "Vorgang abbrechen"
 
@@ -20615,17 +20254,14 @@ msgid "_Minimize"
 msgstr "_Minimieren"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:20
-#, fuzzy
 msgid "Minimize the Window"
 msgstr "Fenster minimieren"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:24
-#, fuzzy
 msgid "_Zoom"
 msgstr "_Zoom"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:25
-#, fuzzy
 msgid "Zoom the Window"
 msgstr "Fenster zoomen"
 
@@ -20698,7 +20334,6 @@ msgid "Save project {0}"
 msgstr "Projekt {0} speichern"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:87
-#, fuzzy
 msgid "Looking for all references"
 msgstr "Alle Verweise werden gesucht."
 
@@ -20798,7 +20433,6 @@ msgstr "Änderungsliste für dieses Refactoring:"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:536
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:567
-#, fuzzy
 msgid "_Options for ‘{0}’"
 msgstr "_Optionen für \"{0}\""
 
@@ -20807,28 +20441,23 @@ msgid "Do not show"
 msgstr "Nicht anzeigen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeWholeSolutionHandler.cs:121
-#, fuzzy
 msgid "Analyzing solution"
 msgstr "Projektmappe wird analysiert."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeWholeSolutionHandler.cs:129
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeCurrentProjectHandler.cs:82
-#, fuzzy
 msgid "Analyzing {0}"
 msgstr "{0} wird analysiert."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeWholeSolutionHandler.cs:150
-#, fuzzy
 msgid "Reporting results..."
 msgstr "Ergebnisbericht wird erstellt..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeCurrentProjectHandler.cs:56
-#, fuzzy
 msgid "Current Project"
 msgstr "Aktuelles Projekt"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/AnalyzeCurrentProjectHandler.cs:60
-#, fuzzy
 msgid "Project '{0}'"
 msgstr "Projekt '{0}'"
 
@@ -20863,17 +20492,14 @@ msgid "Generates an HTML file that contains a list of all code rules"
 msgstr "Generiert eine HTML-Datei, die eine Liste aller Coderegeln enthält."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:98
-#, fuzzy
 msgid "_Whole Solution"
 msgstr "_Gesamte Projektmappe"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:102
-#, fuzzy
 msgid "_Current Project"
 msgstr "_Aktuelles Projekt"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:106
-#, fuzzy
 msgid "_Analyze Source"
 msgstr "Quelle _analysieren"
 
@@ -20963,7 +20589,6 @@ msgid "Controller..."
 msgstr "Controller..."
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:229
-#, fuzzy
 msgid "Add Controller..."
 msgstr "Controller hinzufügen..."
 
@@ -20985,17 +20610,14 @@ msgid "Add an ASP.NET MVC view"
 msgstr "ASP.NET MVC-Ansicht hinzufügen"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:236
-#, fuzzy
 msgid "Go to View"
 msgstr "Gehe zu Ansicht"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:241
-#, fuzzy
 msgid "Add View from Controller..."
 msgstr "Ansicht von Controller hinzufügen..."
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:245
-#, fuzzy
 msgid "Go to Controller"
 msgstr "Gehe zu Controller"
 
@@ -21074,17 +20696,14 @@ msgid "Defines a region of class members"
 msgstr "Definiert eine Region von Klassenmembern."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:48
-#, fuzzy
 msgid "Imports a namespace"
 msgstr "Importiert einen Namespace."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:53
-#, fuzzy
 msgid "Defines a base class of the view"
 msgstr "Definiert eine Basisklasse der Ansicht."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:54
-#, fuzzy
 msgid "References a strongly-typed model"
 msgstr "Verweist auf ein stark typisiertes Modell."
 
@@ -21093,22 +20712,18 @@ msgid "Defines a layout file to use in this view"
 msgstr "Definiert eine Layoutdatei zur Verwendung in dieser Ansicht."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:58
-#, fuzzy
 msgid "Defines a sessionstate mode"
 msgstr "Definiert einen SessionState-Modus."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:59
-#, fuzzy
 msgid "Defines a section"
 msgstr "Definiert einen Abschnitt."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:61
-#, fuzzy
 msgid "Customizes the generated class"
 msgstr "Passt die generierte Klasse an."
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:62
-#, fuzzy
 msgid "Adds a property"
 msgstr "Fügt eine Eigenschaft hinzu."
 
@@ -21169,7 +20784,6 @@ msgid "The port value is outside the permitted range"
 msgstr "Der Portwert liegt außerhalb des zulässigen Bereichs."
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:95
-#, fuzzy
 msgid "The IP address is invalid."
 msgstr "Die IP-Adresse ist ungültig."
 
@@ -21323,7 +20937,6 @@ msgid "ASP.NET Controls"
 msgstr "ASP.NET-Steuerelemente"
 
 #: ../src/addins/AspNet/WebForms/WebFormsMemberListBuilder.cs:72
-#, fuzzy
 msgid "Unknown parser error: {0}"
 msgstr "Unbekannter Parserfehler: {0}"
 
@@ -21336,17 +20949,14 @@ msgid "The tag type '{0}{1}{2}' has not been registered."
 msgstr "Der Tagtyp '{0}{1}{2}' wurde nicht registriert."
 
 #: ../src/addins/AspNet/WebForms/WebFormsCodeBehind.cs:80
-#, fuzzy
 msgid "Failed to parse file '{0}'"
 msgstr "Fehler beim Analysieren der Datei '{0}'"
 
 #: ../src/addins/AspNet/WebForms/WebFormsCodeBehind.cs:165
-#, fuzzy
 msgid "Could not find type for master '{0}'"
 msgstr "Typ für Master '{0}' wurde nicht gefunden."
 
 #: ../src/addins/AspNet/WebForms/Parser/WebFormsAttributeValueState.cs:82
-#, fuzzy
 msgid "Invalid directive location"
 msgstr "Ungültiger Direktivenspeicherort"
 
@@ -21355,7 +20965,6 @@ msgid "Malformed server comment"
 msgstr "Falsch formatierter Serverkommentar"
 
 #: ../src/addins/AspNet/WebForms/Parser/WebFormsDirectiveState.cs:73
-#, fuzzy
 msgid "Unexpected '<' in directive."
 msgstr "Unerwartete '<' in Direktive."
 
@@ -21405,12 +21014,10 @@ msgstr ""
 "Deklariert, dass dieses Steuerelement eine Schnittstelle implementiert."
 
 #: ../src/addins/AspNet/WebForms/WebFormsDirectiveCompletion.cs:84
-#, fuzzy
 msgid "Reference an assembly."
 msgstr "Verweist auf eine Assembly."
 
 #: ../src/addins/AspNet/WebForms/WebFormsDirectiveCompletion.cs:85
-#, fuzzy
 msgid "Import a namespace."
 msgstr "Importiert einen Namespace."
 
@@ -21419,7 +21026,6 @@ msgid "Set output caching behaviour."
 msgstr "Legt das Verhalten des Ausgabecache fest."
 
 #: ../src/addins/AspNet/WebForms/WebFormsDirectiveCompletion.cs:91
-#, fuzzy
 msgid "Reference a page or user control."
 msgstr "Verweist auf eine Seite oder auf ein Benutzersteuerelement."
 
@@ -21471,19 +21077,16 @@ msgid "Select a Layout file..."
 msgstr "Layoutdatei auswählen..."
 
 #: ../src/addins/AspNet/Commands/GoToViewCommandHandler.cs:67
-#, fuzzy
 msgid "Matching view cannot be found."
 msgstr "Keine entsprechende Ansicht gefunden."
 
 #: ../src/addins/AspNet/Commands/AddViewFromControllerCommandHandler.cs:86
 #: ../src/addins/AspNet/ProjectPad/AspNetFolderNodeCommandHandler.cs:98
-#, fuzzy
 msgid "Overwrite file?"
 msgstr "Datei überschreiben?"
 
 #: ../src/addins/AspNet/Commands/AddViewFromControllerCommandHandler.cs:87
 #: ../src/addins/AspNet/ProjectPad/AspNetFolderNodeCommandHandler.cs:99
-#, fuzzy
 msgid "The file '{0}' already exists.\n"
 msgstr "Die Datei '{0}' ist bereits vorhanden.\n"
 
@@ -21505,7 +21108,6 @@ msgid "The '{0}' directive requires exactly two arguments"
 msgstr "Die {0}-Direktive erfordert genau zwei Argumente."
 
 #: ../src/addins/AspNet/Razor/Generator/PreprocessedCSharpRazorCodeParser.cs:67
-#, fuzzy
 msgid "The '{0}' directive requires one or two arguments"
 msgstr "Die {0}-Direktive erfordert ein oder zwei Argumente."
 
@@ -21526,7 +21128,6 @@ msgid "The '{0}' directive must have a value"
 msgstr "Die {0}-Direktive muss einen Wert haben."
 
 #: ../src/addins/AspNet/Razor/Generator/RazorTemplatePreprocessor.cs:54
-#, fuzzy
 msgid "Razor templates are only supported in C# projects"
 msgstr "Razor-Vorlagen werden nur in C#-Projekten unterstützt."
 
@@ -21535,7 +21136,6 @@ msgid "Unhandled error parsing ASP.NET document: {0}"
 msgstr "Unbehandelter Fehler beim Analysieren eines ASP.NET-Dokuments: {0}"
 
 #: ../src/addins/AspNet/WebForms/WebFormsParser.cs:74
-#, fuzzy
 msgid "File directive is missing"
 msgstr "File-Direktive fehlt."
 
@@ -21594,17 +21194,14 @@ msgid "Could not launch ASP.NET web server"
 msgstr "ASP.NET-Webserver konnte nicht gestartet werden."
 
 #: ../src/addins/AspNet/Projects/AspNetAppProjectFlavor.cs:208
-#, fuzzy
 msgid "Running web server..."
 msgstr "Webserver wird ausgeführt..."
 
 #: ../src/addins/AspNet/Projects/AspNetAppProjectFlavor.cs:222
-#, fuzzy
 msgid "The web server exited with code: {0}"
 msgstr "Der Webserver wurde mit dem Code {0} beendet."
 
 #: ../src/addins/AspNet/Projects/AspNetAppProjectFlavor.cs:228
-#, fuzzy
 msgid "Could not launch web server."
 msgstr "Der Webserver konnte nicht gestartet werden."
 
@@ -22021,7 +21618,6 @@ msgid "Process all T4 templates."
 msgstr "Alle T4-Vorlagen verarbeiten..."
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/TextTemplatingFilePreprocessor.cs:68
-#, fuzzy
 msgid ""
 "Could not read input file '{0}':\n"
 "{1}"
@@ -22030,7 +21626,6 @@ msgstr ""
 "{1}"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/TextTemplatingFilePreprocessor.cs:104
-#, fuzzy
 msgid ""
 "Could not write output file '{0}':\n"
 "{1}"
@@ -22047,7 +21642,6 @@ msgid "Process T4 Template"
 msgstr "T4-Vorlage verarbeiten"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/T4FileTemplate.cs:70
-#, fuzzy
 msgid "Failed to generate file: {0}"
 msgstr "Fehler beim Generieren der Datei: {0}"
 
@@ -22105,12 +21699,10 @@ msgstr "Adresse"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:310
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:536
-#, fuzzy
 msgid "[External Code]"
 msgstr "[Externer Code]"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:404
-#, fuzzy
 msgid "Show External Code"
 msgstr "Externen Code anzeigen"
 
@@ -22174,12 +21766,10 @@ msgid "File checksum doesn't match."
 msgstr "Dateiprüfsumme stimmt nicht überein."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DisassemblyView.cs:145
-#, fuzzy
 msgid "File not found."
 msgstr "Datei nicht gefunden."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DisassemblyView.cs:148
-#, fuzzy
 msgid "Error opening file."
 msgstr "Fehler beim Öffnen der Datei."
 
@@ -22189,7 +21779,6 @@ msgstr "Zu Datei wechseln"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:80
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:139
-#, fuzzy
 msgid "Edit Breakpoint…"
 msgstr "Haltepunkt bearbeiten"
 
@@ -22207,19 +21796,16 @@ msgstr "Letzte Ablaufverfolgung"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:369
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:408
-#, fuzzy
 msgid "Enable All Breakpoints"
 msgstr "Alle Haltepunkte aktivieren oder deaktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:371
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:410
-#, fuzzy
 msgid "Disable All Breakpoints"
 msgstr "Alle Haltepunkte aktivieren oder deaktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:343
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:136
-#, fuzzy
 msgid "Remove Breakpoint"
 msgid_plural "Remove Breakpoints"
 msgstr[0] "Haltepunkt entfernen"
@@ -22227,7 +21813,6 @@ msgstr[1] "Haltepunkt entfernen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:374
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:363
-#, fuzzy
 msgid "Enable Breakpoint"
 msgid_plural "Enable Breakpoints"
 msgstr[0] "Haltepunkt aktivieren/deaktivieren"
@@ -22235,7 +21820,6 @@ msgstr[1] "Haltepunkt aktivieren/deaktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:376
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:360
-#, fuzzy
 msgid "Disable Breakpoint"
 msgid_plural "Disable Breakpoints"
 msgstr[0] "Haltepunkt aktivieren/deaktivieren"
@@ -22247,7 +21831,6 @@ msgid "Id"
 msgstr "ID"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:151
-#, fuzzy
 msgid "Resume"
 msgstr "Ergebnis"
 
@@ -22257,7 +21840,6 @@ msgid "Pause"
 msgstr "Pause"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:246
-#, fuzzy
 msgid "Main Thread"
 msgstr "Hauptthread"
 
@@ -22308,7 +21890,6 @@ msgid "Detach"
 msgstr "Trennen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:53
-#, fuzzy
 msgid "Process Name"
 msgstr "Prozessname"
 
@@ -22426,7 +22007,6 @@ msgid "Enable diagnostic logging"
 msgstr "Diagnoseprotokollierung aktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:273
-#, fuzzy
 msgid "Stacktrace"
 msgstr "StackTrace"
 
@@ -22512,12 +22092,10 @@ msgid "A C# boolean expression. Scope is local to the breakpoint."
 msgstr "Boolescher C#-Ausdruck. Der Bereich ist für den Haltepunkt lokal."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:233
-#, fuzzy
 msgid "Create a Breakpoint"
 msgstr "Haltepunkt erstellen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:236
-#, fuzzy
 msgid "Edit Breakpoint"
 msgstr "Haltepunkt bearbeiten"
 
@@ -22559,48 +22137,39 @@ msgid "And the following expression changes"
 msgstr "Und sich der folgende Ausdruck ändert"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:450
-#, fuzzy
 msgid "Enter location."
 msgstr "Speicherort eingeben"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:464
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:495
-#, fuzzy
 msgid "File does not exist."
 msgstr "Datei ist nicht vorhanden."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:469
-#, fuzzy
 msgid "Missing ':' for line declaration."
 msgstr "Für die Zeilendeklaration fehlt ':'."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:474
-#, fuzzy
 msgid "Line is not a number."
 msgstr "Die Zeile ist keine Zahl."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:479
-#, fuzzy
 msgid "Column is not a number."
 msgstr "Die Spalte ist keine Zahl."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:626
-#, fuzzy
 msgid "Enter trace expression."
 msgstr "Trace-Ausdruck eingeben"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:636
-#, fuzzy
 msgid "Enter function name."
 msgstr "Funktionsnamen eingeben"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:642
-#, fuzzy
 msgid "Invalid function syntax."
 msgstr "Ungültige Funktionssyntax"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:656
-#, fuzzy
 msgid "Enter exception type."
 msgstr "Ausnahmetyp eingeben"
 
@@ -22633,7 +22202,6 @@ msgid "Working Directory"
 msgstr "Arbeitsverzeichnis"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:32
-#, fuzzy
 msgid "Debug Pads"
 msgstr "Debugbereiche"
 
@@ -22678,7 +22246,6 @@ msgid "Start D_ebugging Item"
 msgstr "_Elementdebuggen starten"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:69
-#, fuzzy
 msgid "Start Debugging (Current Project)"
 msgstr "Debuggen starten (aktuelles Projekt)"
 
@@ -22719,7 +22286,6 @@ msgid "Step Out"
 msgstr "Ausführen bis Rücksprung"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:119
-#, fuzzy
 msgid "New Breakpoint…"
 msgstr "Haltepunkte anzeigen"
 
@@ -22736,7 +22302,6 @@ msgid "View Breakpoints"
 msgstr "Haltepunkte anzeigen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:140
-#, fuzzy
 msgid "Edit Breakpoint Properties"
 msgstr "Haltepunkt bearbeiten"
 
@@ -22749,7 +22314,6 @@ msgid "Enable/Disable Breakpoint"
 msgstr "Haltepunkt aktivieren/deaktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:149
-#, fuzzy
 msgid "Enable or Disable Breakpoint"
 msgstr "Alle Haltepunkte aktivieren oder deaktivieren"
 
@@ -22759,7 +22323,6 @@ msgid "Enable or Disable All Breakpoints"
 msgstr "Alle Haltepunkte aktivieren oder deaktivieren"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:162
-#, fuzzy
 msgid "Remove All Breakpoints"
 msgstr "Haltepunkt entfernen"
 
@@ -22806,22 +22369,18 @@ msgid "Debugger"
 msgstr "Debugger"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/FileConflictResolver.cs:37
-#, fuzzy
 msgid "Yes to All"
 msgstr "Ja, alle"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/FileConflictResolver.cs:38
-#, fuzzy
 msgid "No to All"
 msgstr "Nein, keine"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/FileConflictResolver.cs:55
-#, fuzzy
 msgid "File Conflict"
 msgstr "Dateikonflikt"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:51
-#, fuzzy
 msgid "License Acceptance"
 msgstr "Zustimmung zur Lizenz"
 
@@ -22833,12 +22392,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
-#, fuzzy
 msgid "Decline"
 msgstr "Deklarierender Typ"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:84
-#, fuzzy
 msgid "Accept"
 msgstr "Zusammenführen akzeptieren"
 
@@ -22848,7 +22405,6 @@ msgid "View License"
 msgstr "Lizenz anzeigen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:57
-#, fuzzy
 msgid ""
 "The following package requires that you accept its license terms before "
 "installing:"
@@ -22906,7 +22462,6 @@ msgstr "Paket aktualisieren"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:653
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:357
-#, fuzzy
 msgid "Add Package"
 msgid_plural "Add Packages"
 msgstr[0] "Pakete hinzufügen"
@@ -22953,7 +22508,6 @@ msgid "<b>Dependencies</b>"
 msgstr "<b>Abhängigkeiten</b>"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:328
-#, fuzzy
 msgid "<b>Version</b>"
 msgstr "<b>Version</b>"
 
@@ -23068,22 +22622,18 @@ msgid "{0} packages added with warnings."
 msgstr "{0} Pakete mit Warnungen hinzugefügt."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
-#, fuzzy
 msgid "Removing {0} packages..."
 msgstr "{0} Pakete werden hinzugefügt..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
-#, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "{0} Pakete erfolgreich hinzugefügt."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
-#, fuzzy
 msgid "Could not remove packages."
 msgstr "Pakete konnten nicht wiederhergestellt werden."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
-#, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "{0} Pakete mit Warnungen hinzugefügt."
 
@@ -23316,7 +22866,6 @@ msgid "Proxy authentication required"
 msgstr "Proxyauthentifizierung erforderlich"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementProgressMonitor.cs:117
-#, fuzzy
 msgid "Cancelling operation..."
 msgstr "Vorgang wird abgebrochen..."
 
@@ -23384,17 +22933,14 @@ msgid "Package '{0}' has already been uninstalled from project '{1}'"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:153
-#, fuzzy
 msgid "Restore failed for '{0}'."
 msgstr "Wiederherstellungsfehler für \"{0}\""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/MonoDevelopBuildIntegratedRestorer.cs:156
-#, fuzzy
 msgid "Restore failed."
 msgstr "Wiederherstellungsfehler"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/NuGetSystemInformation.cs:48
-#, fuzzy
 msgid "Version: {0}"
 msgstr "Version: {0}"
 
@@ -23403,7 +22949,6 @@ msgid "Licenses not accepted."
 msgstr "Lizenzen nicht akzeptiert"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageRestoreMonitor.cs:62
-#, fuzzy
 msgid "Package restore failed."
 msgstr "Fehler bei der Paketwiederherstellung"
 
@@ -23438,7 +22983,6 @@ msgid "Official NuGet Gallery"
 msgstr "Offizielle NuGet Gallery"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SettingsLoader.cs:59
-#, fuzzy
 msgid "Unable to read the NuGet.Config file"
 msgstr "Datei 'NuGet.Config' kann nicht gelesen werden."
 
@@ -23480,7 +23024,6 @@ msgid "Add NuGet _Packages..."
 msgstr "NuGet-_Pakete hinzufügen..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:20
-#, fuzzy
 msgid "Restore all missing packages in the solution"
 msgstr "Alle fehlenden Pakete in der Projektmappe wiederherstellen"
 
@@ -23489,7 +23032,6 @@ msgid "_Restore NuGet Packages"
 msgstr "NuGet-Pakete wiede_rherstellen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
-#, fuzzy
 msgid "Restore Packages (Solution)"
 msgstr "Pakete wiederherstellen (Projektmappe)"
 
@@ -23502,12 +23044,10 @@ msgid "_Restore"
 msgstr "_Wiederherstellen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:28
-#, fuzzy
 msgid "Restore Packages"
 msgstr "Pakete wiederherstellen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:32
-#, fuzzy
 msgid "Retarget selected package"
 msgstr "Ausgewähltes Paket neu zuweisen"
 
@@ -23517,12 +23057,10 @@ msgid "Re_target"
 msgstr "Neu _zuweisen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:34
-#, fuzzy
 msgid "Retarget Package"
 msgstr "Paket neu zuweisen"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:37
-#, fuzzy
 msgid "Update selected package"
 msgstr "Ausgewähltes Paket aktualisieren"
 
@@ -23531,12 +23069,10 @@ msgid "Update all packages"
 msgstr "Alle Pakete aktualisieren"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:44
-#, fuzzy
 msgid "Update All Packages"
 msgstr "Alle Pakete aktualisieren"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:48
-#, fuzzy
 msgid "Update all packages in the solution"
 msgstr "Alle Pakete in der Projektmappe aktualisieren"
 
@@ -23545,7 +23081,6 @@ msgid "_Update NuGet Packages"
 msgstr "_NuGet-Pakete aktualisieren"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:50
-#, fuzzy
 msgid "Update All Packages (Solution)"
 msgstr "Alle Pakete aktualisieren (Projektmappe)"
 
@@ -23554,7 +23089,6 @@ msgid "Retargets all packages"
 msgstr "Weist alle Pakete neu zu."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:56
-#, fuzzy
 msgid "Retarget All Packages"
 msgstr "Alle Pakete neu zuweisen"
 
@@ -23583,7 +23117,6 @@ msgid "Build current startup project"
 msgstr "Aktuelles Startprojekt erstellen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:424
-#, fuzzy
 msgid "Save as script"
 msgstr "Als Skript speichern"
 
@@ -23592,48 +23125,39 @@ msgid "Reset"
 msgstr "Zurücksetzen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:436
-#, fuzzy
 msgid "Save as .fsx"
 msgstr "Als FSX speichern"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:438
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:452
-#, fuzzy
 msgid "F# script files"
 msgstr "F#-Skriptdateien"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:451
-#, fuzzy
 msgid "Open script"
 msgstr "Skript öffnen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:547
-#, fuzzy
 msgid "Find overriden Symbols"
 msgstr "Überschriebene Symbole suchen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:558
-#, fuzzy
 msgid "Find Type Extensions"
 msgstr "Typerweiterungen suchen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:11
-#, fuzzy
 msgid "Indent on try/with"
 msgstr "Bei 'try/with' einziehen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:16
-#, fuzzy
 msgid "Reorder open declaration"
 msgstr "open-Deklaration neu anordnen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:21
-#, fuzzy
 msgid "Space after comma"
 msgstr "Leerzeichen nach Komma"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:26
-#, fuzzy
 msgid "Space after semicolon"
 msgstr "Leerzeichen nach Semikolon"
 
@@ -23642,63 +23166,51 @@ msgid "Space around delimiter"
 msgstr "Leerzeichen um Trennzeichen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:36
-#, fuzzy
 msgid "Space before argument"
 msgstr "Leerzeichen vor Argument"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:41
-#, fuzzy
 msgid "Space before colon"
 msgstr "Leerzeichen vor Doppelpunkt"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:50
-#, fuzzy
 msgid "F# Settings"
 msgstr "F#-Einstellungen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:70
-#, fuzzy
 msgid "F# Source Files"
 msgstr "F#-Quelldateien"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:114
-#, fuzzy
 msgid "F# Source File"
 msgstr "F#-Quelldatei"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:117
-#, fuzzy
 msgid "F# Script File"
 msgstr "F#-Skriptdatei"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:121
-#, fuzzy
 msgid "F# Signature File"
 msgstr "F#-Signaturdatei"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:124
-#, fuzzy
 msgid "F# project file"
 msgstr "F#-Projektdatei"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:154
-#, fuzzy
 msgid "F# Formatting"
 msgstr "F#-Formatierung"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:210
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:244
-#, fuzzy
 msgid "F# Interactive"
 msgstr "F# Interactive"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:233
-#, fuzzy
 msgid "Refactoring Operations"
 msgstr "Vorgänge werden umgestaltet"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:242
-#, fuzzy
 msgid "F# Integration"
 msgstr "F#-Integration"
 
@@ -23711,17 +23223,14 @@ msgid "Send current file to F# Interactive"
 msgstr "Aktuelle Datei an F# Interactive senden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:253
-#, fuzzy
 msgid "Send the current file to F# Interactive"
 msgstr "Aktuelle Datei an F# Interactive senden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:259
-#, fuzzy
 msgid "Send selection to F# Interactive"
 msgstr "Auswahl an F# Interactive senden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:260
-#, fuzzy
 msgid "Send the selected text to F# Interactive"
 msgstr "Ausgewählten Text an F# Interactive senden"
 
@@ -23730,7 +23239,6 @@ msgid "Send line to F# Interactive"
 msgstr "Zeile an F# Interactive senden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:267
-#, fuzzy
 msgid "Send the current line to F# Interactive"
 msgstr "Aktuelle Zeile an F# Interactive senden"
 
@@ -23744,13 +23252,11 @@ msgstr "Verweise an F# Interactive senden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:279
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:280
-#, fuzzy
 msgid "Restart F# Interactive"
 msgstr "F# Interactive neu starten"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:286
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:287
-#, fuzzy
 msgid "Clear F# Interactive"
 msgstr "F# Interactive löschen"
 
@@ -23758,75 +23264,61 @@ msgstr "F# Interactive löschen"
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:295
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:298
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:301
-#, fuzzy
 msgid "Start debugging an .fsx script"
 msgstr "Debuggen starten"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:293
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:299
-#, fuzzy
 msgid "Start Debugging"
 msgstr "_Debuggen starten"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:296
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:302
-#, fuzzy
 msgid "Start Debugging on External Console"
 msgstr "Auf externer Konsole ausführen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:59
-#, fuzzy
 msgid "Generate Debug Information"
 msgstr "Debuginformationen generieren"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:74
-#, fuzzy
 msgid "Enable Optimizations"
 msgstr "Optimierungen aktivieren"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:86
-#, fuzzy
 msgid "Enable tail calls"
 msgstr "Endeaufrufe aktivieren"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:100
-#, fuzzy
 msgid "Generate XML documentation"
 msgstr "XML-Dokumentation generieren"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:141
-#, fuzzy
 msgid "Define symbols:"
 msgstr "Symbole definieren:"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:153
-#, fuzzy
 msgid "Command line parameters:"
 msgstr "Befehlszeilenparameter:"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:168
-#, fuzzy
 msgid "Symbols Only"
 msgstr "Nur Symbole"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:97
-#, fuzzy
 msgid "<b>F# Interactive</b>"
 msgstr "<b>F# Interactive</b>"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:108
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:354
-#, fuzzy
 msgid "Use Default"
 msgstr "Standard verwenden"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:197
-#, fuzzy
 msgid "Advance to next line"
 msgstr "Weiter mit nächster Zeile"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:222
-#, fuzzy
 msgid "<b>FSI Appearance</b>"
 msgstr "<b>FSI-Darstellung</b>"
 
@@ -23835,12 +23327,10 @@ msgid "Match with Theme"
 msgstr "Mit Design abstimmen"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:249
-#, fuzzy
 msgid "Base Color"
 msgstr "Basisfarbe"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:271
-#, fuzzy
 msgid "Text Color"
 msgstr "Textfarbe"
 
@@ -23849,22 +23339,18 @@ msgid "Interactive Pad Font"
 msgstr "Schriftart für Interactive-Bereich"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:343
-#, fuzzy
 msgid "<b>F# Default Compiler</b>"
 msgstr "<b>F#-Standardcompiler</b>"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:431
-#, fuzzy
 msgid "<b>F# Editor</b>"
 msgstr "<b>F#-Editor</b>"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:442
-#, fuzzy
 msgid "Highlight mutable variables"
 msgstr "Änderbare Variablen hervorheben"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/PackagingProjectTemplateWizardPage.cs:39
-#, fuzzy
 msgid "Configure your NuGet package"
 msgstr "Neuen Arbeitsbereich konfigurieren"
 
@@ -23885,14 +23371,12 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:118
-#, fuzzy
 msgid "Author:"
 msgstr "Autor"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:145
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:146
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:119
-#, fuzzy
 msgid "Description:"
 msgstr "_Beschreibung:"
 
@@ -23902,32 +23386,26 @@ msgid "ID:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:116
-#, fuzzy
 msgid "Authors:"
 msgstr "Autor"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:250
-#, fuzzy
 msgid "Copyright:"
 msgstr "_Copyright:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:289
-#, fuzzy
 msgid "Development Dependency:"
 msgstr "Entwicklungsabhängigkeit"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:300
-#, fuzzy
 msgid "Icon URL:"
 msgstr "Symbol:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:343
-#, fuzzy
 msgid "Language:"
 msgstr "_Sprache:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:354
-#, fuzzy
 msgid "License URL:"
 msgstr "Lizenz"
 
@@ -23936,43 +23414,35 @@ msgid "Owners:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:398
-#, fuzzy
 msgid "Project URL:"
 msgstr "Projekt:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:426
-#, fuzzy
 msgid "Release Notes:"
 msgstr "Sperre aufheben"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:485
-#, fuzzy
 msgid "Require License Acceptance:"
 msgstr "Zustimmung zur Lizenz"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:496
-#, fuzzy
 msgid "Summary:"
 msgstr "Zusammenfassung"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:520
-#, fuzzy
 msgid "Tags:"
 msgstr "Tags"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:544
-#, fuzzy
 msgid "Title:"
 msgstr "_Titel:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:44
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:44
-#, fuzzy
 msgid "Include in Package"
 msgstr "In Makefile einbeziehen"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the file will be included in the package. Supported for "
 "None items only."
@@ -23981,17 +23451,14 @@ msgstr ""
 "eingeschlossen:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/PackagingNuGetProject.cs:84
-#, fuzzy
 msgid "Package '{0}' already installed."
 msgstr "Typ '{0}' ist bereits registriert."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/AddPlatformImplementationHandler.cs:63
-#, fuzzy
 msgid "Adding platform implementation..."
 msgstr "In implizite Implementierung"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:41
-#, fuzzy
 msgid "Add Platform Implementation"
 msgstr "In implizite Implementierung"
 
@@ -24004,27 +23471,22 @@ msgid "Create a Shared Project from the Portable Class Library:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:79
-#, fuzzy
 msgid "Create Shared Project"
 msgstr "Freigegebenes Projekt"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:147
-#, fuzzy
 msgid "Implementation:"
 msgstr "Einzug"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:256
-#, fuzzy
 msgid "Platform specific"
 msgstr "Plattform:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:301
-#, fuzzy
 msgid "Single for all platforms"
 msgstr "Abstand für Operatoren festlegen"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:355
-#, fuzzy
 msgid "Target Platforms:"
 msgstr "Zielplattform:"
 
@@ -24037,7 +23499,6 @@ msgid "iOS"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/CrossPlatformLibraryTemplateWizardPage.cs:38
-#, fuzzy
 msgid "Configure your Multiplatform Library"
 msgstr "Neue Projektmappe konfigurieren"
 
@@ -24052,7 +23513,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:53
-#, fuzzy
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr ""
 "Kopiert die Assembly, auf die verwiesen wird, in das Ausgabeverzeichnis."
@@ -24062,13 +23522,11 @@ msgid "<a href=\"https://docs.nuget.org\">Learn more</a>"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the referenced project will be included in the package."
 msgstr "Die folgenden Dateien werden in das Paket eingeschlossen:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkProjectNuGetBuildOptionsPanelWidget.UI.cs:46
-#, fuzzy
 msgid "Create a NuGet Package when building the project."
 msgstr "Neue Pakete für das Projekt erstellen"
 
@@ -24081,7 +23539,6 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:61
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:8
-#, fuzzy
 msgid "NuGet Package"
 msgstr "_NuGet-Pakete aktualisieren"
 
@@ -24090,17 +23547,14 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:80
-#, fuzzy
 msgid "Reference Assemblies"
 msgstr "Verweist auf eine Assembly."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:92
-#, fuzzy
 msgid "Creates a NuGet package"
 msgstr "_NuGet-Pakete aktualisieren"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:93
-#, fuzzy
 msgid "Create NuGet _Package"
 msgstr "Paket erstellen"
 
@@ -24123,12 +23577,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:13
-#, fuzzy
 msgid "Creates a NuGet Packaging project."
 msgstr "Erstellt ein Übersetzungsprojekt."
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:25
-#, fuzzy
 msgid "Output directory:"
 msgstr "Ausgabeverzeichnis:"
 
@@ -24146,12 +23598,10 @@ msgid "Profile for 5 seconds"
 msgstr "Profil für 5 Sekunden"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
-#, fuzzy
 msgid "Performance Diagnostics"
 msgstr "Leistungsdiagnose"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:150
-#, fuzzy
 msgid "Remove {0}"
 msgstr "'{0}' entfernen"
 
@@ -24162,7 +23612,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:171
-#, fuzzy
 msgid "The following packages and their dependencies will be removed:"
 msgstr "Die folgenden Abhängigkeiten konnten nicht aufgelöst werden:"
 
@@ -24172,22 +23621,18 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:26
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:234
-#, fuzzy
 msgid "Added"
 msgstr "{0} hinzugefügt"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:27
-#, fuzzy
 msgid "Available"
 msgstr "verfügbar"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#, fuzzy
 msgid "Dependencies"
 msgstr "<b>Abhängigkeiten</b>"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/GettingStartedConfigurationSection.cs:30
-#, fuzzy
 msgid "Snippet {0}"
 msgstr "{0}' übersprungen"
 
@@ -24196,7 +23641,6 @@ msgid "Code"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
-#, fuzzy
 msgid "Add to the project"
 msgstr "Zum Projekt hinzu_fügen:"
 
@@ -24208,19 +23652,16 @@ msgid "Installed"
 msgstr "Installiert"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:133
-#, fuzzy
 msgid "Configured"
 msgstr "Konfigurieren"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:174
-#, fuzzy
 msgid "Installing…"
 msgstr "Wird installiert"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:246
-#, fuzzy
 msgid "Adding…"
 msgstr "Wird geladen..."
 
@@ -24229,12 +23670,10 @@ msgid "This service has no dependencies"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:137
-#, fuzzy
 msgid "Add Dependency"
 msgstr "Entwicklungsabhängigkeit"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:197
-#, fuzzy
 msgid "Adding failed"
 msgstr "Dateien werden hinzugefügt..."
 
@@ -24244,22 +23683,18 @@ msgid "Retry"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:142
-#, fuzzy
 msgid "Platforms:"
 msgstr "Plattform:"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:170
-#, fuzzy
 msgid "Add {0} to {1}"
 msgstr "{0} von {1}"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:171
-#, fuzzy
 msgid "Also add '{0}' to other projects in the solution?"
 msgstr "Neues Projekt zu ausgewählter Projektmappe hinzufügen"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:247
-#, fuzzy
 msgid "Removing…"
 msgstr "Wird entfernt..."
 
@@ -24272,13 +23707,11 @@ msgid "Open Service Gallery"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
-#, fuzzy
 msgid "Open Service Details"
 msgstr "Details ausblenden"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:48
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:57
-#, fuzzy
 msgid "Remove Service…"
 msgstr "Geschweifte Klammern entfernen"
 
@@ -24287,12 +23720,10 @@ msgid "Adds the Service Capability"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:79
-#, fuzzy
 msgid "Add Service"
 msgstr "Quelle hinzufügen"
 
 #: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
 msgid ""
 "<WinRT>\" + module.GetString(types[i].TypeName));\n"
 "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
@@ -24391,7 +23822,6 @@ msgid "Add-in packages"
 msgstr "Add-In-Pakete"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:366
-#, fuzzy
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "{0} Updates verfügbar"
@@ -24545,7 +23975,6 @@ msgid "The uninstallation has completed with warnings."
 msgstr "Die Deinstallation wurde mit Warnungen abgeschlossen."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:123
-#, fuzzy
 msgid ""
 "Multiple selection:\n"
 "\n"
@@ -24578,7 +24007,6 @@ msgstr ""
 "Dieses Add-In kann aufgrund fehlender Abhängigkeiten nicht geladen werden."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:270
-#, fuzzy
 msgid "Required: {0} v{1}, found v{2}"
 msgstr "Erforderlich: {0} v{1}, gefunden v{2}"
 
@@ -24651,7 +24079,6 @@ msgid "Namespace {0} is missing."
 msgstr "Der {0}-Namespace fehlt."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.Tests/CSharp/CodeIssues/UnusedParameterIssueTests.cs:228
-#, fuzzy
 msgid "\"Text\""
 msgstr "\"Text\""
 
@@ -26518,7 +25945,6 @@ msgid "Redundant comma in collection initializer"
 msgstr "Redundantes Komma in Auflistungsinitialisierer"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerIssue.cs:72
-#, fuzzy
 msgid "Remove ','"
 msgstr "',' entfernen"
 
@@ -27439,7 +26865,6 @@ msgstr ""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddOptionalParameterToInvocationAction.cs:74
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/AddOptionalParameterToInvocationCodeRefactoringProvider.cs:94
-#, fuzzy
 msgid "Add optional parameter \"{0}\""
 msgstr "Optionalen Parameter \"{0}\" hinzufügen"
 
@@ -27604,7 +27029,6 @@ msgstr ""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/FormatStringProblemIssue.cs:116
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FormatStringProblemAnalyzer.cs:105
-#, fuzzy
 msgid ""
 "Multiple:\n"
 "{0}"
@@ -28300,7 +27724,6 @@ msgid "Add null check"
 msgstr "NULL-Überprüfung hinzufügen"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertInstanceToStaticMethodCodeRefactoringProvider.cs:34
-#, fuzzy
 msgid "Convert to static method"
 msgstr "In statische Methode konvertieren"
 
@@ -28309,7 +27732,6 @@ msgid "Asynchronous methods should return a Task instead of void"
 msgstr "Asynchrone Methoden sollten eine Aufgabe anstatt 'void' zurückgeben."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AvoidAsyncVoidAnalyzer.cs:19
-#, fuzzy
 msgid "Asynchronous method '{0}' should not return void"
 msgstr "Die asynchrone Methode '{0}' sollte nicht 'void' zurückgeben."
 
@@ -28651,7 +28073,6 @@ msgstr ""
 "eine return-Anweisung."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FunctionNeverReturnsAnalyzer.cs:20
-#, fuzzy
 msgid "{0} never reaches end or a 'return' statement"
 msgstr "{0} erreicht niemals das Ende oder eine return-Anweisung."
 
@@ -29343,7 +28764,6 @@ msgid "Import static class with using"
 msgstr "Statische Klasse mit 'using' importieren"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/AddCheckForNothingCodeRefactoringProvider.cs:145
-#, fuzzy
 msgid "Add check for Nothing"
 msgstr "Überprüfung auf 'Nothing' hinzufügen"
 
@@ -29434,7 +28854,6 @@ msgstr "Zeitansicht"
 msgid "List View"
 msgstr "Listenansicht"
 
-#, fuzzy
 #~ msgid ""
 #~ "Run Configuration: \" + configInfo.EditedConfig.Name);\n"
 #~ "\t\t\tIcon = \"md-prefs-play\";\n"
@@ -29503,7 +28922,6 @@ msgstr "Listenansicht"
 #~ "\n"
 #~ "\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
 
-#, fuzzy
 #~ msgid ""
 #~ "Run Configuration: \" + configInfo.EditedConfig.Name);\n"
 #~ "\t\t\tIcon = \"md-prefs-play\";\n"

@@ -29,6 +29,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -55,11 +56,18 @@ namespace MonoDevelop.Components
 
         public HoverImageButton()
         {
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += OnPerformPress;
+
+			Accessible.SetRole (AtkCocoa.Roles.AXButton);
+
 			Gtk.Alignment al = new Alignment (0.5f, 0.5f, 0f, 0f);
+			al.Accessible.SetShouldIgnore (true);
 			al.Show ();
             CanFocus = true;
 			VisibleWindow = false;
 			image = new ImageView();
+			image.Accessible.SetShouldIgnore (true);
             image.Show();
 			al.Add (image);
             Add(al);
@@ -82,6 +90,11 @@ namespace MonoDevelop.Components
                 handler(this, EventArgs.Empty);
             }
         }
+
+		void OnPerformPress (object sender, EventArgs args)
+		{
+			Activate ();
+		}
 
         private bool changing_style = false;
         protected override void OnStyleSet(Style previous_style)

@@ -28,6 +28,7 @@ using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -74,6 +75,17 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += HandlePress;
+
+			Accessible.Role = Atk.Role.Link;
+
+			Accessible.SetTitle (title);
+			if (!string.IsNullOrEmpty (href)) {
+				Accessible.SetUrl (href);
+			}
+			Accessible.Description = "Opens the link in a web browser";
+
 			UpdateStyle ();
 
 			VisibleWindow = false;
@@ -84,10 +96,16 @@ namespace MonoDevelop.Ide.WelcomePage
 				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
+			box.Accessible.SetShouldIgnore (true);
+
 			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
 			label = CreateLabel ();
 			imageWidget = image.ToGtkWidget ();
+
+			label.Accessible.SetShouldIgnore (true);
+			imageWidget.Accessible.SetShouldIgnore (true);
+
 			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)
 				imageWidget.NoShowAll = true;
@@ -166,6 +184,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object sender, EventArgs args)
+		{
+			OnClicked ();
 		}
 
 		protected virtual void OnClicked ()

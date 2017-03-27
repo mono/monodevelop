@@ -27,6 +27,8 @@
 
 
 using System;
+using System.Timers;
+
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
@@ -36,7 +38,8 @@ namespace MonoDevelop.Ide.Commands
 	/// <summary>
 	/// Copied from MonoDevelop.Ide.addin.xml
 	/// </summary>
-	public enum HelpCommands {
+	public enum HelpCommands
+	{
 		Help,
 		TipOfTheDay,
 		OpenLogDirectory,
@@ -44,13 +47,13 @@ namespace MonoDevelop.Ide.Commands
 	}
 
 	// MonoDevelop.Ide.Commands.HelpCommands.Help
-	public class HelpHandler: CommandHandler 
+	public class HelpHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			IdeApp.HelpOperations.ShowHelp ("root:");
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			if (!IdeApp.HelpOperations.CanShowHelp ("root:"))
@@ -97,7 +100,7 @@ namespace MonoDevelop.Ide.Commands
 			info.Icon = MonoDevelop.Core.BrandingService.HelpAboutIconId;
 		}
 	}
-	
+
 	class SendFeedbackHandler : CommandHandler
 	{
 		protected override void Run ()
@@ -109,5 +112,68 @@ namespace MonoDevelop.Ide.Commands
 		{
 			info.Visible = FeedbackService.Enabled;
 		}
+	}
+
+	class DumpUITreeHandler : CommandHandler
+	{
+		void DumpGtkWidget (Gtk.Widget widget, int indent = 0)
+		{
+			string spacer = new string (' ', indent);
+			Console.WriteLine ($"{spacer} {widget.Accessible.Name} - {widget.GetType ()}");
+			if (widget.GetType () == typeof (Gtk.Label)) {
+				var label = (Gtk.Label)widget;
+				Console.WriteLine ($"{spacer}   {label.Text}");
+			} else if (widget.GetType () == typeof (Gtk.Button)) {
+				var button = (Gtk.Button)widget;
+				Console.WriteLine ($"{spacer}   {button.Label}");
+			}
+
+			var container = widget as Gtk.Container;
+			if (container != null) {
+				var children = container.Children;
+				Console.WriteLine ($"{spacer}   Number of children: {children.Length}");
+
+				foreach (var child in children) {
+					DumpGtkWidget (child, indent + 3);
+				}
+			}
+		}
+
+		protected override void Run ()
+		{
+			var windows = Gtk.Window.ListToplevels ();
+			Console.WriteLine ($"---------\nNumber of windows: {windows}");
+			foreach (var window in windows) {
+				Console.WriteLine ($"Window: {window.Title} - {window.GetType ()}");
+				DumpGtkWidget (window);
+			}
+		}
+	}
+
+	class DumpA11yTreeHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+#if MAC
+			Components.AtkCocoaHelper.AtkCocoaMacExtensions.DumpAccessibilityTree ();
+#endif
+		}
+	}
+
+	class DumpA11yTreeDelayedHandler : CommandHandler
+	{
+#if MAC
+		Timer t;
+		protected override void Run ()
+		{
+			t = new Timer (10000);
+			t.Elapsed += (sender, e) => {
+				Components.AtkCocoaHelper.AtkCocoaMacExtensions.DumpAccessibilityTree ();
+				t.Dispose ();
+				t = null;
+			};
+			t.Start ();
+		}
+#endif
 	}
 }

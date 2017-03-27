@@ -446,6 +446,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				}
 			} finally {
 				// Dispose the runner before the console, to make sure the console is available until the runner is disposed.
+				runner.Disconnect ().Wait ();
 				runner.Dispose ();
 				if (console != null)
 					console.Dispose ();

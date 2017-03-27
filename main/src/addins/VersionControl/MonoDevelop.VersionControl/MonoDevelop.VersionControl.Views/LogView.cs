@@ -30,7 +30,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		VersionControlDocumentInfo info;
-		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"))
+		public LogView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"))
 		{
 			this.info = info;
 		}

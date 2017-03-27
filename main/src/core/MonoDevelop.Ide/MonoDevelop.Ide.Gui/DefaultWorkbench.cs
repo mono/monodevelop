@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using GLib;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
@@ -222,6 +223,8 @@ namespace MonoDevelop.Ide.Gui
 
 			IdeApp.CommandService.SetRootWindow (this);
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
+
+			Accessible.SetIsMainWindow (true);
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)
@@ -547,7 +550,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationLongName;
 		}
-		
+
+		void SetAccessibilityDetails (IWorkbenchWindow window)
+		{
+			string documentUrl, filename;
+			if (window.ViewContent.Project != null) {
+				Console.WriteLine ($"{window.ViewContent.Project.FileName}");
+				Console.WriteLine ($"{window.ViewContent.PathRelativeToProject}");
+
+				documentUrl = "file://" + window.ViewContent.Project.FileName;
+				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
+			} else {
+				documentUrl = string.Empty;
+				filename = string.Empty;
+			}
+
+			Accessible.SetDocument (documentUrl);
+			Accessible.SetFilename (filename);
+		}
+
 		void SetWorkbenchTitle ()
 		{
 			try {
@@ -560,8 +581,12 @@ namespace MonoDevelop.Ide.Gui
 					if (IsInFullViewMode)
 						this.ToggleFullViewMode ();
 				}
+
+				SetAccessibilityDetails (window);
 			} catch (Exception) {
 				Title = GetDefaultTitle ();
+				Accessible.SetDocument ("");
+				Accessible.SetFilename ("");
 			}
 		}
 		
@@ -853,7 +878,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void CreateComponents ()
 		{
+			Accessible.Name = "MainWindow";
+
 			fullViewVBox = new VBox (false, 0);
+			fullViewVBox.Accessible.Name = "MainWindow.Root";
+			fullViewVBox.Accessible.SetLabel ("Label");
+			fullViewVBox.Accessible.SetShouldIgnore (true);
+
 			rootWidget = fullViewVBox;
 			
 			InstallMenuBar ();
@@ -862,6 +893,8 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.SetMainWindowDecorations (this);
 			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
+			toolbarFrame.Accessible.Name = "MainWindow.Root.ToolbarFrame";
+			toolbarFrame.Accessible.SetShouldIgnore (true);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
 

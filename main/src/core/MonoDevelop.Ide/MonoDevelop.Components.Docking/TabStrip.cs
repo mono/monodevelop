@@ -33,6 +33,7 @@ using Gtk;
 using System;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -47,8 +48,12 @@ namespace MonoDevelop.Components.Docking
 
 		public TabStrip (DockFrame frame)
 		{
+			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
+
 			VBox vbox = new VBox ();
+			vbox.Accessible.SetShouldIgnore (true);
 			box = new TabStripBox () { TabStrip = this };
+			box.Accessible.SetShouldIgnore (true);
 			vbox.PackStart (box, false, false, 0);
 		//	vbox.PackStart (bottomFiller, false, false, 0);
 			Add (vbox);
@@ -90,6 +95,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			tab.ButtonPressEvent += OnTabPress;
+			UpdateAccessibilityTabs ();
 		}
 
 		void HandleRemoved (object o, RemovedArgs args)
@@ -98,6 +104,8 @@ namespace MonoDevelop.Components.Docking
 			w.ButtonPressEvent -= OnTabPress;
 			if (currentTab >= box.Children.Length)
 				currentTab = box.Children.Length - 1;
+
+			UpdateAccessibilityTabs ();
 		}
 
 		public void SetTabLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
@@ -109,6 +117,19 @@ namespace MonoDevelop.Components.Docking
 					break;
 				}
 			}
+		}
+
+		void UpdateAccessibilityTabs ()
+		{
+			var tabs = new Atk.Object [box.Children.Length];
+			int i = 0;
+
+			foreach (DockItemTitleTab tab in box.Children) {
+				tabs [i] = tab.Accessible;
+				i++;
+			}
+
+			Accessible.SetTabs (tabs);
 		}
 		
 		public void UpdateStyle (DockItem item)

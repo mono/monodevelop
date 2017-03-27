@@ -25,7 +25,6 @@ msgid "{0} External Console"
 msgstr "Externí konzola {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:231
-#, fuzzy
 msgid "The application could not be started"
 msgstr "Tuto aplikaci nebylo možné spustit."
 
@@ -513,7 +512,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:294
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:297
-#, fuzzy
 msgid ""
 "Unable to compile ({0}) {1} to .resources. \n"
 "Reason: \n"
@@ -521,7 +519,7 @@ msgid ""
 msgstr ""
 "Nepodařilo se zkompilovat ({0}) {1} do .resources. \n"
 "Důvod: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -540,7 +538,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:390
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:393
-#, fuzzy
 msgid ""
 "Unable to generate satellite assemblies for '{0}' culture with {1}.\n"
 "Reason: \n"
@@ -548,7 +545,7 @@ msgid ""
 msgstr ""
 "Satelitní sestavení pro jazykovou verzi {0} s {1} se nedají vygenerovat.\n"
 "Důvod: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"
@@ -833,7 +830,6 @@ msgid "HelpAboutIcon"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ExecutionTarget.cs:218
-#, fuzzy
 msgid "Multiple"
 msgstr "Více řádků"
 
@@ -863,7 +859,6 @@ msgid "Cleaning: {0} ({1})"
 msgstr "Čištění: {0} ({1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceSerializationExtension.cs:70
-#, fuzzy
 msgid "Could not load workspace item: {0}"
 msgstr "Položku pracovního prostoru nebylo možné načíst: {0}."
 
@@ -872,17 +867,14 @@ msgid "Start the project with arguments '{0}' and environment variables '{1}'"
 msgstr "Spustit projekt s argumenty {0} a proměnnými prostředí {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:78
-#, fuzzy
 msgid "Start the project with arguments '{0}'"
 msgstr "Spustit projekt s argumenty {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:80
-#, fuzzy
 msgid "Start the project with environment variables '{0}'"
 msgstr "Spustit projekt s proměnnými prostředí {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:82
-#, fuzzy
 msgid "Start the project"
 msgstr "Spustit projekt"
 
@@ -895,17 +887,14 @@ msgid "Run {0} with arguments '{1}' and custom environment variables '{2}'"
 msgstr "Spustit {0} s argumenty {1} a vlastními proměnnými prostředí {2}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:90
-#, fuzzy
 msgid "Run {0} with arguments '{1}'"
 msgstr "Spustit {0} s argumenty {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:92
-#, fuzzy
 msgid "Run {0} with environment variables '{1}'"
 msgstr "Spustit {0} s proměnnými prostředí {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:94
-#, fuzzy
 msgid "Run {0}"
 msgstr "Spustit {0}"
 
@@ -1111,7 +1100,6 @@ msgstr ""
 "platné IL, a celý uživatelský kód z hlediska ověřitelnosti IL."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:338
-#, fuzzy
 msgid ""
 "Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
 "assemblies, 'program' entry point assembly, 'assembly' specifies an "
@@ -1450,7 +1438,6 @@ msgid "Optimizations"
 msgstr "Optimalizace"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MultiItemSolutionRunConfiguration.cs:103
-#, fuzzy
 msgid "No projects selected to run"
 msgstr "Přidat projekt do vybraného řešení"
 
@@ -1459,23 +1446,19 @@ msgid "Run with arguments '{0}' and environment variables '{1}'"
 msgstr "Spustit s argumenty {0} a proměnnými prostředí {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:66
-#, fuzzy
 msgid "Run with arguments '{0}'"
 msgstr "Spustit s argumenty {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:68
-#, fuzzy
 msgid "Run with environment variables '{0}''"
 msgstr "Spustit s proměnnými prostředí {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:70
-#, fuzzy
 msgid "Run with no additional arguments"
 msgstr "Spustit bez dalších argumentů"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:169
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
-#, fuzzy
 msgid "Profile"
 msgstr "Profil"
 
@@ -3302,13 +3285,11 @@ msgstr "Přepnout na předchozí dokument"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:780
-#, fuzzy
 msgid "Switch to next pad"
 msgstr "Přepnout na další panel"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:786
-#, fuzzy
 msgid "Switch to previous pad"
 msgstr "Přepnout na předchozí panel"
 
@@ -3334,7 +3315,6 @@ msgid "Show tip of the day"
 msgstr "Zobrazit tip dne"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
-#, fuzzy
 msgid "Open Log Directory"
 msgstr "Kořenový adresář"
 
@@ -3525,7 +3505,6 @@ msgid "Clear bookmarks"
 msgstr "Vymazat záložky"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
-#, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "Přepnou_t záložku"
 
@@ -3572,7 +3551,6 @@ msgid "Toggle Completion Suggestion Mode"
 msgstr "Přepnout režim návrhu doplňování"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
-#, fuzzy
 msgid "Inserts a template"
 msgstr "Vloží šablonu."
 
@@ -4085,7 +4063,6 @@ msgstr "Analýza kódu"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:83
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:87
-#, fuzzy
 msgid "Run Configurations"
 msgstr "Konfigurace spuštění"
 
@@ -4561,7 +4538,6 @@ msgstr "Provozovat analýzu kódu u {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:79
-#, fuzzy
 msgid "Start tool {0}"
 msgstr "Spustit nástroj {0}"
 
@@ -4617,17 +4593,14 @@ msgid "Pads"
 msgstr "Panely"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:96
-#, fuzzy
 msgid "Change Targets"
 msgstr "Změny"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:226
-#, fuzzy
 msgid "PCL {0} - not installed"
 msgstr "{0} (nenainstalováno)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:228
-#, fuzzy
 msgid "PCL {0}"
 msgstr "Vyčistit {0}"
 
@@ -5878,7 +5851,6 @@ msgid "The following add-ins could not be started:"
 msgstr "Následující doplňky se nepodařilo spustit:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:78
-#, fuzzy
 msgid "Tools (Custom)"
 msgstr "Nástroje (vlastní)"
 
@@ -5913,7 +5885,6 @@ msgid "_Command:"
 msgstr "_Příkaz:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:210
-#, fuzzy
 msgid "Key Binding:"
 msgstr "Klávesová zkratka:"
 
@@ -6476,7 +6447,6 @@ msgid "Custom Parameters..."
 msgstr "Vlastní parametry..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:494
-#, fuzzy
 msgid "Custom Configuration..."
 msgstr "Vlastní konfigurace..."
 
@@ -6779,7 +6749,6 @@ msgid "Undock"
 msgstr "Vyjmout z dokovací stanice"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:772
-#, fuzzy
 msgid "There was an error saving the changes"
 msgstr "Při přejmenování souboru se vyskytla chyba."
 
@@ -7303,13 +7272,11 @@ msgid "Clean successful."
 msgstr "Čištění bylo úspěšné."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1223
-#, fuzzy
 msgid "Clean canceled."
 msgstr "Čištění se nepodařilo."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1229
-#, fuzzy
 msgid "Clean: "
 msgstr "Vyčistit"
 
@@ -7377,7 +7344,6 @@ msgid "Adding files..."
 msgstr "Přidávání souborů..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1816
-#, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Odkaz s názvem {0} už v projektu existuje."
 
@@ -7390,7 +7356,6 @@ msgstr ""
 "Zkontrolujte oprávnění."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1932
-#, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Soubor s názvem {0} už v projektu existuje."
 
@@ -8609,7 +8574,6 @@ msgid "Target Framework"
 msgstr "Cílová architektura"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
-#, fuzzy
 msgid ".NET Standard Platform:"
 msgstr "Cílová platforma:"
 
@@ -8620,12 +8584,10 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
-#, fuzzy
 msgid ".NET Portable:"
 msgstr "Přenosná podmnožina .NET"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:157
-#, fuzzy
 msgid "Change..."
 msgstr "Změny"
 
@@ -8672,7 +8634,6 @@ msgid "{0} days ago"
 msgstr "Před {0} dny"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:216
-#, fuzzy
 msgid "{0} week ago"
 msgid_plural "{0} weeks ago"
 msgstr[0] "Před {0} týdny"
@@ -8845,7 +8806,6 @@ msgid "Use MSBuild build engine (unsupported for this project type)"
 msgstr "Použít modul sestavení MSBuild (nepodporuje se pro tento typ projektu)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:160
-#, fuzzy
 msgid "Gathering class information"
 msgstr "Shromažďování informací o třídě..."
 
@@ -9057,36 +9017,30 @@ msgstr "_Zobrazit skrytou zprávu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:159
-#, fuzzy
 msgid "Run Configuration: {0}"
 msgstr "Konfigurace spuštění:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:189
-#, fuzzy
 msgid "New"
 msgstr "Nový..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:193
-#, fuzzy
 msgid "Duplicate"
 msgstr "Duplikovat"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:265
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:251
-#, fuzzy
 msgid "Duplicate Configuration"
 msgstr "Duplikovat konfiguraci"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:291
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:277
-#, fuzzy
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "Určitě chcete odebrat konfiguraci {0}?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:352
-#, fuzzy
 msgid "The name can't be empty"
 msgstr "Název nemůže být prázdný."
 
@@ -9095,50 +9049,41 @@ msgid "This name is already in use"
 msgstr "Tento název se už používá."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:55
-#, fuzzy
 msgid "User-specific configuration"
 msgstr "Konfigurace specifická pro uživatele"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:87
-#, fuzzy
 msgid "Start Action"
 msgstr "Spustit akci"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:90
-#, fuzzy
 msgid "Start project"
 msgstr "Spustit projekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:91
-#, fuzzy
 msgid "Start external program:"
 msgstr "Spustit externí program:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:80
-#, fuzzy
 msgid "Run in directory:"
 msgstr "Spustit v adresáři:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:120
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:95
-#, fuzzy
 msgid "Run on external console"
 msgstr "Spustit na externí konzole"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:121
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:96
-#, fuzzy
 msgid "Pause console output"
 msgstr "Pozastavit výstup konzoly"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
-#, fuzzy
 msgid "Execute in .NET Runtime:"
 msgstr "Spustit v modulu runtime .NET:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:133
-#, fuzzy
 msgid "Mono runtime settings:"
 msgstr "Nastavení Mono runtime:"
 
@@ -9147,37 +9092,30 @@ msgid "..."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:137
-#, fuzzy
 msgid "Default settings"
 msgstr "Výchozí nastavení"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:143
-#, fuzzy
 msgid "Advanced"
 msgstr "Upřesnit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:164
-#, fuzzy
 msgid "(Default runtime)"
 msgstr "(Výchozí modul runtime)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:172
-#, fuzzy
 msgid "Mono Runtime Settings"
 msgstr "Nastavení Mono Runtime"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:54
-#, fuzzy
 msgid "Execution Mode Selector"
 msgstr "Volba režimu spuštění"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:62
-#, fuzzy
 msgid "Run Configurations:"
 msgstr "Konfigurace spuštění:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:67
-#, fuzzy
 msgid "Execution Modes:"
 msgstr "Režimy spuštění:"
 
@@ -9262,12 +9200,10 @@ msgid "Swedish"
 msgstr "Švédština"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/RunWithCustomParametersDialog.cs:51
-#, fuzzy
 msgid "Custom Parameters"
 msgstr "Vlastní parametry"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationPanel.cs:71
-#, fuzzy
 msgid "Run Configuration"
 msgstr "Konfigurace spuštění"
 
@@ -9278,7 +9214,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:84
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:335
-#, fuzzy
 msgid "Finish"
 msgstr "Dokončeno"
 
@@ -9290,7 +9225,6 @@ msgid "Cancel"
 msgstr "Zrušit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:161
-#, fuzzy
 msgid "Back"
 msgstr "_Zpět"
 
@@ -9998,7 +9932,6 @@ msgstr ""
 "{1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:193
-#, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "Revize {0}\"t{1}\"t{2}"
 
@@ -10082,31 +10015,26 @@ msgid "(revision {0})"
 msgstr "(revize {0})"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:163
-#, fuzzy
 msgid "Show Next (Difference)"
 msgstr "Zobrazit další (rozdíl)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:179
-#, fuzzy
 msgid "Show Previous (Difference)"
 msgstr "Zobrazit předchozí (rozdíl)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:59
-#, fuzzy
 msgid "{0} change"
 msgid_plural "{0} changes"
 msgstr[0] "Počet změn: {0}"
 msgstr[1] "Počet změn: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:60
-#, fuzzy
 msgid "{0} line added"
 msgid_plural "{0} lines added"
 msgstr[0] "Počet přidaných řádků: {0}"
 msgstr[1] "Počet přidaných řádků: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:61
-#, fuzzy
 msgid "{0} line removed"
 msgid_plural "{0} lines removed"
 msgstr[0] "Počet odebraných řádků: {0}"
@@ -13327,14 +13255,12 @@ msgstr "Všechny webové odkazy se odstranily."
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:91
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:92
-#, fuzzy
 msgid "Updating web reference"
 msgid_plural "Updating web references"
 msgstr[0] "Aktualizace webových referencí"
 msgstr[1] "Aktualizace webových referencí"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:108
-#, fuzzy
 msgid "Updated Web Reference {0}"
 msgid_plural "Updated Web References"
 msgstr[0] "Aktualizované webové reference"
@@ -14441,7 +14367,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1095
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1168
-#, fuzzy
 msgid ""
 "{0} (expression)\n"
 "  statement1\n"
@@ -15215,7 +15140,6 @@ msgstr ""
 "klauzule-dotazu {0} podmínka [klauzule-dotazu]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1446
-#, fuzzy
 msgid ""
 "{0} {1}\n"
 "\n"
@@ -17456,7 +17380,6 @@ msgid "Can't save file - access denied"
 msgstr "Soubor se nedá uložit – byl odepřen přístup."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1450
-#, fuzzy
 msgid "Insert Breakpoint"
 msgstr "Vložit zarážku"
 
@@ -17504,22 +17427,18 @@ msgstr ""
 "({1})."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:911
-#, fuzzy
 msgid "Convert to {0} line endings"
 msgstr "Převést na konce řádků {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:912
-#, fuzzy
 msgid "Convert all files to {0} line endings"
 msgstr "Převést všechny soubory na konce řádků {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:913
-#, fuzzy
 msgid "Keep {0} line endings"
 msgstr "Zachovat konce řádků {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:914
-#, fuzzy
 msgid "Keep {0} line endings in all files"
 msgstr "Zachovat konce řádků {0} ve všech souborech"
 
@@ -17582,7 +17501,6 @@ msgid "Loading error"
 msgstr "Chyba při načítání"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:174
-#, fuzzy
 msgid "Loading error: {0}"
 msgstr "Chyba při načítání: {0}"
 
@@ -17795,7 +17713,6 @@ msgid "Interpret tab _keystroke as reindent command"
 msgstr "Interpretovat _klávesu Tab jako příkaz pro zvětšení odsazení"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
-#, fuzzy
 msgid "Backspace removes indentation"
 msgstr "Klávesa Backspace odebere odsazení"
 
@@ -18011,7 +17928,6 @@ msgid "Show _Minimap"
 msgstr "Zobrazit _minimapu"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:112
-#, fuzzy
 msgid "Surround With..."
 msgstr "Uzavřít do..."
 
@@ -19830,7 +19746,6 @@ msgstr "Trasování zásobníku:"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:619
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:634
-#, fuzzy
 msgid "Can't get source code location for : {0}"
 msgstr "Nelze získat umístění zdrojového kódu pro {0}."
 
@@ -19892,7 +19807,6 @@ msgid "_Debug"
 msgstr "_Ladit"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/UnitTestingRunConfiguration.cs:40
-#, fuzzy
 msgid "Runs the unit tests of the project"
 msgstr "Spustí testy jednotek projektu."
 
@@ -20032,7 +19946,6 @@ msgid "Credentials Required"
 msgstr "Vyžadují se přihlašovací údaje."
 
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:996
-#, fuzzy
 msgid "Cancel operation"
 msgstr "Zrušit operaci"
 
@@ -20219,7 +20132,6 @@ msgstr "Seznam změn pro tento refaktoring:"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:536
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:567
-#, fuzzy
 msgid "_Options for ‘{0}’"
 msgstr "_Možnosti pro {0}"
 
@@ -21472,7 +21384,6 @@ msgid "[External Code]"
 msgstr "[Externí kód]"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:404
-#, fuzzy
 msgid "Show External Code"
 msgstr "Zobrazit externí kód"
 
@@ -21547,7 +21458,6 @@ msgstr "Přejít na soubor"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:80
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:139
-#, fuzzy
 msgid "Edit Breakpoint…"
 msgstr "Upravit zarážku"
 
@@ -21565,19 +21475,16 @@ msgstr "Poslední trasování"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:369
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:408
-#, fuzzy
 msgid "Enable All Breakpoints"
 msgstr "Povolit nebo zakázat všechny zarážky"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:371
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:410
-#, fuzzy
 msgid "Disable All Breakpoints"
 msgstr "Povolit nebo zakázat všechny zarážky"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:343
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:136
-#, fuzzy
 msgid "Remove Breakpoint"
 msgid_plural "Remove Breakpoints"
 msgstr[0] "Odebrat zarážku"
@@ -21586,7 +21493,6 @@ msgstr[2] "Odebrat zarážku"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:374
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:363
-#, fuzzy
 msgid "Enable Breakpoint"
 msgid_plural "Enable Breakpoints"
 msgstr[0] "Povolit/zakázat zarážku"
@@ -21595,7 +21501,6 @@ msgstr[2] "Povolit/zakázat zarážku"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:376
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:360
-#, fuzzy
 msgid "Disable Breakpoint"
 msgid_plural "Disable Breakpoints"
 msgstr[0] "Povolit/zakázat zarážku"
@@ -21608,7 +21513,6 @@ msgid "Id"
 msgstr "ID"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:151
-#, fuzzy
 msgid "Resume"
 msgstr "Výsledek"
 
@@ -22059,7 +21963,6 @@ msgid "Step Out"
 msgstr "Krokovat s vystoupením"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:119
-#, fuzzy
 msgid "New Breakpoint…"
 msgstr "Zobrazit zarážky"
 
@@ -22076,7 +21979,6 @@ msgid "View Breakpoints"
 msgstr "Zobrazit zarážky"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:140
-#, fuzzy
 msgid "Edit Breakpoint Properties"
 msgstr "Upravit zarážku"
 
@@ -22089,7 +21991,6 @@ msgid "Enable/Disable Breakpoint"
 msgstr "Povolit/zakázat zarážku"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:149
-#, fuzzy
 msgid "Enable or Disable Breakpoint"
 msgstr "Povolit nebo zakázat všechny zarážky"
 
@@ -22099,7 +22000,6 @@ msgid "Enable or Disable All Breakpoints"
 msgstr "Povolit nebo zakázat všechny zarážky"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:162
-#, fuzzy
 msgid "Remove All Breakpoints"
 msgstr "Odebrat zarážku"
 
@@ -22169,12 +22069,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
-#, fuzzy
 msgid "Decline"
 msgstr "Deklarující typ"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:84
-#, fuzzy
 msgid "Accept"
 msgstr "Přijmout sloučení"
 
@@ -22184,7 +22082,6 @@ msgid "View License"
 msgstr "Zobrazit licenci"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:57
-#, fuzzy
 msgid ""
 "The following package requires that you accept its license terms before "
 "installing:"
@@ -22243,7 +22140,6 @@ msgstr "Aktualizovat balíček"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:653
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:357
-#, fuzzy
 msgid "Add Package"
 msgid_plural "Add Packages"
 msgstr[0] "Přidat balíčky"
@@ -22403,22 +22299,18 @@ msgid "{0} packages added with warnings."
 msgstr "Balíčky ({0}) se přidaly s upozorněními."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
-#, fuzzy
 msgid "Removing {0} packages..."
 msgstr "Přidávají se balíčky ({0})..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
-#, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "Balíčky ({0}) se úspěšně přidaly."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
-#, fuzzy
 msgid "Could not remove packages."
 msgstr "Balíčky nešlo obnovit."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
-#, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "Balíčky ({0}) se přidaly s upozorněními."
 
@@ -23040,19 +22932,16 @@ msgstr "Vymazat F# Interactive"
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:295
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:298
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:301
-#, fuzzy
 msgid "Start debugging an .fsx script"
 msgstr "Spustit ladění"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:293
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:299
-#, fuzzy
 msgid "Start Debugging"
 msgstr "Spustit _ladění"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:296
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:302
-#, fuzzy
 msgid "Start Debugging on External Console"
 msgstr "Spustit na externí konzole"
 
@@ -23130,7 +23019,6 @@ msgid "Highlight mutable variables"
 msgstr "Zvýrazňovat měnitelné proměnné"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/PackagingProjectTemplateWizardPage.cs:39
-#, fuzzy
 msgid "Configure your NuGet package"
 msgstr "Konfigurovat nový pracovní prostor"
 
@@ -23151,14 +23039,12 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:118
-#, fuzzy
 msgid "Author:"
 msgstr "Autor"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:145
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:146
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:119
-#, fuzzy
 msgid "Description:"
 msgstr "_Popis:"
 
@@ -23168,32 +23054,26 @@ msgid "ID:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:116
-#, fuzzy
 msgid "Authors:"
 msgstr "Autor"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:250
-#, fuzzy
 msgid "Copyright:"
 msgstr "_Autorská práva:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:289
-#, fuzzy
 msgid "Development Dependency:"
 msgstr "Vývojová závislost"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:300
-#, fuzzy
 msgid "Icon URL:"
 msgstr "Ikona:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:343
-#, fuzzy
 msgid "Language:"
 msgstr "_Jazyk:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:354
-#, fuzzy
 msgid "License URL:"
 msgstr "Licence"
 
@@ -23202,60 +23082,49 @@ msgid "Owners:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:398
-#, fuzzy
 msgid "Project URL:"
 msgstr "Projekt:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:426
-#, fuzzy
 msgid "Release Notes:"
 msgstr "Uvolnit zámek"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:485
-#, fuzzy
 msgid "Require License Acceptance:"
 msgstr "Přijetí licence"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:496
-#, fuzzy
 msgid "Summary:"
 msgstr "Souhrn"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:520
-#, fuzzy
 msgid "Tags:"
 msgstr "Značky"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:544
-#, fuzzy
 msgid "Title:"
 msgstr "_Název:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:44
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:44
-#, fuzzy
 msgid "Include in Package"
 msgstr "Zahrnout v souboru pravidel"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the file will be included in the package. Supported for "
 "None items only."
 msgstr "Do balíčku pro konfiguraci se zahrnou tyto soubory:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/PackagingNuGetProject.cs:84
-#, fuzzy
 msgid "Package '{0}' already installed."
 msgstr "Typ {0} už je zaregistrovaný."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/AddPlatformImplementationHandler.cs:63
-#, fuzzy
 msgid "Adding platform implementation..."
 msgstr "Na implicitní implementaci"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:41
-#, fuzzy
 msgid "Add Platform Implementation"
 msgstr "Na implicitní implementaci"
 
@@ -23268,27 +23137,22 @@ msgid "Create a Shared Project from the Portable Class Library:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:79
-#, fuzzy
 msgid "Create Shared Project"
 msgstr "Sdílený projekt"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:147
-#, fuzzy
 msgid "Implementation:"
 msgstr "Odsazení"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:256
-#, fuzzy
 msgid "Platform specific"
 msgstr "Platforma:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:301
-#, fuzzy
 msgid "Single for all platforms"
 msgstr "Nastavit mezery pro operátory"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:355
-#, fuzzy
 msgid "Target Platforms:"
 msgstr "Cílová platforma:"
 
@@ -23301,7 +23165,6 @@ msgid "iOS"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/CrossPlatformLibraryTemplateWizardPage.cs:38
-#, fuzzy
 msgid "Configure your Multiplatform Library"
 msgstr "Konfigurovat nové řešení"
 
@@ -23316,7 +23179,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:53
-#, fuzzy
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr "Kopírovat odkazované sestavení do výstupního adresáře"
 
@@ -23325,13 +23187,11 @@ msgid "<a href=\"https://docs.nuget.org\">Learn more</a>"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the referenced project will be included in the package."
 msgstr "Do balíčku se zahrnou tyto soubory:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkProjectNuGetBuildOptionsPanelWidget.UI.cs:46
-#, fuzzy
 msgid "Create a NuGet Package when building the project."
 msgstr "Vytvořit nové balíčky pro projekt"
 
@@ -23344,7 +23204,6 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:61
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:8
-#, fuzzy
 msgid "NuGet Package"
 msgstr "_Aktualizovat balíčky NuGet"
 
@@ -23353,17 +23212,14 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:80
-#, fuzzy
 msgid "Reference Assemblies"
 msgstr "Zadejte referenci na sestavení."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:92
-#, fuzzy
 msgid "Creates a NuGet package"
 msgstr "_Aktualizovat balíčky NuGet"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:93
-#, fuzzy
 msgid "Create NuGet _Package"
 msgstr "Vytvořit balíček"
 
@@ -23386,12 +23242,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:13
-#, fuzzy
 msgid "Creates a NuGet Packaging project."
 msgstr "Vytvoří překladový projekt."
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:25
-#, fuzzy
 msgid "Output directory:"
 msgstr "Výstupní adresář:"
 
@@ -23409,12 +23263,10 @@ msgid "Profile for 5 seconds"
 msgstr "Profilovat po dobu 5 sekund"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
-#, fuzzy
 msgid "Performance Diagnostics"
 msgstr "Diagnostika výkonu"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:150
-#, fuzzy
 msgid "Remove {0}"
 msgstr "Odebrat {0}"
 
@@ -23425,7 +23277,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:171
-#, fuzzy
 msgid "The following packages and their dependencies will be removed:"
 msgstr "Nešlo vyřešit následující závislosti:"
 
@@ -23435,22 +23286,18 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:26
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:234
-#, fuzzy
 msgid "Added"
 msgstr "Přidáno   {0}"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:27
-#, fuzzy
 msgid "Available"
 msgstr "k dispozici"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#, fuzzy
 msgid "Dependencies"
 msgstr "<b>Závislosti</b>"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/GettingStartedConfigurationSection.cs:30
-#, fuzzy
 msgid "Snippet {0}"
 msgstr "Vynecháno {0}"
 
@@ -23459,7 +23306,6 @@ msgid "Code"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
-#, fuzzy
 msgid "Add to the project"
 msgstr "_Přidat do projektu:"
 
@@ -23471,19 +23317,16 @@ msgid "Installed"
 msgstr "Nainstalováno"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:133
-#, fuzzy
 msgid "Configured"
 msgstr "Konfigurovat"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:174
-#, fuzzy
 msgid "Installing…"
 msgstr "instalace"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:246
-#, fuzzy
 msgid "Adding…"
 msgstr "Načítání…"
 
@@ -23492,12 +23335,10 @@ msgid "This service has no dependencies"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:137
-#, fuzzy
 msgid "Add Dependency"
 msgstr "Vývojová závislost"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:197
-#, fuzzy
 msgid "Adding failed"
 msgstr "Přidávání souborů..."
 
@@ -23507,22 +23348,18 @@ msgid "Retry"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:142
-#, fuzzy
 msgid "Platforms:"
 msgstr "Platforma:"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:170
-#, fuzzy
 msgid "Add {0} to {1}"
 msgstr "{0} z {1}"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:171
-#, fuzzy
 msgid "Also add '{0}' to other projects in the solution?"
 msgstr "Přidat nový projekt do vybraného řešení"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:247
-#, fuzzy
 msgid "Removing…"
 msgstr "Odstraňování..."
 
@@ -23535,13 +23372,11 @@ msgid "Open Service Gallery"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
-#, fuzzy
 msgid "Open Service Details"
 msgstr "Skrýt podrobnosti"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:48
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:57
-#, fuzzy
 msgid "Remove Service…"
 msgstr "Odebrat závorky"
 
@@ -23550,12 +23385,10 @@ msgid "Adds the Service Capability"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:79
-#, fuzzy
 msgid "Add Service"
 msgstr "Přidat zdroj"
 
 #: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
 msgid ""
 "<WinRT>\" + module.GetString(types[i].TypeName));\n"
 "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
@@ -23654,7 +23487,6 @@ msgid "Add-in packages"
 msgstr "Balíčky doplňků"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:366
-#, fuzzy
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "Počet dostupných aktualizací: {0}"

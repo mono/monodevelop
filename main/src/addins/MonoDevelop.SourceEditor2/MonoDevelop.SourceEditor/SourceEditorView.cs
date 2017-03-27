@@ -140,6 +140,12 @@ namespace MonoDevelop.SourceEditor
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
 		}
+
+		public override string TabAccessibilityDescription {
+			get {
+				return GettextCatalog.GetString ("The main source editor");
+			}
+		}
 		
 
 		uint removeMarkerTimeout;

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
@@ -39,9 +40,15 @@ namespace MonoDevelop.Components
 
 		public ImageButton ()
 		{
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += HandlePress;
+
+			Accessible.Role = Atk.Role.PushButton;
+
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
 			VisibleWindow = false;
 			imageWidget = new ImageView ();
+			imageWidget.Accessible.SetShouldIgnore (true);
 			imageWidget.Show ();
 			Add (imageWidget);
 		}
@@ -121,6 +128,11 @@ namespace MonoDevelop.Components
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object o, EventArgs args)
+		{
+			Clicked?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler Clicked;

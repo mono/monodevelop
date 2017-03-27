@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
@@ -72,6 +73,7 @@ namespace MonoDevelop.Components.DockNotebook
 			PackStart (tabStrip, false, false, 0);
 
 			contentBox = new EventBox ();
+			contentBox.Accessible.SetShouldIgnore (true);
 			PackStart (contentBox, true, true, 0);
 
 			ShowAll ();

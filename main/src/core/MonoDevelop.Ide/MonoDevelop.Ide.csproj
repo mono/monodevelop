@@ -9356,6 +9356,9 @@
     <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelper.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperMac.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperNoOp.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ScopeStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
@@ -9411,6 +9414,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
+    <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -151,17 +152,30 @@ namespace MonoDevelop.Components
 		private void BuildWidget ()
 		{
 			alignment = new Alignment (0.5f, 0.5f, 1f, 0f);
+			alignment.Accessible.SetShouldIgnore (true);
 			alignment.SetPadding (1, 1, 3, 3);
 			VisibleWindow = false;
 
 			box = new HBox ();
+			box.Accessible.SetShouldIgnore (true);
 			entry = new FramelessEntry (this);
 			entry.UseNativeContextMenus ();
+			entry.Accessible.SetSubRole ("AXSearchField");
 
 			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
+			filter_button.Accessible.SetRole (AtkCocoa.Roles.AXMenuButton);
+			filter_button.Accessible.SetLabel (GettextCatalog.GetString ("Search filter menu"));
+			filter_button.Accessible.Description = GettextCatalog.GetString ("Change the search filters");
+
+			// This will be set to false if an event handler is attached to RequestMenu
+			filter_button.Accessible.SetShouldIgnore (true);
+
 			clear_button = new HoverImageButton (IconSize.Menu, "md-searchbox-clear");
+			clear_button.Accessible.SetLabel (GettextCatalog.GetString ("Clear"));
+			clear_button.Accessible.Description = GettextCatalog.GetString ("Clear the search entry");
 
 			entryAlignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			entryAlignment.Accessible.SetShouldIgnore (true);
 			alignment.SetPadding (0, 0, 3, 3);
 			entryAlignment.Add (entry);
 			box.PackStart (filter_button, false, false, 0);
@@ -356,12 +370,28 @@ namespace MonoDevelop.Components
 
 		protected virtual void OnRequestMenu (EventArgs e)
 		{
-			EventHandler handler = this.RequestMenu;
-			if (handler != null)
-				handler (this, e);
+			requestMenu?.Invoke (this, e);
 		}
 
-		public event EventHandler RequestMenu;
+		event EventHandler requestMenu;
+		object requestMenuLock = new object ();
+		public event EventHandler RequestMenu {
+			add {
+				lock (requestMenuLock) {
+					requestMenu += value;
+					filter_button.Accessible.SetShouldIgnore (false);
+				}
+			}
+
+			remove {
+				lock (requestMenuLock) {
+					requestMenu -= value;
+					if (requestMenu == null) {
+						filter_button.Accessible.SetShouldIgnore (true);
+					}
+				}
+			}
+		}
 
 		public void GrabFocusEntry ()
 		{

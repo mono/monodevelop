@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Docking
@@ -95,6 +96,13 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += HandlePress;
+			actionHandler.PerformShowMenu += HandleShowMenu;
+
+			Accessible.SetRole (AtkCocoa.Roles.AXGroup, "pad header");
+			Accessible.SetSubRole ("XAPadHeader");
+
 			this.item = item;
 			this.frame = frame;
 			this.VisibleWindow = false;
@@ -168,6 +176,7 @@ namespace MonoDevelop.Components.Docking
 
 		public void SetLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
 		{
+			string labelNoSpaces = label != null ? label.Replace (' ', '-') : null;
 			this.label = label;
 			this.page = page;
 			if (Child != null) {
@@ -175,22 +184,34 @@ namespace MonoDevelop.Components.Docking
 				Remove (oc);
 				oc.Destroy ();
 			}
-			
+
+			if (label != null) {
+				Accessible.Name = $"DockTab.{labelNoSpaces}";
+				Accessible.Description = GettextCatalog.GetString ("Switch to the {0} tab", label);
+				Accessible.SetTitle (label);
+				Accessible.SetLabel (label);
+			}
+
 			Gtk.HBox box = new HBox ();
+			box.Accessible.SetShouldIgnore (true);
 			box.Spacing = -2;
 			
 			if (icon == null)
 				icon = ImageService.GetIcon ("md-empty");
 
 			tabIcon = new ImageView (icon);
+			tabIcon.Accessible.SetShouldIgnore (true);
 			tabIcon.Show ();
 			box.PackStart (tabIcon, false, false, 3);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
+				// Ignore the label because the title tab already contains its name
+				labelWidget.Accessible.SetShouldIgnore (true);
 				labelWidget.UseMarkup = true;
 				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
+				alignLabel.Accessible.SetShouldIgnore (true);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
@@ -207,7 +228,8 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
-			btnDock.Name = string.Format("btnDock_{0}", label ?? string.Empty);
+			btnDock.Name = string.Format("btnDock_{0}", labelNoSpaces ?? string.Empty);
+			UpdateDockButtonAccessibilityLabels ();
 
 			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
@@ -219,10 +241,22 @@ namespace MonoDevelop.Components.Docking
 				item.Visible = false;
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
-			btnClose.Name = string.Format ("btnClose_{0}", label ?? string.Empty);
+			btnClose.Name = string.Format ("btnClose_{0}", labelNoSpaces ?? string.Empty);
+			string realLabel, realHelp;
+			if (string.IsNullOrEmpty (label)) {
+				realLabel = GettextCatalog.GetString ("Close pad");
+				realHelp = GettextCatalog.GetString ("Close the pad");
+			} else {
+				realLabel = GettextCatalog.GetString ("Close {0}", label);
+				realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
+			}
+			btnClose.Accessible.SetLabel (realLabel);
+			btnClose.Accessible.Description = realHelp;
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
+			al.Accessible.SetShouldIgnore (true);
 			HBox btnBox = new HBox (false, 0);
+			btnBox.Accessible.SetShouldIgnore (true);
 			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
@@ -240,7 +274,34 @@ namespace MonoDevelop.Components.Docking
 			UpdateBehavior ();
 			UpdateVisualStyle ();
 		}
-		
+
+		void UpdateDockButtonAccessibilityLabels ()
+		{
+			string realLabel;
+			string realHelp;
+			bool dockable = item.Status != DockItemStatus.Dockable;
+
+			if (string.IsNullOrEmpty (label)) {
+				if (dockable) {
+					realLabel = GettextCatalog.GetString ("Dock pad");
+					realHelp = GettextCatalog.GetString ("Dock the pad into the UI so it will not hide automatically");
+				} else {
+					realLabel = GettextCatalog.GetString ("Autohide pad");
+					realHelp = GettextCatalog.GetString ("Automatically hide the pad when it loses focus");
+				}
+			} else {
+				if (dockable) {
+					realLabel = GettextCatalog.GetString ("Dock {0}", label);
+					realHelp = GettextCatalog.GetString ("Dock the {0} pad into the UI so it will not hide automatically", label);
+				} else {
+					realLabel = GettextCatalog.GetString ("Autohide {0}", label);
+					realHelp = GettextCatalog.GetString ("Automatically hide the {0} pad when it loses focus", label);
+				}
+			}
+			btnDock.Accessible.SetLabel (realLabel);
+			btnDock.Accessible.Description = realHelp;
+		}
+
 		void OnClickDock (object s, EventArgs a)
 		{
 			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
@@ -300,6 +361,8 @@ namespace MonoDevelop.Components.Docking
 				btnDock.Image = null;
 				btnClose.Image = null;
 			}
+
+			UpdateDockButtonAccessibilityLabels ();
 		}
 
 		bool tabPressed, tabActivated;
@@ -343,6 +406,23 @@ namespace MonoDevelop.Components.Docking
 			}
 			tabPressed = false;
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object sender, EventArgs args)
+		{
+			// FIXME: How to support double click?
+			frame.DockInPlaceholder (item);
+			frame.HidePlaceholder ();
+			if (GdkWindow != null)
+				GdkWindow.Cursor = null;
+			frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+			frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+		}
+
+		void HandleShowMenu (object sender, EventArgs args)
+		{
+			// Show the menu at the middle of the widget
+			item.ShowDockPopupMenu (this, Allocation.Width / 2, Allocation.Height / 2);
 		}
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
