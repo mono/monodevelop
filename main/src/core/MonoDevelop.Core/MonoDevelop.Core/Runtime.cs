@@ -428,6 +428,22 @@ namespace MonoDevelop.Core
 				throw new InvalidOperationException ("Operation not supported in background thread");
 		}
 
+		/// <summary>
+		/// Asserts that the current thread is the main thread. It will log a warning if it isn't.
+		/// </summary>
+		public static void CheckMainThread ()
+		{
+			if (IsMainThread) {
+				return;
+			}
+
+			if (System.Diagnostics.Debugger.IsAttached) {
+				System.Diagnostics.Debugger.Break ();
+			}
+
+			LoggingService.LogWarning ("Operation not supported in background thread. Location: " + Environment.StackTrace);
+		}
+
 		public static void SetProcessName (string name)
 		{
 			if (!Platform.IsMac && !Platform.IsWindows) {

@@ -1100,7 +1100,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// this is supported on the main thread only
 			// see https://github.com/dotnet/roslyn/pull/18043
 			// as a result, we can assume that the things it calls are _also_ main thread only
-			Runtime.AssertMainThread ();
+			Runtime.CheckMainThread ();
 
 			try {
 				var ret = base.TryApplyChanges (newSolution, progressTracker);
