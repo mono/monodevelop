@@ -33,7 +33,7 @@ namespace MonoDevelop.DotNetCore
 	/// <summary>
 	/// .NET Core SDKs that ship with MSBuild.
 	/// </summary>
-	static class MSBuildSdks
+	public static class MSBuildSdks
 	{
 		static MSBuildSdks ()
 		{
