@@ -308,7 +308,7 @@ namespace Mono.TextEditor
 		{
 			MarginMarker marker = null;
 			if (lineSegment != null) {
-				foreach (var m in lineSegment.Markers) {
+				foreach (var m in editor.Document.GetMarkers (lineSegment)) {
 					var mm = m as MarginMarker;
 					if (mm != null && mm.CanDraw (this)) {
 						marker = mm;
@@ -341,13 +341,15 @@ namespace Mono.TextEditor
 				startFoldings.Clear ();
 				containingFoldings.Clear ();
 				endFoldings.Clear ();
-				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-					if (segment.GetStartLine (editor.Document).Offset == lineSegment.Offset) {
-						startFoldings.Add (segment);
-					} else if (segment.GetEndLine (editor.Document).Offset == lineSegment.Offset) {
-						endFoldings.Add (segment);
-					} else {
-						containingFoldings.Add (segment);
+				if (lineSegment != null) {
+					foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
+						if (segment.GetStartLine (editor.Document)?.Offset == lineSegment.Offset) {
+							startFoldings.Add (segment);
+						} else if (segment.GetEndLine (editor.Document)?.Offset == lineSegment.Offset) {
+							endFoldings.Add (segment);
+						} else {
+							containingFoldings.Add (segment);
+						}
 					}
 				}
 				

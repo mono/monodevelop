@@ -25,13 +25,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #endif
     class Group : Capture {
         // the empty group object
-		internal static Group   _emptygroup = new Group(StringTextSource.Empty, new int[0], 0);
+		internal static Group   _emptygroup = new Group("", new int[0], 0);
         
         internal int[] _caps;
         internal int _capcount;
         internal CaptureCollection _capcoll;
 
-        internal Group(ITextSource text, int[] caps, int capcount)
+        internal Group(string text, int[] caps, int capcount)
 
         : base(text, capcount == 0 ? 0 : caps[(capcount - 1) * 2],
                capcount == 0 ? 0 : caps[(capcount * 2) - 1]) {

@@ -114,7 +114,7 @@ namespace Mono.TextEditor
 					y = editor.LineToY (segmentStartLine.LineNumber);
 				}
 
-				for (var curLine = segmentStartLine; curLine != endLine && y < editor.VAdjustment.Value + editor.Allocation.Height; curLine = curLine.NextLine) {
+				for (var curLine = segmentStartLine; curLine != null && curLine != endLine && y < editor.VAdjustment.Value + editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (curLine, curLine.Offset, curLine.Length, -1, -1);
 					var width = (int)(curLayout.Width);
 					if (curLayout.IsUncached)

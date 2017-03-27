@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.DotNetCore
 {
-	static class DotNetCoreSdk
+	public static class DotNetCoreSdk
 	{
 		static DotNetCoreSdk ()
 		{
@@ -46,7 +46,7 @@ namespace MonoDevelop.DotNetCore
 		{
 		}
 
-		public static DotNetCoreSdkPaths FindSdkPaths (string sdk)
+		internal static DotNetCoreSdkPaths FindSdkPaths (string sdk)
 		{
 			var sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.MSBuildSDKsPath = MSBuildSDKsPath;

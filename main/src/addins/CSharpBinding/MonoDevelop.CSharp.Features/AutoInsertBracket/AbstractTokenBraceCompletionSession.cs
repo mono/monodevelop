@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractTokenBraceCompletionSession.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {
@@ -72,11 +73,12 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			return token.RawKind == OpeningTokenKind && token.SpanStart == position;
 		}
 
-
+		ITextSourceVersion version;
 		protected override void OnEditorSet ()
 		{
+			version = Editor.Version;
 			this.startOffset = Editor.CaretOffset - 1;
-			this.endOffset = startOffset + 2;
+			this.endOffset = startOffset + 1;
 		}
 
 		public override void BeforeType (char ch, out bool handledCommand)
@@ -93,16 +95,18 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			}
 		}
 
-		public override void AfterBackspace ()
+		public override void BeforeBackspace (out bool handledCommand)
 		{
-			if (Editor.CaretOffset == StartOffset) {
+			base.BeforeBackspace (out handledCommand);
+			if (Editor.CaretOffset <= StartOffset + 1 || Editor.CaretOffset > EndOffset) {
 				Editor.EndSession ();
 			}
 		}
 
-		public override void AfterDelete ()
+		public override void BeforeDelete (out bool handledCommand)
 		{
-			if (Editor.CaretOffset - 1 == StartOffset) {
+			base.BeforeDelete (out handledCommand);
+			if (Editor.CaretOffset <= StartOffset || Editor.CaretOffset >= EndOffset) {
 				Editor.EndSession ();
 			}
 		}
@@ -129,8 +133,8 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		{
 			var document = Document;
 			if (document != null) {
-				var root = document.GetSyntaxRootAsync (cancellationToken).WaitAndGetResult (cancellationToken);
-				var position = EndOffset;
+				var root = document.GetSyntaxRootAsync(cancellationToken).WaitAndGetResult(cancellationToken);
+				var position = EndOffset + 1;
 
 				return root.FindTokenFromEnd (position, includeZeroWidth: false, findInsideTrivia: true).RawKind == this.ClosingTokenKind;
 			}

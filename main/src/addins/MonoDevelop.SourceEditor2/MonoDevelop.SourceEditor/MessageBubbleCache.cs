@@ -41,7 +41,6 @@ namespace MonoDevelop.SourceEditor
 		internal static Xwt.Drawing.Image warningPixbuf = Xwt.Drawing.Image.FromResource ("gutter-warning-15.png");
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
-		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal MonoTextEditor editor;
 
@@ -250,14 +249,6 @@ namespace MonoDevelop.SourceEditor
 			editor.QueueDraw ();
 		}
 
-		public bool RemoveLine (DocumentLine line)
-		{
-			if (!lineWidthDictionary.ContainsKey (line))
-				return false;
-			lineWidthDictionary.Remove (line);
-			return true;
-		}
-
 		internal void DestroyPopoverWindow ()
 		{
 			if (popoverWindow != null) {
@@ -309,7 +300,6 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEditorEditorOptionsChanged (object sender, EventArgs e)
 		{
-			lineWidthDictionary.Clear ();
 			OnChanged (EventArgs.Empty);
 		}	
 

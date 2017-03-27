@@ -1,4 +1,4 @@
-﻿//
+//
 // FilePathExtensions.cs
 //
 // Author:

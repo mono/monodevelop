@@ -272,17 +272,24 @@ namespace Mono.TextEditor
 			get {
 				return document;
 			}
-			set {
-				DetachDocument ();
-				document = value;
-				this.caret.SetDocument (document);
-				AttachDocument ();
-			}
 		}
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			caret.UpdateCaretPosition (e);
+
+			if (Options.TabsToSpaces && document.IsTextSet && !document.IsInUndo) {
+				string tabReplacement = new string (' ', Options.TabSize);
+				var newChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+				foreach (var change in e.TextChanges) {
+					string replaceText = change.InsertedText.Text.Replace ("\t", tabReplacement);
+					if (replaceText.Length != change.InsertedText.Length) {
+						newChanges.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (change.NewOffset, change.InsertionLength), replaceText)); 
+					}
+				}
+				if (newChanges.Count > 0)
+					document.ApplyTextChanges (newChanges);
+			}
 		}
 
 
@@ -306,10 +313,10 @@ namespace Mono.TextEditor
 						return "\u000D";
 					case UnicodeNewline.NEL:
 						return "\u0085";
-					case UnicodeNewline.VT:
-						return "\u000B";
-					case UnicodeNewline.FF:
-						return "\u000C";
+					//case UnicodeNewline.VT:
+					//	return "\u000B";
+					//case UnicodeNewline.FF:
+					//	return "\u000C";
 					case UnicodeNewline.LS:
 						return "\u2028";
 					case UnicodeNewline.PS:
@@ -381,7 +388,38 @@ namespace Mono.TextEditor
 			}
 			return result.ToString ();
 		}
-		
+
+		internal static int CalcIndentLength (string indent)
+		{
+			int result = 0;
+			foreach (var ch in indent) {
+				if (ch == '\t') {
+					result = result - result % DefaultSourceEditorOptions.Instance.TabSize + DefaultSourceEditorOptions.Instance.TabSize;
+				} else {
+					result++;
+				}
+			}
+			return result;
+		}
+
+
+		internal static int CalcOffset (string indent, int indentLength)
+		{
+			int result = 0;
+			int offset = 0;
+			foreach (var ch in indent) {
+				if (ch == '\t') {
+					result = result - result % DefaultSourceEditorOptions.Instance.TabSize + DefaultSourceEditorOptions.Instance.TabSize;
+				} else {
+					result++;
+				}
+				if (result > indentLength)
+					return offset;
+				offset++;
+			}
+			return offset;
+		}
+
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
 			var mode = Document.SyntaxMode;
@@ -393,8 +431,7 @@ namespace Mono.TextEditor
 					str = str.TrimStart (' ', '\t');
 				return ConvertToPangoMarkup (str, replaceTabs);
 			}
-			// TODO : EditorTheme
-			int indentLength = 4; //SyntaxMode.GetIndentLength (Document, offset, length, false);
+			int indentLength = -1;
 			int curOffset = offset;
 
 			StringBuilder result = new StringBuilder ();
@@ -402,6 +439,15 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
+				if (removeIndent) {
+					var indentString = line.GetIndentation (Document);
+					var curIndent = CalcIndentLength (indentString);
+					if (indentLength < 0) {
+						indentLength = curIndent;
+					} else {
+						curOffset += CalcOffset (indentString, System.Math.Min (curIndent, indentLength));
+					}
+				}
 
 				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
@@ -411,7 +457,7 @@ namespace Mono.TextEditor
 						chunkStyle.FontWeight != FontWeight.Normal;
 					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 
 						chunkStyle.FontStyle != FontStyle.Normal;
-					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
+					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline) ||
 							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
 					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Foreground) != TextViewMargin.GetPixel (chunkStyle.Foreground);
 					if (setColor || setBold || setItalic || setUnderline) {
@@ -442,8 +488,6 @@ namespace Mono.TextEditor
 				}
 
 				curOffset = line.EndOffsetIncludingDelimiter;
-				if (removeIndent)
-					curOffset += indentLength;
 				if (result.Length > 0 && curOffset < offset + length)
 					result.AppendLine ();
 			}
@@ -999,17 +1043,17 @@ namespace Mono.TextEditor
 				int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 				bool preserve = Caret.PreserveSelection;
 				Caret.PreserveSelection = true;
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					DocumentLine curLine = Document.GetLine (lineNr);
 					int col1 = curLine.GetLogicalColumn (this, startCol) - 1;
 					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol) - 1, curLine.Length);
 					if (col1 >= col2)
 						continue;
-					Remove (curLine.Offset + col1, col2 - col1);
-					
-					if (Caret.Line == lineNr && Caret.Column >= col1)
-						Caret.Column = col1 + 1;
+					changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (curLine.Offset + col1, col2 - col1), ""));
 				}
+				Document.ApplyTextChanges (changes);
 				int column = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
 				MainSelection = selection.WithRange (
 					new DocumentLocation (selection.Anchor.Line, column),

@@ -71,8 +71,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)
 		{
-			inactive |= (DocumentContext.ParsedDocument.Flags & ParsedDocumentFlags.HasCustomCompletionExtension) == ParsedDocumentFlags.HasCustomCompletionExtension;
-
+			if (!inactive && DocumentContext.ParsedDocument != null)
+				inactive = (DocumentContext.ParsedDocument.Flags & ParsedDocumentFlags.HasCustomCompletionExtension) == ParsedDocumentFlags.HasCustomCompletionExtension;
 		}
 
 		internal protected override bool IsActiveExtension ()
@@ -117,9 +117,10 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			if (inactive)
 				return await base.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
-
-			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
+			if (Editor.MimeType == "text/plain")
 				return null;
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
+					return null;
 			if (triggerInfo.CompletionTriggerReason != CompletionTriggerReason.CharTyped)
 				return null;
 			char completionChar = triggerInfo.TriggerCharacter.Value;
@@ -149,6 +150,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				result.Add (new CompletionData (word));	
 			}
 
+			if (result.Count == 0)
+				return null;
 			return result;
 		}
 	}

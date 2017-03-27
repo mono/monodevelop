@@ -27,6 +27,7 @@
 
 using Gtk;
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Components
@@ -37,6 +38,12 @@ namespace MonoDevelop.Components
 		string tip;
 		TooltipPopoverWindow tooltipWindow;
 		bool mouseOver;
+
+		public Atk.Object Accessible {
+			get {
+				return eventBox.Accessible;
+			}
+		}
 
 		/// <summary>
 		/// The EventBox should have Visible set to false otherwise the tooltip pop window
@@ -50,6 +57,9 @@ namespace MonoDevelop.Components
 			eventBox.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 
 			Position = PopupPosition.TopLeft;
+
+			// Accessibility: Disguise this eventbox as a label
+			eventBox.Accessible.SetRole (AtkCocoa.Roles.AXStaticText);
 		}
 
 		[GLib.ConnectBefore]
@@ -64,6 +74,11 @@ namespace MonoDevelop.Components
 		{
 			mouseOver = true;
 			ShowTooltip ();
+		}
+
+		void UpdateAccessibility ()
+		{
+			eventBox.Accessible.SetLabel (tip);
 		}
 
 		bool ShowTooltip ()
@@ -106,6 +121,7 @@ namespace MonoDevelop.Components
 						HideTooltip ();
 				} else if (!string.IsNullOrEmpty (tip) && mouseOver)
 					ShowTooltip ();
+				UpdateAccessibility ();
 			}
 		}
 

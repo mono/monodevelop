@@ -144,6 +144,7 @@ namespace MonoDevelop.Ide.StandardHeader
 		{
 			//sane defaults
 			IncludeInNewFiles = true;
+			Text = "";
 		}
 		
 		[ItemProperty]

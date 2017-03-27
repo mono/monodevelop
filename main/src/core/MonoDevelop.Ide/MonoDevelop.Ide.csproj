@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9356,6 +9356,9 @@
     <Compile Include="MonoDevelop.Components\XwtBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Components\MDSpinner.cs" />
     <Compile Include="MonoDevelop.Components\RoundedFrameBox.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelper.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperMac.cs" />
+    <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperNoOp.cs" />
     <Compile Include="MonoDevelop.Components\Xwt\XwtPopup.cs" />
     <Compile Include="MonoDevelop.Components\Xwt\XwtPopupWindowTheme.cs" />
     <Compile Include="MonoDevelop.Components\Xwt\XwtThemedPopup.cs" />
@@ -9364,6 +9367,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerReason.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionSelectionStatus.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\EditorNotificationServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\GlobalOptionPersister.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TextPolicyDocumentOptionsProvider.cs" />
@@ -9415,6 +9419,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />
+    <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

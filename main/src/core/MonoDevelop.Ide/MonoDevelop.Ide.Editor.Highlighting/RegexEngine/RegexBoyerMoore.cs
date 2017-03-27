@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
             }
         }
 
-        private bool MatchPattern(ITextSource text, int index) {
+        private bool MatchPattern(string text, int index) {
                 if (_caseInsensitive) {
                     if( text.Length - index < _pattern.Length) {
                         return false;
@@ -245,14 +245,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
                     return true;
                 }
                 else {
-				return(0 == String.CompareOrdinal(_pattern, text.GetTextAt (index, _pattern.Length)));
+				return(0 == String.CompareOrdinal(_pattern, text.Substring (index, _pattern.Length)));
                 }                            
         }
         
         /*
          * When a regex is anchored, we can do a quick IsMatch test instead of a Scan
          */
-        internal bool IsMatch(ITextSource text, int index, int beglimit, int endlimit) {
+        internal bool IsMatch(string text, int index, int beglimit, int endlimit) {
            
             if (!_rightToLeft) {
                 if (index < beglimit || endlimit - index < _pattern.Length)
@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
          * The direction and case-sensitivity of the match is determined
          * by the arguments to the RegexBoyerMoore constructor.
          */
-        internal int Scan(ITextSource text, int index, int beglimit, int endlimit) {
+        internal int Scan(string text, int index, int beglimit, int endlimit) {
             int test;
             int test2;
             int match;

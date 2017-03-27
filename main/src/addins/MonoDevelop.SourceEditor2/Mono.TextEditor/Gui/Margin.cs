@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace Mono.TextEditor
 {
 	abstract class Margin : IDisposable
@@ -37,8 +39,18 @@ namespace Mono.TextEditor
 		public abstract double Width {
 			get;
 		}
-		
-		public bool IsVisible { get; set; }
+
+		bool isVisible;
+		public bool IsVisible {
+			get {
+				return isVisible;
+			}
+			set {
+				isVisible = value;
+
+				Accessible.Hidden = !value;
+			}
+		}
 		
 		// set by the text editor
 		public virtual double XOffset {
@@ -66,8 +78,39 @@ namespace Mono.TextEditor
 			set;
 		}
 
+		AccessibilityElementProxy accessible;
+		public virtual AccessibilityElementProxy Accessible {
+			get {
+				if (accessible == null) {
+					accessible = new AccessibilityElementProxy ();
+				}
+				return accessible;
+			}
+		}
+
+		Gdk.Rectangle rectInParent;
+		public Gdk.Rectangle RectInParent {
+			get {
+				return rectInParent;
+			}
+
+			set {
+				rectInParent = value;
+
+				if (Accessible == null) {
+					return;
+				}
+
+				Accessible.FrameInGtkParent = rectInParent;
+				// SetFrameInParent is in Cocoa coords, but because margins take up the whole vertical height
+				// we don't need to switch anything around and can just pass in the rectInParent
+				Accessible.FrameInParent = rectInParent;
+			}
+		}
+
 		protected Margin ()
 		{
+			Accessible.SetRole (AtkCocoa.Roles.AXRuler);
 			IsVisible = true;
 		}
 		

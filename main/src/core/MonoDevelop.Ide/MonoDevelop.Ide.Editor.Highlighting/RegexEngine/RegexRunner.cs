@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         protected internal int runtextend;          // end of text to search
         protected internal int runtextstart;        // starting point for search
 
-        protected internal ITextSource runtext;          // text to search
+        protected internal string runtext;          // text to search
         protected internal int runtextpos;          // current position in text
 
         protected internal int [] runtrack;         // The backtracking stack.  Opcodes use this to store data regarding 
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 
 
 */
-        protected internal Match Scan(Regex regex, ITextSource text, int textbeg, int textend, int textstart, int prevlen, bool quick) {
+        protected internal Match Scan(Regex regex, string text, int textbeg, int textend, int textstart, int prevlen, bool quick) {
             return Scan(regex, text, textbeg, textend, textstart, prevlen, quick, regex.MatchTimeout);
         }
 
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         internal
         #endif
-               Match Scan(Regex regex, ITextSource text, int textbeg, int textend, int textstart, int prevlen, bool quick, TimeSpan timeout) {
+               Match Scan(Regex regex, string text, int textbeg, int textend, int textstart, int prevlen, bool quick, TimeSpan timeout) {
         
             int bump;
             int stoppos;

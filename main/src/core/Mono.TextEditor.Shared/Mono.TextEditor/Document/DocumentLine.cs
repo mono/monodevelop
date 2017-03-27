@@ -40,20 +40,6 @@ namespace Mono.TextEditor
 	/// </summary>
 	abstract class DocumentLine : IDocumentLine
 	{
-		List<TextLineMarker> markers;
-
-		public IEnumerable<TextLineMarker> Markers {
-			get {
-				return markers ?? Enumerable.Empty<TextLineMarker> ();
-			}
-		}
-
-		public int MarkerCount {
-			get {
-				return markers != null ? markers.Count : 0;
-			}
-		}
-
 		/// <summary>
 		/// Gets the length of the line.
 		/// </summary>
@@ -141,22 +127,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public bool IsBookmarked {
-			get {
-				if (markers == null)
-					return false;
-				return markers.Contains (BookmarkMarker.Instance);
-			}
-			set {
-				if (value) {
-					if (!IsBookmarked)
-						AddMarker (BookmarkMarker.Instance);
-				} else {
-					if (markers != null)
-						markers.Remove (BookmarkMarker.Instance);
-				}
-			}
-		}
 
 		/// <summary>
 		/// Gets the number of this line.
@@ -193,52 +163,6 @@ namespace Mono.TextEditor
 			UnicodeNewline = unicodeNewline;
 		}
 
-		internal void AddMarker (TextLineMarker marker, int idx = -1)
-		{
-			if (markers == null)
-				markers = new List<TextLineMarker> ();
-			marker.LineSegment = this;
-			if (idx < 0) {
-				markers.Add (marker);
-			} else  {
-				markers.Insert (idx, marker);
-			}
-		}
-
-		public void ClearMarker ()
-		{
-			if (markers != null) {
-				markers.Clear ();
-				markers = null;
-			}
-		}
-
-		internal void RemoveMarker (TextLineMarker marker)
-		{
-			marker.LineSegment = null;
-			if (markers == null)
-				return;
-			markers.Remove (marker);
-			if (markers.Count == 0)
-				markers = null;
-		}
-
-		internal TextLineMarker GetMarker (Type type)
-		{
-			if (markers == null)
-				return null;
-			return markers.Find (m => m.GetType () == type);
-		}
-
-		internal void RemoveMarker (Type type)
-		{
-			for (int i = 0; markers != null && i < markers.Count; i++) {
-				if (markers[i].GetType () == type) {
-					RemoveMarker (markers[i]);
-					i--;
-				}
-			}
-		}
 
 		/// <summary>
 		/// This method gets the line indentation.

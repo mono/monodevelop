@@ -95,10 +95,12 @@ namespace Mono.TextEditor
 
 		public void TextReplaced (object sender, TextChangeEventArgs args)
 		{
-			if (args.RemovalLength > 0)
-				TextRemove (args.Offset, args.RemovalLength);
-			if (args.InsertionLength > 0)
-				TextInsert (args.Offset, args.InsertedText.Text);
+			foreach (var change in args.TextChanges) {
+				if (change.RemovalLength > 0)
+					TextRemove (change.Offset, change.RemovalLength);
+				if (change.InsertionLength > 0)
+					TextInsert (change.Offset, change.InsertedText.Text);
+			}
 		}
 
 		public void TextRemove (int offset, int length)
@@ -279,10 +281,10 @@ namespace Mono.TextEditor
 						return new Delimiter ((int)(p - start), UnicodeNewline.LF);
 					case NewLine.NEL:
 						return new Delimiter ((int)(p - start), UnicodeNewline.NEL);
-					case NewLine.VT:
-						return new Delimiter ((int)(p - start), UnicodeNewline.VT);
-					case NewLine.FF:
-						return new Delimiter ((int)(p - start), UnicodeNewline.FF);
+					//case NewLine.VT:
+					//	return new Delimiter ((int)(p - start), UnicodeNewline.VT);
+					//case NewLine.FF:
+					//	return new Delimiter ((int)(p - start), UnicodeNewline.FF);
 					case NewLine.LS:
 						return new Delimiter ((int)(p - start), UnicodeNewline.LS);
 					case NewLine.PS:

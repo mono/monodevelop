@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var marker = lineSegment != null ? (MarginMarker)lineSegment.Markers.FirstOrDefault (m => m is MarginMarker && ((MarginMarker)m).CanDraw (this)) : null;
+			var marker = lineSegment != null ? (MarginMarker)editor.Document.GetMarkers (lineSegment).FirstOrDefault (m => m is MarginMarker && ((MarginMarker)m).CanDraw (this)) : null;
 			bool drawBackground = true;
 			if (marker != null && marker.CanDrawBackground (this))
 				drawBackground = !marker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextLineMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMousePress (editor, this, args);
@@ -112,7 +112,7 @@ namespace Mono.TextEditor
 
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextLineMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMouseRelease (editor, this, args);
@@ -126,7 +126,7 @@ namespace Mono.TextEditor
 			args.Editor.TooltipText = null;
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextLineMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in editor.Document.GetMarkers (lineSegment)) {
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMouseHover (editor, this, args);

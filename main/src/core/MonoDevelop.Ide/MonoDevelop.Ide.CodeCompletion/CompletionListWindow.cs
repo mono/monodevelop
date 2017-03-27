@@ -1,4 +1,4 @@
-// CompletionListWindow.cs
+﻿// CompletionListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CodeCompletionContext CodeCompletionContext {
 			get { return window.CodeCompletionContext; }
 			set { window.CodeCompletionContext = value; }
-		}
+		} 
 
 		internal int StartOffset {
 			get { return window.StartOffset; }
@@ -158,6 +158,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public int EndOffset {
 			get { return window.EndOffset; }
+			set { window.EndOffset = value; }
 		}
 
 		internal ICompletionWidget CompletionWidget {
@@ -529,11 +530,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			
 			if (!keyHandled)
 				ka = PostProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, descriptor);
+			UpdateLastWordChar ();
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
 				OnWindowClosed (EventArgs.Empty);
@@ -686,10 +687,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
-					UpdateWordSelection ();
 					initialWordLength = 0;
 					//completionWidget.SelectedLength;
-					StartOffset = CompletionWidget.CaretOffset;
+					StartOffset = completionContext.TriggerOffset;
+					UpdateWordSelection ();
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
@@ -817,7 +818,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
+				if (item.HasOverloads && declarationviewwindow != null && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
 					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (facade, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (facade, ref ka, descriptor);
@@ -885,7 +886,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// no selection, try to find a selection
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
-				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString);
+				var match = FindMatchedEntry (List.CompletionString);
+				List.SelectEntry (match);
 			}
 			// no success, hide declaration view
 			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {

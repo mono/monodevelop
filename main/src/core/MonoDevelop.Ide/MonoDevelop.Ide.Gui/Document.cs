@@ -1,4 +1,4 @@
-//
+﻿//
 // Document.cs
 //
 // Author:
@@ -171,6 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += delegate {
 				UnsubscibeAnalysisdocument ();
+				UnloadAdhocProject();
 			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
@@ -222,7 +223,7 @@ namespace MonoDevelop.Ide.Gui
 		Solution adhocSolution;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Project : null); }
+			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -352,6 +353,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.IsViewOnly; }
 		}
 
+		public override bool IsUntitled {
+			get {
+				return Window.ViewContent.IsUntitled;
+			}
+		}
+
 		Task currentOperationTask = Task.FromResult (true);
 
 		Task RunAsyncOperation (Func<Task> action)
@@ -392,16 +399,13 @@ namespace MonoDevelop.Ide.Gui
 				// Freeze the file change events. There can be several such events, and sending them all together
 				// is more efficient
 				FileService.FreezeEvents ();
-
 				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 					return;
-	
 				if (!Window.ViewContent.IsFile) {
 					await Window.ViewContent.Save ();
 					return;
 				}
-				
-				if (Window.ViewContent.ContentName == null) {
+				if (IsUntitled) {
 					await SaveAs ();
 				} else {
 					try {
@@ -447,20 +451,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public Task SaveAs ()
+		public Task<bool> SaveAs ()
 		{
 			return SaveAs (null);
 		}
 
-		public Task SaveAs (string filename)
+		public Task<bool> SaveAs (string filename)
 		{
-			return RunAsyncOperation (() => SaveAsTask (filename));
+			return Runtime.RunInMainThread (() => SaveAsTask (filename));
 		}
 
-		async Task SaveAsTask (string filename)
+		async Task<bool> SaveAsTask (string filename)
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
-				return;
+				return false;
 
 			Encoding encoding = null;
 			
@@ -483,9 +487,9 @@ namespace MonoDevelop.Ide.Gui
 					dlg.CurrentFolder = Path.GetDirectoryName ((string)Window.ViewContent.ContentName);
 					dlg.InitialFileName = Path.GetFileName ((string)Window.ViewContent.ContentName);
 				}
-				
+
 				if (!dlg.Run ())
-					return;
+					return false;
 				
 				filename = dlg.SelectedFile;
 				encoding = dlg.Encoding;
@@ -493,28 +497,31 @@ namespace MonoDevelop.Ide.Gui
 		
 			if (!FileService.IsValidPath (filename)) {
 				MessageService.ShowMessage (GettextCatalog.GetString ("File name {0} is invalid", filename));
-				return;
+				return false;
 			}
 			// detect preexisting file
 			if (File.Exists (filename)) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile))
-					return;
+					return false;
 			}
 			
 			// save backup first
 			if (IdeApp.Preferences.CreateFileBackupCopies) {
 				if (tbuffer != null && encoding != null)
-					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, tbuffer.UseBOM);
+					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, (encoding != null) && (encoding.GetPreamble().Length > 0));
 				else
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
+			Window.ViewContent.ContentName = filename;
 			await Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
+
 			await UpdateParseDocument ();
+			return true;
 		}
 		
 		public async Task<bool> Close ()
@@ -854,6 +861,10 @@ namespace MonoDevelop.Ide.Gui
 						var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
 						if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
 							var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+							var parentSolution = new Solution ();
+							parentSolution.RootFolder.Items.Add (newProject);
+							parentSolution.AddConfiguration ("Debug", true);
+
 							this.adhocProject = newProject;
 
 							newProject.Name = "InvisibleProject";

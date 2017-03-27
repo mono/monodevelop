@@ -31,24 +31,22 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class MonoTextEditorImplementationTests : TextEditorTestBase
 	{
-		protected override TextEditor CreateTextEditor (string text, Encoding enc = null, bool useBom = false)
+		protected override TextEditor CreateTextEditor (string text, Encoding enc = null)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.Text = text;
 			editor.Encoding = enc;
-			editor.UseBOM = useBom;
 			return editor;
 		}
 	}
 
 	public class MonoTextEditorSnapshotImplementationTests : ReadonlyTextDocumentTestBase
 	{
-		protected override IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null, bool useBom = false)
+		protected override IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.Text = text;
 			editor.Encoding = enc;
-			editor.UseBOM = useBom;
 			return editor.CreateDocumentSnapshot ();
 		}
 	}

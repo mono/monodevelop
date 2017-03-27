@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -92,15 +94,18 @@ namespace MonoDevelop.CSharp.Highlighting
 				int minLine = System.Math.Min (selection.Begin.Line, selection.End.Line);
 				int maxLine = System.Math.Max (selection.BeginLine, selection.End.Line);
 
-
+				var changes = new List<TextChange> ();
 				for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
 					var lineSegment = editor.GetLine (lineNumber);
 
-					if (lineSegment.Offset + startCol < lineSegment.EndOffset)
-						editor.InsertText (lineSegment.Offset + startCol, start);
+					if (lineSegment.Offset + startCol < lineSegment.EndOffset) {
+						changes.Add (new TextChange (new TextSpan (lineSegment.Offset + startCol, 0), start));
+					}
 					if (lineSegment.Offset + endCol < lineSegment.EndOffset)
-						editor.InsertText (lineSegment.Offset + endCol, end);
+						changes.Add (new TextChange (new TextSpan (lineSegment.Offset + endCol, 0), end));
 				}
+
+				editor.ApplyTextChanges (changes);
 
 //				textEditorData.MainSelection = new Selection (
 //					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + start.Length : startCol + 1 + start.Length),

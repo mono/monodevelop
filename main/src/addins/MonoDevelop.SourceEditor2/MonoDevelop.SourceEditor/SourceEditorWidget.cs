@@ -29,7 +29,9 @@ using System.Text;
 using System.Collections.Generic;
 using Gtk;
 using Mono.TextEditor;
+//using Mono.TextEditor.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -232,8 +234,10 @@ namespace MonoDevelop.SourceEditor
 				this.strip = new QuickTaskStrip ();
 
 				scrolledBackground = new EventBox ();
+				scrolledBackground.Accessible.SetShouldIgnore (true);
 				scrolledWindow = new CompactScrolledWindow ();
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
+				scrolledWindow.Accessible.SetShouldIgnore (true);
 				scrolledBackground.Add (scrolledWindow);
 				PackStart (scrolledBackground, true, true, 0);
 				strip.VAdjustment = scrolledWindow.Vadjustment;
@@ -390,6 +394,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
+			vbox.Accessible.SetShouldIgnore (true);
+
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance), doc);
 			this.textEditor.TextArea.FocusInEvent += (o, s) => {
 				lastActiveEditor = (ExtensibleTextEditor)((TextArea)o).GetTextEditorData ().Parent;
@@ -402,6 +408,7 @@ namespace MonoDevelop.SourceEditor
 			if (IdeApp.CommandService != null)
 				IdeApp.FocusOut += IdeApp_FocusOut;
 			mainsw = new DecoratedScrolledWindow (this);
+			mainsw.Accessible.SetShouldIgnore (true);
 			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);
@@ -1061,8 +1068,9 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			DocumentLine curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			MonoDevelop.SourceEditor.MessageBubbleTextMarker marker = null;
-			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
-				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
+
+			if (curLine != null && TextEditor.Document.GetMarkers (curLine).Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
+				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)TextEditor.Document.GetMarkers (curLine).First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
 //				marker.CollapseExtendedErrors = false;
 			}
 			
@@ -1357,7 +1365,7 @@ namespace MonoDevelop.SourceEditor
 				info.Visible = false;
 				return;
 			}
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)TextEditor.Document.GetMarkers (line).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			info.Visible = marker != null;
 		}
 		
@@ -1366,7 +1374,7 @@ namespace MonoDevelop.SourceEditor
 			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			if (line == null)
 				return;
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			var marker = (MessageBubbleTextMarker)TextEditor.Document.GetMarkers (line).FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker != null) {
 				marker.IsVisible = !marker.IsVisible;
 				TextEditor.QueueDraw ();

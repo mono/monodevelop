@@ -806,6 +806,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
 		}
 
+		internal void SelectEntry (CompletionSelectionStatus match)
+		{
+			if (match.IsSelected.HasValue)
+				AutoSelect = match.IsSelected.Value;
+			if (match.Index >= 0)
+				SelectionFilterIndex = match.Index;
+		}
+
 		internal static IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
 		{
 			var concrete = dataList as CompletionDataList;
@@ -817,9 +825,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (win.CompletionDataList == null)
 				return;
 			var filterResult = win.CompletionDataList.FilterCompletionList (new CompletionListFilterInput (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString));
-			if (filterResult == null)
+			if (filterResult == null) {
 				filterResult = DefaultFilterWords (win.CompletionDataList, filteredItems, oldCompletionString, CompletionString);
-			
+			}
+
 			filteredItems = filterResult.FilteredItems;
 			if (filterResult.CategorizedItems == null) {
 				categories.Clear ();

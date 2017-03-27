@@ -366,16 +366,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public bool UseBOM {
-			get {
-				return ReadOnlyTextDocument.UseBOM;
-			}
-			set {
-				Runtime.AssertMainThread ();
-				ReadWriteTextDocument.UseBOM = value;
-			}
-		}
-
 		public Encoding Encoding {
 			get {
 				return ReadOnlyTextDocument.Encoding;
@@ -671,6 +661,17 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (segment));
 			Runtime.AssertMainThread ();
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
+		}
+
+		/// <summary>
+		/// Applies a batch of text changes. Note that the textchange offsets are always offsets in the current (old) document.
+		/// </summary>
+		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)
+		{
+			if (changes == null)
+				throw new ArgumentNullException (nameof (changes));
+			Runtime.AssertMainThread ();
+			ReadWriteTextDocument.ApplyTextChanges (changes);
 		}
 
 		public IDocumentLine GetLine (int lineNumber)

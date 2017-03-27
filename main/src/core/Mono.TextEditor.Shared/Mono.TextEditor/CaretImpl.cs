@@ -1,4 +1,4 @@
-// Caret.cs
+﻿// Caret.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -97,7 +97,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		ITextSourceVersion offsetVersion;
 		int caretOffset;
 		public override int Offset {
 			get {
@@ -112,7 +111,6 @@ namespace Mono.TextEditor
 					throw new InvalidOperationException ($"Caret offset must be < Length {TextEditorData.Length} but was {value}");
 				DocumentLocation old = Location;
 				caretOffset = value;
-				offsetVersion = TextEditorData.Document.Version;
 				line = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
 				var lineSegment = TextEditorData.Document.GetLine (line);
 				column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
@@ -349,7 +347,6 @@ namespace Mono.TextEditor
 				}
 			}
 			caretOffset = System.Math.Max(0, result);
-			offsetVersion = doc.Version;
 		}
 
 		internal void UpdateCaretPosition (TextChangeEventArgs e)
@@ -359,12 +356,7 @@ namespace Mono.TextEditor
 			//	return;
 			//}
 			var curVersion = TextEditorData.Version;
-			if (offsetVersion == null) {
-				offsetVersion = curVersion;
-				return;
-			}
-			var newOffset = offsetVersion.MoveOffsetTo (curVersion, caretOffset);
-			offsetVersion = curVersion;
+			var newOffset = e.GetNewOffset (caretOffset);
 			if (newOffset == caretOffset || !AutoUpdatePosition)
 				return;
 			DocumentLocation old = Location;
@@ -393,7 +385,6 @@ namespace Mono.TextEditor
 		public void SetDocument (TextDocument doc)
 		{
 			line = column = 1;
-			offsetVersion = doc.Version;
 			caretOffset = 0;
 		}
 	}

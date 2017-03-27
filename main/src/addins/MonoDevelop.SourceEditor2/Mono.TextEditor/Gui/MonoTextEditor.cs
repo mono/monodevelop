@@ -221,6 +221,10 @@ namespace Mono.TextEditor
 			info.Y = y;
 			containerChildren.Add (info);
 			SetAdjustments ();
+
+			// Emit the add signal so that the A11y system will pick up that a widget has been added to the box
+			// but the box won't handle it because widget.Parent has already been set.
+			GLib.Signal.Emit (this, "add", widget);
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
@@ -266,6 +270,11 @@ namespace Mono.TextEditor
 		
 		protected override void OnAdded (Widget widget)
 		{
+			// Break the add signal cycle
+			if (widget.Parent == this) {
+				return;
+			}
+
 			AddTopLevelWidget (widget, 0, 0);
 		}
 		
@@ -401,9 +410,6 @@ namespace Mono.TextEditor
 		public TextDocument Document {
 			get {
 				return textArea.Document;
-			}
-			set {
-				textArea.Document = value;
 			}
 		}
 		

@@ -223,7 +223,6 @@ namespace MonoDevelop.Ide.Editor
 				var res = await TextFileUtility.GetTextAsync (content);
 				text = textEditor.Text = res.Text;
 				textEditor.Encoding = res.Encoding;
-				textEditor.UseBOM = res.HasBom;
 			}
 			await RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();
@@ -305,6 +304,12 @@ namespace MonoDevelop.Ide.Editor
 		public override string TabPageLabel {
 			get {
 				return textEditorImpl.ViewContent.TabPageLabel;
+			}
+		}
+
+		public override string TabAccessibilityDescription {
+			get {
+				return textEditorImpl.ViewContent.TabAccessibilityDescription;
 			}
 		}
 

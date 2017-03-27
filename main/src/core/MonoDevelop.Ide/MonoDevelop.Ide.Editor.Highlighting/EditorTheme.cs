@@ -211,7 +211,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				depth = int.MaxValue - 1;
 				return true;
 			}
-			foreach (var s in setting.Scopes) {
+			for(int i = 0; i < setting.Scopes.Count; i++) {
+				var s = setting.Scopes[i];
 				if (IsCompatibleScope (s, scopeStack, ref compatibleScope, ref depth)) {
 					return true;
 				}
@@ -259,13 +260,25 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static bool IsCompatibleScope (StackMatchExpression expr, ScopeStack scope, ref string matchingKey, ref int depth)
 		{
 			depth = 0;
-			while (!scope.IsEmpty) {
+			if (scope.Count == 1)
+			{
 				var result = expr.MatchesStack (scope, ref matchingKey);
 				if (result.Item1) {
 					return true;
 				}
-				scope = scope.Pop ();
-				depth++;
+				depth = 1;
+			}
+			else
+			{
+				depth = 0;
+				while (!scope.IsEmpty) {
+					var result = expr.MatchesStack (scope, ref matchingKey);
+					if (result.Item1) {
+						return true;
+					}
+					scope = scope.Pop ();
+					depth++;
+				}
 			}
 			return false;
 		}

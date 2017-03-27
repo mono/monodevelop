@@ -691,7 +691,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///             parameter.
         ///       </para>
         ///    </devdoc>
-        public static bool IsMatch(ITextSource input, String pattern) {
+        public static bool IsMatch(string input, String pattern) {
             return IsMatch(input, pattern, RegexOptions.None, DefaultMatchTimeout);
         }        
 
@@ -705,7 +705,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          parameter.
         ///       </para>
         ///    </devdoc>
-        public static bool IsMatch(ITextSource input, String pattern, RegexOptions options) {
+        public static bool IsMatch(string input, String pattern, RegexOptions options) {
             return IsMatch(input, pattern, options, DefaultMatchTimeout);
         }
 
@@ -714,7 +714,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static bool IsMatch(ITextSource input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
+               static bool IsMatch(string input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).IsMatch(input);
         }
 
@@ -728,7 +728,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          position.
         ///       </para>
         ///    </devdoc>
-        public bool IsMatch(ITextSource input) {
+        public bool IsMatch(string input) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -747,7 +747,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          a new starting position.
         ///    </para>
         /// </devdoc>
-        public bool IsMatch(ITextSource input, int startat) {
+        public bool IsMatch(string input, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -764,7 +764,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///             supplied in the pattern parameter.
         ///       </para>
         ///    </devdoc>
-		public static Match Match(ITextSource input, String pattern) {
+		public static Match Match (string input, String pattern) {
             return Match(input, pattern, RegexOptions.None, DefaultMatchTimeout);
         }
 
@@ -778,7 +778,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          string.
         ///       </para>
         ///    </devdoc>
-        public static Match Match(ITextSource input, String pattern, RegexOptions options) {
+        public static Match Match (string input, String pattern, RegexOptions options) {
             return Match(input, pattern, options, DefaultMatchTimeout);
         }
 
@@ -788,7 +788,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static Match Match(ITextSource input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
+               static Match Match (string input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).Match(input);
         }
 
@@ -802,7 +802,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       the precise result as a RegexMatch object.
         ///    </para>
         /// </devdoc>
-        public Match Match(ITextSource input) {
+        public Match Match (string input) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -817,7 +817,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    Matches a regular expression with a string and returns
         ///    the precise result as a RegexMatch object.
         /// </devdoc>
-        public Match Match(ITextSource input, int startat) {
+        public Match Match(string input, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -836,7 +836,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       RegexMatch object.
         ///    </para>
         /// </devdoc>
-        public Match Match (ITextSource input, int beginning, int length)
+        public Match Match (string input, int beginning, int length)
 		{
 			if (input == null)
 				throw new ArgumentNullException ("input");
@@ -844,7 +844,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 			return Run (false, -1, input, beginning, length, UseOptionR () ? beginning + length : beginning, internalMatchTimeout);
 		}
 
-		public Match Match (ITextSource input, int beginning, int length, TimeSpan matchTimeout)
+		public Match Match (string input, int beginning, int length, TimeSpan matchTimeout)
 		{
 			if (input == null)
 				throw new ArgumentNullException ("input");
@@ -861,7 +861,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          called iteratively numerous times.
         ///       </para>
         ///    </devdoc>
-        public static MatchCollection Matches(ITextSource input, String pattern) {
+        public static MatchCollection Matches(string input, String pattern) {
             return Matches(input, pattern, RegexOptions.None, DefaultMatchTimeout);
         }
 
@@ -874,7 +874,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       numerous times.
         ///    </para>
         /// </devdoc>
-        public static MatchCollection Matches(ITextSource input, String pattern, RegexOptions options) {
+        public static MatchCollection Matches(string input, String pattern, RegexOptions options) {
             return Matches(input, pattern, options, DefaultMatchTimeout);
         }
 
@@ -883,7 +883,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static MatchCollection Matches(ITextSource input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
+               static MatchCollection Matches(string input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).Matches(input);
         }
 
@@ -898,7 +898,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       times.
         ///    </para>
         /// </devdoc>
-        public MatchCollection Matches(ITextSource input) {
+        public MatchCollection Matches(string input) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -916,7 +916,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       times.
         ///    </para>
         /// </devdoc>
-        public MatchCollection Matches(ITextSource input, int startat) {
+        public MatchCollection Matches(string input, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -934,7 +934,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          the first character in the input string. 
         ///       </para>
         ///    </devdoc>
-        public static String Replace(ITextSource input, String pattern, String replacement) {
+        public static String Replace(string input, String pattern, String replacement) {
             return Replace(input, pattern, replacement, RegexOptions.None, DefaultMatchTimeout);
         }
 
@@ -948,7 +948,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          pattern, starting at the first character in the input string. 
         ///       </para>
         ///    </devdoc>
-        public static String Replace(ITextSource input, String pattern, String replacement, RegexOptions options) {
+        public static String Replace(string input, String pattern, String replacement, RegexOptions options) {
             return Replace(input, pattern, replacement, options, DefaultMatchTimeout);
         }
 
@@ -957,7 +957,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static String Replace(ITextSource input, String pattern, String replacement, RegexOptions options, TimeSpan matchTimeout) {
+               static String Replace(string input, String pattern, String replacement, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).Replace(input, replacement);
         }
 
@@ -971,7 +971,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          first character in the input string, using the previous patten. 
         ///       </para>
         ///    </devdoc>
-        public String Replace(ITextSource input, String replacement) {
+        public String Replace(string input, String replacement) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -988,7 +988,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="replacement"/> pattern, starting at the first character in the input string. 
         /// </para>
         /// </devdoc>
-        public String Replace(ITextSource input, String replacement, int count) {
+        public String Replace(string input, String replacement, int count) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1006,7 +1006,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="startat."/>
         /// </para>
         /// </devdoc>
-        public String Replace(ITextSource input, String replacement, int count, int startat) {
+        public String Replace(string input, String replacement, int count, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1035,7 +1035,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="."/>
         /// </para>
         /// </devdoc>
-        public static String Replace(ITextSource input, String pattern, MatchEvaluator evaluator) {
+        public static String Replace(string input, String pattern, MatchEvaluator evaluator) {
             return Replace(input, pattern, evaluator, RegexOptions.None, DefaultMatchTimeout);
         }
 
@@ -1048,7 +1048,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="replacement"/> pattern, starting at the first character<paramref name="."/>
         /// </para>
         /// </devdoc>
-        public static String Replace(ITextSource input, String pattern, MatchEvaluator evaluator, RegexOptions options) {
+        public static String Replace(string input, String pattern, MatchEvaluator evaluator, RegexOptions options) {
             return Replace(input, pattern, evaluator, options, DefaultMatchTimeout);
         }
 
@@ -1057,7 +1057,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static String Replace(ITextSource input, String pattern, MatchEvaluator evaluator, RegexOptions options, TimeSpan matchTimeout) {
+               static String Replace(string input, String pattern, MatchEvaluator evaluator, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).Replace(input, evaluator);
         }
 
@@ -1071,7 +1071,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    position<paramref name="."/>
         /// </para>
         /// </devdoc>
-        public String Replace(ITextSource input, MatchEvaluator evaluator) {
+        public String Replace(string input, MatchEvaluator evaluator) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1089,7 +1089,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    position<paramref name="."/>
         /// </para>
         /// </devdoc>
-        public String Replace(ITextSource input, MatchEvaluator evaluator, int count) {
+        public String Replace(string input, MatchEvaluator evaluator, int count) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1107,7 +1107,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    position<paramref name=" startat."/> 
         /// </para>
         /// </devdoc>
-        public String Replace(ITextSource input, MatchEvaluator evaluator, int count, int startat) {
+        public String Replace(string input, MatchEvaluator evaluator, int count, int startat) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1124,7 +1124,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///          by <paramref name="pattern"/>.
         ///       </para>
         ///    </devdoc>
-        public static ITextSource[] Split(ITextSource input, String pattern) {
+        public static string[] Split(string input, String pattern) {
             return Split(input, pattern, RegexOptions.None, DefaultMatchTimeout);
         }
 
@@ -1136,7 +1136,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       Splits the <paramref name="input "/>string at the position defined by <paramref name="pattern"/>.
         ///    </para>
         /// </devdoc>
-        public static ITextSource[] Split(ITextSource input, String pattern, RegexOptions options) {
+        public static string[] Split(string input, String pattern, RegexOptions options) {
             return Split(input, pattern, options, DefaultMatchTimeout);
         }
 
@@ -1145,7 +1145,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         #else
         private
         #endif
-               static ITextSource[] Split(ITextSource input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
+               static string[] Split(string input, String pattern, RegexOptions options, TimeSpan matchTimeout) {
             return new Regex(pattern, options, matchTimeout, true).Split(input);
         }
 
@@ -1159,7 +1159,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///       .
         ///    </para>
         /// </devdoc>
-        public ITextSource[] Split(ITextSource input) {
+        public string[] Split(string input) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1176,7 +1176,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="pattern"/> . 
         ///    </para>
         /// </devdoc>
-        public ITextSource[] Split(ITextSource input, int count) {
+        public string[] Split(string input, int count) {
 
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -1193,7 +1193,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         ///    <paramref name="pattern"/> . 
         ///    </para>
         /// </devdoc>
-        public ITextSource[] Split(ITextSource input, int count, int startat) {
+        public string[] Split(string input, int count, int startat) {
             if (input==null)
                 throw new ArgumentNullException("input");
 
@@ -1267,7 +1267,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Internal worker called by all the public APIs
          */
-		internal Match Run(bool quick, int prevlen, ITextSource input, int beginning, int length, int startat, TimeSpan matchTimeout) {
+		internal Match Run(bool quick, int prevlen, string input, int beginning, int length, int startat, TimeSpan matchTimeout) {
             Match match;
             RegexRunner runner = null;
 

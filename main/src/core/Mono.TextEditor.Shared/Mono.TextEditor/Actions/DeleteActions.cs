@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
@@ -188,12 +189,12 @@ namespace Mono.TextEditor
 			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
-		
+
 		public static void Backspace (TextEditorData data)
 		{
 			Backspace (data, RemoveCharBeforeCaret);
 		}
-		
+
 		public static void Backspace (TextEditorData data, Action<TextEditorData> removeCharBeforeCaret)
 		{
 			if (!data.CanEditSelection)
@@ -213,11 +214,14 @@ namespace Mono.TextEditor
 						}
 						bool preserve = data.Caret.PreserveSelection;
 						data.Caret.PreserveSelection = true;
+						var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
 							var lineSegment = data.Document.GetLine (lineNumber);
 							int insertOffset = lineSegment.GetLogicalColumn (data, visualAnchorLocation.Column - 1) - 1;
-							data.Remove (lineSegment.Offset + insertOffset, 1);
+							changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (lineSegment.Offset + insertOffset, 1), ""));
 						}
+						data.Document.ApplyTextChanges (changes);
 
 						var visualColumn = data.GetLine (data.Caret.Location.Line).GetVisualColumn (data, col - 1);
 						data.MainSelection = new MonoDevelop.Ide.Editor.Selection (
@@ -236,7 +240,7 @@ namespace Mono.TextEditor
 
 				if (data.Caret.Line == DocumentLocation.MinLine && data.Caret.Column == DocumentLocation.MinColumn)
 					return;
-			
+
 				// Virtual indentation needs to be fixed before to have the same behavior
 				// if it's there or not (otherwise user has to press multiple backspaces in some cases)
 				data.EnsureCaretIsNotVirtual ();
@@ -290,7 +294,7 @@ namespace Mono.TextEditor
 
 			var startOffset = prevLine != null ? prevLine.EndOffset : 0;
 			var count = data.Caret.Offset - startOffset;
-			if (count < 0)
+			if (count < 0 || startOffset >= data.Length)
 				return;
 			data.Remove (startOffset, count);
 			if (prevLine != null) {
@@ -332,11 +336,16 @@ namespace Mono.TextEditor
 						bool preserve = data.Caret.PreserveSelection;
 						data.Caret.PreserveSelection = true;
 						col--;
+						var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
 							DocumentLine lineSegment = data.Document.GetLine (lineNumber);
-							if (col < lineSegment.Length)
-								data.Remove (lineSegment.Offset + col, 1);
+							if (col < lineSegment.Length) {
+								changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (lineSegment.Offset + col, 1), ""));
+							}
 						}
+						data.Document.ApplyTextChanges (changes);
+
 						data.Caret.PreserveSelection = preserve;
 						data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 						return;

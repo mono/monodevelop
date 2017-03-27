@@ -161,13 +161,15 @@ namespace Mono.TextEditor
 		{
 			if (textGC == null) {
 				var plainText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Foreground);
-
 				textGC = plainText.CreateGC (ev.Window);
+
+				plainText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
 				textBgGC = plainText.CreateGC (ev.Window);
 
 				var collapsedText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.CollapsedText);
-
 				foldGC = collapsedText.CreateGC (ev.Window);
+
+				collapsedText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
 				foldBgGC = collapsedText.CreateGC (ev.Window);
 			}
 			

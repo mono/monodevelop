@@ -33,17 +33,19 @@ namespace MonoDevelop.DotNetCore
 	/// <summary>
 	/// .NET Core SDKs that ship with MSBuild.
 	/// </summary>
-	static class MSBuildSdks
+	public static class MSBuildSdks
 	{
 		static MSBuildSdks ()
 		{
 			TargetRuntime runtime = IdeApp.Preferences.DefaultTargetRuntime;
 			string binPath = runtime.GetMSBuildBinPath ("15.0");
-			string sdksPath = Path.Combine (binPath, "Sdks");
+			if (binPath != null) {
+				string sdksPath = Path.Combine(binPath, "Sdks");
 
-			if (Directory.Exists (sdksPath)) {
-				Installed = true;
-				MSBuildSDKsPath = sdksPath;
+				if (Directory.Exists(sdksPath)) {
+					Installed = true;
+					MSBuildSDKsPath = sdksPath;
+				}
 			}
 		}
 

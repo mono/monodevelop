@@ -71,9 +71,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			BezelStyle = NSBezelStyle.TexturedRounded;
 			Title = "";
 
+			var nsa = (INSAccessibility)this;
+			nsa.AccessibilityElement = false;
+
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
 			AddSubview (RealSelectorView);
+
+			// Disguise this NSButton as a group
+			AccessibilityRole = NSAccessibilityRoles.GroupRole;
+
+			// For some reason AddSubview hasn't added RealSelectorView as an accessibility child of SelectorView
+			nsa.AccessibilityChildren = new NSObject [] { RealSelectorView };
 		}
 
 		public override CGSize SizeThatFits (CGSize size)
@@ -136,6 +145,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string RunConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
+			static readonly string RunConfigurationIdentifier = "RunConfiguration";
+			static readonly string ConfigurationIdentifier = "Configuration";
+			static readonly string RuntimeIdentifier = "Runtime";
 
 			static nfloat iconSize = 28;
 			nfloat AddCellSize (int cellId, nfloat totalWidth, nfloat layoutWidth, nfloat allIconsWidth)
@@ -151,6 +163,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return iconSize;
 			}
 
+			int IndexFromIdentifier (string identifier)
+			{
+				int i = 0;
+				foreach (var cell in Cells) {
+					if (cell.Identifier == identifier) {
+						return i;
+					}
+					i++;
+				}
+
+				throw new Exception ($"No cell with {identifier} found");
+			}
+
 			public override CGSize SizeThatFits (CGSize size)
 			{
 				int n = 0;
@@ -161,7 +186,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				totalWidth += AddCellSize (LastSelectedCell, totalWidth, size.Width, allIconsWidth);
 
 				for (;n < VisibleCells.Length; n++) {
-					int cellId = VisibleCellIds [n];
+					var cellId = VisibleCellIds [n];
 					if (cellId == LastSelectedCell)
 						continue;
 					
@@ -314,16 +339,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Image = projectImageDisabled,
 						Title = TextForActiveRunConfiguration,
 						Enabled = false,
+						Identifier = RunConfigurationIdentifier
 					},
 					new NSPathComponentCell {
 						Image = projectImageDisabled,
 						Title = TextForActiveConfiguration,
 						Enabled = false,
+						Identifier = ConfigurationIdentifier
 					},
 					new NSPathComponentCell {
 						Image = deviceImageDisabled,
 						Title = TextForRuntimeConfiguration,
 						Enabled = false,
+						Identifier = RuntimeIdentifier
 					}
 				};
 				SetVisibleCells (RunConfigurationIdx, ConfigurationIdx, RuntimeIdx);
@@ -334,6 +362,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				FocusRingType = NSFocusRingType.None;
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
+
+				var nsa = (INSAccessibility)this;
+				nsa.AccessibilityIdentifier = "ConfigurationSelector";
+				nsa.AccessibilityLabel = GettextCatalog.GetString ("Configuration Selector");
+				nsa.AccessibilityHelp = GettextCatalog.GetString ("Set the project runtime configuration");
 			}
 
 			void SetVisibleCells (params int[] ids)
@@ -362,11 +395,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return -1;
 			}
 
+			public override bool AccessibilityPerformShowMenu ()
+			{
+				if (ClickedPathComponentCell == null) {
+					return false;
+				}
+
+				PopupMenuForCell (ClickedPathComponentCell);
+
+				return true;
+			}
+
 			public override void MouseDown (NSEvent theEvent)
 			{
 				if (!Enabled)
 					return;
 
+				// Can't use ClickedPathComponentCell here because it is only set on MouseUp
 				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
 
 				var cellIdx = IndexOfCellAtX (locationInView.X);
@@ -378,6 +423,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (item == null || !item.Enabled)
 					return;
 
+				PopupMenuForCell (item);
+			}
+
+			void PopupMenuForCell (NSPathComponentCell item)
+			{
 				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
 				int i = 0;
 
@@ -387,7 +437,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					ShowsStateColumn = true,
 					Font = NSFont.MenuFontOfSize (12),
 				};
-				if (cellIdx == RunConfigurationIdx) {
+
+				if (item.Identifier == RunConfigurationIdentifier) {
 					if (ActiveRunConfiguration == null)
 						return;
 
@@ -406,7 +457,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (selectedItem == null && configuration.OriginalId == ActiveRunConfiguration.OriginalId)
 							selectedItem = menuitem;
 					}
-				} else if (cellIdx == ConfigurationIdx) {
+				} else if (item.Identifier == ConfigurationIdentifier) {
 					if (ActiveConfiguration == null)
 						return;
 
@@ -425,7 +476,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (selectedItem == null && configuration.OriginalId == ActiveConfiguration.OriginalId)
 							selectedItem = menuitem;
 					}
-				} else if (cellIdx == RuntimeIdx) {
+				} else if (item.Identifier == RuntimeIdentifier) {
 					if (ActiveRuntime == null)
 						return;
 
@@ -448,7 +499,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else
 					throw new NotSupportedException ();
 				
-				LastSelectedCell = cellIdx;
+				LastSelectedCell = IndexFromIdentifier (item.Identifier);
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 
