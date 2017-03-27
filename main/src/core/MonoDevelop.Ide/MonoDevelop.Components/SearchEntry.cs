@@ -374,16 +374,17 @@ namespace MonoDevelop.Components
 		}
 
 		event EventHandler requestMenu;
+		object requestMenuLock = new object ();
 		public event EventHandler RequestMenu {
 			add {
-				lock (requestMenu) {
+				lock (requestMenuLock) {
 					requestMenu += value;
 					filter_button.Accessible.SetShouldIgnore (false);
 				}
 			}
 
 			remove {
-				lock (requestMenu) {
+				lock (requestMenuLock) {
 					requestMenu -= value;
 					if (requestMenu == null) {
 						filter_button.Accessible.SetShouldIgnore (true);
