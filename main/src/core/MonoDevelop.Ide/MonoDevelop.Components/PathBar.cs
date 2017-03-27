@@ -33,6 +33,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -70,16 +72,31 @@ namespace MonoDevelop.Components
 			get;
 			set;
 		}
-		
-		public PathEntry (Xwt.Drawing.Image icon, string markup)
+
+		internal AtkCocoaHelper.AccessibilityElementProxy Accessible {
+			get;
+			set;
+		}
+
+		PathEntry ()
+		{
+			//Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.Identifier = "Breadcrumb";
+			Accessible.PerformPress += OnPerformShowMenu;
+		}
+
+		public PathEntry (Xwt.Drawing.Image icon, string markup) : this (markup)
 		{
 			this.Icon = icon;
-			this.Markup = markup;
 		}
 		
-		public PathEntry (string markup)
+		public PathEntry (string markup) : this ()
 		{
 			this.Markup = markup;
+
+			// FIXME: Remove markup from this string?
+			Accessible.Label = markup;
 		}
 		
 		public override bool Equals (object obj)
@@ -112,6 +129,12 @@ namespace MonoDevelop.Components
 				}
 				return darkIcon;
 			}
+		}
+
+		internal event EventHandler PerformShowMenu;
+		void OnPerformShowMenu (object sender, EventArgs e)
+		{
+			PerformShowMenu?.Invoke (this, EventArgs.Empty);
 		}
 	}
 	
@@ -158,6 +181,10 @@ namespace MonoDevelop.Components
 
 		public PathBar (Func<int, Control> createMenuForItem)
 		{
+			Accessible.Name = "PathBar";
+			Accessible.SetLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
+			Accessible.Description = GettextCatalog.GetString ("Jump to definitions in the current file");
+
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
 				           EventMask.LeaveNotifyMask |
@@ -180,7 +207,28 @@ namespace MonoDevelop.Components
 		
 		public new PathEntry[] Path { get; private set; }
 		public int ActiveIndex { get { return activeIndex; } }
-		
+
+		void UpdatePathAccessibility ()
+		{
+			var elements = new AtkCocoaHelper.AccessibilityElementProxy [leftPath.Length + rightPath.Length];
+			int idx = 0;
+
+			foreach (var entry in leftPath) {
+				elements [idx] = entry.Accessible;
+				entry.Accessible.GtkParent = this;
+				entry.PerformShowMenu += PerformShowMenu;
+				idx++;
+			}
+			foreach (var entry in rightPath) {
+				elements [idx] = entry.Accessible;
+				entry.Accessible.GtkParent = this;
+				entry.PerformShowMenu += PerformShowMenu;
+				idx++;
+			}
+
+			Accessible.ReplaceAccessibilityElements (elements);
+		}
+
 		public void SetPath (PathEntry[] path)
 		{
 			if (ArrSame (this.leftPath, path))
@@ -196,6 +244,8 @@ namespace MonoDevelop.Components
 			widths = null;
 			EnsureWidths ();
 			QueueResize ();
+
+			UpdatePathAccessibility ();
 		}
 		
 		bool ArrSame (PathEntry[] a, PathEntry[] b)
@@ -243,7 +293,16 @@ namespace MonoDevelop.Components
 			}
 			return currentWidths;
 		}
-		
+
+		void SetAccessibilityFrame (PathEntry entry, int x, int width)
+		{
+			int y = topPadding - buttonPadding;
+			int height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
+			Gdk.Rectangle rect = new Gdk.Rectangle (x, y, width, height);
+
+			entry.Accessible.FrameInGtkParent = rect;
+		}
+
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
@@ -271,6 +330,8 @@ namespace MonoDevelop.Components
 					int itemWidth = currentWidths [i];
 					int x = xpos;
 					xpos += itemWidth;
+
+					SetAccessibilityFrame (leftPath [i], x, itemWidth);
 
 					if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
@@ -331,7 +392,9 @@ namespace MonoDevelop.Components
 					xposRight -= arrowSize;
 						
 					int x = xposRight;
-					
+
+					SetAccessibilityFrame (rightPath [i], x, itemWidth);
+
 					if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
 					
@@ -440,7 +503,30 @@ namespace MonoDevelop.Components
 			}
 			return true;
 		}
-		
+
+		void PerformShowMenu (object sender, EventArgs e)
+		{
+			int idx = 0;
+
+			foreach (var entry in Path) {
+				if (entry == sender) {
+					hoverIndex = idx;
+					pressHoverIndex = idx;
+					break;
+				}
+
+				idx++;
+			}
+
+			Console.WriteLine ($"path item: {idx}");
+			if (idx == Path.Length) {
+				return;
+			}
+
+			Console.WriteLine ("Showing menu");
+			ShowMenu ();
+		}
+
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
 			pressed = false;

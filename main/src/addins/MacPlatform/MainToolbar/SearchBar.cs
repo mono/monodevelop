@@ -181,10 +181,30 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Cell = new DarkThemeSearchFieldCell ();
 
+			var nsa = (INSAccessibility)this;
+
+			AccessibilitySubrole = NSAccessibilitySubroles.SearchFieldSubrole;
+			nsa.AccessibilityIdentifier = "MainToolbar.SearchField";
+			AccessibilityHelp = GettextCatalog.GetString ("Search");
+			// Hide this from the A11y system because we actually care about the inner search field
+			// and not this one according to Cocoa?
+			AccessibilityElement = false;
+
 			Initialize ();
 
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 			UpdateLayout ();
+		}
+
+		public override bool AccessibilityPerformShowMenu ()
+		{
+			Cell.SearchButtonCell.PerformClick (this);
+			return true;
+		}
+
+		public override bool AccessibilityPerformConfirm ()
+		{
+			return true;
 		}
 
 		NSAttributedString MakePlaceholderString (string t)

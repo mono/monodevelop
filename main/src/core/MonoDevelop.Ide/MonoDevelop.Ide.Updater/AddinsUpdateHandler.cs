@@ -88,6 +88,8 @@ namespace MonoDevelop.Ide.Updater
 				s += "\n...";
 
 			updateIcon.ToolTip = s;
+			updateIcon.Title = GettextCatalog.GetString ("Updates");
+			updateIcon.Help = GettextCatalog.GetString ("Indicates that there are updates available to be installed");
 			updateIcon.SetAlertMode (20);
 			updateIcon.Clicked += OnUpdateClicked;
 		}

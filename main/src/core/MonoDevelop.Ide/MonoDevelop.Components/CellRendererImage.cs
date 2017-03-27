@@ -27,6 +27,7 @@ using System;
 using Xwt.Drawing;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components
 {

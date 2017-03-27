@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -50,6 +51,7 @@ namespace MonoDevelop.Components.Commands
 
 		public CommandRouterContainer (Control child, object target, bool continueToParent) : this (continueToParent)
 		{
+			Accessible.SetShouldIgnore (true);
 			if (child != null) {
 				PackStart (child, true, true, 0);
 				child = null;

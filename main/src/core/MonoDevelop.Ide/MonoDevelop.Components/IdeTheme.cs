@@ -67,11 +67,21 @@ namespace MonoDevelop.Components
 			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
+			if (Platform.IsMac) {
+				// Load a private version of AtkCocoa stored in the XS app directory
+				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
+				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
+
+				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
+				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
+			}
+
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac
-			if (Platform.IsMac)
+			if (Platform.IsMac) {
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
+			}
 		}
 
 		internal static void SetupXwtTheme ()

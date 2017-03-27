@@ -33,6 +33,7 @@ using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 using MonoDevelop.Core;
@@ -134,6 +135,9 @@ namespace MonoDevelop.Components.Docking
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformPress += OnPerformPress;
+
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			this.size = size;
 			this.bar = bar;
@@ -158,6 +162,8 @@ namespace MonoDevelop.Components.Docking
 			};
 
 			Styles.Changed += UpdateStyle;
+
+			Accessible.Name = "DockbarItem";
 		}
 
 		void IAnimatable.BatchBegin () { }
@@ -216,6 +222,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			mainBox = new Alignment (0,0,1,1);
+			mainBox.Accessible.SetShouldIgnore (true);
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
 				if (bar.AlignToEnd)
@@ -230,16 +237,19 @@ namespace MonoDevelop.Components.Docking
 				else
 					mainBox.SetPadding (9, 11, 5, 5);
 			}
-			
+			box.Accessible.SetShouldIgnore (true);
+
 			if (it.Icon != null) {
 				var desat = it.Icon.WithAlpha (0.5);
 				crossfade = new CrossfadeIcon (desat, it.Icon);
+				crossfade.Accessible.SetShouldIgnore (true);
 				box.PackStart (crossfade, false, false, 0);
 				desat.Dispose ();
 			}
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
 				label = new Label (it.Label);
+				label.Accessible.SetShouldIgnore (true);
 				label.UseMarkup = true;
 				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
 
@@ -259,6 +269,10 @@ namespace MonoDevelop.Components.Docking
 				// TODO: VV: Test Linux
 
 				box.PackStart (label, true, true, 0);
+
+				Accessible.SetLabel (it.Label);
+				Accessible.SetTitle (it.Label);
+				Accessible.Description = GettextCatalog.GetString ("Show the {0} pad", it.Label);
 			} else
 				label = null;
 
@@ -318,6 +332,9 @@ namespace MonoDevelop.Components.Docking
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
+				if (!string.IsNullOrEmpty (it.Label)) {
+					autoShowFrame.Title = it.Label;
+				}
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
@@ -409,6 +426,15 @@ namespace MonoDevelop.Components.Docking
 				QueueDraw ();
 			}
 			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		void OnPerformPress (object sender, EventArgs args)
+		{
+			if (autoShowFrame == null) {
+				AutoShow ();
+			} else {
+				AutoHide (false);
+			}
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)

@@ -253,36 +253,39 @@ namespace WindowsPlatform.MainToolbar
 			toolbar.SearchBar.SearchBar.Focus ();
 		}
 
-		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
+		public void RebuildToolbar (IEnumerable<ButtonBarGroup> groups)
 		{
 			foreach (var item in toolbar.ButtonBarPanel.Children.OfType<IDisposable> ())
 				item.Dispose ();
 
 			toolbar.ButtonBarPanel.Children.Clear ();
 
-			if (!buttons.Any ())
-				return;
+			// Remove empty groups so we know when to put a separator
+			var groupList = groups.ToList ();
+			groupList.RemoveAll ((g) => g.Buttons.Count == 0);
+
+			int idx = 0;
+			int count = groupList.Count;
 
 			var sepStyle = toolbar.FindResource (System.Windows.Controls.ToolBar.SeparatorStyleKey) as System.Windows.Style;
 
-			bool needsSeparator = true;
-			foreach (var button in buttons) {
-				if (button.IsSeparator) {
-					needsSeparator = true;
-					continue;
+			foreach (var buttonGroup in groupList) {
+				bool needsSeparator = (idx < count - 1);
+				foreach (var button in buttonGroup.Buttons) {
+					if (needsSeparator)
+						toolbar.ButtonBarPanel.Children.Add (new DottedSeparator {
+							Margin = new System.Windows.Thickness {
+								Left = 3,
+								Right = 3,
+							},
+							UseLayoutRounding = true,
+						});
+
+					toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
+					needsSeparator = false;
 				}
 
-				if (needsSeparator)
-					toolbar.ButtonBarPanel.Children.Add (new DottedSeparator {
-						Margin = new System.Windows.Thickness {
-							Left = 3,
-							Right = 3,
-						},
-						UseLayoutRounding = true,
-					});
-
-				toolbar.ButtonBarPanel.Children.Add (new ButtonBarButton (button));
-				needsSeparator = false;
+				idx++;
 			}
 		}
 

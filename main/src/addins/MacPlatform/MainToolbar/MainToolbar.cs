@@ -190,20 +190,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
+		public void RebuildToolbar (IEnumerable<ButtonBarGroup> groups)
 		{
-			List<IButtonBarButton> barItems = new List<IButtonBarButton> ();
-			List<ButtonBar> buttonBars = new List<ButtonBar> ();
-
-			foreach (var item in buttons) {
-				if (item.IsSeparator) {
-					var bar = new ButtonBar (barItems);
-					buttonBars.Add (bar);
-
-					barItems.Clear ();
-				} else {
-					barItems.Add (item);
-				}
+			var buttonBars = new List<ButtonBar> ();
+			foreach (var g in groups) {
+				var bar = new ButtonBar (g.Buttons) {
+					Title = g.Title
+				};
+				buttonBars.Add (bar);
 			}
 
 			awesomeBar.ButtonBarContainer.ButtonBars = buttonBars;

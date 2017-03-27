@@ -57,9 +57,21 @@ namespace MonoDevelop.Ide
 	public interface StatusBarIcon : IDisposable
 	{
 		/// <summary>
+		/// The title of the status icon. Used for accessibility
+		/// </summary>
+		/// <value>The title.</value>
+		string Title { get; set; }
+
+		/// <summary>
 		/// Tooltip of the status icon
 		/// </summary>
 		string ToolTip { get; set; }
+
+		/// <summary>
+		/// The accessibility help message for the button
+		/// </summary>
+		/// <value>The help.</value>
+		string Help { get; set; }
 
 		/// <summary>
 		/// The clicked event to subscribe mouse clicks on the icon.

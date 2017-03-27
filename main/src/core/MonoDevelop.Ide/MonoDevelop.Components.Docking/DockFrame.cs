@@ -37,6 +37,8 @@ using Gtk;
 using Gdk;
 using Xwt.Motion;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -72,17 +74,32 @@ namespace MonoDevelop.Components.Docking
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 
+			Accessible.Name = "DockFrame";
+
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
+			dockBarTop.Accessible.Name = "DockFrame.TopBar";
+
 			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
+			dockBarBottom.Accessible.Name = "DockFrame.BottomBar";
+
 			dockBarLeft = new DockBar (this, Gtk.PositionType.Left);
+			dockBarLeft.Accessible.Name = "DockFrame.LeftBar";
+
 			dockBarRight = new DockBar (this, Gtk.PositionType.Right);
-			
+			dockBarRight.Accessible.Name = "DockFrame.RightBar";
+
 			container = new DockContainer (this);
+			container.Accessible.Name = "DockFrame.Main";
+
 			HBox hbox = new HBox ();
+			hbox.Accessible.SetShouldIgnore (true);
+
 			hbox.PackStart (dockBarLeft, false, false, 0);
 			hbox.PackStart (container, true, true, 0);
 			hbox.PackStart (dockBarRight, false, false, 0);
 			mainBox = new VBox ();
+			mainBox.Accessible.SetShouldIgnore (true);
+
 			mainBox.PackStart (dockBarTop, false, false, 0);
 			mainBox.PackStart (hbox, true, true, 0);
 			mainBox.PackStart (dockBarBottom, false, false, 0);
@@ -143,6 +160,11 @@ namespace MonoDevelop.Components.Docking
 
 			this.overlayWidget = widget;
 			widget.Parent = this;
+
+			// Emit the add signal so that the A11y system will pick up that a widget has been added to the box
+			// but the box won't handle it because widget.Parent has already been set.
+			GLib.Signal.Emit (this, "add", widget);
+
 			OverlayWidgetVisible = true;
 			MinimizeAllAutohidden ();
 			if (animate) {
@@ -150,9 +172,13 @@ namespace MonoDevelop.Components.Docking
 				this.Animate (
 					"ShowOverlayWidget", 
 					ShowOverlayWidgetAnimation,
+					finished: (a, b) => {
+						mainBox.Hide ();
+					},
 					easing: Easing.CubicOut);
 			} else {
 				currentOverlayPosition = Math.Max (0, Allocation.Y);
+				mainBox.Hide ();
 				QueueResize ();
 			}
 
@@ -165,21 +191,29 @@ namespace MonoDevelop.Components.Docking
 			this.AbortAnimation ("HideOverlayWidget");
 			OverlayWidgetVisible = false;
 
+			mainBox.Show ();
+
 			if (overlayWidget != null) {
 				if (animate) {
 					currentOverlayPosition = Allocation.Y;
 					this.Animate (
 						"HideOverlayWidget", 
 						HideOverlayWidgetAnimation,
-						finished: (a,b) => { 
+						finished: (a,b) => {
 							if (overlayWidget != null) {
 								overlayWidget.Unparent ();
+
+								// After we've unparented the widget, we call remove so the A11y system can clean up as well.
+								GLib.Signal.Emit (this, "remove", overlayWidget);
 								overlayWidget = null;
 							}
 						},
 						easing: Easing.SinOut);
 				} else {
 					overlayWidget.Unparent ();
+					// After we've unparented the widget, we call remove so the A11y system can clean up as well.
+					GLib.Signal.Emit (this, "remove", overlayWidget);
+
 					overlayWidget = null;
 					QueueResize ();
 				}
