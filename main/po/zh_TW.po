@@ -17,7 +17,6 @@ msgid "{0} External Console"
 msgstr "{0} 外部主控台"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:231
-#, fuzzy
 msgid "The application could not be started"
 msgstr "無法啟動應用程式"
 
@@ -492,7 +491,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:294
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:297
-#, fuzzy
 msgid ""
 "Unable to compile ({0}) {1} to .resources. \n"
 "Reason: \n"
@@ -500,7 +498,7 @@ msgid ""
 msgstr ""
 "無法將 ({0}) {1} 編譯成 .resources。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:367
 msgid "Generating satellite assembly for '{0}' culture with {1}"
@@ -518,7 +516,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:390
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:393
-#, fuzzy
 msgid ""
 "Unable to generate satellite assemblies for '{0}' culture with {1}.\n"
 "Reason: \n"
@@ -526,7 +523,7 @@ msgid ""
 msgstr ""
 "無法使用 {1} 產生 '{0}' 文化特性 (Culture) 的衛星組件。\n"
 "原因: \n"
-"{2}\"n"
+"{2}\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1FileFormat.cs:109
 msgid "Saving item: {0}"
@@ -803,7 +800,6 @@ msgid "HelpAboutIcon"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ExecutionTarget.cs:218
-#, fuzzy
 msgid "Multiple"
 msgstr "多行"
 
@@ -833,7 +829,6 @@ msgid "Cleaning: {0} ({1})"
 msgstr "正在清除: {0} ({1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceSerializationExtension.cs:70
-#, fuzzy
 msgid "Could not load workspace item: {0}"
 msgstr "無法載入工作區項目: {0}"
 
@@ -842,17 +837,14 @@ msgid "Start the project with arguments '{0}' and environment variables '{1}'"
 msgstr "使用引數 '{0}' 及環境變數 '{1}' 啟動專案"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:78
-#, fuzzy
 msgid "Start the project with arguments '{0}'"
 msgstr "使用引數 '{0}' 啟動專案"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:80
-#, fuzzy
 msgid "Start the project with environment variables '{0}'"
 msgstr "使用環境變數 '{0}' 啟動專案"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:82
-#, fuzzy
 msgid "Start the project"
 msgstr "啟動專案"
 
@@ -865,17 +857,14 @@ msgid "Run {0} with arguments '{1}' and custom environment variables '{2}'"
 msgstr "使用引數 '{1}' 及自訂環境變數 '{2}' 執行 {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:90
-#, fuzzy
 msgid "Run {0} with arguments '{1}'"
 msgstr "使用引數 '{1}' 執行 {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:92
-#, fuzzy
 msgid "Run {0} with environment variables '{1}'"
 msgstr "使用環境變數 '{1}' 執行 {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/AssemblyRunConfiguration.cs:94
-#, fuzzy
 msgid "Run {0}"
 msgstr "執行 {0}"
 
@@ -1079,7 +1068,6 @@ msgstr ""
 "性。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:338
-#, fuzzy
 msgid ""
 "Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
 "assemblies, 'program' entry point assembly, 'assembly' specifies an "
@@ -1387,7 +1375,6 @@ msgid "Optimizations"
 msgstr "最佳化"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MultiItemSolutionRunConfiguration.cs:103
-#, fuzzy
 msgid "No projects selected to run"
 msgstr "將專案新增至選取的解決方案"
 
@@ -1396,23 +1383,19 @@ msgid "Run with arguments '{0}' and environment variables '{1}'"
 msgstr "使用引數 '{0}' 及環境變數 '{1}' 執行"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:66
-#, fuzzy
 msgid "Run with arguments '{0}'"
 msgstr "使用引數 '{0}' 執行"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:68
-#, fuzzy
 msgid "Run with environment variables '{0}''"
 msgstr "使用環境變數 '{0}' 執行"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProcessRunConfiguration.cs:70
-#, fuzzy
 msgid "Run with no additional arguments"
 msgstr "執行而不使用其他引數"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:169
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:110
-#, fuzzy
 msgid "Profile"
 msgstr "設定檔"
 
@@ -3238,13 +3221,11 @@ msgstr "切換至上一份文件"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:779
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:780
-#, fuzzy
 msgid "Switch to next pad"
 msgstr "切換至下一個"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:785
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:786
-#, fuzzy
 msgid "Switch to previous pad"
 msgstr "切換至上一個"
 
@@ -3270,7 +3251,6 @@ msgid "Show tip of the day"
 msgstr "顯示每日小秘訣"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:805
-#, fuzzy
 msgid "Open Log Directory"
 msgstr "根目錄"
 
@@ -3461,7 +3441,6 @@ msgid "Clear bookmarks"
 msgstr "清除書籤"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
-#, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "切換書籤(_T)"
 
@@ -3508,7 +3487,6 @@ msgid "Toggle Completion Suggestion Mode"
 msgstr "切換完成建議模式"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:956
-#, fuzzy
 msgid "Inserts a template"
 msgstr "插入範本"
 
@@ -4017,7 +3995,6 @@ msgstr "程式碼分析"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:83
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:87
-#, fuzzy
 msgid "Run Configurations"
 msgstr "執行組態"
 
@@ -4492,7 +4469,6 @@ msgstr "對 {0} 執行程式碼分析"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:80
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:79
-#, fuzzy
 msgid "Start tool {0}"
 msgstr "啟動工具 {0}"
 
@@ -4548,17 +4524,14 @@ msgid "Pads"
 msgstr "板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:96
-#, fuzzy
 msgid "Change Targets"
 msgstr "變更"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:226
-#, fuzzy
 msgid "PCL {0} - not installed"
 msgstr "{0} (未安裝)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeSelectorDialog.cs:228
-#, fuzzy
 msgid "PCL {0}"
 msgstr "清除 {0}"
 
@@ -5784,7 +5757,6 @@ msgid "The following add-ins could not be started:"
 msgstr "下列增益集無法啟動: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:78
-#, fuzzy
 msgid "Tools (Custom)"
 msgstr "工具 (自訂)"
 
@@ -5818,7 +5790,6 @@ msgid "_Command:"
 msgstr "命令(_C):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:210
-#, fuzzy
 msgid "Key Binding:"
 msgstr "按鍵繫結關係:"
 
@@ -6374,7 +6345,6 @@ msgid "Custom Parameters..."
 msgstr "自訂參數..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:494
-#, fuzzy
 msgid "Custom Configuration..."
 msgstr "自訂組態..."
 
@@ -6668,7 +6638,6 @@ msgid "Undock"
 msgstr "卸除"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs:772
-#, fuzzy
 msgid "There was an error saving the changes"
 msgstr "重新命名檔案時發生錯誤。"
 
@@ -7185,13 +7154,11 @@ msgid "Clean successful."
 msgstr "清除成功。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1223
-#, fuzzy
 msgid "Clean canceled."
 msgstr "清除失敗。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1229
-#, fuzzy
 msgid "Clean: "
 msgstr "清除"
 
@@ -7257,7 +7224,6 @@ msgid "Adding files..."
 msgstr "正在新增檔案..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1816
-#, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "專案內已有名為 '{0}' 的連結"
 
@@ -7268,7 +7234,6 @@ msgid ""
 msgstr "嘗試移動/複製該檔案時發生錯誤。請檢查您的權限。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1932
-#, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "專案內已有名為 '{0}' 的檔案"
 
@@ -8344,7 +8309,6 @@ msgid "Last opened less than a minute ago"
 msgstr "上次開啟未超過一分鐘"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageRecentProjectsList.cs:163
-#, fuzzy
 msgid "Last opened {0} days ago"
 msgid_plural "Last opened {0} days ago"
 msgstr[0] "上次開啟時間為 {0} 天前"
@@ -8472,7 +8436,6 @@ msgid "Target Framework"
 msgstr "目標 Framework"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:144
-#, fuzzy
 msgid ".NET Standard Platform:"
 msgstr "目標平台:"
 
@@ -8483,12 +8446,10 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:154
-#, fuzzy
 msgid ".NET Portable:"
 msgstr ".NET 可攜式子集"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:157
-#, fuzzy
 msgid "Change..."
 msgstr "變更"
 
@@ -8535,7 +8496,6 @@ msgid "{0} days ago"
 msgstr "{0} 天前"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFeedItem.cs:216
-#, fuzzy
 msgid "{0} week ago"
 msgid_plural "{0} weeks ago"
 msgstr[0] "{0} 週前"
@@ -8705,7 +8665,6 @@ msgid "Use MSBuild build engine (unsupported for this project type)"
 msgstr "使用 MSBuild 組建引擎 (此專案類型不予支援)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:160
-#, fuzzy
 msgid "Gathering class information"
 msgstr "收集類別資訊..."
 
@@ -8917,36 +8876,30 @@ msgstr "顯示隱藏的郵件(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:167
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:159
-#, fuzzy
 msgid "Run Configuration: {0}"
 msgstr "執行組態:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:197
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:189
-#, fuzzy
 msgid "New"
 msgstr "新增..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:201
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:193
-#, fuzzy
 msgid "Duplicate"
 msgstr "複製"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:265
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:251
-#, fuzzy
 msgid "Duplicate Configuration"
 msgstr "重複組態"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:291
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:277
-#, fuzzy
 msgid "Are you sure you want to remove the configuration '{0}'?"
 msgstr "確定要移除組態 '{0}' 嗎?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationsPanel.cs:352
-#, fuzzy
 msgid "The name can't be empty"
 msgstr "名稱不得為空白"
 
@@ -8955,50 +8908,41 @@ msgid "This name is already in use"
 msgstr "此名稱已在使用中"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RunConfigurationPanel.cs:55
-#, fuzzy
 msgid "User-specific configuration"
 msgstr "使用者特定組態"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:87
-#, fuzzy
 msgid "Start Action"
 msgstr "起始動作"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:90
-#, fuzzy
 msgid "Start project"
 msgstr "起始專案"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:91
-#, fuzzy
 msgid "Start external program:"
 msgstr "起始外部程式:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:80
-#, fuzzy
 msgid "Run in directory:"
 msgstr "執行於目錄:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:120
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:95
-#, fuzzy
 msgid "Run on external console"
 msgstr "在外部主控台上執行"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:121
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:96
-#, fuzzy
 msgid "Pause console output"
 msgstr "暫停主控台輸出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:130
-#, fuzzy
 msgid "Execute in .NET Runtime:"
 msgstr "在 .NET 執行階段中執行:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:133
-#, fuzzy
 msgid "Mono runtime settings:"
 msgstr "Mono 執行階段設定:"
 
@@ -9007,37 +8951,30 @@ msgid "..."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:137
-#, fuzzy
 msgid "Default settings"
 msgstr "預設設定"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:143
-#, fuzzy
 msgid "Advanced"
 msgstr "進階"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:164
-#, fuzzy
 msgid "(Default runtime)"
 msgstr "(預設執行階段)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:172
-#, fuzzy
 msgid "Mono Runtime Settings"
 msgstr "Mono 執行階段設定"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:54
-#, fuzzy
 msgid "Execution Mode Selector"
 msgstr "執行模式選取器"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:62
-#, fuzzy
 msgid "Run Configurations:"
 msgstr "執行組態:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeSelectorDialog.cs:67
-#, fuzzy
 msgid "Execution Modes:"
 msgstr "執行模式:"
 
@@ -9122,12 +9059,10 @@ msgid "Swedish"
 msgstr "瑞典文"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/RunWithCustomParametersDialog.cs:51
-#, fuzzy
 msgid "Custom Parameters"
 msgstr "自訂參數"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationPanel.cs:71
-#, fuzzy
 msgid "Run Configuration"
 msgstr "執行組態"
 
@@ -9138,7 +9073,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:84
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:335
-#, fuzzy
 msgid "Finish"
 msgstr "已完成"
 
@@ -9150,7 +9084,6 @@ msgid "Cancel"
 msgstr "取消"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:161
-#, fuzzy
 msgid "Back"
 msgstr "上一步(_B)"
 
@@ -9853,7 +9786,6 @@ msgstr ""
 "{1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:193
-#, fuzzy
 msgid "Revision {0}\t{1}\t{2}"
 msgstr "修訂 {0}\"t{1}\"t{2}"
 
@@ -9937,29 +9869,24 @@ msgid "(revision {0})"
 msgstr "(修訂 {0})"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:163
-#, fuzzy
 msgid "Show Next (Difference)"
 msgstr "顯示下一個 (差異)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:179
-#, fuzzy
 msgid "Show Previous (Difference)"
 msgstr "顯示上一個 (差異)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:59
-#, fuzzy
 msgid "{0} change"
 msgid_plural "{0} changes"
 msgstr[0] "{0} 項變更"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:60
-#, fuzzy
 msgid "{0} line added"
 msgid_plural "{0} lines added"
 msgstr[0] "已新增 {0} 行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:61
-#, fuzzy
 msgid "{0} line removed"
 msgid_plural "{0} lines removed"
 msgstr[0] "已移除 {0} 行"
@@ -13095,13 +13022,11 @@ msgstr "已刪除所有 Web 參考"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:91
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:92
-#, fuzzy
 msgid "Updating web reference"
 msgid_plural "Updating web references"
 msgstr[0] "正在更新 Web 參考"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:108
-#, fuzzy
 msgid "Updated Web Reference {0}"
 msgid_plural "Updated Web References"
 msgstr[0] "已更新 Web 參考"
@@ -14176,7 +14101,6 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1095
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1168
-#, fuzzy
 msgid ""
 "{0} (expression)\n"
 "  statement1\n"
@@ -14877,7 +14801,6 @@ msgstr ""
 "查詢子句 {0} 條件 [查詢子句]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1446
-#, fuzzy
 msgid ""
 "{0} {1}\n"
 "\n"
@@ -17089,7 +17012,6 @@ msgid "Can't save file - access denied"
 msgstr "無法儲存檔案 - 拒絕存取"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1450
-#, fuzzy
 msgid "Insert Breakpoint"
 msgstr "插入中斷點"
 
@@ -17135,22 +17057,18 @@ msgid ""
 msgstr "此檔案的行尾結束符號為 ({0})，其與原則設定 ({1}) 不同。"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:911
-#, fuzzy
 msgid "Convert to {0} line endings"
 msgstr "轉換至 {0} 行尾結束符號"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:912
-#, fuzzy
 msgid "Convert all files to {0} line endings"
 msgstr "將所有檔案轉換至 {0} 行尾結束符號"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:913
-#, fuzzy
 msgid "Keep {0} line endings"
 msgstr "保留 {0} 行尾結束符號"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:914
-#, fuzzy
 msgid "Keep {0} line endings in all files"
 msgstr "保留所有檔案的 {0} 行尾結束符號"
 
@@ -17212,7 +17130,6 @@ msgid "Loading error"
 msgstr "載入錯誤"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:174
-#, fuzzy
 msgid "Loading error: {0}"
 msgstr "載入時發生錯誤: {0}"
 
@@ -17423,7 +17340,6 @@ msgid "Interpret tab _keystroke as reindent command"
 msgstr "將 tab 按鍵輸入解譯為重新縮排命令(_K)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
-#, fuzzy
 msgid "Backspace removes indentation"
 msgstr "退格鍵會移除縮排"
 
@@ -17639,7 +17555,6 @@ msgid "Show _Minimap"
 msgstr "顯示迷你地圖(_M)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:112
-#, fuzzy
 msgid "Surround With..."
 msgstr "範圍陳述式..."
 
@@ -19437,7 +19352,6 @@ msgstr "堆疊追蹤:"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:619
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:634
-#, fuzzy
 msgid "Can't get source code location for : {0}"
 msgstr "無法取得 {0} 的原始程式碼位置"
 
@@ -19499,7 +19413,6 @@ msgid "_Debug"
 msgstr "偵錯(_D)"
 
 #: ../src/addins/MonoDevelop.UnitTesting/Services/UnitTestingRunConfiguration.cs:40
-#, fuzzy
 msgid "Runs the unit tests of the project"
 msgstr "執行專案的單位測試"
 
@@ -19636,7 +19549,6 @@ msgid "Credentials Required"
 msgstr "需要認證"
 
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:996
-#, fuzzy
 msgid "Cancel operation"
 msgstr "取消作業"
 
@@ -19823,7 +19735,6 @@ msgstr "本次重構的變更清單:"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:536
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:567
-#, fuzzy
 msgid "_Options for ‘{0}’"
 msgstr "‘{0}’ 的選項(_O)"
 
@@ -21065,7 +20976,6 @@ msgid "[External Code]"
 msgstr "[外部程式碼]"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:404
-#, fuzzy
 msgid "Show External Code"
 msgstr "顯示外部程式碼"
 
@@ -21140,7 +21050,6 @@ msgstr "前往檔案"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:80
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:139
-#, fuzzy
 msgid "Edit Breakpoint…"
 msgstr "編輯中斷點"
 
@@ -21158,33 +21067,28 @@ msgstr "上次追蹤"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:369
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:408
-#, fuzzy
 msgid "Enable All Breakpoints"
 msgstr "啟用或停用所有中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:371
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:410
-#, fuzzy
 msgid "Disable All Breakpoints"
 msgstr "啟用或停用所有中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:343
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:136
-#, fuzzy
 msgid "Remove Breakpoint"
 msgid_plural "Remove Breakpoints"
 msgstr[0] "移除中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:374
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:363
-#, fuzzy
 msgid "Enable Breakpoint"
 msgid_plural "Enable Breakpoints"
 msgstr[0] "啟用/停用中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:376
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:360
-#, fuzzy
 msgid "Disable Breakpoint"
 msgid_plural "Disable Breakpoints"
 msgstr[0] "啟用/停用中斷點"
@@ -21195,7 +21099,6 @@ msgid "Id"
 msgstr "識別碼"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:151
-#, fuzzy
 msgid "Resume"
 msgstr "結果"
 
@@ -21642,7 +21545,6 @@ msgid "Step Out"
 msgstr "跳離函式"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:119
-#, fuzzy
 msgid "New Breakpoint…"
 msgstr "檢視中斷點"
 
@@ -21659,7 +21561,6 @@ msgid "View Breakpoints"
 msgstr "檢視中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:140
-#, fuzzy
 msgid "Edit Breakpoint Properties"
 msgstr "編輯中斷點"
 
@@ -21672,7 +21573,6 @@ msgid "Enable/Disable Breakpoint"
 msgstr "啟用/停用中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:149
-#, fuzzy
 msgid "Enable or Disable Breakpoint"
 msgstr "啟用或停用所有中斷點"
 
@@ -21682,7 +21582,6 @@ msgid "Enable or Disable All Breakpoints"
 msgstr "啟用或停用所有中斷點"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:162
-#, fuzzy
 msgid "Remove All Breakpoints"
 msgstr "移除中斷點"
 
@@ -21752,12 +21651,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:83
-#, fuzzy
 msgid "Decline"
 msgstr "宣告類型"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:84
-#, fuzzy
 msgid "Accept"
 msgstr "接受合併"
 
@@ -21767,7 +21664,6 @@ msgid "View License"
 msgstr "檢視授權"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:57
-#, fuzzy
 msgid ""
 "The following package requires that you accept its license terms before "
 "installing:"
@@ -21824,7 +21720,6 @@ msgstr "更新套件"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:653
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:357
-#, fuzzy
 msgid "Add Package"
 msgid_plural "Add Packages"
 msgstr[0] "新增封裝"
@@ -21983,22 +21878,18 @@ msgid "{0} packages added with warnings."
 msgstr "已新增 {0} 封裝，但有警告。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
-#, fuzzy
 msgid "Removing {0} packages..."
 msgstr "正在新增 {0} 封裝..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
-#, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "已成功新增 {0} 封裝。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
-#, fuzzy
 msgid "Could not remove packages."
 msgstr "無法還原封裝。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
-#, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "已新增 {0} 封裝，但有警告。"
 
@@ -22608,19 +22499,16 @@ msgstr "清除 F# Interactive"
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:295
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:298
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:301
-#, fuzzy
 msgid "Start debugging an .fsx script"
 msgstr "開始偵錯"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:293
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:299
-#, fuzzy
 msgid "Start Debugging"
 msgstr "開始偵錯(_D)"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:296
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:302
-#, fuzzy
 msgid "Start Debugging on External Console"
 msgstr "在外部主控台上執行"
 
@@ -22698,7 +22586,6 @@ msgid "Highlight mutable variables"
 msgstr "醒目提示可變動的變數"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/PackagingProjectTemplateWizardPage.cs:39
-#, fuzzy
 msgid "Configure your NuGet package"
 msgstr "設定新工作區"
 
@@ -22719,14 +22606,12 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:118
-#, fuzzy
 msgid "Author:"
 msgstr "作者 "
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:145
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:146
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:119
-#, fuzzy
 msgid "Description:"
 msgstr "描述(_D):"
 
@@ -22736,32 +22621,26 @@ msgid "ID:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:116
-#, fuzzy
 msgid "Authors:"
 msgstr "作者 "
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:250
-#, fuzzy
 msgid "Copyright:"
 msgstr "著作權(_C):"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:289
-#, fuzzy
 msgid "Development Dependency:"
 msgstr "開發相依性"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:300
-#, fuzzy
 msgid "Icon URL:"
 msgstr "圖示:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:343
-#, fuzzy
 msgid "Language:"
 msgstr "語言(_L):"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:354
-#, fuzzy
 msgid "License URL:"
 msgstr "授權"
 
@@ -22770,60 +22649,49 @@ msgid "Owners:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:398
-#, fuzzy
 msgid "Project URL:"
 msgstr "專案:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:426
-#, fuzzy
 msgid "Release Notes:"
 msgstr "釋放鎖定"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:485
-#, fuzzy
 msgid "Require License Acceptance:"
 msgstr "接受授權"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:496
-#, fuzzy
 msgid "Summary:"
 msgstr "摘要"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:520
-#, fuzzy
 msgid "Tags:"
 msgstr "標記"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:544
-#, fuzzy
 msgid "Title:"
 msgstr "標題(_T):"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:44
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:44
-#, fuzzy
 msgid "Include in Package"
 msgstr "包含在 Makefile"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetFileDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the file will be included in the package. Supported for "
 "None items only."
 msgstr "下列檔案將會包含在組態的封裝中: "
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/PackagingNuGetProject.cs:84
-#, fuzzy
 msgid "Package '{0}' already installed."
 msgstr "類型 '{0}' 已註冊"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/AddPlatformImplementationHandler.cs:63
-#, fuzzy
 msgid "Adding platform implementation..."
 msgstr "至隱含的實作"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:41
-#, fuzzy
 msgid "Add Platform Implementation"
 msgstr "至隱含的實作"
 
@@ -22836,27 +22704,22 @@ msgid "Create a Shared Project from the Portable Class Library:"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/AddPlatformImplementationDialog.UI.cs:79
-#, fuzzy
 msgid "Create Shared Project"
 msgstr "共用的專案"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:147
-#, fuzzy
 msgid "Implementation:"
 msgstr "縮排"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:256
-#, fuzzy
 msgid "Platform specific"
 msgstr "平台:"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:301
-#, fuzzy
 msgid "Single for all platforms"
 msgstr "設定運算子的間距"
 
 #: ../src/addins/MonoDevelop.Packaging/gtk-gui/MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs:355
-#, fuzzy
 msgid "Target Platforms:"
 msgstr "目標平台:"
 
@@ -22869,7 +22732,6 @@ msgid "iOS"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Templating/CrossPlatformLibraryTemplateWizardPage.cs:38
-#, fuzzy
 msgid "Configure your Multiplatform Library"
 msgstr "設定新解決方案"
 
@@ -22884,7 +22746,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:53
-#, fuzzy
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr "將參考的組件複製到輸出目錄。"
 
@@ -22893,13 +22754,11 @@ msgid "<a href=\"https://docs.nuget.org\">Learn more</a>"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging/NuGetProjectReferencePropertyDescriptor.cs:43
-#, fuzzy
 msgid ""
 "Specifies whether the referenced project will be included in the package."
 msgstr "下列檔案將會包含在封裝中: "
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkProjectNuGetBuildOptionsPanelWidget.UI.cs:46
-#, fuzzy
 msgid "Create a NuGet Package when building the project."
 msgstr "建立此專案的新封裝"
 
@@ -22912,7 +22771,6 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:61
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:8
-#, fuzzy
 msgid "NuGet Package"
 msgstr "更新 NuGet 套件(_U)"
 
@@ -22921,17 +22779,14 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:80
-#, fuzzy
 msgid "Reference Assemblies"
 msgstr "參考組件。"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:92
-#, fuzzy
 msgid "Creates a NuGet package"
 msgstr "更新 NuGet 套件(_U)"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.addin.xml:93
-#, fuzzy
 msgid "Create NuGet _Package"
 msgstr "建立封裝"
 
@@ -22954,12 +22809,10 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:13
-#, fuzzy
 msgid "Creates a NuGet Packaging project."
 msgstr "建立翻譯專案。"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/GlobalOptionsDialog.cs:25
-#, fuzzy
 msgid "Output directory:"
 msgstr "輸出目錄:"
 
@@ -22977,12 +22830,10 @@ msgid "Profile for 5 seconds"
 msgstr "進行設定檔 5 秒"
 
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
-#, fuzzy
 msgid "Performance Diagnostics"
 msgstr "效能診斷"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:150
-#, fuzzy
 msgid "Remove {0}"
 msgstr "移除 '{0}'"
 
@@ -22993,7 +22844,6 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:171
-#, fuzzy
 msgid "The following packages and their dependencies will be removed:"
 msgstr "無法解析下列相依性:"
 
@@ -23003,22 +22853,18 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:26
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:234
-#, fuzzy
 msgid "Added"
 msgstr "已新增   {0}"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServicesGalleryWidget.cs:27
-#, fuzzy
 msgid "Available"
 msgstr "可用"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
-#, fuzzy
 msgid "Dependencies"
 msgstr "<b>相依性</b>"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/GettingStartedConfigurationSection.cs:30
-#, fuzzy
 msgid "Snippet {0}"
 msgstr "已略過 '{0}'"
 
@@ -23027,7 +22873,6 @@ msgid "Code"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:99
-#, fuzzy
 msgid "Add to the project"
 msgstr "新增至專案(_A):"
 
@@ -23039,19 +22884,16 @@ msgid "Installed"
 msgstr "已安裝"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:133
-#, fuzzy
 msgid "Configured"
 msgstr "設定"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:174
-#, fuzzy
 msgid "Installing…"
 msgstr "正在安裝"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:176
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:246
-#, fuzzy
 msgid "Adding…"
 msgstr "正在載入..."
 
@@ -23060,12 +22902,10 @@ msgid "This service has no dependencies"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:137
-#, fuzzy
 msgid "Add Dependency"
 msgstr "開發相依性"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:197
-#, fuzzy
 msgid "Adding failed"
 msgstr "正在新增檔案..."
 
@@ -23075,22 +22915,18 @@ msgid "Retry"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:142
-#, fuzzy
 msgid "Platforms:"
 msgstr "平台:"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:170
-#, fuzzy
 msgid "Add {0} to {1}"
 msgstr "{0} / {1}"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:171
-#, fuzzy
 msgid "Also add '{0}' to other projects in the solution?"
 msgstr "將新的專案新增至選取的解決方案"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:247
-#, fuzzy
 msgid "Removing…"
 msgstr "正在移除..."
 
@@ -23103,13 +22939,11 @@ msgid "Open Service Gallery"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
-#, fuzzy
 msgid "Open Service Details"
 msgstr "隱藏詳細資料"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:48
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:57
-#, fuzzy
 msgid "Remove Service…"
 msgstr "移除括號"
 
@@ -23118,12 +22952,10 @@ msgid "Adds the Service Capability"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:79
-#, fuzzy
 msgid "Add Service"
 msgstr "新增來源"
 
 #: ../external/ikvm/reflect/Projection.cs:266
-#, fuzzy
 msgid ""
 "<WinRT>\" + module.GetString(types[i].TypeName));\n"
 "\t\t\t\t\t\ttypes[i].Flags &= (int)~TypeAttributes.Public;\n"
@@ -23222,7 +23054,6 @@ msgid "Add-in packages"
 msgstr "增益集封裝"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:366
-#, fuzzy
 msgid "{0} update available"
 msgid_plural "{0} updates available"
 msgstr[0] "{0} 項更新可用"
@@ -28085,7 +27916,6 @@ msgstr "時間檢視"
 msgid "List View"
 msgstr "清單檢視"
 
-#, fuzzy
 #~ msgid ""
 #~ "Run Configuration: \" + configInfo.EditedConfig.Name);\n"
 #~ "\t\t\tIcon = \"md-prefs-play\";\n"
@@ -28154,7 +27984,6 @@ msgstr "清單檢視"
 #~ "\n"
 #~ "\t\t\tvar btn = new Xwt.Button (GettextCatalog.GetString (\"New"
 
-#, fuzzy
 #~ msgid ""
 #~ "Run Configuration: \" + configInfo.EditedConfig.Name);\n"
 #~ "\t\t\tIcon = \"md-prefs-play\";\n"
