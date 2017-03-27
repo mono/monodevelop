@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.DotNetCore
 {
-	static class DotNetCoreRuntime
+	public static class DotNetCoreRuntime
 	{
 		static DotNetCoreRuntime ()
 		{
