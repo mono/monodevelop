@@ -3,6 +3,8 @@
 	<Runtime>
 		<Import assembly="LibGit2Sharp.dll"/>
 		<Import file="GitIgnore.txt" />
+		<Import file="git2-e8b8948.dll" />
+		<ScanExclude path="git2-e8b8948.dll" />
 	</Runtime>
 
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">
