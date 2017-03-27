@@ -25,11 +25,18 @@
 // THE SOFTWARE.
 
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		static DotNetCoreSdkInstalledCondition ()
+		{
+			PropertyService.Set ("DotNetCore.CanCompileDotNetCoreProject", DotNetCoreSdk.IsInstalled || MSBuildSdks.Installed);
+			PropertyService.Set ("DotNetCore.IsRuntimeInstalled", DotNetCoreRuntime.IsInstalled);
+		}
+
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			if (DotNetCoreSdk.IsInstalled)
