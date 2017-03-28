@@ -608,7 +608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
 								ret.Append (" ");
 								ret.Append (EscapeText (xml ["cref"]));
-								ret.Append (xml ["langword"]);
+								ret.Append (EscapeText (xml ["langword"]));
 							}
 							break;
 						}

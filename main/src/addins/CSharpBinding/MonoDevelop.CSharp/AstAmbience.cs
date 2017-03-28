@@ -289,7 +289,7 @@ namespace MonoDevelop.CSharp
 			}*/
 
 			if (IsObsolete (e as MemberDeclarationSyntax)) {
-				sb.Append ("</s");
+				sb.Append ("</s>");
 				sb.Insert (0, "<s>");
 			}
 			return sb.ToString ();

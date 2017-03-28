@@ -472,7 +472,7 @@ namespace Mono.TextEditor.Utils
 
 			int remEnd = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + item.Context);
 			for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
-				sb.AppendLine (" ").AppendLine (baseDocument.GetLineText (i, false));
+				sb.Append (" ").AppendLine (baseDocument.GetLineText (i, false));
 			}
 		}
 
