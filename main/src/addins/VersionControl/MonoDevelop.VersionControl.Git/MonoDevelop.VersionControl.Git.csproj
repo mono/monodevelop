@@ -213,6 +213,11 @@
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml">
+      <LogicalName>MonoDevelop.VersionControl.Git.Win32.addin.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="GitIgnore.txt">
