@@ -1036,6 +1036,7 @@ namespace MonoDevelop.Ide.Editor
 
 			FileNameChanged += TextEditor_FileNameChanged;
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
+			TextEditor_MimeTypeChanged (null, null);
 		}
 
 		void TextEditor_FileNameChanged (object sender, EventArgs e)
