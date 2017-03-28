@@ -601,6 +601,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					AddRange ('A', 'Z');
 					AddRange ('0', '9');
 					break;
+				case "ascii":
+					AddRange ((char)0, (char)127);
+					break;
 				case "alpha": // Alphabetic character
 					AddRange ('a', 'z');
 					AddRange ('A', 'Z');
