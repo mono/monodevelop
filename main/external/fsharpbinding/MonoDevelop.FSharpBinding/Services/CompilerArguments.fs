@@ -14,6 +14,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open ExtCore
+open ExtCore.Control
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
@@ -488,10 +489,12 @@ module CompilerArguments =
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
   let getArgumentsFromProject (proj:DotNetProject) =
-        let config = getConfig()
-        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        maybe {
+            let config = getConfig()
+            let! projConfig = proj.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
+            let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
+            return generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        }
 
   let getReferencesFromProject (proj:DotNetProject) =
         let config = getConfig()
