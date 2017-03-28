@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
+		[Ignore ("Ignore until bug #54152 is fixed")]
 		public void TestHRefSearching ()
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
