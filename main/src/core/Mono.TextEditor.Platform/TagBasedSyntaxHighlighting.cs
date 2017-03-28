@@ -26,200 +26,198 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Platform
 {
-    [Export(typeof(ITagBasedSyntaxHighlightingFactory))]
-    internal sealed class TagBasedSyntaxHighlightingFactory : ITagBasedSyntaxHighlightingFactory {
-        public ISyntaxHighlighting CreateSyntaxHighlighting (ITextBuffer textBuffer) {
-            return new TagBasedSyntaxHighlighting(textBuffer);
-        }
-    }
+	public sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
+	{
+		public static ISyntaxHighlighting CreateSyntaxHighlighting(ITextBuffer textBuffer)
+		{
+			return new TagBasedSyntaxHighlighting(textBuffer);
+		}
 
-    internal sealed class TagBasedSyntaxHighlighting : ISyntaxHighlighting
-    {
-        private ITextBuffer textBuffer { get; }
-        private IClassifier classifier { get; set; }
+		private ITextBuffer textBuffer { get; }
+		private IClassifier classifier { get; set; }
 
-        internal TagBasedSyntaxHighlighting(ITextBuffer textBuffer)
-        {
-            this.textBuffer = textBuffer;
+		internal TagBasedSyntaxHighlighting(ITextBuffer textBuffer)
+		{
+			this.textBuffer = textBuffer;
 
-        }
+		}
 
-        public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
-        {
-            ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
-            if ((this.classifier == null) || (snapshotLine == null))
-            {
-                return Task.FromResult(new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
-            }
+		public Task<HighlightedLine> GetHighlightedLineAsync(IDocumentLine line, CancellationToken cancellationToken)
+		{
+			ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
+			if ((this.classifier == null) || (snapshotLine == null))
+			{
+				return Task.FromResult(new HighlightedLine(line, new[] { new ColoredSegment(0, line.Length, ScopeStack.Empty) }));
+			}
 
-            List<ColoredSegment> coloredSegments = new List<ColoredSegment>();
+			List<ColoredSegment> coloredSegments = new List<ColoredSegment>();
 
-            SnapshotSpan snapshotSpan = snapshotLine.Extent;
-            int lastClassifiedOffsetEnd = snapshotSpan.Start;
-            ScopeStack scopeStack;
+			SnapshotSpan snapshotSpan = snapshotLine.Extent;
+			int lastClassifiedOffsetEnd = snapshotSpan.Start;
+			ScopeStack scopeStack;
 
-            IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans(snapshotSpan);
-            foreach (ClassificationSpan curSpan in classifications)
-            {
-                if (curSpan.Span.Start > lastClassifiedOffsetEnd)
-                {
-                    scopeStack = new ScopeStack(EditorThemeColors.Foreground);
-                    ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
-                    coloredSegments.Add(whitespaceSegment);
-                }
+			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans(snapshotSpan);
+			foreach (ClassificationSpan curSpan in classifications)
+			{
+				if (curSpan.Span.Start > lastClassifiedOffsetEnd)
+				{
+					scopeStack = new ScopeStack(EditorThemeColors.Foreground);
+					ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
+					coloredSegments.Add(whitespaceSegment);
+				}
 
-                string styleName = GetStyleNameFromClassificationType(curSpan.ClassificationType);
-                scopeStack = new ScopeStack(styleName);
-                ColoredSegment curColoredSegment = new ColoredSegment(curSpan.Span.Start - snapshotLine.Start, curSpan.Span.Length, scopeStack);
-                coloredSegments.Add(curColoredSegment);
+				string styleName = GetStyleNameFromClassificationType(curSpan.ClassificationType);
+				scopeStack = new ScopeStack(styleName);
+				ColoredSegment curColoredSegment = new ColoredSegment(curSpan.Span.Start - snapshotLine.Start, curSpan.Span.Length, scopeStack);
+				coloredSegments.Add(curColoredSegment);
 
-                lastClassifiedOffsetEnd = curSpan.Span.End;
-            }
+				lastClassifiedOffsetEnd = curSpan.Span.End;
+			}
 
-            if (snapshotLine.End.Position  > lastClassifiedOffsetEnd)
-            {
-                scopeStack = new ScopeStack(EditorThemeColors.Foreground);
-                ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, snapshotLine.End.Position - lastClassifiedOffsetEnd, scopeStack);
-                coloredSegments.Add(whitespaceSegment);
-            }
+			if (snapshotLine.End.Position  > lastClassifiedOffsetEnd)
+			{
+				scopeStack = new ScopeStack(EditorThemeColors.Foreground);
+				ColoredSegment whitespaceSegment = new ColoredSegment(lastClassifiedOffsetEnd - snapshotLine.Start, snapshotLine.End.Position - lastClassifiedOffsetEnd, scopeStack);
+				coloredSegments.Add(whitespaceSegment);
+			}
 
-            HighlightedLine result = new HighlightedLine(line, coloredSegments);
-            return Task.FromResult(result);
-        }
+			HighlightedLine result = new HighlightedLine(line, coloredSegments);
+			return Task.FromResult(result);
+		}
 
-        public Task<ScopeStack> GetScopeStackAsync(int offset, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(ScopeStack.Empty);
-        }
+		public Task<ScopeStack> GetScopeStackAsync(int offset, CancellationToken cancellationToken)
+		{
+			return Task.FromResult(ScopeStack.Empty);
+		}
 
-        private EventHandler<LineEventArgs> _highlightingStateChanged;
-        public event EventHandler<LineEventArgs> HighlightingStateChanged
-        {
-            add
-            {
-                lock(this)
-                {
-                    _highlightingStateChanged += value;
-                }
+		private EventHandler<LineEventArgs> _highlightingStateChanged;
+		public event EventHandler<LineEventArgs> HighlightingStateChanged
+		{
+			add
+			{
+				lock(this)
+				{
+					_highlightingStateChanged += value;
+				}
 
-                if (this.classifier == null)
-                {
-                    this.classifier = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(this.textBuffer);
-                    this.classifier.ClassificationChanged += this.OnClassificationChanged;
-                }
-            }
+				if (this.classifier == null)
+				{
+					this.classifier = PlatformCatalog.Instance.ClassifierAggregatorService.GetClassifier(this.textBuffer);
+					this.classifier.ClassificationChanged += this.OnClassificationChanged;
+				}
+			}
 
-            remove
-            {
-                bool dispose = false;
-                lock (this)
-                {
-                    _highlightingStateChanged -= value;
-                    dispose = _highlightingStateChanged == null;
-                }
+			remove
+			{
+				bool dispose = false;
+				lock (this)
+				{
+					_highlightingStateChanged -= value;
+					dispose = _highlightingStateChanged == null;
+				}
 
-                if (dispose && (this.classifier != null))
-                {
-                    this.classifier.ClassificationChanged -= this.OnClassificationChanged;
-                    (this.classifier as IDisposable)?.Dispose();
-                    this.classifier = null;
-                }
-            }
-        }
+				if (dispose && (this.classifier != null))
+				{
+					this.classifier.ClassificationChanged -= this.OnClassificationChanged;
+					(this.classifier as IDisposable)?.Dispose();
+					this.classifier = null;
+				}
+			}
+		}
 
-        private void OnClassificationChanged(object sender, ClassificationChangedEventArgs args)
-        {
-            var handler = _highlightingStateChanged;
-            if (handler != null)
-            {
+		private void OnClassificationChanged(object sender, ClassificationChangedEventArgs args)
+		{
+			var handler = _highlightingStateChanged;
+			if (handler != null)
+			{
 
-            }
-        }
+			}
+		}
 
-        private string GetStyleNameFromClassificationType(IClassificationType classificationType)
-        {
-            string styleName = EditorThemeColors.Foreground;
+		private string GetStyleNameFromClassificationType(IClassificationType classificationType)
+		{
+			string styleName = EditorThemeColors.Foreground;
 
-            // MONO: TODO: get this from the EditorFormat?
-            switch (classificationType.Classification)
-            {
-                // MONO: TODO: Make each language MEF export this knowledge?
+			// MONO: TODO: get this from the EditorFormat?
+			switch (classificationType.Classification)
+			{
+				// MONO: TODO: Make each language MEF export this knowledge?
 
-                // CSS Entries
-                case "CSS Comment":
-                    styleName = "comment.block.css";
-                    break;
-                case "CSS Keyword":
-                    styleName = "keyword.other.css";
-                    break;
-                case "CSS Selector":
-                    styleName = "entity.name.tag.css";
-                    break;
-                case "CSS Property Name":
-                    styleName = "support.type.property-name.css";
-                    break;
-                case "CSS Property Value":
-                    styleName = "support.constant.property-value.css";
-                    break;
-                case "CSS String Value":
-                    styleName = "string.quoted.double.css";
-                    break;
+				// CSS Entries
+				case "CSS Comment":
+					styleName = "comment.block.css";
+					break;
+				case "CSS Keyword":
+					styleName = "keyword.other.css";
+					break;
+				case "CSS Selector":
+					styleName = "entity.name.tag.css";
+					break;
+				case "CSS Property Name":
+					styleName = "support.type.property-name.css";
+					break;
+				case "CSS Property Value":
+					styleName = "support.constant.property-value.css";
+					break;
+				case "CSS String Value":
+					styleName = "string.quoted.double.css";
+					break;
 
-                // HTML Entries
-                case "HTML Attribute Name":
-                    styleName = "entity.other.attribute-name.html";
-                    break;
-                case "HTML Attribute Value":
-                    styleName = "string.unquoted.html";
-                    break;
-                case "HTML Comment":
-                    styleName = "comment.block.html";
-                    break;
-                case "HTML Element Name":
-                    styleName = "entity.name.tag.html";
-                    break;
-                case "HTML Entity":
-                    styleName = "constant.character.entity.html";
-                    break;
-                case "HTML Operator":
-                    styleName = "punctuation.separator.key-value.html";
-                    break;
-                case "HTML Server-Side Script":
-                    //styleName = style.HtmlServerSideScript.Name;
-                    break;
-                case "HTML Tag Delimiter":
-                    styleName = "punctuation.definition.tag.begin.html";
-                    break;
-                case "RazorCode":
-                    //styleName = style.RazorCode.Name;
-                    break;
+				// HTML Entries
+				case "HTML Attribute Name":
+					styleName = "entity.other.attribute-name.html";
+					break;
+				case "HTML Attribute Value":
+					styleName = "string.unquoted.html";
+					break;
+				case "HTML Comment":
+					styleName = "comment.block.html";
+					break;
+				case "HTML Element Name":
+					styleName = "entity.name.tag.html";
+					break;
+				case "HTML Entity":
+					styleName = "constant.character.entity.html";
+					break;
+				case "HTML Operator":
+					styleName = "punctuation.separator.key-value.html";
+					break;
+				case "HTML Server-Side Script":
+					//styleName = style.HtmlServerSideScript.Name;
+					break;
+				case "HTML Tag Delimiter":
+					styleName = "punctuation.definition.tag.begin.html";
+					break;
+				case "RazorCode":
+					//styleName = style.RazorCode.Name;
+					break;
 
-                // JSON Entries
-                case "operator":
-                    styleName = "meta.structure.dictionary.value.json";
-                    break;
-                case "string":
-                    styleName = "string.quoted.double.json";
-                    break;
-                case "keyword":
-                    styleName = "constant.language.json";
-                    break;
-                case "number":
-                    styleName = "constant.numeric.json";
-                    break;
-                case "comment":
-                    styleName = "comment.block.json";
-                    break;
-                case "JSON Property Name":
-                    styleName = "support.type.property-name.json";
-                    break;
+				// JSON Entries
+				case "operator":
+					styleName = "meta.structure.dictionary.value.json";
+					break;
+				case "string":
+					styleName = "string.quoted.double.json";
+					break;
+				case "keyword":
+					styleName = "constant.language.json";
+					break;
+				case "number":
+					styleName = "constant.numeric.json";
+					break;
+				case "comment":
+					styleName = "comment.block.json";
+					break;
+				case "JSON Property Name":
+					styleName = "support.type.property-name.json";
+					break;
 
-                default:
-                    styleName = EditorThemeColors.Foreground;
-                    break;
-            }
+				default:
+					styleName = EditorThemeColors.Foreground;
+					break;
+			}
 
-            return styleName;
-        }
-    }
+			return styleName;
+		}
+	}
 }

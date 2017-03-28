@@ -5,7 +5,6 @@
 using System;
 
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Platform
 {
@@ -13,22 +12,12 @@ namespace Microsoft.VisualStudio.Platform
     {
         public static ITextBuffer GetPlatformTextBuffer(this MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
-            return textEditor.TextView.TextBuffer;
-        }
-
-        public static ITextView GetPlatformTextView(this MonoDevelop.Ide.Editor.TextEditor textEditor)
-        {
-            return textEditor.TextView;
+            return textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
         }
 
         public static MonoDevelop.Ide.Editor.ITextDocument GetTextEditor(this ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetProperty<MonoDevelop.Ide.Editor.ITextDocument>(typeof(MonoDevelop.Ide.Editor.ITextDocument));
-        }
-
-        public static MonoDevelop.Ide.Editor.ITextDocument GetTextEditor (this ITextView textView)
-        {
-            return textView.Properties.GetProperty<MonoDevelop.Ide.Editor.TextEditor>(typeof(MonoDevelop.Ide.Editor.TextEditor));
         }
     }
 }

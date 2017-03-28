@@ -9,6 +9,8 @@
     <Import_RootNamespace>Mono.TextEditor.Platform</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+      <Compile Include="$(MSBuildThisFileDirectory)PlatformCatalog.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)PlatformExtensions.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)TagBasedSyntaxHighlighting.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Core\Impl\ContentType\ContentTypeImpl.cs" />
@@ -116,6 +118,52 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\StringRebuilder.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\LineSpan.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Impl\TextModel\StringRebuilder\SimpleStringRebuilder.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)Platform\Imaging\Impl\ImageMoniker.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ITextEditorFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\ConnectionReason.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextView.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewConnectionListener.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\TextUIMd\Editor\IWpfTextViewCreationListener.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ExtensionMethods.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IThreadHelper.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IObjectTracker.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ITextBufferFactoryService2.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\LazyObservableCollection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\TrackingSpanTree.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\UnicodeWordExtent.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateClassifier.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateTagAggregator.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateTagger.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IElisionTag.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ILoggingServiceInternal.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IPerformanceMarkerBlockProvider.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextModelOptionsSetter.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchNavigator2.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchResultTag.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchTagger.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchTaggerFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\PriorityAttribute.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\TagAggregatorOptions2.cs" />
+
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\Caret.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\DisplayTextPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\DisplayTextRange.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\HowToShow.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IAccurateOutliningManager.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IBufferPrimitives.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IBufferPrimitivesFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IEditorPrimitivesFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IMapEditToData.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IViewPrimitives.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IViewPrimitivesFactoryService.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\Selection.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextBuffer.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextPoint.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextRange.cs" />
+      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextView.cs" />
 
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Impl\StandardClassification\StandardClassificationService.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Language\Impl\StandardClassification\Strings.Designer.cs">
@@ -266,40 +314,6 @@
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextUIUtil\UIExtensionSelector.cs" />
       <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Util\TextUIUtil\VacuousTextViewModel.cs" />
 
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\ExtensionMethods.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\IObjectTracker.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\LazyObservableCollection.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\TrackingSpanTree.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextData\UnicodeWordExtent.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateClassifier.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateTagAggregator.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IAccurateTagger.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IElisionTag.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ILoggingServiceInternal.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\IPerformanceMarkerBlockProvider.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextModelOptionsSetter.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchNavigator2.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchResultTag.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchTagger.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\ITextSearchTaggerFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextLogic\PriorityAttribute.cs" />
-
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\Caret.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\DisplayTextPoint.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\DisplayTextRange.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\HowToShow.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IAccurateOutliningManager.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IBufferPrimitives.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IBufferPrimitivesFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IEditorPrimitivesFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IMapEditToData.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IViewPrimitives.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\IViewPrimitivesFactoryService.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\Selection.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextBuffer.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextPoint.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextRange.cs" />
-      <Compile Include="$(MSBuildThisFileDirectory)\Platform\Text\Def\Internal\TextUI\TextView.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

@@ -12,9 +12,9 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
-namespace Microsoft.VisualStudio.Text.Editor.Implementation
+namespace WebToolingAddin
 {
-    internal class TextCaret : ITextCaret
+    public class TextCaret : ITextCaret
     {
         private TextEditor _textEditor;
         private ITextView _textView;
