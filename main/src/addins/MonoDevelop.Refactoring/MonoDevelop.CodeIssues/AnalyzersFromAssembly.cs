@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -90,46 +91,53 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 
-			foreach (var type in asm.GetTypes ()) {
-				var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
-				if (notPortedYetAttribute!= null) {
-					continue;
-				}
+			try {
+				foreach (var type in asm.GetTypes ()) {
+					var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
+					if (notPortedYetAttribute!= null) {
+						continue;
+					}
 
-				//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
-				//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
-				if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
-					type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
-					continue;
+					//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
+					//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
+					if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
+						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
+						continue;
 
-				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				if (analyzerAttr != null) {
-					try {
-						var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
+					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
+					if (analyzerAttr != null) {
+						try {
+							var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
 
-						if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
-							Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
-						}
-						foreach (var diag in analyzer.SupportedDiagnostics) {
-							//filter out E&C analyzers as we don't support E&C
-							if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
-								continue;
+							if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
+								Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
 							}
+							foreach (var diag in analyzer.SupportedDiagnostics) {
+								//filter out E&C analyzers as we don't support E&C
+								if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+									continue;
+								}
+							}
+						} catch (Exception e) {
+							LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
 						}
-					} catch (Exception e) {
-						LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
+					}
+
+					var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
+					if (codeFixAttr != null) {
+						Fixes.Add (new CodeDiagnosticFixDescriptor (type, codeFixAttr));
+					}
+
+					var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
+					if (exportAttr != null) {
+						Refactorings.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
 					}
 				}
-
-				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
-				if (codeFixAttr != null) {
-					Fixes.Add (new CodeDiagnosticFixDescriptor (type, codeFixAttr));
+			} catch (ReflectionTypeLoadException ex) {
+				foreach (var subException in ex.LoaderExceptions) {
+					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, subException);
 				}
-
-				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
-				if (exportAttr != null) {
-					Refactorings.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
-				}
+				throw;
 			}
 		}
 
