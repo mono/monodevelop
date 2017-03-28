@@ -2271,6 +2271,43 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, buildResult.Errors.Count);
 		}
 
+		/// <summary>
+		/// Ensure project builder is updated when SdksPath changes after referencing a .NET Core project
+		/// </summary>
+		[Test]
+		[Platform (Exclude = "Win")]
+		public async Task BuildProjectAfterReferencingDotNetCoreProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreProjectReference", "NoProjectReference.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			Assert.AreEqual ("DotNetFrameworkProject", p.Name);
+			p.RequiresMicrosoftBuild = true;
+
+			FilePath projectFile = sol.BaseDirectory.Combine ("DotNetCoreNetStandardProject", "DotNetCoreNetStandardProject.csproj");
+			var dotNetCoreProject = (Project)await sol.RootFolder.AddItem (Util.GetMonitor (), projectFile);
+			//var dotNetCoreProject = (DotNetProject)sol.Items [0];
+			dotNetCoreProject.RequiresMicrosoftBuild = true;
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
+				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
+			};
+			var res = await p.RunTarget (Util.GetMonitor (), "Clean", ConfigurationSelector.Default);
+
+			var pr = ProjectReference.CreateProjectReference ((DotNetProject)dotNetCoreProject);
+			pr.ReferenceOutputAssembly = false;
+			pr.LocalCopy = false;
+			p.References.Add (pr);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			var buildResult = res.BuildResult;
+
+			Assert.AreEqual (0, buildResult.Errors.Count);
+		}
+
 		[Test]
 		public async Task CopyConfiguration ()
 		{

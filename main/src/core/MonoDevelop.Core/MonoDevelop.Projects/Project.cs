@@ -1350,12 +1350,12 @@ namespace MonoDevelop.Projects
 
 			using (await builderLock.EnterAsync ()) {
 				bool refAdded = false;
-				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
+				var sdkPath = GetMSBuildSdkPath (runtime);
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile || sdkPath != projectBuilder.SdksPath) {
 					if (projectBuilder != null && refAdded) {
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var sdkPath = GetMSBuildSdkPath (runtime);
 					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
