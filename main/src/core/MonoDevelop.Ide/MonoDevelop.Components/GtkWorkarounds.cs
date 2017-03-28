@@ -1,4 +1,4 @@
-//
+﻿//
 // GtkWorkarounds.cs
 //
 // Authors: Jeffrey Stedfast <jeff@xamarin.com>
@@ -1120,6 +1120,7 @@ namespace MonoDevelop.Components
 			} catch (DllNotFoundException) {
 			} catch (EntryPointNotFoundException) {
 			}
+			canSetOverlayScrollbarPolicy = false;
 		}
 
 		public static void GetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy)

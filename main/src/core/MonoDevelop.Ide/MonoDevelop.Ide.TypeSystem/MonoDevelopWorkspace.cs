@@ -47,6 +47,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Microsoft.CodeAnalysis.Shared.Utilities;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -63,7 +64,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		readonly MonoDevelop.Projects.Solution monoDevelopSolution;
 		object addLock = new object();
 		bool added;
-		bool internalChanges;
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
@@ -373,6 +373,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
+			internal DocumentId GetOrCreateDocumentId (string name, ProjectData previous)
+			{
+				if (previous != null) {
+					var oldId = previous.GetDocumentId (name);
+					if (oldId != null) {
+						AddDocumentId (oldId, name);
+						return oldId;
+					}
+				}
+				return GetOrCreateDocumentId (name);
+			}
+
 			internal DocumentId GetOrCreateDocumentId (string name)
 			{
 				lock (documentIdMap) {
@@ -382,6 +394,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						documentIdMap [name] = result;
 					}
 					return result;
+				}
+			}
+
+			internal void AddDocumentId (DocumentId id, string name)
+			{
+				lock (documentIdMap) {
+					documentIdMap[name] = id;
 				}
 			}
 			
@@ -408,11 +427,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return data.GetDocumentId (name);
 		}
 
-		public override bool CanApplyChange (ApplyChangesKind feature)
-		{
-			return true;
-		}
-
 		void UnloadMonoProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
@@ -433,7 +447,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var projectId = GetOrCreateProjectId (p);
+
+			//when reloading e.g. after a save, preserve document IDs
+			var oldProjectData = GetProjectData (projectId);
 			var projectData = CreateProjectData (projectId);
+
 			var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 			if (token.IsCancellationRequested)
 				return null;
@@ -448,7 +466,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (token.IsCancellationRequested)
 				return null;
 			var sourceFiles = await p.GetSourceFilesAsync (config != null ? config.Selector : null).ConfigureAwait (false);
-			var documents = CreateDocuments (projectData, p, token, sourceFiles);
+			var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
 			if (documents == null)
 				return null;
 			var info = ProjectInfo.Create (
@@ -529,7 +547,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 		}
 
-		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles)
+		Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)
 		{
 			var documents = new List<DocumentInfo> ();
 			var additionalDocuments = new List<DocumentInfo> ();
@@ -540,18 +558,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
+
 				SourceCodeKind sck;
 				if (TypeSystemParserNode.IsCompileableFile (f, out sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
+					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
+					if (!duplicates.Add (id))
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 				} else {
+					var id = projectData.GetOrCreateDocumentId (f.Name, projectData);
+					if (!duplicates.Add (id))
+						continue;
+					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 
-					if (duplicates.Add (projectData.GetOrCreateDocumentId (f.Name))) {
-						additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
-					}
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
-						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
+						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
+						if (!duplicates.Add (projectedId))
 							continue;
 						documents.Add (projectedDocument);
 					}
@@ -705,6 +727,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public override void OpenDocument (DocumentId documentId, bool activate = true)
+		{
+			var doc = GetDocument (documentId);
+			if (doc != null) {
+				var mdProject = GetMonoProject (doc.Project);
+				if (doc != null) {
+					IdeApp.Workbench.OpenDocument (doc.FilePath, mdProject, activate);
+				}
+			}
+		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
@@ -734,31 +767,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return document;
 		}
 
-		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
 		ProjectChanges projectChanges;
-
-		public override bool TryApplyChanges (Solution newSolution)
-		{
-			lock (changedFiles)
-				changedFiles.Clear ();
-			return base.TryApplyChanges (newSolution);
-		}
-
-		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
-		{
-			try {
-				internalChanges = true;
-				this.projectChanges = projectChanges;
-				base.ApplyProjectChanges (projectChanges);
-			} finally {
-				internalChanges = false;
-			}
-		}
-
-		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
-		{
-			base.ApplyAdditionalDocumentAdded (info, text);
-		}
 
 		protected override void OnDocumentTextChanged (Document document)
 		{
@@ -822,8 +831,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
+		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
+		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		{
+			tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
+		}
 
-		protected override async void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
 			if (document == null)
@@ -845,13 +859,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
 				return;
 			}
+
 			SourceText formerText;
-			lock (changedFiles) {
-				if (changedFiles.TryGetValue (filePath, out formerText)) {
+			lock (tryApplyState_documentTextChangedContents) {
+				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out formerText)) {
 					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
 						return;
 				}
-				changedFiles [filePath] = text;
+				tryApplyState_documentTextChangedContents[filePath] = text;
 			}
 
 			SourceText oldFile;
@@ -1032,11 +1047,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				}
-				await Runtime.RunInMainThread (() => {
-						if (IdeApp.Workbench != null)
-						foreach (var w in IdeApp.Workbench.Documents)
-							w.StartReparseThread ();
-				});
 			}
 		}
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
@@ -1086,6 +1096,75 @@ namespace MonoDevelop.Ide.TypeSystem
 			return delta;
 		}
 
+		// used to pass additional state from Apply* to TryApplyChanges so it can batch certain operations such as saving projects
+		HashSet<MonoDevelop.Projects.Project> tryApplyState_changedProjects = new HashSet<MonoDevelop.Projects.Project> ();
+		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
+		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
+
+		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
+		{
+			// this is supported on the main thread only
+			// see https://github.com/dotnet/roslyn/pull/18043
+			// as a result, we can assume that the things it calls are _also_ main thread only
+			Runtime.CheckMainThread ();
+
+			try {
+				var ret = base.TryApplyChanges (newSolution, progressTracker);
+
+				if (tryApplyState_documentTextChangedTasks.Count > 0) {
+					Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
+						try {
+							t.Wait ();
+						}
+						catch (Exception ex) {
+							LoggingService.LogError ("Error applying changes to documents", ex);
+						}
+						if (IdeApp.Workbench != null) {
+							var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
+							foreach (var w in IdeApp.Workbench.Documents) {
+								if (w.IsFile && changedFiles.Contains (w.FileName)) {
+									w.StartReparseThread ();
+								}
+							}
+						}
+					}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+				}
+
+				if (tryApplyState_changedProjects.Count > 0) {
+					IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
+				}
+
+				return ret;
+			}
+			finally {
+				tryApplyState_documentTextChangedContents.Clear ();
+				tryApplyState_documentTextChangedTasks.Clear ();
+				tryApplyState_changedProjects.Clear ();
+			}
+		}
+
+		public override bool CanApplyChange (ApplyChangesKind feature)
+		{
+			switch (feature) {
+			case ApplyChangesKind.AddDocument:
+			case ApplyChangesKind.RemoveDocument:
+			case ApplyChangesKind.ChangeDocument:
+			//HACK: we don't actually support adding and removing metadata references from project
+			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
+			case ApplyChangesKind.AddMetadataReference:
+			case ApplyChangesKind.RemoveMetadataReference:
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
+		{
+			this.projectChanges = projectChanges;
+			base.ApplyProjectChanges (projectChanges);
+		}
+
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
 			var id = info.Id;
@@ -1097,7 +1176,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (mdProject == null)
 					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
 			}
+
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
 			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
@@ -1115,12 +1196,41 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (mdProject != null) {
+				var data = GetProjectData (id.ProjectId);
+				data.AddDocumentId (info.Id, path);
 				var file = new MonoDevelop.Projects.ProjectFile (path);
-				Application.Invoke (delegate {
-					mdProject.Files.Add (file);
-					IdeApp.ProjectOperations.SaveAsync (mdProject);
-				});
+				mdProject.Files.Add (file);
+				tryApplyState_changedProjects.Add (mdProject);
 			}
+
+			this.OnDocumentAdded (info);
+		}
+
+		protected override void ApplyDocumentRemoved (DocumentId documentId)
+		{
+			var document = GetDocument (documentId);
+			var mdProject = GetMonoProject (documentId.ProjectId);
+			if (document == null || mdProject == null) {
+				return;
+			}
+
+			FilePath filePath = document.FilePath;
+			var projectFile = mdProject.Files.GetFile (filePath);
+			if (projectFile == null) {
+				return;
+			}
+
+			//force-close the old doc even if it's dirty
+			var openDoc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.IsFile && filePath.Equals (d.FileName));
+			if (openDoc != null && openDoc.IsDirty) {
+				openDoc.Save ();
+				((Gui.SdiWorkspaceWindow)openDoc.Window).CloseWindow (true, true).Wait ();
+			}
+
+			//this will fire a OnDocumentRemoved event via OnFileRemoved
+			mdProject.Files.Remove (projectFile);
+			FileService.DeleteFile (filePath);
+			tryApplyState_changedProjects.Add (mdProject);
 		}
 
 		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
@@ -1219,8 +1329,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 					var projectFile = fargs.ProjectFile;
@@ -1248,8 +1356,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 					var projectId = GetProjectId (project);
@@ -1287,8 +1393,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnFileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				var project = (MonoDevelop.Projects.Project)sender;
 				foreach (MonoDevelop.Projects.ProjectFileRenamedEventInfo fargs in args) {
 					var projectFile = fargs.ProjectFile;
@@ -1340,8 +1444,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			try {
-				if (internalChanges)
-					return;
 				if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 					return;
 				var project = sender as MonoDevelop.Projects.DotNetProject;

@@ -9,12 +9,7 @@ FOR %%E in (Enterprise, Professional, Community) DO (
 	if exist "!MSBUILD_EXE!" goto :build
 )
 
-rem check for MSBuild from VS2015
-
-set "MSBUILD_EXE=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe"
-if exist "%MSBUILD_EXE%" goto :build
-
-echo Could not find MSBuild
+echo Could not find MSBuild 15
 exit /b 1
 
 :build

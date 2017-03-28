@@ -34,6 +34,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	//FIXME: this mechanism is not correct, we should be implementing IMetadataService instead
 	static class MetadataReferenceCache
 	{
 		static Dictionary<string, MetadataReferenceCacheItem> cache = new Dictionary<string, MetadataReferenceCacheItem> ();
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MetadataReferenceCache ()
 		{
-			timer = new Timer ((o) => CheckForChanges (), null, 5000, 5000);
+			timer = new Timer ((o) => Runtime.RunInMainThread ((Action)CheckForChanges), null, 5000, 5000);
 		}
 
 		//TODO: Call this method when focus returns to MD or even better use FileSystemWatcher
