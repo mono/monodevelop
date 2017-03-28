@@ -748,7 +748,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
                 sb.Append((char) 0x1);
                 sb.Append((char) (set.Length - 2));
                 sb.Append((char) category.Length);
-                sb.Append(set.Substring(2));
+                sb.Append(set, 2, set.Length - 2);
             }
             else {
                 sb.Append((char) 0x0);

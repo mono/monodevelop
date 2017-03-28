@@ -107,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (assemblyDefinition == null)
 				return;
 			
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Assembly:</b>\t{0}, Version={1}"),
+			result.Append (GettextCatalog.GetString ("<b>Assembly:</b>\t{0}, Version={1}",
 			                              assemblyDefinition.Name.Name,
 			                              assemblyDefinition.Name.Version));
 			result.AppendLine ();
@@ -122,7 +122,7 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved)));
 			result.Append ("</span>");
 			result.AppendLine ();
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
+			result.Append (GettextCatalog.GetString ("<b>Name:</b>\t{0}", type.FullName));
 			result.AppendLine ();
 			PrintAssembly (result, navigator);
 			return result.ToString ();

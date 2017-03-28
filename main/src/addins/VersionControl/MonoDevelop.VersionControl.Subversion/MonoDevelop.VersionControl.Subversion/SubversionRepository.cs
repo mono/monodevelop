@@ -596,7 +596,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					else
 						relpath = diff.FileName;
 					relpath = relpath.Replace (Path.DirectorySeparatorChar, '/');
-					patch.AppendLine ("Index: " + relpath);
+					patch.Append ("Index: ").AppendLine (relpath);
 					patch.AppendLine (new string ('=', 67));
 					patch.AppendLine (diff.Content);
 				}

@@ -927,7 +927,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				if (i == startIndex) {
 					opened = true;
-					markupBuilder.Append ("<span background=\"" + ColorToPangoMarkup (searchColor) + "\">");
+					markupBuilder.Append ("<span background=\"").Append (ColorToPangoMarkup (searchColor)).Append ("\">");
 				}
 				if (ch == '&') {
 					inEntity = true;

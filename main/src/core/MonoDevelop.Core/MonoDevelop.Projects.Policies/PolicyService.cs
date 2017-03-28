@@ -500,7 +500,7 @@ namespace MonoDevelop.Projects.Policies
 					if (removed.Length > 0)
 						removed.Append (' ');
 					if (baseline.UniqueNames && node is DataValue)
-						removed.Append ("@" + node.Name);
+						removed.Append ("@").Append (node.Name);
 					else
 						removed.Append (n.ToString (CultureInfo.InvariantCulture));
 				}

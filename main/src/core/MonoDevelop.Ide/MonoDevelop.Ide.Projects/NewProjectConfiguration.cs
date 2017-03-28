@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static bool HasValidProjectNameCharacters (string name)
 		{
-			foreach (char c in name.ToCharArray ()) {
+			foreach (char c in name) {
 				if (!IsValidProjectNameCharacter (c))
 					return false;
 			}

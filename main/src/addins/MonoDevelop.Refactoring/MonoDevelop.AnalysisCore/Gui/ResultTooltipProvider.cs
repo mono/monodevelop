@@ -98,7 +98,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 						break;
 					}
 
-					sb.Append (string.Format ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ()));
+					sb.AppendFormat ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ());
 				} else {
 					sb.Append (escapedMessage);
 				}
