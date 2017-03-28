@@ -3,3 +3,4 @@ FSharp.Compiler.Service
 Newtonsoft.Json
 FSharp.Core
 System.ValueTuple
+StrongNamer
