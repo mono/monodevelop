@@ -154,7 +154,7 @@ type ``Template tests``() =
                         for project in projects do
                             let checker = FSharpChecker.Create()
                             let projectOptions = languageService.GetProjectOptionsFromProjectFile project
-                            let! checkResult = checker.ParseAndCheckProject projectOptions
+                            let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                             for error in checkResult.Errors do
                                 yield "Editor error", error.FileName, error.Message
                     | _ ->
