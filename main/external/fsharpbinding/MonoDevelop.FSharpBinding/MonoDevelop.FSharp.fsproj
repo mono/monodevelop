@@ -54,6 +54,13 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
+      <PropertyGroup>
+        <__paket__StrongNamer_targets>StrongNamer</__paket__StrongNamer_targets>
+      </PropertyGroup>
+    </When>
+  </Choose>
   <Target Name="BeforeBuild">
     <ItemGroup>
       <NuGetPackage Include="FSharp.Core">
@@ -359,7 +366,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
       <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\packages\System.ValueTuple\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
@@ -369,4 +376,5 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets" Condition="Exists('..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets')" Label="Paket" />
 </Project>
