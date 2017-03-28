@@ -153,12 +153,14 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			//FIXME doing this properly involves COM now
-			var programFilesX86 = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
-			foreach (var edition in new[] { "Enterprise", "Professional", "Community" }) {
-				string path = Path.Combine (programFilesX86, "Microsoft Visual Studio", "2017", edition, "MSBuild", "15.0", "Bin");
-				if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
-					return path;
+			// Probe for Dev15 location and use MSBuild from there.
+			using (RegistryKey vsReg = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7", false)) {
+				if (vsReg != null) {
+					string vsPath = (string)vsReg.GetValue ("15.0");
+					string path = Path.Combine (vsPath, "MSBuild", toolsVersion, "Bin");
+					if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
+						return path;
+					}
 				}
 			}
 
