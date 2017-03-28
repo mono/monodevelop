@@ -123,9 +123,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
     </Reference>
-    <Reference Include="FSharpBinding">
-      <HintPath>..\..\..\build\AddIns\BackendBindings\FSharpBinding.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.Tests\MonoDevelop.PackageManagement.Tests.csproj">
       <Project>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</Project>
       <Name>MonoDevelop.PackageManagement.Tests</Name>
@@ -134,10 +131,6 @@
       <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
       <Name>MonoDevelop.PackageManagement</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
-      <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
-      <Name>MonoDevelop.FSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
@@ -148,6 +141,10 @@
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
+      <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
+      <Name>MonoDevelop.FSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -228,9 +225,9 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
-            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
+            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" __added="0" />
           </FSharpFormattingPolicy>
           <TextStylePolicy inheritsSet="null" scope="application/fsproject+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/fsproject+xml" />
