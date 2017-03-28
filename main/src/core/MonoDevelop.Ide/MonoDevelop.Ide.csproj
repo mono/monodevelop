@@ -141,6 +141,23 @@
     <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System.Xaml" />
+    <Reference Include="Microsoft.VisualStudio.CoreUtility">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.0.26201\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Data.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Logic">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Logic.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
@@ -9412,6 +9429,7 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
+  <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Platform" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
