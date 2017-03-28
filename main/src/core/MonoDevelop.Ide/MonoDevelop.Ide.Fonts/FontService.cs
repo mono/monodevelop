@@ -267,5 +267,26 @@ namespace MonoDevelop.Ide.Fonts
 				font.Size = (int)(Pango.Scale.PangoScale * (int)(pt + size / Pango.Scale.PangoScale));
 			}
 		}
+
+		public static FontDescription ToPangoFont (this Xwt.Drawing.Font font)
+		{
+			var backend = Xwt.Toolkit.GetBackend (font) as FontDescription;
+			if (backend != null)
+				return backend.Copy ();
+			return FontDescription.FromString (font.ToString ());
+		}
+
+		public static Xwt.Drawing.Font ToXwtFont (this FontDescription font)
+		{
+			return font.ToXwtFont (null);
+		}
+
+		public static Xwt.Drawing.Font ToXwtFont (this FontDescription font, Xwt.Toolkit withToolkit)
+		{
+			var toolkit = withToolkit ?? Xwt.Toolkit.CurrentEngine;
+			Xwt.Drawing.Font xwtFont = null;
+			toolkit.Invoke (() => xwtFont = Xwt.Drawing.Font.FromName (font.ToString ()));
+			return xwtFont;
+		}
 	}
 }

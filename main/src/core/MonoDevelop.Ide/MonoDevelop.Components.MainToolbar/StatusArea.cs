@@ -539,7 +539,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				if (!string.IsNullOrEmpty (tip)) {
 					HideTooltip ();
-					tooltipWindow = new TooltipPopoverWindow ();
+					tooltipWindow = TooltipPopoverWindow.Create ();
 					tooltipWindow.ShowArrow = true;
 					tooltipWindow.Text = tip;
 					tooltipWindow.ShowPopup (box, PopupPosition.Top);

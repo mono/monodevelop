@@ -181,6 +181,7 @@ namespace MonoDevelop.Ide.Gui
 			public static Color InformationTextColor { get; internal set; }
 
 			public static Color ShadowColor { get; internal set; }
+			public static Color BorderColor { get; internal set; }
 
 			public static class ParamaterWindows
 			{
@@ -522,6 +523,7 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#f2f2f2"); // gtkrc @tooltip_bg_color
 			PopoverWindow.DefaultTextColor = Color.FromName ("#555555");
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (.05);
+			PopoverWindow.BorderColor = Colors.Transparent; // disable border drawing
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1");
@@ -638,6 +640,7 @@ namespace MonoDevelop.Ide.Gui
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#5e5e5e");
 			PopoverWindow.DefaultTextColor = Color.FromName ("#bdc1c1");
 			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark theme doesn't need shadows
+			PopoverWindow.BorderColor = Colors.Transparent; // disable border drawing
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1");

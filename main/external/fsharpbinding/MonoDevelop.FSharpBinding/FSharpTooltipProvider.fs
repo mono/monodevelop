@@ -114,7 +114,7 @@ type FSharpTooltipProvider() =
                 toolTipInfo.SummaryMarkup <- formattedSummary
             result.AddOverload(toolTipInfo)
             result.RepositionWindow ()
-            Control.op_Implicit result
+            Window.op_Implicit result
 
     interface IDisposable with
         member x.Dispose() = killTooltipWindow()

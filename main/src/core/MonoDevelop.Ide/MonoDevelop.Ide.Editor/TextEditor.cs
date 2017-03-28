@@ -1532,7 +1532,7 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl.GrabFocus ();
 		}
 
-		public void ShowTooltipWindow (Control window, TooltipWindowOptions options = null)
+		public void ShowTooltipWindow (Components.Window window, TooltipWindowOptions options = null)
 		{
 			textEditorImpl.ShowTooltipWindow (window, options);
 		}

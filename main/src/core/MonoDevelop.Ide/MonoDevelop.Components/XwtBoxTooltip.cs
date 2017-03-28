@@ -119,7 +119,7 @@ namespace MonoDevelop.Components
 				xwtPopover.Content = new Label { Wrap = WrapMode.Word };
 				xwtPopover.Padding = 3;
 			} else {
-				tooltipWindow = new TooltipPopoverWindow ();
+				tooltipWindow = TooltipPopoverWindow.Create ();
 				tooltipWindow.ShowArrow = true;
 			}
 			Position = PopupPosition.Top;
@@ -166,6 +166,17 @@ namespace MonoDevelop.Components
 		{
 			if (tooltipWindow != null) {
 				tooltipWindow.Hide ();
+			}
+		}
+
+		public new bool Visible {
+			get {
+				return base.Visible;
+			}
+			set {
+				base.Visible = value;
+				if (!value)
+					HideTooltip ();
 			}
 		}
 

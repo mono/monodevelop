@@ -3579,15 +3579,13 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.GrabFocus ();
 		}
 
-		void ITextEditorImpl.ShowTooltipWindow (Control window, TooltipWindowOptions options)
+		void ITextEditorImpl.ShowTooltipWindow (Components.Window window, TooltipWindowOptions options)
 		{
-			var tooltipWindow = window.GetNativeWidget<Gtk.Window> ();
-			if (tooltipWindow == null)
-				return;
-
+			var tooltipWindow = (Xwt.WindowFrame)window;
+			
 			var caret = TextEditor.Caret;
 			var p = TextEditor.LocationToPoint (caret.Location);
-			Mono.TextEditor.TooltipProvider.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, tooltipWindow.SizeRequest ().Width, 0.5);
+			Mono.TextEditor.TooltipProvider.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, (int)tooltipWindow.Width, 0.5);
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
 		}
 

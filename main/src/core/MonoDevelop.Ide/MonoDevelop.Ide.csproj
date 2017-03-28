@@ -9376,6 +9376,10 @@
     <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelper.cs" />
     <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperMac.cs" />
     <Compile Include="MonoDevelop.Components.AtkCocoaHelper\AtkCocoaHelperNoOp.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtPopup.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtPopupWindowTheme.cs" />
+    <Compile Include="MonoDevelop.Components\Xwt\XwtThemedPopup.cs" />
+    <Compile Include="MonoDevelop.Components\XwtWindowControl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ScopeStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\HighlightUrlExtension.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionTriggerInfo.cs" />
@@ -9432,6 +9436,7 @@
   <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Platform" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
+    <Folder Include="MonoDevelop.Components\Xwt\" />
     <Folder Include="MonoDevelop.Components.AtkCocoaHelper\" />
   </ItemGroup>
   <ItemGroup>
