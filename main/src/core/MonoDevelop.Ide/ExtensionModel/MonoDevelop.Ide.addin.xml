@@ -1,10 +1,4 @@
 <ExtensionModel>
-	<Runtime>
-		<Import assembly="Microsoft.VisualStudio.CoreUtility.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.Data.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.Logic.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
-	</Runtime>
 	
 	<!-- Extension ponts -->
 	
