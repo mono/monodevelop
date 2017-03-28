@@ -2245,6 +2245,32 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// The MSBuildSDKsPath property needs to be set when a non .NET Core project references
+		/// a .NET Core project. Otherwise the build will fail with an error similar to:
+		/// Error MSB4019: The imported project "~/Library/Caches/VisualStudio/7.0/MSBuild/8209_1/Sdks/Microsoft.NET.Sdk/Sdk/Sdk.props"
+		/// was not found.
+		/// </summary>
+		[Test]
+		[Platform (Exclude = "Win")]
+		public async Task BuildProjectReferencingDotNetCoreProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreProjectReference", "DotNetCoreProjectReference.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			Assert.AreEqual ("DotNetFrameworkProject", p.Name);
+			p.RequiresMicrosoftBuild = true;
+
+			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
+				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
+			};
+			var res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			var buildResult = res.BuildResult;
+
+			Assert.AreEqual (0, buildResult.Errors.Count);
+		}
+
 		[Test]
 		public async Task CopyConfiguration ()
 		{

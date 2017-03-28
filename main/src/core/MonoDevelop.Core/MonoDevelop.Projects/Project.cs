@@ -1355,7 +1355,7 @@ namespace MonoDevelop.Projects
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+					var sdkPath = GetMSBuildSdkPath (runtime);
 					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
@@ -1382,6 +1382,33 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 
+		string GetMSBuildSdkPath (TargetRuntime runtime)
+		{
+			if (!string.IsNullOrEmpty (MSBuildProject.Sdk))
+				return MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ());
+
+			var dotNetProject = this as DotNetProject;
+			if (dotNetProject == null)
+				return null;
+
+			// Check project references.
+			HashSet<string> sdks = null;
+			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				var project = projectReference.ResolveProject (ParentSolution);
+				if (project != null && !string.IsNullOrEmpty (project.MSBuildProject.Sdk)) {
+					if (sdks == null)
+						sdks = new HashSet<string> ();
+					foreach (string sdk in project.MSBuildProject.GetReferencedSDKs ())
+						sdks.Add (sdk);
+				}
+			}
+
+			if (sdks != null)
+				return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
+
+			return null;
+		}
+
 		RemoteProjectBuilder GetCachedProjectBuilder ()
 		{
 			var pb = projectBuilder;
@@ -1399,7 +1426,7 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var sdkPath = !string.IsNullOrEmpty (MSBuildProject.Sdk) ? MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ()) : null;
+			var sdkPath = GetMSBuildSdkPath (runtime);
 			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
