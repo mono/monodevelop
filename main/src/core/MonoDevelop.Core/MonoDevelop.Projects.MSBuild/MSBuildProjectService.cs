@@ -776,6 +776,10 @@ namespace MonoDevelop.Projects.MSBuild
 					return null;
 				tr.ReadStartElement ();
 				tr.MoveToContent ();
+				while (tr.LocalName != "PropertyGroup" && !tr.EOF) {
+					tr.Skip ();
+					tr.MoveToContent ();
+				}
 				if (tr.LocalName != "PropertyGroup")
 					return null;
 				if (tr.IsEmptyElement)
