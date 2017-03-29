@@ -221,6 +221,19 @@
 		<ExtensionNode name = "ErrorDocumentationProvider" type = "MonoDevelop.Ide.Extensions.ErrorDocumentationProvider" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
+		<Description>Setting what languages are supported for user selection.</Description>
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -378,16 +391,7 @@
 		<Class class = "MonoDevelop.Ide.GettingStarted.GettingStartedProjectExtension"/>
 	</Extension>
 
-	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
-		<Description>Setting what languages are supported for user selection.</Description>
-		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
-	</ExtensionPoint>
-	
-	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
-		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
-		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
-	</ExtensionPoint>
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
+	</Extension>
 </ExtensionModel>

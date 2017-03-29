@@ -191,7 +191,6 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
-		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="MonoDevelop.SourceEditor.dll"/>
 	</Extension>
 </ExtensionModel>
