@@ -412,8 +412,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         /// </remarks>
         private void SubscribeToEvents()
         {
-			if (IdeApp.IsInitialized)
-	            IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
+                if (IdeApp.IsInitialized)
+                        IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
         }
 
         void Workbench_ActiveDocumentChanged(object sender, EventArgs e)
@@ -423,9 +423,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         private void UnsubscribeFromEvents()
         {
-			if (IdeApp.IsInitialized)
-				IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
-		}
+                if (IdeApp.IsInitialized)
+                        IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
+        }
 
         private void BindContentTypeSpecificAssets(IContentType beforeContentType, IContentType afterContentType)
         {
