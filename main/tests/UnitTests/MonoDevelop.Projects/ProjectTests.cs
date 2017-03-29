@@ -575,6 +575,20 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task LoadGenericProjectWithImportBeforePropertyGroup ()
+		{
+			string solFile = Util.GetSampleProject ("generic-project-with-import", "generic-project.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items[0];
+
+			Assert.IsInstanceOf<GenericProject> (p);
+
+			var pl = (GenericProject)p;
+			Assert.AreEqual ("Default", pl.Configurations [0].Name);
+		}
+
+		[Test]
 		public void SanitizeProjectNamespace ()
 		{
 			var info = new ProjectCreateInformation {
