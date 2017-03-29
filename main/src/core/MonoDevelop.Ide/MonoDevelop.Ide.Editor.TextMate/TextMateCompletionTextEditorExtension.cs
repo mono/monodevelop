@@ -117,6 +117,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			if (inactive)
 				return await base.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
+			Console.WriteLine ("mime type :" + Editor.MimeType);
 			if (Editor.MimeType == "text/plain")
 				return null;
 			if (!IdeApp.Preferences.EnableAutoCodeCompletion)
