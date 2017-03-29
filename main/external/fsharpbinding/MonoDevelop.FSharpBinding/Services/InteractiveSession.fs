@@ -12,7 +12,7 @@ type CompletionData = {
     completionText: string
     category: string
     icon: string
-    overloads: CompletionData list
+    overloads: CompletionData array
     description: string
 }
 
@@ -20,7 +20,7 @@ type InteractiveSession(pathToExe) =
     let (|Completion|_|) (command: string) =
         if command.StartsWith("completion ") then
             let payload = command.[11..]
-            Some (JsonConvert.DeserializeObject<CompletionData list> payload)
+            Some (JsonConvert.DeserializeObject<CompletionData array> payload)
         else
             None
 
@@ -34,9 +34,10 @@ type InteractiveSession(pathToExe) =
     let (|ParameterHints|_|) (command: string) =
         if command.StartsWith("parameter-hints ") then
             let payload = command.[16..]
-            Some (JsonConvert.DeserializeObject<MonoDevelop.FSharp.Shared.ParameterTooltip list> payload)
+            Some (JsonConvert.DeserializeObject<MonoDevelop.FSharp.Shared.ParameterTooltip array> payload)
         else
             None
+
     let (|Image|_|) (command: string) =
         if command.StartsWith("image ") then
             let base64image = command.[6..command.Length - 1]
@@ -86,10 +87,10 @@ type InteractiveSession(pathToExe) =
         stream.Write(bytes,0,bytes.Length)
         stream.Flush()
 
-    let completionsReceivedEvent = new Event<CompletionData list>()
+    let completionsReceivedEvent = new Event<CompletionData array>()
     let imageReceivedEvent = new Event<Xwt.Drawing.Image>()
     let tooltipReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ToolTips>()
-    let parameterHintReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ParameterTooltip list>()
+    let parameterHintReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ParameterTooltip array>()
     do
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
@@ -116,8 +117,8 @@ type InteractiveSession(pathToExe) =
                     | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
 
                 with 
-                | :? JsonException ->
-                    LoggingService.logError "[fsharpi] - error deserializing error stream - %s" de.Data
+                | :? JsonException as e ->
+                    LoggingService.logError "[fsharpi] - error deserializing error stream - %s\\n %s" e.Message de.Data
                     ) |> ignore
 
         fsiProcess.EnableRaisingEvents <- true

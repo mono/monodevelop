@@ -211,7 +211,7 @@ type XmlDoc =
 
 type ParameterTooltip =
   ///A ToolTip of signature, summary
-  | ToolTip of signature:string * doc:XmlDoc * parameters: string list
+  | ToolTip of signature:string * doc:XmlDoc * parameters: string array
     ///A empty tip
   | EmptyTip
 
