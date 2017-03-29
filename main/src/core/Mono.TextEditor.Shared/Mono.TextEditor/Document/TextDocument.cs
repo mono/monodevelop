@@ -382,21 +382,7 @@ namespace Mono.TextEditor
 
 			if (value == null)
 				value = string.Empty;
-
 			this.TextBuffer.Replace(new Microsoft.VisualStudio.Text.Span(offset, count), value);
-		}
-
-		public void ApplyTextChanges (IEnumerable<MonoDevelop.Core.Text.TextChange> changes)
-		{
-			if (changes == null)
-				throw new ArgumentNullException (nameof (changes));
-
-			using (var edit = this.TextBuffer.CreateEdit())
-			{
-				foreach (var change in changes)
-					edit.Replace(change.Offset, change.RemovalLength, change.InsertedText.Text);
-				edit.Apply();
-			}
 		}
 
 		public void ApplyTextChanges (IEnumerable<Microsoft.CodeAnalysis.Text.TextChange> changes)

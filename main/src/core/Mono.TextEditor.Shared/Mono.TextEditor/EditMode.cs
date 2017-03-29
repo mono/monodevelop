@@ -1,4 +1,4 @@
-//
+﻿//
 // EditMode.cs
 //
 // Author:
@@ -141,7 +141,7 @@ namespace Mono.TextEditor
 							var visualInsertLocation = textEditorData.LogicalToVisualLocation (Caret.Location);
 							var selection = textEditorData.MainSelection;
 							Caret.PreserveSelection = true;
-							var changes = new List<TextChange> ();
+							var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
 							for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
 								DocumentLine lineSegment = textEditorData.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (textEditorData, visualInsertLocation.Column) - 1;
@@ -156,7 +156,7 @@ namespace Mono.TextEditor
 								} else {
 									textToInsert = text;
 								}
-								changes.Add (new TextChange (new TextSpan (lineSegment.Offset + insertOffset, 0), textToInsert));
+								changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (lineSegment.Offset + insertOffset, 0), textToInsert));
 							}
 							textEditorData.Document.ApplyTextChanges (changes);
 							var visualColumn = textEditorData.GetLine (Caret.Location.Line).GetVisualColumn (textEditorData, Caret.Column);
