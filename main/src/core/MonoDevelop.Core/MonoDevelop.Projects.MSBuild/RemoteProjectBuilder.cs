@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var builder = await LoadProject (projectFile, sdksPath).ConfigureAwait (false);
 			var pb = new RemoteProjectBuilder (projectFile, builder, this);
+			pb.SdksPath = sdksPath;
 			lock (remoteProjectBuilders) {
 				remoteProjectBuilders.Add (pb);
 
@@ -306,6 +307,8 @@ namespace MonoDevelop.Projects.MSBuild
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
 			packageDependenciesCache = new Dictionary<string, PackageDependency[]> ();
 		}
+
+		internal string SdksPath { get; set; }
 
 		public event EventHandler Disconnected;
 
