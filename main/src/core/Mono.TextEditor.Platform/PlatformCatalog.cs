@@ -68,6 +68,10 @@ namespace Microsoft.VisualStudio.Platform
                 {
                     try
                     {
+						// Make sure the add-in that registered the assembly is loaded, since it can bring other
+						// other assemblies required to load this one
+						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
+
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
                         var assembly = MonoDevelop.Core.Platform.AssemblyLoad(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
