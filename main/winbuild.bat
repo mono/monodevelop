@@ -21,7 +21,7 @@ git submodule update --init --recursive || goto :error
 set "CONFIG=DebugWin32"
 set "PLATFORM=Any CPU"
 
-# only perform integrated restore on RefactoringEssentials, it fails on the whole solution
+rem only perform integrated restore on RefactoringEssentials, it fails on the whole solution
 "%MSBUILD_EXE%" external\RefactoringEssentials\RefactoringEssentials.2017.sln /target:Restore %* || goto :error
 
 "%MSBUILD_EXE%" Main.sln /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
