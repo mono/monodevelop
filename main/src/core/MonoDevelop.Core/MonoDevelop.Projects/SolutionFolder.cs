@@ -294,6 +294,7 @@ namespace MonoDevelop.Projects
 				folder.FileRenamedInProject += NotifyFileRenamedInProject;
 				folder.ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
 				folder.ReferenceAddedToProject += NotifyReferenceAddedToProject;
+				folder.ItemSaved += NotifyItemSaved;
 			}
 			
 			if (item is SolutionItem) {
@@ -380,6 +381,7 @@ namespace MonoDevelop.Projects
 				cce.FileRenamedInProject -= NotifyFileRenamedInProject;
 				cce.ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
 				cce.ReferenceAddedToProject -= NotifyReferenceAddedToProject;
+				cce.ItemSaved -= NotifyItemSaved;
 			}
 			
 			if (entry is SolutionItem) {
@@ -1017,7 +1019,7 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler ItemModified;
-		public event SolutionItemEventHandler ItemSaved;
+		public event SolutionItemSavedEventHandler ItemSaved;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileAdded;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileRemoved;
 //		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
