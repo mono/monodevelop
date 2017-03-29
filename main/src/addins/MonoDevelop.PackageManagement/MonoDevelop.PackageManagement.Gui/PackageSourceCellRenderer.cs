@@ -38,6 +38,17 @@ namespace MonoDevelop.PackageManagement
 		[GLib.Property("package-source")]
 		public PackageSourceViewModel PackageSourceViewModel { get; set; }
 
+		[GLib.Property("text")]
+		public string Text {
+			get {
+				if (PackageSourceViewModel == null) {
+					return "";
+				}
+
+				return PackageSourceViewModel.Name + " - " + PackageSourceViewModel.Source;
+			}
+		}
+
 		static Xwt.Drawing.Image warningImage = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		const int imageSpacing = 5;
 		const int textSpacing = 7;
