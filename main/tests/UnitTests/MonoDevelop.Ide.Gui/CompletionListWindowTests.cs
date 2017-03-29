@@ -466,6 +466,7 @@ namespace MonoDevelop.Ide.Gui
 		};
 
 		[Test]
+		[Ignore ("punctuation completion is now handled in backend")]
 		public void TestMatchPunctuation ()
 		{
 			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
@@ -612,6 +613,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 543984 – Completion window should only accept punctuation when it's an exact match
 		/// </summary>
 		[Test]
+		[Ignore ("punctuation completion is now handled in backend")]
 		public void TestBug543984 ()
 		{
 			string output = RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
