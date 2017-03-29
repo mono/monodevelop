@@ -154,7 +154,7 @@ module Completion =
             let! parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
             if residue.Length > 0 && residue.[0] = '#' then
-                return hashDirectives
+                return hashDirectives |> Array.ofList
             else
                 let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
                 let results = symbols
@@ -162,7 +162,7 @@ module Completion =
 
                 let completions, symbols = results |> List.unzip
                 symbolList <- symbols
-                return completions
+                return completions |> Array.ofList
         }
 
     let getCompletionTooltip filter =
