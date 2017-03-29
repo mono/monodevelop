@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // <copyright file="Regex.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>                                                                
@@ -1361,7 +1361,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /// <devdoc>
         /// </devdoc>
         protected bool UseOptionC() {
-            return(roptions & RegexOptions.Compiled) != 0;
+			return false;
         }
 #endif
 
