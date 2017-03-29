@@ -42,12 +42,14 @@ namespace Mono.TextEditor.Tests
 		public void TestBug53283 ()
 		{
 			var data = new TextEditorData ();
-			data.Options.TabsToSpaces = false;
-			data.Options.TabSize = 4;
+			var options = new TextEditorOptions ();
+			options.TabsToSpaces = false;
+			options.TabSize = 4;
+			data.Options = options;
 			data.Insert (0, "\t");
 			Assert.AreEqual ("\t", data.Text);
-			data.Options.TabsToSpaces = true;
-			data.Options.TabSize = 4;
+			options.TabsToSpaces = true;
+			options.TabSize = 4;
 			data.Replace (0, data.Length, "\t");
 			Assert.AreEqual ("    ", data.Text);
 		}

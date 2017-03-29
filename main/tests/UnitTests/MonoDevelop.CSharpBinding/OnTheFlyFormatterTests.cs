@@ -355,7 +355,7 @@ class Foo
 		public async Task TestBug16174_AutoIndent ()
 		{
 			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
-				var options = DefaultSourceEditorOptions.Instance;
+				var options = new CustomEditorOptions ();
 				options.IndentStyle = IndentStyle.Auto;
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);

@@ -269,7 +269,11 @@ namespace Mono.TextEditor
 				case IndentStyle.Auto:
 					data.EnsureCaretIsNotVirtual ();
 					var indent = data.Document.GetLineIndent (data.Caret.Line);
-					data.InsertAtCaret (data.EolMarker + indent);
+					if (data.Caret.Column >= indent.Length) {
+						data.InsertAtCaret (data.EolMarker + indent);
+					} else {
+						data.InsertAtCaret (data.EolMarker);
+					}
 					break;
 				case IndentStyle.Smart:
 					if (!data.HasIndentationTracker)
