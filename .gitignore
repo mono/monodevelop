@@ -8,6 +8,7 @@
 #build stuff
 obj/
 /main/build/bin
+/main/build/lib
 /main/build/AddIns
 /main/build/data/
 /main/build/locale/

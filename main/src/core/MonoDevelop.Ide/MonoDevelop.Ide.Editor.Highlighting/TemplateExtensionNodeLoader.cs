@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (initialized)
 				return;
 			initialized = true;
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Styles", OnStylesExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Editor/Themes", OnStylesExtensionChanged);
 		}
 		
 		static void OnStylesExtensionChanged (object s, ExtensionNodeEventArgs args)

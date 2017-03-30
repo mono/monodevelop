@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor
 
 		static TextEditorFactory ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/EditorFactory", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Editor/EditorFactory", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					if (currentFactory == null)
