@@ -1,4 +1,4 @@
-//
+﻿//
 // MSBuildProject.cs
 //
 // Author:
@@ -66,6 +66,8 @@ namespace MonoDevelop.Projects
 			var pg = p.GetGlobalPropertyGroup ();
 			Assert.AreEqual ("8.0.50727", pg.GetValue ("ProductVersion"));
 			Assert.AreEqual ("$(TestProp)", pg.GetValue ("EvalProp"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -85,6 +87,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("ExtraVal", pg.GetValue ("EvalExtraProp"));
 			Assert.AreEqual ("value2", pg.GetValue ("Case2"));
 			Assert.AreEqual ("value2", pg.GetValue ("Case3"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -144,6 +148,8 @@ namespace MonoDevelop.Projects
 			it = ar [6];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.Include);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -252,6 +258,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -267,6 +275,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
 			Assert.IsFalse (tn.Contains ("Conditioned"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -282,6 +292,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
 			Assert.IsTrue (tn.Contains ("Conditioned"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -291,6 +303,8 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 			var res = p.EvaluatedProperties.GetValue ("ExistsTest");
 			Assert.AreEqual ("OK", res);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -302,6 +316,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("one", p.EvaluatedProperties.GetValue ("PropFromTest1"));
 			Assert.AreEqual ("two", p.EvaluatedProperties.GetValue ("PropFromTest2"));
 			Assert.AreEqual ("three", p.EvaluatedProperties.GetValue ("PropFromFoo"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -319,6 +335,8 @@ namespace MonoDevelop.Projects
 			pi.SetGlobalProperty ("Configuration", "Alt");
 			pi.Evaluate ();
 			Assert.AreEqual ("Three", pi.EvaluatedProperties.GetValue ("Foo"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -326,6 +344,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual (new [] {"aa","vv","test"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -333,6 +352,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-tests", "property-eval-order.csproj");
 			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -370,6 +390,8 @@ namespace MonoDevelop.Projects
 
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (p.FileName), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -418,6 +440,8 @@ namespace MonoDevelop.Projects
 				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_4", "val14_3" }),
 				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_5", "val14_6" }),
 			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1", "cond2").ToArray ()));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -429,6 +453,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
 			Assert.AreEqual ("  ", import.StartWhitespace);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -445,6 +471,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
 			Assert.AreEqual ("  ", import.StartWhitespace);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -454,6 +481,7 @@ namespace MonoDevelop.Projects
 			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -461,6 +489,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-project-test", "test-user.csproj");
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("TestProp"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -482,6 +511,7 @@ namespace MonoDevelop.Projects
 			// Includes can contain several transforms
 			Assert.AreEqual ("a.txt;b.txt;t1.txt;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue"));
 			Assert.AreEqual ("a;b;t1;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue2"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -505,6 +535,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("@", p.EvaluatedProperties.GetValue ("Func2"));
 
 			Assert.AreEqual ("t0 - []", p.EvaluatedProperties.GetValue ("FadaResPrev"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -555,6 +586,7 @@ namespace MonoDevelop.Projects
 
 			// get_Chars
 			Assert.AreEqual ("t;t;.", p.EvaluatedProperties.GetValue ("get_Chars"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -578,6 +610,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
 			Assert.AreEqual (0, itemElement.ChildNodes.Count);
 			Assert.IsTrue (itemElement.IsEmpty);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -608,6 +641,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("AnotherValue", itemElement.GetAttribute ("Another"));
 			Assert.AreEqual (0, itemElement.ChildNodes.Count);
 			Assert.IsTrue (itemElement.IsEmpty);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -623,6 +657,7 @@ namespace MonoDevelop.Projects
 
 			items = p.EvaluatedItems.Where (it => it.Name == "Test3").Select (it => it.Include).ToArray ();
 			Assert.AreEqual (new [] { "file2.txt" }, items);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -636,6 +671,7 @@ namespace MonoDevelop.Projects
 			doc.LoadXml (xml);
 
 			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -650,6 +686,7 @@ namespace MonoDevelop.Projects
 
 			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
 			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -663,6 +700,7 @@ namespace MonoDevelop.Projects
 			doc.LoadXml (xml);
 
 			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -677,6 +715,7 @@ namespace MonoDevelop.Projects
 
 			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
 			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
@@ -700,6 +739,7 @@ namespace MonoDevelop.Projects
 			var propertyGroup = (XmlElement)doc.DocumentElement.ChildNodes[0];
 			Assert.IsFalse (propertyGroup.HasAttribute ("xmlns"));
 			Assert.AreEqual ("PropertyGroup", propertyGroup.Name);
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
@@ -738,6 +778,7 @@ namespace MonoDevelop.Projects
 			commandsElement = (XmlElement)commandsElement.ChildNodes[0];
 			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
 			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
@@ -772,6 +813,7 @@ namespace MonoDevelop.Projects
 			var externalElement = (XmlElement)propertiesElement.ChildNodes[0];
 			Assert.IsFalse (externalElement.HasAttribute ("xmlns"));
 			Assert.AreEqual ("External", externalElement.Name);
+			p.Dispose ();
 		}
 
 		public class TestExternalPropertiesConfig : ItemConfiguration
@@ -815,6 +857,7 @@ namespace MonoDevelop.Projects
 
 			externalElement = p.GetMonoDevelopProjectExtension ("External");
 			Assert.IsNull (externalElement);
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
@@ -848,6 +891,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual ("External", externalElement.Name);
 			Assert.AreEqual (1, monoDevelopElement.ChildNodes.Count);
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"",
@@ -893,6 +937,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (expectedHasXmlAttribute, extensionDataElement.HasAttribute ("xmlns"));
 			Assert.AreEqual ("ExtensionData", extensionDataElement.Name);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -933,6 +978,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -977,6 +1023,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
 			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+			p.Dispose ();
 		}
 
 		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
@@ -1021,6 +1068,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("!Exists('Original.targets')", import2.GetAttribute ("Condition"));
 			Assert.IsFalse (import1.HasAttribute ("xmlns"));
 			Assert.IsFalse (import2.HasAttribute ("xmlns"));
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1061,6 +1109,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1101,6 +1150,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1144,6 +1194,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1187,6 +1238,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1233,6 +1285,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1274,6 +1327,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1314,6 +1368,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1355,6 +1410,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1398,6 +1454,7 @@ namespace MonoDevelop.Projects
 				"  </ItemGroup>\r\n" +
 				"</Project>";
 			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 	}
 }

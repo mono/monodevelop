@@ -1,4 +1,4 @@
-// MakefileTests.cs
+﻿// MakefileTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -114,6 +114,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("System", values [0]);
 			Assert.AreEqual ("System.Data", values [1]);
 			Assert.AreEqual ("System.Web", values [2]);
+
+			sol.Dispose ();
 		}
 		
 		string GetVariable (string content, string var)
