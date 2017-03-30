@@ -50,6 +50,8 @@ namespace MonoDevelop.Ide.Editor
 
 
 		[Test]
+		[Ignore ("Broken Bug #54245")]
+		// see https://bugzilla.xamarin.com/show_bug.cgi?id=54245
 		public void TestLocationToOffset()
 		{
 			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");

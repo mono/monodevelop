@@ -1,4 +1,4 @@
-// CompletionTextEditorExtension.cs
+﻿// CompletionTextEditorExtension.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -371,7 +371,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
 			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
-			if (completionList.TriggerWordStart >= 0) {
+			if (completionList != null && completionList.TriggerWordStart >= 0) {
 				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
 				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
 			}
