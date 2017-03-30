@@ -171,8 +171,8 @@ namespace MonoDevelop.Components
 
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
-			int w, h;
-			size.GetSize (out w, out h);
+			int w = 0, h = 0;
+			Gtk.Application.Invoke ( delegate { size.GetSize (out w, out h); });
 			return image.WithSize (w, h);
 		}
 
