@@ -82,7 +82,7 @@ namespace MonoDevelop.AssemblyBrowser
 			bool publicOnly = Widget.PublicApiOnly;
 			
 			foreach (var type in compilationUnit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
+				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
 					namespaces [namespaceName] = new Namespace (namespaceName);
 				
@@ -90,7 +90,14 @@ namespace MonoDevelop.AssemblyBrowser
 				ns.Types.Add (type);
 			}
 
-			treeBuilder.AddChildren (namespaces.Values.Where (ns => !publicOnly || ns.Types.Any (t => t.IsPublic)));
+			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.IsPublic))).Select (n => n.Value));
+			if (namespaces.ContainsKey ("")) {
+				foreach (var child in namespaces [""].Types) {
+					if (child.Name == "<Module>")
+						continue;
+					treeBuilder.AddChild (child);
+				}
+			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
