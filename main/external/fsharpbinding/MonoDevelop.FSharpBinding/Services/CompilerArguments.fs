@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------
 // Common utilities for environment, debugging and working with project files
 // --------------------------------------------------------------------------------------
 
@@ -46,6 +46,10 @@ module CompilerArguments =
 
       let isPortable (project: DotNetProject) =
           not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
+      
+      let isDotNetCoreProject (project:DotNetProject) =
+          let properties = project.MSBuildProject.EvaluatedProperties
+          properties.HasProperty ("TargetFramework") || properties.HasProperty ("TargetFrameworks")
 
       let isOrReferencesPortableProject (project: DotNetProject) =
           isPortable project ||
@@ -260,12 +264,9 @@ module CompilerArguments =
             |> Seq.tryFind (fun fn -> fn.EndsWith(assemblyName + ".dll", true, CultureInfo.InvariantCulture)
                                       || fn.EndsWith(assemblyName, true, CultureInfo.InvariantCulture))
 
-        let isDotNetCoreProject =
-            let properties = project.MSBuildProject.EvaluatedProperties
-            properties.HasProperty ("TargetFramework") || properties.HasProperty ("TargetFrameworks")
 
         // If 'mscorlib.dll' or 'FSharp.Core.dll' is not in the set of references, we try to resolve and add them.
-        match find "FSharp.Core", find "mscorlib", isDotNetCoreProject with
+        match find "FSharp.Core", find "mscorlib", Project.isDotNetCoreProject project with
         | None, Some mscorlib, false ->
             // if mscorlib is founbd without FSharp.Core yield fsharp.core in the same base dir as mscorlib
             // falling back to one of the default directories
@@ -329,7 +330,7 @@ module CompilerArguments =
        yield "--simpleresolution"
        yield "--noframework"
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
-       if Project.isPortable project then
+       if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
        yield "--platform:anycpu" //?
        yield "--fullpaths"
