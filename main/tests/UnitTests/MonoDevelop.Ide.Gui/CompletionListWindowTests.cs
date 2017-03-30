@@ -466,14 +466,6 @@ namespace MonoDevelop.Ide.Gui
 		};
 
 		[Test]
-		[Ignore ("punctuation completion is now handled in backend")]
-		public void TestMatchPunctuation ()
-		{
-			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
-			Assert.AreEqual ("/AbAb", output);
-		}
-
-		[Test]
 		public void TestMatchPunctuationCase2 ()
 		{
 			string output = RunSimulation ("", "A\n", true, false, false, punctuationData);
@@ -608,18 +600,7 @@ namespace MonoDevelop.Ide.Gui
 			output = RunSimulation ("", " ", true, true, false, "singleEntry");
 			Assert.IsTrue (string.IsNullOrEmpty (output));
 		}
-		
-		/// <summary>
-		/// Bug 543984 – Completion window should only accept punctuation when it's an exact match
-		/// </summary>
-		[Test]
-		[Ignore ("punctuation completion is now handled in backend")]
-		public void TestBug543984 ()
-		{
-			string output = RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
-			Assert.AreEqual ("foo#bar", output);
-		}
-		
+
 		[Test]
 		public void TestBug595240 ()
 		{
