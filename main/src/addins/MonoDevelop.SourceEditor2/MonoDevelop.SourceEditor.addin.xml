@@ -38,9 +38,9 @@
 	</ExtensionPoint>
 
 	<!-- Extensions -->
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
-		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
+		<Provider id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -167,7 +167,7 @@
 		</ItemSet>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
+	<Extension path = "/MonoDevelop/Ide/Editor/EditorFactory">
 		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
 

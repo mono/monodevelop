@@ -1014,7 +1014,7 @@ namespace MonoDevelop.Ide.Editor
 
 		static TextEditor ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/TooltipProviders", delegate (object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Editor/TooltipProviders", delegate (object sender, ExtensionNodeEventArgs args) {
 				var extNode = (TooltipExtensionNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:

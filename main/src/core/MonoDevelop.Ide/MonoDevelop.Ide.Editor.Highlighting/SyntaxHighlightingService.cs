@@ -467,7 +467,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			PrepareMatches ();
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Bundles", OnSyntaxModeExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Editor/Bundles", OnSyntaxModeExtensionChanged);
 		}
 
 		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
