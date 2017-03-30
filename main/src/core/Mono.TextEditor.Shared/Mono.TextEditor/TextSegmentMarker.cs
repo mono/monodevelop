@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
 using Cairo;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
@@ -142,11 +143,16 @@ namespace Mono.TextEditor
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
+
+				var substring = layout.Text.Substring (0, end - startOffset);
+				var asciiLength = Encoding.ASCII.GetByteCount (substring);
+				var utf8Length = Encoding.UTF8.GetByteCount (substring);
+				var encodingDiff = utf8Length - asciiLength;
 				
-				x_pos = layout.IndexToPos (System.Math.Max (0, start - startOffset)).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, start - startOffset + encodingDiff)).X;
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				
-				x_pos = layout.IndexToPos (System.Math.Max (0, end - startOffset)).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, end - startOffset + encodingDiff)).X;
 				
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				var line = editor.GetLineByOffset (endOffset);
