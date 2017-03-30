@@ -74,9 +74,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveSolutionAfterChangingCSharpFormattingPolicyForTheFirstTime ()
 		{
 			string dir = Util.CreateTmpDir ("FormattingPolicyChangedOnce");
-			var pset = PolicyService.GetPolicySet ("Mono");
-			var monoFormattingPolicy = pset.Get<CSharpFormattingPolicy> ("text/x-csharp");
-			var formattingPolicy = monoFormattingPolicy.Clone ();
+			var formattingPolicy = new CSharpFormattingPolicy ();
 			var solution = new Solution ();
 			solution.Policies.Set (formattingPolicy);
 
