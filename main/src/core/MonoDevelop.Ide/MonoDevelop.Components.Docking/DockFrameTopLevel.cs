@@ -142,7 +142,8 @@ namespace MonoDevelop.Components.Docking
 
 		internal string Title {
 			set {
-				ContainerWindow.Title = value;
+				if (ContainerWindow != null)
+					ContainerWindow.Title = value;
 			}
 		}
 	}
