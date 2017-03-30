@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects
 				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "ConsoleProject.csproj");
 				DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
 				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("TestTarget"));
+				p.Dispose ();
 			} finally {
 				UnregisterSearchPath ();
 			}
@@ -71,6 +72,7 @@ namespace MonoDevelop.Projects
 				var res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+				sol.Dispose ();
 			} finally {
 				UnregisterSearchPath ();
 			}
@@ -99,6 +101,7 @@ namespace MonoDevelop.Projects
 			res = await project.RunTarget (Util.GetMonitor (false), "TestInjected", project.Configurations [0].Selector);
 			Assert.AreEqual (0, res.BuildResult.WarningCount);
 			Assert.AreEqual (1, res.BuildResult.ErrorCount);
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -115,6 +118,7 @@ namespace MonoDevelop.Projects
 				var res = await p.RunTarget (Util.GetMonitor (false), "SdkTarget", p.Configurations [0].Selector);
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
+				p.Dispose ();
 			} finally {
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath);
 			}
@@ -155,6 +159,9 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
 
+				p1.Dispose ();
+				p2.Dispose ();
+
 			} finally {
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath2);
@@ -187,6 +194,7 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
 				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("BarProp"));
+				p.Dispose ();
 
 			} finally {
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath1);

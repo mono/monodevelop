@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects
 
 				expectedSetting = !expectedSetting;
 			}
+
+			solution.Dispose ();
 		}
 
 		/// <summary>
@@ -93,6 +95,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentBlock")));
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("SpaceBeforeDot")));
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("NewLineForElse")));
+
+			solution.Dispose ();
 		}
 	}
 }

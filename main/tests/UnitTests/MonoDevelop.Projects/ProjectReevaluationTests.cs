@@ -74,6 +74,8 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -121,6 +123,8 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-refresh-saved")));
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -172,6 +176,8 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-refresh-item-changed-saved")));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -202,6 +208,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (p, library2Item.OwnerProject);
 			Assert.AreSame (library1Reference, library1Item);
 			Assert.AreSame (library2Reference, library2Item);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -246,6 +254,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (p, library1Item.OwnerProject);
 			Assert.AreSame (library1Reference, library1Item);
 			Assert.AreEqual (library1Reference, library1Item);
+
+			sol.Dispose ();
 		}
 	}
 }

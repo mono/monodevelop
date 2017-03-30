@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects
 			p.AddFile (f.FilePath);
 			await p.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("glob-test-saved2")));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -88,6 +90,8 @@ namespace MonoDevelop.Projects
 			p.AddFile (f.FilePath);
 			await p.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (File.ReadAllText (p.FileName), File.ReadAllText (p.FileName.ChangeName ("glob-test-saved2")));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -112,6 +116,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName.ChangeName ("glob-test-saved2")));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -137,6 +143,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName.ChangeName ("glob-test-saved4")));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -160,6 +168,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName.ChangeName ("glob-test-saved3")));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -223,6 +233,8 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -244,6 +256,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-test-saved5")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -266,6 +280,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update1-test-saved")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -288,6 +304,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update2-test-saved")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -309,6 +327,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update1-test-saved2")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -329,6 +349,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update2-test-saved2")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -360,6 +382,8 @@ namespace MonoDevelop.Projects
 
 			projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -395,6 +419,8 @@ namespace MonoDevelop.Projects
 
 				projectXml = File.ReadAllText (p.FileName);
 				Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+
+				p.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -434,6 +460,8 @@ namespace MonoDevelop.Projects
 
 			projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -462,6 +490,7 @@ namespace MonoDevelop.Projects
 
 				string projectXml = File.ReadAllText (p.FileName);
 				Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-import-update1-test")), projectXml);
+				p.Dispose ();
 
 				// Reload the project.
 				p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
@@ -474,6 +503,8 @@ namespace MonoDevelop.Projects
 
 				projectXml = File.ReadAllText (p.FileName);
 				Assert.AreEqual (File.ReadAllText (originalProjFile), projectXml);
+
+				p.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -502,6 +533,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -528,6 +561,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved2")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -550,6 +585,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update4-test-saved")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -574,6 +611,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (File.ReadAllText (p.FileName.ChangeName ("glob-update3-test-saved3")), projectXml);
+
+			p.Dispose ();
 		}
 
 		[Test]

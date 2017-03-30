@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LocalCopyTests.cs
 // 
 // Author:
@@ -148,6 +148,8 @@ namespace MonoDevelop.Projects
 			AssertOutputFiles (sol, "ClassLibrary5", "Release", new string[] {
 				"ClassLibrary5.dll"
 			});
+
+			item.Dispose ();
 		}
 				
 		static void AssertOutputFiles (Solution solution, string projectName, string configuration, string[] expectedFiles)
@@ -254,6 +256,8 @@ namespace MonoDevelop.Projects
 			string projectXml1 = Util.GetXmlFileInfoset (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj.saved"));
 			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			item.Dispose ();
 		}
 	}
 }

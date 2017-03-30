@@ -1,4 +1,4 @@
-// MSBuildTests.cs
+﻿// MSBuildTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -77,6 +77,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (solXml, File.ReadAllText (solFile));
 			Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -88,6 +90,8 @@ namespace MonoDevelop.Projects
 			// Ensure the project is buildable
 			var result = await sol.Build (Util.GetMonitor (), "Debug");
 			Assert.AreEqual (0, result.ErrorCount, "#1");
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -100,6 +104,8 @@ namespace MonoDevelop.Projects
 			ProjectOptionsDialog.RenameItem (sol.GetAllProjects ().First (), "Test");
 			var result = await sol.Build (Util.GetMonitor (), "Release");
 			Assert.AreEqual (0, result.ErrorCount, "#2");
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -125,6 +131,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (solFile)), solXml);
 			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (projectFile)), projectXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -146,6 +154,8 @@ namespace MonoDevelop.Projects
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject2.csproj");
 
 			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (projectFile)), projectXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -218,6 +228,8 @@ namespace MonoDevelop.Projects
 
 			string savedFile = Path.Combine (p.BaseDirectory, "TestConfigurationMergingSaved.csproj");
 			Assert.AreEqual (File.ReadAllText (savedFile), File.ReadAllText (p.FileName));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -240,6 +252,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -260,6 +274,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -286,6 +302,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -307,6 +325,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -329,6 +349,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -351,6 +373,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -364,6 +388,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (refXml, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -377,6 +403,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (refXml, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -392,6 +420,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, p.References.Count);
 			Assert.AreEqual ("some - library", p.References [0].Reference);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -412,6 +442,8 @@ namespace MonoDevelop.Projects
 			conf = ((DotNetProjectConfiguration)p.Configurations [0]);
 
 			Assert.AreEqual (value, conf.OutputAssembly);
+
+			sol.Dispose ();
 		}
 
 
@@ -428,6 +460,8 @@ namespace MonoDevelop.Projects
 			p.Configurations.Insert (0, configuration);
 			await p.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -445,6 +479,8 @@ namespace MonoDevelop.Projects
 			string projectXml2 = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -460,6 +496,8 @@ namespace MonoDevelop.Projects
 			string projectXml2 = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -481,6 +519,8 @@ namespace MonoDevelop.Projects
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
 			var asms = (await p.GetReferencedAssemblies (sol.Configurations [0].Selector)).Select (ar => ar.FilePath).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -492,6 +532,8 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject)sol.GetAllProjects ().First ();
 
 			Assert.AreEqual ("yes", p.ProjectProperties.GetValue ("Imported"));
+
+			sol.Dispose ();
 		}
 
 		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
@@ -505,6 +547,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Program9_yes.cs", p.Files [8].FilePath.FileName, "Non-evaluable property group clears properties");
 			Assert.AreEqual ("Program10_$(AAA", p.Files [9].FilePath.FileName, "Invalid property reference");
 			Assert.AreEqual ("Program11_EnvTest.cs", p.Files [10].FilePath.FileName, "Environment variable");
+
+			sol.Dispose ();
 		}
 
 		async Task LoadBuildVSConsoleProject (string vsVersion, string toolsVersion)
@@ -539,6 +583,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (monitor.Warnings.Length == 0);
 
 			Assert.AreEqual (projectXml, Util.ReadAllWithWindowsEndings (projectFile));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -572,6 +618,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml2 = File.ReadAllText (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -590,6 +638,8 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNotNull (import);
 			Assert.IsFalse (import.HasAttribute ("Condition"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -608,6 +658,8 @@ namespace MonoDevelop.Projects
 			XmlElement import = (XmlElement)doc.SelectSingleNode (@"//ms:Import[@Project='packages\Xamarin.Forms\build\Xamarin.Forms.targets']", manager);
 
 			Assert.AreEqual (condition, import.GetAttribute ("Condition"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -623,6 +675,8 @@ namespace MonoDevelop.Projects
 
 			string projectXml2 = File.ReadAllText (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -647,6 +701,8 @@ namespace MonoDevelop.Projects
 				string projectXml1 = File.ReadAllText (referenceFile);
 				string projectXml2 = File.ReadAllText (mp.FileName);
 				Assert.AreEqual (Util.ToWindowsEndings (projectXml1), projectXml2);
+
+				p.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 			}
@@ -667,6 +723,8 @@ namespace MonoDevelop.Projects
 				Assert.NotNull (mp.Data);
 				Assert.AreEqual (mp.Data.Foo, "bar");
 				Assert.AreEqual (mp.SimpleData, "Test");
+
+				p.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 			}
@@ -695,6 +753,8 @@ namespace MonoDevelop.Projects
 
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
+
+				p.Dispose ();
 
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
@@ -728,6 +788,8 @@ namespace MonoDevelop.Projects
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
+				p.Dispose ();
+
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 			}
@@ -759,6 +821,7 @@ namespace MonoDevelop.Projects
 
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
+				p.Dispose ();
 
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
@@ -783,6 +846,7 @@ namespace MonoDevelop.Projects
 				Assert.NotNull (f.Data);
 				Assert.AreEqual (f.Data.Foo, "bar");
 				Assert.AreEqual (f.SimpleData, "Test");
+				p.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 				WorkspaceObject.UnregisterCustomExtension (fn);
@@ -809,6 +873,7 @@ namespace MonoDevelop.Projects
 				Assert.NotNull (f.Data);
 				Assert.AreEqual (f.Data.Foo, "bar");
 				Assert.AreEqual (f.SimpleData, "Test");
+				p.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 				WorkspaceObject.UnregisterCustomExtension (fn);
@@ -841,6 +906,8 @@ namespace MonoDevelop.Projects
 
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
+
+				p.Dispose ();
 
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
@@ -878,6 +945,8 @@ namespace MonoDevelop.Projects
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
+				p.Dispose ();
+
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 				WorkspaceObject.UnregisterCustomExtension (fn);
@@ -914,6 +983,8 @@ namespace MonoDevelop.Projects
 				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
+				p.Dispose ();
+
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 				WorkspaceObject.UnregisterCustomExtension (fn);
@@ -943,6 +1014,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (actions.Contains ("Content"), "'Content' not found");
 			Assert.IsTrue (actions.Contains ("ItemOne"), "'ItemOne' not found");
 			Assert.IsTrue (actions.Contains ("ItemTwo"), "'ItemTwo' not found");
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -966,6 +1039,8 @@ namespace MonoDevelop.Projects
 				"text3-1.txt",
 				"text3-2.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -984,6 +1059,8 @@ namespace MonoDevelop.Projects
 				"p5.txt",
 				"text3-1.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1011,6 +1088,8 @@ namespace MonoDevelop.Projects
 				"p5.txt",
 				"text3-1.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1029,6 +1108,8 @@ namespace MonoDevelop.Projects
 				"p5.txt",
 				"text3-1.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1047,6 +1128,8 @@ namespace MonoDevelop.Projects
 				"p5.txt",
 				"text3-1.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1072,6 +1155,8 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (new string [] {
 					"Program.cs"
 				}, files);
+
+				sol.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
 			}
@@ -1102,6 +1187,7 @@ namespace MonoDevelop.Projects
 				var itemGroup = mp.MSBuildProject.ItemGroups.LastOrDefault ();
 				Assert.IsTrue (itemGroup.Items.Any (item => item.Include == "NewFile.cs"));
 				Assert.AreEqual (2, itemGroup.Items.Count ());
+				sol.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
 			}
@@ -1120,6 +1206,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1140,6 +1228,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1163,6 +1253,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1183,6 +1275,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1207,6 +1301,8 @@ namespace MonoDevelop.Projects
 				await p.SaveAsync (Util.GetMonitor ());
 
 				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+				p.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -1234,6 +1330,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved4"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1255,6 +1353,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved3"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1286,6 +1386,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved5"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1308,6 +1410,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1334,6 +1438,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1361,6 +1467,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1379,6 +1487,8 @@ namespace MonoDevelop.Projects
 			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
 			await p.SaveAsync (Util.GetMonitor ());
 
+			p.Dispose ();
+
 			p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 			mp = (Project)p;
 			mp.UseAdvancedGlobSupport = true;
@@ -1392,6 +1502,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved6"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1421,6 +1533,8 @@ namespace MonoDevelop.Projects
 				await p.SaveAsync (Util.GetMonitor ());
 
 				Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+
+				p.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -1445,6 +1559,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual ("Xamagon_1.png", f1.Link.ToString ());
 			Assert.AreEqual (Path.Combine ("Subdir", "Xamagon_2.png"), f2.Link.ToString ());
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -1469,6 +1585,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Path.Combine ("Data", "t1.txt"), f1.Link.ToString ());
 			Assert.AreEqual (Path.Combine ("Data", "t2.txt"), f2.Link.ToString ());
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -1493,6 +1611,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual ("t1.dat", f1.Link.ToString ());
 			Assert.AreEqual ("t2.dat", f2.Link.ToString ());
+
+			sol.Dispose ();
 		}
 
 		/// <summary>
@@ -1518,6 +1638,8 @@ namespace MonoDevelop.Projects
 				"text2-1.txt",
 				"text2-2.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1551,6 +1673,8 @@ namespace MonoDevelop.Projects
 				"text2-1.txt",
 				"text2-2.txt",
 			}, filesToCopyToOutputDirectory);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1575,6 +1699,8 @@ namespace MonoDevelop.Projects
 				"text2-1.txt",
 				"text2-2.txt",
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1614,6 +1740,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (2, mp.MSBuildProject.ItemGroups.Count ());
 			Assert.IsFalse (itemGroup.Items.Any (item => item.Include == @"Content\newfile.txt"));
 			Assert.AreEqual (3, itemGroup.Items.Count ());
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1636,6 +1764,8 @@ namespace MonoDevelop.Projects
 				@"Content\Data3.cs",
 				"Program.cs"
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1661,6 +1791,8 @@ namespace MonoDevelop.Projects
 			var itemGroup = mp.MSBuildProject.ItemGroups.FirstOrDefault ();
 			Assert.AreEqual (1, mp.MSBuildProject.ItemGroups.Count ());
 			Assert.IsFalse (itemGroup.Items.Any (item => item.Name != "Reference"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1695,6 +1827,8 @@ namespace MonoDevelop.Projects
 
 				var savedProjFileText = File.ReadAllText (projFile);
 				Assert.AreEqual (originalProjectFileText, savedProjFileText);
+
+				p.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -1714,6 +1848,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved7")), File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1736,6 +1872,8 @@ namespace MonoDevelop.Projects
 				@"Content\text1-1.txt",
 				@"Content\text1-2.txt"
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1756,6 +1894,8 @@ namespace MonoDevelop.Projects
 				@"Content\Data3.cs",
 				"Program.cs"
 			}, files);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1782,6 +1922,8 @@ namespace MonoDevelop.Projects
 			var copyToOutputDirectory = mp.MSBuildProject.EvaluatedItems.Where (item => item.Name == "None")
 				.Select (item => item.Metadata.GetValue ("CopyToOutputDirectory")).ToArray ();
 			Assert.IsTrue (copyToOutputDirectory.All (propertyValue => propertyValue == "PreserveNewest"));
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -1821,6 +1963,8 @@ namespace MonoDevelop.Projects
 				"text3-1.txt",
 				"text3-2.txt"
 			}, nonUpdatedTextFiles);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1858,6 +2002,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refXml1, savedXml1);
 			Assert.AreEqual (refXml2, savedXml2);
 			Assert.AreEqual (refXml3, savedXml3);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -1880,6 +2026,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (solContent, savedSol);
 			Assert.AreEqual (refXml1, savedXml1);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -1902,6 +2050,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (refSol, savedSol);
 			Assert.AreEqual (refProj, savedProj);
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -1916,6 +2066,8 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -1930,6 +2082,8 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -1969,6 +2123,8 @@ namespace MonoDevelop.Projects
 			refXml = Util.ToSystemEndings (File.ReadAllText (projFile + ".saved4"));
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -1995,6 +2151,8 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2023,6 +2181,8 @@ namespace MonoDevelop.Projects
 			conf = p.Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Name == "Test");
 			Assert.AreEqual ("TestValue", conf.Properties.GetValue ("TestProperty"));
 			Assert.AreEqual (p.BaseDirectory.Combine ("Subdir", "SomeFile.txt"), conf.Properties.GetPathValue ("TestPath"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2048,6 +2208,8 @@ namespace MonoDevelop.Projects
 			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-renamed"));
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2083,6 +2245,8 @@ namespace MonoDevelop.Projects
 				Assert.IsNotNull (it);
 				Assert.AreEqual ("TestInclude", it.Include);
 				Assert.AreEqual ("FooTest", it.SomeMetadata);
+
+				sol.Dispose ();
 			} finally {
 				MSBuildProjectService.UnregisterCustomProjectItemType ("CustomItem");
 			}
@@ -2115,6 +2279,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, items.Length);
 			Assert.AreEqual ("bar", items [0].Include);
 			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2133,6 +2299,8 @@ namespace MonoDevelop.Projects
 			FilePath path = null;
 			bool foundProperty = res.Properties.TryGetPathValue ("MissingProperty", out path);
 			Assert.IsFalse (foundProperty);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2154,6 +2322,8 @@ namespace MonoDevelop.Projects
 			// Check that the global property is reset
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -2181,6 +2351,8 @@ namespace MonoDevelop.Projects
 			// Check that the global property is reset
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed (show.targets): show", res.Errors [0].ErrorText);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -2209,6 +2381,8 @@ namespace MonoDevelop.Projects
 			// Check that the global property is reset
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed (true.targets): true", res.Errors [0].ErrorText);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -2240,6 +2414,8 @@ namespace MonoDevelop.Projects
 				string expectedMessage = string.Format ("Something failed (test-import.targets): {0}", sdksPath);
 				Assert.AreEqual (expectedMessage, buildResult.Errors [0].ErrorText);
 
+				sol.Dispose ();
+
 			} finally {
 				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
 			}
@@ -2269,6 +2445,8 @@ namespace MonoDevelop.Projects
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
+
+			sol.Dispose ();
 		}
 
 		/// <summary>
@@ -2306,6 +2484,8 @@ namespace MonoDevelop.Projects
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2328,6 +2508,8 @@ namespace MonoDevelop.Projects
 			var refXml = Util.ToWindowsEndings (File.ReadAllText (p.FileName + ".config-copied"));
 			var savedXml = Util.ToWindowsEndings (File.ReadAllText (p.FileName));
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2338,6 +2520,8 @@ namespace MonoDevelop.Projects
 			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
 			Assert.IsTrue (byDefault);
 			Assert.IsFalse (require);
+
+			project.Dispose ();
 		}
 
 		[Test]
@@ -2357,6 +2541,8 @@ namespace MonoDevelop.Projects
 			mp.Evaluate ();
 			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "test.cs") != null);
 			Assert.IsTrue (mp.EvaluatedItems.FirstOrDefault (i => i.Name == "Compile" && i.Include == "Program.cs") == null);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2368,6 +2554,8 @@ namespace MonoDevelop.Projects
 			p.References.Add (pr);
 
 			Assert.AreEqual ("System", pr.Include);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2383,6 +2571,8 @@ namespace MonoDevelop.Projects
 
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2419,6 +2609,8 @@ namespace MonoDevelop.Projects
 
 			savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -2430,6 +2622,8 @@ namespace MonoDevelop.Projects
 
 			var p = (Project)sol.Items [0];
 			Assert.AreEqual (sol.ItemDirectory.ToString () + Path.DirectorySeparatorChar, p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2451,6 +2645,8 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			var compXml = Util.ToSystemEndings (File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-conf-renamed")));
 			Assert.AreEqual (compXml, savedXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -2475,6 +2671,8 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
 			Assert.AreEqual (refXml, savedXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2496,6 +2694,8 @@ namespace MonoDevelop.Projects
 
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2517,6 +2717,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.ProjectProperties.HasProperty ("TargetName"));
 			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
 			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
+
+			sol.Dispose ();
 		}
 
 		[Test ()]
@@ -2547,6 +2749,8 @@ namespace MonoDevelop.Projects
 
 				Assert.AreEqual (solXml, File.ReadAllText (solFile));
 				Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+
+				sol.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
@@ -2567,6 +2771,8 @@ namespace MonoDevelop.Projects
 			await p.SaveAsync (Util.GetMonitor ());
 
 			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -2586,6 +2792,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Foo", ar.Aliases);
 		
 			Assert.AreEqual (4, asms.Length);
+
+			p.Dispose ();
 		}
 	}
 

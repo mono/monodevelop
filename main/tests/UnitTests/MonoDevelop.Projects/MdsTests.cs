@@ -1,4 +1,4 @@
-// MdsTests.cs
+﻿// MdsTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -57,6 +57,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (File.Exists (ws.FileName));
 			Assert.IsTrue (File.Exists (sol.FileName));
 			Assert.IsTrue (File.Exists (p.FileName));
+
+			ws.Dispose ();
 		}
 	}
 }
