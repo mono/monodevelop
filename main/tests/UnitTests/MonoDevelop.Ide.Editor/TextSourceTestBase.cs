@@ -94,7 +94,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		[Ignore ("Broken - FIXME")]
 		public void TestCreateReaderAt()
 		{
 			const string txt = "test";
@@ -104,7 +103,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		[Ignore ("Broken - FIXME")]
 		public void TestCreateReaderAt_Segment()
 		{
 			const string txt = "test";

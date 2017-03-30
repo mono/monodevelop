@@ -386,7 +386,7 @@ namespace Microsoft.VisualStudio.Platform
 
             _snapshot = textSnapshot;
             _currentPosition = offset;
-            _end = length;
+            _end = offset + length;
         }
 
         ITextSnapshot _snapshot;
