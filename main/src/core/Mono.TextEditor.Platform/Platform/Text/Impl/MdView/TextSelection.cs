@@ -13,9 +13,9 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using MonoDevelop.Ide.Editor;
 
-namespace WebToolingAddin
+namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
-    public class TextSelection : ITextSelection
+    internal class TextSelection : ITextSelection
     {
         private TextEditor _textEditor;
         private ITextView _textView;
@@ -231,4 +231,3 @@ namespace WebToolingAddin
         }
     }
 }
-

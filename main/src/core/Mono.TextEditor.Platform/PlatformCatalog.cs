@@ -61,26 +61,6 @@ namespace Microsoft.VisualStudio.Platform
             AggregateCatalog catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new AssemblyCatalog(typeof(PlatformCatalog).Assembly));
 
-            // Add other assemblies from which we expect to get MEF objects
-            // TODO: add some mechanism to allow these to be updated at runtime.
-            string[] assemblyNames =
-                {
-                "Microsoft.VisualStudio.Text.Logic"
-                };
-
-            foreach (string assemblyName in assemblyNames)
-            {
-                try
-                {
-                    var assembly = Assembly.Load(assemblyName);
-                    catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-                }
-                catch (Exception e)
-                {
-                    LoggingService.LogError("Workspace can't load assembly " + assemblyName + " to host mef services.", e);
-                }
-            }
-
             foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
             {
                 var assemblyNode = node as AssemblyExtensionNode;
@@ -88,8 +68,12 @@ namespace Microsoft.VisualStudio.Platform
                 {
                     try
                     {
+						// Make sure the add-in that registered the assembly is loaded, since it can bring other
+						// other assemblies required to load this one
+						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
+
                         var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = Assembly.LoadFrom(assemblyFilePath);
+                        var assembly = MonoDevelop.Core.Platform.AssemblyLoad(assemblyFilePath);
                         catalog.Catalogs.Add(new AssemblyCatalog(assembly));
                     }
                     catch (Exception e)
@@ -100,7 +84,10 @@ namespace Microsoft.VisualStudio.Platform
             }
 
             //Create the CompositionContainer with the parts in the catalog
-            CompositionContainer container = new CompositionContainer(catalog);
+            CompositionContainer container = new CompositionContainer(catalog,
+                                                                      CompositionOptions.DisableSilentRejection |
+                                                                      CompositionOptions.IsThreadSafe |
+                                                                      CompositionOptions.ExportCompositionService);
 
             return container;
         }

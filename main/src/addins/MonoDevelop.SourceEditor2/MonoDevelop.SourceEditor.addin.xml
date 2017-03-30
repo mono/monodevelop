@@ -1,12 +1,4 @@
 <ExtensionModel>
-	<Runtime>
-		<Import assembly="Microsoft.VisualStudio.CoreUtility.dll" />
-		<Import assembly="Microsoft.VisualStudio.Language.StandardClassification.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.Data.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.Logic.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
-	</Runtime>
-
 	<!-- Extension points --> 
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
@@ -197,5 +189,8 @@
 		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-completion" resource="prefs-completion-16.png" size="Menu" />
 	</Extension>
-	
+
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="MonoDevelop.SourceEditor.dll"/>
+	</Extension>
 </ExtensionModel>

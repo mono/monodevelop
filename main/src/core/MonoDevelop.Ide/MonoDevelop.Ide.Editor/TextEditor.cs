@@ -50,6 +50,8 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
+		public Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; }
+
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
@@ -968,6 +970,8 @@ namespace MonoDevelop.Ide.Editor
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
 
+			this.TextView.Close();
+
 			base.Dispose (disposing);
 		}
 
@@ -1037,6 +1041,8 @@ namespace MonoDevelop.Ide.Editor
 			FileNameChanged += TextEditor_FileNameChanged;
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
 			TextEditor_MimeTypeChanged (null, null);
+
+			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this) as Microsoft.VisualStudio.Text.Editor.ITextView;
 		}
 
 		void TextEditor_FileNameChanged (object sender, EventArgs e)
@@ -1408,7 +1414,7 @@ namespace MonoDevelop.Ide.Editor
 				projectedProviders.ForEach ((obj) => {
 					textEditorImpl.RemoveTooltipProvider (obj);
 					obj.Dispose ();
-                });
+				});
 
 				projectedProviders = new List<ProjectedTooltipProvider> ();
 				foreach (var projection in projections) {
@@ -1504,22 +1510,22 @@ namespace MonoDevelop.Ide.Editor
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public IndentationTracker IndentationTracker
-        {
-            get
-            {
-                Runtime.AssertMainThread();
-                return textEditorImpl.IndentationTracker;
-            }
-            set
-            {
-                Runtime.AssertMainThread();
-                textEditorImpl.IndentationTracker = value;
-            }
-        }
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public IndentationTracker IndentationTracker
+		{
+			get
+			{
+				Runtime.AssertMainThread();
+				return textEditorImpl.IndentationTracker;
+			}
+			set
+			{
+				Runtime.AssertMainThread();
+				textEditorImpl.IndentationTracker = value;
+			}
+		}
 
-        public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
+		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
 
 		public new void GrabFocus ()
 		{
