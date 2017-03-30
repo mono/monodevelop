@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static bool IsValidProjectNameCharacter (char c)
 		{
-			return Char.IsLetterOrDigit (c) || c == '.' || c == '_';
+			return Char.IsLetterOrDigit (c) || c == '.' || c == '_' || c == '-';
 		}
 
 		bool CreateSeparateSolutionDirectory {
