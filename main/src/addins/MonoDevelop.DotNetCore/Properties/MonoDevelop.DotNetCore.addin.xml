@@ -208,4 +208,8 @@
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
 		<Class class="MonoDevelop.DotNetCore.DotNetCoreRunConfigurationEditor" runConfigurationType="MonoDevelop.DotNetCore.DotNetCoreRunConfiguration" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Core/SystemInformation">
+		<Class class="MonoDevelop.DotNetCore.DotNetCoreSystemInformation" />
+	</Extension>
 </ExtensionModel>
