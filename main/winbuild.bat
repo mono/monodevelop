@@ -18,6 +18,8 @@ git submodule sync || goto :error
 git submodule update --init --recursive || goto :error
 "external\nuget-binary\NuGet.exe" restore Main.sln || goto :error
 
+"%MSBUILD_EXE%" external\fsharpbinding\.paket\paket.targets /t:RestorePackages /p:PaketReferences="%~dp0external\fsharpbinding\MonoDevelop.FSharpBinding\paket.references"
+
 set "CONFIG=DebugWin32"
 set "PLATFORM=Any CPU"
 
