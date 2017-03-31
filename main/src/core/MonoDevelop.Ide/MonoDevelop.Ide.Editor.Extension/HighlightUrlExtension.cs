@@ -76,7 +76,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var line = e.Line;
 			var lineOffset = line.Offset;
 			var lineEndOffset = lineOffset + line.Length;
-			var o = lineOffset;
 			if (lineEndOffset > input.Length || line.Length <= 0)
 				return;
 			if (scannedSegmentTree.GetSegmentsAt (lineOffset).Any ())
