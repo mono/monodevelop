@@ -555,9 +555,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string documentUrl, filename;
 			if (window.ViewContent.Project != null) {
-				Console.WriteLine ($"{window.ViewContent.Project.FileName}");
-				Console.WriteLine ($"{window.ViewContent.PathRelativeToProject}");
-
 				documentUrl = "file://" + window.ViewContent.Project.FileName;
 				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
 			} else {
@@ -576,13 +573,16 @@ namespace MonoDevelop.Ide.Gui
 				if (window != null) {
 					if (window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel == this)
 						Title = GetTitle (window);
+
+					SetAccessibilityDetails (window);
 				} else {
 					Title = GetDefaultTitle ();
 					if (IsInFullViewMode)
 						this.ToggleFullViewMode ();
+					Accessible.SetDocument ("");
+					Accessible.SetUrl ("");
 				}
 
-				SetAccessibilityDetails (window);
 			} catch (Exception) {
 				Title = GetDefaultTitle ();
 				Accessible.SetDocument ("");

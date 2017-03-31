@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Editor
 			editor.Text = "FooBarFoo";
 
 			var r = new Regex ("Bar");
-			var match = r.Match (editor);
+			var match = r.Match (editor.Text);
 			Assert.IsTrue (match.Success);
 			Assert.AreEqual ("Foo".Length, match.Groups [0].Index);
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor
 						".NET Base Class Library blog</A></P>"; ;
 
 			var HRefPattern = "href\\s*=\\s*(?:[\"'](?<1>[^\"']*)[\"']|(?<1>\\S+))";
-			var m = Regex.Match (editor, HRefPattern,
+			var m = Regex.Match (editor.Text, HRefPattern,
 				RegexOptions.IgnoreCase | RegexOptions.Compiled,
 				TimeSpan.FromSeconds (1));
 			int matches = 0;
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Editor
 			editor.Text = "FooBarFoo";
 
 			var r = new Regex ("B.r");
-			var match = r.Match (editor, "Foo".Length, editor.Length - "Foo".Length);
+			var match = r.Match (editor.Text, "Foo".Length, editor.Length - "Foo".Length);
 			Assert.IsTrue (match.Success);
 			Assert.AreEqual ("Foo".Length, match.Groups [0].Index);
 		}
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Editor
 
 			var r = new Regex ("^\\s*(using)\\s+([^ ;]*);");
 			var line = editor.GetLine (2);
-			var match = r.Match (editor, line.Offset, line.Length);
+			var match = r.Match (editor.Text, line.Offset, line.Length);
 			Assert.IsTrue (match.Success);
 		}
 	}

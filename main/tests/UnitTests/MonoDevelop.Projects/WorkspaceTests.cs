@@ -1,4 +1,4 @@
-// WorkspaceTests.cs
+﻿// WorkspaceTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -78,6 +78,8 @@ namespace MonoDevelop.Projects
 			cws1.Items.Remove (sol);
 			Assert.AreEqual (2, descItemsRemovedRoot);
 			Assert.AreEqual (1, itemsRemovedRoot);
+
+			ws.Dispose ();
 		}
 		
 		[Test()]
@@ -191,6 +193,8 @@ namespace MonoDevelop.Projects
 			
 			configs = ws.GetConfigurations ();
 			Assert.AreEqual (0, configs.Count);
+
+			ws.Dispose ();
 		}
 		
 		[Test()]
@@ -283,6 +287,9 @@ namespace MonoDevelop.Projects
 			
 			fi = sol2.FindProjectByName ("it2");
 			Assert.IsNull (fi);
+
+			ws.Dispose ();
+			cws.Dispose ();
 		}
 		
 		[Test]
@@ -339,6 +346,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, sol.Items.Count);
 			Assert.IsInstanceOf<Project> (sol.Items[0]);
+
+			ws.Dispose ();
 		}
 
 		[Test]
@@ -354,6 +363,8 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (ws.UserProperties.IsEmpty);
 			Assert.IsNotNull (userData);
 			Assert.AreEqual ("Release", userData.ActiveConfiguration);
+
+			ws.Dispose ();
 		}
 	}
 	

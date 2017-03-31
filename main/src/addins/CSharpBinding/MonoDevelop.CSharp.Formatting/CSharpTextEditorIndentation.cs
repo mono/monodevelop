@@ -199,32 +199,36 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			stateTracker.ResetEngineToPosition (Editor, e.Offset); 
-			if (wasInVerbatimString == null)
-				return;
-			if (e.RemovalLength != 1 /*|| textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format*/)
-				return;
-			SafeUpdateIndentEngine (Math.Min (Editor.Length, e.Offset + e.InsertionLength + 1));
-			if (wasInVerbatimString == true && !stateTracker.IsInsideVerbatimString) {
-				Editor.TextChanging -= HandleTextReplacing;
-				Editor.TextChanged -= HandleTextReplaced;
-				ConvertVerbatimStringToNormal (Editor, e.Offset + e.InsertionLength + 1);
-				Editor.TextChanging += HandleTextReplacing;
-				Editor.TextChanged += HandleTextReplaced;
+			foreach (var change in e.TextChanges) {
+				stateTracker.ResetEngineToPosition (Editor, change.NewOffset);
+				if (wasInVerbatimString == null)
+					return;
+				if (change.RemovalLength != 1 /*|| textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format*/)
+					return;
+				SafeUpdateIndentEngine (Math.Min (Editor.Length, change.NewOffset + change.InsertionLength + 1));
+				if (wasInVerbatimString == true && !stateTracker.IsInsideVerbatimString) {
+					Editor.TextChanging -= HandleTextReplacing;
+					Editor.TextChanged -= HandleTextReplaced;
+					ConvertVerbatimStringToNormal (Editor, change.NewOffset + change.InsertionLength + 1);
+					Editor.TextChanging += HandleTextReplacing;
+					Editor.TextChanged += HandleTextReplaced;
+				}
 			}
 		}
 
 		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			wasInVerbatimString = null;
-			var o = e.Offset + e.RemovalLength;
-			if (o < 0 || o + 1 > Editor.Length || e.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
-				return;
+			foreach (var change in e.TextChanges) {
+				var o = change.Offset + change.RemovalLength;
+				if (o < 0 || o + 1 > Editor.Length || change.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
+					continue;
+				}
+				if (Editor.GetCharAt (o) != '"')
+					continue;
+				SafeUpdateIndentEngine (o + 1);
+				wasInVerbatimString = stateTracker.IsInsideVerbatimString;
 			}
-			if (Editor.GetCharAt (o) != '"')
-				return;
-			SafeUpdateIndentEngine (o + 1);
-			wasInVerbatimString = stateTracker.IsInsideVerbatimString;
 		}
 
 		internal static string ConvertToStringLiteral (string text)

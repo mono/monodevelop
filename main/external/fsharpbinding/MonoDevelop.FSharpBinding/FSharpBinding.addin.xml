@@ -58,8 +58,8 @@
     <Parser class = "MonoDevelop.FSharp.FSharpFoldingParser" mimeType="text/x-fsharp" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpTooltipProvider" mimeType="text/x-fsharp" />
+  <Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+    <Provider id="FSharp" class="MonoDevelop.FSharp.FSharpTooltipProvider" mimeType="text/x-fsharp" />
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
@@ -144,6 +144,11 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+    <Policies resource="FSharpStylePolicy.xml" />
+    <Policies resource="FSharpFormattingPolicy.xml" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Default" >
     <Policies resource="FSharpStylePolicy.xml" />
     <Policies resource="FSharpFormattingPolicy.xml" />
   </Extension>

@@ -51,7 +51,7 @@ namespace MonoDevelop.Gettext
 			
 			StringBuilder files = new StringBuilder ();
 			foreach (Translation t in project.Translations) {
-				files.Append ("\\\n\t" + t.FileName);
+				files.Append ("\\\n\t").Append (t.FileName);
 			}
 			
 			string dir;

@@ -103,10 +103,11 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			int offset = 0;
 			var foldStack = new Stack<int> ();
 			foreach (var line in doc.GetLines ()) {
-				var startMatch = foldingStartMarker.Match (doc, offset, line.Length);
-				var stopMatch = foldingStopMarker.Match (doc, offset, line.Length);
+				var lineText = doc.GetTextAt (offset, line.Length);
+				var startMatch = foldingStartMarker.Match (lineText);
+				var stopMatch = foldingStopMarker.Match (lineText);
 				if (startMatch.Success && !stopMatch.Success) {
-					foldStack.Push (startMatch.Index);
+					foldStack.Push (offset + startMatch.Index);
 				} else if (!startMatch.Success && stopMatch.Success) {
 					if (foldStack.Count > 0) {
 						int start = foldStack.Pop ();

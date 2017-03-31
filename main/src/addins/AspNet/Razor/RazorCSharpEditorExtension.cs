@@ -138,23 +138,25 @@ namespace MonoDevelop.AspNet.Razor
 				return;
 
 			EnsureUnderlyingDocumentSet ();
-			int off = CalculateCaretPosition (e.Offset);
+			foreach (var change in e.TextChanges.Reverse ()) {
+				int off = CalculateCaretPosition (change.Offset);
 
-			if (e.RemovalLength > 0) {
-				int removalLength = e.RemovalLength;
-				if (off + removalLength > HiddenDoc.Editor.Length)
-					removalLength = HiddenDoc.Editor.Length - off;
-				HiddenDoc.Editor.RemoveText (off, removalLength);
+				if (change.RemovalLength > 0) {
+					int removalLength = change.RemovalLength;
+					if (off + removalLength > HiddenDoc.Editor.Length)
+						removalLength = HiddenDoc.Editor.Length - off;
+					HiddenDoc.Editor.RemoveText (off, removalLength);
+				}
+				if (change.InsertionLength > 0) {
+					if (isInCSharpContext) {
+						HiddenDoc.Editor.InsertText (off, change.InsertedText.Text);
+						HiddenDoc.HiddenAnalysisDocument = HiddenDoc.HiddenAnalysisDocument.WithText (Microsoft.CodeAnalysis.Text.SourceText.From (HiddenDoc.Editor.Text));
+					} else // Insert spaces to correctly calculate offsets until next reparse
+						HiddenDoc.Editor.InsertText (off, new String (' ', change.InsertionLength));
+				}
+				if (codeFragment != null)
+					codeFragment.EndOffset += (change.InsertionLength - change.RemovalLength);
 			}
-			if (e.InsertionLength > 0) {
-				if (isInCSharpContext) {
-					HiddenDoc.Editor.InsertText (off, e.InsertedText.Text);
-					HiddenDoc.HiddenAnalysisDocument = HiddenDoc.HiddenAnalysisDocument.WithText (Microsoft.CodeAnalysis.Text.SourceText.From (HiddenDoc.Editor.Text));
-				} else // Insert spaces to correctly calculate offsets until next reparse
-					HiddenDoc.Editor.InsertText (off, new String (' ', e.InsertionLength));
-			}
-			if (codeFragment != null)
-				codeFragment.EndOffset += (e.InsertionLength - e.RemovalLength);
 		}
 
 		protected override void OnParsedDocumentUpdated ()

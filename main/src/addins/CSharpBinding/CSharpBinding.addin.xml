@@ -279,8 +279,8 @@
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="CSharp" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" mimeType="text/x-csharp" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">

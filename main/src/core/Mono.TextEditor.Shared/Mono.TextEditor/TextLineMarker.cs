@@ -107,14 +107,11 @@ namespace Mono.TextEditor
 
 	class TextLineMarker
 	{
-		DocumentLine lineSegment;
+		internal TextDocument.DocumentLineTextSegmentMarker parent { get; set; }
 
 		public DocumentLine LineSegment {
 			get {
-				return lineSegment;
-			}
-			set {
-				lineSegment = value;
+				return parent?.LineSegment;
 			}
 		}
 

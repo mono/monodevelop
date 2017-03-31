@@ -27,11 +27,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 using MonoDevelop.Core;
 using System.Threading;
 using YamlDotNet.Core.Tokens;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -53,8 +53,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override void Dispose ()
 		{
+			Editor.LineShown -= Editor_LineShown;
+			Editor.TextChanged -= Editor_TextChanged;
 			src.Cancel ();
 			DisposeUrlTextMarker ();
+			base.Dispose ();
 		}
 
 		void DisposeUrlTextMarker ()
@@ -76,37 +79,37 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var o = lineOffset;
 			if (lineEndOffset > input.Length || line.Length <= 0)
 				return;
-			if (scannedSegmentTree.GetSegmentsAt (o).Any ())
+			if (scannedSegmentTree.GetSegmentsAt (lineOffset).Any ())
 				return;
+			var o = 0;
+			string lineText = input.GetTextAt (lineOffset, line.Length);
 			
-			var match = UrlRegex.Match (input, lineOffset, line.Length);
+			var match = UrlRegex.Match (lineText);
 			while (match.Success) {
 				matches.Add (Tuple.Create (UrlType.Url, match));
-				o = lineOffset + match.Index + match.Length;
-				var len = lineEndOffset - o;
+				o = match.Index + match.Length;
+				var len = line.Length - o;
 				if (len <= 0)
 					break;
-				match = UrlRegex.Match (input, o, len);
+				match = UrlRegex.Match (lineText, o, len);
 			}
 
-			o = lineOffset;
-			match = MailRegex.Match (input, lineOffset, line.Length);
+			o = 0;
+			match = MailRegex.Match (lineText);
 			while (match.Success) {
 				matches.Add (Tuple.Create (UrlType.Email, match));
-				var delta = line.Offset - o + match.Length;
-				o += delta;
-				o = lineOffset + match.Index + match.Length;
-				var len = lineEndOffset - o;
+				o = match.Index + match.Length;
+				var len = line.Length - o;
 				if (len <= 0)
 					break;
-				match = MailRegex.Match (input, o, len);
+				match = MailRegex.Match (lineText, o, len);
 			}
 			var newSegment = new TextMarkerSegment (line);
 			scannedSegmentTree.Add (newSegment);
 			foreach (var m in matches) {
-				var startCol = m.Item2.Index - line.Offset;
+				var startCol = m.Item2.Index;
 				var url = m.Item2.Value;
-				var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, line, url, m.Item1, "url", startCol, startCol + m.Item2.Length);
+				var marker = Editor.TextMarkerFactory.CreateUrlTextMarker (Editor, url, m.Item1, "url", startCol, startCol + m.Item2.Length);
 				Editor.AddMarker (line, marker);
 				newSegment.UrlTextMarker.Add (marker);
 			}
@@ -114,16 +117,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void Editor_TextChanged (object sender, TextChangeEventArgs e)
 		{
-			var startLine = e != null ? Editor.GetLineByOffset (e.Offset) : Editor.GetLine (1);
-			int startLineOffset = startLine.Offset;
+			foreach (var change in e.TextChanges) {
+				var startLine = Editor.GetLineByOffset (change.NewOffset);
+				int startLineOffset = startLine.Offset;
 
-			var segments = scannedSegmentTree.GetSegmentsOverlapping(e.Offset, e.RemovalLength).ToList ();
-			foreach (var seg in segments) {
-				foreach  (var u in seg.UrlTextMarker) {
-					Editor.RemoveMarker (u);
+				var segments = scannedSegmentTree.GetSegmentsOverlapping (change.NewOffset, change.RemovalLength).ToList ();
+				foreach (var seg in segments) {
+					foreach (var u in seg.UrlTextMarker) {
+						Editor.RemoveMarker (u);
+					}
+					scannedSegmentTree.Remove (seg);
 				}
-				scannedSegmentTree.Remove (seg);
 			}
+
 			scannedSegmentTree.UpdateOnTextReplace (sender, e);
 		}
 

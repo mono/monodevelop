@@ -182,25 +182,20 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var wasSelected = Editor.IsSomethingSelected;
 				var lead = Editor.SelectionLeadOffset;
 				var anchor = Editor.SelectionAnchorOffset;
-				var lineAndIndents = new List<Tuple<IDocumentLine, string>>();
 				string indent = null;
 				var oldVersion = Editor.Version;
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+
 				foreach (var line in GetSelectedLines (Editor)) {
 					var curIndent = line.GetIndentation (Editor);
 					if (line.Length == curIndent.Length) {
-						lineAndIndents.Add (Tuple.Create ((IDocumentLine)null, ""));
 						continue;
 					}
 					if (indent == null || curIndent.Length < indent.Length)
 						indent = curIndent;
-					lineAndIndents.Add (Tuple.Create (line, curIndent));
+					changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (line.Offset + indent.Length, 0), commentTag));
 				}
-
-				foreach (var line in lineAndIndents) {
-					if (line.Item1 == null)
-						continue;
-					Editor.InsertText (line.Item1.Offset + indent.Length, commentTag);
-				}
+				Editor.ApplyTextChanges (changes);
 				if (wasSelected) {
 					Editor.SelectionAnchorOffset = oldVersion.MoveOffsetTo (Editor.Version, anchor);
 					Editor.SelectionLeadOffset = oldVersion.MoveOffsetTo (Editor.Version, lead);
@@ -224,10 +219,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 				//IDocumentLine first = null;
 				IDocumentLine last  = null;
 				var oldVersion = Editor.Version;
+				var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
+				
 				foreach (var line in GetSelectedLines (Editor)) {
 					int startOffset;
 					if (StartsWith (Editor, line.Offset, line.Length, commentTag, out startOffset)) {
-						Editor.RemoveText (startOffset, commentTag.Length);
+						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (startOffset, commentTag.Length), ""));
 						lines++;
 					}
 
@@ -235,7 +232,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 					if (last == null)
 						last = line;
 				}
-
+				Editor.ApplyTextChanges (changes);
+				
 				if (wasSelected) {
 					//					if (IdeApp.Workbench != null)
 					//						CodeFormatterService.Format (Editor, IdeApp.Workbench.ActiveDocument, TextSegment.FromBounds (first.Offset, last.EndOffset));

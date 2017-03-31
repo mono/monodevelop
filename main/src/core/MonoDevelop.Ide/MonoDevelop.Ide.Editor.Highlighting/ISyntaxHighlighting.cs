@@ -36,13 +36,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class HighlightedLine
 	{
+		public ISegment TextSegment { get; }
 		/// <summary>
 		/// The segment offsets are 0 at line start regardless of where the line is inside the document.
 		/// </summary>
 		public IReadOnlyList<ColoredSegment> Segments { get; private set; }
-
-		public HighlightedLine (IReadOnlyList<ColoredSegment> segments)
+		public HighlightedLine (ISegment textSegment, IReadOnlyList<ColoredSegment> segments)
 		{
+			TextSegment = textSegment;
 			Segments = segments;
 		}
 	}
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
+			return Task.FromResult (new HighlightedLine (line, new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
 		}
 
 		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)

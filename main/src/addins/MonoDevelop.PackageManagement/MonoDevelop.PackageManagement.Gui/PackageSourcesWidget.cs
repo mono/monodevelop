@@ -7,6 +7,8 @@ using Gtk;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,6 +51,9 @@ namespace MonoDevelop.PackageManagement
 		void InitializeTreeView ()
 		{
 			packageSourcesStore = new ListStore (typeof (object), typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Data", "store__Selected",
+				"store__IconId", "store__Model");
+			TypeDescriptor.AddAttributes (packageSourcesStore, modelAttr);
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.SearchColumn = -1; // disable the interactive search
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());

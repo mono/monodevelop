@@ -85,7 +85,7 @@ namespace MonoDevelop.Components
 		{
 			if (!string.IsNullOrEmpty (tip)) {
 				HideTooltip ();
-				tooltipWindow = new TooltipPopoverWindow ();
+				tooltipWindow = TooltipPopoverWindow.Create ();
 				tooltipWindow.ShowArrow = true;
 				tooltipWindow.Text = tip;
 				tooltipWindow.Severity = Severity;

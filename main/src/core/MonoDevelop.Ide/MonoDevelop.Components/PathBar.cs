@@ -73,17 +73,19 @@ namespace MonoDevelop.Components
 			set;
 		}
 
+		AtkCocoaHelper.AccessibilityElementProxy accessible;
 		internal AtkCocoaHelper.AccessibilityElementProxy Accessible {
-			get;
-			set;
-		}
+			get {
+				if (accessible == null) {
+					accessible = AccessibilityElementProxy.ButtonElementProxy ();
+					accessible.Identifier = "Breadcrumb";
+					accessible.PerformPress += OnPerformShowMenu;
 
-		PathEntry ()
-		{
-			//Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
-			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
-			Accessible.Identifier = "Breadcrumb";
-			Accessible.PerformPress += OnPerformShowMenu;
+					// FIXME: Remove markup from this string?
+					accessible.Label = Markup;
+				}
+				return accessible;
+			}
 		}
 
 		public PathEntry (Xwt.Drawing.Image icon, string markup) : this (markup)
@@ -91,12 +93,9 @@ namespace MonoDevelop.Components
 			this.Icon = icon;
 		}
 		
-		public PathEntry (string markup) : this ()
+		public PathEntry (string markup)
 		{
 			this.Markup = markup;
-
-			// FIXME: Remove markup from this string?
-			Accessible.Label = markup;
 		}
 		
 		public override bool Equals (object obj)

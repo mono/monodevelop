@@ -297,7 +297,9 @@ namespace MonoDevelop.Ide.Projects
 				project = parentProject;
 			
 			var templates = FileTemplate.GetFileTemplates (project, basePath);
-			templates.Sort ((FileTemplate t, FileTemplate u) => string.Compare (t.Name, u.Name));
+
+			// stable sort, to ensure the template ordering is maintained among templates with the same name
+			templates = templates.OrderBy(t => t.Name).ToList();
 			
 			foreach (var template in templates) {
 				List<string> langs = template.GetCompatibleLanguages (project, basePath);
@@ -383,8 +385,11 @@ namespace MonoDevelop.Ide.Projects
 		{
 			iconView.Clear ();
 			var list = (List<TemplateItem>)(catStore.GetValue (iter, 2));
+			var itemNames = new HashSet<string>();
 			foreach (TemplateItem item in list) {
-				iconView.Add (item);
+				if (itemNames.Add(item.Name)) {
+					iconView.Add(item);
+				}
 			}
 
 			// select first template

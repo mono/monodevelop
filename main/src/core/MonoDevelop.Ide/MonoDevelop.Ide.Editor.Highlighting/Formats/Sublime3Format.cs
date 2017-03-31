@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		class CharacterClass
 		{
-			bool first = true;
+			bool first = true, firstInSubClass = false;
 			bool negativeGroup;
 			StringBuilder wordBuilder;
 			StringBuilder unicodeGroupBuilder = new StringBuilder ();
@@ -228,6 +228,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						wordBuilder = new StringBuilder ();
 						subClass = new CharacterClass ();
 						subClass.Add (':');
+						firstInSubClass = true;
 					} else {
 						if (wordBuilder != null) {
 							ConvertUnicodeCategory (wordBuilder.ToString ());
@@ -238,7 +239,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					break;
 				case '^':
-					if (first) {
+					if (first || firstInSubClass) {
+						firstInSubClass = false;
 						negativeGroup = true;
 						break;
 					}
@@ -600,6 +602,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					AddRange ('a', 'z');
 					AddRange ('A', 'Z');
 					AddRange ('0', '9');
+					break;
+				case "ascii":
+					AddRange ((char)0, (char)127);
 					break;
 				case "alpha": // Alphabetic character
 					AddRange ('a', 'z');

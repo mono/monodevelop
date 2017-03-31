@@ -142,6 +142,7 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdk.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntime.cs" />
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdks.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSystemInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
@@ -218,25 +219,13 @@
         <Url>$(NuGetUrl)Microsoft.DotNet.Common.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
         <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Common.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
       </NuGetPackage>
-      <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.0">
-        <Url>$(NuGetUrl)Microsoft.DotNet.Common.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
-        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Common.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
-      </NuGetPackage>
       <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.1.x">
         <Url>$(NuGetUrl)Microsoft.DotNet.Test.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
         <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Test.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
       </NuGetPackage>
-      <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
-        <Url>$(NuGetUrl)Microsoft.DotNet.Test.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
-        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Test.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
-      </NuGetPackage>
       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
         <Url>$(NuGetUrl)Microsoft.DotNet.Web.ProjectTemplates.1.x/$(TemplatesVersion)</Url>
         <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Web.ProjectTemplates.1.x.$(TemplatesVersion).nupkg</OutputPackage>
-      </NuGetPackage>
-      <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
-        <Url>$(NuGetUrl)Microsoft.DotNet.Web.ProjectTemplates.2.0/$(TemplatesVersion)</Url>
-        <OutputPackage>$(OutputPath)Templates\Microsoft.DotNet.Web.ProjectTemplates.2.0.$(TemplatesVersion).nupkg</OutputPackage>
       </NuGetPackage>
     </ItemGroup>
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\pull-package.exe %(NuGetPackage.Url) %(NuGetPackage.OutputPackage)" Condition="!Exists('%(NuGetPackage.OutputPackage)')" WorkingDirectory="$(MSBuildProjectDirectory)" />

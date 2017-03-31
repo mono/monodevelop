@@ -34,12 +34,12 @@ namespace MonoDevelop.Ide.Editor
 	[TestFixture]
 	public abstract class TextEditorTestBase : TextDocumentTestBase
 	{
-		protected sealed override ITextDocument CreateTextDocument (string text, Encoding enc = null, bool useBom = false)
+		protected sealed override ITextDocument CreateTextDocument (string text, Encoding enc = null)
 		{
-			return CreateTextEditor (text, enc, useBom);
+			return CreateTextEditor (text, enc);
 		}
 
-		protected abstract TextEditor CreateTextEditor (string text, Encoding enc = null, bool useBom = false);
+		protected abstract TextEditor CreateTextEditor (string text, Encoding enc = null);
 	}
 
 }

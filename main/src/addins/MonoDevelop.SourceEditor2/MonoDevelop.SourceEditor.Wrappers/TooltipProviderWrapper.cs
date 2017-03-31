@@ -92,7 +92,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return item;
 		}
 
-		public override bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
+		public override bool IsInteractive (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
@@ -100,7 +100,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return provider.IsInteractive (wrappedEditor, tipWindow);
 		}
 
-		public override Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, MonoDevelop.Ide.Editor.TooltipItem item)
+		public override Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, Ide.Editor.TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
@@ -108,10 +108,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, item, offset, modifierState.ToXwtValue ());
 			if (control == null)
 				return null;
-			return (Gtk.Window)control;
+			return control;
 		}
 
-		protected override void GetRequiredPosition (MonoTextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (MonoTextEditor editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null) {
@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			provider.GetRequiredPosition (wrappedEditor, tipWindow, out requiredWidth, out xalign);
 		}
 
-		public override Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, MonoDevelop.Ide.Editor.TooltipItem item)
+		public override Xwt.WindowFrame ShowTooltipWindow (MonoTextEditor editor, Xwt.WindowFrame tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, Ide.Editor.TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null) {

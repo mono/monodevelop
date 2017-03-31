@@ -1,4 +1,4 @@
-// SolutionTests.cs
+﻿// SolutionTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -160,6 +160,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (2, countReferenceRemovedFromProject);
 			Assert.AreEqual (3, countSolutionItemAdded);
 			Assert.AreEqual (3, countSolutionItemRemoved);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -198,6 +200,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test4", sol.Name);
 			Assert.AreEqual (Path.Combine (tmp, "test4.sln"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -253,6 +257,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
+
+			prj.Dispose ();
 		}
 		
 		[Test()]
@@ -306,6 +312,8 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (Util.GetMonitor ());
 			
 			Assert.IsTrue (sol3.NeedsReload);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -322,6 +330,8 @@ namespace MonoDevelop.Projects
 			await lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2);
 			
 			Assert.AreEqual (3, p.References.Count);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -352,6 +362,8 @@ namespace MonoDevelop.Projects
 
 			p = (DotNetProject) await p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
 			Assert.AreSame (sol.StartupItem, p);
+
+			sol.Dispose ();
 		}
 
 		[Test()]
@@ -380,6 +392,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (files.Contains (p.FileName));
 			foreach (ProjectFile pf in p.Files)
 				Assert.IsTrue (files.Contains (pf.FilePath), "Contains " + pf.FilePath);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -423,6 +437,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -570,6 +586,8 @@ namespace MonoDevelop.Projects
 			
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -610,6 +628,8 @@ namespace MonoDevelop.Projects
 			await CheckProjectBuildClean (lib3, "Release");
 			await CheckProjectBuildClean (lib4, "Debug");
 			await CheckProjectBuildClean (lib4, "Release");
+
+			sol.Dispose ();
 		}
 		
 		async Task CheckSolutionBuildClean (Solution sol, string configuration)
@@ -719,6 +739,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 			Assert.AreEqual (solText, File.ReadAllLines (solFile));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -747,6 +769,8 @@ namespace MonoDevelop.Projects
 			// Regular project not referencing anything else. Should build.
 			res = await app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
 			Assert.IsTrue (res.ErrorCount == 0);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -796,6 +820,8 @@ namespace MonoDevelop.Projects
 			lib1 = sol.FindProjectByName ("library1");
 			Assert.IsNotNull (lib1);
 			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -890,6 +916,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, item.UnboundEvents);
 			Assert.AreEqual (0, item.InternalItem.BoundEvents);
 			Assert.AreEqual (1, item.InternalItem.UnboundEvents);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -935,6 +963,8 @@ namespace MonoDevelop.Projects
 			Assert.AreNotEqual (lib2, lib2Reloaded);
 			Assert.IsTrue (p.ItemDependencies.Contains (lib2Reloaded));
 			Assert.AreEqual (1, p.ItemDependencies.Count);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -957,6 +987,7 @@ namespace MonoDevelop.Projects
 				var savedFile = solFile + ".saved.sln";
 				await sol.SaveAsync (savedFile, Util.GetMonitor ());
 				Assert.AreEqual (File.ReadAllText (solFile), File.ReadAllText (savedFile));
+				sol.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -978,6 +1009,7 @@ namespace MonoDevelop.Projects
 				Assert.NotNull (ext.Extra);
 				Assert.AreEqual ("three", ext.Extra.Prop3);
 				Assert.AreEqual ("four", ext.Extra.Prop4);
+				sol.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -1004,6 +1036,8 @@ namespace MonoDevelop.Projects
 
 				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
 
+				sol.Dispose ();
+
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -1028,6 +1062,8 @@ namespace MonoDevelop.Projects
 				await sol.SaveAsync (Util.GetMonitor ());
 
 				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
+
+				sol.Dispose ();
 
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);

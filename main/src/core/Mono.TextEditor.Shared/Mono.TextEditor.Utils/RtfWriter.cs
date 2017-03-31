@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Utils
 					int color = colorList.IndexOf (foreground);
 					if (curColor != color) {
 						curColor = color;
-						rtfText.Append (@"\cf" + (curColor + 1));
+						rtfText.Append (@"\cf").Append (curColor + 1);
 						appendSpace = true;
 					}
 					AppendRtfText (rtfText, chunk.Text, ref appendSpace);
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Utils
 
 			rtf.AppendLine (@"{\rtf1\ansi\deff0\adeflang1025");
 			rtf.AppendLine (@"{\fonttbl");
-			rtf.AppendLine (@"{\f0\fnil\fprq1\fcharset128 " + options.Font.Family + ";}");
+			rtf.Append (@"{\f0\fnil\fprq1\fcharset128 ").Append (options.Font.Family).AppendLine (";}");
 			rtf.AppendLine ("}");
 			rtf.Append (CreateColorTable (colorList));
 			rtf.AppendLine (@"\viewkind4\uc1\pard");

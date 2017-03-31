@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor
 	[TestFixture]
 	public abstract class TextSourceTestBase : TestBase
 	{
-		protected abstract ITextSource CreateTextSource (string text, Encoding enc = null, bool useBom = false);
+		protected abstract ITextSource CreateTextSource (string text, Encoding enc = null);
 
 		[Test]
 		public void TestTextProperty()

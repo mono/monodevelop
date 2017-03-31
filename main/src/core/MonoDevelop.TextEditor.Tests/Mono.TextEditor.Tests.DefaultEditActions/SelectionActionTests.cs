@@ -185,7 +185,7 @@ namespace Mono.TextEditor.Tests.Actions
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
 			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.Length);
-			Assert.AreEqual (loc, data.Caret.Location);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Caret.Offset);
 		}
 
 		[Test()]

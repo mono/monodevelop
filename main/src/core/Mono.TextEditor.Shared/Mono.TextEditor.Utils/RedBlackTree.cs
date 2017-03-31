@@ -487,8 +487,8 @@ namespace Mono.TextEditor.Utils
 
 		static void AppendNode (StringBuilder builder, IRedBlackTreeNode node, int indent)
 		{
-			builder.Append (GetIndent (indent) + "Node (" + (node.Color == RedBlackColor.Red ? "r" : "b") + "):" + node + Environment.NewLine);
-			builder.Append (GetIndent (indent) + "Left: ");
+			builder.Append (GetIndent (indent)).Append ("Node (").Append ((node.Color == RedBlackColor.Red ? "r" : "b")).Append ("):").AppendLine (node.ToString ());
+			builder.Append (GetIndent (indent)).Append ("Left: ");
 			if (node.Left != null) {
 				builder.Append (Environment.NewLine);
 				AppendNode (builder, node.Left, indent + 1);
@@ -497,7 +497,7 @@ namespace Mono.TextEditor.Utils
 			}
 			
 			builder.Append (Environment.NewLine);
-			builder.Append (GetIndent (indent) + "Right: ");
+			builder.Append (GetIndent (indent)).Append ("Right: ");
 			if (node.Right != null) {
 				builder.Append (Environment.NewLine);
 				AppendNode (builder, node.Right, indent + 1);

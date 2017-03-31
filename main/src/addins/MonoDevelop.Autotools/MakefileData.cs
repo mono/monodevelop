@@ -1304,7 +1304,7 @@ namespace MonoDevelop.Autotools
 						varFound = true;
 					}
 					else
-						sb.Append ("$(" + varname + ")");
+						sb.Append ("$(").Append (varname).Append (")");
 					i = j;
 				}
 			}

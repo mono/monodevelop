@@ -36,14 +36,14 @@ namespace MonoDevelop.Components
 		Xwt.ImageView imageView;
 		string message;
 		TooltipPopoverWindow popover;
-		PopupPosition popupPosition;
+		PopupPosition popupPosition = PopupPosition.Top;
 
 		public InformationPopoverWidget ()
 		{
 			severity = TaskSeverity.Information;
 			imageView = new Xwt.ImageView ();
-			Content = imageView;
 			UpdateIcon ();
+			Content = imageView;
 		}
 
 		public TaskSeverity Severity {
@@ -85,11 +85,11 @@ namespace MonoDevelop.Components
 		{
 			switch (severity) {
 			case TaskSeverity.Error:
-				return ImageService.GetIcon ("md-error");
+				return ImageService.GetIcon ("md-error", Gtk.IconSize.Menu);
 			case TaskSeverity.Warning:
-				return ImageService.GetIcon ("md-warning");
+				return ImageService.GetIcon ("md-warning", Gtk.IconSize.Menu);
 			}
-			return ImageService.GetIcon ("md-information");
+			return ImageService.GetIcon ("md-information", Gtk.IconSize.Menu);
 		}
 
 		protected override void OnMouseEntered (EventArgs args)
@@ -102,12 +102,11 @@ namespace MonoDevelop.Components
 		{
 			if (popover != null)
 				popover.Destroy ();
-			popover = new TooltipPopoverWindow {
-				ShowArrow = true,
-				Text = message,
-				Severity = severity
-			};
-			popover.ShowPopup ((Gtk.Widget)this.Surface.NativeWidget, popupPosition);
+			popover = TooltipPopoverWindow.Create ();
+			popover.ShowArrow = true;
+			popover.Text = message;
+			popover.Severity = severity;
+			popover.ShowPopup (this, popupPosition);
 		}
 
 		void UpdatePopover ()
@@ -119,10 +118,22 @@ namespace MonoDevelop.Components
 		protected override void OnMouseExited (EventArgs args)
 		{
 			base.OnMouseExited (args);
+			DestroyPopover ();
+		}
+
+		void DestroyPopover ()
+		{
 			if (popover != null) {
 				popover.Destroy ();
 				popover = null;
 			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing)
+				DestroyPopover ();
+			base.Dispose (disposing);
 		}
 	}
 }

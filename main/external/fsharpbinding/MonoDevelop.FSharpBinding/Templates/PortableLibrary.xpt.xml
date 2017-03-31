@@ -35,7 +35,7 @@
 			<References>
 			</References>
       <Packages>
-        <Package Id="FSharp.Core" Version="4.0.0.1" local="true" /> 
+        <Package Id="FSharp.Core" Version="4.1.0.2" local="true" /> 
       </Packages>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />

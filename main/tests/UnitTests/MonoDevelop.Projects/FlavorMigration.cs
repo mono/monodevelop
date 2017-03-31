@@ -83,6 +83,7 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			Assert.IsFalse (((Project)p).HasFlavor<NewFlavor> ());
 			Assert.IsTrue (((Project)p).HasFlavor<ObsoleteFlavor> ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -95,6 +96,7 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			Assert.IsTrue (((Project)p).HasFlavor<NewFlavor> ());
 			Assert.IsFalse (((Project)p).HasFlavor<ObsoleteFlavor> ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -108,6 +110,7 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			Assert.IsFalse (((Project)p).HasFlavor<NewFlavor> ());
 			Assert.IsTrue (((Project)p).HasFlavor<ObsoleteFlavor> ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -121,6 +124,7 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			Assert.IsTrue (((Project)p).HasFlavor<NewFlavor> ());
 			Assert.IsFalse (((Project)p).HasFlavor<ObsoleteFlavor> ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -134,6 +138,7 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			Assert.IsTrue (((Project)p).HasFlavor<NewFlavor> ());
 			Assert.IsFalse (((Project)p).HasFlavor<ObsoleteFlavor> ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -146,6 +151,7 @@ namespace MonoDevelop.Projects
 				var m = new CustomProjectLoadProgressMonitor { ShouldMigrateValue = MigrationType.Ignore };
 				var p = await LoadProject (m);
 				Assert.IsInstanceOf<UnknownSolutionItem> (p);
+				p.Dispose ();
 			} finally {
 				migrator.IsMigrationRequired = false;
 			}
@@ -163,6 +169,7 @@ namespace MonoDevelop.Projects
 				Assert.IsInstanceOf<Project> (p);
 				Assert.IsTrue (((Project)p).HasFlavor<NewFlavor> ());
 				Assert.IsFalse (((Project)p).HasFlavor<ObsoleteFlavor> ());
+				p.Dispose ();
 			} finally {
 				migrator.IsMigrationRequired = false;
 			}
@@ -180,6 +187,7 @@ namespace MonoDevelop.Projects
 				var p = await LoadProject (m);
 				Assert.IsTrue (((Project)p).HasFlavor<NewFlavor> ());
 				Assert.IsFalse (((Project)p).HasFlavor<ObsoleteFlavor> ());
+				p.Dispose ();
 			} finally {
 				migrator.IsMigrationRequired = false;
 			}
@@ -195,6 +203,7 @@ namespace MonoDevelop.Projects
 				var m = new CustomProjectLoadProgressMonitor { ShouldMigrateValue = MigrationType.Migrate };
 				var p = await LoadProject (m);
 				Assert.IsInstanceOf<UnknownSolutionItem> (p);
+				p.Dispose ();
 			} finally {
 				migrator.IsMigrationRequired = false;
 			}
@@ -210,6 +219,7 @@ namespace MonoDevelop.Projects
 				var m = new CustomProjectLoadProgressMonitor { ShouldMigrateValue = MigrationType.Migrate };
 				var p = await LoadProject (m);
 				Assert.IsInstanceOf<UnknownSolutionItem> (p);
+				p.Dispose ();
 			} finally {
 				migrationHandler.MigrationResult = true;
 			}

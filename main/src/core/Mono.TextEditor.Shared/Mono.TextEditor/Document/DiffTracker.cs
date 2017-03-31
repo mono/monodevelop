@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -68,38 +69,42 @@ namespace Mono.TextEditor
 		{
 			if (lineStates == null)
 				return;
-			var startLine = trackDocument.GetLineByOffset (e.Offset);
-			var endRemoveLine = trackDocument.GetLineByOffset (e.Offset + e.RemovalLength);
-			if (startLine == null || endRemoveLine == null)
-				return;
-			try {
-				var lineNumber = startLine.LineNumber;
-				lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
-			} catch (Exception ex) {
-				Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanging:" + ex);
+			for(int i = e.TextChanges.Count - 1; i >= 0; i--) {
+				var change = e.TextChanges[i];
+				var startLine = trackDocument.GetLineByOffset (change.Offset);
+				var endRemoveLine = trackDocument.GetLineByOffset (change.Offset + change.RemovalLength);
+				if (startLine == null || endRemoveLine == null)
+					continue;
+				try {
+					var lineNumber = startLine.LineNumber;
+					lineStates.RemoveRange (lineNumber, endRemoveLine.LineNumber - lineNumber);
+				} catch (Exception ex) {
+					Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanging:" + ex);
+				}
 			}
 		}
 
 		void TrackDocument_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			var startLine = trackDocument.GetLineByOffset (e.Offset);
-			var endLine = trackDocument.GetLineByOffset (e.Offset + e.InsertionLength);
-			var lineNumber = startLine.LineNumber;
-			var insertedLines = endLine.LineNumber - lineNumber;
-			try {
-				lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
-				if (trackDocument != null)
-					trackDocument.CommitLineUpdate (lineNumber);
-				while (insertedLines-- > 0) {
-					lineStates.Insert (lineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+			foreach (var change in e.TextChanges) {
+				var startLine = trackDocument.GetLineByOffset (change.NewOffset);
+				var endLine = trackDocument.GetLineByOffset (change.NewOffset + change.InsertionLength);
+				var lineNumber = startLine.LineNumber;
+				var insertedLines = endLine.LineNumber - lineNumber;
+				try {
+					lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
+					if (trackDocument != null)
+						trackDocument.CommitLineUpdate (lineNumber);
+					while (insertedLines-- > 0) {
+						lineStates.Insert (lineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+					}
+				} catch (Exception ex) {
+					Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
 				}
-			} catch (Exception ex) {
-				Console.WriteLine ("error while DiffTracker.TrackDocument_TextChanged:" + ex);
 			}
-
 		}
 
-		public void SetBaseDocument (TextDocument document)
+		public void SetBaseDocument (IReadonlyTextDocument document)
 		{
 			if (lineStates != null) {
 				foreach (var node in lineStates.tree) {

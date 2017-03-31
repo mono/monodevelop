@@ -59,6 +59,15 @@ namespace MonoDevelop.Components
 			return new WindowTransparencyDecorator (window);
 		}
 
+		public static WindowTransparencyDecorator Attach (Xwt.WindowFrame window)
+		{
+			//var gtkWindow = (Xwt.Toolkit.GetBackend (window) as Xwt.Backends.IWindowFrameBackend)?.Window as Gtk.Window;
+			var gtkWindow = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeWindow (window) as Gtk.Window;
+			if (gtkWindow != null)
+				return new WindowTransparencyDecorator (gtkWindow);
+			throw new NotSupportedException ();
+		}
+
 		public void Detach ()
 		{
 			if (window == null)

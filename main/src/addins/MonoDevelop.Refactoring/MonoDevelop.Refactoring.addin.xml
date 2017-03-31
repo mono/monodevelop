@@ -40,8 +40,8 @@
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

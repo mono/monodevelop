@@ -66,10 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);
 				} else {
-					if (viewcontent.ContentName == null) {
-						viewcontent.ContentName = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), viewcontent.UntitledName);
-					}
-					tsFiles.AppendValues (viewcontent.ContentName, true, viewcontent.WorkbenchWindow);
+					tsFiles.AppendValues (GetContentFileName (viewcontent), true, viewcontent.WorkbenchWindow);
 				}
 			}
 			if (!topCombineIter.Equals (TreeIter.Zero)) {
@@ -140,7 +137,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.SetDefaultSize (300, 200);
 			this.Child.ShowAll ();
 		}
-		
+
+		static string GetContentFileName (ViewContent viewcontent)
+		{
+			return viewcontent.ContentName ?? System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), viewcontent.UntitledName);
+		}
+
 		protected override void OnDestroyed ()
 		{
 			btnSaveAndQuit.Clicked -= SaveAndQuit;
@@ -168,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (window == null)
 					return false;
 				if ((bool)tsFiles.GetValue (iter, 1)) {
-					saveTasks.Add (window.ViewContent.Save (window.ViewContent.ContentName));
+					saveTasks.Add (window.ViewContent.Save (GetContentFileName(window.ViewContent)));
 				} else {
 					window.ViewContent.DiscardChanges ();
 				}

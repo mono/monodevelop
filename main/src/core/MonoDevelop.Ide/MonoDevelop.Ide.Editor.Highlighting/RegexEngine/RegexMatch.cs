@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	[ Serializable() ] 
 #endif
     class Match : Group {
-		internal static Match _empty = new Match(null, 1, StringTextSource.Empty, 0, 0, 0);
+		internal static Match _empty = new Match(null, 1, "", 0, 0, 0);
         internal GroupCollection _groupcoll;
         
         // input to the match
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Nonpublic constructor
          */
-        internal Match(Regex regex, int capcount, ITextSource text, int begpos, int len, int startpos)
+        internal Match(Regex regex, int capcount, string text, int begpos, int len, int startpos)
 
         : base(text, new int[2], 0) {
 
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /*
          * Nonpublic set-text method
          */
-        internal virtual void Reset(Regex regex, ITextSource text, int textbeg, int textend, int textstart) {
+        internal virtual void Reset(Regex regex, string text, int textbeg, int textend, int textstart) {
             _regex = regex;
             _text = text;
             _textbeg = textbeg;
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 
             int [] matches = _matches[groupnum];
 
-			return _text.GetTextAt(matches[(c - 1) * 2], matches[(c * 2) - 1]);
+			return _text.Substring(matches[(c - 1) * 2], matches[(c * 2) - 1]);
         }
 
         /*
@@ -431,7 +431,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #else
         internal MatchSparse(Regex regex, Hashtable caps, int capcount,
 #endif
-                             ITextSource text, int begpos, int len, int startpos)
+                             string text, int begpos, int len, int startpos)
 
         : base(regex, capcount, text, begpos, len, startpos) {
 

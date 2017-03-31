@@ -155,6 +155,8 @@ namespace MonoDevelop.CodeActions
 						if (codeFixes == null) {
 							codeFixes = (await CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType), token).ConfigureAwait (false)).ToList ();
 						}
+						var root = await ad.GetSyntaxRootAsync (token);
+
 						foreach (var cfp in codeFixes) {
 							if (token.IsCancellationRequested)
 								return CodeActionContainer.Empty;
@@ -173,6 +175,8 @@ namespace MonoDevelop.CodeActions
 
 									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
 									if (validDiagnostics.Length == 0)
+										continue;
+									if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.Length)
 										continue;
 									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, validDiagnostics, diagnosticSpan)), token));
 

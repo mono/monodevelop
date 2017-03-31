@@ -111,7 +111,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Components.Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var doc = ctx;
 			if (doc == null)
@@ -150,10 +150,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
-			requiredWidth = win.Allocation.Width;
+			requiredWidth = (int)win.Width;
 			xalign = 0.5;
 		}
 

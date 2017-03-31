@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;
 
-		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
+		void ShowTooltipWindow (Components.Window window, TooltipWindowOptions options);
 		Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 
 		double GetLineHeight (int line);

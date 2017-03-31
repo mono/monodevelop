@@ -61,6 +61,10 @@ namespace MonoDevelop.Projects.Policies
 			get { return true; }
 		}
 
+		internal bool IsDefaultSet {
+			get { return Id == "Default"; }
+		}
+
 		/// <summary>
 		/// When set to false, this policy set is not visible to the user. This flag can be used
 		/// to deprecate existing policy sets (since registered policy sets can't be modified/removed).
@@ -78,11 +82,16 @@ namespace MonoDevelop.Projects.Policies
 		
 		protected override T GetDefaultPolicy<T> ()
 		{
+			// The default policy set always resturns a value for any type of policy.
+			if (IsDefaultSet)
+				return new T ();
 			return null;
 		}
 		
 		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
 		{
+			if (IsDefaultSet)
+				return new T ();
 			return null;
 		}
 		

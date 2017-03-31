@@ -632,19 +632,14 @@ namespace MonoDevelop.Components.MainToolbar
 			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
 
 			var window = ToolbarView.PopupAnchor.GdkWindow;
-			if (window == null) {
-				if (popup.IsRealized) {
-					popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				} else {
-					popup.Realized += (sender, e) =>
-						popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				}
-			}
+			if (window == null)
+				popup.Location = new Xwt.Point (ToolbarView.PopupAnchor.Allocation.Width - popup.Size.Width, ToolbarView.PopupAnchor.Allocation.Y);
 		}
 
 		void DestroyPopup ()
 		{
 			if (popup != null) {
+				popup.Close ();
 				popup.Destroy ();
 				popup = null;
 			}
@@ -673,12 +668,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
 				popup.SearchForMembers = SearchForMembers;
-				popup.Destroyed += delegate {
+				popup.Disposed += delegate {
 					popup = null;
 					ToolbarView.SearchText = "";
 				};
 				PositionPopup ();
-				popup.ShowAll ();
+				popup.Show ();
 			}
 
 			popup.Update (pattern);

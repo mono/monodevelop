@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 		
 		void InternalDraw (int markerStart, int markerEnd, MonoTextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
-			if (markerStart >= markerEnd)
+			if (markerStart > markerEnd)
 				return;
 			double @from;
 			double to;
@@ -149,6 +149,13 @@ namespace Mono.TextEditor
 				x_pos = layout.IndexToPos (System.Math.Max (0, end - startOffset)).X;
 				
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+				var line = editor.GetLineByOffset (endOffset);
+				if (markerEnd > endOffset || @from == to) {
+					to += editor.TextViewMargin.CharWidth;
+					if (@from >= to) {
+						@from = to - editor.TextViewMargin.CharWidth;
+					}
+				}
 			}
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);

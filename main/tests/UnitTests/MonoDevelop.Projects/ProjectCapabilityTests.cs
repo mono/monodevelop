@@ -71,6 +71,8 @@ namespace MonoDevelop.Projects
 			var defaultCaps = await GetDefaultCapabilities ();
 
 			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
+
+			item.Dispose ();
 		}
 
 		[Test ()]
@@ -107,6 +109,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (new [] { "Zero" }, item.GetProjectCapabilities ().Except (defaultCaps).ToArray ());
 			ext = item.GetFlavor<CustomCapabilityExtension> ();
 			Assert.IsNull (ext);
+
+			item.Dispose ();
 		}
 	}
 

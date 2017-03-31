@@ -103,7 +103,7 @@ namespace Mono.TextEditor
 			set {
 				if (highlightCaretLine != value) {
 					highlightCaretLine = value;
-					RemoveCachedLine (Document.GetLine (Caret.Line));
+					RemoveCachedLine (Caret.Line);
 					Document.CommitLineUpdate (Caret.Line);
 				}
 			}
@@ -295,13 +295,15 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
-			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
-			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
-				int delta = e.ChangeDelta;
-				mouseWordStart += delta;
-				mouseWordEnd += delta;
+			foreach (var change in e.TextChanges) {
+				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
+				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
+					int delta = change.ChangeDelta;
+					mouseWordStart += delta;
+					mouseWordEnd += delta;
+				}
 			}
-			
+
 			if (selectedRegions.Count > 0) {
 				this.selectedRegions = new List<ISegment> (this.selectedRegions.AdjustSegments (e));
 				RefreshSearchMarker ();
@@ -314,11 +316,10 @@ namespace Mono.TextEditor
 			int startLine = YToLine (textEditor.GetTextEditorData ().VAdjustment.Value) - 5;
 			//We don't want to invalidate 5 lines after end(+10 because start is already -5)
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 10;
-			List<DocumentLine> linesToRemove = new List<DocumentLine> ();
-			foreach (DocumentLine line in layoutDict.Keys) {
-				int curLine = line.LineNumber;
+			var linesToRemove = new List<int> ();
+			foreach (var curLine in layoutDict.Keys) {
 				if (startLine >= curLine || endLine <= curLine) {
-					linesToRemove.Add (line);
+					linesToRemove.Add (curLine);
 				}
 			}
 			linesToRemove.ForEach (RemoveCachedLine);
@@ -499,14 +500,14 @@ namespace Mono.TextEditor
 				return 3;
 			case UnicodeNewline.NEL:
 				return 4;
-			case UnicodeNewline.VT:
-				return 5;
-			case UnicodeNewline.FF:
-				return 6;
+			//case UnicodeNewline.VT:
+			//	return 5;
+			//case UnicodeNewline.FF:
+			//	return 6;
 			case UnicodeNewline.LS:
-				return 7;
+				return 5;
 			case UnicodeNewline.PS:
-				return 8;
+				return 6;
 			}
 			return 0;
 		}
@@ -750,7 +751,7 @@ namespace Mono.TextEditor
 //				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
 				if (line != null) {
-					foreach (var marker in line.Markers) {
+					foreach (var marker in Document.GetMarkers (line)) {
 						var style = marker as StyleTextLineMarker;
 						if (style == null)
 							continue;
@@ -842,17 +843,18 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-
-			protected LineDescriptor (DocumentLine line, int offset, int length)
+			readonly TextDocument doc;
+			protected LineDescriptor (TextDocument doc, DocumentLine line, int offset, int length)
 			{
 				this.Offset = offset;
 				this.Length = length;
-				this.MarkerLength = line.MarkerCount;
+				this.doc = doc;
+                this.MarkerLength = doc.GetMarkers (line).Count ();
 			}
 
 			public bool Equals (DocumentLine line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount;
+				isInvalid = MarkerLength != doc.GetMarkers (line).Count ();
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -874,7 +876,7 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public LayoutDescriptor (DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
+			public LayoutDescriptor (TextDocument doc, DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(doc, line, offset, length)
 			{
 				this.Layout = layout;
 				if (selectionEnd >= 0) {
@@ -921,20 +923,21 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Dictionary<DocumentLine, LayoutDescriptor> layoutDict = new Dictionary<DocumentLine, LayoutDescriptor> ();
+		Dictionary<int, LayoutDescriptor> layoutDict = new Dictionary<int, LayoutDescriptor> ();
 		
 		internal LayoutWrapper CreateLinePartLayout (DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
-			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
+			int lineNumber = line.LineNumber;
+			if (!containsPreedit && layoutDict.TryGetValue (lineNumber, out descriptor)) {
 				bool isInvalid;
 				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor?.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNumber);
 			}
 			var wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
@@ -1004,7 +1007,7 @@ namespace Mono.TextEditor
 					}
 					var theme = textEditor.GetTextEditorData ().EditorTheme;
 					var chunkStyle = theme.GetChunkStyle(chunk.ScopeStack);
-					foreach (TextLineMarker marker in line.Markers)
+					foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line))
 						chunkStyle = marker.GetStyle (chunkStyle);
 
 					if (chunkStyle != null) {
@@ -1153,9 +1156,9 @@ namespace Mono.TextEditor
 
 				selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 				selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
-				descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
+				descriptor = new LayoutDescriptor (textEditor.Document, line, offset, length, wrapper, selectionStart, selectionEnd);
 				if (!containsPreedit && cachedChunks.Item2) {
-					layoutDict [line] = descriptor;
+					layoutDict [lineNumber] = descriptor;
 				}
 				//			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
 				OnLineShown (line);
@@ -1179,21 +1182,21 @@ namespace Mono.TextEditor
 
 		public IEnumerable<DocumentLine> CachedLine {
 			get {
-				return layoutDict.Keys;
+				return layoutDict.Keys.Select (ln => this.textEditor.GetLine (ln));
 			}
 		}
 
-		public void RemoveCachedLine (DocumentLine line)
+		public void RemoveCachedLine (int lineNumber)
 		{
-			if (line == null)
+			if (lineNumber <= 0)
 				return;
 			textEditor.CheckUIThread ();
 			LayoutDescriptor descriptor;
-			if (layoutDict.TryGetValue (line, out descriptor)) {
+			if (layoutDict.TryGetValue (lineNumber, out descriptor)) {
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNumber);
 			}
-			cachedLines.Remove (line);
+			cachedLines.Remove (lineNumber);
 		}
 
 		internal void DisposeLayoutDict ()
@@ -1220,30 +1223,33 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public ChunkDescriptor (DocumentLine line, int offset, int length, List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunk) : base(line, offset, length)
+			public ChunkDescriptor (TextDocument doc, DocumentLine line, int offset, int length, List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunk) : base(doc, line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
 		}
-		Dictionary<DocumentLine, HighlightedLine> cachedLines = new Dictionary<DocumentLine, HighlightedLine> ();
+		Dictionary<int, HighlightedLine> cachedLines = new Dictionary<int, HighlightedLine> ();
 		CancellationTokenSource cacheSrc = new CancellationTokenSource ();
 		Tuple<List<ColoredSegment>, bool> GetCachedChunks (TextDocument doc, DocumentLine line, int offset, int length)
 		{
 			HighlightedLine result;
-			if (cachedLines.TryGetValue (line, out result))
-				return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
+			var lineNumber = line.LineNumber;
+			if (cachedLines.TryGetValue (lineNumber, out result)) {
+				if (result.TextSegment.Length == line.Length && result.TextSegment.Offset == line.Offset)
+					return Tuple.Create (TrimChunks (result.Segments, offset - line.Offset, length), true);
+			}
 			var token = cacheSrc.Token;
 			var task = doc.SyntaxMode.GetHighlightedLineAsync (line, token);
 			task.Wait (100);
 			if (task.IsCompleted) {
-				cachedLines [line] = task.Result;
+				cachedLines [lineNumber] = task.Result;
 				return Tuple.Create (TrimChunks (task.Result.Segments, offset - line.Offset, length), true);
 			}
 			task.ContinueWith (t => {
 				Runtime.RunInMainThread (delegate {
 					if (token.IsCancellationRequested)
 						return;
-					cachedLines [line] = t.Result;
+					cachedLines [lineNumber] = t.Result;
 					Document.CommitLineUpdate (line);
 				});
 			});
@@ -1282,11 +1288,10 @@ namespace Mono.TextEditor
 
 		public void ForceInvalidateLine (int lineNr)
 		{
-			DocumentLine line = Document.GetLine (lineNr);
 			LayoutDescriptor descriptor;
-			if (line != null && layoutDict.TryGetValue (line, out descriptor)) {
+			if (lineNr > 0 && layoutDict.TryGetValue (lineNr, out descriptor)) {
 				descriptor.Dispose ();
-				layoutDict.Remove (line);
+				layoutDict.Remove (lineNr);
 			}
 		}
 
@@ -1805,7 +1810,7 @@ namespace Mono.TextEditor
 				LineYRenderStartPosition = y
 			};
 
-			foreach (TextLineMarker marker in line.Markers) {
+			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 				if (!marker.IsVisible)
 					continue;
 
@@ -2004,7 +2009,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			foreach (TextLineMarker marker in line.Markers) {
+			foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 				if (!marker.IsVisible)
 					continue;
 				
@@ -2155,7 +2160,7 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
-					foreach (TextLineMarker marker in line.Markers) {
+					foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -2294,7 +2299,7 @@ namespace Mono.TextEditor
 			DocumentLine line = Document.GetLine (clickLocation.Line);
 			bool isHandled = false;
 			if (line != null) {
-				foreach (TextLineMarker marker in line.Markers) {
+				foreach (TextLineMarker marker in textEditor.Document.GetMarkers (line)) {
 					if (marker is IActionTextLineMarker) {
 						isHandled |= ((IActionTextLineMarker)marker).MouseReleased(textEditor, args);
 						if (isHandled)
@@ -2351,17 +2356,24 @@ namespace Mono.TextEditor
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
-			// TODO : EditorTheme
-			int indentLength = 4; // SyntaxMode.GetIndentLength (Document, previewSegment.Offset, previewSegment.Length, false);
+			int indentLength = -1;
 
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
+				var indentString = line.GetIndentation (Document);
+				var curIndent = TextEditorData.CalcIndentLength (indentString);
+				if (indentLength < 0) {
+					indentLength = curIndent;
+				} else {
+					curOffset += TextEditorData.CalcOffset (indentString, System.Math.Min (curIndent, indentLength));
+				}
+
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.Length - curOffset);
 				textBuilder.Append (lineText);
 				textBuilder.AppendLine ();
-				curOffset = line.EndOffsetIncludingDelimiter + indentLength;
+				curOffset = line.EndOffsetIncludingDelimiter;
 			}
 
 			codeSegmentEditorWindow.Text = textBuilder.ToString ();
@@ -2511,7 +2523,7 @@ namespace Mono.TextEditor
 
 			if (line != null) {
 				newMarkers.Clear ();
-				newMarkers.AddRange (line.Markers.OfType<IActionTextLineMarker> ());
+				newMarkers.AddRange (textEditor.Document.GetMarkers (line).OfType<IActionTextLineMarker> ());
 				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
@@ -2901,7 +2913,7 @@ namespace Mono.TextEditor
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
-			var extendingMarker = (IExtendingTextLineMarker)line?.Markers.FirstOrDefault (l => l is IExtendingTextLineMarker);
+			var extendingMarker = line != null ? (IExtendingTextLineMarker)textEditor.Document.GetMarkers (line).FirstOrDefault (l => l is IExtendingTextLineMarker) : null;
 			isSpaceAbove = extendingMarker != null ? extendingMarker.IsSpaceAbove : false;
 			spaceAbove = 0;
 			spaceBelow = 0;
@@ -3029,11 +3041,7 @@ namespace Mono.TextEditor
 					isEolFolded = line.EndOffset <= folding.EndOffset;
 				}
 			}
-			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
-			// and the caret position is calculated in DrawLinePart.
-			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
-				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
-			}
+
 
 			bool isEolSelected = 
 				!this.HideSelection && 
@@ -3048,40 +3056,19 @@ namespace Mono.TextEditor
 				textEditor.Allocation.Width - lx,
 				lineArea.Height);
 
-			if (textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.Length)) {
-				DocumentLocation start = textEditor.MainSelection.Anchor;
-				DocumentLocation end = textEditor.MainSelection.Lead;
-				DocumentLocation visStart = textEditor.LogicalToVisualLocation (start);
-				DocumentLocation visEnd = textEditor.LogicalToVisualLocation (end);
-				
-				double x1 = this.ColumnToX (line, visStart.Column);
-				double x2 = this.ColumnToX (line, visEnd.Column);
-				if (x1 > x2) {
-					var tmp = x1;
-					x1 = x2;
-					x2 = tmp;
-				}
-				x1 += correctedXOffset - textEditor.HAdjustment.Value;
-				x2 += correctedXOffset - textEditor.HAdjustment.Value;
 
-				if (x2 > lineArea.X && BackgroundRenderer == null)  {
-					if (x1 - lineArea.X > 0) {
-						DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
-						lineArea = new Cairo.Rectangle (x1, lineArea.Y, lineArea.Width, lineArea.Height);
-					}
-					DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), false);
-					lineArea = new Cairo.Rectangle (x2, lineArea.Y, textEditor.Allocation.Width - lineArea.X, lineArea.Height);
-				}
-			}
 			LayoutWrapper wrapper = null;
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					wrapper = GetLayout (line);
+					int remainingLineWidth, ph;
+					wrapper.GetPixelSize (out remainingLineWidth, out ph);
+
 					if (lineNr == textEditor.MainSelection.Start.Line && line.Length == 0 && textEditor.MainSelection.Start.Column > 1) {
 						// position already skipped virtual space layout
 					} else  {
-						var eolStartX = System.Math.Floor (position);
+						var eolStartX = System.Math.Floor (position + remainingLineWidth);
 						lineArea = new Cairo.Rectangle (
 							eolStartX,
 							lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
@@ -3114,7 +3101,13 @@ namespace Mono.TextEditor
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, lineArea.Height);
 				}
 			}
-			
+
+			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
+			// and the caret position is calculated in DrawLinePart.
+			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
+				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, lineArea.Height);
+			}
+
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				switch (textEditor.Options.ShowWhitespaces) {
 				case ShowWhitespaces.Selection:
@@ -3143,7 +3136,7 @@ namespace Mono.TextEditor
 					LineHeight = _lineHeight,
 					LineYRenderStartPosition = y
 				};
-				foreach (var marker in line.Markers) {
+				foreach (var marker in textEditor.Document.GetMarkers (line)) {
 					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
@@ -3202,18 +3195,20 @@ namespace Mono.TextEditor
 			bool ConsumeLayout (LayoutWrapper layoutWrapper, int xp, int yp)
 			{
 				int trailing;
-				bool isInside = layoutWrapper.XyToIndex (xp, yp, out index, out trailing);
+				if (layoutWrapper.Layout != null) {
+					bool isInside = layoutWrapper.XyToIndex (xp, yp, out index, out trailing);
 
-				if (isInside) {
-					int lineNr;
-					int xp1, xp2;
-					layoutWrapper.IndexToLineX (index, false, out lineNr, out xp1);
-					layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
-					index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
+					if (isInside) {
+						int lineNr;
+						int xp1, xp2;
+						layoutWrapper.IndexToLineX (index, false, out lineNr, out xp1);
+						layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
+						index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
 
-					if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
-						index++;
-					return true;
+						if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+							index++;
+						return true;
+					}
 				}
 				index = line.Length;
 				return false;
@@ -3428,7 +3423,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return LineHeight;
-			foreach (var marker in line.Markers) {
+			foreach (var marker in textEditor.Document.GetMarkers (line)) {
 				IExtendingTextLineMarker extendingTextMarker = marker as IExtendingTextLineMarker;
 				if (extendingTextMarker == null)
 					continue;

@@ -68,5 +68,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
+
+		public static string UnescapeString (string text)
+		{
+			if (string.IsNullOrEmpty (text))
+				return text;
+			return text.Replace (EscapedLessThan, "<")
+				       .Replace (EscapedGreaterThan, ">")
+				       .Replace (EscapedAmpersand, "&")
+				       .Replace (EscapedApostrophe, "'")
+				       .Replace (EscapedQuote, "\"");
+		}
 	}
 }

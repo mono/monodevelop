@@ -67,6 +67,17 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+
+		/// <summary>
+		/// Determine if the file has already saved on disk. Untitled files are open
+		/// in the IDE only. After the first save the file is no longer untitled.
+		/// </summary>
+		public virtual bool IsUntitled {
+			get {
+				return false;
+			}
+		}
+
 		WorkspaceId workspaceId = WorkspaceId.Empty;
 
 		public virtual T GetPolicy<T> (IEnumerable<string> types) where T : class, IEquatable<T>, new ()

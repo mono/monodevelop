@@ -30,17 +30,17 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class StringTextSource_Tests : TextSourceTestBase
 	{
-		protected override ITextSource CreateTextSource (string text, System.Text.Encoding enc = null, bool useBom = false)
+		protected override ITextSource CreateTextSource (string text, System.Text.Encoding enc = null)
 		{
-			return new StringTextSource (text, enc, useBom);
+			return new StringTextSource (text, enc);
 		}
 	}
 
 	public class StringTextSource_Snapshot_Tests : TextSourceTestBase
 	{
-		protected override ITextSource CreateTextSource (string text, System.Text.Encoding enc = null, bool useBom = false)
+		protected override ITextSource CreateTextSource (string text, System.Text.Encoding enc = null)
 		{
-			return new StringTextSource (text, enc, useBom).CreateSnapshot ();
+			return new StringTextSource (text, enc).CreateSnapshot ();
 		}
 	}
 }

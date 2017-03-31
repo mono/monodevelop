@@ -92,7 +92,7 @@ namespace Mono.TextEditor.Utils
 
 		static readonly LeafNode EMPTY_NODE = new Leaf8BitNode (new byte [0]);
 
-		public static readonly ImmutableText Empty = new ImmutableText (EMPTY_NODE, true, null);
+		public static readonly ImmutableText Empty = new ImmutableText (EMPTY_NODE, null);
 
 		readonly Node root;
 
@@ -107,11 +107,6 @@ namespace Mono.TextEditor.Utils
 		}
 
 		public ITextSourceVersion Version {
-			get;
-			internal set;
-		}
-
-		public bool UseBOM {
 			get;
 			internal set;
 		}
@@ -152,10 +147,9 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		ImmutableText (Node node, bool useBom, Encoding encoding)
+		ImmutableText (Node node, Encoding encoding)
 		{
 			root = node;
-			UseBOM = useBom;
 			this.encoding = encoding;
 		}
 
@@ -179,7 +173,7 @@ namespace Mono.TextEditor.Utils
 		/// <returns><code>this + that</code></returns>
 		public ImmutableText Concat (ImmutableText that)
 		{
-			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText (ConcatNodes (EnsureChunked ().root, that.EnsureChunked ().root), UseBOM, encoding);
+			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText (ConcatNodes (EnsureChunked ().root, that.EnsureChunked ().root), encoding);
 		}
 
 		/// <summary>
@@ -231,7 +225,7 @@ namespace Mono.TextEditor.Utils
 				return Empty;
 			}
 
-			return new ImmutableText (root.SubNode (start, end), UseBOM, encoding);
+			return new ImmutableText (root.SubNode (start, end), encoding);
 		}
 
 		/// <summary>
@@ -428,7 +422,7 @@ namespace Mono.TextEditor.Utils
 		ImmutableText EnsureChunked ()
 		{
 			if (Length > BLOCK_SIZE && root is LeafNode) {
-				return new ImmutableText (NodeOf ((LeafNode)root, 0, Length), UseBOM, encoding);
+				return new ImmutableText (NodeOf ((LeafNode)root, 0, Length), encoding);
 			}
 			return this;
 		}

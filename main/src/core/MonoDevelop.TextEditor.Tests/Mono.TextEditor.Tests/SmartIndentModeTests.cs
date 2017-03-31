@@ -124,6 +124,23 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (3, 1), data.Caret.Location);
 		}
+
+
+		/// <summary>
+		/// Bug 53878 - Insert matching brace does not indent properly
+		/// </summary>
+		[Test]
+		public void TestBug53878 ()
+		{
+			var data = CreateData ("    FooBar\n    Foo {}");
+			data.Caret.Offset = data.Document.GetLine (2).EndOffset - 1;
+			data.Options.IndentStyle = IndentStyle.Auto;
+			MiscActions.InsertNewLine (data);
+
+			Assert.AreEqual ("    FooBar\n    Foo {\n    }", data.Document.Text);
+			Assert.AreEqual (data.Document.GetLine (3).EndOffset - 1, data.Caret.Offset);
+		}
+
 	}
 }
 

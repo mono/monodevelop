@@ -347,16 +347,18 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
         let rec getOptions referencedProject =
             let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
-            let referencedProjectOptions =
-                referencedProject
-                |> getReferencedProjects
-                |> Seq.fold (fun acc reference ->
-                                 match getOptions reference with
-                                 | Some outFile, opts  -> (outFile, opts) :: acc
-                                 | None,_ -> acc) ([])
-                                
-            (Some (referencedProject.GetOutputFileName(config).ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } )
-    
+            match projectOptions with
+            | Some projOptions ->
+                let referencedProjectOptions =
+                    referencedProject
+                    |> getReferencedProjects
+                    |> Seq.fold (fun acc reference ->
+                                     match getOptions reference with
+                                     | Some outFile, Some opts  -> (outFile, opts) :: acc
+                                     | _ -> acc) ([])
+                                    
+                (Some (referencedProject.GetOutputFileName(config).ChangeExtension(".ref").ToString()), Some ({ projOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } ))
+            | None -> None, None
         let _file, projectOptions = getOptions project
         projectOptions
                 
@@ -379,12 +381,12 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let opts = x.GetProjectOptionsFromProjectFile (proj :?> DotNetProject)
-
-                    projectInfoCache := cache.Add (key, opts)
-                    // Print contents of check option for debugging purposes
-                    LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-                        opts.ProjectFileName opts.ProjectFileNames opts.OtherOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
-                    Some opts
+                    opts |> Option.bind(fun opts' ->
+                        projectInfoCache := cache.Add (key, opts')
+                        // Print contents of check option for debugging purposes
+                        LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+                            opts'.ProjectFileName opts'.ProjectFileNames opts'.OtherOptions opts'.IsIncompleteTypeCheckEnvironment opts'.UseScriptResolutionRules
+                        opts)
                 | None -> None)
 
     member x.StartBackgroundCompileOfProject (projectFilename) =

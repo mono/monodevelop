@@ -388,7 +388,7 @@ module Completion =
                     let completions = 
                         Async.AwaitEvent (session.CompletionsReceived)
                         |> Async.RunSynchronously
-                        |> List.map (fun c -> FsiMemberCompletionData(c.displayText, c.completionText, symbolStringToIcon c.icon))
+                        |> Array.map (fun c -> FsiMemberCompletionData(c.displayText, c.completionText, symbolStringToIcon c.icon))
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
@@ -702,8 +702,8 @@ module ParameterHinting =
 
                         let hintingData =
                             tooltips
-                            |> List.map (fun meth -> FsiParameterHintingData (meth) :> ParameterHintingData)
-                            |> ResizeArray.ofList
+                            |> Array.map (fun meth -> FsiParameterHintingData (meth) :> ParameterHintingData)
+                            |> ResizeArray.ofArray
                         if hintingData.Count > 0 then
                             return ParameterHintingResult(hintingData, startOffset)
                         else

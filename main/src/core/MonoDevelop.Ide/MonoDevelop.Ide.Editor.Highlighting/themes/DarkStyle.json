@@ -83,8 +83,8 @@
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#5f7247", "bordercolor": "#5f7247" },
 
-		{ "name": "Primary Link", "color": "chocolate1", "secondcolor": "chocolate3" },
-		{ "name": "Primary Link(Highlighted)", "color": "chocolate1", "secondcolor": "chocolate2" },
+		{ "name": "Primary Link", "color": "#7C97A6", "secondcolor": "chocolate3" },
+		{ "name": "Primary Link(Highlighted)", "color": "#7C97A6", "secondcolor": "chocolate2" },
 		{ "name": "Secondary Link", "color": "white", "secondcolor": "aluminium6" },
 		{ "name": "Secondary Link(Highlighted)", "color": "aluminium1", "secondcolor": "aluminium5" },
 

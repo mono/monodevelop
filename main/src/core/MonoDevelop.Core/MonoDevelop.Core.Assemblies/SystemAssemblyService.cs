@@ -275,7 +275,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
 		}
-		
+
 		void CreateFrameworks ()
 		{
 			frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();

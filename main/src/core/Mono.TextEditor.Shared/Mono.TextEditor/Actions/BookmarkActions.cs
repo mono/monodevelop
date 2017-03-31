@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 			int startLineNumber = lineNumber + 1;
 			if (startLineNumber > document.Length) 
 				startLineNumber = 0;
-			var line = document.GetLinesStartingAt (startLineNumber).FirstOrDefault (l => l.IsBookmarked);
+			var line = document.GetLinesStartingAt (startLineNumber).FirstOrDefault (l => document.IsBookmarked (l));
 			return line != null ? line.Offset : -1;
 		}
 		
@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 			int startLineNumber = lineNumber - 1;
 			if (startLineNumber < 0) 
 				startLineNumber =  document.Length - 1;
-			var line = document.GetLinesReverseStartingAt (startLineNumber - 1).FirstOrDefault (l => l.IsBookmarked);
+			var line = document.GetLinesReverseStartingAt (startLineNumber - 1).FirstOrDefault (l => document.IsBookmarked (l));
 			return line != null ? line.Offset : -1;
 		}
 		
@@ -80,8 +80,8 @@ namespace Mono.TextEditor
 		{
 			bool redraw = false;
 			foreach (DocumentLine line in data.Document.Lines) {
-				redraw |= line.IsBookmarked;
-				line.IsBookmarked = false;
+				redraw |= data.Document.IsBookmarked (line);
+				data.Document.SetIsBookmarked (line, false);
 			}
 			if (redraw) {
 				data.Document.RequestUpdate (new UpdateAll ());

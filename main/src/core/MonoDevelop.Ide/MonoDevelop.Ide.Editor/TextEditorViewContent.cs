@@ -223,7 +223,6 @@ namespace MonoDevelop.Ide.Editor
 				var res = await TextFileUtility.GetTextAsync (content);
 				text = textEditor.Text = res.Text;
 				textEditor.Encoding = res.Encoding;
-				textEditor.UseBOM = res.HasBom;
 			}
 			await RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();

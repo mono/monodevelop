@@ -13,8 +13,8 @@ module ParameterHinting =
                                     match param.Name with
                                     | Some n -> n
                                     | _ -> param.DisplayName)
-                    |> List.ofSeq
-                | _ -> []
+                    |> Array.ofSeq
+                | _ -> [||]
             let signature = SymbolTooltips.getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=None}
             let summary = SymbolTooltips.getSummaryFromSymbol m
             ParameterTooltip.ToolTip (signature, summary, parameters)

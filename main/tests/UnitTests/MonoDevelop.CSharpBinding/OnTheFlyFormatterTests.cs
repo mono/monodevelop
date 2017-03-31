@@ -355,7 +355,7 @@ class Foo
 		public async Task TestBug16174_AutoIndent ()
 		{
 			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
-				var options = DefaultSourceEditorOptions.Instance;
+				var options = new CustomEditorOptions ();
 				options.IndentStyle = IndentStyle.Auto;
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
@@ -607,12 +607,13 @@ namespace FormatSelectionTest
 		{
 			await Simulate ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t\t\t}$\r\n", (content, ext) => {
 				content.Data.Options = new CustomEditorOptions {
-					IndentStyle = IndentStyle.Virtual
+					IndentStyle = IndentStyle.Virtual,
+					DefaultEolMarker = "\r\n"
 				};
 				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'}', '}', Gdk.ModifierType.None));
 
 				var newText = content.Text;
-				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
+				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
 			});
 		}
 

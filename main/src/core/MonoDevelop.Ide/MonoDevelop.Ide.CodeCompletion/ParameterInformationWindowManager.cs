@@ -229,10 +229,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window = new ParameterInformationWindow ();
 					window.Ext = textEditorExtension;
 					window.Widget = completionWidget;
-					window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-						if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasCompletionWindowVisible == (CompletionWindowManager.Wnd?.Visible ?? false))
+					window.BoundsChanged += (o, args) => {
+						if (window.Size.Width == lastW && window.Size.Height == lastH && wasCompletionWindowVisible == (CompletionWindowManager.Wnd?.Visible ?? false))
 							return;
-						PositionParameterInfoWindow (args.Allocation);
+						PositionParameterInfoWindow (window.ScreenBounds);
 					};
 					window.Hidden += delegate {
 						lastW = -1;
@@ -242,11 +242,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window.Ext = textEditorExtension;
 					window.Widget = completionWidget;
 				}
+
 				wasAbove = false;
 				int curParam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset) : 0;
-				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen.Number, window.Screen.GetMonitorAtPoint (X, Y));
-				window.ShowParameterInfo (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload, curParam - 1, (int)geometry2.Width);
-				PositionParameterInfoWindow (window.Allocation);
+				var geometry2 = window.Visible ? window.Screen.VisibleBounds.Width : 480;
+				window.ShowParameterInfo (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload, curParam - 1, (int)geometry2);
+				PositionParameterInfoWindow (window.ScreenBounds);
 			}
 			
 			if (currentMethodGroup == null) {
@@ -263,10 +264,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 	
-		static async void PositionParameterInfoWindow (Rectangle allocation)
+		static async void PositionParameterInfoWindow (Xwt.Rectangle allocation)
 		{
-			lastW = allocation.Width;
-			lastH = allocation.Height;
+			lastW = (int)allocation.Width;
+			lastH = (int)allocation.Height;
 			var isCompletionWindowVisible = wasCompletionWindowVisible = (CompletionWindowManager.Wnd?.Visible ?? false);
 			var ctx = window.Widget.CurrentCodeCompletionContext;
 			int cparam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset) : 0;
@@ -274,22 +275,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			X = currentMethodGroup.CompletionContext.TriggerXCoord;
 			if (isCompletionWindowVisible) {
 				// place above
-				Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - allocation.Height - 10;
+				Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - (int)allocation.Height - 10;
 			} else {
 				// place below
 				Y = ctx.TriggerYCoord;
 			}
 
-			var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen.Number, window.Screen.GetMonitorAtPoint (X, Y));
+			var geometry = window.Visible ? window.Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
 
 			window.ShowParameterInfo (currentMethodGroup.MethodProvider, currentMethodGroup.CurrentOverload, cparam - 1, (int)geometry.Width);
 
 			if (X + allocation.Width > geometry.Right)
-				X = (int)geometry.Right - allocation.Width;
+				X = (int)geometry.Right - (int)allocation.Width;
 			if (Y < geometry.Top)
 				Y = ctx.TriggerYCoord;
 			if (wasAbove || Y + allocation.Height > geometry.Bottom) {
-				Y = Y - ctx.TriggerTextHeight - allocation.Height - 4;
+				Y = Y - ctx.TriggerTextHeight - (int)allocation.Height - 4;
 				wasAbove = true;
 			}
 
@@ -297,13 +298,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var completionWindow = new Xwt.Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
 				if (completionWindow.IntersectsWith (new Xwt.Rectangle (X, Y, allocation.Width, allocation.Height))) {
 					X = (int) completionWindow.X;
-					Y = (int)completionWindow.Y - allocation.Height - 6;
+					Y = (int)completionWindow.Y - (int)allocation.Height - 6;
 					if (Y < 0)
 						Y = (int)completionWindow.Bottom + 6;
 				}
 			}
 
-			window.Move (X, Y);
+			window.Location = new Xwt.Point(X, Y);
 		}		
 	}
 		
