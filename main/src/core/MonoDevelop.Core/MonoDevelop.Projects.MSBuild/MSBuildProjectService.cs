@@ -1113,7 +1113,7 @@ namespace MonoDevelop.Projects.MSBuild
 						connection = new RemoteProcessConnection (exe, runtime.GetExecutionHandler ());
 						await connection.Connect ().ConfigureAwait (false);
 
-						var props = GetCoreGlobalProperties (solutionFile);
+						var props = GetCoreGlobalProperties (solutionFile, binDir, toolsVersion);
 						foreach (var gpp in globalPropertyProviders) {
 							foreach (var e in gpp.GetGlobalProperties ())
 								props [e.Key] = e.Value;
@@ -1151,7 +1151,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static Dictionary<string,string> GetCoreGlobalProperties (string slnFile)
+		static Dictionary<string,string> GetCoreGlobalProperties (string slnFile, string binDir, string toolsVersion)
 		{
 			var dictionary = new Dictionary<string,string> ();
 
@@ -1171,7 +1171,12 @@ namespace MonoDevelop.Projects.MSBuild
 			dictionary.Add ("SolutionFilename", Path.GetFileName (slnFile));
 			dictionary.Add ("SolutionDir", Path.GetDirectoryName (slnFile) + Path.DirectorySeparatorChar);
 
-			return dictionary;;
+			//when running the dev15 MSBuild from commandline or inside MSBuild, it sets "VSToolsPath" correctly. when running from MD, it falls back to a bad default. override it.
+			if (Platform.IsWindows) {
+				dictionary.Add ("VSToolsPath", Path.GetFullPath (Path.Combine (binDir, "..", "..", "Microsoft", "VisualStudio", "v" + toolsVersion)));
+			}
+
+			return dictionary;
 		}
 
 #region MSBuild exe file location
