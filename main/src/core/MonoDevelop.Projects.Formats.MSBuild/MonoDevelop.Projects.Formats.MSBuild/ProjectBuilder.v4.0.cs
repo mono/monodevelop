@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectBuilder.cs
 //  
 // Author:
@@ -183,12 +183,16 @@ namespace MonoDevelop.Projects.MSBuild
 					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
 				}
 			}
-			p.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-			p.SetProperty ("Configuration", configuration);
+
+			p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
+			p.SetGlobalProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
-				p.SetProperty ("Platform", platform);
+				p.SetGlobalProperty ("Platform", platform);
 			else
-				p.SetProperty ("Platform", "");
+				p.RemoveGlobalProperty ("Platform");
+
+			p.ReevaluateIfNecessary ();
+
 			return p;
 		}
 	}

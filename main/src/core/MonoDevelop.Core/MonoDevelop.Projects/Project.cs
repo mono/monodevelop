@@ -2574,6 +2574,11 @@ namespace MonoDevelop.Projects
 			return pi;
 		}
 
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return new ProjectConfiguration (id);
+		}
+
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet grp)
 		{
 			config.Read (grp);
