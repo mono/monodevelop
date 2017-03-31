@@ -176,7 +176,7 @@ namespace MonoDevelop.CodeActions
 									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
 									if (validDiagnostics.Length == 0)
 										continue;
-									if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.Length)
+									if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.End)
 										continue;
 									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, validDiagnostics, diagnosticSpan)), token));
 
