@@ -292,7 +292,7 @@ module Patterns =
                 | GenericParameter _ ->
                     makeSeg EditorThemeColors.UserTypesTypeParameters
                 | Namespace _ ->
-                    makeSeg "source"
+                    makeSeg "source.fs"
                 | Property fromDef ->
                     if fromDef then makeSeg EditorThemeColors.UserPropertyDeclaration 
                     else makeSeg EditorThemeColors.UserPropertyUsage
