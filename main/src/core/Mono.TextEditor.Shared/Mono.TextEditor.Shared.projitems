@@ -49,7 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\HtmlWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ClipboardColoredText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\RedBlackTree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\TextFileUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\FileSettingsStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ImmutableText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />

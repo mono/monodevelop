@@ -52,24 +52,24 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource (string text, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, Encoding encoding = null)
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
-			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding);
+			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource (string text, ITextSourceVersion version, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, ITextSourceVersion version, Encoding encoding = null)
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.version = version;
-			this.Encoding = encoding ?? (useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding);
+			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
 		/// <inheritdoc/>
@@ -135,26 +135,24 @@ namespace MonoDevelop.Core.Text
 
 		public static StringTextSource ReadFrom (string fileName)
 		{
-			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.ReadAllText (fileName, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		public static StringTextSource ReadFrom (Stream stream)
 		{
 			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.GetText (stream, out encoding, out hadBom);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.GetText (stream, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		public static StringTextSource ReadFrom (byte[] data)
 		{
-			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.GetText (data, out encoding, out hadBom);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.GetText (data, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		/// <inheritdoc/>
