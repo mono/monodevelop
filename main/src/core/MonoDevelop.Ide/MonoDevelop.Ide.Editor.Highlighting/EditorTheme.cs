@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return settings.TryGetValue (key, out value);
 		}
 
-		Dictionary<string, HslColor> colorCache = new Dictionary<string, HslColor> ();
+		ImmutableDictionary<string, HslColor> colorCache = ImmutableDictionary<string, HslColor>.Empty;
 		
 		public bool TryGetColor (string key, out HslColor color)
 		{
@@ -86,11 +86,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			try {
 				color = HslColor.Parse (value);
-				colorCache [key] = color;
+				colorCache = colorCache.SetItem (key, color);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while parsing color " + key, e);
 				color = new HslColor (0, 0, 0);
-				colorCache [key] = color;
+				colorCache = colorCache.SetItem (key, color);
 				return false;
 			}
 			return true;
