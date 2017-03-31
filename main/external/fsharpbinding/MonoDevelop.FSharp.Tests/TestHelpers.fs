@@ -16,6 +16,7 @@ module FixtureSetup =
             //Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", "/tmp")
             //Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", "/tmp")
             MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
+            Xwt.Application.Initialize (Xwt.ToolkitType.Gtk)
             Runtime.Initialize (true)
             MonoDevelop.Ide.DesktopService.Initialize()
 
