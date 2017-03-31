@@ -508,7 +508,7 @@ namespace MonoDevelop.Ide.Gui
 			// save backup first
 			if (IdeApp.Preferences.CreateFileBackupCopies) {
 				if (tbuffer != null && encoding != null)
-					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, (encoding != null) && (encoding.GetPreamble().Length > 0));
+					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding);
 				else
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
