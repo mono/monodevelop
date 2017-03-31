@@ -18,13 +18,10 @@ module Interactive =
             let testDllFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
             let pathToExe = "\"" + testDllFolder/".."/".."/".."/".."/".."/"build"/"AddIns"/"FSharpBinding"/"MonoDevelop.FSharpInteractive.Service.exe\""
             let ses = InteractiveSession(pathToExe)
-            do! Async.Sleep 1000 // give the process chance to start
-            if ses.HasExited() then
-                Assert.Fail("Interactive session has exited")
             ses.StartReceiving()
             let finished = new AutoResetEvent(false) // using AutoResetEvent because I can't get Async.AwaitEvent to work here without a hang
             ses.PromptReady.Add(fun _ -> finished.Set() |> ignore)
-            let succeeded = finished.WaitOne(2000)
+            let succeeded = finished.WaitOne(5000)
             if not succeeded then Assert.Fail "Timed out waiting for prompt"
             return ses
         }
