@@ -178,7 +178,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSAttributedString resultString;
 		int resultCount;
-		public int ResultCount { 
+		public int ResultCount {
 			get {
 				return resultCount;
 			}
@@ -257,9 +257,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		double oldFraction;
 
 		const int barHeight = 2;
+		const int barY = 0;
 
 		public ProgressView ()
 		{
+			int barWidth = 0;
+
+#if DEBUG_PROGRESSBAR
+			barWidth = 100;
+#endif
 			WantsLayer = true;
 			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 3 : 4;
 
@@ -271,7 +277,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			progressLayer.BackgroundColor = xamBlue.CGColor;
 			progressLayer.BorderWidth = 0;
 			progressLayer.FillMode = CAFillMode.Forwards;
-			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
+			progressLayer.Frame = new CGRect (0, barY, barWidth, barHeight);
 			progressLayer.AnchorPoint = new CGPoint (0, 0);
 
 			AccessibilityIdentifier = "MainToolbar.StatusDisplay.Progress";
@@ -301,7 +307,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			progressLayer.Hidden = false;
 			progressLayer.Opacity = 1;
-			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
+			progressLayer.Frame = new CGRect (0, barY, 0, barHeight);
 
 			AccessibilityHidden = false;
 		}
@@ -338,8 +344,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			grow.Duration = 0.2;
 			grow.FillMode = CAFillMode.Forwards;
 			grow.RemovedOnCompletion = false;
-			grow.From = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)oldFraction, barHeight));
-			grow.To = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)growToFraction, barHeight));
+			grow.From = NSValue.FromCGRect (new CGRect (0, barY, Frame.Width * (nfloat)oldFraction, barHeight));
+			grow.To = NSValue.FromCGRect (new CGRect (0, barY, Frame.Width * (nfloat)growToFraction, barHeight));
 			return grow;
 		}
 
@@ -381,7 +387,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					progress.Hidden = true;
 
 					progress.Opacity = 1;
-					progress.Frame = new CGRect (0, 0, 0, barHeight);
+					progress.Frame = new CGRect (0, barY, 0, barHeight);
 					progress.RemoveAllAnimations ();
 					SetProgressValue (0.0);
 
@@ -1127,7 +1133,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			cancelButton.Frame = new CGRect (cancelButton.Frame.X, cancelButton.Frame.Y, 16, Frame.Height);
 			RepositionStatusIcons ();
 
-			progressView.Frame = new CGRect (0.5f, Frame.Height - (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1f : 2f), Frame.Width - 2, 2);
+			progressView.Frame = new CGRect (0.5f, Frame.Height - 2f, Frame.Width - 2, 2);
 		}
 	}
 }
