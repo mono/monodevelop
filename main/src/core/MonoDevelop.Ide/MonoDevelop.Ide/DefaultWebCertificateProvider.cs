@@ -49,8 +49,7 @@ namespace MonoDevelop.Ide
 					Gtk.Application.Invoke (delegate {
 						value = MessageService.AskQuestion (
 							GettextCatalog.GetString ("Untrusted HTTP certificate detected"),
-							GettextCatalog.GetString (string.Format ("Do you want to temporarily trust this certificate in order to" +
-							                                         " connect to the server at {0}?", uri)),
+							GettextCatalog.GetString ("Do you want to temporarily trust this certificate in order to connect to the server at {0}?", uri),
 							AlertButton.Yes, AlertButton.No) == AlertButton.Yes;
 						TrustedCertificates [certificateFingerprint] = value;
 						handle.Set ();
