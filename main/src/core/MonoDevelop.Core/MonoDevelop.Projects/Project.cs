@@ -1384,16 +1384,11 @@ namespace MonoDevelop.Projects
 
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
-			var tt = System.Diagnostics.Stopwatch.StartNew ();
-			try {
-				HashSet<string> sdks = null;
-				GetReferencedSDKs (runtime, this, ref sdks);
-				if (sdks != null)
-					return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
-				return null;
-			} finally {
-				Console.WriteLine ("GetMSBuildSdkPath " + tt.ElapsedMilliseconds);
-			}
+			HashSet<string> sdks = null;
+			GetReferencedSDKs (runtime, this, ref sdks);
+			if (sdks != null)
+				return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
+			return null;
 		}
 
 		void GetReferencedSDKs (TargetRuntime runtime, Project project, ref HashSet<string> sdks)
