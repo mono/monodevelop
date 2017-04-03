@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += delegate {
-				UnsubscibeAnalysisdocument ();
+				UnsubscribeAnalysisDocument ();
 				UnloadAdhocProject();
 			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (IsAdHocProject)
 				return;
-			UnsubscibeAnalysisdocument ();
+			UnsubscribeAnalysisDocument ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -508,7 +508,7 @@ namespace MonoDevelop.Ide.Gui
 			// save backup first
 			if (IdeApp.Preferences.CreateFileBackupCopies) {
 				if (tbuffer != null && encoding != null)
-					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, (encoding != null) && (encoding.GetPreamble().Length > 0));
+					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding);
 				else
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
@@ -580,7 +580,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			UnsubscibeAnalysisdocument ();
+			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
 			UnloadAdhocProject ();
 			if (window is SdiWorkspaceWindow)
@@ -603,7 +603,7 @@ namespace MonoDevelop.Ide.Gui
 			viewsRO = null;
 		}
 
-		void UnsubscibeAnalysisdocument ()
+		void UnsubscribeAnalysisDocument ()
 		{
 			if (analysisDocument != null) {
 				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
@@ -739,7 +739,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
-				UnsubscibeAnalysisdocument ();
+				UnsubscribeAnalysisDocument ();
 			// Unsubscribe project events
 			if (Window.ViewContent.Project != null)
 				Window.ViewContent.Project.Modified -= HandleProjectModified;
@@ -839,7 +839,7 @@ namespace MonoDevelop.Ide.Gui
 					return Task.CompletedTask;
 			}
 			if (Editor == null) {
-				UnsubscibeAnalysisdocument ();
+				UnsubscribeAnalysisDocument ();
 				return Task.CompletedTask;
 			}
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
@@ -861,9 +861,6 @@ namespace MonoDevelop.Ide.Gui
 						var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
 						if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
 							var newProject = Services.ProjectService.CreateDotNetProject ("C#");
-							var parentSolution = new Solution ();
-							parentSolution.RootFolder.Items.Add (newProject);
-							parentSolution.AddConfiguration ("Debug", true);
 
 							this.adhocProject = newProject;
 

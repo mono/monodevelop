@@ -889,11 +889,10 @@ namespace MonoDevelop.SourceEditor
 					UpdateMimeType(fileName);
 
 					string text = null;
-					bool hadBom;
 					if (loadEncoding == null) {
-						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out hadBom, out loadEncoding);
+						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, out loadEncoding);
 					} else {
-						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding, out hadBom);
+						text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText(fileName, loadEncoding);
 					}
 					this.Document.VsTextDocument.Encoding = loadEncoding;
 
