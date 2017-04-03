@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Policies
 		}
 		
 		[ItemProperty]
-		public DirectoryNamespaceAssociation DirectoryNamespaceAssociation { get; private set; }
+		public DirectoryNamespaceAssociation DirectoryNamespaceAssociation { get; private set; } = DirectoryNamespaceAssociation.PrefixedHierarchical;
 		
 		[ItemProperty]
 		public ResourceNamePolicy ResourceNamePolicy { get; private set; }
