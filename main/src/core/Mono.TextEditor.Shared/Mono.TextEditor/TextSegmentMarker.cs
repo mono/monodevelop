@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
 using Cairo;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
@@ -108,31 +109,32 @@ namespace Mono.TextEditor
 				var range = editor.SelectionRange;
 				if (range.Contains (markerStart)) {
 					int end = System.Math.Min (markerEnd, range.EndOffset);
-					InternalDraw (markerStart, end, editor, cr, layout, true, startOffset, endOffset, y, startXPos, endXPos);
-					InternalDraw (range.EndOffset, markerEnd, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (markerStart, end, editor, cr, metrics, true, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (range.EndOffset, markerEnd, editor, cr, metrics, false, startOffset, endOffset, y, startXPos, endXPos);
 					return;
 				}
 				if (range.Contains (markerEnd)) {
-					InternalDraw (markerStart, range.Offset, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
-					InternalDraw (range.Offset, markerEnd, editor, cr, layout, true, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (markerStart, range.Offset, editor, cr, metrics, false, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (range.Offset, markerEnd, editor, cr, metrics, true, startOffset, endOffset, y, startXPos, endXPos);
 					return;
 				}
 				if (markerStart <= range.Offset && range.EndOffset <= markerEnd) {
-					InternalDraw (markerStart, range.Offset, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
-					InternalDraw (range.Offset, range.EndOffset, editor, cr, layout, true, startOffset, endOffset, y, startXPos, endXPos);
-					InternalDraw (range.EndOffset, markerEnd, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (markerStart, range.Offset, editor, cr, metrics, false, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (range.Offset, range.EndOffset, editor, cr, metrics, true, startOffset, endOffset, y, startXPos, endXPos);
+					InternalDraw (range.EndOffset, markerEnd, editor, cr, metrics, false, startOffset, endOffset, y, startXPos, endXPos);
 					return;
 				}
 				
 			}
 			
-			InternalDraw (markerStart, markerEnd, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
+			InternalDraw (markerStart, markerEnd, editor, cr, metrics, false, startOffset, endOffset, y, startXPos, endXPos);
 		}
 		
-		void InternalDraw (int markerStart, int markerEnd, MonoTextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		void InternalDraw (int markerStart, int markerEnd, MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			if (markerStart > markerEnd)
 				return;
+			var layout = metrics.Layout.Layout;
 			double @from;
 			double to;
 			if (markerStart < startOffset && endOffset < markerEnd) {
@@ -142,11 +144,16 @@ namespace Mono.TextEditor
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
+				uint curIndex = 0;
+				uint byteIndex = 0;
+				metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex);
 				
-				x_pos = layout.IndexToPos (System.Math.Max (0, start - startOffset)).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+
+				metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex);
 				
-				x_pos = layout.IndexToPos (System.Math.Max (0, end - startOffset)).X;
+				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
 				
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				var line = editor.GetLineByOffset (endOffset);
