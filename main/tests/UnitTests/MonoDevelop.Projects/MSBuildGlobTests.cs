@@ -634,6 +634,26 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Test]
+		public async Task AllFilesExcludedFromDirectory ()
+		{
+			FilePath projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-test2.csproj");
+			FilePath ignoredDirectory = projFile.ParentDirectory.Combine ("ignored");
+			Directory.CreateDirectory (ignoredDirectory);
+			File.WriteAllText (ignoredDirectory.Combine ("c4.cs"), "");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			p.UseAdvancedGlobSupport = true;
+
+			var files = p.Files.Select (f => f.FilePath.FileName).OrderBy (f => f).ToArray ();
+			Assert.AreEqual (new string [] {
+				"c1.cs",
+				"c2.cs",
+				"c3.cs",
+			}, files);
+
+			p.Dispose ();
+		}
+
 		class SupportImportedProjectFilesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
