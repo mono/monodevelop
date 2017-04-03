@@ -21,8 +21,8 @@
 	branch = master-signed
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
-    url = git://github.com/mono/debugger-libs.git
-    branch = d15-2
+	url = git://github.com/mono/debugger-libs.git
+	branch = master
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
 	url = git://github.com/mono/guiunit.git
