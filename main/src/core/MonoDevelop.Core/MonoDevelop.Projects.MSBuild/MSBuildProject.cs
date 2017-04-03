@@ -931,7 +931,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!string.IsNullOrEmpty (Sdk))
 				return Sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 			else
-				return new string [0];
+				return Array.Empty<string> ();
 		}
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()

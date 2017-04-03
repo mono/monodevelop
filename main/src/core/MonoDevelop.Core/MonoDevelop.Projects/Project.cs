@@ -1384,29 +1384,37 @@ namespace MonoDevelop.Projects
 
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
-			if (!string.IsNullOrEmpty (MSBuildProject.Sdk))
-				return MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ());
-
-			var dotNetProject = this as DotNetProject;
-			if (dotNetProject == null)
+			var tt = System.Diagnostics.Stopwatch.StartNew ();
+			try {
+				HashSet<string> sdks = null;
+				GetReferencedSDKs (runtime, this, ref sdks);
+				if (sdks != null)
+					return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
 				return null;
+			} finally {
+				Console.WriteLine ("GetMSBuildSdkPath " + tt.ElapsedMilliseconds);
+			}
+		}
 
-			// Check project references.
-			HashSet<string> sdks = null;
-			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-				var project = projectReference.ResolveProject (ParentSolution);
-				if (project != null && !string.IsNullOrEmpty (project.MSBuildProject.Sdk)) {
-					if (sdks == null)
-						sdks = new HashSet<string> ();
-					foreach (string sdk in project.MSBuildProject.GetReferencedSDKs ())
-						sdks.Add (sdk);
-				}
+		void GetReferencedSDKs (TargetRuntime runtime, Project project, ref HashSet<string> sdks)
+		{
+			var projectSdks = project.MSBuildProject.GetReferencedSDKs ();
+			if (projectSdks.Length > 0) {
+				if (sdks == null)
+					sdks = new HashSet<string> ();
+				sdks.UnionWith (projectSdks);
 			}
 
-			if (sdks != null)
-				return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
+			var dotNetProject = project as DotNetProject;
+			if (dotNetProject == null)
+				return;
 
-			return null;
+			// Check project references.
+			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				var p = projectReference.ResolveProject (ParentSolution);
+				if (p != null)
+					GetReferencedSDKs (runtime, p, ref sdks);
+			}
 		}
 
 		RemoteProjectBuilder GetCachedProjectBuilder ()
