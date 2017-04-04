@@ -121,7 +121,7 @@ namespace MonoDevelop.PackageManagement
 				nugetAwareProjectsToBeRestored = projects.ToList ();
 			}
 
-			return packagesToRestore.Any (package => package.IsMissing) ||
+			return packagesToRestore?.Any (package => package.IsMissing) == true ||
 				buildIntegratedProjectsToBeRestored?.Any () == true ||
 				nugetAwareProjectsToBeRestored?.Any () == true;
 		}
