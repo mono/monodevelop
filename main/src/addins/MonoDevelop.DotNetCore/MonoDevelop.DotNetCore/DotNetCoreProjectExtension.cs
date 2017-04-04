@@ -243,10 +243,13 @@ namespace MonoDevelop.DotNetCore
 			using (console) {
 				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
 
-				using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
-					await asyncOp.Task;
+				try {
+					using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
+						await asyncOp.Task;
 
-				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+				} catch (OperationCanceledException) {
+				}
 			}
 		}
 
