@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Policies
 		}
 		
 		public string Name { get; set; }
-		public string Id { get; private set; }
+		public string Id { get; internal set; }
 		
 		internal PolicyKey[] AddSerializedPolicies (StreamReader reader)
 		{
@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		internal void SaveToXml (XmlWriter xw)
+		internal void SaveToXml (XmlWriter xw, PolicySet diffBasePolicySet = null)
 		{
 			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
 			cw.StoreAllInElements = true;
@@ -151,8 +151,8 @@ namespace MonoDevelop.Projects.Policies
 			if (!string.IsNullOrEmpty (Id))
 				xw.WriteAttributeString ("id", Id);
 			if (policies != null) {
-				foreach (KeyValuePair<PolicyKey,object> policyPair in policies)
-					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
+				foreach (KeyValuePair<PolicyKey, object> policyPair in policies)
+					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope, diffBasePolicySet: diffBasePolicySet));
 			}
 			xw.WriteEndElement ();
 		}
