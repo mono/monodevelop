@@ -571,7 +571,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 
-					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
+					foreach (var projectedDocument in GenerateProjections (f, projectData, p, oldProjectData)) {
 						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
 						if (!duplicates.Add (projectedId))
 							continue;
@@ -582,7 +582,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Tuple.Create (documents, additionalDocuments);
 		}
 
-		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, HashSet<DocumentId> duplicates = null)
+		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates = null)
 		{
 			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
@@ -600,11 +600,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			entry.Projections = list;
 			foreach (var projection in projections.Result) {
 				list.Add (projection);
-				if (duplicates != null && !duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
+				if (duplicates != null && !duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName, oldProjectData)))
 					continue;
 				var plainName = projection.Document.FileName.FileName;
 				yield return DocumentInfo.Create (
-					projectData.GetOrCreateDocumentId (projection.Document.FileName),
+					projectData.GetOrCreateDocumentId (projection.Document.FileName, oldProjectData),
 					plainName,
 					new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 					SourceCodeKind.Regular,
@@ -1342,7 +1342,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile, sck);
 						OnDocumentAdded (newDocument);
 					} else {
-						foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project)) {
+						foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project, null)) {
 							OnDocumentAdded (projectedDocument);
 						}
 					}
@@ -1429,7 +1429,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 						}
 
-						foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project)) {
+						foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project, null)) {
 							OnDocumentAdded (projectedDocument);
 						}
 					}
