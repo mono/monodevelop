@@ -146,7 +146,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		void DebugAgentProcess_Exited (object sender, EventArgs e)
 		{
-			protocolClient.Stop ();
+			if (protocolClient != null) {
+				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
+				protocolClient.Stop ();
+				protocolClient = null;
+			}
+			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 		}
 
 		Process debugAgentProcess;
@@ -177,6 +182,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (!MonoDevelop.Core.Platform.IsWindows)
 				startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
 			debugAgentProcess = Process.Start (startInfo);
+			debugAgentProcess.EnableRaisingEvents = true;
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
@@ -376,9 +382,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			base.Dispose ();
 			if (protocolClient != null) {
-				protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
+				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
 				protocolClient.SendRequestSync (new DisconnectRequest ());
 				protocolClient.Stop ();
+				protocolClient = null;
 			}
 		}
 	}

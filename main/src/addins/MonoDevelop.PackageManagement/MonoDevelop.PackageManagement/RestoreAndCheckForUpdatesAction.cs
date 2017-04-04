@@ -109,24 +109,21 @@ namespace MonoDevelop.PackageManagement
 					cancellationToken);
 
 				packagesToRestore = packages.ToList ();
-				if (packagesToRestore.Any (package => package.IsMissing)) {
-					return true;
-				}
 			}
 
 			if (buildIntegratedRestorer != null) {
 				var projects = await buildIntegratedRestorer.GetProjectsRequiringRestore (GetBuildIntegratedNuGetProjects ());
 				buildIntegratedProjectsToBeRestored = projects.ToList ();
-				return buildIntegratedProjectsToBeRestored.Any ();
 			}
 
 			if (nugetAwareRestorer != null) {
 				var projects = await nugetAwareRestorer.GetProjectsRequiringRestore (nugetAwareProjects);
 				nugetAwareProjectsToBeRestored = projects.ToList ();
-				return nugetAwareProjectsToBeRestored.Any ();
 			}
 
-			return false;
+			return packagesToRestore?.Any (package => package.IsMissing) == true ||
+				buildIntegratedProjectsToBeRestored?.Any () == true ||
+				nugetAwareProjectsToBeRestored?.Any () == true;
 		}
 
 		public void Execute ()

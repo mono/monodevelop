@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.GettingStarted
 	{
 		static readonly string GettingStartedProvidersExtensionPoint = "/MonoDevelop/Ide/GettingStartedProviders";
 
-		static List<IGettingStartedProvider> providers = new List<IGettingStartedProvider> ();
+		static List<GettingStartedProvider> providers = new List<GettingStartedProvider> ();
 
 		static GettingStarted ()
 		{
@@ -22,17 +22,18 @@ namespace MonoDevelop.Ide.GettingStarted
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add)
-				providers.Add ((IGettingStartedProvider)args.ExtensionObject);
+				providers.Add ((GettingStartedProvider)args.ExtensionObject);
 			else if (args.Change == ExtensionChange.Remove)
-				providers.Remove ((IGettingStartedProvider)args.ExtensionObject);
+				providers.Remove ((GettingStartedProvider)args.ExtensionObject);
 		}
 
-		public static IGettingStartedProvider GetGettingStartedProvider (this Project project)
+		public static GettingStartedProvider GetGettingStartedProvider (this Project project)
 		{
-			foreach (var provider in providers) {
-				if (provider.SupportsProject (project))
-					return provider;
-			}
+			if (project != null)
+				foreach (var provider in providers) {
+					if (provider.SupportsProject (project))
+						return provider;
+				}
 
 			return null;
 		}
