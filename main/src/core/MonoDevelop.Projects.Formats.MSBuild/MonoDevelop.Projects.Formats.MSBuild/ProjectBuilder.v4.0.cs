@@ -156,7 +156,9 @@ namespace MonoDevelop.Projects.MSBuild
 					project = p;
 			}
 
-			Environment.CurrentDirectory = Path.GetDirectoryName (file);
+			var projectDir = Path.GetDirectoryName (file);
+			if (!string.IsNullOrEmpty (projectDir))
+				Environment.CurrentDirectory = projectDir;
 			return project;
 		}
 
