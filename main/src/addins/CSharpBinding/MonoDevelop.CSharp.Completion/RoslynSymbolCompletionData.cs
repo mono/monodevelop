@@ -386,6 +386,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal static bool HasAnyOverloadWithParameters (IMethodSymbol method)
 		{
+			if (method.Parameters.Length > 0)
+				return true;
 			if (method.MethodKind == MethodKind.Constructor) 
 				return method.ContainingType.GetMembers()
 					.OfType<IMethodSymbol>()
