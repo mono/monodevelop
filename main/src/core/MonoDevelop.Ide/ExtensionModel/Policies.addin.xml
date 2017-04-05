@@ -12,6 +12,9 @@
 <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 	<Policies resource="MonoTextStylePolicy.xml" />
 </Extension>
+<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Default" >
+	<Policies resource="MonoTextStylePolicy.xml" />
+</Extension>
 <Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
 	<Policies resource="VisualStudioTextStylePolicy.xml" />
 </Extension>
