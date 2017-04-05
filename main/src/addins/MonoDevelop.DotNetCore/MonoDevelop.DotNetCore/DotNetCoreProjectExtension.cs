@@ -568,12 +568,23 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			if (Project.Loading) {
-				foreach (var file in objs.OfType<ProjectFile> ()) {
-					if (file.FilePath.ShouldBeHidden ())
-						file.Flags = ProjectItemFlags.Hidden;
-				}
+				UpdateHiddenFiles (objs.OfType<ProjectFile> ());
 			}
 			base.OnItemsAdded (objs);
+		}
+
+		void UpdateHiddenFiles (IEnumerable<ProjectFile> files)
+		{
+			foreach (var file in files) {
+				if (file.FilePath.ShouldBeHidden ())
+					file.Flags = ProjectItemFlags.Hidden;
+			}
+		}
+
+		protected override async Task OnReevaluateProject (ProgressMonitor monitor)
+		{
+			await base.OnReevaluateProject (monitor);
+			UpdateHiddenFiles (Project.Files);
 		}
 	}
 }

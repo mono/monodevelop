@@ -62,5 +62,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}
+
+		public override Type CommandHandlerType {
+			get { return typeof (DotNetCoreProjectNodeCommandHandler); }
+		}
 	}
 }
