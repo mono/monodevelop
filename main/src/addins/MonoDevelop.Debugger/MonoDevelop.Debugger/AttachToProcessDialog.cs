@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Debugger
 		List<ProcessInfo> procs;
 		Gtk.ListStore store;
 		TreeViewState state;
-		uint timeoutHandler;
+		bool closed;
 
 		public AttachToProcessDialog()
 		{
@@ -55,7 +56,9 @@ namespace MonoDevelop.Debugger
 
 			state = new TreeViewState (tree, 1);
 
-			Refresh ();
+			var refreshThread = new Thread (new ThreadStart (Refresh));
+			refreshThread.IsBackground = true;
+			refreshThread.Start ();
 
 			comboDebs.Sensitive = false;
 			buttonOk.Sensitive = false;
@@ -65,57 +68,56 @@ namespace MonoDevelop.Debugger
 			Gtk.TreeIter it;
 			if (store.GetIterFirst (out it))
 				tree.Selection.SelectIter (it);
-
-			timeoutHandler = GLib.Timeout.Add (3000, Refresh);
 		}
 
 		public override void Destroy ()
 		{
-			if (timeoutHandler != 0)
-				GLib.Source.Remove (timeoutHandler);
+			closed = true;
 			base.Destroy ();
 		}
 
-		bool Refresh ()
+		void Refresh ()
 		{
-			procEngines = new Dictionary<long,List<DebuggerEngine>> ();
-			procs = new List<ProcessInfo> ();
+			while (!closed) {
+				var procEngines = new Dictionary<long, List<DebuggerEngine>> ();
+				var procs = new List<ProcessInfo> ();
 
-			foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
-				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
-					continue;
-				try {
-					var infos = de.GetAttachableProcesses ();
-					foreach (ProcessInfo pi in infos) {
-						List<DebuggerEngine> engs;
-						if (!procEngines.TryGetValue (pi.Id, out engs)) {
-							engs = new List<DebuggerEngine> ();
-							procEngines [pi.Id] = engs;
-							procs.Add (pi);
+				foreach (DebuggerEngine de in DebuggingService.GetDebuggerEngines ()) {
+					if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
+						continue;
+					try {
+						var infos = de.GetAttachableProcesses ();
+						foreach (ProcessInfo pi in infos) {
+							List<DebuggerEngine> engs;
+							if (!procEngines.TryGetValue (pi.Id, out engs)) {
+								engs = new List<DebuggerEngine> ();
+								procEngines [pi.Id] = engs;
+								procs.Add (pi);
+							}
+							engs.Add (de);
 						}
-						engs.Add (de);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not get attachable processes.", ex);
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not get attachable processes.", ex);
 				}
-				comboDebs.AppendText (de.Name);
+				this.procEngines = procEngines;
+				this.procs = procs;
+				Runtime.RunInMainThread (new Action(FillList)).Ignore ();
+				Thread.Sleep (3000);
 			}
-
-			FillList ();
-			return true;
 		}
 
 		void FillList ()
 		{
 			state.Save ();
-
+			tree.Model = null;
 			store.Clear ();
 			string filter = entryFilter.Text;
 			foreach (ProcessInfo pi in procs) {
 				if (filter.Length == 0 || pi.Id.ToString().Contains (filter) || pi.Name.Contains (filter))
 					store.AppendValues (pi, pi.Id.ToString (), pi.Name);
 			}
-
+			tree.Model = store;
 			state.Load ();
 
 			if (tree.Selection.CountSelectedRows () == 0) {
