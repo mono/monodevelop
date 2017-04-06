@@ -157,6 +157,10 @@
     <Compile Include="MonoDevelop.Refactoring\AnalyzeCurrentProjectHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeFixMenuService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeOptionService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
