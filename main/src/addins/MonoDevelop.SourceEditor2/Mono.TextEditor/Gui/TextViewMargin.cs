@@ -1033,6 +1033,7 @@ namespace Mono.TextEditor
 									continue;
 								chunkMarker.ChangeForeColor (textEditor, chunk, ref color);
 							}
+							color = StripAlphaValue (color);
 							atts.AddForegroundAttribute ((HslColor)color, si, ei);
 
 							if (!chunkStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background)) != GetPixel (chunkStyle.Background)) {
@@ -1064,6 +1065,7 @@ namespace Mono.TextEditor
 									continue;
 								chunkMarker.ChangeForeColor (textEditor, chunk, ref color);
 							}
+							color = StripAlphaValue (color);
 							atts.AddForegroundAttribute ((HslColor)color, si, ei);
 							if (!wrapper.StartSet)
 								wrapper.SelectionStartIndex = (int)si;
@@ -1168,7 +1170,23 @@ namespace Mono.TextEditor
 			}
 		}
 
-			internal void GetSize (out int w, out int h)
+		/// <summary>
+		/// Strips the alpha value. Gtk doesn't support alpha colors.
+		/// </summary>
+		Cairo.Color StripAlphaValue (Cairo.Color color)
+		{
+			if (color.A < 1.0) {
+				var bgc = (Cairo.Color)SyntaxHighlightingService.GetColor (EditorTheme, EditorThemeColors.Background);
+				return new Cairo.Color (
+					color.R * color.A + bgc.R * (1.0 - color.A),
+					color.G * color.A + bgc.G * (1.0 - color.A),
+					color.B * color.A + bgc.B * (1.0 - color.A)
+				);
+			}
+			return color;
+		}
+
+		internal void GetSize (out int w, out int h)
 			{
 				throw new NotImplementedException ();
 			}

@@ -96,12 +96,12 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-			var bgc = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
-			double alpha = 0.6;
+			
 			color = new Cairo.Color (
-				color.R * alpha + bgc.R * (1.0 - alpha),
-				color.G * alpha + bgc.G * (1.0 - alpha),
-				color.B * alpha + bgc.B * (1.0 - alpha)
+				color.R,
+				color.G,
+				color.B,
+				0.6
 			);
 		}
 		#endregion
