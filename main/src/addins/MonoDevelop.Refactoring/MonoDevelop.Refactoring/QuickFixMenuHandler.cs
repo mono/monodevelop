@@ -29,6 +29,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
@@ -40,8 +41,9 @@ namespace MonoDevelop.Refactoring
 			var ext = editor?.GetContent<CodeActionEditorExtension> ();
 			if (ext == null)
 				return;
-
+			info.Add (new CommandInfo(GettextCatalog.GetString ("Loading...")), null);
 			var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
+			info.Clear ();
 			info.Add (CreateCommandInfoSet (menu));
 		}
 
@@ -57,7 +59,11 @@ namespace MonoDevelop.Refactoring
 
 		void AddItem (CommandInfoSet cis, CodeFixMenuEntry item)
 		{
-			cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+			if (item == CodeFixMenuEntry.Separator) {
+				cis.CommandInfos.AddSeparator ();
+			} else {
+				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+			}
 		}
 
 		protected override void Run (object data)
