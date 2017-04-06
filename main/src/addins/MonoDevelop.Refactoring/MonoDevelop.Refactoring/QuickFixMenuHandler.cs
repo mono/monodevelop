@@ -76,6 +76,8 @@ namespace MonoDevelop.Refactoring
 		void AddItem (CommandInfoSet cis, CodeFixMenuEntry item)
 		{
 			if (item == CodeFixMenuEntry.Separator) {
+				if (cis.CommandInfos.Count == 0)
+					return;
 				cis.CommandInfos.AddSeparator ();
 			} else {
 				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
