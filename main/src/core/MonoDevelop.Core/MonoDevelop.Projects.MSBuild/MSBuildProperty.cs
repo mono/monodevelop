@@ -1,4 +1,4 @@
-//
+﻿//
 // MSBuildProperty.cs
 //
 // Author:
@@ -381,16 +381,18 @@ namespace MonoDevelop.Projects.MSBuild
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}
 
-		internal void InitEvaluatedValue (string value)
+		internal void InitEvaluatedValue (string value, bool definedMultipleTimes)
 		{
 			this.value = value;
+			if (definedMultipleTimes)
+				flags |= LinkedPropertyFlags.DefinedMultipleTimes;
 		}
 
 		internal virtual void SetPropertyValue (string value)
 		{
 			if (this.value == null || !valueType.Equals (this.value, value)) {
 				// If the property has an initial evaluated value, then set the EvaluatedValueModified flag
-				if (!Modified && this.value != null)
+				if (!Modified && this.value != null && (flags & LinkedPropertyFlags.DefinedMultipleTimes) != 0)
 					EvaluatedValueModified = true;
 				
 				Modified = true;
