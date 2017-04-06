@@ -1,10 +1,10 @@
 ﻿//
-// Commands.cs
+// QuickFixMenuHandler.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Microsoft Corporation
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.CodeActions;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
-
-	public enum RefactoryCommands
+	class QuickFixMenuHandler : CommandHandler
 	{
-		CurrentRefactoryOperations,
-		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
-		FindReferences,
-		FindAllReferences,
-		FindDerivedClasses,
-		DeclareLocal,
-		ImportSymbol,
-		QuickFix,
-		QuickFixMenu
+		protected override async Task UpdateAsync (CommandArrayInfo info, CancellationToken cancelToken)
+		{
+			var editor = IdeApp.Workbench.ActiveDocument?.Editor;
+			var ext = editor?.GetContent<CodeActionEditorExtension> ();
+			if (ext == null)
+				return;
+
+			var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
+			info.Add (CreateCommandInfoSet (menu));
+		}
+
+		CommandInfoSet CreateCommandInfoSet (CodeFixMenu menu)
+		{
+			var cis = new CommandInfoSet ();
+			cis.Text = menu.Label;
+			foreach (var item in menu.Items) {
+				AddItem (cis, item);
+			}
+			return cis;
+		}
+
+		void AddItem (CommandInfoSet cis, CodeFixMenuEntry item)
+		{
+			cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+		}
+
+		protected override void Run (object data)
+		{
+			(data as Action)?.Invoke ();
+		}
 	}
-
 }
-

@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/CSharp/Completion/ContextHandler">
@@ -289,7 +289,7 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" mimeTypes="text/x-csharp">
-			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 
 			<ItemSet id = "Navigate" _label = "Navigate">

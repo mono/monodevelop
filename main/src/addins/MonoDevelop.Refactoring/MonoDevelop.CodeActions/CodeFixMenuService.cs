@@ -75,7 +75,7 @@ namespace MonoDevelop.CodeActions
 			usages.Set (id, CodeActionUsages [id]);
 		}
 
-		public static async Task<CodeFixMenu> CreateFixMenu (TextEditor editor, CodeActionContainer fixes)
+		public static async Task<CodeFixMenu> CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var menu = new CodeFixMenu ();
 
@@ -108,7 +108,7 @@ namespace MonoDevelop.CodeActions
 
 			first = false;
 
-			var warningsAtCaret = (editor.DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result)
+			var warningsAtCaret = (await editor.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken))
 				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
 				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
 
@@ -161,7 +161,8 @@ namespace MonoDevelop.CodeActions
 				}
 
 				foreach (var fix in fixes.CodeFixActions.OrderByDescending (i => GetUsage (i.CodeAction.EquivalenceKey))) {
-
+					if (cancellationToken.IsCancellationRequested)
+						return null;
 					var provider = fix.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
 					if (provider == null)
 						continue;

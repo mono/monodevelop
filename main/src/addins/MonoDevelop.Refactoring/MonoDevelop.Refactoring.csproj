@@ -160,6 +160,7 @@
     <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeOptionService.cs" />
     <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
