@@ -1315,7 +1315,7 @@ namespace MonoDevelop.Projects.MSBuild
 				SetMSBuildConfigProperty (toolset, "RoslynTargetsPath", roslynTargetsPath);
 
 				var vcTargetsPath = Path.Combine (extensionsPath, "Common7", "IDE", "VC", "VCTargets");
-				SetMSBuildConfigProperty (toolset, "VCTargets", vcTargetsPath);
+				SetMSBuildConfigProperty (toolset, "VCTargetsPath", vcTargetsPath);
 
 				var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
 				if (projectImportSearchPaths != null) {
