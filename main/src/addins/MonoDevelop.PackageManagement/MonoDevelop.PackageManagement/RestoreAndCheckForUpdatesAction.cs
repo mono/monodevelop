@@ -112,8 +112,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (buildIntegratedRestorer != null) {
-				var projects = await buildIntegratedRestorer.GetProjectsRequiringRestore (GetBuildIntegratedNuGetProjects ());
-				buildIntegratedProjectsToBeRestored = projects.ToList ();
+				buildIntegratedProjectsToBeRestored = GetBuildIntegratedNuGetProjects ().ToList ();
 			}
 
 			if (nugetAwareRestorer != null) {
