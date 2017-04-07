@@ -1292,7 +1292,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var configuration = doc.Root;
 
 			var runtimeElement = configuration.Element ("runtime");
-			ConfigFileUtilities.SetSubelementAttribute (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
 
 			var toolset = configuration.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
 			if (toolset != null) {

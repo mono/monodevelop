@@ -2801,10 +2801,10 @@ namespace MonoDevelop.Projects
 		public void TestMutateConfigFile ()
 		{
 			var runtime = new XElement ("runtime");
-			ConfigFileUtilities.SetSubelementAttribute (runtime, "Subelement", "value", "CustomValue");
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtime, "Subelement", "value", "CustomValue");
 			var runtimeWithSwitch = runtime.ToString ();
 
-			ConfigFileUtilities.SetSubelementAttribute (runtime, "Subelement", "value", "CustomValue");
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtime, "Subelement", "value", "CustomValue");
 			Assert.AreEqual (runtimeWithSwitch, runtime.ToString ());
 		}
 	}

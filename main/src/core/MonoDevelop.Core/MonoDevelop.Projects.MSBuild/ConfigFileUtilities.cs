@@ -5,7 +5,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	class ConfigFileUtilities
 	{
-		internal static void SetSubelementAttribute (XElement element, string subelementName, string attributeName, string attributeValue)
+		internal static void SetOrAppendSubelementAttributeValue (XElement element, string subelementName, string attributeName, string attributeValue)
 		{
 			var subelement = element.Elements ().FirstOrDefault (e => e.Name.LocalName == subelementName);
 			if (subelement != null) {
