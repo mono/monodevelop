@@ -60,6 +60,8 @@
 		<Import file = "Templates/WebConfig-Application.xft.xml"/>
 		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
 
+		<Import file = "Templates/AspNetCore/WebApiController.xft.xml"/>
+
 		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddView/Aspx/Empty.tt" />
@@ -153,6 +155,9 @@
 		              file     = "Templates/Mvc/PartialViewPageRazor.xft.xml" />
 		<FileTemplate id       = "PreprocessedRazorTemplate"
 		              file     = "Templates/PreprocessedRazorTemplate.xft.xml" />
+
+		<FileTemplate id   = "AspNetCoreWebApiController"
+		              file = "Templates/AspNetCore/WebApiController.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
@@ -368,6 +373,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
 		<FileTemplateConditionType name = "AspNetMvc" class = "MonoDevelop.AspNet.Projects.AspNetMvcFileTemplateCondition"/>
+		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNet.Projects.AspNetCoreFileTemplateCondition" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
