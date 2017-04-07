@@ -1,4 +1,4 @@
-//
+﻿//
 // TestResultsPad.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Gui;
@@ -171,6 +172,8 @@ namespace MonoDevelop.UnitTesting
 			
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
+			buttonSuccess.Accessible.Name = "TestResultsPad.SuccessfulTests";
+			buttonSuccess.Accessible.Description = GettextCatalog.GetString ("Show the results for the successful tests");
 			buttonSuccess.Active = false;
 			buttonSuccess.Image = new ImageView (TestStatusIcon.Success);
 			buttonSuccess.Image.Show ();
@@ -180,6 +183,8 @@ namespace MonoDevelop.UnitTesting
 
 			buttonInconclusive = new ToggleButton ();
 			buttonInconclusive.Label = GettextCatalog.GetString ("Inconclusive Tests");
+			buttonInconclusive.Accessible.Name = "TestResultsPad.InconclusiveTests";
+			buttonInconclusive.Accessible.Description = GettextCatalog.GetString ("Show the results for the inconclusive tests");
 			buttonInconclusive.Active = true;
 			buttonInconclusive.Image = new ImageView (TestStatusIcon.Inconclusive);
 			buttonInconclusive.Image.Show ();
@@ -189,6 +194,8 @@ namespace MonoDevelop.UnitTesting
 			
 			buttonFailures = new ToggleButton ();
 			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
+			buttonFailures.Accessible.Name = "TestResultsPad.FailedTests";
+			buttonFailures.Accessible.Description = GettextCatalog.GetString ("Show the results for the failed tests");
 			buttonFailures.Active = true;
 			buttonFailures.Image = new ImageView (TestStatusIcon.Failure);
 			buttonFailures.Image.Show ();
@@ -198,6 +205,8 @@ namespace MonoDevelop.UnitTesting
 
 			buttonIgnored = new ToggleButton ();
 			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
+			buttonIgnored.Accessible.Name = "TestResultsPad.IgnoredTests";
+			buttonIgnored.Accessible.Description = GettextCatalog.GetString ("Show the results for the ignored tests");
 			buttonIgnored.Active = true;
 			buttonIgnored.Image = new ImageView (TestStatusIcon.NotRun);
 			buttonIgnored.Image.Show ();
@@ -207,6 +216,8 @@ namespace MonoDevelop.UnitTesting
 			
 			buttonOutput = new ToggleButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
+			buttonOutput.Accessible.Name = "TestResultsPad.Output";
+			buttonOutput.Accessible.Description = GettextCatalog.GetString ("Show the test output");
 			buttonOutput.Active = false;
 			buttonOutput.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Image.Show ();
@@ -218,12 +229,17 @@ namespace MonoDevelop.UnitTesting
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
+			buttonRun.Accessible.Name = "TestResultsPad.Run";
+			buttonRun.Accessible.Description = GettextCatalog.GetString ("Start a test run and run all the tests");
 			buttonRun.Image = new ImageView ("md-execute-all", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
 			
 			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
+			buttonStop.Accessible.Name = "TestResultsPad.Stop";
+			buttonStop.Accessible.SetTitle (GettextCatalog.GetString ("Stop"));
+			buttonStop.Accessible.Description = GettextCatalog.GetString ("Stop the current test run");
 			toolbar.Add (buttonStop);
 			toolbar.ShowAll ();
 			
