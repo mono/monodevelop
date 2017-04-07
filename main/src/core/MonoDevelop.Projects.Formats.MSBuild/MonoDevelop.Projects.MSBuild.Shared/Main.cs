@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			public static Assembly AssemblyLoad (string asmPath)
 			{
-				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+				if (Type.GetType("Mono.Runtime") == null) {
 					// we need assemblies to be loaded in the Load context
 					// the AssemblyName on Win32 contains the full path information 
 					// so Assembly.Load() will work
