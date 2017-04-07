@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PolicyService.cs
 // 
 // Author:
@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.Policies
 			// If the policy was not found for the specified scope, try using the default policy.
 			// Imprecise values are better than just crashing.
 			if (baseItem == null && inheritScope != null)
-				baseItem = set.Get (t, null);
+				baseItem = set.Get (t);
 			
 			if (baseItem == null) {
 				string msg = "Policy set '" + set.Id + "' does not contain a policy for '" + item.Name + "'";
@@ -299,19 +299,38 @@ namespace MonoDevelop.Projects.Policies
 			DataNode raw = RawSerialize (policyType, policy);
 			
 			if (policy != null) {
+				
 				// By default, diff-serialize against the default instance of the policy. Much safer than
 				// diffing against sets, which can change or not be present
 
-				var diffBasePolicy = diffBasePolicySet != null ? diffBasePolicySet.Get (policyType, scope) : Activator.CreateInstance (policyType);
+				bool usedBaseSet = false, usedBaseScope = false;
+				object diffBasePolicy = null;
+
+				if (diffBasePolicySet != null) {
+					// A set was given for diff serialization. Find a policy for this scope.
+					diffBasePolicy = diffBasePolicySet.Get (policyType, scope);
+					if (diffBasePolicy != null) {
+						usedBaseSet = true;
+						usedBaseScope = scope != null;
+					} else {
+						diffBasePolicy = diffBasePolicySet.Get (policyType);
+						if (diffBasePolicy != null)
+							usedBaseSet = true;
+					}
+				}
+				if (diffBasePolicy == null)
+					diffBasePolicy = Activator.CreateInstance (policyType);
 
 				baseNode = RawSerialize (policyType, diffBasePolicy) as DataItem;
 				int size = 0;
 				node = ExtractOverlay (baseNode, raw, ref size);
-				if (diffBasePolicySet != null) {
-					// Store the set and scope that was used for the diff serialization
+
+				// Store the set and scope that was used for the diff serialization, if necessary
+				if (usedBaseSet)
 					((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", diffBasePolicySet.Id));
+				if (usedBaseScope)
 					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", scope));
-				}
+				
 			} else {
 				node = raw;
 				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", "null"));
@@ -974,9 +993,14 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static T GetDefaultPolicy<T> () where T : class, IEquatable<T>, new ()
 		{
+			return (T) GetDefaultPolicy (typeof (T));
+		}
+
+		internal static object GetDefaultPolicy (Type type)
+		{
 			// If the user has customized the default policy, return that. If not, return the IDE default.
 			// (systemDefaultPolicies always returns a default policy, even if not explicitly defined)
-			return userDefaultPolicies.Get<T> () ?? systemDefaultPolicies.Get<T> ();
+			return userDefaultPolicies.Get (type) ?? systemDefaultPolicies.Get (type);
 		}
 
 		/// <summary>
@@ -1021,11 +1045,16 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static T GetDefaultPolicy<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
 		{
+			return (T)GetDefaultPolicy (typeof (T), scopes);
+		}
+
+		internal static object GetDefaultPolicy (Type policyType, IEnumerable<string> scopes)
+		{
 			// If the user has customized the default policy, return that. If not, return the IDE default.
 			// (systemDefaultPolicies always returns a default policy, even if not explicitly defined)
-			return userDefaultPolicies.Get<T> (scopes) ?? systemDefaultPolicies.Get<T> (scopes);
+			return userDefaultPolicies.Get (policyType, scopes) ?? systemDefaultPolicies.Get (policyType, scopes);
 		}
-		
+
 		/// <summary>
 		/// Gets default user-defined policy set
 		/// </summary>
@@ -1424,27 +1453,27 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		protected override T GetDefaultPolicy<T> ()
+		protected override object GetDefaultPolicy (Type type)
 		{
-			return new T ();
+			return Activator.CreateInstance (type);
 		}
 		
-		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
-			return new T ();
+			return Activator.CreateInstance (type);
 		}
 	}
 
 	class SystemDefaultPolicyBag: PolicyBag
 	{
-		protected override T GetDefaultPolicy<T> ()
+		protected override object GetDefaultPolicy (Type type)
 		{
-			return PolicyService.GetSystemDefaultPolicySet ().Get<T> () ?? new T ();
+			return PolicyService.GetSystemDefaultPolicySet ().Get (type) ?? Activator.CreateInstance (type);
 		}
 
-		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
-			return PolicyService.GetSystemDefaultPolicySet ().Get<T> (scopes) ?? new T ();
+			return PolicyService.GetSystemDefaultPolicySet ().Get (type, scopes) ?? Activator.CreateInstance (type);
 		}
 	}
 }

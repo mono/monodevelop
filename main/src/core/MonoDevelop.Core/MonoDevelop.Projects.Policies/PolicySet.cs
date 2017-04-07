@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PolicySet.cs
 // 
 // Author:
@@ -80,18 +80,18 @@ namespace MonoDevelop.Projects.Policies
 			get { return null; }
 		}
 		
-		protected override T GetDefaultPolicy<T> ()
+		protected override object GetDefaultPolicy (Type type)
 		{
 			// The default policy set always resturns a value for any type of policy.
 			if (IsDefaultSet)
-				return new T ();
+				return Activator.CreateInstance (type);
 			return null;
 		}
 		
-		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
 			if (IsDefaultSet)
-				return new T ();
+				return Activator.CreateInstance (type);
 			return null;
 		}
 		
