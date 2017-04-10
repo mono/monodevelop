@@ -238,7 +238,7 @@ namespace MonoDevelop.Components
 		protected Rectangle GetUsableMonitorGeometry (Rectangle targetRect)
 		{
 			var screen = Desktop.GetScreenAtLocation (targetRect.Location);
-			return screen.VisibleBounds;
+			return screen?.VisibleBounds ?? Rectangle.Zero;
 		}
 
 		Rectangle cachedBounds;
@@ -292,32 +292,34 @@ namespace MonoDevelop.Components
 			
 			Rectangle geometry = GetUsableMonitorGeometry (currentRect);
 
-			// Add some spacing between the screen border and the popover window
-			geometry.Inflate (-5, -5);
+			if (!geometry.IsEmpty) {
+				// Add some spacing between the screen border and the popover window
+				geometry = geometry.Inflate (-5, -5);
 
-			// Flip the orientation if the window doesn't fit the screen.
+				// Flip the orientation if the window doesn't fit the screen.
 
-			int intPos = (int)position;
-			switch ((PopupPosition)(intPos & 0x0f)) {
-			case PopupPosition.Top:
-				if (currentRect.Bottom + request.Height > geometry.Bottom)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Bottom;
-				break;
-			case PopupPosition.Bottom:
-				if (currentRect.Top - request.Height < geometry.X)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Top;
-				break;
-			case PopupPosition.Right:
-				if (currentRect.X - request.Width < geometry.X)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Left;
-				break;
-			case PopupPosition.Left:
-				if (currentRect.Right + request.Width > geometry.Right)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Right;
-				break;
+				int intPos = (int)position;
+				switch ((PopupPosition)(intPos & 0x0f)) {
+				case PopupPosition.Top:
+					if (currentRect.Bottom + request.Height > geometry.Bottom)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Bottom;
+					break;
+				case PopupPosition.Bottom:
+					if (currentRect.Top - request.Height < geometry.X)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Top;
+					break;
+				case PopupPosition.Right:
+					if (currentRect.X - request.Width < geometry.X)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Left;
+					break;
+				case PopupPosition.Left:
+					if (currentRect.Right + request.Width > geometry.Right)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Right;
+					break;
+				}
+
+				position = (PopupPosition)intPos;
 			}
-
-			position = (PopupPosition)intPos;
 
 			CurrentPosition = position;
 
