@@ -26,9 +26,11 @@
 using System.Collections.Generic;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.SharedAssetsProjects;
 using NUnit.Framework;
 using UnitTests;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -68,6 +70,27 @@ namespace MonoDevelop.Ide
 			cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
 			template.CreateWorkspaceItem (cinfo);
+		}
+
+		[Test]
+		public async Task NewSharedProjectAddedToExistingSolutionUsesCorrectBuildAction ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("shared-project");
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == "MonoDevelop.CSharp.SharedProject");
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+
+			var sharedAssetsProject = template.CreateProjects (sol.RootFolder, cinfo)
+				.OfType<SharedAssetsProject> ().Single ();
+			var myclassFile = sharedAssetsProject.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			Assert.AreEqual ("Compile", myclassFile.BuildAction);
 		}
 	}
 }
