@@ -251,9 +251,10 @@ namespace MonoDevelop.Core.Text
 		{
 			ArgumentCheck (fileName);
 			var tmpPath = WriteTextInit (fileName);
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write))
-			using (var sw = new StreamWriter (stream)) {
-				source.WriteTextTo (sw);
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+				using (var sw = new StreamWriter (stream, source.Encoding)) {
+					source.WriteTextTo (sw);
+				}
 			}
 			WriteTextFinal (tmpPath, fileName);
 		}
