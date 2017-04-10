@@ -242,6 +242,13 @@ namespace MonoDevelop.Components
 				var alloc = gtkTarget.Allocation;
 				return new Size (alloc.Width, alloc.Height);
 			}
+			#if MAC
+			var nsTarget = target as AppKit.NSView;
+			if (nsTarget != null) {
+				var frame = nsTarget.Frame;
+				return new Size (frame.Width, frame.Height);
+			}
+			#endif
 			var xwtTarget = target as Widget;
 			if (xwtTarget != null) {
 				var size = xwtTarget.Size;
