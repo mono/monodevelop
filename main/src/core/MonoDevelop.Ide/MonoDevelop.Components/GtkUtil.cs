@@ -178,9 +178,10 @@ namespace MonoDevelop.Components
 
 		public static Xwt.Size GetSize (this IconSize size)
 		{
+			var displayScale = Platform.IsWindows ? GtkWorkarounds.GetScaleFactor () : 1.0;
 			int w, h;
 			size.GetSize (out w, out h);
-			return new Xwt.Size (w, h);
+			return new Xwt.Size ((double)w / displayScale, (double)h / displayScale);
 		}
 
 		public static void GetSize (this IconSize size, out int width, out int height)
