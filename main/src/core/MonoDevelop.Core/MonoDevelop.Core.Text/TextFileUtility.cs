@@ -161,12 +161,6 @@ namespace MonoDevelop.Core.Text
 			return encoding.GetString (bytes, start, bytes.Length - start);
 		}
 
-		[Obsolete("Use encoding.GetString")]
-		public static string GetText (byte[] bytes, Encoding encoding)
-		{
-			return encoding.GetString (bytes);
-		}
-
 		public static string GetText (Stream inputStream)
 		{
 			using (var stream = OpenStream (inputStream)) {
