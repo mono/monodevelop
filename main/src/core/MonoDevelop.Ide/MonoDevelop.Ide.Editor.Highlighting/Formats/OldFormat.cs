@@ -1189,11 +1189,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (el != null)
 					result.BaseScheme = el.Value;
 
-				//if (result.BaseScheme != null) {
-				//	var baseScheme = SyntaxModeService.GetColorStyle (result.BaseScheme);
-				//	if (baseScheme != null)
-				//		result.CopyValues (baseScheme);
-				//}
 
 				var palette = new Dictionary<string, HslColor> ();
 				foreach (var color in root.XPathSelectElements ("palette/*")) {
@@ -1224,6 +1219,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						continue;
 					}
 					info.Info.SetValue (result, color, null);
+				}
+
+				if (result.BaseScheme != null) {
+					var defaultStyle = HslColor.Brightness (result.PlainText.Background) < 0.5 ? dark : light;
+					foreach (var color in textColors.Values) {
+						if (color.Info.GetValue (result, null) == null)
+							color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+					}
+					foreach (var color in ambientColors.Values) {
+						if (color.Info.GetValue (result, null) == null)
+							color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+					}
 				}
 
 				// Check scheme
@@ -1370,7 +1377,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", (HslColor)AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
 
 				var defaultStyle = HslColor.Brightness (result.PlainText.Background) < 0.5 ? dark : light;
-
 				foreach (var color in textColors.Values) {
 					if (color.Info.GetValue (result, null) == null)
 						color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
