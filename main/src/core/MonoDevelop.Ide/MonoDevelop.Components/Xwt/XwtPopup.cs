@@ -111,7 +111,12 @@ namespace MonoDevelop.Components
 			target = widget;
 			targetRect = targetRectangle;
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
+			try {
+				TransientFor = Toolkit.Load (Xwt.ToolkitType.XamMac)?.WrapWindow (widget.Window);
+			} catch {
+				if (MessageDialog.RootWindow != null)
+					TransientFor = MessageDialog.RootWindow;
+			}
 			var pos = GtkUtil.GetSceenBounds (widget);
 			targetWindowOrigin = new Point (pos.X, pos.Y);
 			ShowPopupInternal ();
@@ -138,7 +143,8 @@ namespace MonoDevelop.Components
 			target = IdeApp.Workbench.RootWindow;
 			targetRect = onScreenArea;
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
+			if (MessageDialog.RootWindow != null)
+				TransientFor = MessageDialog.RootWindow;
 			targetWindowOrigin = new Point (onScreenArea.X, onScreenArea.Y);
 			ShowPopupInternal ();
 		}
@@ -164,7 +170,6 @@ namespace MonoDevelop.Components
 			target = parent;
 			targetRect = targetRectangle.ToXwtRectangle ();
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
 			Gdk.Window targetWindow;
 			if (evt != null) {
 				eventProvided = true;
@@ -177,6 +182,16 @@ namespace MonoDevelop.Components
 				targetWindow.GetOrigin (out x, out y);
 				targetWindowOrigin = new Point (x, y);
 			}
+			Gtk.Window parentWindow = parent.Toplevel as Gtk.Window;
+			if (parentWindow != null)
+				try {
+					TransientFor = Toolkit.Load (ToolkitType.Gtk).WrapWindow (parentWindow);
+				} catch {
+					if (MessageDialog.RootWindow != null)
+						TransientFor = MessageDialog.RootWindow;
+				}
+			else if (MessageDialog.RootWindow != null)
+				TransientFor = MessageDialog.RootWindow;
 			ShowPopupInternal ();
 		}
 
