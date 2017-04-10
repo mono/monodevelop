@@ -841,11 +841,12 @@ namespace MonoDevelop.CSharp.Formatting
 					if (!lexer.IsInString)
 						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
-					textEditorData.InsertText (prevLine.Offset + prevLine.Length, "\" +");
-
-					int indentSize = textEditorData.CaretOffset - line.Offset;
-					var insertedText = prevLine.GetIndentation (textEditorData) + (trimmedPreviousLine.StartsWith ("\"", StringComparison.Ordinal) ? "" : "\t") + "\"";
-					textEditorData.ReplaceText (line.Offset, indentSize, insertedText);
+					var insertedText = "\" +";
+					textEditorData.InsertText (prevLine.Offset + prevLine.Length, insertedText);
+					var lineOffset = line.Offset + insertedText.Length;
+					int indentSize = textEditorData.CaretOffset - lineOffset;
+					insertedText = prevLine.GetIndentation (textEditorData) + (trimmedPreviousLine.StartsWith ("\"", StringComparison.Ordinal) ? "" : "\t") + "\"";
+					textEditorData.ReplaceText (lineOffset, indentSize, insertedText);
 					return true;
 				}
 			}
