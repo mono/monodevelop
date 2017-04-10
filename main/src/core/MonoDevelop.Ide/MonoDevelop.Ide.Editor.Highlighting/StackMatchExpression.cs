@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -88,6 +89,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (sb.Length > 0)
 				exprStack.Push (CreateMatchExpression (sb));
 			ShrinkStack (exprStack);
+			if (exprStack.IsEmpty ())
+				return new StringMatchExpression ("");
 			return exprStack.Peek ();
 		}
 
