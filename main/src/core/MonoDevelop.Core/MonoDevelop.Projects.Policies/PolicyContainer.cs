@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PolicyContainer.cs
 //  
 // Author:
@@ -53,44 +53,17 @@ namespace MonoDevelop.Projects.Policies
 		/// </returns>
 		public T Get<T> () where T : class, IEquatable<T>, new ()
 		{
-			if (policies != null) {
-				object policy;
-				if (policies.TryGetValue (typeof(T), null, out policy)) {
-					if (!PolicyService.IsUndefinedPolicy (policy))
-						return (T)policy;
-					return GetDefaultPolicy<T> ();
-				}
-			}
-			if (IsRoot)
-				return GetDefaultPolicy<T> ();
-			else
-				return ParentPolicies.Get<T> ();
+			return (T)Get (typeof (T));
 		}
-		
+
 		public T Get<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
-			return Get<T> (new string[] { scope });
+			return (T)Get (typeof (T), new string [] { scope });
 		}
 		
 		public T Get<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
 		{
-			// The search is done vertically, looking first at the parents
-			foreach (string scope in scopes) {
-				PolicyContainer currentBag = this;
-				while (currentBag != null) {
-					if (currentBag.DirectHas<T> (scope)) {
-						T pol = currentBag.DirectGet<T> (scope);
-						if (!PolicyService.IsUndefinedPolicy (pol))
-							return pol;
-						// If the bag has the policy (Has<> returns true) but the policy is undefined,
-						// then we have to keep looking using the base scopes.
-						// We start looking from the original bag, using the new scope.
-						break;
-					} else
-						currentBag = currentBag.ParentPolicies;
-				}
-			}
-			return GetDefaultPolicy<T>(scopes);
+			return (T)Get (typeof (T), scopes);
 		}
 		
 		public void Set<T> (T value) where T : class, IEquatable<T>, new ()
@@ -304,21 +277,46 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal object Get (Type type)
 		{
-			return Get (type, (string) null);
+			if (policies != null) {
+				object policy;
+				if (policies.TryGetValue (type, null, out policy)) {
+					if (!PolicyService.IsUndefinedPolicy (policy))
+						return policy;
+					return GetDefaultPolicy (type);
+				}
+			}
+			if (IsRoot)
+				return GetDefaultPolicy (type);
+			else
+				return ParentPolicies.Get (type);
 		}
 		
 		internal object Get (Type type, string scope)
 		{
-			if (policies == null)
-				return null;
-			object o;
-			if (policies.TryGetValue (type, scope, out o)) {
-				if (PolicyService.IsUndefinedPolicy (o))
-					return null;
-			}
-			return o;
+			return Get (type, new [] { scope });
 		}
-		
+
+		internal object Get (Type type, IEnumerable<string> scopes)
+		{
+			// The search is done vertically, looking first at the parents
+			foreach (string scope in scopes) {
+				PolicyContainer currentBag = this;
+				while (currentBag != null) {
+					if (currentBag.DirectHas (type, scope)) {
+						object pol = currentBag.DirectGet (type, scope);
+						if (!PolicyService.IsUndefinedPolicy (pol))
+							return pol;
+						// If the bag has the policy (Has<> returns true) but the policy is undefined,
+						// then we have to keep looking using the base scopes.
+						// We start looking from the original bag, using the new scope.
+						break;
+					} else
+						currentBag = currentBag.ParentPolicies;
+				}
+			}
+			return GetDefaultPolicy (type, scopes);
+		}
+
 		/// <summary>
 		/// Gets a list of all policies defined in this container (not inherited)
 		/// </summary>
@@ -343,33 +341,58 @@ namespace MonoDevelop.Projects.Policies
 		
 		public T DirectGet<T> () where T : class, IEquatable<T>, new ()
 		{
-			return DirectGet<T> (null);
+			return (T) DirectGet (typeof(T), null);
 		}
 		
 		public T DirectGet<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
+			return (T)DirectGet (typeof (T), scope);
+		}
+
+		internal object DirectGet (Type type)
+		{
+			return DirectGet (type, null);
+		}
+
+		internal object DirectGet (Type type, string scope)
+		{
 			if (policies != null) {
 				object policy;
-				if (policies.TryGetValue (typeof(T), scope, out policy))
-					return (T) policy;
+				if (policies.TryGetValue (type, scope, out policy))
+					return policy;
 			}
 			return null;
 		}
-		
+
 		public bool DirectHas<T> ()
 		{
-			return DirectHas<T> ((string)null);
+			return DirectHas (typeof (T), (string)null);
 		}
 		
 		public bool DirectHas<T> (string scope)
 		{
-			return policies != null && policies.ContainsKey (new PolicyKey (typeof(T), scope));
+			return DirectHas (typeof (T), scope);
 		}
 		
 		public bool DirectHas<T> (IEnumerable<string> scopes)
 		{
+			return DirectHas (typeof (T), scopes);
+		}
+
+		internal bool DirectHas (Type type)
+		{
+			return DirectHas (type, (string)null);
+		}
+
+		internal bool DirectHas (Type type, string scope)
+		{
+			return policies != null && policies.ContainsKey (new PolicyKey (type, scope));
+		}
+
+		internal bool DirectHas (Type type, IEnumerable<string> scopes)
+		{
 			foreach (string scope in scopes) {
-				if (DirectHas<T> (scope))
+				if (DirectHas (type, scope))
 					return true;
 			}
 			return false;
@@ -388,14 +411,14 @@ namespace MonoDevelop.Projects.Policies
 				PolicyChanged (this, new PolicyChangedEventArgs (policyType, scope));
 		}
 		
-		protected virtual T GetDefaultPolicy<T> () where T : class, IEquatable<T>, new ()
+		protected virtual object GetDefaultPolicy (Type type)
 		{
-			return PolicyService.GetDefaultPolicy<T> ();
+			return PolicyService.GetDefaultPolicy (type);
 		}
 		
-		protected virtual T GetDefaultPolicy<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		protected virtual object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
-			return PolicyService.GetDefaultPolicy<T> (scopes);
+			return PolicyService.GetDefaultPolicy (type, scopes);
 		}
 		
 		public virtual bool ReadOnly {

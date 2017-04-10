@@ -248,7 +248,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
-				var modifiedWhileLoading = modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+				var modifiedWhileLoading = modifiedProjects;
+				modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 				var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
 				foreach (var project in modifiedWhileLoading) {
 					if (solution.ContainsItem (project)) {
