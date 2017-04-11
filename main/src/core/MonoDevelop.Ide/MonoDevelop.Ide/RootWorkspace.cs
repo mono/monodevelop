@@ -575,10 +575,6 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-
-				timer.Trace ("Reattaching documents");
-				ReattachDocumentProjects (null);
-				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 			}
 			return true;
 		}
