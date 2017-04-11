@@ -43,8 +43,9 @@ namespace MonoDevelop.DotNetCore
 		protected override void Initialize (Project project)
 		{
 			base.Initialize (project);
-			ExternalConsole = true;
-			if (project.GetFlavor<DotNetCoreProjectExtension> ()?.IsWeb ?? false && string.IsNullOrEmpty (ApplicationURL)) {
+			bool webProject = project.GetFlavor<DotNetCoreProjectExtension> ()?.IsWeb ?? false;
+			ExternalConsole = !webProject;
+			if (webProject && string.IsNullOrEmpty (ApplicationURL)) {
 				var tcpListner = new TcpListener (IPAddress.Loopback, 0);
 				tcpListner.Start ();
 				ApplicationURL = $"http://localhost:{((IPEndPoint)tcpListner.LocalEndpoint).Port}";
