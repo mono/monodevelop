@@ -1365,7 +1365,6 @@ namespace MonoDevelop.SourceEditor
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				if (bp.Line <= 0 || bp.Line > textEditor.Document.LineCount) {
-					LoggingService.LogWarning ("Invalid breakpoint :" + bp + " in line " + bp.Line);
 					return;
 				}
 				DocumentLine line = document.GetLine (bp.Line);
