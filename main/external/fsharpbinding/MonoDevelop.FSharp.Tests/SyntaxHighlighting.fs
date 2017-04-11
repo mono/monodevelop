@@ -1,4 +1,4 @@
-namespace MonoDevelopTests
+﻿namespace MonoDevelopTests
 
 open System
 open NUnit.Framework
@@ -142,6 +142,7 @@ type SyntaxHighlighting() =
     [<TestCase("addButton (\"$gtk-save$\"", "string.quoted.double.source.fs")>]
     [<TestCase(@"namespace $rec$ MonoDevelop", "keyword.source.fs")>]
     [<TestCase(@"$type$ internal SomeType", "keyword.source.fs")>]
+    [<TestCase(@"$#I$ /some/path", "meta.preprocessor.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
