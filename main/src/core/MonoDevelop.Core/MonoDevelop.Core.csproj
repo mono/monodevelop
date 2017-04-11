@@ -747,6 +747,9 @@
     <EmbeddedResource Include="frameworks\framework_NET_4_0_client.xml">
       <LogicalName>framework_NET_4_0_client.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Projects.Policies\DefaultDotNetNamingPolicy.xml">
+      <LogicalName>DefaultDotNetNamingPolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">

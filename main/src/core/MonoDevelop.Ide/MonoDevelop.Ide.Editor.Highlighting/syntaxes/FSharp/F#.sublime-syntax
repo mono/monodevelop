@@ -273,7 +273,7 @@ contexts:
           pop: true
   
   preprocessor:
-    - match: '^\s*#(if|else|elif|endif|load|r|reference|nowarn|time|q|quit|help|include")\b'
+    - match: '^\s*#(if|else|elif|endif|load|r|reference|I|nowarn|time|q|quit|help|include")\b'
       scope: meta.preprocessor.source.fs
       push:
         - match: '\n?'

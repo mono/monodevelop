@@ -162,10 +162,6 @@
     </When>
   </Choose>
   <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj">
-      <Project>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</Project>
-      <Name>MonoDevelop.FSharpInteractive.Service</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
       <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
       <Name>MonoDevelop.FSharp.Shared</Name>
@@ -225,9 +221,9 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
-            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
+            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" __added="0" />
           </FSharpFormattingPolicy>
           <TextStylePolicy inheritsSet="null" scope="application/fsproject+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/fsproject+xml" />

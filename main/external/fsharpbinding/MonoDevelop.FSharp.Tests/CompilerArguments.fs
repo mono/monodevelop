@@ -88,9 +88,9 @@ type CompilerArgumentsTests() =
         | _ -> ()
 
     //[<TestCase(TestPlatform.Windows,"FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.OSX,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>]
-    [<TestCase(TestPlatform.Linux, "/usr/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
+    [<TestCase(TestPlatform.OSX,"FSharp.Core, Version=4.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.4.1.0__b03f5f7f11d50a3a/FSharp.Core.dll")>]
+    [<TestCase(TestPlatform.Linux, "/usr/lib/mono/gac/FSharp.Core/4.4.1.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
     [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
     member x.``Only FSharp.Core referenced`` (platform: TestPlatform, assemblyName:string) =
         match platform with

@@ -120,7 +120,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
 
 					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-						FindReferencesHandler.FindRefs (sym);
+						FindReferencesHandler.FindRefs (sym, doc.AnalysisDocument.Project.Solution);
 					} else {
 						RefactoringService.FindReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 					}

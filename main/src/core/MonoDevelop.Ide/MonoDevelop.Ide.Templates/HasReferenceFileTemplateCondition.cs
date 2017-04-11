@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Xml;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -42,8 +43,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public override bool ShouldEnableFor (Project proj, string projectPath)
 		{
-			var dnp = proj as DotNetProject;
-			if (dnp != null) {
+			if (proj is DotNetProject dnp) {
 				return dnp.References.Where (x => x.ReferenceType != ReferenceType.Project).Any (x => {
 					if (x.StoredReference.Length < reference.Length)
 						return false;
@@ -57,6 +57,15 @@ namespace MonoDevelop.Ide.Templates
 						letterCount = reference.Length;
 					return trimmed.IndexOf (reference, 0, letterCount, StringComparison.Ordinal) == 0;
 				});
+			} else if (proj is SharedAssetsProject sharedProj) {
+				// Check every .NET project
+				foreach (var projInSol in sharedProj.ParentSolution.GetAllProjects ().OfType<DotNetProject> ())
+					foreach (var r in projInSol.References)
+						// if it references this shared project
+						if (r.ReferenceType == ReferenceType.Project && r.ResolveProject (sharedProj.ParentSolution) == sharedProj)
+							// then check if that project has assembly reference
+							if (this.ShouldEnableFor (projInSol, projectPath))
+								return true;
 			}
 			return false;
 		}
