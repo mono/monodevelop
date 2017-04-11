@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cshtml">
+		<File name="${Name}.cs">
 <![CDATA[using System;
 using System.Collections.Generic;
 using System.Linq;
