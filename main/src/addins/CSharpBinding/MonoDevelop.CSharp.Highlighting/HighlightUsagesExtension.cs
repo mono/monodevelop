@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					});
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, DocumentContext.AnalysisDocument.Project.Solution, documents, token)) {
 				foreach (var loc in mref.Locations) {
 					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
 					var root = loc.Location.SourceTree.GetRoot ();
