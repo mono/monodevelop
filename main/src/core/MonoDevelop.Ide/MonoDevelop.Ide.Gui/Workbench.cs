@@ -893,7 +893,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		// When looking for the project to which the file belongs, look first
 		// in the active project, then the active solution, and so on
-		static Project GetProjectContainingFile (FilePath fileName)
+		internal static Project GetProjectContainingFile (FilePath fileName)
 		{
 			Project project = null;
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
