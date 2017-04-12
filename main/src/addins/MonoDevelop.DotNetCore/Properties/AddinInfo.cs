@@ -15,4 +15,5 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger.VsCodeDebugProtocol", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("PackageManagement", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("UnitTesting", MonoDevelop.BuildInfo.Version)]
