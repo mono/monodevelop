@@ -46,9 +46,13 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			//need a default namespace or if there is no project, substitutions can get very messed up
-			string ns;
+			string ns = "Application";
+			string rootNamespace = ns;
 			var dotNetFileContainer = project as IDotNetFileContainer;
-			ns = dotNetFileContainer != null ? dotNetFileContainer.GetDefaultNamespace (fileName) : "Application";
+			if (dotNetFileContainer != null) {
+				ns = dotNetFileContainer.GetDefaultNamespace (fileName);
+				rootNamespace = dotNetFileContainer.GetDefaultNamespace (null);
+			}
 
 			//need an 'identifier' for tag substitution, e.g. class name or page name
 			//if not given an identifier, use fileName
@@ -73,6 +77,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			tags ["Namespace"] = ns;
+			tags ["RootNamespace"] = rootNamespace;
 			if (policyParent != null)
 				tags ["SolutionName"] = policyParent.Name;
 			if (project != null) {

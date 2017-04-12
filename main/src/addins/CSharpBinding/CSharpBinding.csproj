@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -172,10 +172,9 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!-- NOTE:  On Mono this conflicts with the one in mscorlib -->
-    <Reference Include="System.ValueTuple" Condition="'$(OS)' != 'Unix'">
+    <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Aliases>SystemValueTuple</Aliases>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

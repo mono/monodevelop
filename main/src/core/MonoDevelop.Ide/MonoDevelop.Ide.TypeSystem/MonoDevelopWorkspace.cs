@@ -231,6 +231,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
 				projectionList.Clear ();
+				projectIdMap.Clear ();
+				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {

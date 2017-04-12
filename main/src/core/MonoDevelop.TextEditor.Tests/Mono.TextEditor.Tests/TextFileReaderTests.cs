@@ -144,16 +144,6 @@ namespace Mono.TextEditor.Tests
 			byte[] input = Encoding.GetEncoding (54936).GetBytes (src);
 			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
-
-		/// <summary>
-		/// Bug 16332 - Duplicate BOM! 
-		/// </summary>
-		[Test()]
-		public void TestBug16332 ()	
-		{
-			byte[] input = new byte[] { 0xEF, 0xBB, 0xBF, (byte)'a'};
-			Assert.AreEqual ("a", TextFileUtility.GetText (input, Encoding.UTF8));
-		}
 	}
 }
 

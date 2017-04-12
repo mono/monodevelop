@@ -39,7 +39,8 @@ module TestHelpers =
                       ParseAndCheckResults(Some checkResults, Some parseResults)
                   | FSharpCheckFileAnswer.Aborted ->
                       ParseAndCheckResults(None, Some parseResults)
-
+                if parseResults.Errors.Length > 0 then
+                    printfn "%A" parseResults.Errors
                 return results
             with exn ->
                 printf "%A" exn
