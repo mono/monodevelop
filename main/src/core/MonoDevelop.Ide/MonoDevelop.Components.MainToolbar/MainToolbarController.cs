@@ -629,10 +629,10 @@ namespace MonoDevelop.Components.MainToolbar
 			if (popup == null)
 				return;
 
-			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+			if (IdeApp.Workbench.RootWindow.Visible)
+				popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
 
-			var window = ToolbarView.PopupAnchor.GdkWindow;
-			if (window == null)
+			if (ToolbarView.PopupAnchor.GdkWindow == null)
 				popup.Location = new Xwt.Point (ToolbarView.PopupAnchor.Allocation.Width - popup.Size.Width, ToolbarView.PopupAnchor.Allocation.Y);
 		}
 
