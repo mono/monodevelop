@@ -19,7 +19,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cshtml">
+		<File name="${Name}.cs">
 <![CDATA[using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 
-namespace ${Namespace}.Controllers
+namespace ${RootNamespace}.Controllers
 {
 	public class ${EscapedIdentifier} : Controller
 	{

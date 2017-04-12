@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace ${Namespace}
+namespace ${RootNamespace}
 {
 	public static class WebApiConfig
 	{
