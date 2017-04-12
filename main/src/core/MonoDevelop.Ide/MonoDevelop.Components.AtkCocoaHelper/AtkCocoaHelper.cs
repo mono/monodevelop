@@ -38,13 +38,17 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 {
 	public static class AtkCocoaExtensions
 	{
+		public static void SetCommonAttributes (this Atk.Object o, string name, string label, string help)
+		{
+			o.Name = name;
+			o.Description = help;
+			o.SetLabel (label);
+		}
+
 		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
 		{
 			var accessible = w.Accessible;
-
-			accessible.Name = name;
-			accessible.Description = help;
-			accessible.SetLabel (label);
+			accessible.SetCommonAttributes (name, label, help);
 		}
 	}
 
