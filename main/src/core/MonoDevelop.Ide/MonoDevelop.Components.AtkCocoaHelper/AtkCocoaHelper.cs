@@ -1,4 +1,4 @@
-//
+﻿//
 // AtkCocoaHelper.cs
 //
 // Author:
@@ -36,6 +36,18 @@ using ObjCRuntime;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
+	public static class AtkCocoaExtensions
+	{
+		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
+		{
+			var accessible = w.Accessible;
+
+			accessible.Name = name;
+			accessible.Description = help;
+			accessible.SetLabel (label);
+		}
+	}
+
 	// AtkCocoaHelper wraps NSAccessibilityElement to set NSAccessibility properties that aren't supported by Atk
 	public static class AtkCocoa
 	{

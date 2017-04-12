@@ -111,7 +111,12 @@ namespace MonoDevelop.Components
 			target = widget;
 			targetRect = targetRectangle;
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
+			try {
+				TransientFor = Toolkit.Load (Xwt.ToolkitType.XamMac)?.WrapWindow (widget.Window);
+			} catch {
+				if (MessageDialog.RootWindow != null)
+					TransientFor = MessageDialog.RootWindow;
+			}
 			var pos = GtkUtil.GetSceenBounds (widget);
 			targetWindowOrigin = new Point (pos.X, pos.Y);
 			ShowPopupInternal ();
@@ -138,7 +143,8 @@ namespace MonoDevelop.Components
 			target = IdeApp.Workbench.RootWindow;
 			targetRect = onScreenArea;
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
+			if (MessageDialog.RootWindow != null)
+				TransientFor = MessageDialog.RootWindow;
 			targetWindowOrigin = new Point (onScreenArea.X, onScreenArea.Y);
 			ShowPopupInternal ();
 		}
@@ -164,7 +170,6 @@ namespace MonoDevelop.Components
 			target = parent;
 			targetRect = targetRectangle.ToXwtRectangle ();
 			targetPosition = position;
-			TransientFor = MessageDialog.RootWindow;
 			Gdk.Window targetWindow;
 			if (evt != null) {
 				eventProvided = true;
@@ -177,6 +182,16 @@ namespace MonoDevelop.Components
 				targetWindow.GetOrigin (out x, out y);
 				targetWindowOrigin = new Point (x, y);
 			}
+			Gtk.Window parentWindow = parent.Toplevel as Gtk.Window;
+			if (parentWindow != null)
+				try {
+					TransientFor = Toolkit.Load (ToolkitType.Gtk).WrapWindow (parentWindow);
+				} catch {
+					if (MessageDialog.RootWindow != null)
+						TransientFor = MessageDialog.RootWindow;
+				}
+			else if (MessageDialog.RootWindow != null)
+				TransientFor = MessageDialog.RootWindow;
 			ShowPopupInternal ();
 		}
 
@@ -227,6 +242,13 @@ namespace MonoDevelop.Components
 				var alloc = gtkTarget.Allocation;
 				return new Size (alloc.Width, alloc.Height);
 			}
+			#if MAC
+			var nsTarget = target as AppKit.NSView;
+			if (nsTarget != null) {
+				var frame = nsTarget.Frame;
+				return new Size (frame.Width, frame.Height);
+			}
+			#endif
 			var xwtTarget = target as Widget;
 			if (xwtTarget != null) {
 				var size = xwtTarget.Size;
@@ -238,7 +260,7 @@ namespace MonoDevelop.Components
 		protected Rectangle GetUsableMonitorGeometry (Rectangle targetRect)
 		{
 			var screen = Desktop.GetScreenAtLocation (targetRect.Location);
-			return screen.VisibleBounds;
+			return screen?.VisibleBounds ?? Rectangle.Zero;
 		}
 
 		Rectangle cachedBounds;
@@ -292,32 +314,34 @@ namespace MonoDevelop.Components
 			
 			Rectangle geometry = GetUsableMonitorGeometry (currentRect);
 
-			// Add some spacing between the screen border and the popover window
-			geometry.Inflate (-5, -5);
+			if (!geometry.IsEmpty) {
+				// Add some spacing between the screen border and the popover window
+				geometry = geometry.Inflate (-5, -5);
 
-			// Flip the orientation if the window doesn't fit the screen.
+				// Flip the orientation if the window doesn't fit the screen.
 
-			int intPos = (int)position;
-			switch ((PopupPosition)(intPos & 0x0f)) {
-			case PopupPosition.Top:
-				if (currentRect.Bottom + request.Height > geometry.Bottom)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Bottom;
-				break;
-			case PopupPosition.Bottom:
-				if (currentRect.Top - request.Height < geometry.X)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Top;
-				break;
-			case PopupPosition.Right:
-				if (currentRect.X - request.Width < geometry.X)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Left;
-				break;
-			case PopupPosition.Left:
-				if (currentRect.Right + request.Width > geometry.Right)
-					intPos = (intPos & 0xf0) | (int)PopupPosition.Right;
-				break;
+				int intPos = (int)position;
+				switch ((PopupPosition)(intPos & 0x0f)) {
+				case PopupPosition.Top:
+					if (currentRect.Bottom + request.Height > geometry.Bottom)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Bottom;
+					break;
+				case PopupPosition.Bottom:
+					if (currentRect.Top - request.Height < geometry.X)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Top;
+					break;
+				case PopupPosition.Right:
+					if (currentRect.X - request.Width < geometry.X)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Left;
+					break;
+				case PopupPosition.Left:
+					if (currentRect.Right + request.Width > geometry.Right)
+						intPos = (intPos & 0xf0) | (int)PopupPosition.Right;
+					break;
+				}
+
+				position = (PopupPosition)intPos;
 			}
-
-			position = (PopupPosition)intPos;
 
 			CurrentPosition = position;
 
