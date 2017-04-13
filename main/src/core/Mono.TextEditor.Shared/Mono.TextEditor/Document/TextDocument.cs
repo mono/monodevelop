@@ -956,9 +956,6 @@ namespace Mono.TextEditor
 		/// </summary>
 		public void SetNotDirtyState ()
 		{
-			OptimizeTypedUndo ();
-			if (undoStack.Count > 0 && undoStack.Peek () is KeyboardStackUndo)
-				((KeyboardStackUndo)undoStack.Peek ()).IsClosed = true;
 			savePoint = undoStack.ToArray ();
 			this.CommitUpdateAll ();
 			DiffTracker.SetBaseDocument (CreateDocumentSnapshot ());
@@ -969,7 +966,7 @@ namespace Mono.TextEditor
 			if (undoStack.Count == 0)
 				return;
 			UndoOperation top = undoStack.Pop ();
-			if (top.Changes == null) {
+			if (top.Changes == null || top.Changes.Count > 1) {
 				undoStack.Push (top);
 				return;
 			}
