@@ -13,7 +13,7 @@
 	<Policies resource="MonoTextStylePolicy.xml" />
 </Extension>
 <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Default" >
-	<Policies resource="MonoTextStylePolicy.xml" />
+	<Policies resource="VisualStudioTextStylePolicy.xml" />
 	<Policies resource="DefaultDotNetNamingPolicy.xml" />
 </Extension>
 <Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >

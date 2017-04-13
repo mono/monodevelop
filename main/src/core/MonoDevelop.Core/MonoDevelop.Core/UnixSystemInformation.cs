@@ -31,7 +31,7 @@ namespace MonoDevelop.Core
 	{
 		internal override void AppendOperatingSystem (System.Text.StringBuilder sb)
 		{
-			var psi = new System.Diagnostics.ProcessStartInfo ("uname", "-a") {
+			var psi = new System.Diagnostics.ProcessStartInfo ("uname", "-mrsv") {
 				RedirectStandardOutput = true,
 				UseShellExecute = false,
 			};
