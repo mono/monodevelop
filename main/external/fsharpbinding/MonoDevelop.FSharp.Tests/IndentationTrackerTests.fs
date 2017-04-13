@@ -45,9 +45,8 @@ let b = (fun a ->
   let b = a
 """
         doc.Editor.IndentationTracker <- FSharpIndentationTracker(doc.Editor)
-        // default indent width is 8
-        getIndent (doc, 3, 1) |> should equal 9
-        getIndent (doc, 5, 1) |> should equal 9
+        getIndent (doc, 3, 1) |> should equal 5
+        getIndent (doc, 5, 1) |> should equal 5
         getIndent (doc, 7, 1) |> should equal 3
 
     [<Test>]
@@ -56,7 +55,7 @@ let b = (fun a ->
 
     [<Test>]
     member x.``If then expression``() =
-        getIndent("if true then\n§") |> should equal 8
+        getIndent("if true then\n§") |> should equal 4
 
     [<Test>]
     member x.``Indented match expression``() =
