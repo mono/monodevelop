@@ -1208,7 +1208,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				Accessible.Help = string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (t.Location));
 
 				var line = mode.TextEditor.OffsetToLineNumber (t.Location);
-				var y = mode.LineToY (line);
+				var y = mode.GetYPosition (line);
 				var frameInParent = new Gdk.Rectangle (0, (int)y, mode.Allocation.Width, 2);
 				Accessible.FrameInGtkParent = frameInParent;
 
@@ -1228,7 +1228,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				Accessible.Help = string.Format (GettextCatalog.GetString ("Jump to line {0}"), strip.TextEditor.OffsetToLineNumber (u.Offset));
 
 				var line = mode.TextEditor.OffsetToLineNumber (u.Offset);
-				var y = mode.LineToY (line) - 3.0;
+				var y = mode.GetYPosition (line) - 3.0;
 				var frameInParent = new Gdk.Rectangle (0, (int)y, 5, 6);
 				Accessible.FrameInGtkParent = frameInParent;
 
