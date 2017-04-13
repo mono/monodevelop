@@ -374,8 +374,11 @@ class Foo
 		public async Task TestBug16174_VirtualIndent ()
 		{
 			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
-				var options = DefaultSourceEditorOptions.Instance;
-				options.IndentStyle = IndentStyle.Virtual;
+				var options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual,
+					TabsToSpaces = false
+				};
+
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
@@ -413,12 +416,12 @@ class Foo
 			await Simulate (@"
 namespace FormatSelectionTest
 {
-	public class EmptyClass
-	{
-		<-public EmptyClass ()
-		{
-		}->
-	}
+    public class EmptyClass
+    {
+        <-public EmptyClass ()
+        {
+        }->
+    }
 }", (content, ext) => {
 
 				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset);
@@ -427,12 +430,12 @@ namespace FormatSelectionTest
 				Assert.AreEqual (@"
 namespace FormatSelectionTest
 {
-	public class EmptyClass
-	{
-		public EmptyClass()
-		{
-		}
-	}
+    public class EmptyClass
+    {
+        public EmptyClass()
+        {
+        }
+    }
 }", ext.Editor.Text);
 			});
 		}
@@ -626,10 +629,10 @@ namespace FormatSelectionTest
 			await Simulate (@"
 class EmptyClass
 {
-	public EmptyClass()
-	{
-		$Console.WriteLine() ;
-	}
+    public EmptyClass()
+    {
+        $Console.WriteLine() ;
+    }
 }", (content, ext) => { 
 				var oldOffset = ext.Editor.CaretOffset;
 				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
@@ -651,10 +654,10 @@ using System;
 
 class MyContext
 {
-	public static void Main()
-	{
-		Console.WriteLine   $   (""Hello world!"");
-	}
+    public static void Main()
+    {
+        Console.WriteLine   $   (""Hello world!"");
+    }
 }", (content, ext) => {
 				var oldOffset = ext.Editor.CaretOffset;
 				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
