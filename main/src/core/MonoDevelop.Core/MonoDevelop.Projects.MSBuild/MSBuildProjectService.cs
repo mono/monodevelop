@@ -1268,9 +1268,11 @@ namespace MonoDevelop.Projects.MSBuild
 					var dlls = Directory.GetFiles (binDir, "*.dll");
 
 					foreach (var dll in dlls) {
-						File.Copy (dll, Path.Combine (exesDir, Path.GetFileName (dll)));
-			}
-		}
+						var destination = Path.Combine (exesDir, Path.GetFileName (dll));
+						if (!File.Exists (destination))
+							File.Copy (dll, destination);
+					}
+				}
 
 				UpdateMSBuildExeConfigFile (runtime, binDir, localConfigOriginal);
 			}
