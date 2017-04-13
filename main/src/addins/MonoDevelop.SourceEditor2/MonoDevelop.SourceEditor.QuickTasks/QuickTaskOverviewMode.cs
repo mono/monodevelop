@@ -680,7 +680,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		double LineToY (int logicalLine)
 		{
 			var h = Allocation.Height - IndicatorHeight;
-			var p = TextEditor.LocationToPoint (logicalLine, 1, true).Y;
+			var p = TextEditor.LineToY (logicalLine);
 			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height)
 				+ TextEditor.Allocation.Height
 				- TextEditor.LineHeight;
