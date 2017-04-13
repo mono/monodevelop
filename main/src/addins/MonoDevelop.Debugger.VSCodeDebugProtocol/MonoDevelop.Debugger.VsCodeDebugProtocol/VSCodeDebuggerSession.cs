@@ -118,6 +118,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		bool currentExceptionState = false;
 		void UpdateExceptions ()
 		{
+			//Disposed
+			if (protocolClient == null)
+				return;
+
 			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any ();
 			if (currentExceptionState != hasCustomExceptions) {
 				currentExceptionState = hasCustomExceptions;
@@ -321,6 +325,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		void UpdateBreakpoints ()
 		{
+			//Disposed
+			if (protocolClient == null)
+				return;
+
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled).GroupBy (b => b.FileName).ToArray ();
 			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
