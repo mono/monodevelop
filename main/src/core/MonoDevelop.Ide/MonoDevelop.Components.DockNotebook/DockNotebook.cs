@@ -179,7 +179,7 @@ namespace MonoDevelop.Components.DockNotebook
 					if (currentTab != null) {
 						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
-							contentBox.ChildFocus (DirectionType.Down);
+							contentBox.ChildFocus (DirectionType.Up);
 						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
