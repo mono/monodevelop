@@ -1284,13 +1284,13 @@ namespace MonoDevelop.Projects.MSBuild
 		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string binDir, string configFile)
 		{
 			// strip the ".original" suffix
-				var localConfigFile = configFile.Substring (0, configFile.Length - 9);
+			var localConfigFile = configFile.Substring (0, configFile.Length - 9);
 
 			if (Platform.IsWindows) {
 				configFile = Path.Combine (binDir, "MSBuild.exe.config");
 			}
 
-				var doc = XDocument.Load (configFile);
+			var doc = XDocument.Load (configFile);
 			var configuration = doc.Root;
 
 			var runtimeElement = configuration.Element ("runtime");
@@ -1299,10 +1299,10 @@ namespace MonoDevelop.Projects.MSBuild
 			var toolset = configuration.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
 			if (toolset != null) {
 				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
-				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, false, true);
+				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
 
-					//this must match MSBuildBinPath w/MSBuild15
-					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, false, true);
+				//this must match MSBuildBinPath w/MSBuild15
+				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, append: false, insertBefore: true);
 
 				var extensionsPath = Path.GetDirectoryName (Path.GetDirectoryName (binDir));
 				SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath", extensionsPath);
