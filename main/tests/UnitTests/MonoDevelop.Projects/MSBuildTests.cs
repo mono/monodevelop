@@ -2798,7 +2798,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void TestMutateConfigFile ()
+		public void TestSetOrAppendSubelementAttributeValue ()
 		{
 			var runtime = new XElement ("runtime");
 			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtime, "Subelement", "value", "CustomValue");
