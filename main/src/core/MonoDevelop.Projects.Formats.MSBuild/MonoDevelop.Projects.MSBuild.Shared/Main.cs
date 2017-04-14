@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.MSBuild
 			{
 				if (Type.GetType("Mono.Runtime") == null) {
 					// we need assemblies to be loaded in the Load context
-					// the AssemblyName on Win32 contains the full path information 
+					// the AssemblyName on .NET Runtime contains the full path information 
 					// so Assembly.Load() will work
 					var asmName = AssemblyName.GetAssemblyName (asmPath);
 					return Assembly.Load (asmName);
