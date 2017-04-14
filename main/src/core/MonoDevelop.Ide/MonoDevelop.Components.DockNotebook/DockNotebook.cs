@@ -179,6 +179,7 @@ namespace MonoDevelop.Components.DockNotebook
 					if (currentTab != null) {
 						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
+							// Focus the last child, as some editors like the JSON one have a dropdown at the top.
 							contentBox.ChildFocus (DirectionType.Up);
 						}
 						pagesHistory.Remove (currentTab);
