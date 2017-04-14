@@ -113,8 +113,7 @@ namespace MonoDevelop.DotNetCore
 		IEnumerable<TargetFramework> GetNetFrameworkTargetFrameworks ()
 		{
 			foreach (var targetFramework in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (!targetFramework.Hidden &&
-					targetFramework.IsNetFramework () &&
+				if (targetFramework.IsNetFramework () &&
 					project.TargetRuntime.IsInstalled (targetFramework))
 					yield return targetFramework;
 			}

@@ -73,7 +73,6 @@ namespace MonoDevelop.Packaging.Gui
 		static IEnumerable<TargetFramework> GetPortableTargetFrameworks (PackagingProject project)
 		{
 			return Runtime.SystemAssemblyService.GetTargetFrameworks ().Where (fx =>
-				!fx.Hidden &&
 				fx.Id.Identifier == ".NETPortable" &&
 				!string.IsNullOrEmpty (fx.Id.Profile) &&
 				project.TargetRuntime.IsInstalled (fx));

@@ -359,7 +359,6 @@
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetTargetRuntimeFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\MsNetExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\PcFileCache.cs" />
-    <Compile Include="MonoDevelop.Core.AddIns\TargetFrameworkNode.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\TargetFrameworkBackend.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MonoFrameworkBackend.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs" />
@@ -761,30 +760,6 @@
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
       <LogicalName>MonoDevelop.Core.addin.xml</LogicalName>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_1_1.xml">
-      <LogicalName>framework_NET_1_1.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_2_0.xml">
-      <LogicalName>framework_NET_2_0.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_3_0.xml">
-      <LogicalName>framework_NET_3_0.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_3_5.xml">
-      <LogicalName>framework_NET_3_5.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_4_0.xml">
-      <LogicalName>framework_NET_4_0.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_4_5.xml">
-      <LogicalName>framework_NET_4_5.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_3_5_client.xml">
-      <LogicalName>framework_NET_3_5_client.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frameworks\framework_NET_4_0_client.xml">
-      <LogicalName>framework_NET_4_0_client.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Projects.Policies\DefaultDotNetNamingPolicy.xml">
       <LogicalName>DefaultDotNetNamingPolicy.xml</LogicalName>
