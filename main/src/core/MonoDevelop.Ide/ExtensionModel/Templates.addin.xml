@@ -113,9 +113,7 @@
 	<Category id="other" name="Other" icon="md-platform-other">
 		<Category id="net" name=".NET">
 			<Category id="general" name="General" mappedCategories="C#" />
-		</Category>
-		<Category id="aspnet" name="ASP.NET">
-			<Category id="general" name="General" mappedCategories="C#/ASP.NET" />
+			<Category id="aspnet" name="ASP.NET" mappedCategories="C#/ASP.NET" />
 		</Category>
 		<Category id="misc" name="Miscellaneous">
 			<Category id="generic" name="Generic" />

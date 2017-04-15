@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET MVC Project</_Name>
-		<Category>other/aspnet/general</Category>
+		<Category>other/net/aspnet</Category>
 		<Icon>md-aspnet-empty-project</Icon>
 		<Image id="md-aspnet-empty-project" />
 		<LanguageName>C#</LanguageName>
