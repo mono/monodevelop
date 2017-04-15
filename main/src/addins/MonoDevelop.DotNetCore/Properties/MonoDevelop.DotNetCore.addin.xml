@@ -8,10 +8,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="netcore" name=".NET Core" icon="md-platform-other" insertbefore="other">
+		<Category id="netcore" name=".NET Core" icon="md-platform-other">
 			<Category id="app" name="App">
 				<Category id="general" name="General" />
-				<Category id="aspnet" name="ASP.NET" />
+				<Category id="aspnet" name="ASP.NET Core" />
 			</Category>
 			<Category id="library" name="Library">
 				<Category id="general" name="General" />
