@@ -48,8 +48,7 @@ namespace MonoDevelop.Projects.MSBuild
 				} else {
 					subelement.SetAttributeValue (attributeName, attributeValue);
 				}
-			}
-			else {
+			} else {
 				subelement = new XElement (subelementName);
 				subelement.SetAttributeValue (attributeName, attributeValue);
 				element.AddFirst (subelement);
