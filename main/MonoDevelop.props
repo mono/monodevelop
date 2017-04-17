@@ -6,7 +6,7 @@
 		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
-	<Import Project="$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.props" />
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+	<!-- import common targets if they were not imported already by an MSBuild Sdk -->
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(MicrosoftCommonPropsHasBeenImported)' != 'true'" />
 	<Import Project="$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.props" />
 </Project>
