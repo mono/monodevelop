@@ -196,7 +196,7 @@ namespace MonoDevelop.Platform
 
 			foreach (var e in TextEncoding.ConversionEncodings) {
 				combo.Items.Add (new EncodingComboItem (Encoding.GetEncoding (e.CodePage), string.Format ("{0} ({1})", e.Name, e.Id)));
-				if (selectedEncoding != null && e.CodePage == selectedEncoding.WindowsCodePage)
+				if (selectedEncoding != null && e.CodePage == selectedEncoding.CodePage)
 					combo.SelectedIndex = i;
 				i++;
 			}
