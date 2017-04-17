@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
+
 namespace MonoDevelop.DotNetCore
 {
 	public static class DotNetCoreRuntime
@@ -33,6 +35,9 @@ namespace MonoDevelop.DotNetCore
 			var path = new DotNetCorePath ();
 			IsInstalled = !path.IsMissing;
 			FileName = path.FileName;
+
+			if (!IsInstalled)
+				LoggingService.LogInfo (".NET Core runtime not found.");
 		}
 
 		public static string FileName { get; private set; }
