@@ -45,8 +45,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (!existingValue.Value.Contains (attributeValue)) {
 						existingValue.Value = existingValue.Value + ";" + attributeValue;
 					}
-				}
-				else {
+				} else {
 					subelement.SetAttributeValue (attributeName, attributeValue);
 				}
 			}
