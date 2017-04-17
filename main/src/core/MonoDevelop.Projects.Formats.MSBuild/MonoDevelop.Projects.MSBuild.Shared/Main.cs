@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Main.cs
 //  
 // Author:
@@ -44,9 +44,6 @@ namespace MonoDevelop.Projects.MSBuild
 		[STAThread]
 		public static void Main (string[] args)
 		{
-			// This is required for MSBuild to properly load the .exe.config configuration file for this executable.
-			Environment.SetEnvironmentVariable ("MSBUILD_EXE_PATH", typeof(MainClass).Assembly.Location);
-
 			RemoteProcessServer server = new RemoteProcessServer ();
 			server.Connect (args, new AssemblyResolver (server));
 		}
@@ -76,6 +73,7 @@ namespace MonoDevelop.Projects.MSBuild
 							"Microsoft.Build.Framework",
 							"Microsoft.Build.Tasks.Core",
 							"Microsoft.Build.Utilities.Core",
+							"System.Collections.Immutable",
 							"System.Reflection.Metadata"};
 
 				var asmName = new AssemblyName (args.Name);
@@ -100,9 +98,22 @@ namespace MonoDevelop.Projects.MSBuild
 					// If the file exists under the msbuild bin dir, then we need
 					// to load it only from there. If that fails, then let that exception
 					// escape
-					return Assembly.LoadFrom (fullPath);
+					return AssemblyLoad (fullPath);
 				} else
 					return null;
+			}
+
+			public static Assembly AssemblyLoad (string asmPath)
+			{
+				if (Type.GetType("Mono.Runtime") == null) {
+					// we need assemblies to be loaded in the Load context
+					// the AssemblyName on .NET Runtime contains the full path information 
+					// so Assembly.Load() will work
+					var asmName = AssemblyName.GetAssemblyName (asmPath);
+					return Assembly.Load (asmName);
+				}
+
+				return Assembly.LoadFrom (asmPath);
 			}
 
 			[MessageHandler]
@@ -113,7 +124,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return CreateBuildEngineAndRespondToInitialize(msg);
 			}
 
-			//Keep in seperate method so MSBuildAssemblyResolver is installed before BuildEngine is loaded
+			// Keep in separate method so MSBuildAssemblyResolver is installed before BuildEngine is loaded
 			[MethodImpl (MethodImplOptions.NoInlining)]
 			BinaryMessage CreateBuildEngineAndRespondToInitialize (InitializeRequest msg)
 			{

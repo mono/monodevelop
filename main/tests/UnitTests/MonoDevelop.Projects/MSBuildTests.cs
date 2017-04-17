@@ -27,18 +27,19 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.CSharp.Project;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.CSharp.Project;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects;
-using System.Linq;
-using MonoDevelop.Projects.MSBuild;
-using System.Threading.Tasks;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Extensions;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Projects
 {
@@ -2794,6 +2795,17 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (4, asms.Length);
 
 			p.Dispose ();
+		}
+
+		[Test]
+		public void TestSetOrAppendSubelementAttributeValue ()
+		{
+			var runtime = new XElement ("runtime");
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtime, "Subelement", "value", "CustomValue");
+			var runtimeWithSwitch = runtime.ToString ();
+
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtime, "Subelement", "value", "CustomValue");
+			Assert.AreEqual (runtimeWithSwitch, runtime.ToString ());
 		}
 	}
 

@@ -359,6 +359,7 @@
     <Compile Include="Mono.Options.cs" />
     <Compile Include="MonoDevelop.Core.Logging\InstrumentationLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimerCounter.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\ConfigFileUtilities.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectPathItemPropertyAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfiguration.cs" />

@@ -258,7 +258,8 @@ namespace MonoDevelop.Projects.MSBuild
 				string binDir;
 				GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
-				var configFile = Path.Combine (binDir, "MSBuild.dll.config");
+				var configFileName = Platform.IsWindows ? "MSBuild.exe.config" : "MSBuild.dll.config";
+				var configFile = Path.Combine (binDir, configFileName);
 				if (File.Exists (configFile)) {
 					var doc = XDocument.Load (configFile);
 					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
@@ -1235,21 +1236,23 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var dirId = Process.GetCurrentProcess ().Id.ToString () + "_" + runtime.InternalId;
 			var exesDir = UserProfile.Current.CacheDir.Combine ("MSBuild").Combine (dirId);
+			var originalExe = GetMSBuildExeLocationInBundle (runtime);
+			var localExe = exesDir.Combine (Path.GetFileName (originalExe));
+			var localConfigOriginal = localExe + ".config.original";
 
 			if (!Directory.Exists (exesDir)) {
 				// Copy the builder to the local dir, including the debug file and config file.
 				Directory.CreateDirectory (exesDir);
-				var exe = GetMSBuildExeLocationInBundle (runtime);
-				File.Copy (exe, exesDir.Combine (Path.GetFileName (exe)));
-				var exeMdb = exe + ".mdb";
+				File.Copy (originalExe, localExe);
+				var exeMdb = originalExe + ".mdb";
 				if (File.Exists (exeMdb))
 					File.Copy (exeMdb, exesDir.Combine (Path.GetFileName (exeMdb)));
-				var exePdb = Path.ChangeExtension (exe, ".pdb");
+				var exePdb = Path.ChangeExtension (originalExe, ".pdb");
 				if (File.Exists (exePdb))
 					File.Copy (exePdb, exesDir.Combine (Path.GetFileName (exePdb)));
-				var exeConfig = exe + ".config";
+				var exeConfig = originalExe + ".config";
 				if (File.Exists (exeConfig))
-					File.Copy (exeConfig, exesDir.Combine (Path.GetFileName (exeConfig + ".original")));
+					File.Copy (exeConfig, localConfigOriginal);
 
 				searchPathConfigNeedsUpdate = true;
 			}
@@ -1257,32 +1260,64 @@ namespace MonoDevelop.Projects.MSBuild
 			if (searchPathConfigNeedsUpdate) {
 				// There is already a local copy of the builder, but the config file needs to be updated.
 				searchPathConfigNeedsUpdate = false;
-				UpdateMSBuildExeConfigFile (runtime);
+
+				string binDir;
+				GetNewestInstalledToolsVersion (runtime, true, out binDir);
+
+				if (Platform.IsWindows) {
+					var dlls = Directory.GetFiles (binDir, "*.dll");
+
+					foreach (var dll in dlls) {
+						var destination = Path.Combine (exesDir, Path.GetFileName (dll));
+						if (!File.Exists (destination))
+							File.Copy (dll, destination);
+					}
+				}
+
+				UpdateMSBuildExeConfigFile (runtime, binDir, localConfigOriginal);
 			}
-			return exesDir.Combine ("MonoDevelop.Projects.Formats.MSBuild.exe");
+
+			return localExe;
 		}
 
-		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime)
+		// Creates an MSBuild config file with the search paths registered by add-ins.
+		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string binDir, string configFile)
 		{
-			// Creates an MSBuild config file with the search paths registered by add-ins.
+			// strip the ".original" suffix
+			var localConfigFile = configFile.Substring (0, configFile.Length - 9);
 
-			foreach (var configFile in Directory.GetFiles (Path.GetDirectoryName (GetLocalMSBuildExeLocation (runtime)), "*.config.original")) {
+			if (Platform.IsWindows) {
+				configFile = Path.Combine (binDir, "MSBuild.exe.config");
+			}
 
-				var localConfigFile = configFile.Substring (0, configFile.Length - 9);
+			var doc = XDocument.Load (configFile);
+			var configuration = doc.Root;
 
-				var doc = XDocument.Load (configFile);
-				var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
+			var runtimeElement = configuration.Element ("runtime");
+			ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
 
-				if (toolset != null) {
-					
-					string binDir;
-					GetNewestInstalledToolsVersion (runtime, true, out binDir);
+			var toolset = configuration.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
+			if (toolset != null) {
+				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
+				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
 
-					// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
-					SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, false, true);
+				//this must match MSBuildBinPath w/MSBuild15
+				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, append: false, insertBefore: true);
 
-					//this must match MSBuildBinPath w/MSBuild15
-					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, false, true);
+				var extensionsPath = Path.GetDirectoryName (Path.GetDirectoryName (binDir));
+				SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath", extensionsPath);
+				SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath32", extensionsPath);
+				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir);
+				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath32", binDir);
+
+				var sdksPath = Path.Combine (extensionsPath, "Sdks");
+				SetMSBuildConfigProperty (toolset, "MSBuildSDKsPath", sdksPath);
+
+				var roslynTargetsPath = Path.Combine (binDir, "Roslyn");
+				SetMSBuildConfigProperty (toolset, "RoslynTargetsPath", roslynTargetsPath);
+
+				var vcTargetsPath = Path.Combine (extensionsPath, "Common7", "IDE", "VC", "VCTargets");
+				SetMSBuildConfigProperty (toolset, "VCTargetsPath", vcTargetsPath);
 
 					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
 					if (projectImportSearchPaths != null) {
@@ -1297,11 +1332,10 @@ namespace MonoDevelop.Projects.MSBuild
 							SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
 					}
 					doc.Save (localConfigFile);
-				}
 			}
 		}
 
-		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append, bool insertBefore)
+		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append = false, bool insertBefore = false)
 		{
 			var prop = elem.Elements ("property").FirstOrDefault (p => p.Attribute ("name")?.Value == name);
 			if (prop != null) {
