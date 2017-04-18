@@ -1336,7 +1336,7 @@ namespace MonoDevelop.Projects.MSBuild
 						projectImportSearchPaths.Add (searchPaths);
 					}
 					foreach (var path in GetProjectImportSearchPaths (runtime, false))
-						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
+						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, append: true, insertBefore: false);
 				}
 				doc.Save (destinationConfigFile);
 			}
