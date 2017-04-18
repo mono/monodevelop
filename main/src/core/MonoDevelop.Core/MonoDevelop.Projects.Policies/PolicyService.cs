@@ -328,8 +328,12 @@ namespace MonoDevelop.Projects.Policies
 				// Store the set and scope that was used for the diff serialization, if necessary
 				if (usedBaseSet)
 					((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", diffBasePolicySet.Id));
+				else if (keepDeletedNodes)
+					((DataItem)node).ItemData.Add (new DataDeletedNode ("inheritsSet"));
 				if (usedBaseScope)
 					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", scope));
+				else if (keepDeletedNodes)
+					((DataItem)node).ItemData.Add (new DataDeletedNode ("inheritsScope"));
 				
 			} else {
 				node = raw;
