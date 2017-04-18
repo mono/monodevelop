@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -37,6 +38,9 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
+
+			if (!IsInstalled)
+				LoggingService.LogInfo (".NET Core SDK not found.");
 		}
 
 		public static bool IsInstalled { get; private set; }
