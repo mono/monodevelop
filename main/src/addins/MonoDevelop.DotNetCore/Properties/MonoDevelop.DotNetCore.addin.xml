@@ -8,7 +8,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="netcore" name=".NET Core" icon="md-platform-other" insertbefore="other">
+		<Category id="netcore" name=".NET Core" icon="md-platform-netcore" insertbefore="other">
 			<Category id="app" name="App">
 				<Category id="general" name="General" />
 				<Category id="aspnet" name="ASP.NET Core" />
@@ -28,15 +28,15 @@
 			id="Microsoft.Common.Console.CSharp"
 			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-console-project"
-			imageId="md-console-project"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		<Template
 			id="Microsoft.Common.Console.FSharp"
 			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-console-project"
-			imageId="md-console-project"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
@@ -62,43 +62,43 @@
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-test-project"
-			imageId="md-test-project"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Test.xUnit.FSharp"
 			_overrideDescription="Creates a new xUnit test project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-test-project"
-			imageId="md-test-project"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Web.Empty.CSharp"
 			_overrideDescription="Creates a new ASP.NET Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-aspnet-empty-project"
-			imageId="md-aspnet-empty-project"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.CSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-aspnet-empty-project"
-			imageId="md-aspnet-empty-project"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.FSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-aspnet-empty-project"
-			imageId="md-aspnet-empty-project"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-aspnet-empty-project"
-			imageId="md-aspnet-empty-project"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		</Condition>
 	</Extension>
@@ -211,5 +211,17 @@
 
 	<Extension path="/MonoDevelop/Core/SystemInformation">
 		<Class class="MonoDevelop.DotNetCore.DotNetCoreSystemInformation" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-netcore-empty-project" resource="project-netcore-template.png" />
+		<Image id="md-netcore-console-project" resource="project-netcore-console-template.png" />
+		<Image id="md-netcore-test-project" resource="project-netcore-test-template.png" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-netcore-empty-project" resource="project-netcore-32.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-console-project" resource="project-netcore-console-32.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-test-project" resource="project-netcore-test-32.png" size="Dnd" />
 	</Extension>
 </ExtensionModel>
