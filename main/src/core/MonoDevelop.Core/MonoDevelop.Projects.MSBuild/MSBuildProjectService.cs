@@ -258,7 +258,8 @@ namespace MonoDevelop.Projects.MSBuild
 				string binDir;
 				GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
-				var configFile = Path.Combine (binDir, "MSBuild.dll.config");
+				var configFileName = Platform.IsWindows ? "MSBuild.exe.config" : "MSBuild.dll.config";
+				var configFile = Path.Combine (binDir, configFileName);
 				if (File.Exists (configFile)) {
 					var doc = XDocument.Load (configFile);
 					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
@@ -1243,6 +1244,12 @@ namespace MonoDevelop.Projects.MSBuild
 			string binDir;
 			GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
+			if (Platform.IsWindows) {
+				// on Windows copy the official MSBuild.exe.config from the VS 2017 install
+				// and use this as the starting point
+				originalExeConfig = Path.Combine (binDir, "MSBuild.exe.config");
+			}
+
 			if (!Directory.Exists (exesDir)) {
 				// Copy the builder to the local dir, including the debug file and config file.
 				Directory.CreateDirectory (exesDir);
@@ -1284,15 +1291,40 @@ namespace MonoDevelop.Projects.MSBuild
 			// Creates an MSBuild config file with the search paths registered by add-ins.
 
 			var doc = XDocument.Load (sourceConfigFile);
-			var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
+			var configuration = doc.Root;
 
+			if (Platform.IsWindows) {
+				// we want the config file to have the UseLegacyPathHandling=false switch
+				// https://blogs.msdn.microsoft.com/jeremykuhne/2016/06/21/more-on-new-net-path-handling/
+				var runtimeElement = configuration.Element ("runtime");
+				ConfigFileUtilities.SetOrAppendSubelementAttributeValue (runtimeElement, "AppContextSwitchOverrides", "value", "Switch.System.IO.UseLegacyPathHandling=false");
+			}
+
+			var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
 			if (toolset != null) {
 					
 				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
 				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
 
-				//this must match MSBuildBinPath w/MSBuild15
+				// this must match MSBuildBinPath w/MSBuild15
 				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, append: false, insertBefore: true);
+
+				if (Platform.IsWindows) {
+					var extensionsPath = Path.GetDirectoryName (Path.GetDirectoryName (binDir));
+					SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath", extensionsPath);
+					SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath32", extensionsPath);
+					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir);
+					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath32", binDir);
+
+					var sdksPath = Path.Combine (extensionsPath, "Sdks");
+					SetMSBuildConfigProperty (toolset, "MSBuildSDKsPath", sdksPath);
+
+					var roslynTargetsPath = Path.Combine (binDir, "Roslyn");
+					SetMSBuildConfigProperty (toolset, "RoslynTargetsPath", roslynTargetsPath);
+
+					var vcTargetsPath = Path.Combine (extensionsPath, "Common7", "IDE", "VC", "VCTargets");
+					SetMSBuildConfigProperty (toolset, "VCTargetsPath", vcTargetsPath);
+				}
 
 				var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
 				if (projectImportSearchPaths != null) {
@@ -1304,7 +1336,7 @@ namespace MonoDevelop.Projects.MSBuild
 						projectImportSearchPaths.Add (searchPaths);
 					}
 					foreach (var path in GetProjectImportSearchPaths (runtime, false))
-						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
+						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, append: true, insertBefore: false);
 				}
 				doc.Save (destinationConfigFile);
 			}
