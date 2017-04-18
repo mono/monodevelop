@@ -1235,21 +1235,38 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var dirId = Process.GetCurrentProcess ().Id.ToString () + "_" + runtime.InternalId;
 			var exesDir = UserProfile.Current.CacheDir.Combine ("MSBuild").Combine (dirId);
+			var originalExe = GetMSBuildExeLocationInBundle (runtime);
+			var originalExeConfig = originalExe + ".config";
+			var destinationExe = exesDir.Combine (Path.GetFileName (originalExe));
+			var destinationExeConfig = destinationExe + ".config";
+
+			string binDir;
+			GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
 			if (!Directory.Exists (exesDir)) {
 				// Copy the builder to the local dir, including the debug file and config file.
 				Directory.CreateDirectory (exesDir);
-				var exe = GetMSBuildExeLocationInBundle (runtime);
-				File.Copy (exe, exesDir.Combine (Path.GetFileName (exe)));
-				var exeMdb = exe + ".mdb";
+				File.Copy (originalExe, destinationExe);
+				var exeMdb = originalExe + ".mdb";
 				if (File.Exists (exeMdb))
 					File.Copy (exeMdb, exesDir.Combine (Path.GetFileName (exeMdb)));
-				var exePdb = Path.ChangeExtension (exe, ".pdb");
+				var exePdb = Path.ChangeExtension (originalExe, ".pdb");
 				if (File.Exists (exePdb))
 					File.Copy (exePdb, exesDir.Combine (Path.GetFileName (exePdb)));
-				var exeConfig = exe + ".config";
-				if (File.Exists (exeConfig))
-					File.Copy (exeConfig, exesDir.Combine (Path.GetFileName (exeConfig + ".original")));
+
+				// On Windows we need to copy the MSBuild .dlls locally to the builder directory.
+				// The assembly resolve logic in the builder that loads them from the original
+				// directory at runtime doesn't work for multiple AppDomains, and so for example
+				// WPF MarkupCompilePass1 will fail since it can't load MSBuild binaries into an
+				// AppDomain it creates.
+				if (Platform.IsWindows) {
+					var dlls = Directory.GetFiles (binDir, "*.dll");
+					foreach (var dll in dlls) {
+						var destination = Path.Combine (exesDir, Path.GetFileName (dll));
+						if (!File.Exists (destination))
+							File.Copy (dll, destination);
+					}
+				}
 
 				searchPathConfigNeedsUpdate = true;
 			}
@@ -1257,51 +1274,43 @@ namespace MonoDevelop.Projects.MSBuild
 			if (searchPathConfigNeedsUpdate) {
 				// There is already a local copy of the builder, but the config file needs to be updated.
 				searchPathConfigNeedsUpdate = false;
-				UpdateMSBuildExeConfigFile (runtime);
+				UpdateMSBuildExeConfigFile (runtime, originalExeConfig, destinationExeConfig, binDir);
 			}
-			return exesDir.Combine ("MonoDevelop.Projects.Formats.MSBuild.exe");
+			return destinationExe;
 		}
 
-		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime)
+		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string sourceConfigFile, string destinationConfigFile, string binDir)
 		{
 			// Creates an MSBuild config file with the search paths registered by add-ins.
 
-			foreach (var configFile in Directory.GetFiles (Path.GetDirectoryName (GetLocalMSBuildExeLocation (runtime)), "*.config.original")) {
+			var doc = XDocument.Load (sourceConfigFile);
+			var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
 
-				var localConfigFile = configFile.Substring (0, configFile.Length - 9);
-
-				var doc = XDocument.Load (configFile);
-				var toolset = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ();
-
-				if (toolset != null) {
+			if (toolset != null) {
 					
-					string binDir;
-					GetNewestInstalledToolsVersion (runtime, true, out binDir);
+				// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
+				SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, append: false, insertBefore: true);
 
-					// This is required for MSBuild to properly load the searchPaths element (@radical knows why)
-					SetMSBuildConfigProperty (toolset, "MSBuildBinPath", binDir, false, true);
+				//this must match MSBuildBinPath w/MSBuild15
+				SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, append: false, insertBefore: true);
 
-					//this must match MSBuildBinPath w/MSBuild15
-					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir, false, true);
-
-					var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
-					if (projectImportSearchPaths != null) {
-						var os = Platform.IsMac ? "osx" : Platform.IsWindows ? "windows" : "unix";
-						XElement searchPaths = projectImportSearchPaths.Elements ("searchPaths").FirstOrDefault (sp => sp.Attribute ("os")?.Value == os);
-						if (searchPaths == null) {
-							searchPaths = new XElement ("searchPaths");
-							searchPaths.SetAttributeValue ("os", os);
-							projectImportSearchPaths.Add (searchPaths);
-						}
-						foreach (var path in GetProjectImportSearchPaths (runtime, false))
-							SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
+				var projectImportSearchPaths = doc.Root.Elements ("msbuildToolsets").FirstOrDefault ()?.Elements ("toolset")?.FirstOrDefault ()?.Element ("projectImportSearchPaths");
+				if (projectImportSearchPaths != null) {
+					var os = Platform.IsMac ? "osx" : Platform.IsWindows ? "windows" : "unix";
+					XElement searchPaths = projectImportSearchPaths.Elements ("searchPaths").FirstOrDefault (sp => sp.Attribute ("os")?.Value == os);
+					if (searchPaths == null) {
+						searchPaths = new XElement ("searchPaths");
+						searchPaths.SetAttributeValue ("os", os);
+						projectImportSearchPaths.Add (searchPaths);
 					}
-					doc.Save (localConfigFile);
+					foreach (var path in GetProjectImportSearchPaths (runtime, false))
+						SetMSBuildConfigProperty (searchPaths, path.Property, path.Path, true, false);
 				}
+				doc.Save (destinationConfigFile);
 			}
 		}
 
-		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append, bool insertBefore)
+		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append = false, bool insertBefore = false)
 		{
 			var prop = elem.Elements ("property").FirstOrDefault (p => p.Attribute ("name")?.Value == name);
 			if (prop != null) {
