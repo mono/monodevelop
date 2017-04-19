@@ -246,6 +246,14 @@ namespace MonoDevelop.Core.Assemblies
 			get { return new TargetFrameworkMoniker ("4.5"); }
 		}
 
+		public static TargetFrameworkMoniker NET_4_6 {
+			get { return new TargetFrameworkMoniker ("4.6"); }
+		}
+
+		public static TargetFrameworkMoniker NET_4_6_1 {
+			get { return new TargetFrameworkMoniker ("4.6.1"); }
+		}
+
 		public static TargetFrameworkMoniker NET_4_6_2 {
 			get { return new TargetFrameworkMoniker ("4.6.2"); }
 		}
