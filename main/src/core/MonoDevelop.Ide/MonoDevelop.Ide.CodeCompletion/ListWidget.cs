@@ -791,8 +791,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			public int Compare (CompletionData a, CompletionData b)
 			{
+				if (a == b)
+					return 0;
 				if (a is IComparable && b is IComparable)
-					return ((IComparable)a).CompareTo (b);
+						return ((IComparable)a).CompareTo (b);
 				return CompletionData.Compare (a, b);
 			}
 		}
