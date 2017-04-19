@@ -850,50 +850,50 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+					return Task.CompletedTask;
 				}
-			} else {
-				lock (adhocProjectLock) {
-					var token = analysisDocumentSrc.Token;
-					if (adhocProject != null) {
-						return Task.CompletedTask;
-					}
+			}
+			lock (adhocProjectLock) {
+				var token = analysisDocumentSrc.Token;
+				if (adhocProject != null) {
+					return Task.CompletedTask;
+				}
 
-					if (Editor != null) {
-						var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
-						if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
-							var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+				if (Editor != null) {
+					var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
+					if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
+						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
 
-							this.adhocProject = newProject;
+						this.adhocProject = newProject;
 
-							newProject.Name = "InvisibleProject";
-							newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-							newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-							newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+						newProject.Name = "InvisibleProject";
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-							newProject.FileName = "test.csproj";
-							if (!Window.ViewContent.IsUntitled) {
-								adHocFile = Editor.FileName;
-							} else {
-								adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
-							}
-
-							newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-							adhocSolution = new Solution ();
-							adhocSolution.AddConfiguration ("", true);
-							adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-							MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
-							return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
-								MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
-								if (token.IsCancellationRequested)
-									return;
-								UnsubscribeRoslynWorkspace ();
-								RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
-								SubscribeRoslynWorkspace ();
-								analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-								TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
-							});
+						newProject.FileName = "test.csproj";
+						if (!Window.ViewContent.IsUntitled) {
+							adHocFile = Editor.FileName;
+						} else {
+							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
 						}
+
+						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
+
+						adhocSolution = new Solution ();
+						adhocSolution.AddConfiguration ("", true);
+						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
+						MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
+							MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+							if (token.IsCancellationRequested)
+								return;
+							UnsubscribeRoslynWorkspace ();
+							RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
+							SubscribeRoslynWorkspace ();
+							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
+							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
+						});
 					}
 				}
 			}
