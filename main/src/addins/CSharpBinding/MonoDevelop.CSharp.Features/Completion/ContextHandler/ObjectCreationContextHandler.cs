@@ -92,11 +92,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			SyntaxKind.StringKeyword
 		};
 
-		public override Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext syntaxContext, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
-		{
-			return Task.FromResult (true);
-		}
-
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var list = new List<CompletionData> ();

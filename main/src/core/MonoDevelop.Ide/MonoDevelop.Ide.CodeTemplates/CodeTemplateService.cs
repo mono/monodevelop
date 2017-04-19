@@ -95,7 +95,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var savedTemplates = templates;
 			if (savedTemplates == null || string.IsNullOrEmpty (mimeType))
 				return new CodeTemplate [0];
-			return savedTemplates.ToArray ().Where (t => t != null && DesktopService.GetMimeTypeIsSubtype (mimeType, t.MimeType));
+			return savedTemplates.ToArray ().Where (delegate (CodeTemplate t) {
+				try {
+					return t != null && DesktopService.GetMimeTypeIsSubtype (mimeType, t.MimeType);
+				} catch (Exception) {
+					// required for some unit tests
+					return t != null && mimeType == t.MimeType;
+				}	
+			});
 		}
 
 		public static async Task<IEnumerable<CodeTemplate>> GetCodeTemplatesAsync (TextEditor editor, CancellationToken cancellationToken = default(CancellationToken))
