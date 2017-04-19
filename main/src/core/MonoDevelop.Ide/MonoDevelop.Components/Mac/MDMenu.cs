@@ -55,7 +55,8 @@ namespace MonoDevelop.Components.Mac
 
 			AutoEnablesItems = false;
 
-			Title = (ces.Name ?? "").Replace ("_", "");
+			var label = ces.Name ?? "";
+			Title = ContextMenuItem.SanitizeMnemonics (label);
 			foreach (CommandEntry ce in ces) {
 				if (ce.CommandId == Command.Separator) {
 					AddItem (NSMenuItem.SeparatorItem);

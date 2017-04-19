@@ -191,7 +191,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			                  // default - word with highest match rating in the list.
 			int idx = -1;
-
+			if (DefaultCompletionString != null && DefaultCompletionString.StartsWith (partialWord, StringComparison.OrdinalIgnoreCase)) {
+				partialWord = DefaultCompletionString;
+			}
 			StringMatcher matcher = null;
 			if (!string.IsNullOrEmpty (partialWord)) {
 				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);

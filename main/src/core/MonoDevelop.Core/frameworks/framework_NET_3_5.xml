@@ -1,4 +1,4 @@
-<TargetFramework id=".NETFramework,Version=v3.5" _name="Mono / .NET 3.5" clrVersion="Net_2_0" IncludesFramework="v3.0">
+﻿<TargetFramework id=".NETFramework,Version=v3.5" _name=".NET Framework 3.5" clrVersion="Net_2_0" IncludesFramework="v3.0">
 <Assemblies>
   <Assembly name="System.Core" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.AddIn.Contract" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />

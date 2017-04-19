@@ -286,11 +286,17 @@ namespace MonoDevelop.Components.Mac
 			if (txt == null)
 				return "";
 
+			bool isSpecial = ContextMenuItem.ContainsSpecialMnemonics;
 			//FIXME: markup stripping could be done better
 			var sb = new StringBuilder ();
 			for (int i = 0; i < txt.Length; i++) {
 				char ch = txt[i];
-				if (ch == '_') {
+
+				if (isSpecial && ch == '(') {
+					if (i + 3 < txt.Length && txt [i + 1] == '_' && txt [i + 3] == ')') {
+						i += 3;
+					}
+				} else if (ch == '_') {
 					if (i + 1 < txt.Length && txt[i + 1] == '_') {
 						sb.Append ('_');
 						i++;
