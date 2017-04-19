@@ -37,7 +37,8 @@ namespace MonoDevelop.Refactoring
 		FindDerivedClasses,
 		DeclareLocal,
 		ImportSymbol,
-		QuickFix
+		QuickFix,
+		QuickFixMenu
 	}
 
 }

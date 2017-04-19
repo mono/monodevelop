@@ -63,6 +63,11 @@
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />
 		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu"
+		         _label = "Quick Fix"
+		         type = "array"
+		         defaultHandler = "MonoDevelop.Refactoring.QuickFixMenuHandler" />
+
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
