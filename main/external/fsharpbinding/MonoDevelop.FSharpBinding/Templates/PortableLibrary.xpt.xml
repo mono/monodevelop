@@ -34,7 +34,7 @@
 					 TargetProfile = "netcore" />
 			<References>
 			</References>
-      <Packages>
+      <Packages requireLicenseAcceptance="false">
         <Package Id="FSharp.Core" Version="4.1.0.2" />
       </Packages>
 			<Files>
