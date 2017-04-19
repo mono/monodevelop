@@ -76,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
-			Run (progressMessage, action, clearConsole: true);
+			Run (progressMessage, action, clearConsole: !IsRunning);
 		}
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action, bool clearConsole)
@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
-			Run (progressMessage, actions, clearConsole: true);
+			Run (progressMessage, actions, clearConsole: !IsRunning);
 		}
 
 		public void Run (
@@ -117,7 +117,7 @@ namespace MonoDevelop.PackageManagement
 
 		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
-			return RunAsync (progressMessage, actions, clearConsole: true);
+			return RunAsync (progressMessage, actions, clearConsole: !IsRunning);
 		}
 
 		public Task RunAsync (
