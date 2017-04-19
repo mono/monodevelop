@@ -1,4 +1,4 @@
-// 
+﻿// 
 // StringTagSelectorButton.cs
 //  
 // Author:
@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core.StringParsing;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -39,8 +40,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		public StringTagSelectorButton ()
 		{
 			this.Build ();
+
+			Accessible.SetShouldIgnore (true);
 		}
-		
+
 		public StringTagModelDescription TagModel { get; set; }
 		
 		public Entry TargetEntry { get; set; }
@@ -146,6 +149,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			//let GTK reposition the button if it still doesn't fit on the screen
 			push_in = true;
+		}
+
+		public Atk.Object ButtonAccessible {
+			get {
+				return button.Accessible;
+			}
 		}
 	}
 }
