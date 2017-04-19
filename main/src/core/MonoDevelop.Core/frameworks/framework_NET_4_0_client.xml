@@ -1,4 +1,4 @@
-<TargetFramework id=".NETFramework,Version=v4.0,Profile=Client" _name=".NET 4.0 Client Profile" clrVersion="Net_4_0">
+﻿<TargetFramework id=".NETFramework,Version=v4.0,Profile=Client" _name=".NET Framework 4.0 Client Profile" clrVersion="Net_4_0">
 <Assemblies>
   <Assembly name="System" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Activities" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
