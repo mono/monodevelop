@@ -232,6 +232,8 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
 				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
+			if (textEditorImpl.ContentName != fileSaveInformation.FileName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			return textEditorImpl.ViewContent.Save (fileSaveInformation);
 		}
 
