@@ -63,7 +63,8 @@ xcode_get_dev_path ()
 	if ((len = readlink ("/var/db/xcode_select_link", (char*) &buf, PATH_MAX)) > 0) {
 		return strndup (buf, len);
 	}
-	return NULL;
+
+	return strdup("/Applications/Xcode.app/Contents/Developer");
 }
 
 static char *
