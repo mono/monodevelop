@@ -36,7 +36,7 @@
 				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 			</References>
 
-      <Packages>
+      <Packages requireLicenseAcceptance="false">
         <Package Id="FSharp.Core" Version="4.1.0.2" local="true" /> 
       </Packages>
 			<Files>
