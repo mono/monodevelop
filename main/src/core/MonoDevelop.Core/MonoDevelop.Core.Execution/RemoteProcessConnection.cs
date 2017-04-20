@@ -557,9 +557,9 @@ namespace MonoDevelop.Core.Execution
 		void ProcessResponse (BinaryMessage msg)
 		{
 			DateTime respTime = DateTime.Now;
+			MessageRequest req;
 
 			lock (messageWaiters) {
-				MessageRequest req;
 				if (messageWaiters.TryGetValue (msg.Id, out req)) {
 					messageWaiters.Remove (msg.Id);
 					try {
@@ -578,12 +578,15 @@ namespace MonoDevelop.Core.Execution
 						LogMessage (MessageType.Response, msg, time);
 					}
 
-					if (!req.Request.OneWay)
-						NotifyResponse (req, msg);
-				}
-				else if (DebugMode)
+				} else if (DebugMode) {
+					req = null;
 					LogMessage (MessageType.Response, msg, -1);
+				}
 			}
+
+			// Notify the response outside the lock to avoid deadlocks
+			if (req != null && !req.Request.OneWay)
+				NotifyResponse (req, msg);
 		}
 
 		void NotifyResponse (MessageRequest req, BinaryMessage res)
