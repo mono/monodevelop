@@ -187,10 +187,13 @@ namespace Mono.TextEditor.Tests
 		{
 			var path = Path.GetTempFileName ();
 			File.WriteAllText (path, "Hello World", Encoding.ASCII);
-			var document = new TextDocument (path, "text");
+			try {
+				var document = new TextDocument (path, "text");
 
-			Assert.AreEqual (0, document.Encoding.GetPreamble ().Length);
-			File.Delete (path);
+				Assert.AreEqual (0, document.Encoding.GetPreamble ().Length);
+			} finally {
+				File.Delete (path);
+			}
 		}
 	}
 }
