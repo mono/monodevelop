@@ -289,8 +289,8 @@ namespace Mono.TextEditor
 			var text = TextFileUtility.GetText (fileName, out enc);
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
 			                                                                                 PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
-
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, string.Empty);
+			
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
 			this.VsTextDocument.Encoding = enc;
 
 			this.Initialize();
