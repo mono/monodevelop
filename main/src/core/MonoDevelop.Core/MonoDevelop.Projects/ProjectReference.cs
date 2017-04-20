@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal string ProjectGuid { get => projectGuid; }
+		public string ProjectGuid { get => projectGuid; }
 		
 		public ProjectReference ()
 		{
