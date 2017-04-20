@@ -1385,17 +1385,15 @@ namespace MonoDevelop.Projects
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
 			HashSet<string> sdks = null;
-			GetReferencedSDKs (this, ref sdks, new HashSet<Project> ());
+			GetReferencedSDKs (this, ref sdks, new HashSet<string> ());
 			if (sdks != null)
 				return MSBuildProjectService.FindSdkPath (runtime, sdks);
 			return null;
 		}
 
-		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<Project> traversedProjects)
+		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<string> traversedProjects)
 		{
-			if (traversedProjects.Contains (project))
-				return;
-			traversedProjects.Add (project);
+			traversedProjects.Add (project.ItemId);
 
 			var projectSdks = project.MSBuildProject.GetReferencedSDKs ();
 			if (projectSdks.Length > 0) {
@@ -1410,6 +1408,9 @@ namespace MonoDevelop.Projects
 
 			// Check project references.
 			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				if (traversedProjects.Contains (projectReference.ProjectGuid))
+					return;
+
 				var p = projectReference.ResolveProject (ParentSolution);
 				if (p != null)
 					GetReferencedSDKs (p, ref sdks, traversedProjects);
