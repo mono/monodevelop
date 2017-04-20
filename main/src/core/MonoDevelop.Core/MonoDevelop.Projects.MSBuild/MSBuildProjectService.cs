@@ -226,7 +226,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Finds an SDKs path that contains the specified SDK.
 		/// </summary>
-		internal static string FindSdkPath (TargetRuntime runtime, string[] sdks)
+		internal static string FindSdkPath (TargetRuntime runtime, IEnumerable<string> sdks)
 		{
 			string binDir;
 			GetNewestInstalledToolsVersion (runtime, true, out binDir);
