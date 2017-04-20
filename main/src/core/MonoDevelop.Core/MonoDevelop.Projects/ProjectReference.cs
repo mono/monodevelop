@@ -96,6 +96,8 @@ namespace MonoDevelop.Projects
 				package = value;
 			}
 		}
+
+		public string ProjectGuid { get => projectGuid; }
 		
 		public ProjectReference ()
 		{

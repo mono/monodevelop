@@ -688,13 +688,14 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
+		static char[] parameterCloseChars = new[] { ',', ')' };
 		internal bool EvaluateParameters (string str, ref int i, out object[] parameters)
 		{
 			parameters = null;
 			var list = new List<object> ();
 
 			while (i < str.Length) {
-				var j = FindClosingChar (str, i, new [] { ',', ')' });
+				var j = FindClosingChar (str, i, parameterCloseChars);
 				if (j == -1)
 					return false;
 				
@@ -957,7 +958,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.Contains (c))
+				if (pc == 0 && closeChar.IndexOf (c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;
