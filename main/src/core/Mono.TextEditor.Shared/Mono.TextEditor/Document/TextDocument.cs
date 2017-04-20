@@ -282,11 +282,16 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument(string fileName, string mimeType)
+		public TextDocument (string fileName, string mimeType)
 		{
-			var contentType = GetContentTypeFromMimeType(mimeType);
-
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateAndLoadTextDocument(fileName, contentType ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType);
+			var contentType = GetContentTypeFromMimeType (mimeType);
+			Encoding enc;
+			var text = TextFileUtility.GetText (fileName, out enc);
+			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
+			                                                                                 PlatformCatalog.Instance.TextBufferFactoryService.InertContentType);
+			
+			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
+			this.VsTextDocument.Encoding = enc;
 
 			this.Initialize();
 		}

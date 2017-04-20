@@ -31,9 +31,9 @@ namespace Microsoft.VisualStudio.Text.Implementation
         [Import]
         internal GuardedOperations _guardedOperations { get; set; }
 
-        #endregion
+		#endregion
 
-        internal static Encoding DefaultEncoding = Encoding.Default; // Exposed for unit tests.
+		internal static Encoding DefaultEncoding = new UTF8Encoding (encoderShouldEmitUTF8Identifier: false); // Exposed for unit tests.
 
         #region ITextDocumentFactoryService Members
 

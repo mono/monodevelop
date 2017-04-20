@@ -28,6 +28,8 @@
 
 using System;
 using NUnit.Framework;
+using System.IO;
+using System.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -174,6 +176,23 @@ namespace Mono.TextEditor.Tests
 				document.Text = text;
 				Assert.AreEqual (i, document.Length);
 				Assert.AreEqual (text, document.Text);
+			}
+		}
+
+		/// <summary>
+		/// Bug 53380 - [Webtools] Editor inserts BOMs sometimes
+		/// </summary>
+		[Test]
+		public void TestBug53380 ()
+		{
+			var path = Path.GetTempFileName ();
+			File.WriteAllText (path, "Hello World", Encoding.ASCII);
+			try {
+				var document = new TextDocument (path, "text");
+
+				Assert.AreEqual (0, document.Encoding.GetPreamble ().Length);
+			} finally {
+				File.Delete (path);
 			}
 		}
 	}
