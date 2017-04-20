@@ -157,7 +157,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			var projectDir = Path.GetDirectoryName (file);
-			if (!string.IsNullOrEmpty (projectDir))
+			if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
 				Environment.CurrentDirectory = projectDir;
 			return project;
 		}
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (content == null)
 					p = engine.LoadProject (file);
 				else {
-					if (!string.IsNullOrEmpty (projectDir))
+					if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
 						Environment.CurrentDirectory = projectDir;
 					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
 					projectRootElement.FullPath = file;
