@@ -772,8 +772,9 @@ module SymbolTooltips =
     let returnType (symbol:FSharpSymbolUse) =
         match symbol with
         | MemberFunctionOrValue m ->
-            Some m.ReturnParameter.Type
-        //| Entity c ->
+            try
+                Some m.ReturnParameter.Type
+            with _ -> None
         | _ -> None
 
     let footerForType (entity:FSharpSymbolUse) =
