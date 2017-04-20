@@ -1409,7 +1409,7 @@ namespace MonoDevelop.Projects
 			// Check project references.
 			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
 				if (traversedProjects.Contains (projectReference.ProjectGuid))
-					return;
+					continue;
 
 				var p = projectReference.ResolveProject (ParentSolution);
 				if (p != null)
