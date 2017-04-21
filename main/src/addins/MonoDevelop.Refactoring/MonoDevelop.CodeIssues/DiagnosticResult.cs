@@ -44,21 +44,13 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		public DiagnosticResult (Diagnostic diagnostic) : base (GetSpan (diagnostic), diagnostic.GetMessage ())
+		public DiagnosticResult (Diagnostic diagnostic) : base (diagnostic.Location.SourceSpan, diagnostic.GetMessage ())
 		{
 			if (diagnostic == null)
 				throw new ArgumentNullException (nameof (diagnostic));
 			this.diagnostic = diagnostic;
 
 			SetSeverity (diagnostic.Severity, GetIssueMarker ()); 
-		}
-
-		static TextSpan GetSpan (Diagnostic diagnostic)
-		{
-			int start = diagnostic.Location.SourceSpan.Start;
-			int end = diagnostic.Location.SourceSpan.End;
-
-			return TextSpan.FromBounds (start, end);
 		}
 
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
