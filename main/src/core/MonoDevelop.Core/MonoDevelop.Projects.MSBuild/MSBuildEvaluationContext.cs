@@ -74,6 +74,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.project = parentContext.project;
 			this.propertiesWithTransforms = parentContext.propertiesWithTransforms;
 			this.propertiesWithTransformsSorted = parentContext.propertiesWithTransformsSorted;
+			this.ExistsEvaluationCache = parentContext.ExistsEvaluationCache;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
