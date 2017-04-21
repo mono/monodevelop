@@ -35,7 +35,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
 	
 		readonly Token token;
-		
+		readonly Func<IExpressionContext, Token> EvaluateToken;
+
 		static Hashtable allValues;
 		static Hashtable trueValues;
 		static Hashtable falseValues;
@@ -64,11 +65,16 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public ConditionFactorExpression (Token token)
 		{
 			this.token = token;
+			EvaluateToken = new Func<IExpressionContext, Token> (context => {
+				// FIXME: in some situations items might not be allowed
+				string val = context.EvaluateString (token.Value);
+				return new Token (val, TokenType.String, 0);
+			}).MemoizeWithLock();
 		}
-		
+
 		public override bool BoolEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (token, context);
+			Token evaluatedToken = EvaluateToken (context);
 		
 			if (trueValues [evaluatedToken.Value] != null)
 				return true;
@@ -82,14 +88,14 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		
 		public override float NumberEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (token, context);
+			Token evaluatedToken = EvaluateToken (context);
 		
 			return Single.Parse (evaluatedToken.Value, CultureInfo.InvariantCulture);
 		}
 		
 		public override string StringEvaluate (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (token, context);
+			Token evaluatedToken = EvaluateToken (context);
 		
 			return evaluatedToken.Value;
 		}
@@ -97,7 +103,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		// FIXME: check if we really can do it
 		public override bool CanEvaluateToBool (IExpressionContext context)
 		{
-			Token evaluatedToken = EvaluateToken (token, context);
+			Token evaluatedToken = EvaluateToken (context);
 		
 			if (token.Type == TokenType.String && allValues [evaluatedToken.Value] != null)
 				return true;
@@ -121,13 +127,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		public override bool CanEvaluateToString (IExpressionContext context)
 		{
 			return true;
-		}
-		
-		// FIXME: in some situations items might not be allowed
-		static Token EvaluateToken (Token token, IExpressionContext context)
-		{
-			string val = context.EvaluateString (token.Value);
-			return new Token (val, TokenType.String, 0);
 		}
 
 		internal Conditions.Token Token {
