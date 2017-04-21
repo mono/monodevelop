@@ -58,11 +58,6 @@ namespace MonoDevelop.CodeIssues
 			int start = diagnostic.Location.SourceSpan.Start;
 			int end = diagnostic.Location.SourceSpan.End;
 
-			foreach (var loc in diagnostic.AdditionalLocations) {
-				start = Math.Min (start, loc.SourceSpan.Start);
-				end = Math.Max (start, loc.SourceSpan.End);
-			}
-
 			return TextSpan.FromBounds (start, end);
 		}
 
