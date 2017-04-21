@@ -882,7 +882,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (formatter.SupportsPartialDocumentFormatting) {
+				if (formatter != null && formatter.SupportsPartialDocumentFormatting) {
 					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
 					string currentText = data.Text;
 
@@ -931,7 +931,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							delta = ApplyChanges (projection, data, changes);
 							var versionBeforeFormat = editor.Version;
 
-							if (formatter.SupportsOnTheFlyFormatting) {
+							if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 								foreach (var change in changes) {
 									delta -= change.Span.Length - change.NewText.Length;
 									var startOffset = change.Span.Start - delta;
@@ -1366,7 +1366,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					var id = data.GetDocumentId (fargs.ProjectFile.FilePath);
 					if (id != null) {
 						ClearDocumentData (id);
-						OnDocumentRemoved (id);
+						try {
+							OnDocumentRemoved (id);
+						} catch (Exception) {}
 						data.RemoveDocument (fargs.ProjectFile.FilePath);
 					} else {
 						foreach (var entry in ProjectionList) {
@@ -1454,8 +1456,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var projectId = GetProjectId (project);
 				if (CurrentSolution.ContainsProject (projectId)) {
-					OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
-					ProjectReloaded?.Invoke (this, new RoslynProjectEventArgs (projectId));
+					HandleActiveConfigurationChanged (this, EventArgs.Empty);
 				} else {
 					modifiedProjects.Add (project);
 				}
