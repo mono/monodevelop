@@ -349,7 +349,9 @@ namespace MonoDevelop.SourceEditor
 		void HandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
 			OnEndUndo (EventArgs.Empty);
+			IsDirty = Document.IsDirty;
 		}
+
 
 		void HandleBeginUndo (object sender, EventArgs e)
 		{
