@@ -549,8 +549,15 @@ namespace MonoDevelop.Projects
 
 			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 
-			var config = configuration != null ? GetConfiguration (configuration) : null;
-			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+			MSBuildProjectInstance pri = null;
+			var config = configuration != null ? (ProjectConfiguration)GetConfiguration (configuration) : null;
+			if (config != null) {
+				pri = config.ProjectInstance;
+			}
+
+			if (pri == null)
+				pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
+
 			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 				results.Add (CreateProjectFile (it));
 
