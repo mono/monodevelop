@@ -53,9 +53,11 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.Highlighting
 			SyntaxNode root,
 			int position)
 		{
-			var tokens1 = GetTokens(root, position, findInsideTrivia: true);
-			var tokens2 = GetTokens(root, position, findInsideTrivia: false);
-			return tokens1.Concat(tokens2);
+			foreach (var token in GetTokens (root, position, findInsideTrivia: true))
+				yield return token;
+
+			foreach (var token in GetTokens (root, position, findInsideTrivia: false))
+				yield return token;
 		}
 
 		private static IEnumerable<SyntaxToken> GetTokens(
