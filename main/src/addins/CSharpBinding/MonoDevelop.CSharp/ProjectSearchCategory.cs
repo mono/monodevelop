@@ -249,10 +249,7 @@ namespace MonoDevelop.CSharp
 
 			static void RemoveDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.DocumentId documentId)
 			{
-				if (result.ContainsKey (documentId)) {
-					Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val;
-					result.TryRemove (documentId, out val);
-				}
+				result.TryRemove (documentId, out Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val);
 			}
 
 			public void Dispose ()
