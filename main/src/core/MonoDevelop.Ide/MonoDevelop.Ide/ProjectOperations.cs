@@ -712,9 +712,9 @@ namespace MonoDevelop.Ide
 			NewSolution (defaultTemplate, true);
 		}
 
-		public void NewSolution (string defaultTemplate, bool showTemplateSelection)
+		public async void NewSolution (string defaultTemplate, bool showTemplateSelection)
 		{
-			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
+			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
 				return;
 
 			var newProjectDialog = new NewProjectDialogController ();
