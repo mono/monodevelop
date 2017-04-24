@@ -25,24 +25,64 @@
 // THE SOFTWARE.
 
 using System;
-using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
 {
 	class TextEditorTestBase
 	{
 		static bool firstRun = true;
-		
+		static string rootDir;
+		static int projectId = 1;
+
+		public static string TestsRootDir {
+			get {
+				if (rootDir == null) {
+					rootDir = Path.GetDirectoryName (typeof (TextEditorTestBase).Assembly.Location);
+					rootDir = Path.Combine (Path.Combine (rootDir, ".."), "..");
+					rootDir = Path.GetFullPath (Path.Combine (rootDir, "tests"));
+				}
+				return rootDir;
+			}
+		}
+
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
 			if (firstRun) {
-				Gtk.Application.Init ();
-				firstRun = false;
+				string rootDir = Path.Combine (TestsRootDir, "config");
+				try {
+					firstRun = false;
+					InternalSetup (rootDir);
+				} catch (Exception) {
+					// if we encounter an error, try to re create the configuration directory
+					// (This takes much time, therfore it's only done when initialization fails)
+					try {
+						if (Directory.Exists (rootDir))
+							Directory.Delete (rootDir, true);
+						InternalSetup (rootDir);
+					} catch (Exception) {
+					}
+				}
 			}
+		}
+
+		protected virtual void InternalSetup (string rootDir)
+		{
+			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
+			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
+			Runtime.Initialize (true);
+			Gtk.Application.Init ();
+			DesktopService.Initialize ();
+			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
+				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 		}
 
 		[TestFixtureTearDown]
