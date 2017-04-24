@@ -391,6 +391,9 @@ namespace MonoDevelop.Projects
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (p.FileName), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
 
+			Assert.AreEqual ("00065535.0", p.EvaluatedProperties.GetValue ("DoubleNumber"));
+			Assert.AreEqual ("56735", p.EvaluatedProperties.GetValue ("DoubleNumberComplex"));
+
 			p.Dispose ();
 		}
 
