@@ -884,9 +884,7 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
-							MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
 							UnsubscribeRoslynWorkspace ();

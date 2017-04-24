@@ -112,16 +112,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
 				//If we want BeginTiming to work correctly we need to `await`
-				return await InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
+				return await InternalLoad (wsList, item, progressMonitor, cancellationToken, showStatusIcon).ContinueWith (t => { t.Wait (); return wsList; });
 			}
 		}
 
-		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
+		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken), bool showStatusIcon = true)
 		{
 			return Task.Run (async () => {
 				var ws = item as MonoDevelop.Projects.Workspace;
@@ -138,14 +138,16 @@ namespace MonoDevelop.Ide.TypeSystem
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
 						list.Add (workspace);
-						workspace.ShowStatusIcon ();
+						if (showStatusIcon)
+							workspace.ShowStatusIcon ();
 						await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						TaskCompletionSource<MonoDevelopWorkspace> request;
 						if (workspaceRequests.TryGetValue (solution, out request))
 							request.TrySetResult (workspace);
-						workspace.HideStatusIcon ();
+						if (showStatusIcon)
+							workspace.HideStatusIcon ();
 					}
 				}
 			});
