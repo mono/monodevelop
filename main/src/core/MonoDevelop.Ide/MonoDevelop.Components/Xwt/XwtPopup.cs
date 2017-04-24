@@ -70,6 +70,8 @@ namespace MonoDevelop.Components
 			get { return eventProvided; }
 		}
 
+		protected Toolkit Toolkit { get; private set; }
+
 		protected virtual void CurrentPositionChanged ()
 		{
 		}
@@ -89,6 +91,7 @@ namespace MonoDevelop.Components
 		public XwtPopup (PopupType type) : base (type)
 		{
 			currentPosition = targetPosition = PopupPosition.Top;
+			Toolkit = Toolkit.CurrentEngine;
 		}
 
 		public void ShowPopup (Control widget, Rectangle targetRectangle, PopupPosition position)
@@ -205,14 +208,40 @@ namespace MonoDevelop.Components
 
 		protected Rectangle GetScreenCoordinates (Rectangle targetRect)
 		{
+			var xwtTarget = target as Widget;
+			if (xwtTarget != null)
+				return GetXwtScreenCoordinates (xwtTarget, targetRect);
+			#if MAC
+			if (Toolkit.Type == ToolkitType.XamMac)
+				return GetXamMacScreenCoordinates (targetRect);
+			#endif
+			return GetGtkScreenCoordinates (targetRect);
+		}
+
+		private Rectangle GetXwtScreenCoordinates (Widget widget, Rectangle widgetRect)
+		{
+			#if MAC
+			// convert Gtk -> XamMac
+			if (Toolkit.Type == Xwt.ToolkitType.XamMac && widget.Surface.ToolkitEngine.Type == ToolkitType.Gtk)
+				return GetXamMacDesktopBounds (widget.Surface.NativeWidget as Gtk.Widget, widgetRect);
+			// TODO: convert XamMac -> Gtk
+			#endif
+			// TODO: convert Wpf <-> Gtk
+			return new Rectangle (widget.ConvertToScreenCoordinates (widgetRect.Location), widgetRect.Size);
+		}
+
+		private Rectangle GetGtkScreenCoordinates (Rectangle widgetRect)
+		{
 			// TODO: Fix cross toolkit coords
+			// NSView coordinates have the wrong origin for Gtk
+			// Windows needs to be converted in HiDPI mode
 			var gtkTarget = target as Gtk.Widget;
 			if (gtkTarget != null)
-				return GtkUtil.ToScreenCoordinates (gtkTarget, gtkTarget.GdkWindow, targetRect.ToGdkRectangle ()).ToXwtRectangle ();
+				return GtkUtil.ToScreenCoordinates (gtkTarget, gtkTarget.GdkWindow, widgetRect.ToGdkRectangle ()).ToXwtRectangle ();
 			#if MAC
 			var nsTarget = target as AppKit.NSView;
 			if (nsTarget != null) {
-				var lo = nsTarget.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)targetRect.X, (nfloat)targetRect.Y), null);
+				var lo = nsTarget.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)widgetRect.X, (nfloat)widgetRect.Y), null);
 				lo = nsTarget.Window.ConvertRectToScreen (new CoreGraphics.CGRect (lo, CoreGraphics.CGSize.Empty)).Location;
 				var r = new CoreGraphics.CGRect (lo.X, lo.Y, 0, nsTarget.IsFlipped ? 0 : nsTarget.Frame.Height);
 
@@ -228,12 +257,67 @@ namespace MonoDevelop.Components
 				return new Rectangle (r.X, r.Y, r.Width, r.Height);
 			}
 			#endif
-			var xwtTarget = target as Widget;
-			if (xwtTarget != null)
-				return GtkUtil.ToScreenCoordinates (xwtTarget, targetRect).ToXwtRectangle ();
 			
 			return Rectangle.Zero;
 		}
+
+		#if MAC
+		protected Rectangle GetXamMacScreenCoordinates (Rectangle targetRect)
+		{
+			var gtkTarget = target as Gtk.Widget;
+			if (gtkTarget != null)
+				return GetXamMacDesktopBounds (gtkTarget, targetRect);
+			var nsTarget = target as AppKit.NSView;
+			if (nsTarget != null)
+				return GetXamMacDesktopBounds (nsTarget, targetRect);
+
+			return Rectangle.Zero;
+		}
+
+		private Rectangle GetXamMacDesktopBounds (Gtk.Widget widget, Rectangle widgetRect)
+		{
+			int x, y;
+			widget.ParentWindow.GetOrigin (out x, out y);
+			var a = widget.Allocation;
+			x += a.X;
+			y += a.Y;
+			var gtkScreenRect = new Rectangle (x + widgetRect.X, y + widgetRect.Y, widgetRect.Width, widgetRect.Height);
+
+			var monitor = widget.Screen.GetMonitorAtPoint ((int)gtkScreenRect.X, (int)gtkScreenRect.Y);
+			var geometry = widget.Screen.GetMonitorGeometry (monitor);
+			gtkScreenRect.X -= geometry.X;
+			gtkScreenRect.Y -= geometry.Y;
+
+			var nsTarget = Mac.GtkMacInterop.GetNSView (widget);
+			Toolkit.Invoke (() => {
+				foreach (var screen in Desktop.Screens) {
+					if (Toolkit.GetBackend (screen) == nsTarget.Window.Screen) {
+						gtkScreenRect.X += screen.Bounds.X;
+						gtkScreenRect.Y += screen.Bounds.Y;
+					}
+				}
+			});
+			return gtkScreenRect;
+		}
+
+		static Rectangle GetXamMacDesktopBounds (AppKit.NSView view, Rectangle viewRect)
+		{
+			var lo = view.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)viewRect.X, (nfloat)viewRect.Y), null);
+			lo = view.Window.ConvertRectToScreen (new CoreGraphics.CGRect (lo, CoreGraphics.CGSize.Empty)).Location;
+			var r = new CoreGraphics.CGRect (lo.X, lo.Y, 0, view.IsFlipped ? 0 : view.Frame.Height);
+
+			var desktopBounds = new Rectangle ();
+			foreach (var s in AppKit.NSScreen.Screens) {
+				var sr = s.Frame;
+				desktopBounds = desktopBounds.Union (new Rectangle (sr.X, sr.Y, sr.Width, sr.Height));
+			}
+
+			r.Y = (nfloat)desktopBounds.Height - r.Y - r.Height;
+			if (desktopBounds.Y < 0)
+				r.Y += (nfloat)desktopBounds.Y;
+			return new Rectangle (r.X, r.Y, r.Width, r.Height);
+		}
+		#endif
 
 		protected Size GetParentSize ()
 		{
@@ -259,8 +343,13 @@ namespace MonoDevelop.Components
 
 		protected Rectangle GetUsableMonitorGeometry (Rectangle targetRect)
 		{
-			var screen = Desktop.GetScreenAtLocation (targetRect.Location);
-			return screen?.VisibleBounds ?? Rectangle.Zero;
+			var rect = Rectangle.Zero;
+			Toolkit.Invoke (() => {
+				var screen = Desktop.GetScreenAtLocation (targetRect.Location);
+				if (screen != null)
+					rect = screen.VisibleBounds;
+			});
+			return rect;
 		}
 
 		Rectangle cachedBounds;
@@ -287,18 +376,14 @@ namespace MonoDevelop.Components
 				targetRect = newTargetRect.Value;
 
 			Rectangle currentRect = targetRect;
-			if (targetWindowOrigin.X < 0)
-				return;
-			var x = targetWindowOrigin.X;
-			var y = targetWindowOrigin.Y;
 			PopupPosition position = targetPosition;
 			CurrentPosition = targetPosition;
 
 			var psize = GetParentSize ();
 
 			if (eventProvided) {
-				currentRect.X = x;
-				currentRect.Y = y;
+				currentRect.X = targetWindowOrigin.X;
+				currentRect.Y = targetWindowOrigin.Y;
 				currentRect.Width = currentRect.Height = 1;
 			} else {
 				if (currentRect.IsEmpty)
@@ -346,6 +431,7 @@ namespace MonoDevelop.Components
 			CurrentPosition = position;
 
 			// Calculate base coordinate
+			double x = 0, y = 0;
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
