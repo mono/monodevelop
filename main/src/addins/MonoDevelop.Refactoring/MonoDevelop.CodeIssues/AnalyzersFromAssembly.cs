@@ -101,6 +101,8 @@ namespace MonoDevelop.CodeIssues
 					//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
 					//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
 					if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
+						type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeRefactoringProvider) ||
+						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeRefactoringProvider) ||
 						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
 						continue;
 
