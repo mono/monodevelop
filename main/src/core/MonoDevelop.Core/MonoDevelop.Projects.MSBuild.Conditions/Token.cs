@@ -94,7 +94,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 		public override int GetHashCode()
 		{
-			return tokenValue.GetHashCode () ^ tokenType.GetHashCode () ^ position.GetHashCode ();
+			return (tokenValue?.GetHashCode () ?? 0) ^ tokenType.GetHashCode () ^ position.GetHashCode ();
 		}
 
 		public override bool Equals (object obj)
