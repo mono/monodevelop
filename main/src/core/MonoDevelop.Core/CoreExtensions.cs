@@ -203,29 +203,12 @@ namespace System
 		public static Func<T1, R> MemoizeWithLock<T1, R> (this Func<T1, R> f)
 		{
 			var map = new Dictionary<T1, R> ();
-			var lockObject = new object ();
 			return a => {
-				lock (lockObject) {
+				lock (map) {
 					if (map.TryGetValue (a, out R value))
 						return value;
 					value = f (a);
 					map.Add (a, value);
-					return value;
-				}
-			};
-		}
-
-		public static Func<T1, T2, R> MemoizeWithLock<T1, T2, R> (this Func<T1, T2, R> f)
-		{
-			var map = new Dictionary<ValueTuple<T1, T2>, R> ();
-			var lockObject = new object ();
-			return (a, b) => {
-				var key = ValueTuple.Create (a, b);
-				lock (lockObject) {
-					if (map.TryGetValue (key, out R value))
-						return value;
-					value = f (a, b);
-					map.Add (key, value);
 					return value;
 				}
 			};
@@ -241,6 +224,21 @@ namespace System
 				value = f (a, b);
 				map.Add (key, value);
 				return value;
+			};
+		}
+
+		public static Func<T1, T2, R> MemoizeWithLock<T1, T2, R> (this Func<T1, T2, R> f)
+		{
+			var map = new Dictionary<ValueTuple<T1, T2>, R> ();
+			return (a, b) => {
+				var key = ValueTuple.Create (a, b);
+				lock (map) {
+					if (map.TryGetValue (key, out R value))
+						return value;
+					value = f (a, b);
+					map.Add (key, value);
+					return value;
+				}
 			};
 		}
 
