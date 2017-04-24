@@ -1469,10 +1469,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
-
-		public event EventHandler<RoslynProjectEventArgs> ProjectReloaded;
-
-
 		/// <summary>
 		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
 		/// back to the original physical file.

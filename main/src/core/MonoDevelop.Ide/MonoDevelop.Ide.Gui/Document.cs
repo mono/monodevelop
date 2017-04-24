@@ -905,7 +905,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.ProjectReloaded -= HandleRoslynProjectReload;
+				ws.WorkspaceChanged -= HandleRoslynProjectReload;
 			}
 		}
 
@@ -913,11 +913,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.ProjectReloaded += HandleRoslynProjectReload;
+				ws.WorkspaceChanged += HandleRoslynProjectReload;
 			}
 		}
 
-		void HandleRoslynProjectReload (object sender, RoslynProjectEventArgs e)
+		void HandleRoslynProjectReload (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
 			StartReparseThread ();
 		}
