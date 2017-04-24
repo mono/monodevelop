@@ -1368,7 +1368,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						ClearDocumentData (id);
 						try {
 							OnDocumentRemoved (id);
-						} catch (Exception) {}
+						} catch (Exception e) {
+							LoggingService.LogInternalError (e);
+						}
 						data.RemoveDocument (fargs.ProjectFile.FilePath);
 					} else {
 						foreach (var entry in ProjectionList) {
