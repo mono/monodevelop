@@ -178,8 +178,9 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
+			if (IsAdHocProject)
+				return;
 			UnsubscribeAnalysisDocument ();
-			UnloadAdhocProject ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -845,8 +846,6 @@ namespace MonoDevelop.Ide.Gui
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
 				UnsubscribeRoslynWorkspace ();
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
-				if (RoslynWorkspace == null) // Solution not loaded yet
-					return Task.CompletedTask;
 				SubscribeRoslynWorkspace ();
 				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 				if (analysisDocument != null) {
