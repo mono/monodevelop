@@ -53,5 +53,20 @@ namespace Mono.TextEditor.Tests
 			data.Replace (0, data.Length, "\t");
 			Assert.AreEqual ("    ", data.Text);
 		}
+
+		/// <summary>
+		/// Bug 55459 - Undo doesn't bring files back to unmodified status (edit)
+		/// </summary>
+		[Test]
+		public void TestBug55459 ()
+		{
+			var data = new TextEditorData ();
+			data.InsertAtCaret ("a");
+			Assert.AreEqual (true, data.Document.IsDirty);
+			data.Document.EndUndo += delegate {
+				Assert.AreEqual (false, data.Document.IsDirty);
+			};
+			data.Document.Undo ();
+		}
  	}
 }

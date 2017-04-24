@@ -922,7 +922,7 @@ namespace Mono.TextEditor
 					return true;
 				if (savePoint == null)
 					return CanUndo;
-				if (undoStack.Count != savePoint.Length) 
+				if (undoStack.Count != savePoint.Length)
 					return true;
 				UndoOperation[] currentStack = undoStack.ToArray ();
 				for (int i = 0; i < currentStack.Length; i++) {
@@ -1160,18 +1160,20 @@ namespace Mono.TextEditor
 			Debug.Assert (atomicUndoLevel >= 0); 
 			
 			if (atomicUndoLevel == 0 && currentAtomicOperation != null) {
-				if (currentAtomicOperation.Operations.Count > 1) {
-					undoStack.Push (currentAtomicOperation);
-					OnEndUndo (new UndoOperationEventArgs (currentAtomicOperation));
+				var cuao = currentAtomicOperation;
+				currentAtomicOperation = null;
+
+				if (cuao.Operations.Count > 1) {
+					undoStack.Push (cuao);
+					OnEndUndo (new UndoOperationEventArgs (cuao));
 				} else {
-					if (currentAtomicOperation.Operations.Count > 0) {
-						undoStack.Push (currentAtomicOperation.Operations [0]);
-						OnEndUndo (new UndoOperationEventArgs (currentAtomicOperation.Operations [0]));
+					if (cuao.Operations.Count > 0) {
+						undoStack.Push (cuao.Operations [0]);
+						OnEndUndo (new UndoOperationEventArgs (cuao.Operations [0]));
 					} else {
 						OnEndUndo (null);
 					}
 				}
-				currentAtomicOperation = null;
 			}
 			currentAtomicUndoOperationType.Pop ();
 		}
