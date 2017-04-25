@@ -310,7 +310,8 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnContentNameChanged ()
 		{
-			Document.FileName = ContentName;
+			if (!string.IsNullOrEmpty (ContentName))
+				Document.FileName = ContentName;
 			UpdateMimeType (Document.FileName);
 			if (!String.IsNullOrEmpty (ContentName) && File.Exists (ContentName))
 				lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
