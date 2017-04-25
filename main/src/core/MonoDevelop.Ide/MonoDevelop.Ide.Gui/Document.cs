@@ -512,6 +512,7 @@ namespace MonoDevelop.Ide.Gui
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
+
 			// do actual save
 			Window.ViewContent.ContentName = filename;
 			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
