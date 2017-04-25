@@ -666,14 +666,14 @@ namespace MonoDevelop.Ide.Gui
 					var views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
 					foreach (var content in views) {
-						if (content.ContentName.StartsWith (e.SourceFile, StringComparison.CurrentCulture)) {
+						if (content.ContentName.StartsWith (e.SourceFile, FilePath.PathComparison)) {
 							content.ContentName = e.TargetFile + content.ContentName.Substring (e.SourceFile.ToString ().Length);
 						}
 					}
 				} else {
 					foreach (var content in viewContentCollection) {
 						if (content.ContentName != null &&
-						    content.ContentName == e.SourceFile) {
+						    FilePath.PathComparer.Compare (content.ContentName, e.SourceFile) == 0) {
 							content.ContentName = e.TargetFile;
 							return;
 						}
