@@ -17,12 +17,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			client_version ();
 		}
-		
+
+		[DllImport ("libc")]
+		extern static IntPtr dlopen (string name, int mode);
+
 		public static LibSvnClient GetLib ()
 		{
+			if (Core.Platform.IsMac) {
+				dlopen ("libsvn_client-1.0.dylib", 0x1);
+				return new LibSvnClient2 ();
+			}
 			try {
 				return new LibSvnClient0 ();
-			} catch {}
+			} catch { }
 			
 			try {
 				return new LibSvnClient1 ();
