@@ -34,7 +34,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			// crash. dlopen-ining libsvn_client allows us to handle the right mix-match of svn and apr, since it loads
 			// apr via the linker flags on the binary.
 			if (Core.Platform.IsMac) {
-				dlopen ("libsvn_client-1.0.dylib", 0x1);
+				if (dlopen ("libsvn_client-1.0.dylib", 0x1) == IntPtr.Zero)
+					return null;
 				return new LibSvnClient2 ();
 			}
 			try {
