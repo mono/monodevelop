@@ -44,7 +44,6 @@ namespace MonoDevelop.Core
 		
 		static string applicationName;
 		static string applicationLongName;
-		static string privacyStatement;
 
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;
@@ -81,15 +80,9 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public static string PrivacyStatement {
-			get {
-				return privacyStatement;
-			}
-
-			set {
-				privacyStatement = value;
-			}
-		}
+		public static string PrivacyStatement { get; set; }
+		public static string PrivacyStatementUrl { get; set; }
+		public static string LicenseTermsUrl { get; set; }
 
 		static BrandingService ()
 		{
