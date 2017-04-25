@@ -666,7 +666,7 @@ namespace MonoDevelop.Ide.Gui
 					var views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
 					foreach (var content in views) {
-						if (e.SourceFile.IsChildPathOf (content.ContentName)) {
+						if (((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
 							content.ContentName = e.TargetFile + content.ContentName.Substring (e.SourceFile.ToString ().Length);
 						}
 					}
