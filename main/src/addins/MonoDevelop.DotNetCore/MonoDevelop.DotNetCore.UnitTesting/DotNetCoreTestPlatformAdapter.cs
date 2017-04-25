@@ -484,6 +484,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				startInfo.Arguments
 			);
 			command.Command = startInfo.FileName;
+			command.Arguments = startInfo.Arguments;
 			command.EnvironmentVariables = startInfo.EnvironmentVariables;
 
 			debugOperation = currentTestContext.ExecutionContext.ExecutionHandler.Execute (command, console);
