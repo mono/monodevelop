@@ -346,7 +346,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 				return;
 
 			var payload = dataSerializer.DeserializePayload<TestMessagePayload> (message);
-			currentContext.Monitor.WriteGlobalLog (payload.Message);
+			currentContext.Monitor.WriteGlobalLog (payload.Message + Environment.NewLine);
 		}
 
 		void OnTestRunComplete (Message message)
