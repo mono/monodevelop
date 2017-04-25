@@ -512,6 +512,11 @@ namespace MonoDevelop.Ide.Gui
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
+
+			// remove auto save file for old file name.
+			if (Window.ViewContent.ContentName != filename && !string.IsNullOrEmpty (Window.ViewContent.ContentName))
+				AutoSave.RemoveAutoSaveFile (Window.ViewContent.ContentName);
+			
 			// do actual save
 			Window.ViewContent.ContentName = filename;
 			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
