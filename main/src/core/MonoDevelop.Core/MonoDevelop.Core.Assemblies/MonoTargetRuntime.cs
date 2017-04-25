@@ -323,6 +323,13 @@ namespace MonoDevelop.Core.Assemblies
 			return new ExecutionEnvironment (EnvironmentVariables);
 		}
 
+		static bool Is64BitPE (Mono.Cecil.TargetArchitecture machine)
+		{
+			return machine == Mono.Cecil.TargetArchitecture.AMD64 ||
+				   machine == Mono.Cecil.TargetArchitecture.IA64 ||
+				   machine == Mono.Cecil.TargetArchitecture.ARM64;
+		}
+
 		/// <summary>
 		/// Get the Mono executable best matching the assembly architecture flags.
 		/// </summary>
@@ -350,11 +357,10 @@ namespace MonoDevelop.Core.Assemblies
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
 				if (File.Exists (monoPath))
 					return monoPath;
-				// FIXME: See how this can be done with Mono.Cecil.
-			//} else if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0) {
-			//	monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
-			//	if (File.Exists (monoPath))
-			//		return monoPath;
+			} else if (Is64BitPE (machine)) {
+				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
+				if (File.Exists (monoPath))
+					return monoPath;
 			}
 
 			return monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono");
