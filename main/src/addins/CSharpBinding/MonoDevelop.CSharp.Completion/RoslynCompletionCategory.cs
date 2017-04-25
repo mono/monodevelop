@@ -52,7 +52,10 @@ namespace MonoDevelop.CSharp.Completion
 			var t1 = symbol as INamedTypeSymbol;
 			if (other is DelegateCreationContextHandler.DelegateCreationCategory)
 				return 1;
-			var t2 = ((RoslynCompletionCategory)other).symbol as INamedTypeSymbol;
+			var oc = other as RoslynCompletionCategory;
+			if (oc == null)
+				return 1;
+			var t2 = oc.symbol as INamedTypeSymbol;
 			if (t1 != null && t2 != null) {
 				if (t1.AllInterfaces.Contains (t2) || t1.GetBaseTypes().Contains (t2))
 					return -1;
