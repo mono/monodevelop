@@ -45,7 +45,6 @@ namespace MonoDevelop.Ide.Navigation
 		readonly int offset;
 		readonly ITextSourceVersion version;
 
-		
 		public TextFileNavigationPoint (Document doc, TextEditor buffer)
 			: base (doc)
 		{
@@ -103,7 +102,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		protected void JumpToCurrentLocation (TextEditor editor)
 		{
-			if (version.BelongsToSameDocumentAs (editor.Version)) {
+			if (version != null && version.BelongsToSameDocumentAs (editor.Version)) {
 				var currentOffset = version.MoveOffsetTo (editor.Version, offset);
 				var loc = editor.OffsetToLocation (currentOffset);
 				editor.SetCaretLocation (loc);

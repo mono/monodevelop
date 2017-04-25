@@ -1275,6 +1275,38 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 
+				// Mono has Microsoft.Build.{Tasks,Utilities}.{v4.0,v12.0} assemlies, which are xbuild's
+				// implementation, installed in the GAC.
+				//
+				// With msbuild, we want to use the facade assemblies of the same name, installed with
+				// msbuild, which redirect to the corresponding .Core assemblies.
+				//
+				// We have an AssemblyResolve event handler which resolves some msbuild assemblies from
+				// the correct path. But that is fired only if the runtime fails to resolve the assembly, which
+				// happens when, for example, MSBuild.dll is requesting Microsoft.Build, 15.1.0.0 .
+				//
+				// But for the v4.0/v12.0 assemblies, the runtime is able to resolve them from the GAC and
+				// so the event handler never gets fired.
+				//
+				// To ensure that msbuild is able to load the facade assemblies, we copy them over next to
+				// the builder. This is temporary though. It can be removed when xbuild is removed from mono,
+				// and we can put these in the proper locations in mono (GAC/facades?).
+				//
+				if (Platform.IsMac || Platform.IsLinux) {
+					var assemblies = new string[] {
+								"Microsoft.Build.Tasks.v4.0.dll",
+								"Microsoft.Build.Utilities.v4.0.dll",
+								"Microsoft.Build.Tasks.v12.0.dll",
+								"Microsoft.Build.Utilities.v12.0.dll" };
+
+					foreach (var asm in assemblies) {
+						var src = Path.Combine(binDir, asm);
+						var dest = Path.Combine (exesDir, asm);
+						if (File.Exists (src))
+							File.Copy (src, dest);
+					}
+				}
+
 				searchPathConfigNeedsUpdate = true;
 			}
 

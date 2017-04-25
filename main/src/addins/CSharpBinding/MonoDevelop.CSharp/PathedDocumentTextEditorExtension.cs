@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharp
 			SubscribeCaretPositionChange ();
 
 			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
-			if (ownerProjects.Count > 1) {
+			if (ownerProjects?.Count > 1) {
 				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (TypeSystemService.GetCodeAnalysisProject).ToList ();
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;

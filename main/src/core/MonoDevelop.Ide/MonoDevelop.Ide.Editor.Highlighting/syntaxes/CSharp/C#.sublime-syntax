@@ -96,7 +96,7 @@ contexts:
       push:
         - match: '""'
           scope: constant.character.interpolated.verbatim.escape.source.cs
-        - match: '")'
+        - match: '"'
           pop: true
         - match: '({)'
           captures:
