@@ -47,8 +47,8 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
-		List<string> propertiesWithTransformsSorted = new List<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
 		public Dictionary<string, bool> ExistsEvaluationCache { get; } = new Dictionary<string, bool> ();
@@ -64,8 +64,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public MSBuildEvaluationContext ()
 		{
-			propertiesWithTransforms = new HashSet<string> ();
-			propertiesWithTransformsSorted = new List<string> ();
 		}
 
 		public MSBuildEvaluationContext (MSBuildEvaluationContext parentContext)
