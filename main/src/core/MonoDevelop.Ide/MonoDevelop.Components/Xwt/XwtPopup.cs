@@ -208,116 +208,52 @@ namespace MonoDevelop.Components
 
 		protected Rectangle GetScreenCoordinates (Rectangle targetRect)
 		{
+			var screenLocation = Point.Zero;
+			Toolkit targetToolkit = null;
 			var xwtTarget = target as Widget;
-			if (xwtTarget != null)
-				return GetXwtScreenCoordinates (xwtTarget, targetRect);
-			#if MAC
-			if (Toolkit.Type == ToolkitType.XamMac)
-				return GetXamMacScreenCoordinates (targetRect);
-			#endif
-			return GetGtkScreenCoordinates (targetRect);
-		}
-
-		private Rectangle GetXwtScreenCoordinates (Widget widget, Rectangle widgetRect)
-		{
-			#if MAC
-			// convert Gtk -> XamMac
-			if (Toolkit.Type == Xwt.ToolkitType.XamMac && widget.Surface.ToolkitEngine.Type == ToolkitType.Gtk)
-				return GetXamMacDesktopBounds (widget.Surface.NativeWidget as Gtk.Widget, widgetRect);
-			// TODO: convert XamMac -> Gtk
-			#endif
-			// TODO: convert Wpf <-> Gtk
-			return new Rectangle (widget.ConvertToScreenCoordinates (widgetRect.Location), widgetRect.Size);
-		}
-
-		private Rectangle GetGtkScreenCoordinates (Rectangle widgetRect)
-		{
-			// TODO: Fix cross toolkit coords
-			// NSView coordinates have the wrong origin for Gtk
-			// Windows needs to be converted in HiDPI mode
-			var gtkTarget = target as Gtk.Widget;
-			if (gtkTarget != null)
-				return GtkUtil.ToScreenCoordinates (gtkTarget, gtkTarget.GdkWindow, widgetRect.ToGdkRectangle ()).ToXwtRectangle ();
-			#if MAC
-			var nsTarget = target as AppKit.NSView;
-			if (nsTarget != null) {
-				var lo = nsTarget.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)widgetRect.X, (nfloat)widgetRect.Y), null);
-				lo = nsTarget.Window.ConvertRectToScreen (new CoreGraphics.CGRect (lo, CoreGraphics.CGSize.Empty)).Location;
-				var r = new CoreGraphics.CGRect (lo.X, lo.Y, 0, nsTarget.IsFlipped ? 0 : nsTarget.Frame.Height);
-
-				var desktopBounds = new Rectangle ();
-				foreach (var s in AppKit.NSScreen.Screens) {
-					var sr = s.Frame;
-					desktopBounds = desktopBounds.Union (new Rectangle (sr.X, sr.Y, sr.Width, sr.Height));
-				}
-
-				r.Y = (nfloat)desktopBounds.Height - r.Y - r.Height;
-				if (desktopBounds.Y < 0)
-					r.Y += (nfloat)desktopBounds.Y;
-				return new Rectangle (r.X, r.Y, r.Width, r.Height);
+			if (xwtTarget != null) {
+				screenLocation = xwtTarget.ConvertToScreenCoordinates (targetRect.Location);
+				targetToolkit = xwtTarget.Surface.ToolkitEngine;
+			} else {
+				targetToolkit = GetToolkitForWidget (target);
+				screenLocation = targetToolkit.GetScreenBounds (target).Offset (targetRect.Location).Location; 
 			}
-			#endif
-			
-			return Rectangle.Zero;
+
+			screenLocation = TranslateCoordinates (targetToolkit, Toolkit, screenLocation);
+			return new Rectangle (screenLocation, targetRect.Size);
 		}
 
-		#if MAC
-		protected Rectangle GetXamMacScreenCoordinates (Rectangle targetRect)
+		static Point TranslateCoordinates (Xwt.Toolkit sourceToolkit, Xwt.Toolkit targetToolkit, Point point)
 		{
-			var gtkTarget = target as Gtk.Widget;
-			if (gtkTarget != null)
-				return GetXamMacDesktopBounds (gtkTarget, targetRect);
-			var nsTarget = target as AppKit.NSView;
-			if (nsTarget != null)
-				return GetXamMacDesktopBounds (nsTarget, targetRect);
-
-			return Rectangle.Zero;
-		}
-
-		private Rectangle GetXamMacDesktopBounds (Gtk.Widget widget, Rectangle widgetRect)
-		{
-			int x, y;
-			widget.ParentWindow.GetOrigin (out x, out y);
-			var a = widget.Allocation;
-			x += a.X;
-			y += a.Y;
-			var gtkScreenRect = new Rectangle (x + widgetRect.X, y + widgetRect.Y, widgetRect.Width, widgetRect.Height);
-
-			var monitor = widget.Screen.GetMonitorAtPoint ((int)gtkScreenRect.X, (int)gtkScreenRect.Y);
-			var geometry = widget.Screen.GetMonitorGeometry (monitor);
-			gtkScreenRect.X -= geometry.X;
-			gtkScreenRect.Y -= geometry.Y;
-
-			var nsTarget = Mac.GtkMacInterop.GetNSView (widget);
-			Toolkit.Invoke (() => {
-				foreach (var screen in Desktop.Screens) {
-					if (Toolkit.GetBackend (screen) == nsTarget.Window.Screen) {
-						gtkScreenRect.X += screen.Bounds.X;
-						gtkScreenRect.Y += screen.Bounds.Y;
-					}
-				}
+			if (sourceToolkit == targetToolkit)
+				return point;
+			sourceToolkit.Invoke (() => {
+				var desktopBounds = Desktop.Bounds;
+				point.X -= desktopBounds.X;
+				point.Y -= desktopBounds.Y;
 			});
-			return gtkScreenRect;
+			targetToolkit.Invoke (() => {
+				var desktopBounds = Desktop.Bounds;
+				point.X += desktopBounds.X;
+				point.Y += desktopBounds.Y;
+			});
+			return point;
 		}
 
-		static Rectangle GetXamMacDesktopBounds (AppKit.NSView view, Rectangle viewRect)
+		static Toolkit GetToolkitForWidget (object nativeWidget)
 		{
-			var lo = view.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)viewRect.X, (nfloat)viewRect.Y), null);
-			lo = view.Window.ConvertRectToScreen (new CoreGraphics.CGRect (lo, CoreGraphics.CGSize.Empty)).Location;
-			var r = new CoreGraphics.CGRect (lo.X, lo.Y, 0, view.IsFlipped ? 0 : view.Frame.Height);
-
-			var desktopBounds = new Rectangle ();
-			foreach (var s in AppKit.NSScreen.Screens) {
-				var sr = s.Frame;
-				desktopBounds = desktopBounds.Union (new Rectangle (sr.X, sr.Y, sr.Width, sr.Height));
-			}
-
-			r.Y = (nfloat)desktopBounds.Height - r.Y - r.Height;
-			if (desktopBounds.Y < 0)
-				r.Y += (nfloat)desktopBounds.Y;
-			return new Rectangle (r.X, r.Y, r.Width, r.Height);
+			if (nativeWidget is Gtk.Widget)
+				return Toolkit.Load (ToolkitType.Gtk);
+			#if MAC
+			if (nativeWidget is AppKit.NSView)
+				return Toolkit.Load (ToolkitType.XamMac);
+			#endif
+			#if WIN32
+			if (nativeWidget is System.Windows.FrameworkElement)
+				return Toolkit.Load (ToolkitType.Wpf);
+			#endif
+			throw new NotSupportedException (string.Format ("Widget of type '{0}' does not belong to a supported Toolkit.", nativeWidget.GetType ()));
 		}
-		#endif
 
 		protected Size GetParentSize ()
 		{
