@@ -615,10 +615,11 @@ namespace MonoDevelop.Core.Execution
 				return;
 			}
 
-			Runtime.RunInMainThread (delegate {
-				if (MessageReceived != null)
-					MessageReceived (null, new MessageEventArgs () { Message = msg });
-			});
+			if (MessageReceived != null) {
+				Runtime.RunInMainThread (delegate {
+					MessageReceived?.Invoke (null, new MessageEventArgs () { Message = msg });
+				});
+			}
 
 			try {
 				foreach (var li in listeners) {
