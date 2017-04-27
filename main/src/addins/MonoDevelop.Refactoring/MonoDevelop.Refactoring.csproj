@@ -161,6 +161,9 @@
     <Compile Include="MonoDevelop.Refactoring.SignatureChange\SignatureChangeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.SignatureChange.SignatureChangeDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.GenerateType\GenerateTypeDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.GenerateType.GenerateTypeDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring.GenerateType\GenerateTypeOptionsService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -170,6 +173,7 @@
     <Folder Include="MonoDevelop.CodeActions\" />
     <Folder Include="MonoDevelop.CodeIssues\Pad\" />
     <Folder Include="MonoDevelop.Refactoring.SignatureChange\" />
+    <Folder Include="MonoDevelop.Refactoring.GenerateType\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

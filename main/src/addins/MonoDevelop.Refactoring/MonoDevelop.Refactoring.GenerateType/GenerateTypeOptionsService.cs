@@ -1,5 +1,5 @@
 ﻿//
-// SignatureChangeOptionService.cs
+// GenerateTypeOptionsService.cs
 //
 // Author:
 //       Mike Krüger <mikkrg@microsoft.com>
@@ -31,40 +31,38 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Host;
 using System.Composition;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.GenerateType;
+using Microsoft.CodeAnalysis.LanguageServices;
+using Microsoft.CodeAnalysis.ProjectManagement;
 
-namespace MonoDevelop.Refactoring.SignatureChange
+namespace MonoDevelop.Refactoring.GenerateType
 {
-	[ExportWorkspaceServiceFactory (typeof (IChangeSignatureOptionsService)), Shared]
-	class SignatureChangeOptionServiceFactory : IWorkspaceServiceFactory
+	[ExportWorkspaceServiceFactory (typeof (IGenerateTypeOptionsService)), Shared]
+	class GenerateTypeOptionsServiceFactory2 : IWorkspaceServiceFactory
 	{
-		static Lazy<IChangeSignatureOptionsService> service = new Lazy<IChangeSignatureOptionsService> (() => new SignatureChangeOptionService ());
+		static Lazy<IGenerateTypeOptionsService> service = new Lazy<IGenerateTypeOptionsService> (() => new GenerateTypeOptionsService ());
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
+
 			return service.Value;
 		}
 
-		class SignatureChangeOptionService : IChangeSignatureOptionsService
+		class GenerateTypeOptionsService : IGenerateTypeOptionsService
 		{
-			static readonly ChangeSignatureOptionsResult cancelled = new ChangeSignatureOptionsResult { IsCancelled = true };
-
-			public ChangeSignatureOptionsResult GetChangeSignatureOptions (ISymbol symbol, ParameterConfiguration parameters, INotificationService notificationService)
+			GenerateTypeOptionsResult IGenerateTypeOptionsService.GetGenerateTypeOptions (string className, GenerateTypeDialogOptions generateTypeDialogOptions, Document document, INotificationService notificationService, IProjectManagementService projectManagementService, ISyntaxFactsService syntaxFactsService)
 			{
-				var dialog = new SignatureChangeDialog ();
+				var dialog = new GenerateTypeDialog (className, generateTypeDialogOptions, document, notificationService, projectManagementService, syntaxFactsService);
 				try {
-					dialog.Init (symbol, parameters); 
 					bool performChange = dialog.Run () == (int)Gtk.ResponseType.Ok;
 					if (!performChange)
-						return cancelled;
-
-					return new ChangeSignatureOptionsResult {
-						IsCancelled = false,
-						UpdatedSignature = new Microsoft.CodeAnalysis.ChangeSignature.SignatureChange (parameters, ParameterConfiguration.Create (dialog.ParameterList, parameters.ThisParameter != null))
-					};
+						return GenerateTypeOptionsResult.Cancelled;
+					
+					return dialog.GenerateTypeOptionsResult;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while signature changing.", ex);
-					return cancelled;
-				} finally  {
+					return GenerateTypeOptionsResult.Cancelled;
+				} finally {
 					dialog.Destroy ();
 				}
 			}

@@ -163,15 +163,6 @@ namespace MonoDevelop.Core.Text
 
 		public static string GetText (byte[] bytes, Encoding encoding)
 		{
-			byte[] bom = encoding.GetPreamble ();
-			if (bom != null && bom.Length > 0 && bom.Length <= bytes.Length) {
-				for (int i = 0; i < bom.Length; i++) {
-					if (bytes [i] != bom [i]) {
-						break;
-					}
-				}
-				return encoding.GetString (bytes, bom.Length, bytes.Length - bom.Length);
-			}
 			return encoding.GetString (bytes);
 		}
 
