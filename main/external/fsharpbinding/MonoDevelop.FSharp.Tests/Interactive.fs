@@ -21,7 +21,7 @@ module Interactive =
             ses.StartReceiving()
             let finished = new AutoResetEvent(false) // using AutoResetEvent because I can't get Async.AwaitEvent to work here without a hang
             ses.PromptReady.Add(fun _ -> finished.Set() |> ignore)
-            let succeeded = finished.WaitOne(5000)
+            let succeeded = finished.WaitOne(10000)
             if not succeeded then Assert.Fail "Timed out waiting for prompt"
             return ses
         }

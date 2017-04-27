@@ -17,12 +17,30 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			client_version ();
 		}
-		
+
+		[DllImport ("libc")]
+		extern static IntPtr dlopen (string name, int mode);
+
 		public static LibSvnClient GetLib ()
 		{
+			// Here be linker dragons.
+			// Due to the way the mono dlloader works, and how svn is architected we need to manually load libsvn_client
+			// Because libsvn_client relies on apr_initialize being called, we need to get the right apr dependency.
+			// Letting mono resolve both libraries separately will only load libsvn_client's deps when needed,
+			// Thus it'll end up loading the wrong libapr in the case of Mac.
+			// We rely on using Xcode's libsvn_client, so if that isn't found or the license hasn't been accepted,
+			// it'll be skipped. If svn is installed from somewhere else (most commonly via brew), we end up loading
+			// brew's libsvn_client and the system libapr, which are mismatched on dependency versions causing a native
+			// crash. dlopen-ining libsvn_client allows us to handle the right mix-match of svn and apr, since it loads
+			// apr via the linker flags on the binary.
+			if (Core.Platform.IsMac) {
+				if (dlopen ("libsvn_client-1.0.dylib", 0x1) == IntPtr.Zero)
+					return null;
+				return new LibSvnClient2 ();
+			}
 			try {
 				return new LibSvnClient0 ();
-			} catch {}
+			} catch { }
 			
 			try {
 				return new LibSvnClient1 ();

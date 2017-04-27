@@ -1,10 +1,11 @@
 ﻿using System;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.GettingStarted
 {
-	public abstract class GettingStartedProviderBase : IGettingStartedProvider
+	public abstract class GettingStartedProvider
 	{
 		public abstract bool SupportsProject (Project project);
 
@@ -26,6 +27,10 @@ namespace MonoDevelop.Ide.GettingStarted
 				var vc = new GettingStartedViewContent (project, provider);
 				IdeApp.Workbench.OpenDocument (vc, true);
 			}
+		}
+
+		public virtual void SupportedProjectCreated (ProcessedTemplateResult templateResult)
+		{
 		}
 	}
 }

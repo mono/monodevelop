@@ -37,7 +37,7 @@
 				<add namespace="System.Web.Mvc.Ajax" />
 				<add namespace="System.Web.Mvc.Html" />
 				<add namespace="System.Web.Routing" />
-				<add namespace="${Namespace}" />
+				<add namespace="${RootNamespace}" />
 			</namespaces>
 		</pages>
 	</system.web.webPages.razor>

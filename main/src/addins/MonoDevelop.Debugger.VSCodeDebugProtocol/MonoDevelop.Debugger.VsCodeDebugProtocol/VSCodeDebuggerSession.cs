@@ -118,6 +118,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		bool currentExceptionState = false;
 		void UpdateExceptions ()
 		{
+			//Disposed
+			if (protocolClient == null)
+				return;
+
 			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any ();
 			if (currentExceptionState != hasCustomExceptions) {
 				currentExceptionState = hasCustomExceptions;
@@ -146,7 +150,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		void DebugAgentProcess_Exited (object sender, EventArgs e)
 		{
-			protocolClient.Stop ();
+			if (protocolClient != null) {
+				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
+				protocolClient.Stop ();
+				protocolClient = null;
+			}
+			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 		}
 
 		Process debugAgentProcess;
@@ -177,6 +186,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (!MonoDevelop.Core.Platform.IsWindows)
 				startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
 			debugAgentProcess = Process.Start (startInfo);
+			debugAgentProcess.EnableRaisingEvents = true;
 			debugAgentProcess.Exited += DebugAgentProcess_Exited;
 			protocolClient = new DebugProtocolHost (debugAgentProcess.StandardInput.BaseStream, debugAgentProcess.StandardOutput.BaseStream);
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
@@ -315,6 +325,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		void UpdateBreakpoints ()
 		{
+			//Disposed
+			if (protocolClient == null)
+				return;
+
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled).GroupBy (b => b.FileName).ToArray ();
 			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
@@ -376,9 +390,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			base.Dispose ();
 			if (protocolClient != null) {
-				protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
+				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
 				protocolClient.SendRequestSync (new DisconnectRequest ());
 				protocolClient.Stop ();
+				protocolClient = null;
 			}
 		}
 	}

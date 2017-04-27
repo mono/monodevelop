@@ -116,6 +116,9 @@ namespace MonoDevelop.CodeIssues
 					
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
+				} catch (OperationCanceledException) {
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ix => ix is OperationCanceledException);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error creating analyzer compilation", ex);
 					return Enumerable.Empty<Result> ();

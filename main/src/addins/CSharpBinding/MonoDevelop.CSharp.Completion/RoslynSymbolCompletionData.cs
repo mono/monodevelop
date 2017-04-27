@@ -386,19 +386,22 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal static bool HasAnyOverloadWithParameters (IMethodSymbol method)
 		{
-			if (method.MethodKind == MethodKind.Constructor) 
-				return method.ContainingType.GetMembers()
-					.OfType<IMethodSymbol>()
-					.Where(m => m.MethodKind == MethodKind.Constructor)
+			switch (method.MethodKind) {
+			case MethodKind.Constructor:
+				return method.ContainingType.GetMembers ()
+					.OfType<IMethodSymbol> ()
+					.Where (m => m.MethodKind == MethodKind.Constructor)
 					.Any (m => m.Parameters.Length > 0);
-			return method.ContainingType
-				.GetMembers()
-				.OfType<IMethodSymbol>()
-				.Any (m => m.Name == method.Name && m.Parameters.Length > 0);
+			case MethodKind.LocalFunction:
+				return method.Parameters.Length > 0;
+			default:
+				return method.ContainingType
+					         .GetMembers ()
+					         .OfType<IMethodSymbol> ()
+					         .Any (m => m.Name == method.Name && m.Parameters.Length > 0);
+			}
 		}
-
-
-
+		
 		static bool RequireGenerics (IMethodSymbol method)
 		{
 			System.Collections.Immutable.ImmutableArray<ITypeSymbol> typeArgs;

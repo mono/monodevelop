@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.GettingStarted
 	{
 		Control gettingStartedWidget;
 		
-		public GettingStartedViewContent (Project project, IGettingStartedProvider provider)
+		public GettingStartedViewContent (Project project, GettingStartedProvider provider)
 		{
 			Project = project;
 			gettingStartedWidget = provider.GetGettingStartedWidget (project);

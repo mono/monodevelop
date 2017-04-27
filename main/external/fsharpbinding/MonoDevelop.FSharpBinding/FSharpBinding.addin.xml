@@ -173,8 +173,7 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />
-    <!-- Extension check is done within code -->
-    <Class class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">

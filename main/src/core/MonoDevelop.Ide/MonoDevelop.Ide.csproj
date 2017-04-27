@@ -6389,6 +6389,30 @@
     <EmbeddedResource Include="icons\platform-macos-16~dark~sel%402x.png">
       <LogicalName>platform-macos-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16.png">
+      <LogicalName>platform-netcore-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16%402x.png">
+      <LogicalName>platform-netcore-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~dark.png">
+      <LogicalName>platform-netcore-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~dark%402x.png">
+      <LogicalName>platform-netcore-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~sel.png">
+      <LogicalName>platform-netcore-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~sel%402x.png">
+      <LogicalName>platform-netcore-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~dark~sel.png">
+      <LogicalName>platform-netcore-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-netcore-16~dark~sel%402x.png">
+      <LogicalName>platform-netcore-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-other-16.png">
       <LogicalName>platform-other-16.png</LogicalName>
     </EmbeddedResource>
@@ -9358,8 +9382,7 @@
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProjectExtension.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProviderBase.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProvider.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedHeaderBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Wizard\WizardDialogController.cs" />

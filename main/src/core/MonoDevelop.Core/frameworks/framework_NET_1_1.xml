@@ -1,4 +1,4 @@
-<TargetFramework id=".NETFramework,Version=v1.1" _name="Mono / .NET 1.1" clrVersion="Net_1_1">
+﻿<TargetFramework id=".NETFramework,Version=v1.1" _name=".NET Framework 1.1" clrVersion="Net_1_1">
 <Assemblies>
   <Assembly name="System" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="mscorlib" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />

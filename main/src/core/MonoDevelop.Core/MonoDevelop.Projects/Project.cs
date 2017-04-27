@@ -1384,29 +1384,37 @@ namespace MonoDevelop.Projects
 
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
-			if (!string.IsNullOrEmpty (MSBuildProject.Sdk))
-				return MSBuildProjectService.FindSdkPath (runtime, MSBuildProject.GetReferencedSDKs ());
-
-			var dotNetProject = this as DotNetProject;
-			if (dotNetProject == null)
-				return null;
-
-			// Check project references.
 			HashSet<string> sdks = null;
-			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-				var project = projectReference.ResolveProject (ParentSolution);
-				if (project != null && !string.IsNullOrEmpty (project.MSBuildProject.Sdk)) {
-					if (sdks == null)
-						sdks = new HashSet<string> ();
-					foreach (string sdk in project.MSBuildProject.GetReferencedSDKs ())
-						sdks.Add (sdk);
-				}
+			GetReferencedSDKs (this, ref sdks, new HashSet<string> ());
+			if (sdks != null)
+				return MSBuildProjectService.FindSdkPath (runtime, sdks);
+			return null;
+		}
+
+		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<string> traversedProjects)
+		{
+			traversedProjects.Add (project.ItemId);
+
+			var projectSdks = project.MSBuildProject.GetReferencedSDKs ();
+			if (projectSdks.Length > 0) {
+				if (sdks == null)
+					sdks = new HashSet<string> ();
+				sdks.UnionWith (projectSdks);
 			}
 
-			if (sdks != null)
-				return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
+			var dotNetProject = project as DotNetProject;
+			if (dotNetProject == null)
+				return;
 
-			return null;
+			// Check project references.
+			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				if (traversedProjects.Contains (projectReference.ProjectGuid))
+					continue;
+
+				var p = projectReference.ResolveProject (ParentSolution);
+				if (p != null)
+					GetReferencedSDKs (p, ref sdks, traversedProjects);
+			}
 		}
 
 		RemoteProjectBuilder GetCachedProjectBuilder ()

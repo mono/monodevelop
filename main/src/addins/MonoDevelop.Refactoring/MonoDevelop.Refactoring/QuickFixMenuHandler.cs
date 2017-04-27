@@ -29,6 +29,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
@@ -40,9 +41,26 @@ namespace MonoDevelop.Refactoring
 			var ext = editor?.GetContent<CodeActionEditorExtension> ();
 			if (ext == null)
 				return;
-
-			var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
-			info.Add (CreateCommandInfoSet (menu));
+			var quickFixMenu = new CommandInfoSet ();
+			quickFixMenu.Text = GettextCatalog.GetString ("Quick Fix");
+			quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
+			info.Add (quickFixMenu);
+			try {
+				var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
+				quickFixMenu.CommandInfos.Clear ();
+				foreach (var item in menu.Items) {
+					AddItem (quickFixMenu, item);
+				}
+				if (menu.Items.Count == 0) {
+					quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+				}
+			} catch (OperationCanceledException) {
+				
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating quick fix menu.", e); 
+				quickFixMenu.CommandInfos.Clear ();
+				quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+			}
 		}
 
 		CommandInfoSet CreateCommandInfoSet (CodeFixMenu menu)
@@ -57,7 +75,13 @@ namespace MonoDevelop.Refactoring
 
 		void AddItem (CommandInfoSet cis, CodeFixMenuEntry item)
 		{
-			cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+			if (item == CodeFixMenuEntry.Separator) {
+				if (cis.CommandInfos.Count == 0)
+					return;
+				cis.CommandInfos.AddSeparator ();
+			} else {
+				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
+			}
 		}
 
 		protected override void Run (object data)

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Timers;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using Xwt;
@@ -142,6 +143,8 @@ namespace MonoDevelop.Components
 
 		public bool ShowTooltip ()
 		{
+			if (hideTooltipTimer?.Enabled == true)
+				hideTooltipTimer.Stop ();
 			if (!string.IsNullOrEmpty (tip)) {
 				var rect = new Rectangle (0, 0, Content.Size.Width, Content.Size.Height);
 				if (tooltipWindow != null)
@@ -162,11 +165,23 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		Timer hideTooltipTimer;
+
 		public void HideTooltip ()
 		{
-			if (tooltipWindow != null) {
-				tooltipWindow.Hide ();
+			// we delay hiding using a timer to avoid tooltip flickering in case of focus stealing
+			// due to weird toolkit behaviour.
+			if (hideTooltipTimer == null) {
+				hideTooltipTimer = new Timer (50) {
+					AutoReset = false,
+					SynchronizingObject = this,
+				};
+				hideTooltipTimer.Elapsed += (sender, e) => {
+					if (tooltipWindow?.Visible == true)
+						tooltipWindow.Hide ();
+				};
 			}
+			hideTooltipTimer.Start ();
 		}
 
 		public new bool Visible {
@@ -184,8 +199,13 @@ namespace MonoDevelop.Components
 		{
 			if (disposing) {
 				HideTooltip ();
+				hideTooltipTimer?.Dispose ();
 				tooltipWindow?.Dispose ();
+				xwtPopover?.Dispose ();
 			}
+			hideTooltipTimer = null;
+			tooltipWindow = null;
+			xwtPopover = null;
 			base.Dispose (disposing);
 		}
 	}

@@ -199,6 +199,9 @@ namespace MonoDevelop.CodeActions
 						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).ConfigureAwait (false)) {
 							codeActions.Add (action);
 						}
+						if (token.IsCancellationRequested)
+							return CodeActionContainer.Empty;
+
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)

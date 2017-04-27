@@ -243,7 +243,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			return null;
 		}
-
 	}
 }
 

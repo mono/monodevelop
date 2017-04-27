@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TargetFrameworkMoniker.cs
 //  
 // Author:
@@ -245,7 +245,19 @@ namespace MonoDevelop.Core.Assemblies
 		public static TargetFrameworkMoniker NET_4_5 {
 			get { return new TargetFrameworkMoniker ("4.5"); }
 		}
-		
+
+		public static TargetFrameworkMoniker NET_4_6 {
+			get { return new TargetFrameworkMoniker ("4.6"); }
+		}
+
+		public static TargetFrameworkMoniker NET_4_6_1 {
+			get { return new TargetFrameworkMoniker ("4.6.1"); }
+		}
+
+		public static TargetFrameworkMoniker NET_4_6_2 {
+			get { return new TargetFrameworkMoniker ("4.6.2"); }
+		}
+
 		public static TargetFrameworkMoniker PORTABLE_4_0 {
 			get { return new TargetFrameworkMoniker (ID_PORTABLE, "4.0", "Profile1"); }
 		}

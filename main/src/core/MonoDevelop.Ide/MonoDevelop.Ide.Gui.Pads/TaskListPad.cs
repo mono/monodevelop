@@ -42,6 +42,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -74,6 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Id = "MonoDevelop.Ide.Gui.Pads.TaskListPad";
 
 			VBox vbox = new VBox ();
+			vbox.Accessible.SetShouldIgnore (true);
 			
 			switcherComboList = new ListStore (typeof (string), typeof (ITaskListView), typeof (string));
 			try
@@ -90,6 +92,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			
 			switcherCombo = new ComboBox (switcherComboList);
+			switcherCombo.SetCommonAccessibilityAttributes ("TaskPad.Switcher",
+			                                                GettextCatalog.GetString ("Type Selector"),
+			                                                GettextCatalog.GetString ("Select which type of tasks to display"));
 			CellRenderer cr = new CellRendererText ();
 			switcherCombo.PackStart (cr, true);
 			switcherCombo.AddAttribute (cr, "text", 0);

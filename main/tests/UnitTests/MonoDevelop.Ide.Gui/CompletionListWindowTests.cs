@@ -998,5 +998,20 @@ namespace MonoDevelop.Ide.Gui
 			string output = RunSimulation ("", "String(\t", true, true, false, "StringBuilder()", "FooBar");
 			Assert.AreEqual ("StringBuilder()", output);
 		}
+
+
+		/// <summary>
+		/// Bug 55298 - Autocomplete () doesn't work
+		/// </summary>
+		[Test]
+		public void TestBug55298 ()
+		{
+			string output = RunSimulation (new SimulationSettings () {
+				DefaultCompletionString ="Random()",
+				SimulatedInput = "Ran\t",
+				CompletionData = new string [] { "Random", "Random()" }
+			});
+			Assert.AreEqual ("Random()", output);
+		}
 	}
 }

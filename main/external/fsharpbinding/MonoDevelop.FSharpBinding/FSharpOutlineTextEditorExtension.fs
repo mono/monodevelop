@@ -96,7 +96,7 @@ type FSharpOutlineTextEditorExtension() as x =
                         |> Option.tryCast<FSharpNavigationDeclarationItem[]>
                         |> Option.iter(fun item ->
                             let node = item.[0]
-                            let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
+                            let (scol,sline) = node.Range.StartColumn+1, node.Range.StartLine
                             IdeApp.Workbench.OpenDocument (x.Editor.FileName, null, max 1 sline, max 1 scol) |> ignore)
 
                     if focus then

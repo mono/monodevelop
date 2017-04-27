@@ -42,13 +42,12 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	class FindReferencesHandler
 	{
-		internal static void FindRefs (ISymbol symbol)
+		internal static void FindRefs (ISymbol symbol, Solution solution)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			if (workspace == null)
 				return;
-			var solution = workspace.CurrentSolution;
 			Task.Run (async delegate {
 				try {
 					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
@@ -130,7 +129,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindRefs (sym);
+					FindRefs (sym, doc.AnalysisDocument.Project.Solution);
 				} else {
 					RefactoringService.FindReferencesAsync (FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}
@@ -173,7 +172,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindReferencesHandler.FindRefs (sym);
+					FindReferencesHandler.FindRefs (sym, doc.AnalysisDocument.Project.Solution);
 				} else {
 					RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}

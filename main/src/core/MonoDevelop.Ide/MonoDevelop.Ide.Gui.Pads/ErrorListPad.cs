@@ -298,6 +298,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 
+			// Set the model to null as it makes Gtk clean up faster
+			view.Model = null;
+
 			base.Dispose ();
 		}
 		
@@ -635,12 +638,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			descriptionCol.AddNotification("width", delegate
 			{
+				if (descriptionCellRenderer.WrapWidth == descriptionCol.Width)
+					return;
 				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
-				store.Foreach((model, path, iter) =>
-				{
-					model.EmitRowChanged(path, iter);
-					return false;
-				});
+				descriptionCol.QueueResize ();
 			});
 			
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);

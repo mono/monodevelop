@@ -527,7 +527,15 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public string Sdk { get; set; }
+		string sdk;
+		string[] sdkArray;
+		public string Sdk {
+			get => sdk;
+			set {
+				sdk = value;
+				sdkArray = null;
+			}
+		}
 
 		public override string Namespace {
 			get {
@@ -928,10 +936,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public string[] GetReferencedSDKs ()
 		{
-			if (!string.IsNullOrEmpty (Sdk))
-				return Sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (!string.IsNullOrEmpty (Sdk)) {
+				if (sdkArray == null)
+					sdkArray = Sdk.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+				return sdkArray;
+			}
 			else
-				return new string [0];
+				return Array.Empty<string> ();
 		}
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()

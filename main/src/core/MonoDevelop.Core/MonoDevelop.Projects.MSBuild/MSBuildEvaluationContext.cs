@@ -47,8 +47,8 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		HashSet<string> propertiesWithTransforms = new HashSet<string> ();
-		List<string> propertiesWithTransformsSorted = new List<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
 		public Dictionary<string, bool> ExistsEvaluationCache { get; } = new Dictionary<string, bool> ();
@@ -64,8 +64,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public MSBuildEvaluationContext ()
 		{
-			propertiesWithTransforms = new HashSet<string> ();
-			propertiesWithTransformsSorted = new List<string> ();
 		}
 
 		public MSBuildEvaluationContext (MSBuildEvaluationContext parentContext)
@@ -74,6 +72,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.project = parentContext.project;
 			this.propertiesWithTransforms = parentContext.propertiesWithTransforms;
 			this.propertiesWithTransformsSorted = parentContext.propertiesWithTransformsSorted;
+			this.ExistsEvaluationCache = parentContext.ExistsEvaluationCache;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
@@ -688,13 +687,14 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
+		static char[] parameterCloseChars = new[] { ',', ')' };
 		internal bool EvaluateParameters (string str, ref int i, out object[] parameters)
 		{
 			parameters = null;
 			var list = new List<object> ();
 
 			while (i < str.Length) {
-				var j = FindClosingChar (str, i, new [] { ',', ')' });
+				var j = FindClosingChar (str, i, parameterCloseChars);
 				if (j == -1)
 					return false;
 				
@@ -957,7 +957,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.Contains (c))
+				if (pc == 0 && closeChar.IndexOf (c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;

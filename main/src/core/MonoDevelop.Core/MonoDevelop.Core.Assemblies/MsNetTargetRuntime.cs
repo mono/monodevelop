@@ -55,7 +55,8 @@ namespace MonoDevelop.Core.Assemblies
 			
 			string programFilesX86 = GetProgramFilesX86 ();
 			newFxDir = programFilesX86 + "\\Reference Assemblies\\Microsoft\\Framework";
-			msbuildDir = programFilesX86 + "\\MSBuild";
+			msbuildDir = GetMSBuildBinPath ("15.0"); // C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\bin
+			msbuildDir = Path.GetDirectoryName (Path.GetDirectoryName (msbuildDir)); // C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild
 			
 			this.running = running;
 			execHandler = new MsNetExecutionHandler ();

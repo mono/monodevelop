@@ -370,6 +370,7 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Projects\GtkAspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="Projects\AspNetCoreFileTemplateCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -552,6 +553,9 @@
     <None Include="Templates\Projects\Files\Test.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\AspNetCore\WebApiController.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Html\Schemas\readme.txt">
@@ -602,4 +606,5 @@
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
+  <Import Project="..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets" Condition="Exists('..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets')" />
 </Project>

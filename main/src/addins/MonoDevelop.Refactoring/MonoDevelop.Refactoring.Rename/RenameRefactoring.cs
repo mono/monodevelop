@@ -79,8 +79,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public async Task Rename (ISymbol symbol)
 		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			var ws = TypeSystemService.GetWorkspace (solution);
+			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var currentSolution = ws.CurrentSolution;
 			var cts = new CancellationTokenSource ();
@@ -121,7 +120,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, default(CancellationToken))) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default(CancellationToken))) {
 				foreach (var loc in mref.Locations) {
 					TextSpan span = loc.Location.SourceSpan;
 					var root = loc.Location.SourceTree.GetRoot ();
@@ -176,8 +175,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			var ws = TypeSystemService.GetWorkspace (solution);
+			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();

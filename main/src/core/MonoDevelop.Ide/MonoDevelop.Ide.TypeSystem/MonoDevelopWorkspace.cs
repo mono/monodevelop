@@ -231,6 +231,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
 				projectionList.Clear ();
+				projectIdMap.Clear ();
+				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
@@ -248,7 +250,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				await Task.WhenAll (allTasks.ToArray ()).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
 					return null;
-				var modifiedWhileLoading = modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+				var modifiedWhileLoading = modifiedProjects;
+				modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 				var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
 				foreach (var project in modifiedWhileLoading) {
 					if (solution.ContainsItem (project)) {
@@ -571,7 +574,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					additionalDocuments.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 
-					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
+					foreach (var projectedDocument in GenerateProjections (f, projectData, p, oldProjectData)) {
 						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
 						if (!duplicates.Add (projectedId))
 							continue;
@@ -582,7 +585,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Tuple.Create (documents, additionalDocuments);
 		}
 
-		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, HashSet<DocumentId> duplicates = null)
+		IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, ProjectData projectData, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates = null)
 		{
 			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
@@ -600,11 +603,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			entry.Projections = list;
 			foreach (var projection in projections.Result) {
 				list.Add (projection);
-				if (duplicates != null && !duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
+				if (duplicates != null && !duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName, oldProjectData)))
 					continue;
 				var plainName = projection.Document.FileName.FileName;
 				yield return DocumentInfo.Create (
-					projectData.GetOrCreateDocumentId (projection.Document.FileName),
+					projectData.GetOrCreateDocumentId (projection.Document.FileName, oldProjectData),
 					plainName,
 					new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 					SourceCodeKind.Regular,
@@ -879,7 +882,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!isOpen) {
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (formatter.SupportsPartialDocumentFormatting) {
+				if (formatter != null && formatter.SupportsPartialDocumentFormatting) {
 					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
 					string currentText = data.Text;
 
@@ -928,7 +931,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							delta = ApplyChanges (projection, data, changes);
 							var versionBeforeFormat = editor.Version;
 
-							if (formatter.SupportsOnTheFlyFormatting) {
+							if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 								foreach (var change in changes) {
 									delta -= change.Span.Length - change.NewText.Length;
 									var startOffset = change.Span.Start - delta;
@@ -1342,7 +1345,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile, sck);
 						OnDocumentAdded (newDocument);
 					} else {
-						foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project)) {
+						foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project, null)) {
 							OnDocumentAdded (projectedDocument);
 						}
 					}
@@ -1363,7 +1366,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var id = data.GetDocumentId (fargs.ProjectFile.FilePath);
 					if (id != null) {
 						ClearDocumentData (id);
-						OnDocumentRemoved (id);
+						try {
+							OnDocumentRemoved (id);
+						} catch (Exception e) {
+							LoggingService.LogInternalError (e);
+						}
 						data.RemoveDocument (fargs.ProjectFile.FilePath);
 					} else {
 						foreach (var entry in ProjectionList) {
@@ -1429,7 +1436,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 						}
 
-						foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project)) {
+						foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project, null)) {
 							OnDocumentAdded (projectedDocument);
 						}
 					}
@@ -1451,8 +1458,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var projectId = GetProjectId (project);
 				if (CurrentSolution.ContainsProject (projectId)) {
-					OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
-					ProjectReloaded?.Invoke (this, new RoslynProjectEventArgs (projectId));
+					HandleActiveConfigurationChanged (this, EventArgs.Empty);
 				} else {
 					modifiedProjects.Add (project);
 				}
@@ -1462,10 +1468,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-
-
-		public event EventHandler<RoslynProjectEventArgs> ProjectReloaded;
-
 
 		/// <summary>
 		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 

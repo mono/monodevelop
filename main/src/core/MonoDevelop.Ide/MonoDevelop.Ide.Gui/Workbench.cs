@@ -358,7 +358,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal bool SaveAllDirtyFiles ()
+		internal async Task<bool> SaveAllDirtyFiles ()
 		{
 			Document[] docs = Documents.Where (doc => doc.IsDirty && doc.Window.ViewContent != null).ToArray ();
 			if (!docs.Any ())
@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.Gui
 				if (result == AlertButton.Cancel)
 					return false;
 
-				doc.Save ();
+				await doc.Save ();
 				if (doc.IsDirty) {
 					doc.Select ();
 					return false;
@@ -893,7 +893,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		// When looking for the project to which the file belongs, look first
 		// in the active project, then the active solution, and so on
-		static Project GetProjectContainingFile (FilePath fileName)
+		internal static Project GetProjectContainingFile (FilePath fileName)
 		{
 			Project project = null;
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {

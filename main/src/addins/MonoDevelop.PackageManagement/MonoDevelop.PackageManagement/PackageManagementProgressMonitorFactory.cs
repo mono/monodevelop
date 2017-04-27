@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Pads;
+using System;
 using System.Linq;
 
 namespace MonoDevelop.PackageManagement
@@ -73,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 		void ConfigureConsoleClearing (bool clearConsole)
 		{
 			var workbench = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
-			var codon = workbench.PadContentCollection.FirstOrDefault (pad => pad.PadId.Contains ("PackageConsole"));
+			var codon = workbench.PadContentCollection.FirstOrDefault (pad => pad.PadId.StartsWith ("OutputPad-PackageConsole-", StringComparison.Ordinal));
 			if (codon != null) {
 				var pad = codon.PadContent as DefaultMonitorPad;
 				if (pad != null) {

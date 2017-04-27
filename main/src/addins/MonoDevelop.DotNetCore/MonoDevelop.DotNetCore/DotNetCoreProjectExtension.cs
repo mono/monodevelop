@@ -238,15 +238,18 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			OperationConsole console = externalConsole ? context.ExternalConsoleFactory.CreateConsole (!pauseConsole, monitor.CancellationToken)
-				: context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+				: context.ConsoleFactory.CreateConsole (OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (Project.Name), monitor.CancellationToken);
 
 			using (console) {
 				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
 
-				using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
-					await asyncOp.Task;
+				try {
+					using (var stopper = monitor.CancellationToken.Register (asyncOp.Cancel))
+						await asyncOp.Task;
 
-				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
+				} catch (OperationCanceledException) {
+				}
 			}
 		}
 
@@ -565,12 +568,23 @@ namespace MonoDevelop.DotNetCore
 		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			if (Project.Loading) {
-				foreach (var file in objs.OfType<ProjectFile> ()) {
-					if (file.FilePath.ShouldBeHidden ())
-						file.Flags = ProjectItemFlags.Hidden;
-				}
+				UpdateHiddenFiles (objs.OfType<ProjectFile> ());
 			}
 			base.OnItemsAdded (objs);
+		}
+
+		void UpdateHiddenFiles (IEnumerable<ProjectFile> files)
+		{
+			foreach (var file in files) {
+				if (file.FilePath.ShouldBeHidden ())
+					file.Flags = ProjectItemFlags.Hidden;
+			}
+		}
+
+		protected override async Task OnReevaluateProject (ProgressMonitor monitor)
+		{
+			await base.OnReevaluateProject (monitor);
+			UpdateHiddenFiles (Project.Files);
 		}
 	}
 }

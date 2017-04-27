@@ -85,6 +85,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public MSBuildItem Item;
 			public string Include;
 			public Regex ExcludeRegex;
+			public Regex DirectoryExcludeRegex;
 			public bool Condition;
 		}
 
@@ -318,11 +319,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 					var excludeRegex = !string.IsNullOrEmpty (exclude) ? new Regex (ExcludeToRegex (exclude)) : null;
 
+					Regex directoryExcludeRegex = null;
+					if (!string.IsNullOrEmpty (exclude)) {
+						string regex = ExcludeToRegex (exclude, true);
+						if (!string.IsNullOrEmpty (regex)) {
+							directoryExcludeRegex = new Regex (regex);
+						}
+					}
+
 					if (it.Include.IndexOf (';') == -1)
-						AddItem (project, context, item, it, it.Include, excludeRegex, trueCond);
+						AddItem (project, context, item, it, it.Include, excludeRegex, directoryExcludeRegex, trueCond);
 					else {
 						foreach (var inc in it.Include.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
-							AddItem (project, context, item, it, inc, excludeRegex, trueCond);
+							AddItem (project, context, item, it, inc, excludeRegex, directoryExcludeRegex, trueCond);
 				}
 				}
 			}
@@ -369,11 +378,22 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		/// <summary>
+		/// Only supports exact match when looking for a glob.
+		/// </summary>
+		static Regex GetDirectoryExcludeRegex (ProjectInfo project, string wildcard)
+		{
+			return project.GlobIncludes.Where (g => g.Condition && g.Include == wildcard)
+				.Select (g => g.DirectoryExcludeRegex)
+				.FirstOrDefault ();
+		}
+
 		static void RemoveItem (ProjectInfo project, MSBuildItem item, string remove, bool trueCond)
 		{
 			if (IsWildcardInclude (remove)) {
 				var rootProject = project.GetRootMSBuildProject ();
-				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove))
+				var directoryExcludeRegex = GetDirectoryExcludeRegex (project, remove);
+				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove, directoryExcludeRegex))
 					RemoveEvaluatedItemFromAllProjects (project, item, f, trueCond);
 			} else
 				RemoveEvaluatedItemFromAllProjects (project, item, remove, trueCond);
@@ -394,7 +414,7 @@ namespace MonoDevelop.Projects.MSBuild
 			project.EvaluatedItemsIgnoringCondition.RemoveAll (it => it.Name == item.Name && it.Include == include);
 		}
 
-		void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
+		void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, Regex directoryExcludeRegex, bool trueCond)
 		{
 			// Don't add the result from any item that has an empty include. MSBuild never returns those.
 			if (include == string.Empty)
@@ -412,8 +432,8 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}
 			} else if (IsWildcardInclude (include)) {
-				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, ExcludeRegex = excludeRegex, Condition = trueCond });
-				foreach (var eit in ExpandWildcardFilePath (project, context, item, include)) {
+				project.GlobIncludes.Add (new GlobInfo { Item = item, Include = include, ExcludeRegex = excludeRegex, DirectoryExcludeRegex = directoryExcludeRegex, Condition = trueCond });
+				foreach (var eit in ExpandWildcardFilePath (project, context, item, include, directoryExcludeRegex)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
 					project.EvaluatedItemsIgnoringCondition.Add (eit);
@@ -727,7 +747,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.IndexOf ('*') != -1;
 		}
 
-		IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path)
+		IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildEvaluationContext context, MSBuildItem sourceItem, string path, Regex directoryExcludeRegex)
 		{
 			var subpath = SplitWildcardFilePath (path);
 		
@@ -737,17 +757,17 @@ namespace MonoDevelop.Projects.MSBuild
 				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include);
 			};
 			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
-			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func);
+			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func, directoryExcludeRegex);
 		}
 
-		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path)
+		static IEnumerable<string> GetIncludesForWildcardFilePath (MSBuildProject project, string path, Regex directoryExcludeRegex = null)
 		{
 			var subpath = SplitWildcardFilePath (path);
 		
 			WildcardExpansionFunc<string> func = delegate (string file, string include, string recursiveDir) {
 				return include;
 			};
-			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, 0, func);
+			return ExpandWildcardFilePath (project, project.BaseDirectory, FilePath.Null, false, subpath, 0, func, directoryExcludeRegex);
 		}
 
 		static string[] SplitWildcardFilePath (string path)
@@ -760,7 +780,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		delegate T WildcardExpansionFunc<T> (string filePath, string include, string recursiveDir);
 
-		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string [] filePath, int index, WildcardExpansionFunc<T> func)
+		static IEnumerable<T> ExpandWildcardFilePath<T> (MSBuildProject project, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string [] filePath, int index, WildcardExpansionFunc<T> func, Regex directoryExcludeRegex)
 		{
 			var res = Enumerable.Empty<T> ();
 
@@ -770,10 +790,13 @@ namespace MonoDevelop.Projects.MSBuild
 			var path = filePath [index];
 
 			if (path == "..")
-				return ExpandWildcardFilePath (project, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1, func);
+				return ExpandWildcardFilePath (project, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1, func, directoryExcludeRegex);
 
 			if (path == ".")
-				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, recursive, filePath, index + 1, func);
+				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, recursive, filePath, index + 1, func, directoryExcludeRegex);
+
+			if (directoryExcludeRegex != null && directoryExcludeRegex.IsMatch (basePath.ToString ().Replace ('/', '\\')))
+				return res;
 
 			if (!Directory.Exists (basePath))
 				return res;
@@ -787,7 +810,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (baseRecursiveDir.IsNullOrEmpty)
 					baseRecursiveDir = basePath;
 
-				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, true, filePath, index + 1, func);
+				return ExpandWildcardFilePath (project, basePath, baseRecursiveDir, true, filePath, index + 1, func, directoryExcludeRegex);
 			}
 
 			if (index == filePath.Length - 1) {
@@ -807,26 +830,32 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.EnumerateDirectories (basePath, path))
-						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath, index + 1, func));
+						res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, false, filePath, index + 1, func, directoryExcludeRegex));
 				} else
-					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1, func));
+					res = res.Concat (ExpandWildcardFilePath (project, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1, func, directoryExcludeRegex));
 			}
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.EnumerateDirectories (basePath))
-					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, index, func));
+					res = res.Concat (ExpandWildcardFilePath (project, dir, baseRecursiveDir, true, filePath, index, func, directoryExcludeRegex));
 			}
 
 			return res;
 		}
 
-		static string ExcludeToRegex (string exclude)
+		static string ExcludeToRegex (string exclude, bool excludeDirectoriesOnly = false)
 		{
 			exclude = exclude.Replace ('/', '\\').Replace (@"\\", @"\");
 			var sb = new StringBuilder ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
 				var ex = ep.Trim ();
+				if (excludeDirectoriesOnly) {
+					if (ex.EndsWith (@"\**", StringComparison.OrdinalIgnoreCase))
+						ex = ex.Substring (0, ex.Length - 3);
+					else
+						continue;
+				}
                 if (sb.Length > 0)
 					sb.Append ('|');
 				sb.Append ('^');
