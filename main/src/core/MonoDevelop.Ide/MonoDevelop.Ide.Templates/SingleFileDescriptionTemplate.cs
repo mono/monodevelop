@@ -310,8 +310,8 @@ namespace MonoDevelop.Ide.Templates
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
-			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime)
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mime);
 			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
 			byte[] eolMarkerBytes = System.Text.Encoding.UTF8.GetBytes (eolMarker);
 			
