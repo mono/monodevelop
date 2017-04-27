@@ -2285,6 +2285,10 @@ namespace MonoDevelop.Components.Commands
 		{
 			RegisterUserInteraction ();
 		}
+
+		internal DateTime LastUserInteraction {
+			get { return lastUserInteraction; }
+		}
 		
 		public void RegisterCommandBar (ICommandBar commandBar)
 		{
