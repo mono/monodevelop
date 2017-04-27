@@ -66,11 +66,11 @@ namespace MonoDevelop.Refactoring.GenerateType
 					entryName.Text,
 					SelectedProject,
 					radiobuttonNewFile.Active,
-					fileName,
+					FileName,
 					Folders,
 					FullFilePath,
 					SelectedDocument,
-					true,
+					areFoldersValidIdentifiers,
 					defaultNamespace
 				);
 			}
@@ -96,28 +96,28 @@ namespace MonoDevelop.Refactoring.GenerateType
 			PopulateAccessibilty ();
 			PopulateTypeKinds ();
 
-			entryName.Text = generateTypeDialogOptions.GetTypeDisplayName ();
+			entryName.Text = className;
+			FileName = className + ".cs";
+
 			PopulateProjectList ();
 			comboboxProject.Model = projectStore;
-
-			var cr = new CellRendererText ();
-			comboboxProject.PackStart (cr, true);
-			comboboxProject.AddAttribute (cr, "text", 0);
-			comboboxProject.Active = 0;
 			comboboxProject.Changed += delegate {
 				PopulateDocumentList ();
 			};
+			comboboxProject.Active = 0;
 
 			comboboxExistingFile.Model = documentStore;
-			comboboxExistingFile.PackStart (cr, true);
-			comboboxExistingFile.AddAttribute (cr, "text", 0);
-			comboboxExistingFile.Active = 0;
 			comboboxExistingFile.Changed += delegate {
 				if (comboboxExistingFile.GetActiveIter (out TreeIter iter)) {
 					SelectedDocument = (Document)documentStore.GetValue (iter, 1);
 				}
 			};
 			PopulateDocumentList ();
+			radiobuttonToExistingFile.Active = true;
+			this.buttonOk.Clicked += delegate {
+				if (TrySubmit ())
+					Respond (ResponseType.Ok);
+			};
 		}
 
 		void PopulateDocumentList ()
@@ -127,9 +127,10 @@ namespace MonoDevelop.Refactoring.GenerateType
 			if (selectedProject == document.Project) {
 				SelectedDocument = document;
 				documentStore.AppendValues (GettextCatalog.GetString ("<Current File>"), document);
-				foreach (var doc in document.Project.Documents.Where (d => d != SelectedDocument && !d.IsGeneratedCode ())) {
+				foreach (var doc in document.Project.Documents.Where (d => d.FilePath != SelectedDocument.FilePath && !d.IsGeneratedCode ())) {
 					documentStore.AppendValues (GetDocumentName (document), document);
 				}
+				comboboxExistingFile.Active = 0;
 				return;
 			}
 
@@ -141,22 +142,23 @@ namespace MonoDevelop.Refactoring.GenerateType
 				}
 				documentStore.AppendValues (GetDocumentName (document), document);
 			}
+			comboboxExistingFile.Active = 0;
 		}
 
-		static string GetDocumentName (Document document) 
+		string GetDocumentName (Document document) 
 		{
-			if (document.Folders.Count == 0) {
+			if (document.Folders.Count <= 2) {
 				return document.Name;
 			}
-			return string.Join (System.IO.Path.DirectorySeparatorChar.ToString (), document.Folders) + System.IO.Path.DirectorySeparatorChar + document.Name;
+			return string.Join (System.IO.Path.DirectorySeparatorChar.ToString (), document.Folders.Take (2)) + System.IO.Path.DirectorySeparatorChar + document.Name;
 		}
 
 		void PopulateProjectList ()
 		{
+			projectStore.Clear ();
 			projectStore.AppendValues (document.Project.Name, document.Project);
-
 			var dependencyGraph = document.Project.Solution.GetProjectDependencyGraph ();
-			foreach (var project in document.Project.Solution.Projects.Where (p => p != document.Project && !dependencyGraph.GetProjectsThatThisProjectTransitivelyDependsOn (p.Id).Contains (document.Project.Id))) {
+			foreach (var project in document.Project.Solution.Projects.Where (p => p.Name != document.Project.Name && !dependencyGraph.GetProjectsThatThisProjectTransitivelyDependsOn (p.Id).Contains (document.Project.Id))) {
 				projectStore.AppendValues (project.Name, project);
 			}
 		}
@@ -179,7 +181,16 @@ namespace MonoDevelop.Refactoring.GenerateType
 
 		List<TypeKind> typeKindList = new List<TypeKind> ();
 		string FullFilePath;
-		string fileName;
+
+		string FileName {
+			get {
+				return entryNewFile.Text;
+			}
+			set {
+				entryNewFile.Text = value;
+			}
+		}
+
 		List<string> Folders;
 		bool areFoldersValidIdentifiers;
 		Document SelectedDocument;
@@ -273,6 +284,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 					return false;
 				}
 
+				areFoldersValidIdentifiers = true;
 				if (this.FullFilePath.StartsWith (projectRootPath, StringComparison.Ordinal)) {
 					// The new file will be within the root of the project
 					var folderPath = this.FullFilePath.Substring (projectRootPath.Length);
@@ -280,7 +292,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 
 					// Folder name was mentioned
 					if (containers.Length > 1) {
-						fileName = containers.Last ();
+						FileName = containers.Last ();
 						Folders = new List<string> (containers);
 						Folders.RemoveAt (Folders.Count - 1);
 
@@ -289,7 +301,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 						}
 					} else if (containers.Length == 1) {
 						// File goes at the root of the Directory
-						fileName = containers [0];
+						FileName = containers [0];
 						Folders = null;
 					} else {
 						MessageService.ShowError (GettextCatalog.GetString ("Illegal characters in path."));
@@ -305,7 +317,7 @@ namespace MonoDevelop.Refactoring.GenerateType
 						return false;
 					}
 
-					fileName = this.FullFilePath.Substring (lastIndexOfSeparator + 1);
+					FileName = this.FullFilePath.Substring (lastIndexOfSeparator + 1);
 				}
 
 				// Check for reserved words in the folder or filenameSystem.IO.Path.DirectorySeparatorChar
@@ -317,8 +329,8 @@ namespace MonoDevelop.Refactoring.GenerateType
 				// We check to see if file path of the new file matches the filepath of any other existing file or if the Folders and FileName matches any of the document then
 				// we say that the file already exists.
 				if (this.SelectedProject.Documents.Where (n => n != null).Where (n => n.FilePath == FullFilePath).Any () ||
-					(this.Folders != null && fileName != null &&
-					 this.SelectedProject.Documents.Where (n => n.Name != null && n.Folders.Count > 0 && n.Name == fileName && this.Folders.SequenceEqual (n.Folders)).Any ()) ||
+					(this.Folders != null && FileName != null &&
+					 this.SelectedProject.Documents.Where (n => n.Name != null && n.Folders.Count > 0 && n.Name == FileName && this.Folders.SequenceEqual (n.Folders)).Any ()) ||
 					 System.IO.File.Exists (FullFilePath)) {
 					MessageService.ShowError (GettextCatalog.GetString ("File already exists."));
 					return false;
