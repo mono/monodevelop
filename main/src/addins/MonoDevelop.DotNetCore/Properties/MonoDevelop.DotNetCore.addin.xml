@@ -51,11 +51,27 @@
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/library/general" />
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/library/general" />
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled">
 		<Template
