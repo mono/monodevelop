@@ -730,7 +730,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Sort (delegate (int left, int right) {
 				var data1 = dataList [left];
 				var data2 = dataList [right];
-				if (data1 == null || data2 == null)
+				if (data1 != null && data2 == null)
+					return -1;
+				if (data1 == null && data2 != null)
+					return 1;
+				if (data1 == null && data2 == null)
 					return left.CompareTo (right);
 
 				if (data1.PriorityGroup != data2.PriorityGroup)
