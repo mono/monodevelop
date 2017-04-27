@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var addedMethods = new List<IMethodSymbol> ();
 			var filterMethod = new HashSet<IMethodSymbol> ();
 			for (;type != null; type = type.BaseType) {
-				foreach (var method in type.GetMembers ().OfType<IMethodSymbol> ().Concat (GetExtensionMethods(semanticModel, type, node, cancellationToken)).Where (m => m.Name == name)) {
+				foreach (var method in type.GetMembers (name).OfType<IMethodSymbol> ().Concat (GetExtensionMethods(semanticModel, type, node, name, cancellationToken))) {
 					if (staticLookup && !method.IsStatic)
 						continue;
 					if (method.OverriddenMethod != null)
@@ -225,7 +225,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					}
 					if (!type.MightContainExtensionMethods)
 						continue;
-					foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+					foreach (var extMethod in type.GetMembers (name).OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+						if (!extMethod.IsAccessibleWithin (semanticModel.Compilation.Assembly))
+							continue;
 						var reducedMethod = extMethod.ReduceExtensionMethod (typeToExtend);
 						if (reducedMethod != null) {
 							yield return reducedMethod;
