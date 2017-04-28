@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=514b36b014d2ce4b16efccffd710121873cbb6b7
+DEP_NEEDED_VERSION[0]=a504a1376baae52ced1f970269014bed14a55d76
 DEP_BRANCH_AND_REMOTE[0]="d15-2-licensing-for-rtw origin/d15-2-licensing-for-rtw"
  
 # heap-shot
