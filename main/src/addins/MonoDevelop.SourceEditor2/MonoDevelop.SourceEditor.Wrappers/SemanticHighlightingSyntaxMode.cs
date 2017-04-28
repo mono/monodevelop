@@ -140,8 +140,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			if (isDisposed)
 				return;
-			isDisposed = true;
+			// Unregister before setting isDisposed=true, as that causes the method to bail out early.
 			UnregisterLineSegmentTrees ();
+			isDisposed = true;
 			lineSegments = null;
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
