@@ -39,7 +39,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	sealed class SemanticHighlightingSyntaxMode : ISyntaxHighlighting, IDisposable
+	sealed class SemanticHighlightingSyntaxMode : ISyntaxHighlighting
 	{
 		readonly ExtensibleTextEditor editor;
 		readonly ISyntaxHighlighting syntaxMode;

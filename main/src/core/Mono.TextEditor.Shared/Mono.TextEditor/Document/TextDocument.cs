@@ -132,8 +132,10 @@ namespace Mono.TextEditor
 				ISyntaxHighlighting old;
 				lock (syncObject) {
 					old = syntaxMode;
-					if (old != null && old != DefaultSyntaxHighlighting.Instance)
+					if (old != null && old != DefaultSyntaxHighlighting.Instance) {
 						old.HighlightingStateChanged -= SyntaxMode_HighlightingStateChanged;
+						old.Dispose ();
+					}
 
 					syntaxMode = value;
 					if (syntaxMode != null && syntaxMode != DefaultSyntaxHighlighting.Instance)
