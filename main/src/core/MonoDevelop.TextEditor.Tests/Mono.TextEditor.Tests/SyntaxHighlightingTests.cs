@@ -191,5 +191,12 @@ namespace Mono.TextEditor.Tests
 			  			"<span foreground=\"#8ae232\">2e64</span>");
 		}
 
+		[Test]
+		public void TestBinaryLiteral ()
+		{
+			TestOutput ("0b1111_0000",
+			  			"<span foreground=\"#8ae232\">0b1111_0000</span>");
+		}
+
 	}
 }
