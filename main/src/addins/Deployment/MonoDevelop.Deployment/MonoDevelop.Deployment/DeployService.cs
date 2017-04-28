@@ -188,6 +188,7 @@ namespace MonoDevelop.Deployment
 							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
 								zs.Write (buffer, 0, nr);
 						}
+						zs.CloseEntry ();
 					}
 					zs.Finish ();
 					zs.Close ();

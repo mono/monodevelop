@@ -203,10 +203,10 @@ namespace System
 
 		public static Func<T1, T2, R> Memoize<T1, T2, R> (this Func<T1, T2, R> f)
 		{
-			var map = new Dictionary<Tuple<T1, T2>, R> ();
+			var map = new Dictionary<ValueTuple<T1, T2>, R> ();
 			return (a, b) => {
 				R value;
-				var key = Tuple.Create (a, b);
+				var key = ValueTuple.Create (a, b);
 				if (map.TryGetValue (key, out value))
 					return value;
 				value = f (a, b);
