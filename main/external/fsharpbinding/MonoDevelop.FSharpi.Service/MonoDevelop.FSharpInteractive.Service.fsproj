@@ -50,7 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
   </ItemGroup>
