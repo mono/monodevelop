@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return result;
 		}
 
-		IEnumerable<IMethodSymbol> GetExtensionMethods (SemanticModel semanticModel, ITypeSymbol typeToExtend, InvocationExpressionSyntax node, CancellationToken cancellationToken)
+		IEnumerable<IMethodSymbol> GetExtensionMethods (SemanticModel semanticModel, ITypeSymbol typeToExtend, InvocationExpressionSyntax node, string name, CancellationToken cancellationToken)
 		{
 			var usedNamespaces = new List<string> ();
 			foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
