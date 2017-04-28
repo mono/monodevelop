@@ -1,0 +1,13 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="**/*" />
+    <None Remove="**/*.cs" />
+    <None Remove="**/*.resx" />
+    <None Remove="**/*.txt" />
+
+    <Compile Include="**/*.cs" />
+
+    <EmbeddedResource Include="**/*.resx" />
+    <EmbeddedResource Include="**/*.txt" />
+  </ItemGroup>
+</Project>
