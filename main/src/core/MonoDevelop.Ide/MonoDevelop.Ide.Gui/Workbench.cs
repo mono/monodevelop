@@ -866,6 +866,7 @@ namespace MonoDevelop.Ide.Gui
 						// This may happen if the save operation failed
 						args.Cancel = true;
 						doc.Select ();
+						return;
 					}
 				} else if (result == AlertButton.SaveAs) {
 					var doc = FindDocument (window);
@@ -874,6 +875,7 @@ namespace MonoDevelop.Ide.Gui
 						// This may happen if the save operation failed or Save As was canceled
 						args.Cancel = true;
 						doc.Select ();
+						return;
 					}
 				} else {
 					args.Cancel |= result != AlertButton.CloseWithoutSave;
