@@ -183,6 +183,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			ExtensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition (this));
+
 			if (sourceProject == null) {
 				sourceProject = new MSBuildProject ();
 				sourceProject.FileName = FileName;
