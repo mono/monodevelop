@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Navigation
 	public static class NavigationHistoryService
 	{
 		static HistoryList history = new HistoryList ();
-		static Stack<Tuple<NavigationPoint, int>> closedHistory = new Stack<Tuple<NavigationPoint, int>> ();
+		static List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
 
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
@@ -64,12 +64,17 @@ namespace MonoDevelop.Ide.Navigation
 				OnClosedHistoryChanged ();
 			};
 
+			IdeApp.Workbench.DocumentOpened += delegate (object sender, DocumentEventArgs e) {
+				closedHistory.RemoveAll(np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
+				OnClosedHistoryChanged ();
+			};
+
 			IdeApp.Workbench.DocumentClosing += delegate(object sender, DocumentEventArgs e) {
-				NavigationPoint point = GetNavPointForDoc (e.Document, true);
+				NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
 				if (point == null)
 					return;
 				
-				closedHistory.Push (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
+				closedHistory.Add (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
 				OnClosedHistoryChanged ();
 			};
 
@@ -232,7 +237,10 @@ namespace MonoDevelop.Ide.Navigation
 
 		public static async void OpenLastClosedDocument () {
 			if (HasClosedDocuments) {
-				var tuple = closedHistory.Pop ();
+				int closedHistoryIndex = closedHistory.Count - 1;
+				var tuple = closedHistory[closedHistoryIndex];
+				closedHistory.RemoveAt (closedHistoryIndex);
+				OnClosedHistoryChanged ();
 				var doc = await tuple.Item1.ShowDocument ();
 				if (doc != null)
 					IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
