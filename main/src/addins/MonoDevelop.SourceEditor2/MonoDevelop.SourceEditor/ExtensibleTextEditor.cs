@@ -209,11 +209,7 @@ namespace MonoDevelop.SourceEditor
 			IsDestroyed = true;
 			UnregisterAdjustments ();
 			view = null;
-			var disposableSyntaxMode = Document.SyntaxMode as IDisposable;
-			if (disposableSyntaxMode != null)  {
-				disposableSyntaxMode.Dispose ();
-				Document.SyntaxMode = null;
-			}
+			Document.SyntaxMode = null;
 			base.OnDestroyed ();
 			if (Options != null) {
 				Options.Dispose ();
