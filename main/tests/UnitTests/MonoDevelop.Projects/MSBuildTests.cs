@@ -1540,6 +1540,45 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that the C# file build action can be changed to None with globs:
+		///
+		/// None Include="**/*"
+		/// None Remove="**/*.cs"
+		/// Compile Include="**/*.cs"
+		/// </summary>
+		[Test]
+		public async Task CSharpFileBuildActionChangedToNone ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-none-wildcard.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				// Changing the Program.cs file to None should result in the following
+				// being added:
+				//
+				// <Compile Remove="Program.cs" />
+				// <None Include="Program.cs" />
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()

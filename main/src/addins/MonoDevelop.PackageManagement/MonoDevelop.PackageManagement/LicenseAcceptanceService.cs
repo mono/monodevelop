@@ -49,11 +49,9 @@ namespace MonoDevelop.PackageManagement
 		bool ShowLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
 		{
 			bool result = false;
-			Xwt.Toolkit.NativeEngine.Invoke (delegate {
-				using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
-					result = dialog.Run (Xwt.MessageDialog.RootWindow);
-				}
-			});
+			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
+				result = dialog.Run (Xwt.MessageDialog.RootWindow);
+			}
 			return result;
 		}
 
