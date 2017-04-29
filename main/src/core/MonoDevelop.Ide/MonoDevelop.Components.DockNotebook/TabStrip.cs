@@ -220,8 +220,8 @@ namespace MonoDevelop.Components.DockNotebook
 			
 			foreach (var tab in notebook.Tabs) {
 				Accessible.AddAccessibleElement (tab.Accessible);
-				UpdateAccessibilityTabs ();
 			}
+			UpdateAccessibilityTabs ();
 			notebook.PageAdded += PageAddedHandler;
 			notebook.PageRemoved += PageRemovedHandler;
 			notebook.TabsReordered += PageReorderedHandler;

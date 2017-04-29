@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
