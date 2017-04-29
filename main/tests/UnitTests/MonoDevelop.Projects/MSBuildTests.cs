@@ -1194,6 +1194,48 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task GeneratedNuGetMSBuildFilesAreImportedWithDotNetCoreProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			FilePath baseIntermediateOutputPath = solFile.ParentDirectory.Combine ("dotnetcore-console", "obj");
+			string projectFileName = "dotnetcore-disable-default-items.csproj";
+
+			try {
+				string nugetProps =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetPropsImported>True</NuGetPropsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				string nugetTargets =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetTargetsImported>True</NuGetTargetsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				Directory.CreateDirectory (baseIntermediateOutputPath);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.props"), nugetProps);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.targets"), nugetTargets);
+
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetPropsImported"));
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetTargetsImported"));
+
+				sol.Dispose ();
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
