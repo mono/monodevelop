@@ -367,6 +367,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			AppResult[] resultSet = query.Execute ();
 			Sync (() => {
+				DispatchService.RunPendingEvents ();
 				return true;
 			});
 
