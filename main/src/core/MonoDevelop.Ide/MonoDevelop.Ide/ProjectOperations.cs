@@ -1392,7 +1392,10 @@ namespace MonoDevelop.Ide
 				AlertButton.Cancel,
 				bBuild,
 				bRun);
-			
+
+			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
+			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
+			DispatchService.RunPendingEvents ();
 
 			if (res == bRun) {
 				return true;

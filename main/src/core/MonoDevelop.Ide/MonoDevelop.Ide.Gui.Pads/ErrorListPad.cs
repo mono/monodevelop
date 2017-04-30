@@ -874,6 +874,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			int n = 1;
 			foreach (TaskListEntry t in tasks) {
 				AddTaskInternal (t);
+				if ((n++ % 100) == 0) {
+					// Adding many tasks is a bit slow, so refresh the
+					// ui at every block of 100.
+					DispatchService.RunPendingEvents ();
+				}
 			}
 			filter.Refilter ();
 		}
