@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
 				dialog.Show ();
 				dialog.CancellationTokenSource = CancellationTokenSource;
-				DispatchService.RunPendingEvents ();
 				this.hideWhenDone = hideWhenDone;
 				this.showDetails = showDetails;
 			}
@@ -75,7 +74,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (text);
-				DispatchService.RunPendingEvents ();
 			}
 		}
 		
@@ -100,14 +98,12 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				dialog.EndTask ();
 			}
 			base.OnEndTask (name, totalWork, stepWork);
-			DispatchService.RunPendingEvents ();
 		}
 
 		protected override void OnWarningReported (string message)
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
-				DispatchService.RunPendingEvents ();
 			}
 			base.OnWarningReported (message);
 		}
@@ -116,7 +112,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + Errors [Errors.Length - 1] + "\n");
-				DispatchService.RunPendingEvents ();
 			}
 			base.OnErrorReported (message, exception);
 		}

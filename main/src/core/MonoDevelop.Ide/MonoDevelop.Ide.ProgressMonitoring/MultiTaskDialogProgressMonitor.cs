@@ -77,7 +77,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.PlaceDialog (dialog, parent);
 				GtkWorkarounds.PresentWindowWithNotification (dialog);
 				dialog.CancellationTokenSource = CancellationTokenSource;
-				DispatchService.RunPendingEvents ();
 				this.showDetails = showDetails;
 			}
 		}
@@ -100,7 +99,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (text);
-				DispatchService.RunPendingEvents ();
 			}
 		}
 		
@@ -124,7 +122,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			if (dialog != null) {
 				dialog.EndTask ();
 			}
-			DispatchService.RunPendingEvents ();
 			base.OnEndTask (name, totalWork, stepWork);
 		}
 
@@ -132,7 +129,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
-				DispatchService.RunPendingEvents ();
 			}
 			warningMessages.Add (message);
 			base.OnWarningReported (message);
@@ -148,7 +144,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + ErrorHelper.GetErrorMessage (message, ex) + "\n");
-				DispatchService.RunPendingEvents ();
 			}
 			base.OnErrorReported (message, ex);
 		}

@@ -90,37 +90,6 @@ namespace MonoDevelop.Ide
 
 		public static SynchronizationContext SynchronizationContext { get; private set; }
 		
-		static DateTime lastPendingEvents;
-		internal static void RunPendingEvents ()
-		{
-			// The loop is limited to 1000 iterations as a workaround for an issue that some users
-			// have experienced. Sometimes EventsPending starts return 'true' for all iterations,
-			// causing the loop to never end.
-			//
-			// The loop is also limited to running at most twice a second as some of the classes
-			// inheriting from BaseProgressMonitor call RunPendingEvents for every method invocation.
-			// This means we pump the main loop dozens of times a second resulting in many screen
-			// redraws and significantly slow down the running task.
-
-			int maxLength = 20;
-			Gdk.Threads.Enter();
-			Stopwatch sw = new Stopwatch ();
-			sw.Start ();
-
-			// Check for less than zero in case there's a system time change
-			var diff = DateTime.UtcNow - lastPendingEvents;
-			if (diff > TimeSpan.FromMilliseconds (500) || diff < TimeSpan.Zero) {
-				lastPendingEvents = DateTime.UtcNow;
-				while (Gtk.Application.EventsPending () && sw.ElapsedMilliseconds < maxLength) {
-					Gtk.Application.RunIteration (false);
-				}
-			}
-
-			sw.Stop ();
-
-			Gdk.Threads.Leave();
-		}
-		
 		#region Animations
 
 		/// <summary>
