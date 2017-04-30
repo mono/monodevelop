@@ -225,7 +225,6 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 			
 			Counters.Initialization.Trace ("Flushing GUI events");
-			DispatchService.RunPendingEvents ();
 			Counters.Initialization.Trace ("Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
