@@ -1072,6 +1072,7 @@ namespace MonoDevelop.SourceEditor
 			currentDebugLineMarker = null;
 
 			RemoveMarkerQueue ();
+			widget.TextEditor.Document.Dispose ();
 			widget.Dispose ();
 			this.Project = null;
 		}
