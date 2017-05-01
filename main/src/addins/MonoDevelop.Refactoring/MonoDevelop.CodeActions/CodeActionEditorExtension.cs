@@ -82,7 +82,6 @@ namespace MonoDevelop.CodeActions
 			CancelQuickFixTimer ();
 			RefactoringPreviewTooltipWindow.HidePreviewTooltip ();
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
-			Editor.SelectionChanged -= HandleSelectionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
 			Editor.MouseMoved -= HandleBeginHover;
 			Editor.TextChanged -= Editor_TextChanged;
@@ -374,7 +373,6 @@ namespace MonoDevelop.CodeActions
 		{
 			base.Initialize ();
 			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
-			Editor.SelectionChanged += HandleSelectionChanged;
 			Editor.MouseMoved += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;
@@ -384,7 +382,6 @@ namespace MonoDevelop.CodeActions
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
 		{
 			RemoveWidget ();
-			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
@@ -398,11 +395,6 @@ namespace MonoDevelop.CodeActions
 		void HandleBeginHover (object sender, EventArgs e)
 		{
 			CancelSmartTagPopupTimeout ();
-		}
-
-		void HandleSelectionChanged (object sender, EventArgs e)
-		{
-			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
