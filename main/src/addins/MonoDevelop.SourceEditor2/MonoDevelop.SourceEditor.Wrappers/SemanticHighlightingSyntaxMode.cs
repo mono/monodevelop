@@ -163,7 +163,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				var segments = new List<ColoredSegment> (syntaxLine.Segments);
 				int endOffset = segments [segments.Count - 1].EndOffset;
 				try {
-					var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
+					Tuple<IDocumentLine, HighlightingSegmentTree> tree = null;
+
+					// This code should not have any lambda capture linq, as it is a hot loop.
+					foreach (var segment in lineSegments) {
+						if (segment.Item1 == line) {
+							tree = segment;
+							break;
+						}
+					}
 					int lineOffset = line.Offset;
 					if (tree == null) {
 						tree = Tuple.Create (line, new HighlightingSegmentTree ());
