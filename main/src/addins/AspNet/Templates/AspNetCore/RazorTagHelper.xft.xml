@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0"?>
 <Template
 	originator="Matt Ward"
-	created="2017/04/07"
+	created="2017/05/01"
 	lastModified="2017/05/01">
 
 	<TemplateConfiguration>
-		<_Name>Web API Controller Class</_Name>
+		<_Name>Razor Tag Helper</_Name>
 		<Icon>md-html-file-icon</Icon>
 		<_Category>ASP.NET Core</_Category>
 		<LanguageName>C#</LanguageName>
-		<DefaultFilename>ValuesController</DefaultFilename>
-		<_Description>Creates a Web API Controller.</_Description>
+		<DefaultFilename>RazorTagHelper</DefaultFilename>
+		<_Description>Creates a class to write a Tag Helper.</_Description>
 	</TemplateConfiguration>
 
 	<Conditions>
@@ -19,6 +19,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cs" src="WebApiControllerTemplate.cs" />
+		<File name="${Name}.cs" src="RazorTagHelperTemplate.cs" />
 	</TemplateFiles>
 </Template>
