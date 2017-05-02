@@ -202,6 +202,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 
 			if ((descriptor.SpecialKey == SpecialKey.Delete || descriptor.SpecialKey == SpecialKey.BackSpace) && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
+				if (!char.IsLetterOrDigit (deleteOrBackspaceTriggerChar) && deleteOrBackspaceTriggerChar != '_')
+					return res;
 				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 
 				int cpos, wlen;
@@ -209,6 +211,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					cpos = Editor.CaretOffset;
 					wlen = 0;
 				}
+
 				CurrentCompletionContext.TriggerOffset = cpos;
 				CurrentCompletionContext.TriggerWordLength = wlen;
 				
