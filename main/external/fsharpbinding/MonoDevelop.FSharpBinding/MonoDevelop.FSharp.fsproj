@@ -168,9 +168,7 @@
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Reference Include="monodoc">
-      <HintPath>..\..\..\build\bin\monodoc.dll</HintPath>
-    </Reference>
+    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>

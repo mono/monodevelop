@@ -78,7 +78,10 @@ namespace MonoDevelop.CSharp.Parser
 						if (comments == null) {
 							var visitor = new CommentVisitor (cancellationToken);
 							if (Unit != null)
-								visitor.Visit (Unit.GetRoot (cancellationToken));
+								try {
+									visitor.Visit (Unit.GetRoot (cancellationToken));
+								} catch (OperationCanceledException) {
+								}
 							comments = visitor.Comments;
 						}
 					}
@@ -156,6 +159,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitTrivia (SyntaxTrivia trivia)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				base.VisitTrivia (trivia);
 				switch (trivia.Kind ()) {
 				case SyntaxKind.MultiLineCommentTrivia:
@@ -310,8 +314,14 @@ namespace MonoDevelop.CSharp.Parser
 
 		IEnumerable<FoldingRegion> GenerateFoldingsInternal (IReadOnlyList<Comment> comments, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+				yield break;
+
 			foreach (var fold in comments.ToFolds ())
 				yield return fold;
+
+			if (cancellationToken.IsCancellationRequested)
+				yield break;
 
 			var visitor = new FoldingVisitor (cancellationToken);
 			if (Unit != null) {
@@ -319,6 +329,9 @@ namespace MonoDevelop.CSharp.Parser
 					visitor.Visit (Unit.GetRoot (cancellationToken));
 				} catch (Exception) { }
 			}
+
+			if (cancellationToken.IsCancellationRequested)
+				yield break;
 			foreach (var fold in visitor.Foldings)
 				yield return fold;
 		}
@@ -337,6 +350,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				SyntaxNode firstChild = null, lastChild = null;
 				foreach (var child in parent.ChildNodes ()) {
+					cancellationToken.ThrowIfCancellationRequested ();
 					if (child is UsingDirectiveSyntax) {
 						if (firstChild == null) {
 							firstChild = child;
@@ -358,12 +372,14 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitCompilationUnit (Microsoft.CodeAnalysis.CSharp.Syntax.CompilationUnitSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddUsings (node);
 				base.VisitCompilationUnit (node);
 			}
 
 			void AddFolding (SyntaxToken openBrace, SyntaxToken closeBrace, FoldType type)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				openBrace = openBrace.GetPreviousToken (false, false, true, true);
 
 				try {
@@ -378,6 +394,7 @@ namespace MonoDevelop.CSharp.Parser
 			Stack<SyntaxTrivia> regionStack = new Stack<SyntaxTrivia> ();
 			public override void VisitTrivia (SyntaxTrivia trivia)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				base.VisitTrivia (trivia);
 				if (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia)) {
 					regionStack.Push (trivia);
@@ -399,6 +416,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitNamespaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddUsings (node);
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Undefined);
 				base.VisitNamespaceDeclaration (node);
@@ -406,24 +424,28 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitClassDeclaration (node);
 			}
 
 			public override void VisitStructDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitStructDeclaration (node);
 			}
 
 			public override void VisitInterfaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitInterfaceDeclaration (node);
 			}
 
 			public override void VisitEnumDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken, FoldType.Type);
 				base.VisitEnumDeclaration (node);
 			}

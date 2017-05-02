@@ -2,15 +2,15 @@
 <Template
 	originator="Matt Ward"
 	created="2017/04/07"
-	lastModified="2017/04/07">
+	lastModified="2017/05/01">
 
 	<TemplateConfiguration>
-		<_Name>Web API Controller</_Name>
+		<_Name>Web API Controller Class</_Name>
 		<Icon>md-html-file-icon</Icon>
 		<_Category>ASP.NET Core</_Category>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>ValuesController</DefaultFilename>
-		<_Description>Creates an ASP.NET Core Web API Controller.</_Description>
+		<_Description>Creates a Web API Controller.</_Description>
 	</TemplateConfiguration>
 
 	<Conditions>
@@ -19,21 +19,6 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.cs">
-<![CDATA[using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ${RootNamespace}.Controllers
-{
-	[Route("api/[controller]")]
-	public class ${EscapedIdentifier} : Controller
-	{
-	}
-}
-]]>
-		</File>
+		<File name="${Name}.cs" src="WebApiControllerTemplate.cs" />
 	</TemplateFiles>
 </Template>

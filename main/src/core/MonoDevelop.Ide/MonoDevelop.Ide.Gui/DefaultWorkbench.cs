@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
-
+			FileService.FileMoved   += CheckFileMoved;
 			FileService.FileRemoved += CheckRemovedFile;
 			FileService.FileRenamed += CheckRenamedFile;
 			
@@ -658,7 +658,30 @@ namespace MonoDevelop.Ide.Gui
 				Decorated = true;
 			}
 		}
-		
+
+		void CheckFileMoved (object sender, FileCopyEventArgs args)
+		{
+			foreach (var e in args) {
+				if (e.IsDirectory) {
+					var views = new ViewContent [viewContentCollection.Count];
+					viewContentCollection.CopyTo (views, 0);
+					foreach (var content in views) {
+						if (((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
+							content.ContentName = e.TargetFile + content.ContentName.Substring (e.SourceFile.ToString ().Length);
+						}
+					}
+				} else {
+					foreach (var content in viewContentCollection) {
+						if (content.ContentName != null &&
+						    content.ContentName == e.SourceFile) {
+							content.ContentName = e.TargetFile;
+							return;
+						}
+					}
+				}
+			}
+		}
+
 		void CheckRemovedFile (object sender, FileEventArgs args)
 		{
 			foreach (var e in args) {
@@ -1104,7 +1127,7 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.CommandService.ShowContextMenu (notebook, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
 		}
 		
-		internal void OnTabsReordered (Widget widget, int oldPlacement, int newPlacement)
+		internal void OnTabsReordered (DockNotebookTab widget, int oldPlacement, int newPlacement)
 		{
 			IdeApp.Workbench.ReorderDocuments (oldPlacement, newPlacement);
 		}

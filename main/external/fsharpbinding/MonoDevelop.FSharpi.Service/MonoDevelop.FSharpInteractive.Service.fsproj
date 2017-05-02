@@ -11,7 +11,7 @@
     <AssemblyName>MonoDevelop.FSharpInteractive.Service</AssemblyName>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,7 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
   </ItemGroup>

@@ -62,14 +62,15 @@ namespace MonoDevelop.Ide.Projects
 		const int ColPackage = 5;
 		const int ColIcon = 6;
 		const int ColMatchRank = 7;
-		const int ColType = 8;
+		const int ColProjectName = 8;
+		const int ColType = 9;
         
         public PackageReferencePanel (SelectReferenceDialog selectDialog, bool showAll)
         {
             this.selectDialog = selectDialog;
 			this.showAll = showAll;
 			
-            store = new ListStore (typeof (string), typeof (string), typeof (SystemAssembly), typeof (bool), typeof (string), typeof (string), typeof(IconId), typeof(int), typeof(ReferenceType));
+			store = new ListStore (typeof (string), typeof (string), typeof (SystemAssembly), typeof (bool), typeof (string), typeof (string), typeof(IconId), typeof(int), typeof (string), typeof(ReferenceType));
             treeView = new TreeView (store);
 
             TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -177,6 +178,7 @@ namespace MonoDevelop.Ide.Projects
 						pkg,
 						MonoDevelop.Ide.Gui.Stock.Package,
 						matchRank,
+						null,
 						ReferenceType.Package);
 				}
 
@@ -214,7 +216,7 @@ namespace MonoDevelop.Ide.Projects
 							if (!configureProject.CanReferenceProject (netProject, out reason))
 								continue;
 						}
-						store.InsertWithValues(-1, name, "", null, selected, projectEntry.FileName.ToString (), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
+						store.InsertWithValues (-1, name, "", null, selected, projectEntry.FileName.ToString (), "", projectEntry.StockIcon, matchRank, projectEntry.Name, ReferenceType.Project);
 					}
 
 					foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
@@ -240,7 +242,7 @@ namespace MonoDevelop.Ide.Projects
 						} else {
 							name = GLib.Markup.EscapeText (fname);
 						}
-						store.InsertWithValues (-1, name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
+						store.InsertWithValues (-1, name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, null, ReferenceType.Assembly);
 					}
 				}
 			} finally {
@@ -361,6 +363,10 @@ namespace MonoDevelop.Ide.Projects
 				}
             }
             else {
+				if (rt == ReferenceType.Project)
+					fullName = (string)store.GetValue (iter, ColProjectName);
+				else if (rt == ReferenceType.Assembly)
+					fullName = System.IO.Path.GetFileNameWithoutExtension (fullName);
                 store.SetValue (iter, ColSelected, false);
                 selectDialog.RemoveReference (rt, fullName);
             }

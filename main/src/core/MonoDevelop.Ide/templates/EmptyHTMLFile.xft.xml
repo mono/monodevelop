@@ -10,13 +10,16 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".html"><![CDATA[
+		<File DefaultExtension=".html">
+<![CDATA[<!DOCTYPE html>
 <html>
-	<head>
-		<title></title>
-	</head>
-	<body>
-	</body>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+</body>
 </html>]]>
 		</File>
 	</TemplateFiles>

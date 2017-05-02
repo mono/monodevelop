@@ -482,12 +482,10 @@ module Completion =
                         let data = getCompletionData symbols isInAttribute
                         result.AddRange (filterResults data residue)
 
-                        if completionChar <> '.' && result.Count > 0 then
-                            LoggingService.logDebug "Completion: residue %s" residue
-                            result.DefaultCompletionString <- residue
-                            result.TriggerWordLength <- residue.Length
+                        LoggingService.logDebug "Completion: residue %s" residue
+                        result.DefaultCompletionString <- residue
+                        result.TriggerWordLength <- residue.Length
 
-                            
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'

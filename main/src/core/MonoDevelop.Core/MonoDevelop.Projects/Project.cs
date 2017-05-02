@@ -1385,14 +1385,16 @@ namespace MonoDevelop.Projects
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
 			HashSet<string> sdks = null;
-			GetReferencedSDKs (runtime, this, ref sdks);
+			GetReferencedSDKs (this, ref sdks, new HashSet<string> (StringComparer.OrdinalIgnoreCase));
 			if (sdks != null)
-				return MSBuildProjectService.FindSdkPath (runtime, sdks.ToArray ());
+				return MSBuildProjectService.FindSdkPath (runtime, sdks);
 			return null;
 		}
 
-		void GetReferencedSDKs (TargetRuntime runtime, Project project, ref HashSet<string> sdks)
+		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<string> traversedProjects)
 		{
+			traversedProjects.Add (project.ItemId);
+
 			var projectSdks = project.MSBuildProject.GetReferencedSDKs ();
 			if (projectSdks.Length > 0) {
 				if (sdks == null)
@@ -1406,9 +1408,12 @@ namespace MonoDevelop.Projects
 
 			// Check project references.
 			foreach (var projectReference in dotNetProject.References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
+				if (traversedProjects.Contains (projectReference.ProjectGuid))
+					continue;
+
 				var p = projectReference.ResolveProject (ParentSolution);
 				if (p != null)
-					GetReferencedSDKs (runtime, p, ref sdks);
+					GetReferencedSDKs (p, ref sdks, traversedProjects);
 			}
 		}
 
@@ -3575,34 +3580,38 @@ namespace MonoDevelop.Projects
 		/// <remarks>
 		/// Reevaluates the underlying msbuild project and updates the project information acording to the new items and properties.
 		/// </remarks>
-		public async Task ReevaluateProject (ProgressMonitor monitor)
+		public Task ReevaluateProject (ProgressMonitor monitor)
 		{
-			var oldCapabilities = new HashSet<string> (projectCapabilities);
+			return BindTask (ct => Runtime.RunInMainThread (async () => {
+				using (await writeProjectLock.EnterAsync ()) {
+					var oldCapabilities = new HashSet<string> (projectCapabilities);
 
-			try {
-				IsReevaluating = true;
+					try {
+						IsReevaluating = true;
 
-				// Reevaluate the msbuild project
-				await sourceProject.EvaluateAsync ();
+						// Reevaluate the msbuild project
+						await sourceProject.EvaluateAsync ();
 
-				// Loads minimal data required to instantiate extensions and prepare for project loading
-				InitBeforeProjectExtensionLoad ();
+						// Loads minimal data required to instantiate extensions and prepare for project loading
+						InitBeforeProjectExtensionLoad ();
 
-				// Activate / deactivate extensions based on the new status
-				RefreshExtensions ();
+						// Activate / deactivate extensions based on the new status
+						RefreshExtensions ();
 
-				await ProjectExtension.OnReevaluateProject (monitor);
-		
-			} finally {
-				IsReevaluating = false;
-			}
+						await ProjectExtension.OnReevaluateProject (monitor);
 
-			ResetCachedCompileItems ();
+					} finally {
+						IsReevaluating = false;
+					}
 
-			if (!oldCapabilities.SetEquals (projectCapabilities))
-				NotifyProjectCapabilitiesChanged ();
+					ResetCachedCompileItems ();
 
-			NotifyExecutionTargetsChanged (); // Maybe...
+					if (!oldCapabilities.SetEquals (projectCapabilities))
+						NotifyProjectCapabilitiesChanged ();
+
+					NotifyExecutionTargetsChanged (); // Maybe...
+				}
+			}));
 		}
 
 		protected virtual async Task OnReevaluateProject (ProgressMonitor monitor)

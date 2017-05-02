@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	language="JSON"
+	created="2017/05/01"
+	lastModified="2017/05/01">
+
+	<TemplateConfiguration>
+		<_Name>Empty JSON File</_Name>
+		<Icon>md-file-source</Icon>
+		<_Category>Web</_Category>
+		<_Description>Creates an empty JSON file.</_Description>
+		<DefaultFilename>EmptyJSONFile</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".json" src="JsonFileTemplate.json" />
+	</TemplateFiles>
+</Template>

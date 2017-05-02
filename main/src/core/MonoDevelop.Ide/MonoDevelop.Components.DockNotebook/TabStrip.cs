@@ -71,7 +71,6 @@ namespace MonoDevelop.Components.DockNotebook
 		int animationTarget;
 
 		Dictionary<int, DockNotebookTab> closingTabs;
-		List<DockNotebookTab> allTabs;
 
 		public Button PreviousButton;
 		public Button NextButton;
@@ -218,16 +217,14 @@ namespace MonoDevelop.Components.DockNotebook
 					QueueDraw ();
 				}
 			};
-
-			// Create a copy of the tabs so we can track which tabs have been added or removed
-			// for accessibility purposes.
-			allTabs = new List<DockNotebookTab> ();
+			
 			foreach (var tab in notebook.Tabs) {
-				allTabs.Add (tab);
 				Accessible.AddAccessibleElement (tab.Accessible);
 			}
+			UpdateAccessibilityTabs ();
 			notebook.PageAdded += PageAddedHandler;
 			notebook.PageRemoved += PageRemovedHandler;
+			notebook.TabsReordered += PageReorderedHandler;
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
@@ -240,45 +237,38 @@ namespace MonoDevelop.Components.DockNotebook
 			base.OnDestroyed ();
 		}
 
-		void PageAddedHandler (object sender, EventArgs args)
+		void PageAddedHandler (object sender, TabEventArgs args)
 		{
-			int idx = 0;
-			foreach (var tab in notebook.Tabs) {
-				if (idx >= allTabs.Count || tab != allTabs [idx]) {
-					allTabs.Insert (idx, tab);
-					Accessible.AddAccessibleElement (tab.Accessible);
+			var tab = args.Tab;
 
-					tab.AccessibilityPressTab += OnAccessibilityPressTab;
-					tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
-					tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
-					break;
-				}
+			Accessible.AddAccessibleElement (tab.Accessible);
 
-				idx++;
-			}
+			tab.AccessibilityPressTab += OnAccessibilityPressTab;
+			tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
+			tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
 
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
 		}
 
-		void PageRemovedHandler (object sender, EventArgs args)
+		void PageRemovedHandler (object sender, TabEventArgs args)
 		{
-			int idx = 0;
-			foreach (var tab in notebook.Tabs) {
-				if (tab != allTabs [idx]) {
-					tab.AccessibilityPressTab -= OnAccessibilityPressTab;
-					tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
-					tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
+			var tab = args.Tab;
 
-					Accessible.RemoveAccessibleElement (tab.Accessible);
-					allTabs.RemoveAt (idx);
-					break;
-				}
+			tab.AccessibilityPressTab -= OnAccessibilityPressTab;
+			tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
+			tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
 
-				idx++;
-			}
+			Accessible.RemoveAccessibleElement (tab.Accessible);
 
+			QueueResize ();
+
+			UpdateAccessibilityTabs ();
+		}
+
+		void PageReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement)
+		{
 			QueueResize ();
 
 			UpdateAccessibilityTabs ();
@@ -286,14 +276,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void UpdateAccessibilityTabs ()
 		{
-			int idx = 0;
-			var tabs = new AtkCocoaHelper.AccessibilityElementProxy [allTabs.Count];
-
-			foreach (var tab in allTabs) {
-				tabs [idx] = tab.Accessible;
-				idx++;
-			}
-
+			var tabs = notebook.Tabs.OrderBy (x => x.Index).Select (x => x.Accessible).ToArray ();
 			Accessible.SetTabs (tabs);
 		}
 

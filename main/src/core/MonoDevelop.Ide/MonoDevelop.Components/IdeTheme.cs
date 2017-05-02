@@ -67,15 +67,23 @@ namespace MonoDevelop.Components
 			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
-			if (Platform.IsMac) {
+#if MAC
+			// Early init Cocoa through xwt
+			var path = Path.GetDirectoryName (typeof (IdeTheme).Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+
+			if (Platform.IsMac && NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled")) {
 				// Load a private version of AtkCocoa stored in the XS app directory
 				var appDir = Directory.GetParent (AppDomain.CurrentDomain.BaseDirectory);
 				var gtkPath = $"{appDir.Parent.FullName}/lib/gtk-2.0";
 
 				LoggingService.LogInfo ($"Loading modules from {gtkPath}");
 				Environment.SetEnvironmentVariable ("GTK_MODULES", $"{gtkPath}/libatkcocoa.so");
+			} else {
+				LoggingService.LogInfo ("Accessibility disabled");
 			}
-
+#endif
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac

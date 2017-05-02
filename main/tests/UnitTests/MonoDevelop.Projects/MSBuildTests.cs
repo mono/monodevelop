@@ -1194,6 +1194,48 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task GeneratedNuGetMSBuildFilesAreImportedWithDotNetCoreProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			FilePath baseIntermediateOutputPath = solFile.ParentDirectory.Combine ("dotnetcore-console", "obj");
+			string projectFileName = "dotnetcore-disable-default-items.csproj";
+
+			try {
+				string nugetProps =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetPropsImported>True</NuGetPropsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				string nugetTargets =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetTargetsImported>True</NuGetTargetsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				Directory.CreateDirectory (baseIntermediateOutputPath);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.props"), nugetProps);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.targets"), nugetTargets);
+
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetPropsImported"));
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetTargetsImported"));
+
+				sol.Dispose ();
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
@@ -1533,6 +1575,45 @@ namespace MonoDevelop.Projects
 				await p.SaveAsync (Util.GetMonitor ());
 
 				Assert.AreEqual (Util.ToSystemEndings (originalProjectFileText), File.ReadAllText (p.FileName));
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		/// <summary>
+		/// Tests that the C# file build action can be changed to None with globs:
+		///
+		/// None Include="**/*"
+		/// None Remove="**/*.cs"
+		/// Compile Include="**/*.cs"
+		/// </summary>
+		[Test]
+		public async Task CSharpFileBuildActionChangedToNone ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-none-wildcard.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				// Changing the Program.cs file to None should result in the following
+				// being added:
+				//
+				// <Compile Remove="Program.cs" />
+				// <None Include="Program.cs" />
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
 
 				p.Dispose ();
 			} finally {

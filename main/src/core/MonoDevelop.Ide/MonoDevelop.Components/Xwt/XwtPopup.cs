@@ -70,6 +70,8 @@ namespace MonoDevelop.Components
 			get { return eventProvided; }
 		}
 
+		protected Toolkit Toolkit { get; private set; }
+
 		protected virtual void CurrentPositionChanged ()
 		{
 		}
@@ -89,6 +91,7 @@ namespace MonoDevelop.Components
 		public XwtPopup (PopupType type) : base (type)
 		{
 			currentPosition = targetPosition = PopupPosition.Top;
+			Toolkit = Toolkit.CurrentEngine;
 		}
 
 		public void ShowPopup (Control widget, Rectangle targetRectangle, PopupPosition position)
@@ -205,34 +208,51 @@ namespace MonoDevelop.Components
 
 		protected Rectangle GetScreenCoordinates (Rectangle targetRect)
 		{
-			// TODO: Fix cross toolkit coords
-			var gtkTarget = target as Gtk.Widget;
-			if (gtkTarget != null)
-				return GtkUtil.ToScreenCoordinates (gtkTarget, gtkTarget.GdkWindow, targetRect.ToGdkRectangle ()).ToXwtRectangle ();
-			#if MAC
-			var nsTarget = target as AppKit.NSView;
-			if (nsTarget != null) {
-				var lo = nsTarget.ConvertPointToView (new CoreGraphics.CGPoint ((nfloat)targetRect.X, (nfloat)targetRect.Y), null);
-				lo = nsTarget.Window.ConvertRectToScreen (new CoreGraphics.CGRect (lo, CoreGraphics.CGSize.Empty)).Location;
-				var r = new CoreGraphics.CGRect (lo.X, lo.Y, 0, nsTarget.IsFlipped ? 0 : nsTarget.Frame.Height);
-
-				var desktopBounds = new Rectangle ();
-				foreach (var s in AppKit.NSScreen.Screens) {
-					var sr = s.Frame;
-					desktopBounds = desktopBounds.Union (new Rectangle (sr.X, sr.Y, sr.Width, sr.Height));
-				}
-
-				r.Y = (nfloat)desktopBounds.Height - r.Y - r.Height;
-				if (desktopBounds.Y < 0)
-					r.Y += (nfloat)desktopBounds.Y;
-				return new Rectangle (r.X, r.Y, r.Width, r.Height);
-			}
-			#endif
+			var screenLocation = Point.Zero;
+			Toolkit targetToolkit = null;
 			var xwtTarget = target as Widget;
-			if (xwtTarget != null)
-				return GtkUtil.ToScreenCoordinates (xwtTarget, targetRect).ToXwtRectangle ();
-			
-			return Rectangle.Zero;
+			if (xwtTarget != null) {
+				screenLocation = xwtTarget.ConvertToScreenCoordinates (targetRect.Location);
+				targetToolkit = xwtTarget.Surface.ToolkitEngine;
+			} else {
+				targetToolkit = GetToolkitForWidget (target);
+				screenLocation = targetToolkit.GetScreenBounds (target).Offset (targetRect.Location).Location; 
+			}
+
+			screenLocation = TranslateCoordinates (targetToolkit, Toolkit, screenLocation);
+			return new Rectangle (screenLocation, targetRect.Size);
+		}
+
+		static Point TranslateCoordinates (Xwt.Toolkit sourceToolkit, Xwt.Toolkit targetToolkit, Point point)
+		{
+			if (sourceToolkit == targetToolkit)
+				return point;
+			sourceToolkit.Invoke (() => {
+				var desktopBounds = Desktop.Bounds;
+				point.X -= desktopBounds.X;
+				point.Y -= desktopBounds.Y;
+			});
+			targetToolkit.Invoke (() => {
+				var desktopBounds = Desktop.Bounds;
+				point.X += desktopBounds.X;
+				point.Y += desktopBounds.Y;
+			});
+			return point;
+		}
+
+		static Toolkit GetToolkitForWidget (object nativeWidget)
+		{
+			if (nativeWidget is Gtk.Widget)
+				return Toolkit.Load (ToolkitType.Gtk);
+			#if MAC
+			if (nativeWidget is AppKit.NSView)
+				return Toolkit.Load (ToolkitType.XamMac);
+			#endif
+			#if WIN32
+			if (nativeWidget is System.Windows.FrameworkElement)
+				return Toolkit.Load (ToolkitType.Wpf);
+			#endif
+			throw new NotSupportedException (string.Format ("Widget of type '{0}' does not belong to a supported Toolkit.", nativeWidget.GetType ()));
 		}
 
 		protected Size GetParentSize ()
@@ -259,8 +279,13 @@ namespace MonoDevelop.Components
 
 		protected Rectangle GetUsableMonitorGeometry (Rectangle targetRect)
 		{
-			var screen = Desktop.GetScreenAtLocation (targetRect.Location);
-			return screen?.VisibleBounds ?? Rectangle.Zero;
+			var rect = Rectangle.Zero;
+			Toolkit.Invoke (() => {
+				var screen = Desktop.GetScreenAtLocation (targetRect.Location);
+				if (screen != null)
+					rect = screen.VisibleBounds;
+			});
+			return rect;
 		}
 
 		Rectangle cachedBounds;
@@ -287,18 +312,14 @@ namespace MonoDevelop.Components
 				targetRect = newTargetRect.Value;
 
 			Rectangle currentRect = targetRect;
-			if (targetWindowOrigin.X < 0)
-				return;
-			var x = targetWindowOrigin.X;
-			var y = targetWindowOrigin.Y;
 			PopupPosition position = targetPosition;
 			CurrentPosition = targetPosition;
 
 			var psize = GetParentSize ();
 
 			if (eventProvided) {
-				currentRect.X = x;
-				currentRect.Y = y;
+				currentRect.X = targetWindowOrigin.X;
+				currentRect.Y = targetWindowOrigin.Y;
 				currentRect.Width = currentRect.Height = 1;
 			} else {
 				if (currentRect.IsEmpty)
@@ -346,6 +367,7 @@ namespace MonoDevelop.Components
 			CurrentPosition = position;
 
 			// Calculate base coordinate
+			double x = 0, y = 0;
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:

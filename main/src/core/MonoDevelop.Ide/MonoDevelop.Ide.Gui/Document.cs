@@ -512,6 +512,7 @@ namespace MonoDevelop.Ide.Gui
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
+
 			// do actual save
 			Window.ViewContent.ContentName = filename;
 			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
@@ -884,9 +885,7 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
-							MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
 							UnsubscribeRoslynWorkspace ();
@@ -905,7 +904,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.ProjectReloaded -= HandleRoslynProjectReload;
+				ws.WorkspaceChanged -= HandleRoslynProjectReload;
 			}
 		}
 
@@ -913,11 +912,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.ProjectReloaded += HandleRoslynProjectReload;
+				ws.WorkspaceChanged += HandleRoslynProjectReload;
 			}
 		}
 
-		void HandleRoslynProjectReload (object sender, RoslynProjectEventArgs e)
+		void HandleRoslynProjectReload (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
 			StartReparseThread ();
 		}

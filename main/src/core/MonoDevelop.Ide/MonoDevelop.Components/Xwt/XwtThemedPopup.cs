@@ -138,18 +138,14 @@ namespace MonoDevelop.Components
 				TargetRectangle = newTargetRect.Value;
 
 			Rectangle currentRect = TargetRectangle;
-			if (TargetWindowOrigin.X < 0)
-				return;
-			var x = TargetWindowOrigin.X;
-			var y = TargetWindowOrigin.Y;
 			PopupPosition position = TargetPosition;
 			CurrentPosition = TargetPosition;
 
 			var psize = GetParentSize ();
 
 			if (EventProvided) {
-				currentRect.X = x;
-				currentRect.Y = y;
+				currentRect.X = TargetWindowOrigin.X;
+				currentRect.Y = TargetWindowOrigin.Y;
 				currentRect.Width = currentRect.Height = 1;
 			} else {
 				if (currentRect.IsEmpty)
@@ -197,6 +193,7 @@ namespace MonoDevelop.Components
 			CurrentPosition = position;
 
 			// Calculate base coordinate
+			double x = 0, y = 0;
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
