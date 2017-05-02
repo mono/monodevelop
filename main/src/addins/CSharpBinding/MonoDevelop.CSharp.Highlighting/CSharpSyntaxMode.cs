@@ -97,6 +97,7 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (highlightTree != null) {
 								highlightTree.RemoveListener ();
 							}
+							var doNotify = !AreEqual (highlightTree, newTree);
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
 							if (doNotify) {
@@ -162,7 +163,13 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class StyledTreeSegment : TreeSegment
 	{
-		string style;
+		readonly string style;
+		
+		public string Style {
+			get {
+				return style;
+			}
+		}
 
 		public StyledTreeSegment (int offset, int length, string colorStyleKey) : base (offset, length)
 		{
