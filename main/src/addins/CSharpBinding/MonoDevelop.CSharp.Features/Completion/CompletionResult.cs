@@ -104,7 +104,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 		internal void AddData (CompletionData completionData)
 		{
-			var displayText = completionData.DisplayText;
 			foreach (var od in data) {
 				if (od.IsOverload (completionData) && completionData.IsOverload (od)) {
 					od.AddOverload (completionData);
@@ -119,13 +118,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			foreach (var cd in completionData) {
 				AddData (cd);
 			}
-		}
-
-		public static CompletionResult Create(IEnumerable<CompletionData> data)
-		{
-			var result = new CompletionResult();
-			result.data.AddRange(data);
-			return result;
 		}
 	}
 }
