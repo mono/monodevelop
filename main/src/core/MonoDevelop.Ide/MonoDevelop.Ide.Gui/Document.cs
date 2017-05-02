@@ -674,7 +674,7 @@ namespace MonoDevelop.Ide.Gui
 
 				if (Editor.IsInAtomicUndo) {
 					wasEdited = true;
-				} else {
+				} else if (!wasEdited) {
 					StartReparseThread ();
 				}
 			};
