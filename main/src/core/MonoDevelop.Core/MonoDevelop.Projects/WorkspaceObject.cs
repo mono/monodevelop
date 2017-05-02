@@ -69,6 +69,7 @@ namespace MonoDevelop.Projects
 
 				extensionContext = AddinManager.CreateExtensionContext ();
 				extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (GetType ()));
+				ExtensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition (this));
 
 				OnInitialize ();
 				InitializeExtensionChain ();

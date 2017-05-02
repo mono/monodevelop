@@ -30,15 +30,19 @@ namespace MonoDevelop.Projects.Extensions
 {
 	public class AppliesToCondition : ConditionType
 	{
-		Project project;
+		readonly WorkspaceObject workspaceObject;
 
-		public AppliesToCondition (Project project)
+		public AppliesToCondition (WorkspaceObject workspaceObject)
 		{
-			this.project = project;
+			this.workspaceObject = workspaceObject;
 		}
 
 		public override bool Evaluate (NodeElement conditionNode)
 		{
+			var project = workspaceObject as Project;
+			if (project == null) {
+				return false;
+			}
 			var expr = conditionNode.GetAttribute ("capability");
 			return project.IsCapabilityMatch (expr);
 		}
