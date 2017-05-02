@@ -548,8 +548,9 @@ namespace MonoDevelop.Ide
 					}
 
 					if (n == 0) {
-						ib = new Xwt.Drawing.ImageBuilder (px.Width, px.Height);
-						ib.Context.DrawImage (px, 0, 0);
+						using (ib = new Xwt.Drawing.ImageBuilder (px.Width, px.Height)) {
+							ib.Context.DrawImage (px, 0, 0);
+						}
 						icon = px;
 						continue;
 					}

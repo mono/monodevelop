@@ -286,10 +286,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				for (int n=0; n<10; n++) {
 					var img1 = next.WithAlpha (((double)(n))/10.0);
 					var img2 = prev.WithAlpha (((double)(9-n))/10.0);
-					var ib = new ImageBuilder (img1.Size.Width, img2.Size.Height);
-					ib.Context.DrawImage (img1, 0, 0, ((double)(n)) / 10.0);
-					ib.Context.DrawImage (img2, 0, 0, ((double)(9 - n)) / 10.0);
-					AddImage (ib.ToVectorImage ());
+					using (var ib = new ImageBuilder (img1.Size.Width, img2.Size.Height)) {
+						ib.Context.DrawImage (img1, 0, 0, ((double)(n)) / 10.0);
+						ib.Context.DrawImage (img2, 0, 0, ((double)(9 - n)) / 10.0);
+						AddImage (ib.ToVectorImage ());
+					}
 					AddPause (60);
 				}
 			}
