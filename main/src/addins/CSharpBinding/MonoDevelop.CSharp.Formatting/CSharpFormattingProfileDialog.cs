@@ -88,6 +88,10 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			this.Build ();
+			this.DefaultWidth = 1400;
+			this.DefaultHeight = 600;
+			this.hpaned1.Position = (int)(DefaultWidth * 0.618);
+
 			this.profile = profile;
 			this.Title = profile.IsBuiltIn ? GettextCatalog.GetString ("Show built-in profile") : GettextCatalog.GetString ("Edit Profile");
 			
