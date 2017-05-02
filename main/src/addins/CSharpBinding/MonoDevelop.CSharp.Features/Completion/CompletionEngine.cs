@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in exclusiveHandlers) {
-					var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+					var handlerResult = await handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken);
 					//if (handlerResult != null) {
 					//	Console.WriteLine ("-----" + handler);
 					//	foreach (var item in handlerResult) {
