@@ -88,6 +88,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 					var visitor = new HighlightingVisitior (theme, resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
 					visitor.Visit (root);
+					var doNotify = !AreEqual (highlightTree, newTree, token);
 
 					if (!token.IsCancellationRequested) {
 						Gtk.Application.Invoke (delegate {
@@ -96,12 +97,10 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (highlightTree != null) {
 								highlightTree.RemoveListener ();
 							}
-							var doNotify = !AreEqual (highlightTree, newTree);
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
 							if (doNotify) {
 								NotifySemanticHighlightingUpdate ();
-								Console.WriteLine ("notify change !!!");
 							}
 						});
 					}
@@ -112,16 +111,20 @@ namespace MonoDevelop.CSharp.Highlighting
 			}, token);
 		}
 
-		bool AreEqual (HighlightingSegmentTree highlightTree, HighlightingSegmentTree newTree)
+		bool AreEqual (HighlightingSegmentTree highlightTree, HighlightingSegmentTree newTree, CancellationToken token)
 		{
 			if (newTree == null || highlightTree == null ||  highlightTree.Count != newTree.Count)
 				return false;
 			var e1 = highlightTree.GetEnumerator ();
 			var e2 = newTree.GetEnumerator ();
+			int i = 0;
 			while (e1.MoveNext () && e2.MoveNext ()) {
 				var i1 = e1.Current;
 				var i2 = e2.Current;
-
+				if (i++ % 1000 == 0) {
+					if (token.IsCancellationRequested)
+						return false;
+				}
 				if (i1.Offset != i2.Offset ||
 					i1.Length != i2.Length ||
 					i1.Style != i2.Style)
