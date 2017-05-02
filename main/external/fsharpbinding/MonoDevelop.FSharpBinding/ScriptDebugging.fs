@@ -35,7 +35,7 @@ type ScriptBuildTarget(scriptPath, consoleKind, source) =
         async {
             let filename = scriptPath |> string
             let checker = FSharpChecker.Create()
-            let! opts = checker.GetProjectOptionsFromScript(filename, source)
+            let! opts, _errors = checker.GetProjectOptionsFromScript(filename, source)
             let! _parseFileResults, checkFileResults = 
                     checker.ParseAndCheckFileInProject(filename, 0, source, opts)
             let checkResults =

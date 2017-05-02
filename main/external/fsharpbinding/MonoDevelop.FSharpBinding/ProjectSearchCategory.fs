@@ -77,7 +77,7 @@ module Search =
     /// constructors have a display name of ( .ctor ) use the enclosing entities display name
     let correctDisplayName (symbol:FSharpSymbolUse) =
         match symbol with
-        | Constructor c ->
+        | SymbolUse.Constructor c ->
             match c.EnclosingEntitySafe with
             | Some ent -> ent.DisplayName
             | _ -> LoggingService.LogError(sprintf "Constructor with no EnclosingEntity: %s" c.DisplayName)
@@ -112,24 +112,24 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
 
     override x.SearchResultType =
         match symbol with
-        | Record _ | Module _ | ValueType _ | Delegate _ | Union _  | Class _
-        | Namespace _ | Interface _ | Enum _ | ActivePattern _ -> SearchResultType.Type
+        | Record _ | SymbolUse.Module _ | ValueType _ | Delegate _ | Union _  | SymbolUse.Class _
+        | SymbolUse.Namespace _ | SymbolUse.Interface _ | Enum _ | ActivePattern _ -> SearchResultType.Type
 
         | ActivePatternCase _ | Field _ | UnionCase _ | Property _
-        | Event _ | Operator _ | Constructor _ | Function _ | Val _-> SearchResultType.Member
+        | Event _ | Operator _ | SymbolUse.Constructor _ | Function _ | Val _-> SearchResultType.Member
         | _ -> SearchResultType.Unknown
 
     override x.Description =
         let cat =
             match symbol with
             | Record _ -> "record"
-            | Module _ -> "module"
+            | SymbolUse.Module _ -> "module"
             | ValueType _ -> "struct"
             | Delegate _ -> "delegate"
             | Union _ -> "union"
-            | Class c -> if c.IsFSharp then "type" else "class"
-            | Namespace _ -> "namespace"
-            | Interface _ -> "interface"
+            | SymbolUse.Class c -> if c.IsFSharp then "type" else "class"
+            | SymbolUse.Namespace _ -> "namespace"
+            | SymbolUse.Interface _ -> "interface"
             | Enum _ -> "enum"
             | ActivePattern _ -> "active pattern"
             | Field _ -> "field"
@@ -137,7 +137,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
             | Property _ -> "property"
             | Event _ -> "event"
             | Operator _ -> "operator"
-            | Constructor _ -> "constructor"
+            | SymbolUse.Constructor _ -> "constructor"
             | Method _ -> "method"
             | Function _ -> "function"
             | Val _ -> "val"
@@ -150,13 +150,13 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
     override x.Icon =
         match symbol with
         | Record _ -> getImage "md-type"
-        | Module _ -> getImage "md-module"
+        | SymbolUse.Module _ -> getImage "md-module"
         | ValueType s -> s |> getImageFromAccessibility Stock.Struct.Name Stock.InternalStruct.Name Stock.PrivateStruct.Name
         | Delegate d -> d |> getImageFromAccessibility Stock.Delegate.Name Stock.InternalDelegate.Name Stock.PrivateDelegate.Name
         | Union _ -> getImage "md-type"
-        | Class c -> if c.IsFSharp then getImage "md-type" else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
-        | Namespace _ -> getImage Stock.NameSpace.Name
-        | Interface i -> i |> getImageFromAccessibility Stock.Interface.Name Stock.InternalInterface.Name Stock.PrivateInterface.Name
+        | SymbolUse.Class c -> if c.IsFSharp then getImage "md-type" else c |> getImageFromAccessibility Stock.Class.Name Stock.InternalClass.Name Stock.PrivateClass.Name
+        | SymbolUse.Namespace _ -> getImage Stock.NameSpace.Name
+        | SymbolUse.Interface i -> i |> getImageFromAccessibility Stock.Interface.Name Stock.InternalInterface.Name Stock.PrivateInterface.Name
         | Enum e -> e |> getImageFromAccessibility Stock.Enum.Name Stock.InternalEnum.Name Stock.PrivateEnum.Name
         | ActivePattern _ -> getImage "md-type"
         | Field f ->f |> getImageFromAccessibility Stock.Field.Name Stock.InternalField.Name Stock.PrivateField.Name
@@ -164,7 +164,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
         | Property p -> p |> getImageFromAccessibility Stock.Property.Name Stock.InternalProperty.Name Stock.PrivateProperty.Name
         | Event e -> e |> getImageFromAccessibility Stock.Event.Name Stock.InternalEvent.Name Stock.PrivateEvent.Name
         | Operator _ -> getImage "md-fs-field"
-        | Constructor c -> c |> getImageFromAccessibility Stock.Method.Name Stock.InternalMethod.Name Stock.PrivateMethod.Name
+        | SymbolUse.Constructor c -> c |> getImageFromAccessibility Stock.Method.Name Stock.InternalMethod.Name Stock.PrivateMethod.Name
         | Function mfv ->
             if mfv.IsExtensionMember then mfv |> getImageFromAccessibility "md-extensionmethod" "md-internal-extensionmethod" "md-private-extensionmethod"
             elif mfv.IsMember then mfv |> getImageFromAccessibility Stock.Method.Name Stock.InternalMethod.Name Stock.PrivateMethod.Name

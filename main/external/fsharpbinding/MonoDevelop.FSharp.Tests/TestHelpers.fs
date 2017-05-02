@@ -29,7 +29,7 @@ module TestHelpers =
         async {
             try
                 let checker = FSharpChecker.Create()
-                let! projOptions = checker.GetProjectOptionsFromScript(filename, source)
+                let! projOptions, _errors = checker.GetProjectOptionsFromScript(filename, source)
                 let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(filename, 0, source , projOptions)
 
                 // Construct new typed parse result if the task succeeded
