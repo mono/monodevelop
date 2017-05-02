@@ -96,9 +96,13 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (highlightTree != null) {
 								highlightTree.RemoveListener ();
 							}
+							var doNotify = !AreEqual (highlightTree, newTree);
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
-							NotifySemanticHighlightingUpdate ();
+							if (doNotify) {
+								NotifySemanticHighlightingUpdate ();
+								Console.WriteLine ("notify change !!!");
+							}
 						});
 					}
 				} catch (OperationCanceledException) {
@@ -106,6 +110,25 @@ namespace MonoDevelop.CSharp.Highlighting
 					ae.Flatten ().Handle (x => x is OperationCanceledException); 
 				}
 			}, token);
+		}
+
+		bool AreEqual (HighlightingSegmentTree highlightTree, HighlightingSegmentTree newTree)
+		{
+			if (newTree == null || highlightTree == null ||  highlightTree.Count != newTree.Count)
+				return false;
+			var e1 = highlightTree.GetEnumerator ();
+			var e2 = newTree.GetEnumerator ();
+			while (e1.MoveNext () && e2.MoveNext ()) {
+				var i1 = e1.Current;
+				var i2 = e2.Current;
+
+				if (i1.Offset != i2.Offset ||
+					i1.Length != i2.Length ||
+					i1.Style != i2.Style)
+					return false;
+			}
+
+			return true;
 		}
 
 		void CancelHighlightingTask ()
@@ -136,7 +159,13 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class StyledTreeSegment : TreeSegment
 	{
-		string style;
+		readonly string style;
+		
+		public string Style {
+			get {
+				return style;
+			}
+		}
 
 		public StyledTreeSegment (int offset, int length, string colorStyleKey) : base (offset, length)
 		{
