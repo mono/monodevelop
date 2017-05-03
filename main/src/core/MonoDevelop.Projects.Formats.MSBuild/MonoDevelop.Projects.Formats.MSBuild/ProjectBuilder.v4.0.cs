@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.MSBuild
 					if (evaluateProperties != null) {
 						foreach (var name in evaluateProperties) {
 							var prop = pi.GetProperty (name);
-							result.Properties [name] = prop != null? prop.EvaluatedValue : null;
+							result.Properties [name] = prop != null? prop.EvaluatedValue : string.Empty;
 						}
 					}
 

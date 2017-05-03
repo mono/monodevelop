@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					if (evaluateProperties != null) {
 						foreach (var name in evaluateProperties)
-							result.Properties [name] = project.GetEvaluatedProperty (name);
+							result.Properties [name] = project.GetEvaluatedProperty (name) ?? string.Empty;
 					}
 
 					if (evaluateItems != null) {
