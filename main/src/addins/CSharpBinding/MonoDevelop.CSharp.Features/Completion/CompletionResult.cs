@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			public int GetHashCode (CompletionData obj)
 			{
-				return obj.GetHashCode ();
+				return obj.DisplayText.GetHashCode ();
 			}
 		}
 	}
