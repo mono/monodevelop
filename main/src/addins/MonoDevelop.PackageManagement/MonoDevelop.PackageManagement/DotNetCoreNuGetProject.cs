@@ -320,11 +320,17 @@ namespace MonoDevelop.PackageManagement
 			DotNetProject.NotifyModified ("References");
 		}
 
+		/// <summary>
+		/// Always returns true so the project is re-evaluated after a restore.
+		/// This ensures any imports in the generated .nuget.g.targets are
+		/// re-evaluated. Without this custom MSBuild targets used by a NuGet package
+		/// that was restored into the local NuGet package cache would not be available
+		/// until the solution is closed and re-opened. Also handles the project file
+		/// being edited by hand and a new package reference being added that has a
+		/// custom MSBuild target.
+		/// </summary>
 		public bool ProjectRequiresReloadAfterRestore ()
 		{
-			if (project.DotNetCoreNuGetMSBuildFilesExist ())
-				return false;
-
 			return true;
 		}
 	}
