@@ -257,7 +257,7 @@ namespace MonoDevelop.Core.Execution
 			} else if (et == typeof(string)) {
 				bw.Write ((byte)TypeCode.String);
 				foreach (var v in (string [])val)
-					bw.Write (v);
+					bw.Write (v ?? "");
 			} else if (et == typeof(bool)) {
 				bw.Write ((byte)TypeCode.Boolean);
 				foreach (var v in (bool [])val)
