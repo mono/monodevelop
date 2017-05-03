@@ -51,10 +51,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (DataObject.GetType ()));
 			extensionContext.RegisterCondition ("ActiveLanguage", new ProjectLanguageCondition (DataObject));
 			if (DataObject is Project) {
+				extensionContext.RegisterCondition ("AppliesTo", new AppliesToCondition ((Project)DataObject));
 				extensionContext.RegisterCondition ("FlavorType", new FlavorTypeCondition ((Project)DataObject));
 				extensionContext.RegisterCondition ("ProjectTypeId", new ProjectTypeIdCondition ((Project)DataObject));
 				extensionContext.RegisterCondition ("SupportsTarget", new SupportsTargetCondition ((Project)DataObject));
 			} else {
+				extensionContext.RegisterCondition ("AppliesTo", new FalseCondition ());
 				extensionContext.RegisterCondition ("FlavorType", new FalseCondition ());
 				extensionContext.RegisterCondition ("ProjectTypeId", new FalseCondition ());
 			}
