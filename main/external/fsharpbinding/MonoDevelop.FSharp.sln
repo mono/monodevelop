@@ -8,13 +8,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{165E4D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fastbuild.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.fastbuild", "MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fastbuild.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fastbuild.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests.fastbuild", "MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fastbuild.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fastbuild.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service.fastbuild", "MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fastbuild.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fastbuild.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared.fastbuild", "MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fastbuild.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FAKE", "FAKE", "{0926DD37-C0FF-464E-96A9-42D5AAA48D1B}"
+	ProjectSection(SolutionItems) = preProject
+		build.fsx = build.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
