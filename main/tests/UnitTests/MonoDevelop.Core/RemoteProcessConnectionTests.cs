@@ -133,6 +133,31 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
+		public void BinaryMessageSerializeDictionaryWithNullStringValues ()
+		{
+			var data1 = new Dictionary<string, string> ();
+			data1 ["one"] = "a";
+			data1 ["two"] = null;
+
+			var m = new BinaryMessage ("Test");
+			m.AddArgument ("map1", data1);
+
+			MemoryStream ms = new MemoryStream ();
+			m.Write (ms);
+			ms.Position = 0;
+
+			m = BinaryMessage.Read (ms);
+			var readData1 = m.GetArgument ("map1") as Dictionary<string, string>;
+			Assert.AreEqual (1, m.Args.Count);
+			Assert.AreEqual (2, readData1.Keys.Count);
+			Assert.AreEqual ("a", readData1 ["one"]);
+
+			// Null value in dictionary is converted to empty string
+			// on writing to the stream.
+			Assert.AreEqual (string.Empty, readData1 ["two"]);
+		}
+
+		[Test]
 		public void BinaryMessageCustomMapSerialization ()
 		{
 			var data = new Dictionary<string, CustomData[]> ();
