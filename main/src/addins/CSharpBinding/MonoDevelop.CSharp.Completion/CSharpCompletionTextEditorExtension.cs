@@ -464,10 +464,8 @@ namespace MonoDevelop.CSharp.Completion
 					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
 					if (completionResult == CompletionResult.Empty)
 						return null;
-					
-					foreach (var symbol in completionResult) {
-						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
-					}
+
+					list.AddRange (completionResult.Data);
 
 					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => (cd.GetType () == typeof (RoslynSymbolCompletionData)) && (cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol)))) {
 						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
