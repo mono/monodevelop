@@ -37,10 +37,22 @@ namespace MonoDevelop.Ide.Navigation
 	public class DocumentNavigationPoint : NavigationPoint
 	{
 		Document doc;
+
+		public Document Document {
+			get {
+				return doc;
+			}
+		}
+
 		FilePath fileName;
 		string project;
 		
 		public DocumentNavigationPoint (Document doc)
+		{
+			SetDocument (doc);
+		}
+
+		protected void SetDocument (Document doc)
 		{
 			this.doc = doc;
 			doc.Closed += HandleClosed;
@@ -59,10 +71,14 @@ namespace MonoDevelop.Ide.Navigation
 			}
 			base.Dispose ();
 		}
-		
+
+		protected virtual void OnDocumentClosing ()
+		{
+		}
 
 		void HandleClosed (object sender, EventArgs e)
 		{
+			OnDocumentClosing ();
 			fileName = doc.FileName;
 			project = doc.HasProject ? doc.Project.ItemId : null;
 			if (fileName == FilePath.Null) {
