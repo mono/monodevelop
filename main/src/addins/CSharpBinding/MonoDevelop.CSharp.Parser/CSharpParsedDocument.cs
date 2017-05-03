@@ -462,37 +462,33 @@ namespace MonoDevelop.CSharp.Parser
 		IReadOnlyList<Error> errors;
 		SemaphoreSlim errorLock = new SemaphoreSlim (1, 1);
 
-		public override Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var model = GetAst<SemanticModel> ();
 			if (model == null)
-				return Task.FromResult (emptyErrors);
+				return emptyErrors;
 			
-			if (errors == null) {
-				return Task.Run (async delegate {
-					bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+			bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
+			try {
+				if (errors == null) {
 					try {
-						if (errors == null) {
-							try {
-								errors = model
-									.GetDiagnostics (null, cancellationToken)
-									.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-									.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
-									.ToList ();
-							} catch (OperationCanceledException) {
-								errors = emptyErrors;
-							} catch (Exception e) {
-								LoggingService.LogError ("Error while getting diagnostics.", e);
-								errors = emptyErrors;
-							}
-						}
-						return errors;
-					} finally {
-						if (locked)
-							errorLock.Release ();					}
-				});
-			}
-			return Task.FromResult (errors);
+						errors = model
+							.GetDiagnostics (null, cancellationToken)
+							.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+							.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
+							.ToList ();
+					} catch (OperationCanceledException) {
+						errors = emptyErrors;
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while getting diagnostics.", e);
+						errors = emptyErrors;
+					}
+				}
+			} finally {
+				if (locked)
+					errorLock.Release ();			}
+			
+			return errors;
 		}
 
 		static DocumentRegion GetRegion (Diagnostic diagnostic)
