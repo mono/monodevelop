@@ -197,6 +197,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return DisplayText == other.DisplayText;
 		}
 
+		public override int GetHashCode ()
+		{
+			return DisplayText.GetHashCode ();
+		}
+
 		const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
 		
 		public virtual bool IsCommitCharacter (char keyChar, string partialWord)
