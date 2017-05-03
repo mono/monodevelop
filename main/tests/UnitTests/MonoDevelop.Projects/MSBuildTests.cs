@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (res.BuildResult);
 			Assert.AreEqual (0, res.BuildResult.ErrorCount);
 			Assert.AreEqual (0, res.BuildResult.WarningCount);
-			Assert.AreEqual ("", res.Properties.GetValue ("TestUnknownPropertyToEvaluate"));
+			Assert.IsNull (res.Properties.GetValue ("TestUnknownPropertyToEvaluate"));
 
 			sol.Dispose ();
 		}
