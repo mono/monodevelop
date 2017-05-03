@@ -310,12 +310,7 @@
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
     <CommandItem id = "MonoDevelop.FSharp.CurrentRefactoringOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-    <ComplexCondition>
-      <Or>
-        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-      </Or>
+    <Condition id="FileType" fileExtensions=".fs,.fsi,.fsx,.fsscript">
       <SeparatorItem id = "FSharpScriptDebug" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptExternal" />
@@ -324,7 +319,7 @@
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
-    </ComplexCondition>
+    </Condition>
   </Extension>
   
   <ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi" name = "Editor context menu for fsi">
