@@ -97,7 +97,6 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (highlightTree != null) {
 								highlightTree.RemoveListener ();
 							}
-							var doNotify = !AreEqual (highlightTree, newTree);
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
 							if (doNotify) {
