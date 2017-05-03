@@ -149,12 +149,7 @@ namespace MonoDevelop.Core
 			m = BinaryMessage.Read (ms);
 			var readData1 = m.GetArgument ("map1") as Dictionary<string, string>;
 			Assert.AreEqual (1, m.Args.Count);
-			Assert.AreEqual (2, readData1.Keys.Count);
-			Assert.AreEqual ("a", readData1 ["one"]);
-
-			// Null value in dictionary is converted to empty string
-			// on writing to the stream.
-			Assert.AreEqual (string.Empty, readData1 ["two"]);
+			Assert.AreEqual (data1, readData1);
 		}
 
 		[Test]
