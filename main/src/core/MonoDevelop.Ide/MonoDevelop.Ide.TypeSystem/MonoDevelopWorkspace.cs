@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
 				var mdProjects = solution.GetAllProjects ();
-				projectionList.Clear ();
+				projectionList = projectionList.Clear ();
 				projectIdMap.Clear ();
 				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
@@ -497,13 +497,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException (nameof (projectFile));
 			if (projections == null)
 				throw new ArgumentNullException (nameof (projections));
-			foreach (var entry in projectionList) {
-				if (entry?.File?.FilePath == projectFile.FilePath) {
-					projectionList.Remove (entry);
-					break;
+			lock (projectionListUpdateLock) {
+				foreach (var entry in projectionList) {
+					if (entry?.File?.FilePath == projectFile.FilePath) {
+						projectionList = projectionList.Remove (entry);
+						break;
+					}
 				}
+				projectionList = projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections });
 			}
-			projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections});
 
 		}
 
@@ -527,7 +529,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				false
 			);
 		}
-		List<ProjectionEntry> projectionList = new List<ProjectionEntry>();
+		object projectionListUpdateLock = new object ();
+		ImmutableList<ProjectionEntry> projectionList = ImmutableList<ProjectionEntry>.Empty;
 
 		internal IReadOnlyList<ProjectionEntry> ProjectionList {
 			get {
@@ -616,7 +619,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					false
 				);
 			}
-			projectionList.Add (entry);
+			projectionList = projectionList.Add (entry);
 		}
 
 		internal static readonly string [] DefaultAssemblies = {
