@@ -769,6 +769,7 @@ namespace MonoDevelop.CSharp.Formatting
 			reIndent = false;
 			switch (charInserted) {
 			case '}':
+			case ':':
 			case ';':
 				reIndent = true;
 				break;
