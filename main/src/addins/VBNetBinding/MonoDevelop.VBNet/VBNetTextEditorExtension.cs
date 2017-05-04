@@ -196,6 +196,10 @@ namespace MonoDevelop.VBNet
 			{
 				return Task.FromResult (vbScope);
 			}
+
+			public void Dispose()
+			{
+			}
 		}
 	}
 }

@@ -45,7 +45,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Mono.TextEditor
 {
-	class TextDocument : ITextDocument
+	class TextDocument : ITextDocument, IDisposable
 	{
 		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; }
 		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
@@ -132,8 +132,10 @@ namespace Mono.TextEditor
 				ISyntaxHighlighting old;
 				lock (syncObject) {
 					old = syntaxMode;
-					if (old != null && old != DefaultSyntaxHighlighting.Instance)
+					if (old != null && old != DefaultSyntaxHighlighting.Instance) {
 						old.HighlightingStateChanged -= SyntaxMode_HighlightingStateChanged;
+						old.Dispose ();
+					}
 
 					syntaxMode = value;
 					if (syntaxMode != null && syntaxMode != DefaultSyntaxHighlighting.Instance)
@@ -218,6 +220,15 @@ namespace Mono.TextEditor
 			TextChanging += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
+		}
+
+		public void Dispose()
+		{
+			this.TextBuffer.Changed -= this.OnTextBufferChanged;
+			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
+			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
+			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccured;
+			SyntaxMode = null;
 		}
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)

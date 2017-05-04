@@ -115,6 +115,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			UpdateVariables ();
 		}
 
+		protected override void OnDestroyed ()
+		{
+			textEditor.TextChanged -= DocumentTextReplaced;
+			textEditor.CaretPositionChanged -= CaretPositionChanged;
+			base.OnDestroyed ();
+		}
+
 		void ComboboxVariablesChanged (object sender, EventArgs e)
 		{
 			if (comboboxVariables.Active < 0) {

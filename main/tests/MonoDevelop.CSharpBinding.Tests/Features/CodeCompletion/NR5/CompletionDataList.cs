@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 	{
 		public static CompletionData Find (this CompletionResult result, string name, bool includeImportData = false)
 		{
-			return result.FirstOrDefault (d => /*(!(d is CodeCompletionBugTests.TestFactory.ImportCompletionData) || includeImportData) &&*/ d.CompletionText == name);
+			return result.Data.FirstOrDefault (d => /*(!(d is CodeCompletionBugTests.TestFactory.ImportCompletionData) || includeImportData) &&*/ d.CompletionText == name);
 		}
 	}
 }
