@@ -103,12 +103,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			public bool Equals (CompletionData x, CompletionData y)
 			{
-				return x.IsOverload (y) && y.IsOverload(x);
+				return x.OverloadGroupEquals (y) && y.OverloadGroupEquals(x);
 			}
 
 			public int GetHashCode (CompletionData obj)
 			{
-				return obj.DisplayText.GetHashCode ();
+				return obj.GetOverloadGroupHashCode ();
 			}
 		}
 	}
