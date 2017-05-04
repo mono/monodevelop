@@ -155,10 +155,12 @@ namespace MonoDevelop.Components.Docking
 				if (!(Parent is TabStrip.TabStripBox))
 					labelWidget.Xalign = 0;
 			}
-			
-			tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
-			tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
-			
+
+			if (tabIcon != null) {
+				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
+				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
+			}
+
 			if (IsRealized && labelWidget?.Visible == true) {
 				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
 				font.AbsoluteSize = Pango.Units.FromPixels (11);
