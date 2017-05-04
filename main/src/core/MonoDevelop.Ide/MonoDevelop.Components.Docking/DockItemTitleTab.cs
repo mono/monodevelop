@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.Docking
 			else
 				inactiveIconAlpha = 0.6;
 
-			if (labelWidget.Visible && label != null) {
+			if (labelWidget?.Visible == true && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
 					labelWidget.Text = label.ToUpper ();
 				else
@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.Docking
 			tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
 			tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			
-			if (IsRealized && labelWidget.Visible) {
+			if (IsRealized && labelWidget?.Visible == true) {
 				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
 				font.AbsoluteSize = Pango.Units.FromPixels (11);
 				labelWidget.ModifyFont (font);
