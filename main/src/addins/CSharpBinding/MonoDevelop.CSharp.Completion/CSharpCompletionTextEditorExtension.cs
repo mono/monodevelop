@@ -143,6 +143,11 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
+		{
+			return doc.WithFrozenPartialSemanticsAsync (token);
+		}
+
 		public CSharpCompletionTextEditorExtension ()
 		{
 			try {

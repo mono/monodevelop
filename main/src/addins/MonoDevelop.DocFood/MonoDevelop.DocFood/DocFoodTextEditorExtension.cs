@@ -172,7 +172,7 @@ namespace MonoDevelop.DocFood
 				var analysisDoc = DocumentContext.AnalysisDocument;
 				if (analysisDoc == null)
 					return null;
-				var partialDoc = await analysisDoc.WithFrozenPartialSemanticsAsync (cancellationToken).ConfigureAwait (false);
+				var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDoc, cancellationToken).ConfigureAwait (false);
 				var semanticModel = await partialDoc.GetSemanticModelAsync ();
 				if (semanticModel == null)
 					return null;
