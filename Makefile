@@ -122,6 +122,10 @@ run-gdb:
 
 run-gdb-64:
 	cd main && $(MAKE) run-gdb-64
+
+run-leaks:
+	cd main && $(MAKE) run-leaks
+
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
