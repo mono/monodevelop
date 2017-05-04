@@ -1261,18 +1261,16 @@ namespace MonoDevelop.Projects.MSBuild
 				if (File.Exists (exePdb))
 					File.Copy (exePdb, exesDir.Combine (Path.GetFileName (exePdb)));
 
-				// On Windows we need to copy the MSBuild .dlls locally to the builder directory.
+				// We need to copy the MSBuild .dlls locally to the builder directory.
 				// The assembly resolve logic in the builder that loads them from the original
 				// directory at runtime doesn't work for multiple AppDomains, and so for example
-				// WPF MarkupCompilePass1 will fail since it can't load MSBuild binaries into an
-				// AppDomain it creates.
-				if (Platform.IsWindows) {
-					var dlls = Directory.GetFiles (binDir, "*.dll");
-					foreach (var dll in dlls) {
-						var destination = Path.Combine (exesDir, Path.GetFileName (dll));
-						if (!File.Exists (destination))
-							File.Copy (dll, destination);
-					}
+				// WPF MarkupCompilePass1 and Azure Functions BuildFunctions will fail since it
+				// can't load MSBuild types into an AppDomain it creates.
+				var dlls = Directory.GetFiles (binDir, "*.dll");
+				foreach (var dll in dlls) {
+					var destination = Path.Combine (exesDir, Path.GetFileName (dll));
+					if (!File.Exists (destination))
+						File.Copy (dll, destination);
 				}
 
 				// Mono has Microsoft.Build.{Tasks,Utilities}.{v4.0,v12.0} assemlies, which are xbuild's
