@@ -9413,6 +9413,7 @@
     <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\HasReferenceFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\D152AccessibilityPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
