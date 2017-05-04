@@ -30,6 +30,7 @@ namespace MonoDevelop.Core.Execution
 			TimeSpan = 14,
 		}
 
+		static readonly string NullString = "\0";
 		static object dataTypesLock = new object ();
 		static Dictionary<Type, TypeMap> dataTypes = new Dictionary<Type, TypeMap> ();
 
@@ -257,7 +258,7 @@ namespace MonoDevelop.Core.Execution
 			} else if (et == typeof(string)) {
 				bw.Write ((byte)TypeCode.String);
 				foreach (var v in (string [])val)
-					bw.Write (v);
+					bw.Write (v ?? NullString);
 			} else if (et == typeof(bool)) {
 				bw.Write ((byte)TypeCode.Boolean);
 				foreach (var v in (bool [])val)
@@ -386,8 +387,12 @@ namespace MonoDevelop.Core.Execution
 				}
 			case TypeCode.String: {
 					var a = new string [count];
-					for (int n = 0; n < count; n++)
-						a [n] = br.ReadString ();
+					for (int n = 0; n < count; n++) {
+						string s = br.ReadString ();
+						if (s == NullString)
+							s = null;
+						a [n] = s;
+					}
 					return a;
 				}
 			case TypeCode.Boolean: {

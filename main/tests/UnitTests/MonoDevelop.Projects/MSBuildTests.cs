@@ -82,6 +82,31 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		[TestCase (true)]
+		[TestCase (false)]
+		public async Task EvaluateUnknownPropertyDuringBuild (bool requiresMSBuild)
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var project = ((Project)sol.Items [0]);
+			project.RequiresMicrosoftBuild = requiresMSBuild;
+
+			var context = new TargetEvaluationContext ();
+			context.PropertiesToEvaluate.Add ("TestUnknownPropertyToEvaluate");
+
+			var res = await project.RunTarget (Util.GetMonitor (), "Build", project.Configurations [0].Selector, context);
+			Assert.IsNotNull (res);
+			Assert.IsNotNull (res.BuildResult);
+			Assert.AreEqual (0, res.BuildResult.ErrorCount);
+			Assert.AreEqual (0, res.BuildResult.WarningCount);
+			Assert.IsNull (res.Properties.GetValue ("TestUnknownPropertyToEvaluate"));
+
+			sol.Dispose ();
+		}
+
+		[Test]
 		public async Task BuildConsoleProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
