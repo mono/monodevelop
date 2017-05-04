@@ -429,7 +429,7 @@ namespace MonoDevelop.Core.Execution
 					console.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}"), operation.ExitCode);
 			} catch (ArgumentException ex) {
 				// ArgumentException comes from Syscall.WTERMSIG when an unknown signal is encountered
-				console.Log.WriteLine (GettextCatalog.GetString ("The application was terminated by an unknown signal: {0}"), ex.Message);
+				console.Error.WriteLine (GettextCatalog.GetString ("The application was terminated by an unknown signal: {0}"), ex.Message);
 			} finally {
 				console.Dispose ();
 			}
