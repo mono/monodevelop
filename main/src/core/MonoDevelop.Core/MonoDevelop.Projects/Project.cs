@@ -1385,7 +1385,7 @@ namespace MonoDevelop.Projects
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
 			HashSet<string> sdks = null;
-			GetReferencedSDKs (this, ref sdks, new HashSet<string> (StringComparer.OrdinalIgnoreCase));
+			GetReferencedSDKs (this, ref sdks, new HashSet<string> ());
 			if (sdks != null)
 				return MSBuildProjectService.FindSdkPath (runtime, sdks);
 			return null;

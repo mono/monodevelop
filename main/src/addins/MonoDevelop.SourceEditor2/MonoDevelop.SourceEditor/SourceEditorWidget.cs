@@ -494,7 +494,6 @@ namespace MonoDevelop.SourceEditor
 
 			if (!isDisposed) {
 				vbox.Destroy ();
-				TextEditor.Document.Dispose ();
 				isDisposed = true;
 			}
 		}

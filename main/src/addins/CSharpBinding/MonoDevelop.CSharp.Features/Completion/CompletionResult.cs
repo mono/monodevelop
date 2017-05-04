@@ -30,12 +30,11 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	class CompletionResult
+	class CompletionResult : IReadOnlyList<CompletionData>
 	{
 		public static readonly CompletionResult Empty = new CompletionResult ();
 
 		readonly List<CompletionData> data = new List<CompletionData> ();
-		Dictionary<CompletionData, CompletionData> hashData = new Dictionary<CompletionData, CompletionData> (new CompletionOverloadEqualityComparer ());
 
 		public string DefaultCompletionString {
 			get;
@@ -67,27 +66,52 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		internal SyntaxContext SyntaxContext;
 
 		public readonly List<IMethodSymbol> PossibleDelegates = new List<IMethodSymbol>();
+
+		public List<CompletionData>.Enumerator GetEnumerator ()
+		{
+			return data.GetEnumerator ();
+		}
+
+		#region IReadOnlyList<ICompletionData> implemenation
+		IEnumerator<CompletionData> IEnumerable<CompletionData>.GetEnumerator ()
+		{
+			return data.GetEnumerator ();
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return data.GetEnumerator();
+		}
+		
+		public CompletionData this[int index] {
+			get {
+				return data [index];
+			}
+		}
+
+		public int Count {
+			get {
+				return data.Count;
+			}
+		}
+		#endregion
 		
 		internal CompletionResult()
 		{
 			AutoSelect = true;
 			AutoCompleteEmptyMatchOnCurlyBracket = true;
 		}
-
-		public int Count => data.Count;
-
-		public CompletionData this[int index] => data[index];
-
-		public List<CompletionData>.Enumerator GetEnumerator () => data.GetEnumerator ();
 		
 		internal void AddData (CompletionData completionData)
 		{
-			if (hashData.TryGetValue (completionData, out CompletionData od)) {
-				od.AddOverload (completionData);
-				return;
+			var displayText = completionData.DisplayText;
+			foreach (var od in data) {
+				if (od.IsOverload (completionData) && completionData.IsOverload (od)) {
+					od.AddOverload (completionData);
+					return;
+				}
 			}
-			hashData[completionData] = completionData;
-			data.Add (completionData);
+			data.Add(completionData); 
 		}
 
 		internal void AddRange (IEnumerable<CompletionData> completionData)
@@ -97,19 +121,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			}
 		}
 
-		internal IReadOnlyList<CompletionData> Data => data;
-
-		class CompletionOverloadEqualityComparer : IEqualityComparer<CompletionData>
+		public static CompletionResult Create(IEnumerable<CompletionData> data)
 		{
-			public bool Equals (CompletionData x, CompletionData y)
-			{
-				return x.OverloadGroupEquals (y) && y.OverloadGroupEquals(x);
-			}
-
-			public int GetHashCode (CompletionData obj)
-			{
-				return obj.GetOverloadGroupHashCode ();
-			}
+			var result = new CompletionResult();
+			result.data.AddRange(data);
+			return result;
 		}
 	}
 }

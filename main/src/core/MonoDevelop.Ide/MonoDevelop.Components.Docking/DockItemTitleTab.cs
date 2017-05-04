@@ -51,12 +51,10 @@ namespace MonoDevelop.Components.Docking
 		int minWidth;
 		DockVisualStyle visualStyle;
 		ImageView tabIcon;
-		Gtk.HBox box;
 		DockFrame frame;
 		string label;
 		ImageButton btnDock;
 		ImageButton btnClose;
-		Gtk.Alignment al;
 		DockItem item;
 		bool allowPlaceholderDocking;
 		bool mouseOver;
@@ -143,7 +141,7 @@ namespace MonoDevelop.Components.Docking
 			else
 				inactiveIconAlpha = 0.6;
 
-			if (labelWidget?.Visible == true && label != null) {
+			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
 					labelWidget.Text = label.ToUpper ();
 				else
@@ -160,8 +158,7 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
-
-			if (IsRealized && labelWidget?.Visible == true) {
+			if (IsRealized && labelWidget != null) {
 				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
 				font.AbsoluteSize = Pango.Units.FromPixels (11);
 				labelWidget.ModifyFont (font);
@@ -182,83 +179,11 @@ namespace MonoDevelop.Components.Docking
 			string labelNoSpaces = label != null ? label.Replace (' ', '-') : null;
 			this.label = label;
 			this.page = page;
-
-			if (icon == null)
-				icon = ImageService.GetIcon ("md-empty");
-
-			if (box == null) {
-				box = new HBox ();
-				box.Accessible.SetShouldIgnore (true);
-				box.Spacing = -2;
-
-				tabIcon = new ImageView ();
-				tabIcon.Accessible.SetShouldIgnore (true);
-				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 3);
-				
-				labelWidget = new ExtendedLabel (label);
-				// Ignore the label because the title tab already contains its name
-				labelWidget.Accessible.SetShouldIgnore (true);
-				labelWidget.UseMarkup = true;
-				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
-				alignLabel.Accessible.SetShouldIgnore (true);
-				alignLabel.BottomPadding = 0;
-				alignLabel.RightPadding = 15;
-				alignLabel.Add (labelWidget);
-				box.PackStart (alignLabel, false, false, 0);
-
-				btnDock = new ImageButton ();
-				btnDock.Image = pixAutoHide;
-				btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
-				btnDock.CanFocus = false;
-				//			btnDock.WidthRequest = btnDock.HeightRequest = 17;
-				btnDock.Clicked += OnClickDock;
-				btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
-				btnDock.WidthRequest = btnDock.SizeRequest ().Width;
-				UpdateDockButtonAccessibilityLabels ();
-
-				btnClose = new ImageButton ();
-				btnClose.Image = pixClose;
-				btnClose.TooltipText = GettextCatalog.GetString ("Close");
-				btnClose.CanFocus = false;
-				//			btnClose.WidthRequest = btnClose.HeightRequest = 17;
-				btnClose.WidthRequest = btnDock.SizeRequest ().Width;
-				btnClose.Clicked += delegate {
-					item.Visible = false;
-				};
-				btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
-
-				al = new Alignment (0, 0.5f, 1, 1);
-				al.Accessible.SetShouldIgnore (true);
-				HBox btnBox = new HBox (false, 0);
-				btnBox.Accessible.SetShouldIgnore (true);
-				btnBox.PackStart (btnDock, false, false, 3);
-				btnBox.PackStart (btnClose, false, false, 1);
-				al.Add (btnBox);
-				box.PackEnd (al, false, false, 3);
-
-				Add (box);
+			if (Child != null) {
+				Gtk.Widget oc = Child;
+				Remove (oc);
+				oc.Destroy ();
 			}
-
-			tabIcon.Image = icon;
-
-			string realLabel, realHelp;
-			if (!string.IsNullOrEmpty (label)) {
-				labelWidget.Parent.Show ();
-				labelWidget.Name = label;
-				btnDock.Name = string.Format ("btnDock_{0}", labelNoSpaces ?? string.Empty);
-				btnClose.Name = string.Format ("btnClose_{0}", labelNoSpaces ?? string.Empty);
-				realLabel = GettextCatalog.GetString ("Close {0}", label);
-				realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
-			}
-			else {
-				labelWidget.Parent.Hide ();
-				realLabel = GettextCatalog.GetString ("Close pad");
-				realHelp = GettextCatalog.GetString ("Close the pad");
-			}
-
-			btnClose.Accessible.SetLabel (realLabel);
-			btnClose.Accessible.Description = realHelp;
 
 			if (label != null) {
 				Accessible.Name = $"DockTab.{labelNoSpaces}";
@@ -266,6 +191,78 @@ namespace MonoDevelop.Components.Docking
 				Accessible.SetTitle (label);
 				Accessible.SetLabel (label);
 			}
+
+			Gtk.HBox box = new HBox ();
+			box.Accessible.SetShouldIgnore (true);
+			box.Spacing = -2;
+			
+			if (icon == null)
+				icon = ImageService.GetIcon ("md-empty");
+
+			tabIcon = new ImageView (icon);
+			tabIcon.Accessible.SetShouldIgnore (true);
+			tabIcon.Show ();
+			box.PackStart (tabIcon, false, false, 3);
+
+			if (!string.IsNullOrEmpty (label)) {
+				labelWidget = new ExtendedLabel (label);
+				// Ignore the label because the title tab already contains its name
+				labelWidget.Accessible.SetShouldIgnore (true);
+				labelWidget.UseMarkup = true;
+				labelWidget.Name = label;
+				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
+				alignLabel.Accessible.SetShouldIgnore (true);
+				alignLabel.BottomPadding = 0;
+				alignLabel.RightPadding = 15;
+				alignLabel.Add (labelWidget);
+				box.PackStart (alignLabel, false, false, 0);
+			} else {
+				labelWidget = null;
+			}
+
+			btnDock = new ImageButton ();
+			btnDock.Image = pixAutoHide;
+			btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
+			btnDock.CanFocus = false;
+//			btnDock.WidthRequest = btnDock.HeightRequest = 17;
+			btnDock.Clicked += OnClickDock;
+			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
+			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
+			btnDock.Name = string.Format("btnDock_{0}", labelNoSpaces ?? string.Empty);
+			UpdateDockButtonAccessibilityLabels ();
+
+			btnClose = new ImageButton ();
+			btnClose.Image = pixClose;
+			btnClose.TooltipText = GettextCatalog.GetString ("Close");
+			btnClose.CanFocus = false;
+//			btnClose.WidthRequest = btnClose.HeightRequest = 17;
+			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
+			btnClose.Clicked += delegate {
+				item.Visible = false;
+			};
+			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
+			btnClose.Name = string.Format ("btnClose_{0}", labelNoSpaces ?? string.Empty);
+			string realLabel, realHelp;
+			if (string.IsNullOrEmpty (label)) {
+				realLabel = GettextCatalog.GetString ("Close pad");
+				realHelp = GettextCatalog.GetString ("Close the pad");
+			} else {
+				realLabel = GettextCatalog.GetString ("Close {0}", label);
+				realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
+			}
+			btnClose.Accessible.SetLabel (realLabel);
+			btnClose.Accessible.Description = realHelp;
+
+			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
+			al.Accessible.SetShouldIgnore (true);
+			HBox btnBox = new HBox (false, 0);
+			btnBox.Accessible.SetShouldIgnore (true);
+			btnBox.PackStart (btnDock, false, false, 3);
+			btnBox.PackStart (btnClose, false, false, 1);
+			al.Add (btnBox);
+			box.PackEnd (al, false, false, 3);
+
+			Add (box);
 			
 			// Get the required size before setting the ellipsize property, since ellipsized labels
 			// have a width request of 0

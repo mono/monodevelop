@@ -962,9 +962,6 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (isDisposed)
 				return;
-
-			// Break fileTypeCondition circular event handling reference.
-			fileTypeCondition = null;
 			isDisposed = true;
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;

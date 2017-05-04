@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// <summary>
 	/// The basic interface for all syntax modes
 	/// </summary>
-	public interface ISyntaxHighlighting : IDisposable
+	public interface ISyntaxHighlighting
 	{
 		/// <summary>
 		/// Gets colorized segments (aka chunks) from offset to offset + length.
@@ -84,9 +84,5 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		public event EventHandler<LineEventArgs> HighlightingStateChanged;
-
-		public void Dispose()
-		{
-		}
 	}
 }

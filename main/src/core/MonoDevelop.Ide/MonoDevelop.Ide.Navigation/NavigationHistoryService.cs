@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
@@ -41,7 +40,7 @@ namespace MonoDevelop.Ide.Navigation
 	public static class NavigationHistoryService
 	{
 		static HistoryList history = new HistoryList ();
-		static List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
+		static Stack<Tuple<NavigationPoint, int>> closedHistory = new Stack<Tuple<NavigationPoint, int>> ();
 
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
@@ -59,22 +58,16 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
 				history.Clear ();
-				OnHistoryChanged ();
 				closedHistory.Clear ();
-				OnClosedHistoryChanged ();
-			};
-
-			IdeApp.Workbench.DocumentOpened += delegate (object sender, DocumentEventArgs e) {
-				closedHistory.RemoveAll(np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
-				OnClosedHistoryChanged ();
+				OnHistoryChanged ();
 			};
 
 			IdeApp.Workbench.DocumentClosing += delegate(object sender, DocumentEventArgs e) {
-				NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
+				NavigationPoint point = GetNavPointForDoc (e.Document);
 				if (point == null)
 					return;
-				
-				closedHistory.Add (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
+
+				closedHistory.Push (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
 				OnClosedHistoryChanged ();
 			};
 
@@ -97,7 +90,7 @@ namespace MonoDevelop.Ide.Navigation
 			if (switching)
 				return;
 			
-			NavigationPoint point = GetNavPointForActiveDoc (false);
+			NavigationPoint point = GetNavPointForActiveDoc ();
 			if (point == null)
 				return;
 			
@@ -142,17 +135,17 @@ namespace MonoDevelop.Ide.Navigation
 				currentIsTransient = transient;
 			}
 			else
-				item.Dispose ();
+				point.Dispose ();
 				
 			OnHistoryChanged ();
 		}
 		
-		static NavigationPoint GetNavPointForActiveDoc (bool forClosedHistory)
+		static NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, forClosedHistory);
+			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument);
 		}
 		
-		static NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
+		static NavigationPoint GetNavPointForDoc (Document doc)
 		{
 			if (doc == null)
 				return null;
@@ -168,11 +161,7 @@ namespace MonoDevelop.Ide.Navigation
 			
 			var editBuf = doc.Editor;
 			if (editBuf != null) {
-				if (forClosedHistory) {
-					point = new TextFileNavigationPoint (doc.FileName, editBuf.CaretLine, editBuf.CaretColumn);
-				} else {
-					point = new TextFileNavigationPoint (doc, editBuf);
-				}
+				point = new TextFileNavigationPoint (doc, editBuf);
 				if (point != null)
 					return point;
 			}
@@ -237,13 +226,9 @@ namespace MonoDevelop.Ide.Navigation
 
 		public static async void OpenLastClosedDocument () {
 			if (HasClosedDocuments) {
-				int closedHistoryIndex = closedHistory.Count - 1;
-				var tuple = closedHistory[closedHistoryIndex];
-				closedHistory.RemoveAt (closedHistoryIndex);
-				OnClosedHistoryChanged ();
+				var tuple = closedHistory.Pop ();
 				var doc = await tuple.Item1.ShowDocument ();
-				if (doc != null)
-					IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
+				IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
 			}
 		}
 

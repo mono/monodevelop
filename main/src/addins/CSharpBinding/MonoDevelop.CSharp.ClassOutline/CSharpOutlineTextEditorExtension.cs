@@ -68,6 +68,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 		TreeStore outlineTreeStore;
 		TreeModelSort outlineTreeModelSort;
 		Widget[] toolbarWidgets;
+		AstAmbience astAmbience;
 
 		OutlineNodeComparer comparer;
 		OutlineSettings settings;
@@ -88,6 +89,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 
 			if (DocumentContext != null)
 				DocumentContext.DocumentParsed += UpdateDocumentOutline;
+			astAmbience = new AstAmbience (TypeSystemService.Workspace.Options);
 		}
 
 		public override void Dispose ()
@@ -245,9 +247,8 @@ namespace MonoDevelop.CSharp.ClassOutline
 			}
 		}
 
-		static void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var astAmbience = new AstAmbience (TypeSystemService.Workspace.Options);
 			var txtRenderer = (CellRendererText)cell;
 			object o = model.GetValue (iter, 0);
 			var syntaxNode = o as SyntaxNode;

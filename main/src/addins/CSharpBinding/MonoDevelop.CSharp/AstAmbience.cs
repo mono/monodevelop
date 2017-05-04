@@ -36,7 +36,7 @@ using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp
 {
-	struct AstAmbience
+	class AstAmbience
 	{
 //		OptionSet options;
 		

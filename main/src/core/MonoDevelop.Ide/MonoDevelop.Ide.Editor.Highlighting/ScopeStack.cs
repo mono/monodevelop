@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ScopeStack : IEnumerable<string>
 	{
-		public static readonly ScopeStack Empty = new ScopeStack (null, ImmutableStack<string>.Empty, 0, null);
+		public static readonly ScopeStack Empty = new ScopeStack (null, ImmutableStack<string>.Empty, 0);
 
 		public string FirstElement {
 			get;
@@ -52,39 +52,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		ImmutableStack<string> stack;
-		ScopeStack parent;
+
 
 		public ScopeStack (string first)
 		{
 			FirstElement = first;
 			stack = ImmutableStack<string>.Empty.Push (first);
-			parent = ScopeStack.Empty;
 			Count = 1;
 		}
 
-		// The reasoning for having a constructor which takes a parent is that we want to make allocations
-		// on the less common operation - Push. Having the allocation of the parent ScopeStack happening
-		// on Pop, would yield an allocation hot loop, given that:
-		// We already allocate it once on push.
-		// We pass the same scope stack multiple times.
-		ScopeStack (string first, ImmutableStack<string> immutableStack, int count, ScopeStack parent)
+		ScopeStack (string first, ImmutableStack<string> immutableStack, int count)
 		{
 			this.FirstElement = first;
 			this.stack = immutableStack;
 			this.Count = count;
-			this.parent = parent;
 		}
 
 		public ScopeStack Push (string item)
 		{
-			return new ScopeStack (FirstElement, stack.Push (item), Count + 1, this);
+			return new ScopeStack (FirstElement, stack.Push (item), Count + 1);
 		}
 
 		public ScopeStack Pop ()
 		{
-			if (parent == null)
-				throw new InvalidOperationException ("ScopeStack is empty");
-			return parent;
+			return new ScopeStack (FirstElement, stack.Pop (), Count - 1);
 		}
 
 		public string Peek ()

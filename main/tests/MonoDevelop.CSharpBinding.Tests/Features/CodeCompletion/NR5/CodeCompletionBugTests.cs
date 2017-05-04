@@ -1891,7 +1891,7 @@ public class MyClass
         C myclass = new C ();
         $myclass.$
     }
-}", provider => Assert.AreEqual(1, provider.Data.Count(c => c.DisplayText == "MouseClick")));
+}", provider => Assert.AreEqual(1, provider.Count(c => c.DisplayText == "MouseClick")));
 		}
 		
 		/// <summary>
@@ -4929,7 +4929,7 @@ class B : A
 }
 
 ");
-			Assert.AreEqual(2, provider.Data.Count(d => d.DisplayText == "Method"));
+			Assert.AreEqual(2, provider.Count(d => d.DisplayText == "Method"));
 		}
 
 		/// <summary>
@@ -6086,9 +6086,9 @@ class Test
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "async delegate"));
-			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "() =>"));
-			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "async () =>"));
+			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "async delegate"));
+			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "() =>"));
+			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "async () =>"));
 		}
 
 		[Ignore]
@@ -6154,7 +6154,7 @@ namespace Foo
         }
     }
 }
-", provider => provider.Data.Single(d => d.DisplayText == "Foo"));
+", provider => provider.Single(d => d.DisplayText == "Foo"));
 		}
 	
 		/// <summary>

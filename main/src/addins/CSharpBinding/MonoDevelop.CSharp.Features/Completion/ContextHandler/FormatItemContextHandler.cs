@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				case "System.Guid":
 				return GenerateGuidFormatitems(engine);
 			}
-			return CompletionResult.Empty.Data;
+			return CompletionResult.Empty;
 		}
 
 		IEnumerable<CompletionData> GetFormatCompletionData(CompletionEngine engine, SemanticModel semanticModel, InvocationExpressionSyntax invocationExpression, int formatArgument, char currentChar)

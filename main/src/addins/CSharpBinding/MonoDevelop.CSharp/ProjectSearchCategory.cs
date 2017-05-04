@@ -1,4 +1,4 @@
-﻿// 
+// 
 // ProjectSearchCategory.cs
 //  
 // Author:

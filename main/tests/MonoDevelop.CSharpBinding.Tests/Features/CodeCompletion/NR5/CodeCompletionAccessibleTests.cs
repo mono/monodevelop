@@ -1574,7 +1574,7 @@ class Test
 	}
 }
 ", provider => {
-				Assert.AreEqual (1, provider.Data.Count (p => p.DisplayText == "test"));
+				Assert.AreEqual (1, provider.Count (p => p.DisplayText == "test"));
 			});
 		}
 
@@ -1596,7 +1596,7 @@ class Test
 	}
 }
 ", provider => {
-				Assert.AreEqual (1, provider.Data.Count (p => p.DisplayText == "Foo"));
+				Assert.AreEqual (1, provider.Count (p => p.DisplayText == "Foo"));
 				var data = provider.Find ("Foo");
 				Assert.AreEqual (3, data.OverloadedData.Count ());
 

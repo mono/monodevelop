@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 
 			var semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			//var symbol = SymbolFinder.FindSymbolAtPosition(semanticModel, position, workspace, bindLiteralsToUnderlyingType: true, cancellationToken: cancellationToken);
-			var symbol = await SymbolFinder.FindSymbolAtPositionAsync (semanticModel, position, workspace, cancellationToken: cancellationToken).ConfigureAwait (false);
+			var symbol = SymbolFinder.FindSymbolAtPosition (semanticModel, position, workspace, cancellationToken: cancellationToken);
 
 			return FindRelatedExplicitlyDeclaredSymbol (symbol, semanticModel.Compilation);
 		}

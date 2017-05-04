@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			var ext = new CSharpCompletionTextEditorExtension ();
 			var list = new CSharpCompletionTextEditorExtension.CSharpCompletionDataList ();
 			var result = CodeCompletionBugTests.CreateProvider (text);
-			list.AddRange (result.Data);
+			list.AddRange (result);
 			ext.AddImportCompletionData (result, list, new RoslynCodeCompletionFactory (ext, semanticModel), semanticModel, cursorPosition);
 
 			return list;

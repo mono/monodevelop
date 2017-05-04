@@ -703,7 +703,7 @@ namespace MonoDevelop.CSharp
 		SyntaxNode lastMember;
 		string lastMemberMarkup;
 		MonoDevelop.Projects.Project lastProject;
-		AstAmbience? amb;
+		AstAmbience amb;
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool caretPositionChangedSubscribed;
 		uint updatePathTimeoutId;
@@ -713,7 +713,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (amb == null || node == null)
 				return "";
-			return amb.Value.GetEntityMarkup (node);
+			return amb.GetEntityMarkup (node);
 		}
 
 
