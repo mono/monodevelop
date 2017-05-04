@@ -76,35 +76,40 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
 
-			int howManyDirtyFiles = documents.Count (doc => doc.IsDirty);
-			if (howManyDirtyFiles > 1) {
+			if (documents.Count (doc => doc.IsDirty) > 1) {
+				// There is more than one document modified. Show a dialog asking which documents to save.
 				using (var dlg = new DirtyFilesDialog (documents, closeWorkspace: false, groupByProject: false)) {
 					dlg.Modal = true;
 					if (MessageService.ShowCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
 						return true;
 				}
-			} else if (howManyDirtyFiles == 1) {
+
+				// All the changes are now either saved or discarded, so all documents can be force-closed now.
+				foreach (var d in documents)
+					d.Window.CloseWindow (true);
+				
+				return base.OnDeleteEvent (evnt);
+			}
+			else {
 				// Ensure dirty file is closed first. This prevents saved files being closed
 				// if the save is cancelled.
 				documents.Sort (DirtyFilesFirst);
-			}
 
-			foreach (var d in documents) {
-				if (howManyDirtyFiles > 1)
-					d.Window.CloseWindow (true);
-				else {
-					// d.Close() could leave the UI synchronization context, letting the Gtk signal handler pass
-					// and Gtk would destroy the window immediately. Since we need to preserve the window
-					// state until the async document.Close () has finished, we interrupt the signal (return true)
-					// and destoy the window in a continuation task after the document has been closed.
-					d.Close ().ContinueWith ((arg) => {
-						if (arg.Result)
-							Destroy ();
-					}, Core.Runtime.MainTaskScheduler);
-					return true; 
-				}
+				// Document.Close() is asynchronous, but we can't wait for all close calls to finish here,
+				// so we interrupt the signal (return true). The window will be destroyed after all the close
+				// calls, if necessary.
+				CloseDocumentsAsync (documents);
+				return true;
 			}
-			return base.OnDeleteEvent (evnt);
+		}
+
+		async void CloseDocumentsAsync (IEnumerable<Document> documents)
+		{
+			foreach (var d in documents) {
+				if (!await d.Close ())
+					return;
+			}
+			Destroy ();
 		}
 
 		static int DirtyFilesFirst (Document x, Document y)
