@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.Docking
 			else
 				inactiveIconAlpha = 0.6;
 
-			if (labelWidget != null && label != null) {
+			if (labelWidget.Visible && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
 					labelWidget.Text = label.ToUpper ();
 				else
@@ -155,12 +155,11 @@ namespace MonoDevelop.Components.Docking
 				if (!(Parent is TabStrip.TabStripBox))
 					labelWidget.Xalign = 0;
 			}
-
-			if (tabIcon != null) {
-				tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
-				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
-			}
-			if (IsRealized && labelWidget != null) {
+			
+			tabIcon.Image = tabIcon.Image.WithAlpha (active ? 1.0 : inactiveIconAlpha);
+			tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
+			
+			if (IsRealized && labelWidget.Visible) {
 				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
 				font.AbsoluteSize = Pango.Units.FromPixels (11);
 				labelWidget.ModifyFont (font);
@@ -241,26 +240,23 @@ namespace MonoDevelop.Components.Docking
 
 			tabIcon.Image = icon;
 
+			string realLabel, realHelp;
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget.Parent.Show ();
 				labelWidget.Name = label;
 				btnDock.Name = string.Format ("btnDock_{0}", labelNoSpaces ?? string.Empty);
 				btnClose.Name = string.Format ("btnClose_{0}", labelNoSpaces ?? string.Empty);
-
-				string realLabel, realHelp;
-				if (string.IsNullOrEmpty (label)) {
-					realLabel = GettextCatalog.GetString ("Close pad");
-					realHelp = GettextCatalog.GetString ("Close the pad");
-				}
-				else {
-					realLabel = GettextCatalog.GetString ("Close {0}", label);
-					realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
-				}
-				btnClose.Accessible.SetLabel (realLabel);
-				btnClose.Accessible.Description = realHelp;
+				realLabel = GettextCatalog.GetString ("Close {0}", label);
+				realHelp = GettextCatalog.GetString ("Close the {0} pad", label);
 			}
-			else
+			else {
 				labelWidget.Parent.Hide ();
+				realLabel = GettextCatalog.GetString ("Close pad");
+				realHelp = GettextCatalog.GetString ("Close the pad");
+			}
+
+			btnClose.Accessible.SetLabel (realLabel);
+			btnClose.Accessible.Description = realHelp;
 
 			if (label != null) {
 				Accessible.Name = $"DockTab.{labelNoSpaces}";
