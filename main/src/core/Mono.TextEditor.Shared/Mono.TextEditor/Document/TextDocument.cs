@@ -2254,7 +2254,7 @@ namespace Mono.TextEditor
 			{
 				if (line > this.LineCount || line < DocumentLocation.MinLine)
 					return -1;
-				IDocumentLine documentLine = GetLineByOffset(line);
+				IDocumentLine documentLine = GetLine(line);
 				return System.Math.Min(Length, documentLine.Offset + System.Math.Max(0, System.Math.Min(documentLine.Length, column - 1)));
 			}
 
