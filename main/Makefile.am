@@ -130,7 +130,13 @@ run-bundle: $(PROGRAM)
 	LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
 
 run-leaks: $(PROGRAM)
-	DYLD_FORCE_FLAT_NAMESPACE=1 DYLD_INSERT_LIBRARIES=`pwd`/build/bin/libgobject-tracker.dylib LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
+	@if [ -a `pwd`/build/bin/libgobject-tracker.dylib ]; then \
+		DYLD_FORCE_FLAT_NAMESPACE=1 DYLD_INSERT_LIBRARIES=`pwd`/build/bin/libgobject-tracker.dylib LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect; \
+	else \
+		echo '\033[0;31m' \
+		&& echo "You need to compile and install libgobject-tracker.dylib from https://github.com/alanmcgovern/gobject-tracker to run gobject leak checking" \
+		&& echo '\033[0m'; \
+	fi
 
 run-64: run-sgen-64
 
