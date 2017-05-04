@@ -529,12 +529,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			base.VisitIdentifierName(node);
 			ISymbol symbol = null;
 			if (node.IsVar) {
+				// We don't need to lookup symbol information here, as var is colored as a keyword.
 				if (node.Parent is ForEachStatementSyntax) {
-					var sym = semanticModel.GetDeclaredSymbol(node.Parent, cancellationToken);
-					if (sym != null) {
-						Colorize(node.Span, varKeywordTypeColor);
-						return;
-					}
+					Colorize(node.Span, varKeywordTypeColor);
+					return;
 				}
 				var vds = node.Parent as VariableDeclarationSyntax;
 				if (vds != null && vds.Variables.Count == 1) {

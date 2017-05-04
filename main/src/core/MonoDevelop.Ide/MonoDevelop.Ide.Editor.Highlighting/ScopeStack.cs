@@ -62,6 +62,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			Count = 1;
 		}
 
+		// The reasoning for having a constructor which takes a parent is that we want to make allocations
+		// on the less common operation - Push. Having the allocation of the parent ScopeStack happening
+		// on Pop, would yield an allocation hot loop, given that:
+		// We already allocate it once on push.
+		// We pass the same scope stack multiple times.
 		ScopeStack (string first, ImmutableStack<string> immutableStack, int count, ScopeStack parent)
 		{
 			this.FirstElement = first;

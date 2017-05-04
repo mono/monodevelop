@@ -228,6 +228,7 @@ namespace Mono.TextEditor
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
 			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccured;
+			SyntaxMode = null;
 		}
 
 		void OnTextBufferChanged(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)

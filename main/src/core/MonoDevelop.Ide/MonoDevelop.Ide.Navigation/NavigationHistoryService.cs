@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Navigation
 
 			IdeApp.Workbench.DocumentOpened += delegate (object sender, DocumentEventArgs e) {
 				closedHistory.RemoveAll(np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
+				OnClosedHistoryChanged ();
 			};
 
 			IdeApp.Workbench.DocumentClosing += delegate(object sender, DocumentEventArgs e) {
@@ -239,6 +240,7 @@ namespace MonoDevelop.Ide.Navigation
 				int closedHistoryIndex = closedHistory.Count - 1;
 				var tuple = closedHistory[closedHistoryIndex];
 				closedHistory.RemoveAt (closedHistoryIndex);
+				OnClosedHistoryChanged ();
 				var doc = await tuple.Item1.ShowDocument ();
 				if (doc != null)
 					IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);

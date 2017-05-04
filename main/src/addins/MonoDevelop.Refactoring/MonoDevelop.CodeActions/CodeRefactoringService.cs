@@ -104,7 +104,7 @@ namespace MonoDevelop.CodeActions
 			if (analysisDocument == null)
 				return actions;
 
-			var model = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			var model = await analysisDocument.GetSemanticModelAsync (cancellationToken);
 			if (model == null)
 				return actions;
 			var root = await model.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);

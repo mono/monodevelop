@@ -163,6 +163,7 @@ namespace MonoDevelop.CodeActions
 							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
 								continue;
 
+							// These two delegates were factored out, as using them as lambdas in the inner loop creates more captures than declaring them here.
 							Func<Diagnostic, bool> providerIdsContain = d => provider.FixableDiagnosticIds.Contains (d.Id);
 							Action<Microsoft.CodeAnalysis.CodeActions.CodeAction, ImmutableArray<Diagnostic>> codeFixRegistration = (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, d, d[0].Location.SourceSpan));
 							try {

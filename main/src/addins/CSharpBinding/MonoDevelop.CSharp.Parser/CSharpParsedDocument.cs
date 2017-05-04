@@ -467,7 +467,10 @@ namespace MonoDevelop.CSharp.Parser
 			var model = GetAst<SemanticModel> ();
 			if (model == null)
 				return emptyErrors;
-			
+
+			if (errors != null)
+				return errors;
+
 			bool locked = await errorLock.WaitAsync (Timeout.Infinite, cancellationToken).ConfigureAwait (false);
 			try {
 				if (errors == null) {
@@ -486,7 +489,8 @@ namespace MonoDevelop.CSharp.Parser
 				}
 			} finally {
 				if (locked)
-					errorLock.Release ();			}
+					errorLock.Release ();
+			}
 			
 			return errors;
 		}
