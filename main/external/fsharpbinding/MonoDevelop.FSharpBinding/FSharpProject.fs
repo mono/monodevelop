@@ -262,8 +262,16 @@ type FSharpProject() as self =
 
     override x.OnModified(e) =
         base.OnModified(e)
-        if not self.Loading then invalidateProjectFile()
+        if not self.Loading && not self.IsReevaluating then invalidateProjectFile()
 
+    override x.OnReevaluateProject(e) =
+        let task = base.OnReevaluateProject (e)
+
+        async {
+            do! task |> Async.AwaitTask
+            invalidateProjectFile()
+        } |> Async.startAsPlainTask    
+            
     override x.OnDispose () =
         //if not self.Loading then invalidateProjectFile()
 
