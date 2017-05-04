@@ -115,26 +115,12 @@ namespace MonoDevelop.CSharp.Completion
 				return "C#";
 			}
 		}
-
-		internal static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
+		
 		static List<CompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()
 		{
 			try {
-				var methodInfo = typeof (Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
-				if (methodInfo == null)
-					LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
-
-				WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
-					try {
-						return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
-					} catch (TargetInvocationException ex) {
-						ExceptionDispatchInfo.Capture (ex.InnerException).Throw ();
-						return null;
-					}
-				};
-
 				CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
 					if (snippets != null)
 						return Task.FromResult ((IEnumerable<CompletionData>)snippets);
@@ -155,6 +141,11 @@ namespace MonoDevelop.CSharp.Completion
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
 			}
+		}
+
+		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
+		{
+			return doc.WithFrozenPartialSemanticsAsync (token);
 		}
 
 		public CSharpCompletionTextEditorExtension ()
@@ -450,7 +441,8 @@ namespace MonoDevelop.CSharp.Completion
 				return Task.FromResult ((ICompletionDataList)null);
 			return Task.Run (async delegate {
 				try {
-					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+					
+					var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token).ConfigureAwait (false);
 					var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
 
 					var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
@@ -684,7 +676,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 				return Task.Run (async delegate {
-					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
+					var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token);
 					var semanticModel = await partialDoc.GetSemanticModelAsync ();
 					var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
 					var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
@@ -723,7 +715,7 @@ namespace MonoDevelop.CSharp.Completion
 			var caretOffset = Editor.CaretOffset;
 			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
-			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token).ConfigureAwait (false);
 			var result = await ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset, token).ConfigureAwait (false);
 			return result.ParameterIndex;
 		}
