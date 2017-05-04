@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
 
-		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode"]
+		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
 		public virtual bool IsOverload (CompletionData other)
 		{
 			return false;
