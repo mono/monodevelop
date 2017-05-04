@@ -362,6 +362,12 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let _file, projectOptions = getOptions project
         projectOptions
                 
+    member x.TryGetProjectCheckerOptionsFromCache(projFilename, ?properties) : FSharpProjectOptions option =
+        let properties = defaultArg properties ["Configuration", "Debug"]
+        let key = (projFilename, properties)
+        let entry, _ = (!projectInfoCache).TryFind (key)
+        entry
+
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties) : FSharpProjectOptions option =
         let properties = defaultArg properties ["Configuration", "Debug"]

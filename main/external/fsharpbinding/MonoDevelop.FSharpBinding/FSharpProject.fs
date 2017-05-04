@@ -46,7 +46,7 @@ type FSharpProject() as self =
     let invalidateProjectFile() =
         try
             if File.Exists (self.FileName.ToString()) then
-                languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+                languageService.TryGetProjectCheckerOptionsFromCache(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
                 |> Option.iter(fun options ->
                     languageService.InvalidateConfiguration(options)
                     languageService.ClearProjectInfoCache())
