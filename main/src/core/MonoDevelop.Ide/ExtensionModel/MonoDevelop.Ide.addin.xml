@@ -226,11 +226,7 @@
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
-		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+	<ExtensionPoint path="/MonoDevelop/Ide/Composition">
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
 	</ExtensionPoint>
 
@@ -391,7 +387,14 @@
 		<Class class = "MonoDevelop.Ide.GettingStarted.GettingStartedProjectExtension"/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
+		<Assembly file="MonoDevelop.Ide.dll"/>
 	</Extension>
 </ExtensionModel>
