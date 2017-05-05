@@ -36,6 +36,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				((ITextDocument)document).TextChanged += Handle_TextChanged;
 		}
 
+		public void Dispose()
+		{
+			if (Document is ITextDocument)
+				((ITextDocument)Document).TextChanged -= Handle_TextChanged;
+		}
+
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
