@@ -21,12 +21,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AzureFunctions
 {
 	[ExportProjectModelExtension, AppliesTo ("AzureFunctions")]
-	public class AzureFunctionsProjectExtension : ProjectExtension
+	public class AzureFunctionsProjectExtension : DotNetProjectExtension
 	{
+		static string FuncExe = System.Environment.GetEnvironmentVariable ("AZURE_FUNCTIONS_CLI");
+
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			return true;
+		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return (base.OnGetSupportedFeatures () | ProjectFeatures.Execute) ^ ProjectFeatures.RunConfigurations;
+		}
+
+		protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
+		{
+			return base.OnGetDotNetProjectFlags () | DotNetProjectFlags.IsLibrary;
+		}
+
+		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		{
+			// Unless we pass a port it will spawn a child host, which won't be followed by the debugger.
+			var cfg = (DotNetProjectConfiguration)Project.GetConfiguration (configSel);
+			var cmd = new DotNetExecutionCommand (FuncExe) {
+				Arguments = "host start -p 7071 --pause-on-error",
+				WorkingDirectory = cfg.OutputDirectory,
+				EnvironmentVariables = cfg.GetParsedEnvironmentVariables (),
+			};
+
+			// The Mono Mac filesystem watcher immediate fires a change event on the assembly,
+			// causing the host to shutdown and restart as a new process.
+			// However, it doesn't seem to be possible to disable the host's filesystem watcher.
+			// Instead, force Mono to use its polling watcher.
+			cmd.EnvironmentVariables ["MONO_MANAGED_WATCHER"] = "true";
+
+			return cmd;
+		}
 	}
 }
