@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // AzureFunctionsProjectExtension.cs
 
 // Copyright (c) Microsoft Corp.
@@ -59,8 +59,8 @@ namespace MonoDevelop.AzureFunctions
 			// The Mono Mac filesystem watcher immediate fires a change event on the assembly,
 			// causing the host to shutdown and restart as a new process.
 			// However, it doesn't seem to be possible to disable the host's filesystem watcher.
-			// Instead, force Mono to use its polling watcher.
-			cmd.EnvironmentVariables ["MONO_MANAGED_WATCHER"] = "true";
+			// Instead, force Mono to disable file watching.
+			cmd.EnvironmentVariables ["MONO_MANAGED_WATCHER"] = "disabled";
 
 			return cmd;
 		}
