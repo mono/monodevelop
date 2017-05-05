@@ -279,10 +279,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			treeviewSearchResults.Model = newStore;
-
 			store = newStore;
-
+			newStore = null;
+			treeviewSearchResults.Model = store;
 			treeviewSearchResults.ThawChildNotify ();
 		}
 
