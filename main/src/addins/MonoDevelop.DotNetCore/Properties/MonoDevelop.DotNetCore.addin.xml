@@ -39,6 +39,12 @@
 			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		</Condition>
+		<!--
+			.NET Standard library project in Multiplatform - Library category.
+			Displayed if Mono's MSBuild includes the .NET Core SDK. The .NET Core
+			SDK or runtime does not have to be installed separately for this template
+			to be displayed since it can be compiled and does not need to be run.
+		-->
 		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
 		<Template
 			_overrideName=".NET Standard Library"
@@ -51,19 +57,26 @@
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
-			id="Microsoft.Common.Library.CSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
-			icon="md-netcore-empty-project"
-			imageId="md-netcore-empty-project"
-			category="netcore/library/general" />
-		<Template
-			_overrideName=".NET Standard Library"
-			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
+		</Condition>
+		<!--
+			.NET Standard library project in .NET Core - Library category.
+			Not displayed if .NET Core SDK or runtime is not installed unlike the
+			.NET Standard library project in the Multiplatform section.
+		-->
+		<Condition id="DotNetCoreSdkInstalled">
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
