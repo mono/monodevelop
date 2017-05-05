@@ -375,12 +375,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					var selectedItem = list.SelectedItemIndex;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
-					var text = DataProvider.GetText (selectedItem);
-					if (!text.Substring (0, Math.Min (text.Length, CurrentPartialWord.Length)).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-						return KeyActions.Process | KeyActions.CloseWindow;
+					if (descriptor.SpecialKey == SpecialKey.None) {
+						ResetSizes ();
+						UpdateWordSelection ();
 					}
 				}
 			}
+
 			return KeyActions.Process;
 		}
 
