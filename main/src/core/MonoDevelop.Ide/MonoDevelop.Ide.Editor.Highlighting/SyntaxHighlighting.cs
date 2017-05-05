@@ -36,6 +36,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				((ITextDocument)document).TextChanged += Handle_TextChanged;
 		}
 
+		public void Dispose()
+		{
+			if (Document is ITextDocument)
+				((ITextDocument)Document).TextChanged -= Handle_TextChanged;
+		}
+
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
@@ -43,10 +49,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (ln >= stateCache.Count)
 					continue;
 				var line = Document.GetLineByOffset (change.NewOffset);
-				var lastState = GetState (line);
+				var lastState = GetState (line, out HighlightedLine highlightedLine);
 
-				var high = new Highlighter (this, lastState);
-				await high.GetColoredSegments (Document, line.Offset, line.LengthIncludingDelimiter);
+				if (highlightedLine == null) {
+					var high = new Highlighter (this, lastState);
+					await high.GetColoredSegments (Document, line.Offset, line.LengthIncludingDelimiter);
+				}
 				OnHighlightingStateChanged (new LineEventArgs (line));
 				stateCache.RemoveRange (ln - 1, stateCache.Count - ln + 1);
 			}
@@ -58,7 +66,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return DefaultSyntaxHighlighting.Instance.GetHighlightedLineAsync (line, cancellationToken);
 			}
 			var snapshot = Document.CreateSnapshot ();
-			var high = new Highlighter (this, GetState (line));
+
+			var state = GetState (line, out HighlightedLine highlightedLine);
+			if (highlightedLine != null)
+				return Task.FromResult (highlightedLine);
+
+			var high = new Highlighter (this, state);
 			int offset = line.Offset;
 			int length = line.Length;
 			//return Task.Run (async delegate {
@@ -69,24 +82,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public async Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			var line = Document.GetLineByOffset (offset);
-			var state = GetState (line);
+			var state = GetState (line, out HighlightedLine highlightedLine);
 			var lineOffset = line.Offset;
 			if (lineOffset == offset) {
 				return state.ScopeStack;
 			}
 
-			var high = new Highlighter (this, state);
-			foreach (var seg in (await high.GetColoredSegments (Document, lineOffset, line.Length)).Segments) {
+			if (highlightedLine == null) {
+				var high = new Highlighter (this, state);
+				highlightedLine = await high.GetColoredSegments (Document, lineOffset, line.Length);
+			}
+
+			foreach (var seg in highlightedLine.Segments) {
 				if (seg.Contains (offset - lineOffset))
 					return seg.ScopeStack;
 			}
-			return high.State.ScopeStack;
+
+			return state.ScopeStack;
 		}
 
 		List<HighlightState> stateCache = new List<HighlightState> ();
 
-		HighlightState GetState (IDocumentLine line)
+		HighlightState GetState (IDocumentLine line, out HighlightedLine highlightOnline)
 		{
+			highlightOnline = default (HighlightedLine);
 			var pl = line?.PreviousLine;
 			if (pl == null)
 				return HighlightState.CreateNewState (this);
@@ -94,14 +113,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				stateCache.Add (HighlightState.CreateNewState (this));
 			var ln = line.LineNumber;
 			if (ln <= stateCache.Count) {
-				return stateCache [ln - 1].Clone ();
+				return stateCache[ln - 1].Clone ();
 			}
-			var lastState = stateCache [stateCache.Count - 1];
+			var lastState = stateCache[stateCache.Count - 1];
 			var cur = Document.GetLine (stateCache.Count);
 			if (cur != null && cur.Offset < line.Offset) {
 				do {
 					var high = new Highlighter (this, lastState.Clone ());
-					high.GetColoredSegments (Document, cur.Offset, cur.LengthIncludingDelimiter).Wait ();
+					highlightOnline = high.GetColoredSegments (Document, cur.Offset, cur.LengthIncludingDelimiter).Result;
 					stateCache.Add (lastState = high.State);
 					cur = cur.NextLine;
 				} while (cur != null && cur.Offset < line.Offset);
@@ -110,7 +129,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return lastState.Clone ();
 		}
 
-			
+
 		class HighlightState : IEquatable<HighlightState>
 		{
 			public ImmutableStack<SyntaxContext> ContextStack;

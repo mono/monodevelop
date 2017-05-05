@@ -223,12 +223,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
-			CancelParsedDocumentUpdate ();
 			DocumentContext.DocumentParsed -= HandleDocumentParsed;
-			if (validTypeSystemSegmentTree != null) {
-				validTypeSystemSegmentTree.RemoveListener ();
-				validTypeSystemSegmentTree = null;
-			}
 
 			base.Dispose ();
 		}
@@ -243,26 +238,7 @@ namespace MonoDevelop.CSharp.Completion
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
 				return;
-			CancelParsedDocumentUpdate ();
-			var token = documentParsedTokenSrc.Token;
-			Task.Run(delegate {
-				try {
-					var newTree = TypeSystemSegmentTree.Create (semanticModel, token);
-					if (validTypeSystemSegmentTree != null)
-						validTypeSystemSegmentTree.RemoveListener ();
-					validTypeSystemSegmentTree = newTree;
-					newTree.InstallListener (Editor);
-					if (TypeSegmentTreeUpdated != null)
-						TypeSegmentTreeUpdated (this, EventArgs.Empty);
-				} catch (OperationCanceledException) {
-				}
-			});
-		}
-
-		void CancelParsedDocumentUpdate ()
-		{
-			documentParsedTokenSrc.Cancel ();
-			documentParsedTokenSrc = new CancellationTokenSource ();
+			TypeSegmentTreeUpdated?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler TypeSegmentTreeUpdated;
@@ -488,10 +464,8 @@ namespace MonoDevelop.CSharp.Completion
 					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
 					if (completionResult == CompletionResult.Empty)
 						return null;
-					
-					foreach (var symbol in completionResult) {
-						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
-					}
+
+					list.AddRange (completionResult.Data);
 
 					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => (cd.GetType () == typeof (RoslynSymbolCompletionData)) && (cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol)))) {
 						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
@@ -1183,148 +1157,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		#endregion
 		
-		#region TypeSystemSegmentTree
-
-		TypeSystemSegmentTree validTypeSystemSegmentTree;
-
-		internal class TypeSystemTreeSegment : TreeSegment
-		{
-			public SyntaxNode Entity {
-				get;
-				private set;
-			}
-			
-			public TypeSystemTreeSegment (int offset, int length, SyntaxNode entity) : base (offset, length)
-			{
-				this.Entity = entity;
-			}
-		}
-
-		internal TypeSystemTreeSegment GetMemberSegmentAt (int offset)
-		{
-			TypeSystemTreeSegment result = null;
-			if (result == null && validTypeSystemSegmentTree != null)
-				result = validTypeSystemSegmentTree.GetMemberSegmentAt (offset);
-			return result;
-		}
-		
-		internal class TypeSystemSegmentTree : SegmentTree<TypeSystemTreeSegment>
-		{
-			public SyntaxNode GetMemberAt (int offset)
-			{
-				// Members don't overlap
-				var seg = GetSegmentsAt (offset).FirstOrDefault ();
-				if (seg == null)
-					return null;
-				return seg.Entity;
-			}
-			
-			public TypeSystemTreeSegment GetMemberSegmentAt (int offset)
-			{
-				return GetSegmentsAt (offset).LastOrDefault ();
-			}
-
-			
-			
-			internal static TypeSystemSegmentTree Create (SemanticModel semanticModel, CancellationToken token)
-			{
-				var visitor = new TreeVisitor (token);
-				visitor.Visit (semanticModel.SyntaxTree.GetRoot ()); 
-				return visitor.Result;
-			}
-
-			class TreeVisitor : CSharpSyntaxWalker
-			{
-				readonly CancellationToken token;
-				public TypeSystemSegmentTree Result = new TypeSystemSegmentTree ();
-
-				public TreeVisitor (System.Threading.CancellationToken token)
-				{
-					this.token = token;
-				}
-
-				public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-					base.VisitClassDeclaration (node);
-				}
-				public override void VisitStructDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-					base.VisitStructDeclaration (node);
-				}
-
-				public override void VisitInterfaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-					base.VisitInterfaceDeclaration (node);
-				}
-
-				public override void VisitEnumDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitPropertyDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitMethodDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitConstructorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitDestructorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.DestructorDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitIndexerDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.IndexerDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitDelegateDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.DelegateDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitOperatorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.OperatorDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitEventDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EventDeclarationSyntax node)
-				{
-					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
-				}
-
-				public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
-				{
-					token.ThrowIfCancellationRequested ();
-				}
-			}
-			
-		}
-		
-		public SyntaxNode GetMemberAt (int offset)
-		{
-			SyntaxNode member = null;
-			if (member == null && validTypeSystemSegmentTree != null)
-				member = validTypeSystemSegmentTree.GetMemberAt (offset);
-
-			return member;
-		}
-		#endregion
-	
-	
-
 		[CommandHandler(RefactoryCommands.ImportSymbol)]
 		async void ImportSymbolCommand ()
 		{

@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ScopeStack : IEnumerable<string>
 	{
-		public static readonly ScopeStack Empty = new ScopeStack (null, ImmutableStack<string>.Empty, 0);
+		public static readonly ScopeStack Empty = new ScopeStack (null, ImmutableStack<string>.Empty, 0, null);
 
 		public string FirstElement {
 			get;
@@ -52,30 +52,34 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		ImmutableStack<string> stack;
-
+		ScopeStack parent;
 
 		public ScopeStack (string first)
 		{
 			FirstElement = first;
 			stack = ImmutableStack<string>.Empty.Push (first);
+			parent = ScopeStack.Empty;
 			Count = 1;
 		}
 
-		ScopeStack (string first, ImmutableStack<string> immutableStack, int count)
+		ScopeStack (string first, ImmutableStack<string> immutableStack, int count, ScopeStack parent)
 		{
 			this.FirstElement = first;
 			this.stack = immutableStack;
 			this.Count = count;
+			this.parent = parent;
 		}
 
 		public ScopeStack Push (string item)
 		{
-			return new ScopeStack (FirstElement, stack.Push (item), Count + 1);
+			return new ScopeStack (FirstElement, stack.Push (item), Count + 1, this);
 		}
 
 		public ScopeStack Pop ()
 		{
-			return new ScopeStack (FirstElement, stack.Pop (), Count - 1);
+			if (parent == null)
+				throw new InvalidOperationException ("ScopeStack is empty");
+			return parent;
 		}
 
 		public string Peek ()

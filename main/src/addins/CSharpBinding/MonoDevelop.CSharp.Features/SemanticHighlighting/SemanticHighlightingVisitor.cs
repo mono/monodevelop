@@ -538,12 +538,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 				}
 				var vds = node.Parent as VariableDeclarationSyntax;
 				if (vds != null && vds.Variables.Count == 1) {
-					symbol = semanticModel.GetSymbolInfo (node, cancellationToken).Symbol;
-					// var sym = vds.Variables[0].Initializer != null ? vds.Variables[0].Initializer.Value as LiteralExpressionSyntax : null;
-					if (symbol == null || symbol.Name != "var") {
-						Colorize(node.Span, varKeywordTypeColor);
-						return;
-					}
+					Colorize(node.Span, varKeywordTypeColor);
+					return;
 				}
 			}
 			
