@@ -957,7 +957,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.IndexOf (c) != -1)
+				if (pc == 0 && Array.IndexOf (closeChar, c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;
