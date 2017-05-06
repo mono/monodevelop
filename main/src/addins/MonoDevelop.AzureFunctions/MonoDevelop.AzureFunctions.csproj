@@ -54,6 +54,57 @@
     <EmbeddedResource Include="Properties\Manifest.addin.xml">
       <LogicalName>Manifest.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark-sel.png">
+      <LogicalName>project-azurefunctions-32-dark-sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark-sel%402x.png">
+      <LogicalName>project-azurefunctions-32-dark-sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark.png">
+      <LogicalName>project-azurefunctions-32-dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark%402x.png">
+      <LogicalName>project-azurefunctions-32-dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-sel.png">
+      <LogicalName>project-azurefunctions-32-sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-sel%402x.png">
+      <LogicalName>project-azurefunctions-32-sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32.png">
+      <LogicalName>project-azurefunctions-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32%402x.png">
+      <LogicalName>project-azurefunctions-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template-dark.png">
+      <LogicalName>project-azurefunctions-template-dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template-dark%402x.png">
+      <LogicalName>project-azurefunctions-template-dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template.png">
+      <LogicalName>project-azurefunctions-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template%402x.png">
+      <LogicalName>project-azurefunctions-template@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates\" />
+    <Folder Include="images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta2\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta2.nupkg">
+      <Link>Templates\Microsoft.AzureFunctions.ProjectTemplates.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.0\Azure.Functions.Templates.1.0.0.nupkg">
+      <Link>Templates\Azure.Functions.Templates.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
