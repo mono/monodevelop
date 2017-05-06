@@ -24,21 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Mono.Addins;
 
 namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkInstalledCondition : ConditionType
 	{
+		/// <summary>
+		/// The SDK version check is not quite correct. It currently only checks the
+		/// latest installed version when it should check all versions installed.
+		/// The runtime check also needs improving. Currently it only checks that dotnet
+		/// is available. It should check the runtimes installed so it is possible
+		/// to create a .NET Core 2.0 project if only the 2.0 runtime is installed.
+		/// </summary>
 		public override bool Evaluate (NodeElement conditionNode)
 		{
-			if (DotNetCoreSdk.IsInstalled)
+			if (DotNetCoreSdk.IsInstalled && SdkVersionSupported (conditionNode, DotNetCoreSdk.LatestSdkFullVersion))
 				return true;
 
-			if (MSBuildSdks.Installed)
+			// Mono's MSBuild SDKs currently includes .NET Core SDK 1.0.
+			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, DotNetCoreSdk.LatestSdkFullVersion ?? "1.0"))
 				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
 
 			return false;
+		}
+
+		static bool SdkVersionSupported (NodeElement conditionNode, string sdkVersionInstalled)
+		{
+			string requiredSdkversion = conditionNode.GetAttribute ("sdkVersion");
+			if (string.IsNullOrEmpty (requiredSdkversion))
+				return true;
+
+			return sdkVersionInstalled.StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>

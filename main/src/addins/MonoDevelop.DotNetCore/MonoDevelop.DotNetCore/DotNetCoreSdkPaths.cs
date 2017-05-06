@@ -55,6 +55,8 @@ namespace MonoDevelop.DotNetCore
 			if (SdksParentDirectory == null)
 				return;
 
+			LatestSdkFullVersion = Path.GetFileName (SdksParentDirectory);
+
 			msbuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
 
 			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", MSBuildSDKsPath);
@@ -95,6 +97,8 @@ namespace MonoDevelop.DotNetCore
 				}
 			}
 		}
+
+		public string LatestSdkFullVersion { get; private set; }
 
 		string SdksParentDirectory { get; set; }
 
