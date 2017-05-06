@@ -77,14 +77,14 @@ namespace MonoDevelop.Ide.Templates
 			//TODO: Uncomment this IF, but also add logic to invalidate/check if new templates were added from newly installed AddOns...
 			//if (!paths.Exists (paths.User.BaseDir) || !paths.Exists (paths.User.FirstRunCookie)) {
 			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
-			var _templateCache = new TemplateCache (environmentSettings);
+			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
 			foreach (var scanPath in TemplatesNodes.Select (t => t.ScanPath).Distinct ()) {
-				_templateCache.Scan (scanPath);
+				settingsLoader.UserTemplateCache.Scan (scanPath);
 			}
-			_templateCache.WriteTemplateCaches ();
+			settingsLoader.Save ();
 			paths.WriteAllText (paths.User.FirstRunCookie, "");
 			//}
-			var templateInfos = templateCreator.List (false, (t, s) => new MatchInfo ()).ToDictionary (m => m.Info.Identity, m => m.Info);
+			var templateInfos = settingsLoader.UserTemplateCache.List (false, t => new MatchInfo ()).ToDictionary (m => m.Info.Identity, m => m.Info);
 			var newTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
 			foreach (var template in TemplatesNodes) {
 				ITemplateInfo templateInfo;
@@ -144,7 +144,8 @@ namespace MonoDevelop.Ide.Templates
 				config.ProjectLocation,
 				new Dictionary<string, string> (),
 				true,
-				false);
+				false,
+				null);
 			if (result.ResultInfo.PrimaryOutputs.Any ()) {
 				foreach (var res in result.ResultInfo.PrimaryOutputs) {
 					var fullPath = Path.Combine (config.ProjectLocation, res.Path);

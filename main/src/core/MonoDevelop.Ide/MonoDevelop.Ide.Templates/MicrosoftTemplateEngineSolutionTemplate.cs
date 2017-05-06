@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.Templates
 			this.templateInfo = templateInfo;
 			Description = template.OverrideDescription ?? templateInfo.Description;
 			Category = template.Category;
-			string language;
-			if (templateInfo.Tags.TryGetValue ("Language", out language))
-				Language = language;
+			ICacheTag languageTag;
+			if (templateInfo.Tags.TryGetValue ("language", out languageTag))
+				Language = languageTag.DefaultValue;
 			else
 				Language = string.Empty;
 			GroupId = templateInfo.GroupIdentity;
