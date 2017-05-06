@@ -23,9 +23,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Templates">
-		<Condition id="DotNetCoreSdkInstalled">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
+			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-netcore-console-project"
@@ -33,8 +34,27 @@
 			category="netcore/app/general"/>
 		<Template
 			id="Microsoft.Common.Console.FSharp"
+			_overrideName="Console Application"
 			_overrideDescription="Creates a new .NET Core console project."
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
+			category="netcore/app/general"/>
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Template
+			id="Microsoft.Common.Console.CSharp.2.0"
+			_overrideName="Console Application (.NET Core 2.0)"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-console-project"
+			imageId="md-netcore-console-project"
+			category="netcore/app/general"/>
+		<Template
+			id="Microsoft.Common.Console.FSharp.2.0"
+			_overrideName="Console Application (.NET Core 2.0)"
+			_overrideDescription="Creates a new .NET Core console project."
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
@@ -45,7 +65,7 @@
 			SDK or runtime does not have to be installed separately for this template
 			to be displayed since it can be compiled and does not need to be run.
 		-->
-		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="1.0">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -59,6 +79,24 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-library-project"
+			imageId="md-library-project"
+			category="multiplat/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.0">
+		<Template
+			_overrideName=".NET Standard 2.0 Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp.2.0"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-library-project"
+			imageId="md-library-project"
+			category="multiplat/library/general" />
+		<Template
+			_overrideName=".NET Standard 2.0 Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp.2.0"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
@@ -68,7 +106,7 @@
 			Not displayed if .NET Core SDK or runtime is not installed unlike the
 			.NET Standard library project in the Multiplatform section.
 		-->
-		<Condition id="DotNetCoreSdkInstalled">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -86,7 +124,25 @@
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Template
+			_overrideName=".NET Standard 2.0 Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.CSharp.2.0"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/library/general" />
+		<Template
+			_overrideName=".NET Standard 2.0 Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp.2.0"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
@@ -124,6 +180,56 @@
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
+			_overrideDescription="Creates a new ASP.NET Web API Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/app/aspnet" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Template
+			id="Microsoft.Test.xUnit.CSharp.2.0"
+			_overrideName="xUnit Test Project (.NET Core 2.0)"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.xUnit.FSharp.2.0"
+			_overrideName="xUnit Test Project (.NET Core 2.0)"
+			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Web.Empty.CSharp.2.0"
+			_overrideName="ASP.NET Core 2.0 Empty"
+			_overrideDescription="Creates a new ASP.NET Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.Mvc.CSharp.2.0"
+			_overrideName="ASP.NET Core 2.0 Web App"
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.Mvc.FSharp.2.0"
+			_overrideName="ASP.NET Core 2.0 Web App"
+			_overrideDescription="Creates a new ASP.NET MVC Core web project."
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			category="netcore/app/aspnet" />
+		<Template
+			id="Microsoft.Web.WebApi.CSharp.2.0"
+			_overrideName="ASP.NET Core 2.0 Web Api"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 			icon="md-netcore-empty-project"
