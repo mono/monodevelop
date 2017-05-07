@@ -12,6 +12,7 @@ obj/
 /main/build/AddIns
 /main/build/data/
 /main/build/locale/
+/main/msbuild/MDBuildTasks/bin
 /extras/*/build
 /extras/*/*/bin
 /main/src/tools/SharpCoco/SharpCoco.exe*

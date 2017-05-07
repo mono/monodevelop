@@ -13,4 +13,8 @@
 		<PublicSign>True</PublicSign>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<MDBuildTasks>$(MSBuildThisFileDirectory)</MDBuildTasks>
+	</PropertyGroup>
 </Project>
