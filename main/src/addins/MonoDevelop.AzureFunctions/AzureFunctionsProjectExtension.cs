@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // AzureFunctionsProjectExtension.cs
 
 // Copyright (c) Microsoft Corp.
@@ -21,6 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.IO;
+using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
@@ -29,7 +33,27 @@ namespace MonoDevelop.AzureFunctions
 	[ExportProjectModelExtension, AppliesTo ("AzureFunctions")]
 	public class AzureFunctionsProjectExtension : DotNetProjectExtension
 	{
-		static string FuncExe = System.Environment.GetEnvironmentVariable ("AZURE_FUNCTIONS_CLI");
+		readonly string FuncExe;
+
+		public AzureFunctionsProjectExtension ()
+		{
+			FuncExe = GetFuncExe ();
+		}
+
+		static string GetFuncExe ()
+		{
+			var funcEnv = Environment.GetEnvironmentVariable ("AZURE_FUNCTIONS_CLI_EXE");
+			if (!string.IsNullOrEmpty (funcEnv)) {
+				if (string.Equals (Path.GetFileName (funcEnv), "func.exe", StringComparison.OrdinalIgnoreCase)) {
+					LoggingService.LogError ($"AZURE_FUNCTIONS_CLI_EXE is set but does not point to func.exe");
+				} else if (!File.Exists (funcEnv)) {
+					LoggingService.LogError ($"AZURE_FUNCTIONS_CLI_EXE is set but its target is missing");
+				} else {
+					return Path.GetFullPath (funcEnv);
+				}
+			}
+			return AddinManager.CurrentAddin.GetFilePath (Path.Combine ("azure-functions-cli-66a932fb", "func.exe"));
+		}
 
 		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
