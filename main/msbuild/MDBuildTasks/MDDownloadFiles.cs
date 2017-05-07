@@ -1,11 +1,11 @@
-﻿using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace MDBuildTasks
 {
@@ -117,9 +117,34 @@ namespace MDBuildTasks
 				Log.LogMessage ($"Extracting {srcFile} to {destDir}");
 				Directory.CreateDirectory (destDir);
 				if (Directory.Exists (destDir)) {
-					Directory.Delete (destDir, true); 
+					Directory.Delete (destDir, true);
 				}
-				ZipFile.ExtractToDirectory (srcFile, destDir);
+
+				using (var zip = ZipFile.Open (srcFile, ZipArchiveMode.Read)) {
+					var prefix = Path.GetFileName (destDir) + Path.DirectorySeparatorChar;
+					var trimChars = new [] { Path.DirectorySeparatorChar };
+					foreach (var e in zip.Entries) {
+						//don't care about bare directories
+						if (e.Length == 0) {
+							continue;
+						}
+
+						//strip redundant prefix
+						var fileDest = e.FullName;
+						if (fileDest.StartsWith (prefix, StringComparison.Ordinal)) {
+							fileDest = fileDest.Substring (prefix.Length).TrimStart (trimChars);
+						}
+
+						//guard against breaking out with ..
+						fileDest = Path.GetFullPath (Path.Combine (destDir,  fileDest));
+						if (!fileDest.StartsWith (destDir, StringComparison.Ordinal)) {
+							throw new Exception ($"Cannot extract outside target dir: '{e.FullName}'");
+						}
+
+						Directory.CreateDirectory (Path.GetDirectoryName (fileDest));
+						e.ExtractToFile (fileDest);
+					}
+				}
 				Directory.SetLastWriteTimeUtc (destDir, srcInfo.LastWriteTimeUtc);
 			}
 		}
