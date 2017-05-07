@@ -32,6 +32,7 @@
     <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Utilities.Core.dll" />
     <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Framework.dll" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
