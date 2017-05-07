@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreRuntime.cs
+// DotNetCoreRuntimeVersions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,52 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
-	public static class DotNetCoreRuntime
+	class DotNetCoreRuntimeVersions
 	{
-		static DotNetCoreRuntime ()
+		public static IEnumerable<DotNetCoreVersion> GetInstalledVersions (DotNetCorePath dotNetCorePath)
 		{
-			var path = new DotNetCorePath ();
-			IsInstalled = !path.IsMissing;
-			FileName = path.FileName;
+			if (dotNetCorePath.IsMissing)
+				return Enumerable.Empty<DotNetCoreVersion> ();
 
-			Versions = DotNetCoreRuntimeVersions.GetInstalledVersions (path)
-				.OrderByDescending (version => version)
-				.ToArray ();
+			string runtimePath = GetDotNetCoreRuntimePath (dotNetCorePath);
+			if (!Directory.Exists (runtimePath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
 
-			GetPreviewNetCore20AppVersion ();
-
-			if (!IsInstalled)
-				LoggingService.LogInfo (".NET Core runtime not found.");
+			return Directory.EnumerateDirectories (runtimePath)
+				.Select (directory => GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
 		}
 
-		public static string FileName { get; private set; }
-
-		public static bool IsInstalled { get; private set; }
-
-		public static bool IsMissing {
-			get { return !IsInstalled; }
+		static string GetDotNetCoreRuntimePath (DotNetCorePath dotNetCorePath)
+		{
+			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
+			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
 		}
 
-		internal static DotNetCoreVersion[] Versions { get; private set; }
-
-		internal static string PreviewNetCore20AppVersion { get; private set; }
-
-		static void GetPreviewNetCore20AppVersion ()
+		static DotNetCoreVersion GetDotNetCoreVersionFromDirectory (string directory)
 		{
-			var latestInstalledVersion = Versions.FirstOrDefault ();
-			if (latestInstalledVersion == null)
-				return;
+			string directoryName = Path.GetFileName (directory);
+			DotNetCoreVersion version = null;
+			if (DotNetCoreVersion.TryParse (directoryName, out version))
+				return version;
 
-			if (latestInstalledVersion.Major == 2 &&
-			    latestInstalledVersion.Minor == 0 &&
-			    latestInstalledVersion.IsPrerelease) {
-				PreviewNetCore20AppVersion = latestInstalledVersion.OriginalString;
-			}
+			LoggingService.LogInfo ("Unable to parse runtime version from directory. '{0}'", directory);
+			return null;
 		}
 	}
 }
