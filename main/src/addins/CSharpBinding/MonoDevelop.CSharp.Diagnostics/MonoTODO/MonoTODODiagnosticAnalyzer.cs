@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 
 		bool TryFindMonoTODO (SemanticModel semanticModel, SyntaxNode node, out Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
-			var info = semanticModel.GetSymbolInfo (node);
+			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
 			diagnostic = default(Diagnostic);
 			if (info.Symbol == null)
 				return false;
