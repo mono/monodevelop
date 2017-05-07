@@ -118,7 +118,16 @@ namespace MonoDevelop.PackageManagement
 		{
 			return project.GetEvaluatedPackageReferenceItems ()
 				.Where (item => item.IsImported)
-				.Select (ProjectPackageReference.Create);
+				.Select (CreateImportedPackageReference);
+		}
+
+		public static Action<ProjectPackageReference> ModifyImportedPackageReference;
+
+		static ProjectPackageReference CreateImportedPackageReference (IMSBuildItemEvaluated item)
+		{
+			var packageReference = ProjectPackageReference.Create (item);
+			ModifyImportedPackageReference?.Invoke (packageReference);
+			return packageReference;
 		}
 	}
 }
