@@ -51,6 +51,25 @@ namespace MonoDevelop.DotNetCore
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
+			PackageManagement.MSBuildProjectExtensions.ModifyImportedPackageReference = ModifyImportedPackageReference;
+		}
+
+		/// <summary>
+		/// HACK: Ensure NuGet packages can be restored for .NET Core 2.0 projects if
+		/// a preview version of .NET Core 2.0 is installed by mapping the Microsoft.NETCore.App
+		/// 2.0 package reference to the installed preview version. When MSBuild supports this
+		/// with the sdk resolver this code can be removed.
+		/// </summary>
+		static void ModifyImportedPackageReference (ProjectPackageReference packageReference)
+		{
+			if (packageReference.Include == "Microsoft.NETCore.App") {
+				string version = packageReference.Metadata.GetValue ("Version");
+				if (version == "2.0") {
+					string previewVersion = DotNetCoreRuntime.PreviewNetCore20AppVersion;
+					if (previewVersion != null)
+						packageReference.Metadata.SetValue ("Version", previewVersion);
+				}
+			}
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)

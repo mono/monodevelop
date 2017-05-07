@@ -142,6 +142,8 @@
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdks.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSystemInformation.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreVersion.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeVersions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
