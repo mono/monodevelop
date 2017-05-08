@@ -57,7 +57,7 @@ type HighlightUsagesExtension() =
                                         let endOffset = x.Editor.LocationToOffset (finish.Line, finish.Column+1)
                                         let referenceType =
                                             if symbolUse.IsFromDefinition then
-                                                ReferenceUsageType.Declariton
+                                                ReferenceUsageType.Declaration
                                             else
                                                 ReferenceUsageType.Unknown
                                         new MemberReference (symbolUse, symbolUse.FileName, startOffset, endOffset-startOffset, ReferenceUsageType=referenceType))
