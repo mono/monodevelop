@@ -23,7 +23,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Templates">
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
 			_overrideName="Console Application"
@@ -41,7 +41,7 @@
 			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
 		<Template
 			id="Microsoft.Common.Console.CSharp.2.0"
 			_overrideName="Console Application (.NET Core 2.0)"
@@ -65,7 +65,7 @@
 			SDK or runtime does not have to be installed separately for this template
 			to be displayed since it can be compiled and does not need to be run.
 		-->
-		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="1.0">
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="1.*">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -83,7 +83,7 @@
 			imageId="md-library-project"
 			category="multiplat/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.0">
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.*">
 		<Template
 			_overrideName=".NET Standard 2.0 Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -106,7 +106,7 @@
 			Not displayed if .NET Core SDK or runtime is not installed unlike the
 			.NET Standard library project in the Multiplatform section.
 		-->
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -124,7 +124,7 @@
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
 		<Template
 			_overrideName=".NET Standard 2.0 Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -142,7 +142,7 @@
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
@@ -186,7 +186,7 @@
 			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp.2.0"
 			_overrideName="xUnit Test Project (.NET Core 2.0)"

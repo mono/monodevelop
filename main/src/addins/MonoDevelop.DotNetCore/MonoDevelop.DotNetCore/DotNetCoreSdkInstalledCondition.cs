@@ -50,12 +50,17 @@ namespace MonoDevelop.DotNetCore
 			return false;
 		}
 
+		/// <summary>
+		/// Supports simple wildcards. 1.* => 1.0, 1.2, up to but not including 2.0.
+		/// Wildcards such as 1.*.3 are not supported.
+		/// </summary>
 		static bool SdkVersionSupported (NodeElement conditionNode, string sdkVersionInstalled)
 		{
 			string requiredSdkversion = conditionNode.GetAttribute ("sdkVersion");
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
+			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
 			return sdkVersionInstalled.StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase);
 		}
 
