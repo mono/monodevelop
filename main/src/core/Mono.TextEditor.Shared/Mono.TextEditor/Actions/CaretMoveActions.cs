@@ -70,8 +70,8 @@ namespace Mono.TextEditor
 						if (!foundFolding) {
 							var layout = data.Parent?.TextViewMargin?.GetLayout (line);
 							if (layout != null && data.Caret.Column < line.Length) {
-								uint curIndex = 0;
-								int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)(offset - line.Offset), ref curIndex);
+								uint curIndex = 0, byteIndex = 0;
+								int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)(offset - line.Offset), ref curIndex, ref byteIndex);
 								layout.Layout.GetCursorPos (utf8ByteIndex, out var strong_pos, out var weak_pos);
 								if (strong_pos.X != weak_pos.X) {
 									offset--;
@@ -148,8 +148,8 @@ namespace Mono.TextEditor
 					data.Caret.Column++;
 					var layout = data.Parent?.TextViewMargin?.GetLayout (line);
 					if (layout != null && data.Caret.Column < line.Length) {
-						uint curIndex = 0;
-						int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)data.Caret.Column - 1, ref curIndex);
+						uint curIndex = 0, byteIndex = 0;
+						int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)data.Caret.Column - 1, ref curIndex, ref byteIndex);
 						layout.Layout.GetCursorPos (utf8ByteIndex, out var strong_pos, out var weak_pos);
 						if (strong_pos.X != weak_pos.X) {
 							data.Caret.Column++;
