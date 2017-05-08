@@ -195,13 +195,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
 		public virtual bool IsOverload (CompletionData other)
 		{
-			return false;
+			return true;
 		}
 
 		public virtual bool OverloadGroupEquals (CompletionData other)
 		{
-			if (IsOverload (other))
-				return true;
+			if (!IsOverload (other))
+				return false;
 			return DisplayText == other.DisplayText;
 		}
 
