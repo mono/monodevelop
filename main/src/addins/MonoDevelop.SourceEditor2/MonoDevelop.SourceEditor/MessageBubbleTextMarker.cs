@@ -697,7 +697,7 @@ namespace MonoDevelop.SourceEditor
 
 		void DrawErrorMarkers (MonoTextEditor editor, Cairo.Context g, LineMetrics metrics, double y)
 		{
-			uint curIndex = 0;
+			uint curIndex = 0, byteIndex = 0;
 
 			var o = metrics.LineSegment.Offset;
 
@@ -711,7 +711,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					if (column >= metrics.Layout.LineChars.Length)
 						continue;
-					int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex);
+					int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 					var pos = metrics.Layout.IndexToPos (index);
 					var co = o + task.Column - 1;
 					g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
