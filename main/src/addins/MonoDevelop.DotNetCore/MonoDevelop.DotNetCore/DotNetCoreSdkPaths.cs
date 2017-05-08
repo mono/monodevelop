@@ -54,7 +54,7 @@ namespace MonoDevelop.DotNetCore
 			if (!SdkVersions.Any ())
 				return;
 
-			DotNetCoreVersion latestVersion = SdkVersions.LastOrDefault ();
+			DotNetCoreVersion latestVersion = SdkVersions.FirstOrDefault ();
 			SdksParentDirectory = Path.Combine (sdkRootPath, latestVersion.OriginalString);
 			if (SdksParentDirectory == null)
 				return;
