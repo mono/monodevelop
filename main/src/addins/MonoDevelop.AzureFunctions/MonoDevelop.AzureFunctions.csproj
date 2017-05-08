@@ -97,11 +97,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta2\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta2.nupkg">
+    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3.nupkg">
       <Link>Templates\Microsoft.AzureFunctions.ProjectTemplates.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.0\Azure.Functions.Templates.1.0.0.nupkg">
+    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.1-beta1\Azure.Functions.Templates.1.0.1-beta1.nupkg">
       <Link>Templates\Azure.Functions.Templates.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
