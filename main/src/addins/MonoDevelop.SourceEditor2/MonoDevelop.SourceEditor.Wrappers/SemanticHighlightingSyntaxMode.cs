@@ -166,13 +166,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					Tuple<IDocumentLine, HighlightingSegmentTree> tree = null;
 
 					// This code should not have any lambda capture linq, as it is a hot loop.
+					int lineOffset = line.Offset;
 					foreach (var segment in lineSegments) {
-						if (segment.Item1 == line) {
+						if (segment.Item1.Offset == lineOffset) {
 							tree = segment;
 							break;
 						}
 					}
-					int lineOffset = line.Offset;
 					if (tree == null) {
 						tree = Tuple.Create (line, new HighlightingSegmentTree ());
 						tree.Item2.InstallListener (editor.Document);
