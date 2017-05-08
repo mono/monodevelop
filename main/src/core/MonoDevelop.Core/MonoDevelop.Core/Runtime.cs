@@ -137,6 +137,7 @@ namespace MonoDevelop.Core
 				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
+				LoadMSBuildLibraries ();
 				
 				initialized = true;
 				
@@ -477,6 +478,14 @@ namespace MonoDevelop.Core
 		}
 		
 		public static event EventHandler ShuttingDown;
+
+		static void LoadMSBuildLibraries ()
+		{
+			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
+			System.Reflection.Assembly.LoadFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
+			System.Reflection.Assembly.LoadFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
+			System.Reflection.Assembly.LoadFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
+		}
 	}
 	
 	internal static class Counters

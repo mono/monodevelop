@@ -67,8 +67,8 @@ namespace MonoDevelop.Projects.MSBuild
 				Project project = null;
 				Dictionary<string, string> originalGlobalProperties = null;
 				try {
-					if (sdksPath != null)
-						Environment.SetEnvironmentVariable ("MSBuildSDKsPath", sdksPath);
+				//	if (sdksPath != null)
+				//		Environment.SetEnvironmentVariable ("MSBuildSDKsPath", sdksPath);
 					project = SetupProject (configurations);
 					InitLogger (logWriter);
 

@@ -30,15 +30,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
-
-using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using System.Reflection;
 using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
-using System.Web.UI.WebControls;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.MSBuild

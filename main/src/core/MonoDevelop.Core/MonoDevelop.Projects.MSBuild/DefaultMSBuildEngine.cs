@@ -27,13 +27,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.MSBuild.Conditions;
+using Microsoft.Build.Exceptions;
+using Microsoft.Build.Framework;
+using Microsoft.Build.BackEnd;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -214,8 +215,14 @@ namespace MonoDevelop.Projects.MSBuild
 				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
 				int index = 0;
 				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
-					var propsPath = $"$(MSBuildSDKsPath)\\{sdkPath}\\Sdk\\Sdk.props";
-					var targetsPath = $"$(MSBuildSDKsPath)\\{sdkPath}\\Sdk\\Sdk.targets";
+					if (!SdkReference.TryParse (sdkPath, out var sdkRef))
+						continue;
+					var path = SdkResolution.Instance.GetSdkPath (sdkRef, new CustomLoggingService (), null, pi.Project.FileName, pi.Project.SolutionDirectory);
+					if (path == null)
+						continue;
+					path = MSBuildProjectService.ToMSBuildPath (null, path);
+					var propsPath = $"{path}\\Sdk.props";
+					var targetsPath = $"{path}\\Sdk.targets";
 					list.Insert (index++, new MSBuildImport { Project = propsPath, Condition = $"Exists('{propsPath}')" });
 					list.Add (new MSBuildImport { Project = targetsPath, Condition = $"Exists('{targetsPath}')" });
 				}
