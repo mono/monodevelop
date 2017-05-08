@@ -391,10 +391,6 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
-			if (!sdkPaths.Exist)
-				return;
-
-			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
 		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
