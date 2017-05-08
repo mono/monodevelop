@@ -97,7 +97,6 @@
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestRunner.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\TestResultBuilder.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreRuntimeOptionsPanelWidget.cs" />
