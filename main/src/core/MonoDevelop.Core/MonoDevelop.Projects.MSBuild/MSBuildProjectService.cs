@@ -1301,7 +1301,7 @@ namespace MonoDevelop.Projects.MSBuild
 						var src = Path.Combine(binDir, asm);
 						var dest = Path.Combine (exesDir, asm);
 						if (File.Exists (src))
-							File.Copy (src, dest);
+							File.Copy (src, dest, true);
 					}
 				}
 
