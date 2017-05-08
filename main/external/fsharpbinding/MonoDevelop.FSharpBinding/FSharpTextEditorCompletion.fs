@@ -195,9 +195,9 @@ module Completion =
         | ActivePatternCase _ -> Stock.Enum
         | Field _ -> Stock.Field
         | UnionCase _ -> IconId("md-type")
-        | Class _ -> Stock.Class
+        | SymbolUse.Class _ -> Stock.Class
         | Delegate _ -> Stock.Delegate
-        | Constructor _  -> Stock.Method
+        | SymbolUse.Constructor _  -> Stock.Method
         | Event _ -> Stock.Event
         | Property _ -> Stock.Property
         | Function f ->
@@ -208,9 +208,9 @@ module Completion =
         | ClosureOrNestedFunction _ -> IconId("md-fs-field")
         | Val _ -> Stock.Field
         | Enum _ -> Stock.Enum
-        | Interface _ -> Stock.Interface
-        | Module _ -> IconId("md-module")
-        | Namespace _ -> Stock.NameSpace
+        | SymbolUse.Interface _ -> Stock.Interface
+        | SymbolUse.Module _ -> IconId("md-module")
+        | SymbolUse.Namespace _ -> Stock.NameSpace
         | Record _ -> Stock.Class
         | Union _ -> IconId("md-type")
         | ValueType _ -> Stock.Struct
@@ -246,7 +246,7 @@ module Completion =
         let category =
             try
                 match symbolUse with
-                | Constructor c ->
+                | SymbolUse.Constructor c ->
                     c.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
