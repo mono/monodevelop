@@ -74,12 +74,12 @@ namespace MonoDevelop.GtkCore
 		
 		public override bool SupportsProject (Project project, string projectPath)
 		{
-			return (project is DotNetProject) && GtkDesignInfo.SupportsRefactoring (project as DotNetProject);
+			return (project is DotNetProject) && GtkDesignInfo.SupportsDesigner (project);
 		}
 		
 		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
-			if (!GtkDesignInfo.SupportsDesigner (project)) {
+			if (!GtkDesignInfo.SupportsDesigner (project, false)) {
 				ReferenceManager mgr = new ReferenceManager (project as DotNetProject);
 				mgr.GtkPackageVersion = mgr.DefaultGtkVersion;
 				mgr.Dispose ();
