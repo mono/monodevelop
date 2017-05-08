@@ -517,7 +517,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal static MSBuildSupport GetMSBuildSupportForFlavors (IEnumerable<string> flavorGuids)
 		{
 			foreach (var fid in flavorGuids) {
-				var node = WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().FirstOrDefault (n => n.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase));
+				var node = WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().FirstOrDefault (n => n.Guid != null && n.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase));
 				if (node != null) {
 					if (node.MSBuildSupport != MSBuildSupport.Supported)
 						return node.MSBuildSupport;
@@ -532,7 +532,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var list = new List<SolutionItemExtensionNode> ();
 			foreach (var fid in flavorGuids) {
 				foreach (var node in WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ()) {
-					if (node.SupportsMigration && node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))
+					if (node.SupportsMigration && node.Guid != null && node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))
 						list.Add (node);
 				}
 			}
@@ -633,7 +633,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static bool IsKnownFlavorGuid (string guid)
 		{
-			return WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().Any (n => n.Guid.Equals (guid, StringComparison.InvariantCultureIgnoreCase));
+			return WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().Any (n => n.Guid != null && n.Guid.Equals (guid, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		internal static bool IsKnownTypeGuid (string guid)
