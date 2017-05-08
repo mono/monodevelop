@@ -289,7 +289,7 @@ namespace MonoDevelop.CSharp.Completion
 							return null;
 						triggerWordLength = 1;
 					}
-					return InternalHandleCodeCompletion (completionContext, completionChar, false, triggerWordLength, token);
+					return InternalHandleCodeCompletion (completionContext, triggerInfo, triggerWordLength, token);
 				} catch (Exception e) {
 					LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine +
 						"FileName: " + DocumentContext.Name + Environment.NewLine +
@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
 					return null;
 				try {
-					return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, token).ContinueWith (t => {
+					return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, ch), triggerWordLength, token).ContinueWith (t => {
 						var result = (CompletionDataList)t.Result;
 						if (result == null)
 							return null;
@@ -331,7 +331,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			default:
 				ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-				return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, default (CancellationToken));
+				return InternalHandleCodeCompletion (completionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand, ch), triggerWordLength, default (CancellationToken));
 			}
 		}
 
@@ -457,7 +457,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
+		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
 			if (Editor.EditMode == MonoDevelop.Ide.Editor.EditMode.CursorInsertion)
 				return Task.FromResult ((ICompletionDataList)null);
@@ -484,7 +484,6 @@ namespace MonoDevelop.CSharp.Completion
 					var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 					ctx.AdditionalContextHandlers = additionalContextHandlers;
 
-					var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
 					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
 					if (completionResult == CompletionResult.Empty)
 						return null;
@@ -502,8 +501,7 @@ namespace MonoDevelop.CSharp.Completion
 					list.AutoSelect = completionResult.AutoSelect;
 					list.DefaultCompletionString = completionResult.DefaultCompletionString;
 					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
-					if (ctrlSpace)
-						list.AutoCompleteUniqueMatch = true;
+					list.AutoCompleteUniqueMatch = triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand;
 				} catch (OperationCanceledException) {
 					return null;
 				} catch (AggregateException e) {
@@ -1345,8 +1343,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			int triggerWordLength = 0;
 			char ch = CurrentCompletionContext.TriggerOffset > 0 ? Editor.GetCharAt (CurrentCompletionContext.TriggerOffset - 1) : '\0';
-				
-			var	completionList = await InternalHandleCodeCompletion (CurrentCompletionContext, ch, true, triggerWordLength, default(CancellationToken), true);
+			var	completionList = await InternalHandleCodeCompletion (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CompletionCommand, ch), triggerWordLength, default(CancellationToken), true);
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else
