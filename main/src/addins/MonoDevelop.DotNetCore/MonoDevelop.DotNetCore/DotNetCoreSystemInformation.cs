@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
 
@@ -46,6 +47,7 @@ namespace MonoDevelop.DotNetCore
 			var description = new StringBuilder ();
 
 			description.AppendLine (GettextCatalog.GetString ("Runtime: {0}", GetDotNetRuntimeLocation ()));
+			AppendDotNetCoreRuntimeVersions (description);
 			description.AppendLine (GettextCatalog.GetString ("SDK: {0}", GetDotNetSdkLocation ()));
 			description.AppendLine (GettextCatalog.GetString ("MSBuild SDKs: {0}", GetMSBuildSdksLocation ()));
 
@@ -79,6 +81,23 @@ namespace MonoDevelop.DotNetCore
 				return MSBuildSdks.MSBuildSDKsPath;
 
 			return GetNotInstalledString ();
+		}
+
+		static void AppendDotNetCoreRuntimeVersions (StringBuilder description)
+		{
+			if (!DotNetCoreRuntime.Versions.Any ())
+				return;
+
+			if (DotNetCoreRuntime.Versions.Count () == 1) {
+				description.AppendLine (GettextCatalog.GetString ("Runtime Version: {0}", DotNetCoreRuntime.Versions[0]));
+			} else {
+				description.AppendLine (GettextCatalog.GetString ("Runtime Versions:"));
+
+				foreach (DotNetCoreVersion version in DotNetCoreRuntime.Versions) {
+					description.Append ('\t');
+					description.AppendLine (version.OriginalString);
+				}
+			}
 		}
 	}
 }
