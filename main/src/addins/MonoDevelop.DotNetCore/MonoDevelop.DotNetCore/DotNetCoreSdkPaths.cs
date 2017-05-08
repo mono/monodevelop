@@ -35,8 +35,6 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkPaths
 	{
-		List<string> projectImportProps = new List<string> ();
-		List<string> projectImportTargets = new List<string> ();
 		string msbuildSDKsPath;
 
 		public void FindMSBuildSDKsPath ()
@@ -73,15 +71,7 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (MSBuildSDKsPath))
 				return;
 
-			if (sdk.Contains (';')) {
-				foreach (string sdkItem in SplitSdks (sdk)) {
-					AddSdkImports (sdkItem);
-				}
-			} else {
-				AddSdkImports (sdk);
-			}
-
-			Exist = CheckImportsExist ();
+			Exist = CheckSdksExist (sdk);
 
 			if (Exist) {
 				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (SdksParentDirectory);
@@ -110,43 +100,27 @@ namespace MonoDevelop.DotNetCore
 
 		string SdksParentDirectory { get; set; }
 
-		public IEnumerable<string> ProjectImportProps {
-			get { return projectImportProps; }
-		}
-
-		public IEnumerable<string> ProjectImportTargets {
-			get { return projectImportTargets; }
-		}
-
 		static IEnumerable<string> SplitSdks (string sdk)
 		{
 			return sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 		}
 
-		void AddSdkImports (string sdk)
+		bool CheckSdksExist (string sdk)
 		{
-			string sdkMSBuildTargetsDirectory = Path.Combine (MSBuildSDKsPath, sdk, "Sdk");
-			projectImportProps.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.props"));
-			projectImportTargets.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.targets"));
+			if (sdk.Contains (';')) {
+				foreach (string sdkItem in SplitSdks (sdk)) {
+					if (!SdkPathExists (sdkItem))
+						return false;
+				}
+				return true;
+			}
+			return SdkPathExists (sdk);
 		}
 
-		bool CheckImportsExist ()
+		bool SdkPathExists (string sdk)
 		{
-			foreach (string prop in ProjectImportProps) {
-				if (!File.Exists (prop)) {
-					LoggingService.LogError ("Sdk.props not found. '{0}'", prop);
-					return false;
-				}
-			}
-
-			foreach (string target in ProjectImportTargets) {
-				if (!File.Exists (target)) {
-					LoggingService.LogError ("Sdk.targets not found. '{0}'", target);
-					return false;
-				}
-			}
-
-			return true;
+			string sdkDirectory = Path.Combine (MSBuildSDKsPath, sdk);
+			return Directory.Exists (sdkDirectory);
 		}
 
 		/// <summary>
