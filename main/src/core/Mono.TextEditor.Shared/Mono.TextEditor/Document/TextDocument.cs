@@ -2240,12 +2240,12 @@ namespace Mono.TextEditor
 
 			public int LineCount { get { return this.Span.Snapshot.LineCount; } }
 
-			public int LocationToOffset(int line, int column)
+			public int LocationToOffset (int line, int column)
 			{
 				if (line > this.LineCount || line < DocumentLocation.MinLine)
 					return -1;
-				IDocumentLine documentLine = GetLine(line);
-				return System.Math.Min(Length, documentLine.Offset + System.Math.Max(0, System.Math.Min(documentLine.Length, column - 1)));
+				IDocumentLine documentLine = GetLine (line);
+				return System.Math.Min (Length, documentLine.Offset + System.Math.Max (0, System.Math.Min (documentLine.Length, column - 1)));
 			}
 
 			public DocumentLocation OffsetToLocation(int offset)
