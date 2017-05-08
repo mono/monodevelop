@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -43,7 +42,7 @@ namespace MonoDevelop.DotNetCore
 				return Enumerable.Empty<DotNetCoreVersion> ();
 
 			return Directory.EnumerateDirectories (runtimePath)
-				.Select (directory => GetDotNetCoreVersionFromDirectory (directory))
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
 				.Where (version => version != null);
 		}
 
@@ -51,17 +50,6 @@ namespace MonoDevelop.DotNetCore
 		{
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
 			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
-		}
-
-		static DotNetCoreVersion GetDotNetCoreVersionFromDirectory (string directory)
-		{
-			string directoryName = Path.GetFileName (directory);
-			DotNetCoreVersion version = null;
-			if (DotNetCoreVersion.TryParse (directoryName, out version))
-				return version;
-
-			LoggingService.LogInfo ("Unable to parse runtime version from directory. '{0}'", directory);
-			return null;
 		}
 	}
 }

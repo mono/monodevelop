@@ -50,12 +50,18 @@ namespace MonoDevelop.DotNetCore
 			if (!Directory.Exists (sdkRootPath))
 				return;
 
-			string[] directories = Directory.GetDirectories (sdkRootPath);
-			SdksParentDirectory = directories.OrderBy (directory => directory).LastOrDefault ();
+			SdkVersions = GetInstalledSdkVersions (sdkRootPath)
+				.OrderByDescending (version => version)
+				.ToArray ();
+			if (!SdkVersions.Any ())
+				return;
+
+			DotNetCoreVersion latestVersion = SdkVersions.LastOrDefault ();
+			SdksParentDirectory = Path.Combine (sdkRootPath, latestVersion.OriginalString);
 			if (SdksParentDirectory == null)
 				return;
 
-			LatestSdkFullVersion = Path.GetFileName (SdksParentDirectory);
+			LatestSdkFullVersion = latestVersion.OriginalString;
 
 			msbuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
 
@@ -99,6 +105,8 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		public string LatestSdkFullVersion { get; private set; }
+
+		public DotNetCoreVersion[] SdkVersions { get; private set; }
 
 		string SdksParentDirectory { get; set; }
 
@@ -161,6 +169,13 @@ namespace MonoDevelop.DotNetCore
 				LoggingService.LogError ("Error checking sdk version.", ex);
 			}
 			return true;
+		}
+
+		IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions (string sdkRootPath)
+		{
+			return Directory.EnumerateDirectories (sdkRootPath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
 		}
 	}
 }

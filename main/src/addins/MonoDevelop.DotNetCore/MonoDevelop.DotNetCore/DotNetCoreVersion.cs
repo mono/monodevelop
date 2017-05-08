@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -195,6 +197,17 @@ namespace MonoDevelop.DotNetCore
 		public static bool operator >= (DotNetCoreVersion x, DotNetCoreVersion y)
 		{
 			return Compare (x, y) >= 0;
+		}
+
+		public static DotNetCoreVersion GetDotNetCoreVersionFromDirectory (string directory)
+		{
+			string directoryName = Path.GetFileName (directory);
+			DotNetCoreVersion version = null;
+			if (TryParse (directoryName, out version))
+				return version;
+
+			LoggingService.LogInfo ("Unable to parse version from directory. '{0}'", directory);
+			return null;
 		}
 	}
 }
