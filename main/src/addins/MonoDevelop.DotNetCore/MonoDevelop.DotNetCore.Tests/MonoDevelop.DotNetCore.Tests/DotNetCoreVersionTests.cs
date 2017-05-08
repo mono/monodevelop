@@ -184,5 +184,93 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual (expected, sorted);
 		}
+
+		[TestCase ("1.0.2", "1.0.2", true)]
+		[TestCase ("1.2.3", "1.0.2", false)]
+		[TestCase ("1.0.0", "1.0.2", false)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", false)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2-preview1-002912-00", true)]
+		[TestCase ("1.0.2-preview1-002912-01", "1.0.2-preview1-002912-00", false)]
+		public void EqualsOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX == versionY);
+		}
+
+		[TestCase ("1.0.2", "1.0.2", false)]
+		[TestCase ("1.2.3", "1.0.2", true)]
+		[TestCase ("1.0.0", "1.0.2", true)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", true)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2-preview1-002912-00", false)]
+		[TestCase ("1.0.2-preview1-002912-01", "1.0.2-preview1-002912-00", true)]
+		public void NotEqualsOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX != versionY);
+		}
+
+		[TestCase ("1.0.2", "1.0.2", false)]
+		[TestCase ("1.2.3", "1.0.2", true)]
+		[TestCase ("1.0.0", "1.0.2", false)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", true)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", false)]
+		public void GreaterThanOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX > versionY);
+		}
+
+		[TestCase ("1.0.2", "1.0.2", true)]
+		[TestCase ("1.2.3", "1.0.2", true)]
+		[TestCase ("1.0.0", "1.0.2", false)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", true)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", false)]
+		public void GreaterThanOrEqualtoOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX >= versionY);
+		}
+
+		[TestCase ("1.0.2", "1.0.2", false)]
+		[TestCase ("1.2.3", "1.0.2", false)]
+		[TestCase ("1.0.0", "1.0.2", true)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", false)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", true)]
+		public void LessThanOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX < versionY);
+		}
+
+		[TestCase ("1.0.2", "1.0.2", true)]
+		[TestCase ("1.2.3", "1.0.2", false)]
+		[TestCase ("1.0.0", "1.0.2", true)]
+		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", false)]
+		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", true)]
+		public void LessThanOrEqualOperator_Version (string x, string y, bool expected)
+		{
+			var versionX = DotNetCoreVersion.Parse (x);
+			var versionY = DotNetCoreVersion.Parse (y);
+			Assert.AreEqual (expected, versionX <= versionY);
+		}
+
+		[Test]
+		public void Operators_NullVersions ()
+		{
+			DotNetCoreVersion nullVersionX = null;
+			DotNetCoreVersion nullVersionY = null;
+			var nonNullVersion = DotNetCoreVersion.Parse ("1.0");
+
+			Assert.IsTrue (nullVersionX == nullVersionY);
+			Assert.IsTrue (nullVersionX < nonNullVersion);
+			Assert.IsFalse (nullVersionX > nonNullVersion);
+			Assert.IsFalse (nonNullVersion < nullVersionY);
+			Assert.IsTrue (nonNullVersion > nullVersionY);
+		}
 	}
 }

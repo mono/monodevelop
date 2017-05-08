@@ -28,8 +28,15 @@ using System;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreVersion : IEquatable<DotNetCoreVersion>, IComparable<DotNetCoreVersion>
+	class DotNetCoreVersion : IEquatable<DotNetCoreVersion>, IComparable, IComparable<DotNetCoreVersion>
 	{
+		public static readonly DotNetCoreVersion MinimumSupportedVersion = new DotNetCoreVersion (1, 0, 0);
+
+		DotNetCoreVersion (int major, int minor, int patch)
+			: this (new Version (major, minor, patch))
+		{
+		}
+
 		DotNetCoreVersion (Version version)
 		{
 			Version = version;
@@ -56,7 +63,10 @@ namespace MonoDevelop.DotNetCore
 
 		public override string ToString ()
 		{
-			return OriginalString;
+			if (!string.IsNullOrEmpty (OriginalString))
+				return OriginalString;
+
+			return Version.ToString ();
 		}
 
 		/// <summary>
@@ -121,24 +131,70 @@ namespace MonoDevelop.DotNetCore
 
 		public int CompareTo (DotNetCoreVersion other)
 		{
-			if (other == null)
+			return Compare (this, other);
+		}
+
+		public int CompareTo (object obj)
+		{
+			return CompareTo (obj as DotNetCoreVersion);
+		}
+
+		public static int Compare (DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			if (ReferenceEquals (x, y))
+				return 0;
+
+			if (ReferenceEquals (y, null))
 				return 1;
 
-			int result = Version.CompareTo (other.Version);
+			if (ReferenceEquals (x, null))
+				return -1;
+
+			int result = x.Version.CompareTo (y.Version);
 			if (result != 0)
 				return result;
 
-			if (!IsPrerelease && !other.IsPrerelease)
+			if (!x.IsPrerelease && !y.IsPrerelease)
 				return result;
 
 			// Pre-release versions are lower than stable versions.
-			if (IsPrerelease && !other.IsPrerelease)
+			if (x.IsPrerelease && !y.IsPrerelease)
 				return -1;
 
-			if (!IsPrerelease && other.IsPrerelease)
+			if (!x.IsPrerelease && y.IsPrerelease)
 				return 1;
 
-			return StringComparer.OrdinalIgnoreCase.Compare (ReleaseLabel, other.ReleaseLabel);
+			return StringComparer.OrdinalIgnoreCase.Compare (x.ReleaseLabel, y.ReleaseLabel);
+		}
+
+		public static bool operator ==(DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) == 0;
+		}
+
+		public static bool operator !=(DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) != 0;
+		}
+
+		public static bool operator < (DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) < 0;
+		}
+
+		public static bool operator <= (DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) <= 0;
+		}
+
+		public static bool operator > (DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) > 0;
+		}
+
+		public static bool operator >= (DotNetCoreVersion x, DotNetCoreVersion y)
+		{
+			return Compare (x, y) >= 0;
 		}
 	}
 }
