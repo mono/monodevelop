@@ -19,6 +19,7 @@
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
+typedef void (* gobject_tracker_init) (void *libmono);
 
 void *libmono;
 
@@ -45,7 +46,7 @@ exit_with_message (char *reason, char *argv0)
 	[alert release];
 
 	if (answer == NSAlertFirstButtonReturn) {
-		NSString *mono_download_url = @"http://www.go-mono.com/mono-downloads/download.html";
+		NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
 		CFURLRef url = CFURLCreateWithString (NULL, (CFStringRef) mono_download_url, NULL);
 		LSOpenCFURLRef (url, NULL);
 		CFRelease (url);
@@ -231,6 +232,24 @@ correct_locale(void)
 	setenv("LANGUAGE", [preferredLanguage UTF8String], 1);
 }
 
+static void
+try_load_gobject_tracker (void *libmono, char *entry_executable)
+{
+	void *gobject_tracker;
+	NSString *entryExecutable = [[NSString alloc] initWithUTF8String: entry_executable];
+	NSString *binDir = [entryExecutable stringByDeletingLastPathComponent];
+	NSString *libgobjectPath = [binDir stringByAppendingPathComponent: @"libgobject-tracker.dylib"];
+	gobject_tracker = dlopen ((char *)[libgobjectPath UTF8String], RTLD_GLOBAL);
+	if (gobject_tracker) {
+		gobject_tracker_init _gobject_tracker_init = (gobject_tracker_init) dlsym (gobject_tracker, "gobject_tracker_init");
+		if (_gobject_tracker_init) {
+			_gobject_tracker_init (libmono);
+			printf ("Loaded gobject tracker\n");
+			return;
+		}
+	}
+}
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -262,7 +281,7 @@ int main (int argc, char **argv)
 	}
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"4.3";
+	NSString *req_mono_version = @"5.0";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 	bool need64Bit = false;
@@ -329,6 +348,8 @@ int main (int argc, char **argv)
 		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]];
 		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
+
+	try_load_gobject_tracker (libmono, argv [0]);
 
 	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
 	if (!_mono_main) {

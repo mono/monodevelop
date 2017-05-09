@@ -34,6 +34,7 @@ using Pango;
 using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -150,6 +151,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			discloseDown = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu);
 			discloseUp = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu);
 			handCursor = new Cursor (CursorType.Hand1);
+
+			var actionHandler = new ActionDelegate (this);
+			actionHandler.PerformShowMenu += PerformShowMenu;
 		}
 
 		protected override void OnStyleSet (Gtk.Style previous_style)
@@ -477,6 +481,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return true;
 			}
 			return base.OnButtonPressEvent (e);
+		}
+
+		void PerformShowMenu (object sender, EventArgs args)
+		{
+			DoPopupMenu?.Invoke (null);
 		}
 
 		void SetCategoryExpanded (Category cat, bool expanded)

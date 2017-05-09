@@ -1,4 +1,4 @@
-// SolutionTests.cs
+﻿// SolutionTests.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -43,6 +43,11 @@ namespace MonoDevelop.Projects
 	[TestFixture()]
 	public class SolutionTests: TestBase
 	{
+		public static string GetMdb (Project p, string file)
+		{
+			return ((DotNetProject)p).GetAssemblyDebugInfoFile (p.Configurations [0].Selector, file);
+		}
+
 		[Test()]
 		public void SolutionItemsEvents()
 		{
@@ -155,6 +160,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (2, countReferenceRemovedFromProject);
 			Assert.AreEqual (3, countSolutionItemAdded);
 			Assert.AreEqual (3, countSolutionItemRemoved);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -193,6 +200,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test4", sol.Name);
 			Assert.AreEqual (Path.Combine (tmp, "test4.sln"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -248,6 +257,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
+
+			prj.Dispose ();
 		}
 		
 		[Test()]
@@ -301,6 +312,8 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (Util.GetMonitor ());
 			
 			Assert.IsTrue (sol3.NeedsReload);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -317,6 +330,8 @@ namespace MonoDevelop.Projects
 			await lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2);
 			
 			Assert.AreEqual (3, p.References.Count);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -347,6 +362,8 @@ namespace MonoDevelop.Projects
 
 			p = (DotNetProject) await p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
 			Assert.AreSame (sol.StartupItem, p);
+
+			sol.Dispose ();
 		}
 
 		[Test()]
@@ -375,6 +392,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (files.Contains (p.FileName));
 			foreach (ProjectFile pf in p.Files)
 				Assert.IsTrue (files.Contains (pf.FilePath), "Contains " + pf.FilePath);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -406,11 +425,11 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, res.BuildCount);
 
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Build the project, but not the references
 			
@@ -418,6 +437,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -449,21 +470,21 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, res.BuildCount);
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Clean the workspace
 			
 			await ws.Clean (Util.GetMonitor (), ConfigurationSelector.Default);
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Build the solution
 			
@@ -473,21 +494,21 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, res.BuildCount);
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Clean the solution
 			
 			await sol.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Build the solution folder
 			
@@ -497,17 +518,18 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, res.BuildCount);
 			
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
 			
 			// Clean the solution folder
 			
 			await folder.Clean (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -564,6 +586,8 @@ namespace MonoDevelop.Projects
 			
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
+
+			sol.Dispose ();
 		}
 		
 		[Test()]
@@ -604,6 +628,8 @@ namespace MonoDevelop.Projects
 			await CheckProjectBuildClean (lib3, "Release");
 			await CheckProjectBuildClean (lib4, "Debug");
 			await CheckProjectBuildClean (lib4, "Release");
+
+			sol.Dispose ();
 		}
 		
 		async Task CheckSolutionBuildClean (Solution sol, string configuration)
@@ -713,6 +739,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 			Assert.AreEqual (solText, File.ReadAllLines (solFile));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -741,6 +769,8 @@ namespace MonoDevelop.Projects
 			// Regular project not referencing anything else. Should build.
 			res = await app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
 			Assert.IsTrue (res.ErrorCount == 0);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -790,6 +820,8 @@ namespace MonoDevelop.Projects
 			lib1 = sol.FindProjectByName ("library1");
 			Assert.IsNotNull (lib1);
 			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -884,6 +916,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, item.UnboundEvents);
 			Assert.AreEqual (0, item.InternalItem.BoundEvents);
 			Assert.AreEqual (1, item.InternalItem.UnboundEvents);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -929,6 +963,8 @@ namespace MonoDevelop.Projects
 			Assert.AreNotEqual (lib2, lib2Reloaded);
 			Assert.IsTrue (p.ItemDependencies.Contains (lib2Reloaded));
 			Assert.AreEqual (1, p.ItemDependencies.Count);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -951,6 +987,7 @@ namespace MonoDevelop.Projects
 				var savedFile = solFile + ".saved.sln";
 				await sol.SaveAsync (savedFile, Util.GetMonitor ());
 				Assert.AreEqual (File.ReadAllText (solFile), File.ReadAllText (savedFile));
+				sol.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -972,6 +1009,7 @@ namespace MonoDevelop.Projects
 				Assert.NotNull (ext.Extra);
 				Assert.AreEqual ("three", ext.Extra.Prop3);
 				Assert.AreEqual ("four", ext.Extra.Prop4);
+				sol.Dispose ();
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -998,6 +1036,8 @@ namespace MonoDevelop.Projects
 
 				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
 
+				sol.Dispose ();
+
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
@@ -1022,6 +1062,8 @@ namespace MonoDevelop.Projects
 				await sol.SaveAsync (Util.GetMonitor ());
 
 				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
+
+				sol.Dispose ();
 
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (en);

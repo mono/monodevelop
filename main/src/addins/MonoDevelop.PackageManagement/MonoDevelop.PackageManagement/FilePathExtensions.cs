@@ -26,7 +26,6 @@
 
 using System;
 using MonoDevelop.Core;
-using NuGet;
 using NuGet.Common;
 
 namespace MonoDevelop.PackageManagement
@@ -39,7 +38,13 @@ namespace MonoDevelop.PackageManagement
 				return false;
 			}
 
-			return PackageReferenceFile.IsValidConfigFileName (filePath.FileName);
+			return IsValidPackagesConfigFileName (filePath.FileName);
+		}
+
+		static bool IsValidPackagesConfigFileName (string fileName)
+		{
+			return fileName.StartsWith ("packages.", StringComparison.OrdinalIgnoreCase) &&
+			 fileName.EndsWith (".config", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static bool IsProjectJsonFileName (this FilePath filePath)

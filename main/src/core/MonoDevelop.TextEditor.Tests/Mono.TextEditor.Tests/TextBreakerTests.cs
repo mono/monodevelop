@@ -28,11 +28,12 @@ using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using NUnit.Framework;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class TextBreakerTests : TextEditorTestBase
+	class TextBreakerTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestTextBreakerWithSingleWord ()
@@ -97,12 +98,12 @@ namespace Mono.TextEditor.Tests
 			return new TextEditorData (new TextDocument (editorText));
 		}
 
-		public List<TextSegment> BreakAllLines (String editorText)
+		public List<ISegment> BreakAllLines (String editorText)
 		{
 			return BreakAllLines (CreateData (editorText));
 		}
 
-		public List<TextSegment> BreakAllLines (TextEditorData data)
+		public List<ISegment> BreakAllLines (TextEditorData data)
 		{
 			return TextBreaker.BreakLinesIntoWords (data.Document, 1, data.LineCount, false);
 		}

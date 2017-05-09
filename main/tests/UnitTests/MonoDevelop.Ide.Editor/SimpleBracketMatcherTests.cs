@@ -42,12 +42,8 @@ namespace MonoDevelop.Ide.Editor
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.MimeType = "text/x-csharp";
 			editor.Text = text;
-			var document = new TextDocument (text);
 
 			int actualOffset = SimpleBracketMatcher.GetMatchingBracketOffset (editor, offset);
-			int actualOffset2 = document.GetMatchingBracketOffset (offset);
-
-			Assert.AreEqual (actualOffset2, actualOffset);
 			Assert.AreEqual (expectedOffsetMatch, actualOffset);
 		}
 	}

@@ -28,18 +28,16 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
 using Xwt.Mac;
-using CoreImage;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
-	[Register]
-	class RunButton : NSButton
+	[Register ("RunButton")]
+	class RunButton : NSButton, INSAccessibilityButton, INSAccessibility
 	{
 		NSImage stopIcon, continueIcon, buildIcon;
-
 
 		public RunButton ()
 		{
@@ -54,6 +52,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			BezelStyle = NSBezelStyle.TexturedRounded;
 
 			Enabled = false;
+			UpdateAccessibilityValues ();
 		}
 
 		void UpdateIcons (object sender = null, EventArgs e = null)
@@ -86,6 +85,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			throw new InvalidOperationException ();
 		}
 
+		void GetTitleAndHelpForIcon (out string title, out string help)
+		{
+			title = "";
+			help = "";
+
+			switch (icon) {
+			case OperationIcon.Stop:
+				title = GettextCatalog.GetString ("Stop");
+				help = GettextCatalog.GetString ("Stop the executing solution");
+				break;
+			case OperationIcon.Run:
+				title = GettextCatalog.GetString ("Run");
+				help = GettextCatalog.GetString ("Build and run the current solution");
+				break;
+			case OperationIcon.Build:
+				title = GettextCatalog.GetString ("Build");
+				help = GettextCatalog.GetString ("Build the current solution");
+				break;
+			}
+		}
+
 		public override bool Enabled {
 			get {
 				return base.Enabled;
@@ -93,6 +113,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set {
 				base.Enabled = value;
 				Image = GetIcon ();
+
+				UpdateAccessibilityValues ();
 			}
 		}
 
@@ -104,7 +126,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return;
 				icon = value;
 				Image = GetIcon ();
+
+				UpdateAccessibilityValues ();
 			}
+		}
+
+		void UpdateAccessibilityValues ()
+		{
+			var nsa = (INSAccessibility) this;
+			nsa.AccessibilityIdentifier = "MainToolbar.RunButton";
+
+			string help, title;
+			GetTitleAndHelpForIcon (out title, out help);
+
+			AccessibilityHelp = help;
+			AccessibilityTitle = title;
+			AccessibilityEnabled = Enabled;
+			AccessibilitySubrole = NSAccessibilitySubroles.ToolbarButtonSubrole;
+
+			// FIXME: Setting this doesn't appear to change anything.
+			// Nor does overriding the INSAccessibilityButton.AccessibilityLabel getter
+			nsa.AccessibilityLabel = title;
+		}
+
+		// This method override is required so that Cocoa will pick up that our button subclass
+		// has a PerformPress action.
+		public override bool AccessibilityPerformPress ()
+		{
+			return base.AccessibilityPerformPress ();
 		}
 
 		public override CGSize IntrinsicContentSize {

@@ -24,17 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				// check parent if for direct type check
 				var ifStmSyntax = ancestor as IfStatementSyntax;
 				if (ifStmSyntax != null) {
-					var condition = ifStmSyntax.Condition.SkipParens ();
+					var condition = SkipParens (ifStmSyntax.Condition);
 					if (condition != null && condition.IsKind (SyntaxKind.IsExpression)) {
 						var isExpr = ((BinaryExpressionSyntax)condition);
 						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
@@ -95,10 +95,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					foreach (var ifStmt in blockSyntax.Statements.OfType<IfStatementSyntax> ()) {
 						if (ifStmt.Span.End >= ma.Span.Start)
 							break;
-						var condition = ifStmt.Condition.SkipParens ();
+						var condition = SkipParens (ifStmt.Condition);
 						bool wasNegated = false;
 						if (condition.IsKind (SyntaxKind.LogicalNotExpression)) {
-							condition = ((PrefixUnaryExpressionSyntax)condition).Operand.SkipParens ();
+							condition = SkipParens(((PrefixUnaryExpressionSyntax)condition).Operand);
 							wasNegated = true;
 						}
 						if (condition == null || !condition.IsKind (SyntaxKind.IsExpression))
@@ -125,8 +125,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 				var binOp = ancestor as BinaryExpressionSyntax;
 				if (binOp != null && binOp.IsKind (SyntaxKind.LogicalAndExpression)) {
-					if (binOp.Left.SkipParens ().IsKind (SyntaxKind.IsExpression)) {
-						var isExpr = ((BinaryExpressionSyntax)binOp.Left.SkipParens ());
+					if (SkipParens(binOp.Left).IsKind (SyntaxKind.IsExpression)) {
+						var isExpr = (BinaryExpressionSyntax)SkipParens (binOp.Left);
 						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
 
 						if (leftSymbol.Symbol == symbolInfo.Symbol) {
@@ -142,6 +142,16 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			}
 
 			return Task.FromResult ((IEnumerable<CompletionData>)list);
+		}
+
+		static ExpressionSyntax SkipParens (ExpressionSyntax expression)
+		{
+			if (expression == null)
+				return null;
+			while (expression != null && expression.IsKind (SyntaxKind.ParenthesizedExpression)) {
+				expression = ((ParenthesizedExpressionSyntax)expression).Expression;
+			}
+			return expression;
 		}
 
 		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ITypeSymbol stopAt, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)

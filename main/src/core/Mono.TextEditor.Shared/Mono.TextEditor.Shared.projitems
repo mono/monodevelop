@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{FBAAD910-F29B-4AC5-9FC0-27F6EB36C495}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Mono.TextEditor.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DiffTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentRegion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\FoldSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\ILineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\IWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LazyLineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LineEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\OperationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\PrimitiveLineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SegmentTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SharpDevelopWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\ViActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\CloneableStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\Regex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\BookmarkActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\CaretMoveActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ClipboardActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\DeleteActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\FoldActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\MiscActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ScrollActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\SelectionActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Selection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\CompressingTreeList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\Diff.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\HtmlWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ClipboardColoredText.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\RedBlackTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\FileSettingsStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ImmutableText.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\RtfWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\TextBreaker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\BookmarkMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\CaretImpl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\EditMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\EditModeChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\HeightTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\HelperMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\IndentStyle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\InsertionCursorEditMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISearchEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextEditorOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\LineBackgroundMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\LinkEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\MarginMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SimpleEditMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Styles.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\StyleTextLineMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLineMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLinkEditMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextMarkerEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextSegmentMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UnderlineMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UrlMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\DefaultIndentationTracker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\" />
+  </ItemGroup>
+</Project>

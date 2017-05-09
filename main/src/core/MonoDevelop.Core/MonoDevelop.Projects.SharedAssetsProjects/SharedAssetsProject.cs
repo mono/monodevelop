@@ -82,8 +82,12 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
-			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
+			// Get the language before calling OnInitializeFromTemplate so the language binding
+			// is available when adding new files to the project if the project is added to
+			// an existing solution.
 			languageName = projectOptions.GetAttribute ("language");
+
+			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
 
 			string templateDefaultNamespace = GetDefaultNamespace (projectCreateInfo, projectOptions);
 			DefaultNamespace = templateDefaultNamespace ?? projectCreateInfo.ProjectName;

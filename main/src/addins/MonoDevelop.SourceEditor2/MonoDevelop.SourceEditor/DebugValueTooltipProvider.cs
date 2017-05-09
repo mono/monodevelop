@@ -35,11 +35,6 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;
@@ -81,7 +76,7 @@ namespace MonoDevelop.SourceEditor
 			if (offset >= editor.Length)
 				return null;
 
-			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
+			if (!DebuggingService.IsPaused)
 				return null;
 
 			StackFrame frame = DebuggingService.CurrentFrame;
@@ -134,12 +129,12 @@ namespace MonoDevelop.SourceEditor
 			return new TooltipItem (val, startOffset, expression.Length);
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (TextEditor editor, Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);
@@ -155,7 +150,7 @@ namespace MonoDevelop.SourceEditor
 			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
 		}
 
-		public override bool IsInteractive (TextEditor editor, Control tipWindow)
+		public override bool IsInteractive (TextEditor editor, Window tipWindow)
 		{
 			return DebuggingService.IsDebugging;
 		}

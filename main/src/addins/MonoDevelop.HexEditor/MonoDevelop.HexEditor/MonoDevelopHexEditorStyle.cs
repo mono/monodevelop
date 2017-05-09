@@ -37,9 +37,9 @@ namespace MonoDevelop.HexEditor
 {
 	class MonoDevelopHexEditorStyle : HexEditorStyle, IDisposable
 	{
-		ColorScheme colorStyle;
+		EditorTheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;
-		
+
 		public MonoDevelopHexEditorStyle (Mono.MHex.HexEditor hexEditor)
 		{
 			this.hexEditor = hexEditor;
@@ -54,10 +54,10 @@ namespace MonoDevelop.HexEditor
 			this.hexEditor.PurgeLayoutCaches ();
 			this.hexEditor.Repaint ();
 		}
-		
+
 		void SetStyle ()
 		{
-			colorStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			colorStyle = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 		}
 
 		Color ConvertColor (Cairo.Color foreground)
@@ -72,85 +72,85 @@ namespace MonoDevelop.HexEditor
 
 		public override Color HexOffset {
 			get {
-				return ConvertColor (colorStyle.LineNumbers.Foreground);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.LineNumbers));
 			}
 		}
-		
+
 		public override Color HexOffsetBg {
 			get {
-				return ConvertColor (colorStyle.LineNumbers.Background);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.LineNumbersBackground));
 			}
 		}
-		
-/*		public override Color HexOffsetHighlighted {
-			get {
-				return ConvertColor (colorStyle.LineNumbers.fo);
-			}
-		}*/
-		
+
+		/*		public override Color HexOffsetHighlighted {
+					get {
+						return ConvertColor (colorStyle.LineNumbers.fo);
+					}
+				}*/
+
 		public override Color HexDigit {
 			get {
-				return ConvertColor (colorStyle.PlainText.Foreground);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground));
 			}
 		}
-		
+
 		public override Color HexDigitBg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Background);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Background));
 			}
 		}
-		
+
 		public override Color DashedLineFg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Foreground);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground));
 			}
 		}
-		
+
 		public override Color DashedLineBg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Background);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Background));
 			}
 		}
-		
+
 		public override Color IconBarBg {
 			get {
-				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.IndicatorMarginSeparator));
 			}
 		}
-		
+
 		public override Color IconBarSeperator {
 			get {
-				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.IndicatorMarginSeparator));
 			}
 		}
-		
+
 		public override Color BookmarkColor1 {
 			get {
-				return ConvertColor (colorStyle.Bookmarks.Color);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.MessageBubbleWarningLine));
 			}
 		}
-		
+
 		public override Color BookmarkColor2 {
 			get {
-				return ConvertColor (colorStyle.Bookmarks.SecondColor);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.MessageBubbleWarningLine2));
 			}
 		}
 		
 		public override Color Selection {
 			get {
-				return ConvertColor (colorStyle.SelectedText.Foreground);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground));
 			}
 		}
 		
 		public override Color SelectionBg {
 			get {
-				return ConvertColor (colorStyle.SelectedText.Background);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Selection));
 			}
 		}
 		
 		public override Color HighlightOffset {
 			get {
-				return ConvertColor (colorStyle.SearchResult.Color);
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.FindHighlight));
 			}
 		}
 	}

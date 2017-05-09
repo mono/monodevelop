@@ -93,8 +93,14 @@ namespace MonoDevelop.Projects
 
 		internal void ResolveObjects (Solution sol)
 		{
-			foreach (var it in Items)
+			for (int i = 0; i < Items.Count; i++) {
+				var it = Items [i];
 				it.ResolveObjects (sol);
+				if (it.SolutionItem == null) {//If we can't resolve project, it was probably removed from solution
+					Items.RemoveAt (i);
+					i--;
+				}
+			}
 		}
 
 		public override string Summary {
@@ -126,12 +132,19 @@ namespace MonoDevelop.Projects
 		}
 
 		string itemId;
+		string itemName;
 		string configurationId;
 
 		[ItemProperty]
 		string ItemId {
 			get { return itemId ?? SolutionItem?.ItemId; }
 			set { itemId = value; }
+		}
+
+		[ItemProperty]
+		string ItemName {
+			get { return itemName ?? SolutionItem?.Name; }
+			set { itemName = value; }
 		}
 
 		[ItemProperty]
@@ -144,6 +157,8 @@ namespace MonoDevelop.Projects
 		{
 			if (ItemId != null) {
 				SolutionItem = sol.GetSolutionItem (ItemId) as SolutionItem;
+				if (SolutionItem == null)
+					SolutionItem = sol.FindProjectByName (ItemName) as SolutionItem;
 				if (SolutionItem != null && ConfigurationId != null)
 					RunConfiguration = SolutionItem.GetRunConfigurations ().FirstOrDefault (c => c.Id == ConfigurationId);
 				ItemId = null;

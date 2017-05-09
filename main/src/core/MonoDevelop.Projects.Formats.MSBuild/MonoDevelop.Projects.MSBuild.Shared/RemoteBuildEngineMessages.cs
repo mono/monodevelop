@@ -50,6 +50,9 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		[MessageDataProperty]
 		public string ProjectFile { get; set; }
+
+		[MessageDataProperty]
+		public string SDKsPath { get; set; }
 	}
 
 	[MessageDataTypeAttribute]

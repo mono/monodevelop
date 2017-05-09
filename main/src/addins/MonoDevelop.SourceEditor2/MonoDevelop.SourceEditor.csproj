@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,9 +9,8 @@
     <ProjectGuid>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
-    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -23,15 +23,27 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
-      </CustomCommands>
-    </CustomCommands>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <ConsolePause>False</ConsolePause>
+    <DefineConstants>DEBUG</DefineConstants>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,6 +58,28 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>mono</StartProgram>
+    <StartArguments>--debug ../../../build/bin/MonoDevelop.exe</StartArguments>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -68,11 +102,6 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
@@ -88,16 +117,6 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
       <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
       <Name>Xwt.Gtk</Name>
@@ -108,6 +127,26 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="Microsoft.VisualStudio.CoreUtility">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.0.26201\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Data.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Logic">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.Logic.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Language.StandardClassification.15.0.26201\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -137,8 +176,13 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MonoDevelop.SourceEditor.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
@@ -170,8 +214,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\NewColorShemeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
@@ -190,16 +232,9 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextSourceVersionWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextChangeEventArgsWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\WavedLineMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\GrayOutMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
@@ -209,15 +244,45 @@
     <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ReadonlyDocumentSnapshot.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeLoader.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ImmutableTextTextSource.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchInSelectionMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DefaultAutoInsertBracketHandler.cs" />
+    <Compile Include="Mono.TextEditor\Gui\ActionMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\CodeSegmentEditorWindow.cs" />
+    <Compile Include="Mono.TextEditor\Gui\CodeSegmentPreviewWindow.cs" />
+    <Compile Include="Mono.TextEditor\Gui\DashedLineMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\FoldingScreenbackgroundRenderer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\GutterMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\IAnimationDrawer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\IBackgroundRenderer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\IconMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
+    <Compile Include="Mono.TextEditor\Gui\Margin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MarginDrawer.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextEditorAccessibility.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextViewMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\IListDataProvider.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\ListWidget.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Actor.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedBox.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedVBox.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedWidget.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Animation.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\BounceFadePopupWindow.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Choreographer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Pulsator.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -443,11 +508,28 @@
       <LogicalName>prefs-completion-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion" />
+    <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git" />
+    <InternalsVisibleTo Include="MonoDevelop.Refactoring" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNet.Tests" />
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.FSharp.Tests" />
+  </ItemGroup>
+  <Import Project="..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems')" />
+  <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
     <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
     <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
+    <Folder Include="Mono.TextEditor\" />
+    <Folder Include="Mono.TextEditor.PopupWindow\" />
+    <Folder Include="Mono.TextEditor.Theatrics\" />
   </ItemGroup>
 </Project>

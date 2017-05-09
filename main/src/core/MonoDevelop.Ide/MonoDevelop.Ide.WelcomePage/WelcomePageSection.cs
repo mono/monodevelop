@@ -28,6 +28,7 @@ using Gtk;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -56,19 +57,28 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageSection (string title = null)
 		{
+			if (!string.IsNullOrEmpty (title)) {
+				Accessible.SetTitle (title);
+			}
+
 			this.title = title;
 			VisibleWindow = false;
+			root.Accessible.SetShouldIgnore (true);
 			Add (root);
+
 			root.Show ();
 
 			uint p = Styles.WelcomeScreen.Pad.ShadowSize * 2;
 			root.SetPadding (p, p, p, p);
 
 			TitleAlignment = new Alignment (0f, 0f, 1f, 1f);
+			TitleAlignment.Accessible.SetShouldIgnore (true);
 			p = Styles.WelcomeScreen.Pad.Padding;
 			TitleAlignment.SetPadding (p, Styles.WelcomeScreen.Pad.LargeTitleMarginBottom, p, p);
+
 			ContentAlignment = new Alignment (0f, 0f, 1f, 1f);
 			ContentAlignment.SetPadding (0, p, p, p);
+			ContentAlignment.Accessible.SetShouldIgnore (true);
 
 			Gui.Styles.Changed += UpdateStyle;
 		}
@@ -91,6 +101,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			var box = new VBox ();
+			box.Accessible.SetShouldIgnore (true);
+
 			label = new Label () { Markup = string.Format (headerFormat, title), Xalign = (uint) 0 };
 			TitleAlignment.Add (label);
 			box.PackStart (TitleAlignment, false, false, 0);
@@ -169,6 +181,32 @@ namespace MonoDevelop.Ide.WelcomePage
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (GettextCatalog.GetString ("Could not open the url '{0}'", uri), ex);
 			}
+		}
+
+		// Accessible widgets can say what other widget acts as their title
+		// so use this to set the Section title to be that title
+		//
+		// The content cannot automatically be set because it might be ignored
+		// by accessibility
+		//
+		// This must be called after setContent, otherwise label will be null
+		protected void SetTitledWidget (Widget widget)
+		{
+			if (label == null) {
+				return;
+			}
+
+			widget.Accessible.SetTitleUIElement (label.Accessible);
+			label.Accessible.AddElementToTitle (widget.Accessible);
+		}
+
+		protected void RemoveAccessibiltyTitledWidget (Widget widget)
+		{
+			if (label == null) {
+				return;
+			}
+
+			label.Accessible.RemoveElementFromTitle (widget.Accessible);
 		}
 	}
 }

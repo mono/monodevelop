@@ -200,7 +200,7 @@ namespace MonoDevelop.ConnectedServices
 					if (service.Dependencies [i].Category == ConnectedServiceDependency.PackageDependencyCategory) {
 						if (i > 0)
 							sb.AppendLine ();
-						sb.Append ("   • " + service.Dependencies [i].DisplayName);
+						sb.Append ("   • ").Append (service.Dependencies [i].DisplayName);
 					}
 				}
 				sb.Append ("\n\n");

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TextEditorTestBase.cs
 //  
 // Author:
@@ -25,23 +25,64 @@
 // THE SOFTWARE.
 
 using System;
-using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
 {
-	public class TextEditorTestBase
+	class TextEditorTestBase
 	{
 		static bool firstRun = true;
-		
+		static string rootDir;
+		static int projectId = 1;
+
+		public static string TestsRootDir {
+			get {
+				if (rootDir == null) {
+					rootDir = Path.GetDirectoryName (typeof (TextEditorTestBase).Assembly.Location);
+					rootDir = Path.Combine (Path.Combine (rootDir, ".."), "..");
+					rootDir = Path.GetFullPath (Path.Combine (rootDir, "tests"));
+				}
+				return rootDir;
+			}
+		}
+
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
 			if (firstRun) {
-				Gtk.Application.Init ();
-				firstRun = false;
+				string rootDir = Path.Combine (TestsRootDir, "config");
+				try {
+					firstRun = false;
+					InternalSetup (rootDir);
+				} catch (Exception) {
+					// if we encounter an error, try to re create the configuration directory
+					// (This takes much time, therfore it's only done when initialization fails)
+					try {
+						if (Directory.Exists (rootDir))
+							Directory.Delete (rootDir, true);
+						InternalSetup (rootDir);
+					} catch (Exception) {
+					}
+				}
 			}
+		}
+
+		protected virtual void InternalSetup (string rootDir)
+		{
+			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
+			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
+			Runtime.Initialize (true);
+			Gtk.Application.Init ();
+			DesktopService.Initialize ();
+			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
+				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 		}
 
 		[TestFixtureTearDown]
@@ -85,8 +126,8 @@ namespace Mono.TextEditor.Tests
 							break;
 						}
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
-							segment.IsFolded = false;
+							var segment = new FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
+							segment.IsCollapsed = false;
 							foldStack.Push (segment);
 							i++;
 							break;
@@ -97,8 +138,8 @@ namespace Mono.TextEditor.Tests
 					if (i + 1 < content.Length) {
 						var next = content [i + 1];
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
-							segment.IsFolded = true;
+							var segment = new FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
+							segment.IsCollapsed = true;
 							foldStack.Push (segment);
 							i++;
 							break;
@@ -156,7 +197,7 @@ namespace Mono.TextEditor.Tests
 				Assert.AreEqual (list1.Count, list2.Count, "Fold segment count mismatch.");
 				for (int i = 0; i < list1.Count; i++) {
 					Assert.AreEqual (list1 [i].Segment, list2 [i].Segment, "Fold " + i + " segment mismatch.");
-					Assert.AreEqual (list1 [i].IsFolded, list2 [i].IsFolded, "Fold " + i + " isFolded mismatch.");
+					Assert.AreEqual (list1 [i].IsCollapsed, list2 [i].IsCollapsed, "Fold " + i + " isFolded mismatch.");
 				}
 			}
 		}

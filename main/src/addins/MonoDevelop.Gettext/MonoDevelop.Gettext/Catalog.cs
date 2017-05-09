@@ -976,7 +976,8 @@ namespace MonoDevelop.Gettext
 				foreach (string line in value.Split (new string[] {Environment.NewLine}, StringSplitOptions.None)) {
 					if (sb.Length != 0)
 						sb.AppendLine ();
-					sb.Append ("# " + line);
+					sb.Append ("# ");
+					sb.Append (line);
 				}
 				this.Comment = sb.ToString ();
 			}

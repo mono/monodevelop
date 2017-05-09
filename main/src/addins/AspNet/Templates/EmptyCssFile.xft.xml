@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	language="CSS"
+	created="2017/05/01"
+	lastModified="2017/05/01">
+
+	<TemplateConfiguration>
+		<_Name>Empty CSS File</_Name>
+		<Icon>md-file-css</Icon>
+		<_Category>Web</_Category>
+		<_Description>Creates an empty CSS file.</_Description>
+		<DefaultFilename>EmptyCSSFile</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".css" src="StylesheetTemplate.css" />
+	</TemplateFiles>
+</Template>

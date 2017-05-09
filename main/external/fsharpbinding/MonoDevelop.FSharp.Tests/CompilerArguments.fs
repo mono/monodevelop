@@ -20,8 +20,13 @@ type CompilerArgumentsTests() =
         let path = path.Substring(0,path.Length - 1)
         path
 
+    let createFSharpProject() =
+        let testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        testProject.FileName <- FilePath "FSharpProject.fsproj"
+        testProject
+
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
-        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        use testProject = createFSharpProject()
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let _ = testProject.AddReference assemblyName
         let references =
@@ -31,16 +36,14 @@ type CompilerArgumentsTests() =
                                                  ConfigurationSelector.Default,
                                                  true) 
 
-        references.Length |> should equal 3
-
         //The two paths for mscorlib and FSharp.Core should match
         let testPaths = references |> List.map makeTestableReference
         match testPaths |> List.map Path.GetDirectoryName with
-        | [one; two; three] -> ()//one |> should equal three
-        | _ -> Assert.Fail("Too many references returned")
+        | [one; two; three] -> ()
+        | _ -> Assert.Fail(sprintf "Too many references returned %A" testPaths)
 
     member private x.``Run Only FSharp.Core referenced``(assemblyName) =
-        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        use testProject = createFSharpProject()
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let reference = testProject.AddReference assemblyName
         let references = 
@@ -85,9 +88,9 @@ type CompilerArgumentsTests() =
         | _ -> ()
 
     //[<TestCase(TestPlatform.Windows,"FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.OSX,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>]
-    [<TestCase(TestPlatform.Linux, "/usr/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
+    [<TestCase(TestPlatform.OSX,"FSharp.Core, Version=4.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.4.1.0__b03f5f7f11d50a3a/FSharp.Core.dll")>]
+    [<TestCase(TestPlatform.Linux, "/usr/lib/mono/gac/FSharp.Core/4.4.1.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
     [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
     member x.``Only FSharp.Core referenced`` (platform: TestPlatform, assemblyName:string) =
         match platform with
@@ -101,10 +104,10 @@ type CompilerArgumentsTests() =
     
     [<Test>]
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
-        if not Platform.IsWindows then
-            use testProject = Services.ProjectService.CreateDotNetProject ("F#")
+        if Platform.IsMac then
+            use testProject = createFSharpProject()
             let _ = testProject.AddReference "mscorlib"
-            let reference = testProject.AddReference "FSharp.Core.dll"
+            let reference = testProject.AddReference "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll"
             let references =
                 CompilerArguments.generateReferences(testProject,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),

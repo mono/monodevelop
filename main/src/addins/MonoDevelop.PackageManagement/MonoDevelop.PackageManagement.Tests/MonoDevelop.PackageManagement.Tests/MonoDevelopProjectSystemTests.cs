@@ -1248,7 +1248,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var package = new PackageIdentity ("Test", new NuGetVersion ("1.2"));
 			string expectedLogMessage = "WARNING: Test Package contains PowerShell script 'init.ps1' which will not be run.";
 
-			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, null, false);
+			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, false);
 
 			Assert.AreEqual (MessageLevel.Info, projectSystem.FakeNuGetProjectContext.LastLogLevel);
 			Assert.AreEqual (expectedLogMessage, projectSystem.FakeNuGetProjectContext.LastMessageLogged);

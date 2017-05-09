@@ -34,8 +34,13 @@ namespace MonoDevelop.Core.Collections
 	public class Set<T>: ICollection<T>
 	{
 		Dictionary<T,Set<T>> dict = new Dictionary<T,Set<T>> ();
-		
-		public IEnumerator GetEnumerator ()
+
+		public Dictionary<T, Set<T>>.KeyCollection.Enumerator GetEnumerator ()
+		{
+			return dict.Keys.GetEnumerator ();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator ()
 		{
 			return ((IEnumerable)dict.Keys).GetEnumerator ();
 		}

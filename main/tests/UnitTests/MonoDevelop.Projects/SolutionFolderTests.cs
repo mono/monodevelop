@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectFolderTests.cs
 //
 // Author:
@@ -43,6 +43,8 @@ namespace MonoDevelop.Projects
 			folder.AddItem (project);
 
 			Assert.IsNotNull (folder.GetProjectContainingFile (project.FileName), "#1");
+
+			project.Dispose ();
 		}
 	}
 }

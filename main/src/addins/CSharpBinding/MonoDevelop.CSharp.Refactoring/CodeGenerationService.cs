@@ -142,12 +142,13 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentNullException (nameof (type));
 			if (newMember == null)
 				throw new ArgumentNullException (nameof (newMember));
-			var ws = MonoDevelop.Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
-			var projectId = ws.GetProjectId (project);
-			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
-
-			var document = ws.GetDocument (docId, cancellationToken);
-
+			var doc = await IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
+			await doc.UpdateParseDocument ();
+			var document = doc.AnalysisDocument;
+			if (document == null) {
+				LoggingService.LogError ("Can't find document to insert member (fileName:" + part.SourceTree.FilePath + ")");
+				return;
+			}
 			var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
 
@@ -157,7 +158,6 @@ namespace MonoDevelop.Refactoring
 			if (systemVoid != null) newMember = newMember.ReplaceNode (systemVoid, SyntaxFactory.ParseTypeName ("void"));
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
-			var doc = await IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
 
 			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
 			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");

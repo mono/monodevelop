@@ -37,6 +37,7 @@ namespace MonoDevelop.Components
 
 		public ImageView ()
 		{
+			Accessible.Role = Atk.Role.Image;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable | Gtk.WidgetFlags.NoWindow;
 		}
 

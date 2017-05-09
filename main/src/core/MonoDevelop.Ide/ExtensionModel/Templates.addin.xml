@@ -4,6 +4,15 @@
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
 	<Description>File templates to be shown in the New File dialog.</Description>
 	<ExtensionNode name="FileTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+	<ConditionType id="FlavorType" type="MonoDevelop.Projects.Extensions.FlavorTypeCondition">
+		<Description>Type of a flavor that a project must have. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+	</ConditionType>
+	<ConditionType id="ProjectTypeId" type="MonoDevelop.Projects.Extensions.ProjectTypeIdCondition">
+		<Description>The id can be a project type guid or a flavor guid, or the corresponding type alias</Description>
+	</ConditionType>
+	<ConditionType id="AppliesTo" type="MonoDevelop.Projects.Extensions.AppliesToCondition">
+		<Description>Project capability expression.</Description>
+	</ConditionType>
 </ExtensionPoint>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateTypes" name = "File template types">
@@ -19,6 +28,11 @@
 <ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplates" name = "File template types">
 	<Description>Project templates to be shown in the New Project dialog.</Description>
 	<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/Templates" name = "Microsoft Templating Engine templates">
+	<Description>Microsoft templating engine project templates to be shown in the New Project dialog.</Description>
+	<ExtensionNode name="Template" type="MonoDevelop.Ide.Codons.TemplateExtensionNode"/>
 </ExtensionPoint>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatePackageInstallers" name = "Project template package installers">
@@ -87,6 +101,7 @@
 </Extension>
 
 <Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+	<FileTemplateConditionType name = "HasReference" class = "MonoDevelop.Ide.Templates.HasReferenceFileTemplateCondition"/>
 	<FileTemplateConditionType name = "ClrVersion" class = "MonoDevelop.Ide.Templates.ClrVersionFileTemplateCondition"/>
 	<FileTemplateConditionType name = "PartialTypeSupport" class = "MonoDevelop.Ide.Templates.PartialTypeFileTemplateCondition"/>
 	<FileTemplateConditionType name = "ParentProject" class = "MonoDevelop.Ide.Templates.ParentProjectFileTemplateCondition"/>
@@ -107,9 +122,7 @@
 	<Category id="other" name="Other" icon="md-platform-other">
 		<Category id="net" name=".NET">
 			<Category id="general" name="General" mappedCategories="C#" />
-		</Category>
-		<Category id="aspnet" name="ASP.NET">
-			<Category id="general" name="General" mappedCategories="C#/ASP.NET" />
+			<Category id="aspnet" name="ASP.NET" mappedCategories="C#/ASP.NET" />
 		</Category>
 		<Category id="misc" name="Miscellaneous">
 			<Category id="generic" name="Generic" />
@@ -121,6 +134,7 @@
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplatingProviders">
 	<Class id="MonoDevelop.ProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.ProjectTemplatingProvider" />
+	<Class id="MonoDevelop.MicrosoftTemplateEngineProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.MicrosoftTemplateEngineProjectTemplatingProvider" />
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/TemplateImages">

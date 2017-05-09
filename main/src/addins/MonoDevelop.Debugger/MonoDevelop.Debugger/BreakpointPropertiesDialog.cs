@@ -84,97 +84,11 @@ namespace MonoDevelop.Debugger
 		readonly TextEntry entryPrintExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Value of 'name' is {name}") };
 
 		// Warning icon
-		readonly ImageViewWithTooltip warningFunction = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageViewWithTooltip warningLocation = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageViewWithTooltip warningException = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageViewWithTooltip warningCondition = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageViewWithTooltip warningPrintExpression = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-
-		//This class was created because normal TooltipText sometimes didn't appear seems like GTK# bug
-		class ImageViewWithTooltip : Xwt.Widget
-		{
-			string tip;
-			Xwt.Drawing.Image icon;
-			Xwt.ImageView image;
-
-			MonoDevelop.Components.TooltipPopoverWindow tooltipWindow;
-			bool mouseOver;
-
-			public ImageViewWithTooltip (Xwt.Drawing.Image icon)
-			{
-				this.icon = icon;
-				image = new Xwt.ImageView (icon);
-				this.Content = image;
-
-				MouseEntered += HandleEnterNotifyEvent;
-				MouseExited += HandleLeaveNotifyEvent;
-			}
-
-			[GLib.ConnectBefore]
-			void HandleLeaveNotifyEvent (object sender, EventArgs e)
-			{
-				mouseOver = false;
-				HideTooltip ();
-			}
-
-			[GLib.ConnectBefore]
-			void HandleEnterNotifyEvent (object sender, EventArgs e)
-			{
-				mouseOver = true;
-				ShowTooltip ();
-			}
-
-			bool ShowTooltip ()
-			{
-				if (!string.IsNullOrEmpty (tip)) {
-					HideTooltip ();
-					tooltipWindow = new MonoDevelop.Components.TooltipPopoverWindow ();
-					tooltipWindow.ShowArrow = true;
-					tooltipWindow.Text = tip;
-					var rect = this.ScreenBounds;
-					tooltipWindow.ShowPopup ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (this),
-						new Gdk.Rectangle ((int)(ParentWindow.X - rect.X), (int)(ParentWindow.Y - rect.Y), (int)rect.Width, (int)rect.Height),
-						MonoDevelop.Components.PopupPosition.Bottom);
-				}
-				return false;
-			}
-
-			void HideTooltip ()
-			{
-				if (tooltipWindow != null) {
-					tooltipWindow.Destroy ();
-					tooltipWindow = null;
-				}
-			}
-
-			protected override void Dispose (bool disposing)
-			{
-				HideTooltip ();
-				base.Dispose (disposing);
-			}
-
-			public string ToolTip {
-				get { return tip; }
-				set {
-					tip = value;
-					if (tooltipWindow != null) {
-						if (!string.IsNullOrEmpty (tip))
-							tooltipWindow.Text = value;
-						else
-							HideTooltip ();
-					} else if (!string.IsNullOrEmpty (tip) && mouseOver)
-						ShowTooltip ();
-				}
-			}
-
-			public Xwt.Drawing.Image Image {
-				get { return icon; }
-				set {
-					icon = value;
-					image.Image = icon;
-				}
-			}
-		}
+		readonly Components.InformationPopoverWidget warningFunction = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningLocation = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningException = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningCondition = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningPrintExpression = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
 
 		// Combobox + Pager
 		readonly SpinButton ignoreHitCount = new SpinButton ();
@@ -221,6 +135,9 @@ namespace MonoDevelop.Debugger
 				case BreakpointType.Catchpoint:
 					stopOnException.Active = true;
 					entryExceptionType.SetFocus ();
+					entryExceptionType.Text = "System.Exception";
+					entryExceptionType.SelectionStart = 0;
+					entryExceptionType.SelectionLength = entryExceptionType.TextLength;
 					break;
 				}
 			}
@@ -623,7 +540,7 @@ namespace MonoDevelop.Debugger
 
 			if (breakpointActionPrint.Active && string.IsNullOrWhiteSpace (entryPrintExpression.Text)) {
 				warningPrintExpression.Show ();
-				warningPrintExpression.ToolTip = GettextCatalog.GetString ("Enter trace expression.");
+				warningPrintExpression.Message = GettextCatalog.GetString ("Enter trace expression.");
 				result = false;
 			}
 
@@ -633,13 +550,13 @@ namespace MonoDevelop.Debugger
 				if (stopOnFunction.Active) {
 					if (text.Length == 0) {
 						warningFunction.Show ();
-						warningFunction.ToolTip = GettextCatalog.GetString ("Enter function name.");
+						warningFunction.Message = GettextCatalog.GetString ("Enter function name.");
 						result = false;
 					}
 
 					if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
 						warningFunction.Show ();
-						warningFunction.ToolTip = GettextCatalog.GetString ("Invalid function syntax.");
+						warningFunction.Message = GettextCatalog.GetString ("Invalid function syntax.");
 						result = false;
 					}
 				}
@@ -647,17 +564,17 @@ namespace MonoDevelop.Debugger
 				breakpointLocation.Update (entryLocationFile.Text);
 				if (!breakpointLocation.IsValid) {
 					warningLocation.Show ();
-					warningLocation.ToolTip = breakpointLocation.Warning;
+					warningLocation.Message = breakpointLocation.Warning;
 					result = false;
 				}
 			} else if (stopOnException.Active) {
 				if (string.IsNullOrWhiteSpace (entryExceptionType.Text)) {
 					warningException.Show ();
-					warningException.ToolTip = GettextCatalog.GetString ("Enter exception type.");
+					warningException.Message = GettextCatalog.GetString ("Enter exception type.");
 					result = false;
 				} else if (!classes.Contains (entryExceptionType.Text)) {
 					warningException.Show ();
-					warningException.ToolTip = GettextCatalog.GetString ("Exception not identified in exception list generated from currently selected project.");
+					warningException.Message = GettextCatalog.GetString ("Exception not identified in exception list generated from currently selected project.");
 					//We might be missing some exceptions that are loaded at runtime from outside our project
 					//or we don't have project at all, hence show warning but still allow user to close window
 					result = true;

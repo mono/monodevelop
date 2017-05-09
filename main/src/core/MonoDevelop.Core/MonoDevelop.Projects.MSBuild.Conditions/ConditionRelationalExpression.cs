@@ -149,32 +149,39 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			}
 		}
 
+		List<string> combinedProperty = null;
+		List<string> combinedValue = null;
+		bool combinedPropertySet;
+		object conditionPropertiesLock = new object ();
 		public override void CollectConditionProperties (ConditionedPropertyCollection properties)
 		{
-			if ((op == RelationOperator.Equal || op == RelationOperator.NotEqual) && left is ConditionFactorExpression && right is ConditionFactorExpression) {
-				var leftString = ((ConditionFactorExpression)left).Token.Value;
-				var rightString = ((ConditionFactorExpression)right).Token.Value;
-				List<string> combinedProperty = null;
-				List<string> combinedValue = null;
+			lock (conditionPropertiesLock) {
+				if (!combinedPropertySet) {
+					combinedPropertySet = true;
+					if ((op == RelationOperator.Equal || op == RelationOperator.NotEqual) && left is ConditionFactorExpression && right is ConditionFactorExpression) {
+						var leftString = ((ConditionFactorExpression)left).Token.Value;
+						var rightString = ((ConditionFactorExpression)right).Token.Value;
 
-				int il = 0;
-				int rl = 0;
-				while (il < leftString.Length && rl < rightString.Length) {
-					if (il < leftString.Length - 2 && leftString [il] == '$' && leftString [il + 1] == '(')
-						ReadPropertyCondition (leftString, ref combinedProperty, ref combinedValue, ref il, rightString, ref rl);
-					else if (rl < rightString.Length - 2 && rightString [rl] == '$' && rightString [rl + 1] == '(')
-						ReadPropertyCondition (rightString, ref combinedProperty, ref combinedValue, ref rl, leftString, ref il);
-					else if (leftString [il] != rightString [rl])
-						return; // Condition can't be true
-					il++; rl++;
+						int il = 0;
+						int rl = 0;
+						while (il < leftString.Length && rl < rightString.Length) {
+							if (il < leftString.Length - 2 && leftString [il] == '$' && leftString [il + 1] == '(')
+								ReadPropertyCondition (leftString, ref combinedProperty, ref combinedValue, ref il, rightString, ref rl);
+							else if (rl < rightString.Length - 2 && rightString [rl] == '$' && rightString [rl + 1] == '(')
+								ReadPropertyCondition (rightString, ref combinedProperty, ref combinedValue, ref rl, leftString, ref il);
+							else if (leftString [il] != rightString [rl])
+								return; // Condition can't be true
+							il++; rl++;
+						}
+					}
 				}
-
-				// This condition sets values for more that one property. In addition to the individual values, also register
-				// the combination of values. So for example if the condition has "$(Configuration)|$(Platform) == Foo|Bar",
-				// the conditioned property collection would contain Configuration=Foo, Platform=Bar, (Configuration|Platfrom)=Foo|Bar
-				if (combinedProperty != null)
-					properties.AddPropertyValues (combinedProperty, combinedValue);
 			}
+
+			// This condition sets values for more that one property. In addition to the individual values, also register
+			// the combination of values. So for example if the condition has "$(Configuration)|$(Platform) == Foo|Bar",
+			// the conditioned property collection would contain Configuration=Foo, Platform=Bar, (Configuration|Platfrom)=Foo|Bar
+			if (combinedProperty != null)
+				properties.AddPropertyValues (combinedProperty, combinedValue);
 		}
 
 		void ReadPropertyCondition (string propString, ref List<string> combinedProperty, ref List<string> combinedValue, ref int i, string valString, ref int j)

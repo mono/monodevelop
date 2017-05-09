@@ -72,6 +72,18 @@ namespace MonoDevelop.Core.Execution
 		public bool Notable { get; set; }
 
 		/// <summary>
+		/// Gets or sets the image name that should be used for this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/>.
+		/// </summary>
+		/// <value>The name of the image.</value>
+		public string Image { get; set; }
+
+		/// <summary>
+		/// Gets or sets the tooltip that should be used for this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/>.
+		/// </summary>
+		/// <value>The text to be shown in the tooltip.</value>
+		public string Tooltip { get; set; }
+
+		/// <summary>
 		/// Target group on which this target is included
 		/// </summary>
 		public ExecutionTargetGroup ParentGroup { get; internal set; }
@@ -186,9 +198,14 @@ namespace MonoDevelop.Core.Execution
 
 		#endregion
 
+		public List<ExecutionTarget>.Enumerator GetEnumerator ()
+		{
+			return targets.GetEnumerator ();
+		}
+
 		#region IEnumerable implementation
 
-		public IEnumerator<ExecutionTarget> GetEnumerator ()
+		IEnumerator<ExecutionTarget> IEnumerable<ExecutionTarget>.GetEnumerator ()
 		{
 			return targets.GetEnumerator ();
 		}

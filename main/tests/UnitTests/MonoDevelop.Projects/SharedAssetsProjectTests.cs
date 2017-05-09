@@ -64,6 +64,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
 
 			Assert.AreEqual ("SharedNamespace", pcs.DefaultNamespace);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -75,6 +77,8 @@ namespace MonoDevelop.Projects
 			var res = await pc1.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -120,6 +124,8 @@ namespace MonoDevelop.Projects
 			pc2f = pc2.Files.GetFile (sharedFile);
 			Assert.IsTrue (pc1f == null);
 			Assert.IsTrue (pc2f == null);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -143,6 +149,8 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (r);
 
 			Assert.IsTrue (pc3.Files.GetFile (sharedFile) != null);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -167,6 +175,8 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (pc1.Files.GetFile (sharedFile) != null);
 			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
 			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -278,6 +288,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refProjectXml, projectXml);
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -298,6 +310,8 @@ namespace MonoDevelop.Projects
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			sol.RootFolder.AddItem (project);
 			Assert.IsTrue (sol.StartupItem == project);
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -315,6 +329,8 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.AddItem (main);
 
 			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -332,6 +348,8 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.AddItem (shared);
 
 			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -358,6 +376,8 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNull (main.Files.GetFile ("Foo.cs"));
 			Assert.IsFalse (main.References.Contains (pref));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -421,6 +441,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (refProj, savedProj);
 			Assert.AreEqual (refItems, savedItems);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -447,6 +469,8 @@ namespace MonoDevelop.Projects
 			sourceFiles = await pc1.GetSourceFilesAsync (ConfigurationSelector.Default);
 
 			Assert.IsTrue (sourceFiles.Any (pf => pf.Name.EndsWith ("NewClass.cs", System.StringComparison.Ordinal)), "Source files list doesn't contain NewClass.cs");
+
+			sol.Dispose ();
 		}
 	}
 }

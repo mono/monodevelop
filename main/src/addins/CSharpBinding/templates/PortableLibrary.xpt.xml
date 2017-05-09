@@ -10,7 +10,7 @@
 		<Icon>md-crossplatform-pcl-project</Icon>
 		<Image id="md-crossplatform-pcl-project" />
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates a C# library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
+		<_Description>Creates a C# library that can be used in Windows, Mac, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>
 		<GroupId>md-project-portable-library</GroupId>
 	</TemplateConfiguration>

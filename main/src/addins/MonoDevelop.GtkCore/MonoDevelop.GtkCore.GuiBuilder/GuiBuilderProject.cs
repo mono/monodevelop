@@ -435,7 +435,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (p != null)
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
-				path = pref.Reference;
+				path = pref.HintPath;
 			} else if (pref.ReferenceType == ReferenceType.Package) {
 				path = pref.Reference;
 			}

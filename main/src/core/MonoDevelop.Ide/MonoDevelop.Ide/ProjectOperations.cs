@@ -709,12 +709,18 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
-			if (!IdeApp.Workbench.SaveAllDirtyFiles ())
+			NewSolution (defaultTemplate, true);
+		}
+
+		public async void NewSolution (string defaultTemplate, bool showTemplateSelection)
+		{
+			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
 				return;
 
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
+			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
 			newProjectDialog.Show ();
 		}
 		
@@ -791,11 +797,17 @@ namespace MonoDevelop.Ide
 
 		public SolutionFolderItem CreateProject (SolutionFolder parentFolder, string selectedTemplateId)
 		{
+			return CreateProject (parentFolder, selectedTemplateId, true);
+		}
+
+		public SolutionFolderItem CreateProject (SolutionFolder parentFolder, string selectedTemplateId, bool showTemplateSelection)
+		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.ParentFolder = parentFolder;
 			newProjectDialog.BasePath = basePath;
 			newProjectDialog.SelectedTemplateId = selectedTemplateId;
+			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
 
 			if (newProjectDialog.Show ()) {
 				var item = newProjectDialog.NewItem as SolutionFolderItem;
@@ -2460,7 +2472,7 @@ namespace MonoDevelop.Ide
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
 			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
+				if (IsSearchedDocument (doc, filePath)) {
 					return doc.Editor;
 				}
 			}
@@ -2472,24 +2484,22 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Workbench != null) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.FileName == filePath) {
+					if (IsSearchedDocument (doc, filePath)) {
 						isOpen = true;
 						return doc.Editor;
 					}
 				}
 			}
 
-			bool hadBom;
-			Encoding encoding;
-			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = TextEditorFactory.CreateNewDocument ();
-			data.UseBOM = hadBom;
-			data.Encoding = encoding;
-			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.FileName = filePath;
-			data.Text = text;
+			var data = TextEditorFactory.CreateNewDocument (filePath, DesktopService.GetMimeTypeForUri(filePath));
+
 			isOpen = false;
 			return data;
+		}
+
+		static bool IsSearchedDocument (Document doc, FilePath filePath)
+		{
+			return doc.IsFile && doc.Editor != null && doc.FileName != null && FilePath.PathComparer.Compare (Path.GetFullPath (doc.FileName), filePath) == 0;
 		}
 	}
 }

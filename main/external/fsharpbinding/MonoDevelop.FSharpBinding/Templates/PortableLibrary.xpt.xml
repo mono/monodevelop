@@ -10,7 +10,7 @@
 		<Icon>md-crossplatform-pcl-project</Icon>
 		<Image id="md-crossplatform-pcl-project" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates a F# PCL library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
+		<_Description>Creates a F# PCL library that can be used in Windows, Mac, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>
 		<GroupId>md-project-portable-library</GroupId>
 	</TemplateConfiguration>
@@ -34,8 +34,8 @@
 					 TargetProfile = "netcore" />
 			<References>
 			</References>
-      <Packages>
-        <Package Id="FSharp.Core" Version="4.0.0.1" local="true" /> 
+      <Packages requireLicenseAcceptance="false">
+        <Package Id="FSharp.Core" Version="4.1.0.2" />
       </Packages>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
@@ -47,7 +47,7 @@ type Class1() =
 ]]></UnformattedFile>
 				<UnformattedFile name = "Script.fsx" AddStandardHeader="True">
 				<![CDATA[// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
- for more guidance on F# programming.
+// for more guidance on F# programming.
 
 #load "Component1.fs"
 open ${Namespace}

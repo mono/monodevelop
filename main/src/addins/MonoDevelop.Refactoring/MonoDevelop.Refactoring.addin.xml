@@ -1,4 +1,7 @@
 <ExtensionModel>
+	<Runtime>
+		<Import assembly="RefactoringEssentials.dll" />
+	</Runtime>
 	
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
@@ -25,29 +28,6 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
-	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
-		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
-			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
-		</ExtensionNode>
-		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.Extensions.NamedAnalysisRuleAddinNode" />
-		<ExtensionNode name="Adaptor" type="MonoDevelop.AnalysisCore.Extensions.AdaptorAnalysisRuleAddinNode" />
-	</ExtensionNodeSet>
-	
-	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Rules" name = "Analysis Rules">
-		<Description>Analysis rules.</Description>
-		<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
-		<Description>Analysis rule input/output types.</Description>
-		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.Extensions.AnalysisTypeExtensionNode" />
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/FixHandlers" name = "Fix handlers">
-		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
-		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
-	</ExtensionPoint>
-
 	<!-- Extensions -->
 
 	<!--
@@ -60,8 +40,8 @@
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -83,6 +63,11 @@
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />
 		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu"
+		         _label = "Quick Fix"
+		         type = "array"
+		         defaultHandler = "MonoDevelop.Refactoring.QuickFixMenuHandler" />
+
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
@@ -122,17 +107,6 @@
 		             insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 	</Extension>
 	
-	<!-- Quick fix commands -->
-
-	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ShowFixes"
-			defaultHandler="MonoDevelop.AnalysisCore.ShowFixesHandler"
-			_label = "Show Fixes"
-			_description="Shows a list of fixes for problems at the current location"
-			macShortcut="Control|."
-			shortcut = "Control|." />
-	</Extension>
-	
 	<!-- Options panels -->
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
@@ -145,25 +119,6 @@
 	</Extension>
 	
 	<!-- Extensions to the addin points defined by this addin -->
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="AnalysisDocument" class="MonoDevelop.AnalysisCore.Gui.AnalysisDocument" />
-		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
-			input="AnalysisDocument" output="CompilationUnit" />
-		<Category _name="Design Guidelines" id="Design">
-<!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
-				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->
-		</Category>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
-		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
-		<Handler fixName="Generic" class = "MonoDevelop.AnalysisCore.Fixes.GenericFixHandler" />
-	</Extension>
     
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="md-prefs-code-actions" resource="prefs-code-actions-16.png" size="Menu" />

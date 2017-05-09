@@ -48,12 +48,12 @@ using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
-using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
 using System.Diagnostics;
 using Xwt.Mac;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -169,6 +169,15 @@ namespace MonoDevelop.MacIntegration
 				};
 			}
 
+			// Now that Cocoa has been initialized we can check whether the keyboard focus mode is turned on
+			// See System Preferences - Keyboard - Shortcuts - Full Keyboard Access
+			var keyboardMode = NSUserDefaults.StandardUserDefaults.IntForKey ("AppleKeyboardUIMode");
+			// 0 - Text boxes and lists only
+			// 2 - All controls
+			if (keyboardMode == 2) {
+				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
+			}
+
 			return loaded;
 		}
 
@@ -251,7 +260,7 @@ namespace MonoDevelop.MacIntegration
 
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				foreach (CommandEntry ce in ces) {
-					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet) ce));
+					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
 				}
 			} catch (Exception ex) {
 				try {
@@ -265,6 +274,7 @@ namespace MonoDevelop.MacIntegration
 				setupFail = true;
 				return false;
 			}
+
 			return true;
 		}
 
@@ -294,7 +304,7 @@ namespace MonoDevelop.MacIntegration
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Policies...");
 			commandManager.GetCommand (HelpCommands.About).Text = GetAboutCommandText ();
 			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GetHideWindowCommandText ();
-			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
+			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Extensions...");
 
 			initedApp = true;
 
@@ -335,7 +345,7 @@ namespace MonoDevelop.MacIntegration
 		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
 		{
 			if (view.Class.Name == "NSPageableTableView")
-					((NSTableView)view).BackgroundColor = Styles.BackgroundColor.ToNSColor ();
+					((NSTableView)view).BackgroundColor = Xwt.Mac.Util.ToNSColor (Styles.BackgroundColor);
 			view.Appearance = appearance;
 
 			foreach (var subview in view.Subviews)
@@ -413,7 +423,7 @@ namespace MonoDevelop.MacIntegration
 				{
 					// We can only attempt to quit safely if all windows are GTK windows and not modal
 					if (!IsModalDialogRunning ()) {
-						e.UserCancelled = !IdeApp.Exit ();
+						e.UserCancelled = !IdeApp.Exit ().Result; // FIXME: could this block in rare cases?
 						e.Handled = true;
 						return;
 					}
@@ -968,7 +978,9 @@ namespace MonoDevelop.MacIntegration
 			var proc = new Process ();
 
 			var path = bundlePath.Combine ("Contents", "MacOS");
-			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+			//assume renames of mdtool end with "tool"
+			var mdtool = Directory.EnumerateFiles (path, "*tool").Single();
+			var psi = new ProcessStartInfo (mdtool) {
 				CreateNoWindow = true,
 				UseShellExecute = false,
 				WorkingDirectory = path,

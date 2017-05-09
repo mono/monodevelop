@@ -5,6 +5,7 @@ using MonoDevelop.Ide.FindInFiles;
 using Cairo;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -65,12 +66,12 @@ namespace MonoDevelop.SourceEditor
 				uint curIndex = 0, byteIndex = 0;
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
 
-				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
 				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}
@@ -78,25 +79,26 @@ namespace MonoDevelop.SourceEditor
 			@from = Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				Mono.TextEditor.Highlighting.AmbientColor colorStyle;
+				HslColor colorStyle;
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
-					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
-					colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
-					if (colorStyle.Color.A == 0.0)
-						colorStyle = editor.ColorStyle.UsagesRectangle;
+					(usage.UsageType & ReferenceUsageType.Declaration) == ReferenceUsageType.Declaration) {
+					
+					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
+					if (colorStyle.Alpha == 0.0)
+						colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				} else {
-					colorStyle = editor.ColorStyle.UsagesRectangle;
+					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				}
 
 				using (var lg = new LinearGradient (@from + 1, y + 1.5, to , y + editor.LineHeight - 1)) {
-					lg.AddColorStop (0, colorStyle.Color);
-					lg.AddColorStop (1, colorStyle.SecondColor);
+					lg.AddColorStop (0, colorStyle);
+					lg.AddColorStop (1, colorStyle);
 					cr.SetSource (lg);
 					cr.RoundedRectangle (@from - 0.5, y + 0.5, to - @from + 1, editor.LineHeight - 1, 2);
 					cr.FillPreserve ();
 				}
-
-				cr.SetSourceColor (colorStyle.BorderColor);
+				// TODO: EditorTheme : do we need the border ?!
+				cr.SetSourceColor (colorStyle);
 				cr.Stroke ();
 			}
 		}

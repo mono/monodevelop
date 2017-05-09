@@ -104,11 +104,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 			file = MSBuildProjectService.FromMSBuildPath (directory, file);
 			bool res;
-			if (context.ExistsEvaluationCache.TryGetValue (file, out res))
-				return res;
-			
-			res = File.Exists (file) || Directory.Exists (file);
-			context.ExistsEvaluationCache [file] = res;
+			lock (context.ExistsEvaluationCache) {
+				if (context.ExistsEvaluationCache.TryGetValue (file, out res))
+					return res;
+
+				res = File.Exists (file) || Directory.Exists (file);
+				context.ExistsEvaluationCache[file] = res;
+			}
 			return res;
 		}
 

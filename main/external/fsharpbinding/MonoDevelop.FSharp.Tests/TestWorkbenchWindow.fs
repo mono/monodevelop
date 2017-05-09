@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelopTests
 open System
+open System.Threading.Tasks
 open Mono.Addins
 open MonoDevelop.Ide.Gui
 
@@ -23,7 +24,7 @@ type TestWorkbenchWindow(viewContent) =
         member x.ViewContent with get() = viewContent
         member x.ActiveViewContent with get() = viewContent :> BaseViewContent and set v = ()
         member x.ExtensionContext with get() = AddinManager.AddinEngine :> _
-        member x.CloseWindow (force) = true
+        member x.CloseWindow (force) = Task.FromResult true
         member x.AttachViewContent (subViewContent) = ()
         member x.InsertViewContent(index, subViewContent) = ()
         member x.SubViewContents with get() = Seq.empty

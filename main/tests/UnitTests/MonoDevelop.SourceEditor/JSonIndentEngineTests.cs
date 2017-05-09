@@ -31,6 +31,7 @@ using UnitTests;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -60,7 +61,10 @@ namespace MonoDevelop.SourceEditor
 
 			content.Data.Text = sb.ToString ();
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-
+			doc.Editor.Options = new CustomEditorOptions {
+				TabsToSpaces = false,
+				TabSize = 4
+			};
 			var csi = new JSonIndentEngine (content.Data, doc);
 			var result = new CacheIndentEngine (csi);
 			result.Update (content.Data, offset);
@@ -85,7 +89,7 @@ $
 			var engine = CreateEngine (
 				@"
 {
-	""foo"":""bar"",
+" + indentString + @"""foo"":""bar"",
 $
 ");
 			Assert.AreEqual (indentString, engine.ThisLineIndent);
@@ -98,7 +102,7 @@ $
 			var engine = CreateEngine (
 				@"
 {
-	""test"":[
+" + indentString + @"""test"":[
 $
 ");
 			Assert.AreEqual (indentString + indentString, engine.ThisLineIndent);
@@ -122,7 +126,7 @@ $
 			var engine = CreateEngine (
 				@"
 {
-	""test"":""
+" + indentString + @"""test"":""
 $
 ");
 			Assert.AreEqual ("", engine.ThisLineIndent);

@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			List<string> gacRoots = new List<string> ();
-			sb.AppendFormat ("\"/out:{0}\"", outputName);
+			sb.AppendFormat ("\"/out:{0}\"", outputName.ToString ());
 			sb.AppendLine ();
 			
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
@@ -201,18 +201,18 @@ namespace MonoDevelop.CSharp
 					debugType = "full";
 			}
 			if (!string.Equals (debugType, "none", StringComparison.OrdinalIgnoreCase)) {
-					sb.AppendLine ("/debug:" + debugType);
+				sb.Append ("/debug:").AppendLine (debugType);
 			}
 
-			if (compilerParameters.LangVersion != LangVersion.Default) {
-				var langVersionString = CSharpCompilerParameters.TryLangVersionToString (compilerParameters.LangVersion);
+			if (compilerParameters.LangVersion != Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default) {
+				var langVersionString = CSharpCompilerParameters.LanguageVersionToString (compilerParameters.LangVersion);
 				if (langVersionString == null) {
 					string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
 					monitor.ReportError (message, null);
 					LoggingService.LogError (message);
 					return null;
 				}
-				sb.AppendLine ("/langversion:" + langVersionString);
+				sb.Append ("/langversion:").AppendLine (langVersionString);
 			}
 			
 			// mcs default is + but others might not be
@@ -234,7 +234,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (projectParameters.CodePage != 0)
-				sb.AppendLine ("/codepage:" + projectParameters.CodePage);
+				sb.Append ("/codepage:").AppendLine (projectParameters.CodePage.ToString ());
 			else if (runtime is MonoTargetRuntime)
 				sb.AppendLine ("/codepage:utf8");
 			
@@ -249,14 +249,14 @@ namespace MonoDevelop.CSharp
 					LoggingService.LogWarning ("Mono runtime '" + runtime.DisplayName + 
 					                           "' appears to be too old to support the 'platform' C# compiler flag.");
 				} else {
-					sb.AppendLine ("/platform:" + compilerParameters.PlatformTarget);
+					sb.Append ("/platform:").AppendLine (compilerParameters.PlatformTarget);
 				}
 			}
 
 			if (compilerParameters.TreatWarningsAsErrors) {
 				sb.AppendLine ("-warnaserror");
 				if (!string.IsNullOrEmpty (compilerParameters.WarningsNotAsErrors))
-					sb.AppendLine ("-warnaserror-:" + compilerParameters.WarningsNotAsErrors);
+					sb.Append ("-warnaserror-:").AppendLine (compilerParameters.WarningsNotAsErrors);
 			}
 
 			foreach (var define in configuration.GetDefineSymbols ()) {
@@ -267,7 +267,7 @@ namespace MonoDevelop.CSharp
 			CompileTarget ctarget = configuration.CompileTarget;
 			
 			if (!string.IsNullOrEmpty (projectParameters.MainClass)) {
-				sb.AppendLine ("/main:" + projectParameters.MainClass);
+				sb.Append ("/main:").AppendLine (projectParameters.MainClass);
 				// mcs does not allow providing a Main class when compiling a dll
 				// As a workaround, we compile as WinExe (although the output will still
 				// have a .dll extension).

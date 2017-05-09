@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 	public interface ICompletionDataFactory
 	{
-		CompletionData CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind);
+		CompletionData CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string keyword);
 
 		CompletionData CreateGenericData (ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType = GenericDataType.Undefined);
 

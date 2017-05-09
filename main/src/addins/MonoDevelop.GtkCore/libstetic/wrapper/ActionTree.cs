@@ -209,9 +209,9 @@ namespace Stetic.Wrapper
 				name = action.Name;
 
 			if (!String.IsNullOrEmpty (name))
-				sb.Append (' ').Append ("name='").Append (name).Append ("'");
+				sb.Append (" name='").Append (name).Append ("'");
 			if (action != null)
-				sb.Append (' ').Append ("action='").Append (action.Name).Append ("'");
+				sb.Append (" action='").Append (action.Name).Append ("'");
 				
 			if (Children.Count > 0) {
 				sb.Append ('>');

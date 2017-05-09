@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
+		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"))
 		{
 			this.info = info;
 		}

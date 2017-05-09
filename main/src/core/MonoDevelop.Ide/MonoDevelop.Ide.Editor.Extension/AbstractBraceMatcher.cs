@@ -35,7 +35,16 @@ namespace MonoDevelop.Ide.Editor
 {
 	public abstract class AbstractBraceMatcher
 	{
-		public abstract bool CanHandle (TextEditor editor);
+		public string MimeType {
+			get;
+			internal set;
+		} 
+
+		public virtual bool CanHandle (TextEditor editor)
+		{
+			return DesktopService.GetMimeTypeIsSubtype(editor.MimeType, MimeType);
+		}
+
 		public abstract Task<BraceMatchingResult?> GetMatchingBracesAsync(IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken));
 	}
 

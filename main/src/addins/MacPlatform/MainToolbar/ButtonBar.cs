@@ -84,6 +84,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		readonly Dictionary<IButtonBarButton, int> indexMap = new Dictionary<IButtonBarButton, int> ();
 		readonly IReadOnlyList<IButtonBarButton> buttons;
 
+		public string Title {
+			set {
+				AccessibilityLabel = value;
+				AccessibilityTitle = value;
+			}
+		}
+
 		public ButtonBar (IEnumerable<IButtonBarButton> buttons)
 		{
 			Cell = new DarkThemeSegmentedCell ();
@@ -111,6 +118,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						return;
 					Cell.SetToolTip (_button.Tooltip, indexMap [_button]);
 				};
+				button.TitleChanged += (o, e) => {
+					if (!indexMap.ContainsKey (_button))
+						return;
+					SetLabel (_button.Title, indexMap [_button]);
+				};
 			}
 			Activated += (sender, e) => indexMap.First (b => b.Value == SelectedSegment).Key.NotifyPushed ();
 
@@ -129,6 +141,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			else
 				img = ImageService.GetIcon (button.Image, Gtk.IconSize.Menu).WithStyles ("disabled").ToNSImage ();
 			SetImage (img, indexMap [button]);
+
+			// We need to set the width because if there is an image and a title set, then Cocoa uses the
+			// title to set the width, even if the title isn't shown. We need to set the title for accessibility.
+			SetWidth (ButtonBarContainer.SegmentWidth - 1, indexMap [button]);
 		}
 
 		public override nint SegmentCount {
@@ -171,6 +187,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				SetEnabled (button.Enabled, idx);
 			if (button.Tooltip != Cell.GetToolTip (idx))
 				Cell.SetToolTip (button.Tooltip, idx);
+			if (button.Title != GetLabel (idx))
+				SetLabel (button.Title, idx);
 			SetNeedsDisplay ();
 		}
 

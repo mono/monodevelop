@@ -30,6 +30,7 @@ using System.Linq;
 using NUnit.Framework;
 using Mono.TextEditor.Utils;
 using System.Reflection;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -142,18 +143,6 @@ namespace Mono.TextEditor.Tests
 			var src = "南北西东";
 			byte[] input = Encoding.GetEncoding (54936).GetBytes (src);
 			Assert.AreEqual (src, TextFileUtility.GetText (input));
-		}
-
-		/// <summary>
-		/// Bug 16332 - Duplicate BOM! 
-		/// </summary>
-		[Test()]
-		public void TestBug16332 ()	
-		{
-			byte[] input = new byte[] { 0xEF, 0xBB, 0xBF, (byte)'a'};
-			bool hadBom;
-			Assert.AreEqual ("a", TextFileUtility.GetText (input, Encoding.UTF8, out hadBom));
-			Assert.IsTrue (hadBom);
 		}
 	}
 }

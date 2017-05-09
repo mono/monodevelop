@@ -28,11 +28,13 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class VirtualIndentModeTests
+	class VirtualIndentModeTests
 	{
 		public static TextEditorData CreateData (string content)
 		{
@@ -51,7 +53,7 @@ namespace Mono.TextEditor.Tests
 			MiscActions.InsertNewLine (data);
 			
 			Assert.AreEqual ("\n\n\n\n", data.Document.Text);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
 		[Test]
@@ -63,7 +65,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.LineEnd (data);
 			
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
 		[Test]
@@ -74,7 +76,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 
 			CaretMoveActions.Down (data);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 			CaretMoveActions.Down (data);
 			
 			Assert.AreEqual (4, data.Caret.Column);
@@ -91,7 +93,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 
 			CaretMoveActions.Up (data);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 			CaretMoveActions.Up (data);
 			
 			Assert.AreEqual (4, data.Caret.Column);
@@ -112,7 +114,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Down (data);
 
 
-			int indentColumn = data.IndentationTracker.GetVirtualIndentationColumn (2, 1);
+			int indentColumn = data.GetVirtualIndentationColumn (2, 1);
 			Assert.AreEqual (indentColumn, data.Caret.Column);
 			Assert.AreEqual (data.LogicalToVisualLocation (2, indentColumn).Column, data.Caret.DesiredColumn);
 		}
@@ -122,7 +124,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("12345\n\n12345\n");
 			var segs = new List<FoldSegment> ();
-			segs.Add (new FoldSegment (data.Document, "", 5, 5, FoldingType.Region));
+			segs.Add (new FoldSegment ("", 5, 5, FoldingType.Region));
 			data.Document.UpdateFoldSegments (segs);
 			CaretMoveActions.Down (data);
 			CaretMoveActions.Right (data);
@@ -133,7 +135,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Down (data);
 			CaretMoveActions.Up (data);
 
-			int indentColumn = data.IndentationTracker.GetVirtualIndentationColumn (2, 1);
+			int indentColumn = data.GetVirtualIndentationColumn (2, 1);
 			Assert.AreEqual (indentColumn, data.Caret.Column);
 			Assert.AreEqual (data.LogicalToVisualLocation (2, indentColumn).Column, data.Caret.DesiredColumn);
 		}
@@ -143,11 +145,11 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("\n\n\n");
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, data.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (2, 1), data.Caret.Location);
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (2, data.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 		}
 
 		[Test]
@@ -159,14 +161,14 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (2, 1), data.Caret.Location);
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (2, data.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 		}
 
 		[Test]
 		public void TestBackspaceRightBehavior ()
 		{
 			var data = CreateData ("test\n\n\n");
-			data.Caret.Location = new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1));
+			data.Caret.Location = new DocumentLocation (2, data.GetVirtualIndentationColumn (2, 1));
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
 			Assert.AreEqual ("test\n\n", data.Document.Text);
@@ -220,7 +222,7 @@ namespace Mono.TextEditor.Tests
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 		
 		[Test]
@@ -311,7 +313,7 @@ namespace Mono.TextEditor.Tests
 			data.Remove (0, "Hello".Length);
 
 			Assert.AreEqual ("\n\n", data.Document.Text);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 		
 		[Test]
@@ -323,7 +325,7 @@ namespace Mono.TextEditor.Tests
 			data.Insert (0, "Hello");
 
 			Assert.AreEqual ("Hello\n\n", data.Document.Text);
-			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
 
@@ -443,6 +445,18 @@ namespace Mono.TextEditor.Tests
 
 		}
 
+		class TestBug15476IndentationTracker : DefaultIndentationTracker
+		{
+			public override IndentationTrackerFeatures SupportedFeatures {
+				get {
+					return IndentationTrackerFeatures.All;
+				}
+			}
+
+			public TestBug15476IndentationTracker (TextDocument doc) : base (doc)
+			{
+			}
+		}
 		/// <summary>
 		/// Bug 15476 - Cursor is getting stuck when deleting last empty line with indents 
 		/// </summary>
@@ -451,9 +465,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n\t\t\r\n\r\n");
 			data.Options.DefaultEolMarker = "\r\n";
-			data.IndentationTracker = new DefaultIndentationTracker (data.Document) {
-				SupportedFeatures = IndentatitonTrackerFeatures.All
-			};
+			data.IndentationTracker = new TestBug15476IndentationTracker (data.Document);
 			data.Caret.Location = new DocumentLocation (4, 3);
 
 			DeleteActions.Backspace (data);

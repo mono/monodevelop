@@ -140,6 +140,13 @@ namespace MonoDevelop.Core.Text
 			this.length = length;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextSegment"/> struct.
+		/// </summary>
+		public TextSegment (ISegment segment) : this(segment.Offset, segment.Length)
+		{
+		}
+
 		public static bool operator == (TextSegment left, TextSegment right)
 		{
 			return Equals (left, right);
@@ -196,7 +203,10 @@ namespace MonoDevelop.Core.Text
 		/// </returns>
 		public override bool Equals (object obj)
 		{
-			return obj is ISegment && Equals (this, (ISegment)obj);
+			var otherSegment = obj as ISegment;
+			if (otherSegment == null)
+				return false;
+			return Offset == otherSegment.Offset && length == otherSegment.Length;
 		}
 
 		/// <summary>
@@ -312,6 +322,8 @@ namespace MonoDevelop.Core.Text
 		/// </param>
 		protected AbstractSegment (int offset, int length)
 		{
+			if (length < 0)
+				throw new System.ArgumentOutOfRangeException (nameof (length), "was " + length);
 			this.offset = offset;
 			this.length = length;
 		}
@@ -402,11 +414,9 @@ namespace MonoDevelop.Core.Text
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			if (args.Offset < segment.Offset)
-				return new TextSegment (segment.Offset + args.InsertionLength - args.RemovalLength, segment.Length);
-			if (args.Offset <= segment.EndOffset)
-				return new TextSegment (segment.Offset, segment.Length);
-			return segment;
+			var newStartOffset = args.GetNewOffset (segment.Offset);
+			var newEndOffset = args.GetNewOffset (segment.EndOffset);
+			return new TextSegment (newStartOffset, newEndOffset - newStartOffset);
 		}
 
 		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, TextChangeEventArgs args)
@@ -416,6 +426,13 @@ namespace MonoDevelop.Core.Text
 			foreach (var segment in segments) {
 				yield return segment.AdjustSegment (args);
 			}
+		}
+
+		public static bool IsInvalid (this ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return segment.Offset < 0;
 		}
 	}
 }

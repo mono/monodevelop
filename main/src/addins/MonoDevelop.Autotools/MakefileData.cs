@@ -81,8 +81,18 @@ namespace MonoDevelop.Autotools
 
 		public XmlElement Write ()
 		{
+			string xmlns = MSBuildProject.Schema;
+			var msbuildProject = ownerProject?.MSBuildProject;
+			if (msbuildProject != null)
+				xmlns = msbuildProject.Namespace;
+
+			return Write (xmlns);
+		}
+
+		XmlElement Write (string xmlns)
+		{
 			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-			ser.Namespace = MSBuildProject.Schema;
+			ser.Namespace = xmlns;
 			var sw = new StringWriter ();
 			ser.Serialize (new XmlTextWriter (sw), this);
 			XmlDocument doc = new XmlDocument ();
@@ -1294,7 +1304,7 @@ namespace MonoDevelop.Autotools
 						varFound = true;
 					}
 					else
-						sb.Append ("$(" + varname + ")");
+						sb.Append ("$(").Append (varname).Append (")");
 					i = j;
 				}
 			}

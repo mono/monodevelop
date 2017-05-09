@@ -26,10 +26,11 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class NewColorShemeDialog : Gtk.Dialog
+	partial class NewColorShemeDialog : Gtk.Dialog
 	{
 		Gtk.ListStore store = new Gtk.ListStore (typeof(string));
 			
@@ -37,7 +38,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build ();
 			
-			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
+			foreach (string styleName in SyntaxHighlightingService.Styles) {
 				store.AppendValues (styleName);
 			}
 			comboboxBaseStyle.Model = store;
@@ -45,6 +46,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			this.entryName.Changed += HandleEntryNameChanged;
 			this.entryDescription.Changed += HandleEntryNameChanged;
+			this.entryDescription.Visible = label3.Visible = false;
 			this.buttonOk.Clicked += HandleButtonOkClicked;
 			this.buttonOk.Sensitive = false;
 			
@@ -54,32 +56,28 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.buttonOk.Sensitive = !string.IsNullOrEmpty (entryName.Text);
 		}
-		
+
 		void HandleButtonOkClicked (object sender, EventArgs e)
 		{
 			Gtk.TreeIter iter;
 			if (!store.IterNthChild (out iter, comboboxBaseStyle.Active))
 				return;
 			string name = (string)store.GetValue (iter, 0);
-			
-			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (name);
-			
-			style = style.Clone ();
-			style.Name = this.entryName.Text;
-			style.Description = this.entryDescription.Text;
-			style.BaseScheme = name;
+
+			var style = SyntaxHighlightingService.GetEditorTheme (name);
+
+			style = style.CloneWithName (entryName.Text);
+
 			string path = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath;
 			string baseName = style.Name.Replace (" ", "_");
-			
-			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.json"))) {
+
+			while (File.Exists (System.IO.Path.Combine (path, baseName + ".tmTheme"))) {
 				baseName = baseName + "_";
 			}
-			string fileName = System.IO.Path.Combine (path, baseName + "Style.json");
+			string fileName = System.IO.Path.Combine (path, baseName + ".tmTheme");
 			try {
-				style.Save (fileName);
-				style.FileName = fileName;
-				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (style);
-				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
+				using (var writer = new StreamWriter (fileName))
+					TextMateFormat.Save (writer, style); 
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			}

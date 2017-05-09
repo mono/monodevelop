@@ -765,7 +765,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (2, provider.Count);
 		}
 		
 		/// <summary>
@@ -1483,6 +1483,33 @@ namespace DifferentNamespace.ha
 ");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
+		}
+
+
+		/// <summary>
+		/// Bug 52886 - Base class constructor tooltip doesn't contain all constructor definition.
+		/// </summary>
+		[Test]
+		public void TestBug52886 ()
+		{
+			var provider = CreateProvider (
+				@"
+class Foo
+{
+	public Foo ()
+	{
+	}
+	public Foo (int a)
+	{
+	}
+}
+class Bar : Foo
+{
+	public Bar () : base($$
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (2, provider.Count);
 		}
 	}
 }

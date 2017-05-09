@@ -1,4 +1,4 @@
-//
+﻿//
 // NamespaceBuilder.cs
 //
 // Author:
@@ -59,9 +59,9 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e1 == null && e2 == null)
 					return 0;
 				if (e1 == null)
-					return -1;
-				if (e2 == null)
 					return 1;
+				if (e2 == null)
+					return -1;
 				
 				return e1.Name.CompareTo (e2.Name);
 			} catch (Exception e) {

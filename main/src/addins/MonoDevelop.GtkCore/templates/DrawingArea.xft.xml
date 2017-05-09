@@ -9,6 +9,9 @@
     <_Description>Creates a custom Gtk.DrawingArea subclass.</_Description>
     <DefaultFilename>DrawingArea</DefaultFilename>
   </TemplateConfiguration>
+  <Conditions>
+    <HasReference Assembly="gtk-sharp" />
+  </Conditions>
   <TemplateFiles>
     <CodeDomFile>
        <CompileUnit>

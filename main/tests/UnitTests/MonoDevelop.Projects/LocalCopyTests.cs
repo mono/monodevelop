@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LocalCopyTests.cs
 // 
 // Author:
@@ -148,6 +148,8 @@ namespace MonoDevelop.Projects
 			AssertOutputFiles (sol, "ClassLibrary5", "Release", new string[] {
 				"ClassLibrary5.dll"
 			});
+
+			item.Dispose ();
 		}
 				
 		static void AssertOutputFiles (Solution solution, string projectName, string configuration, string[] expectedFiles)
@@ -242,18 +244,20 @@ namespace MonoDevelop.Projects
 			await sol.SaveAsync (new ProgressMonitor ());
 			await sol.Build (new ProgressMonitor (), "Debug");
 
-			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
-
 			AssertOutputFiles (sol, "ConsoleProject", "Debug", new string[] {
 				"ConsoleProject.exe",
-				p.TargetRuntime.GetAssemblyDebugInfoFile ("ConsoleProject.exe"),
+				p.GetAssemblyDebugInfoFile (sol.Configurations["Debug"].Selector, "ConsoleProject.exe"),
 				"System.Data.dll",
-				"gtk-sharp.dll"
+				"gtk-sharp.dll",
+				"gtk-sharp.dll.config",
+				"gtk-sharp.dll.mdb",
 			});
 
 			string projectXml1 = Util.GetXmlFileInfoset (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj.saved"));
 			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
 			Assert.AreEqual (projectXml1, projectXml2);
+
+			item.Dispose ();
 		}
 	}
 }

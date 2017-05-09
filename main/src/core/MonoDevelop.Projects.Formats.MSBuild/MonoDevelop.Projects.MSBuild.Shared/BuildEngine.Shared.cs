@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectBuilder.cs
 //  
 // Author:
@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	partial class BuildEngine
 	{
-		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
+		static AutoResetEvent workDoneEvent;
 		static ThreadStart workDelegate;
 		static readonly object workLock = new object ();
 		static Thread workThread;
@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.MSBuild
 		[MessageHandler]
 		public LoadProjectResponse LoadProject (LoadProjectRequest msg)
 		{
-			var pb = LoadProject (msg.ProjectFile);
+			var pb = LoadProject (msg.ProjectFile, msg.SDKsPath);
 			lock (projects) {
 				var id = ++projectIdCounter;
 				projects [id] = pb;
@@ -266,13 +266,18 @@ namespace MonoDevelop.Projects.MSBuild
 			lock (workLock) {
 				if (IsTaskCancelled (taskId))
 					return;
+
+				AutoResetEvent doneEvent;
+
 				lock (threadLock) {
 					// Last chance to check for canceled task before the thread is started
 					if (IsTaskCancelled (taskId))
 						return;
-					
+
+					doneEvent = workDoneEvent = new AutoResetEvent (false);
 					workDelegate = ts;
 					workError = null;
+
 					if (workThread == null) {
 						workThread = new Thread (STARunner);
 						workThread.SetApartmentState (ApartmentState.STA);
@@ -290,7 +295,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return;
 				}
 
-				workDoneEvent.WaitOne ();
+				doneEvent.WaitOne ();
 
 				ResetCurrentTask ();
 			}
@@ -307,19 +312,28 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		static void STARunner ()
 		{
-			lock (threadLock) {
-				do {
-					try {
-						workDelegate ();
+			try {
+				lock (threadLock) {
+					do {
+						var doneEvent = workDoneEvent;
+						try {
+							workDelegate ();
+						} catch (ThreadAbortException) {
+							// Gracefully stop the thread
+							Thread.ResetAbort ();
+							return;
+						} catch (Exception ex) {
+							workError = ex;
+						}
+						doneEvent.Set ();
 					}
-					catch (Exception ex) {
-						workError = ex;
-					}
-					workDoneEvent.Set ();
+					while (Monitor.Wait (threadLock, 60000));
+
+					workThread = null;
 				}
-				while (Monitor.Wait (threadLock, 60000));
-				
-				workThread = null;
+			} catch (ThreadAbortException) {
+				// Gracefully stop the thread
+				Thread.ResetAbort ();
 			}
 		}
 	}

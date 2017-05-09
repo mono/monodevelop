@@ -37,6 +37,7 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
@@ -44,8 +45,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
 using System.Runtime.CompilerServices;
-
-[assembly:InternalsVisibleTo("MonoDevelop.UnitTesting")]
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -241,6 +241,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.TestExpandRow += OnTestExpandRow;
 			tree.RowActivated += OnNodeActivated;
 			tree.DoPopupMenu += ShowPopup;
+
+			// Add an extra action handler to the tree to handle Press actions
+			var actionHandler = tree.ActionHandler;
+			actionHandler.PerformPress += OnPerformPress;
+
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
@@ -525,13 +530,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			statusMessageVisible = true;
 			statusIconIter = it;
 
-			statusPopover = new TooltipPopoverWindow {
-				ShowArrow = true,
-				Text = info.StatusMessage,
-				Severity = info.StatusSeverity
-			};
+			statusPopover = TooltipPopoverWindow.Create ();
+			statusPopover.ShowArrow = true;
+			statusPopover.Text = info.StatusMessage;
+			statusPopover.Severity = info.StatusSeverity;
 			rect.Y += 2;
-			statusPopover.ShowPopup (this, rect, PopupPosition.Bottom);
+			statusPopover.ShowPopup (this, rect, PopupPosition.Top);
 		}
 
 		void HideStatusMessage ()
@@ -2107,6 +2111,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			ActivateCurrentItem ();
 		}
 
+		void OnPerformPress (object sender, EventArgs args)
+		{
+			ActivateCurrentItem ();
+		}
+
 		void OnSelectionChanged (object sender, EventArgs args)
 		{
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
@@ -2669,6 +2678,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		Xwt.Drawing.Image overlayBottomRight;
 		Xwt.Drawing.Image overlayTopLeft;
 		Xwt.Drawing.Image overlayTopRight;
+
+		public ZoomableCellRendererPixbuf () : base ()
+		{
+		}
 
 		public double Zoom {
 			get { return zoom; }

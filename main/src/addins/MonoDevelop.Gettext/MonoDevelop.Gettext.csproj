@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +11,7 @@
     <AssemblyName>MonoDevelop.Gettext</AssemblyName>
     <CodePage>65001</CodePage>
     <RootNamespace>MonoDevelop.Gettext</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -262,8 +263,8 @@
     <EmbeddedResource Include="templates\Makefile.template">
       <LogicalName>Makefile.template</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\Makefile.am.template">
-      <LogicalName>Makefile.am.template</LogicalName>
+    <EmbeddedResource Include="templates\Makefile_am.template">
+      <LogicalName>Makefile.am_template</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16.png">
       <LogicalName>prefs-language-16.png</LogicalName>

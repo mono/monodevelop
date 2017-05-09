@@ -1,4 +1,4 @@
-<TargetFramework id=".NETFramework,Version=v4.5" _name="Mono / .NET 4.5" clrVersion="Net_4_5">
+﻿<TargetFramework id=".NETFramework,Version=v4.5" _name=".NET Framework 4.5" clrVersion="Net_4_5">
 <Assemblies>
   <Assembly name="System" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Activities" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 
@@ -147,6 +149,25 @@ namespace MonoDevelop.PackageManagement
 		public void RefreshReferenceStatus ()
 		{
 			DotNetProject.RefreshReferenceStatus ();
+		}
+
+		/// <summary>
+		/// Returns imported package references (e.g. NETStandard.Library) from the
+		/// evaluated items and package references defined directly in the project file.
+		/// Only imported package references are taken from the evaluated items to
+		/// avoid duplicate package references and also to avoid old versions being
+		/// returned since the evaluated items may still have old values if the
+		/// package references have just been updated. This avoids the wrong value being
+		/// added to the project.assets.json file.
+		/// </summary>
+		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
+		{
+			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences ()) {
+				yield return item;
+			}
+			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
+				yield return item;
+			}
 		}
 	}
 }

@@ -25,15 +25,17 @@
 // THE SOFTWARE.
 
 
-using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.CodeCompletion;
+using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -53,7 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (targetToken.IsKind(SyntaxKind.AliasKeyword) && targetToken.Parent.IsKind(SyntaxKind.ExternAliasDirective))
 			{
 				var compilation = await document.GetCSharpCompilationAsync(cancellationToken).ConfigureAwait(false);
-				var aliases = compilation.ExternalReferences.Where(r => r.Properties.Aliases != null).SelectMany(r => r.Properties.Aliases).ToSet();
+				var aliases = compilation.ExternalReferences.SelectMany(r => r.Properties.Aliases).ToSet();
 
 				if (aliases.Any())
 				{

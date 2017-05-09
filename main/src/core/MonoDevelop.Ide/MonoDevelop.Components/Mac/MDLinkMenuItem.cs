@@ -50,9 +50,8 @@ namespace MonoDevelop.Components.Mac
 			MonoDevelop.Ide.DesktopService.ShowUrl (lce.Url);
 		}
 
-		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
+		public void Update (MDMenu parent, ref int index)
 		{
-			MDMenu.ShowLastSeparator (ref lastSeparator);
 		}
 	}
 }

@@ -26,11 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NuGet;
+using NuGet.Common;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class PackageManagementLogger : NuGet.ILogger, NuGet.Common.ILogger
+	internal class PackageManagementLogger : ILogger
 	{
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -42,11 +43,6 @@ namespace MonoDevelop.PackageManagement
 		public void Log(MessageLevel level, string message, params object[] args)
 		{
 			packageManagementEvents.OnPackageOperationMessageLogged(level, message, args);
-		}
-		
-		public FileConflictResolution ResolveFileConflict(string message)
-		{
-			return FileConflictResolution.Ignore;
 		}
 
 		public void LogDebug (string data)

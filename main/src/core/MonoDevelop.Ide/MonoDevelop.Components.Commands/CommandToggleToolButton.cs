@@ -38,6 +38,7 @@ namespace MonoDevelop.Components.Commands
 		bool updating;
 		object initialTarget;
 		string lastDesc;
+		CommandInfo lastCmdInfo;
 		
 		public CommandToggleToolButton (object commandId, CommandManager commandManager): base ("")
 		{
@@ -70,7 +71,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 				
-			commandManager.DispatchCommand (commandId, null, initialTarget, CommandSource.MainToolbar);
+			commandManager.DispatchCommand (commandId, null, initialTarget, CommandSource.MainToolbar, lastCmdInfo);
 		}
 		
 		IconId stockId = null;
@@ -78,6 +79,7 @@ namespace MonoDevelop.Components.Commands
 		
 		void Update (CommandInfo cmdInfo)
 		{
+			lastCmdInfo = cmdInfo;
 			updating = true;
 			if (Active != cmdInfo.Checked)
 				Active = cmdInfo.Checked;

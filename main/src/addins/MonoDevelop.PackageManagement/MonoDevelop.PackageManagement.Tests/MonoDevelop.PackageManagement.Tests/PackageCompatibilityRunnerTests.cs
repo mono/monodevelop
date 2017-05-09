@@ -27,12 +27,14 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet;
 using NUnit.Framework;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -44,16 +46,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
 		FakeProgressMonitor progressMonitor;
-		NetPortableProfileTable profileTable;
-
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			string appDataFolder = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
-			string dummyPath = Path.Combine (appDataFolder, "MonoDevelopPackageManagementTests");
-			Environment.SetEnvironmentVariable ("NuGetPortableReferenceAssemblyPath", dummyPath);
-			profileTable = NetPortableProfileTable.Instance;
-		}
 
 		void CreateRunner ()
 		{
@@ -83,59 +75,58 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void ProjectHasNoPackageReferences ()
 		{
-			runner.FileSystem.FileExistsReturnValue = true;
-			runner.FileSystem.FileToReturnFromOpenFile = "<packages />";
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Clear ();
 		}
 
 		void ProjectHasOnePackageReferenceNeedingReinstall (string packageId)
 		{
-			var package = FakePackage.CreatePackageWithVersion (packageId, "1.2.3.4");
-			package.AddFile (@"lib\net45\MyPackage.dll");
-			package.AddFile (@"lib\net40\MyPackage.dll");
+			var packageReference = new PackageReference (
+				new PackageIdentity (packageId, NuGetVersion.Parse ("1.2.3.4")),
+				NuGetFramework.Parse ("net40"));
 
-			runner.PackageRepository.FakeSharedRepository.FakePackages.Add (package);
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Add (packageReference);
 
-			string xml = String.Format (
-				@"<packages>
-					<package id='{0}' version='1.2.3.4' targetFramework='net40'/>
-				</packages>",
-				packageId);
-
-			SetProjectPackagesConfigFileContents (xml);
-		}
-
-		void SetProjectPackagesConfigFileContents (string xml)
-		{
-			runner.FileSystem.FileExistsReturnValue = true;
-			runner.FileSystem.FileToReturnFromOpenFile = xml;
+			runner.PackageCompatibilityChecker.OnCreatePackageCompatibility = item => {
+				item.PackageFilesReader.LibItems.Add (new FrameworkSpecificGroup (
+					NuGetFramework.Parse ("net45"),
+					new [] { @"lib\net45\MyPackage.dll" }));
+				
+				item.PackageFilesReader.LibItems.Add (new FrameworkSpecificGroup (
+					NuGetFramework.Parse ("net40"),
+					new [] { @"lib\net40\MyPackage.dll" }));
+			};
 		}
 
 		void ProjectPackagesAreNotRestored ()
 		{
-			runner.PackageRepository.FakeSharedRepository.FakePackages.Clear ();
+			runner.PackageCompatibilityChecker.FileExistsReturnValue = false;
 		}
 
 		void ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework (string packageId)
 		{
 			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
-
-			runner.PackageRepository.FakeSharedRepository.FakePackages [0].FilesList.Clear ();
 		}
 
 		void ProjectHasOnePackageReferenceIncompatibleWithCurrentProjectTargetFramework (string packageId)
 		{
-			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
+			var packageReference = new PackageReference (
+				new PackageIdentity (packageId, NuGetVersion.Parse ("1.2.3.4")),
+				NuGetFramework.Parse ("net45"));
 
-			FakePackage package = runner.PackageRepository.FakeSharedRepository.FakePackages [0];
-			package.FilesList.Clear ();
-			package.AddFile (@"lib\wp8\MyPackage.dll");
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Add (packageReference);
+			runner.PackageCompatibilityChecker.NuGetProject.TargetFramework = NuGetFramework.Parse ("net40");
+
+			runner.PackageCompatibilityChecker.OnCreatePackageCompatibility = item => {
+				item.PackageFilesReader.LibItems.Add (new FrameworkSpecificGroup (
+					NuGetFramework.Parse ("net45"),
+					new [] { @"lib\net45\MyPackage.dll" }));
+			};
 		}
 
 		void FindPackageInProjectThrowsException (string errorMessage)
 		{
-			runner.PackageRepository.FakeSharedRepository.BeforeGetPackagesAction = () => {
-				throw new Exception (errorMessage);
-			};
+			runner.PackageCompatibilityChecker.NuGetProject.ExceptionToThrowWhenInstalledPackagesCalled = 
+				new Exception (errorMessage);
 		}
 
 		void AssertPackageMarkedForReinstallationInPackagesConfigFile (string packageId)
@@ -150,23 +141,15 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertPackageMarkedForReinstallationInPackagesConfigFile (string packageId, bool expectedReinstallationSetting)
 		{
-			var fileSystem = new FakeFileSystem ();
-			fileSystem.FileExistsReturnValue = true;
-			MemoryStream stream = runner.FileSystem.FilesAdded.First ().Value;
-			string file = UTF8Encoding.UTF8.GetString (stream.ToArray ());
-			fileSystem.FileToReturnFromOpenFile = file;
-			var packageReferenceFile = new PackageReferenceFile (fileSystem, "packages.config");
-			PackageReference matchedReference = packageReferenceFile
-				.GetPackageReferences ()
-				.FirstOrDefault (packageReference => packageReference.Id == packageId);
+			var entry = runner.PackageCompatibilityChecker.PackageReferencesToUpdate.FirstOrDefault (
+				item => item.Key.PackageIdentity.Id == packageId);
 
-			Assert.AreEqual (expectedReinstallationSetting, matchedReference.RequireReinstallation);
+			Assert.AreEqual (expectedReinstallationSetting, entry.Value.RequireReinstallation);
 		}
 
 		FilePath ConfigurePackagesConfigFilePath (string packagesconfigFileName)
 		{
 			string fileName = Path.Combine (project.BaseDirectory, packagesconfigFileName);
-			runner.FileSystem.PathToReturnFromGetFullPath = fileName.ToNativePath ();
 			return new FilePath (fileName.ToNativePath ());
 		}
 
@@ -316,11 +299,16 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
-			string xml =
-				@"<packages>
-					<package id='MyPackageId' version='1.2.3.4' targetFramework='net40' requireReinstallation='True' />
-				</packages>";
-			SetProjectPackagesConfigFileContents (xml);
+
+			var packageReference = new PackageReference (
+				new PackageIdentity ("MyPackageId", NuGetVersion.Parse ("1.2.3.4")),
+				NuGetFramework.Parse ("net45"),
+				false,
+				false,
+				requireReinstallation: true);
+
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Clear ();
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Add (packageReference);
 
 			Run ();
 
@@ -332,11 +320,16 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
-			string xml =
-				@"<packages>
-					<package id='MyPackageId' version='1.2.3.4' targetFramework='net40' requireReinstallation='True' />
-				</packages>";
-			SetProjectPackagesConfigFileContents (xml);
+			var packageReference = new PackageReference (
+				new PackageIdentity ("MyPackageId", NuGetVersion.Parse ("1.2.3.4")),
+				NuGetFramework.Parse ("net40"),
+				false,
+				false,
+				requireReinstallation: true);
+
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Clear ();
+			runner.PackageCompatibilityChecker.NuGetProject.InstalledPackages.Add (packageReference);
+
 			FilePath expectedFilePath = ConfigurePackagesConfigFilePath ("packages.config");
 
 			Run ();
@@ -350,10 +343,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
+			runner.PackageCompatibilityChecker.NuGetProject.TargetFramework = NuGetFramework.Parse ("net40");
 
 			Run ();
 
-			Assert.AreEqual (0, runner.FileSystem.FilesAdded.Count);
+			Assert.AreEqual (0, runner.EventsMonitor.FilesChanged.Count);
 		}
 
 		[Test]

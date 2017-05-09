@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (editor != null /*&& editor.TextViewMargin != null*/) {
 				if (references != null) {
 					var builder = ImmutableArray<Usage>.Empty.ToBuilder ();
-					foreach (var r in references) {
+					foreach (var r in references.OrderBy (r => r.Offset)) {
 						if (r == null)
 							continue;
 						var start = r.Offset;

@@ -23,17 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -44,10 +44,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var position = completionContext.Position;
 			var document = completionContext.Document;
 			var syntaxTree = ctx.SyntaxTree;
-			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
-				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
+			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
+				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken))
+			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken))
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (symbolInfo.Symbol == null || symbolInfo.Symbol.Kind != SymbolKind.Parameter)
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var list = new List<CompletionData> ();
-			var within = model.GetEnclosingNamedTypeOrAssembly(position, cancellationToken);
+			var within = model.GetEnclosingNamedTypeOrAssembly (position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
 
 			foreach (var ano in ma.AncestorsAndSelf ().OfType<AnonymousMethodExpressionSyntax> ()) {
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
-		void Analyze (CompletionEngine engine,SemanticModel model, SyntaxNode node, ISymbol within, List<CompletionData> list, ParameterListSyntax parameterList, ISymbol symbol, HashSet<string> addedSymbols, CancellationToken cancellationToken)
+		void Analyze (CompletionEngine engine, SemanticModel model, SyntaxNode node, ISymbol within, List<CompletionData> list, ParameterListSyntax parameterList, ISymbol symbol, HashSet<string> addedSymbols, CancellationToken cancellationToken)
 		{
 			var type = CheckParameterList (model, parameterList, symbol, cancellationToken);
 			if (type == null)
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						continue;
 					if (member.IsOrdinaryMethod () || member.Kind == SymbolKind.Field || member.Kind == SymbolKind.Property) {
 						if (member.IsAccessibleWithin (within)) {
-							var completionData = engine.Factory.CreateCastCompletionData(this, member, node, startType);
+							var completionData = engine.Factory.CreateCastCompletionData (this, member, node, startType);
 							if (addedSymbols.Contains (completionData.DisplayText))
 								continue;
 							addedSymbols.Add (completionData.DisplayText);

@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal override string Namespace {
+		public override string Namespace {
 			get {
 				if (ns != null)
 					return ns;

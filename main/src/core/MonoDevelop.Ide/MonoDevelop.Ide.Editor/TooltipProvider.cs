@@ -89,18 +89,21 @@ namespace MonoDevelop.Ide.Editor
 	{
 		public abstract Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken));
 
-		public virtual bool IsInteractive (TextEditor editor, Control tipWindow)
+		public virtual bool IsInteractive (TextEditor editor, Window tipWindow)
 		{
 			return false;
 		}
 
-		public virtual void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public virtual void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			requiredWidth = ((Gtk.Widget)tipWindow).SizeRequest ().Width;
+			if (tipWindow is XwtWindowControl)
+				requiredWidth = (int)tipWindow.GetNativeWidget<Xwt.WindowFrame> ().Width;
+			else
+				requiredWidth = ((Gtk.Window)tipWindow).SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public virtual Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			return null;
 		}
@@ -125,18 +128,18 @@ namespace MonoDevelop.Ide.Editor
 				(int)p1.X,
 				(int)p1.Y,
 				(int)w,
-				(int)editor.LineHeight
+				(int)editor.GetLineHeight (startLoc.Line)
 			);
 
 			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);
 		}
 
-		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public virtual void ShowTooltipWindow (TextEditor editor, Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			if (tipWindow == null)
 				return;
 
-			var tipInfoWindow = ((Gtk.Widget)tipWindow) as TooltipInformationWindow;
+			TooltipInformationWindow tipInfoWindow = (tipWindow as XwtWindowControl)?.Window as TooltipInformationWindow;
 			if (tipInfoWindow != null) {
 				ShowTipInfoWindow (editor, tipInfoWindow, item, modifierState, mouseX, mouseY);
 				return;
@@ -162,17 +165,20 @@ namespace MonoDevelop.Ide.Editor
 				x = geometry.X + geometry.Width - w;
 			if (x < geometry.Left)
 				x = geometry.Left;
-			
-			var gtkWindow = (Gtk.Window)tipWindow;
-			int h = gtkWindow.SizeRequest ().Height;
+
+			var xwtWindow = (Xwt.WindowFrame)tipWindow;
+			int h = (int)xwtWindow.Size.Height;
 			if (y + h >= geometry.Y + geometry.Height)
 				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
 			
-			gtkWindow.Move (x, y);
-			
-			gtkWindow.ShowAll ();
+			xwtWindow.Location = new Xwt.Point(x, y);
+			var gtkWindow = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeWindow (xwtWindow) as Gtk.Window;
+			if (gtkWindow != null)
+				gtkWindow.ShowAll ();
+			else
+				xwtWindow.Show ();
 		}
 
 		protected bool IsDisposed {

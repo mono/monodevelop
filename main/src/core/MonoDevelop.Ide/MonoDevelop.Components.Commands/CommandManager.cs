@@ -41,6 +41,8 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -487,6 +489,8 @@ namespace MonoDevelop.Components.Commands
 
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
+				if (cinfo.IsUpdatingAsynchronously)
+					cinfo.UpdateTask.Wait (); // Not nice, but we need a synchronous result here
 				if (cinfo.Bypass) {
 					bypass = true;
 					continue;
@@ -1334,7 +1338,7 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
-			return DispatchCommand (commandId, dataItem, initialTarget, source, null);
+			return DispatchCommand (commandId, dataItem, initialTarget, source, null, null);
 		}
 
 		/// <summary>
@@ -1360,6 +1364,28 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, uint? time)
 		{
+			return DispatchCommand (commandId, dataItem, initialTarget, source, time, null);
+		}
+
+		internal bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, CommandInfo sourceUpdateInfo)
+		{
+			return DispatchCommand (commandId, dataItem, initialTarget, source, null, sourceUpdateInfo);
+		}
+
+		internal bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source, uint? time, CommandInfo sourceUpdateInfo)
+		{
+			// (*) Before executing the command, DispatchCommand executes the command update handler to make sure the command is enabled in the given
+			// context. This is necessary because the status of the command may have changed since it was last checked (for example, since the menu
+			// was shown). In general this is not a problem because command update handlers are fast and cheap. However, it may be a problem
+			// for async command update handlers. The sourceUpdateInfo argument can be used in this case to provide the update info that was obtained
+			// when checking the status of the command before showing it to the user, so it doesn't need to be queried again.
+
+			// (**) The above special case works when the command is being executed from a menu, because the command update info has already been
+			// obtained to build the menu. However in other cases, such as execution through keyboard shortcuts or direct executions of
+			// the DispatchCommand method from code, sourceUpdateInfo may not be available. In those cases, if the command update handler is asynchronous,
+			// DispatchCommand will *not* wait for the update handler to end, it will use whatever value the handler sets before starting the
+			// async operation.
+
 			RegisterUserInteraction ();
 			
 			if (guiLock > 0)
@@ -1382,6 +1408,7 @@ namespace MonoDevelop.Components.Commands
 
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
+
 			try {
 				cmd = GetActionCommand (commandId);
 				if (cmd == null)
@@ -1400,10 +1427,16 @@ namespace MonoDevelop.Components.Commands
 					
 					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
 					if (cui != null) {
-						if (cmd.CommandArray) {
+						if (sourceUpdateInfo != null && cmdTarget == sourceUpdateInfo.SourceTarget && sourceUpdateInfo.IsUpdatingAsynchronously) {
+							// If the source update info was provided and it was part of an asynchronous command update, reuse it to avoid
+							// running the asynchronous update again. In other cases, the command update should be fast, so the check will be run again.
+							// See (*) above.
+							info = sourceUpdateInfo;
+						} else if (cmd.CommandArray) {
 							// Make sure that the option is still active
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
+							info.ArrayInfo.CancelAsyncUpdate (); // See (**) above
 							if (!info.ArrayInfo.Bypass) {
 								if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
 									return false;
@@ -1412,6 +1445,7 @@ namespace MonoDevelop.Components.Commands
 						} else {
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
+							info.CancelAsyncUpdate (); // See (**) above
 							bypass = info.Bypass;
 							
 							if (!bypass && (!info.Enabled || !info.Visible))
@@ -1482,6 +1516,7 @@ namespace MonoDevelop.Components.Commands
 		bool DefaultDispatchCommand (ActionCommand cmd, CommandInfo info, object dataItem, object target, CommandSource source)
 		{
 			DefaultUpdateCommandInfo (cmd, info);
+			info.CancelAsyncUpdate ();
 			
 			if (cmd.CommandArray) {
 				//if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
@@ -1541,7 +1576,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			return GetCommandInfo (commandId, new CommandTargetRoute ());
 		}
-		
+
 		/// <summary>
 		/// Retrieves status information about a command by looking for a handler in the active command route.
 		/// </summary>
@@ -1555,6 +1590,23 @@ namespace MonoDevelop.Components.Commands
 		/// Command route origin
 		/// </param>
 		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute)
+		{
+			return GetCommandInfo (commandId, targetRoute, default (CancellationToken));
+		}
+		
+		/// <summary>
+		/// Retrieves status information about a command by looking for a handler in the active command route.
+		/// </summary>
+		/// <returns>
+		/// The command information.
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command.
+		/// </param>
+		/// <param name='targetRoute'>
+		/// Command route origin
+		/// </param>
+		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute, CancellationToken cancelToken)
 		{
 			commandId = CommandManager.ToCommandId (commandId);
 			ActionCommand cmd = GetActionCommand (commandId);
@@ -2506,15 +2558,23 @@ namespace MonoDevelop.Components.Commands
 		{
 			base.Init (method, attr);
 			ParameterInfo[] pars = method.GetParameters ();
-			if (pars.Length == 1) {
-				Type t = pars[0].ParameterType;
-				
-				if (t == typeof(CommandArrayInfo)) {
+			if (pars.Length > 0 && pars.Length <= 2) {
+				if (pars.Length == 2) {
+					if (method.ReturnType != typeof (Task) || pars [1].ParameterType != typeof (CancellationToken))
+						ReportInvalidSignature (method);
+				}
+				Type t = pars [0].ParameterType;
+				if (t == typeof (CommandArrayInfo)) {
 					isArray = true;
 					return;
-				} else if (t == typeof(CommandInfo))
+				} else if (t == typeof (CommandInfo))
 					return;
 			}
+			ReportInvalidSignature (method);
+		}
+
+		void ReportInvalidSignature (MethodInfo method)
+		{
 			throw new InvalidOperationException ("Invalid signature for command update handler: " + method.DeclaringType + "." + method.Name + "()");
 		}
 
@@ -2542,7 +2602,12 @@ namespace MonoDevelop.Components.Commands
 
 				var sw = Stopwatch.StartNew ();
 
-				Method.Invoke (cmdTarget, new object[] {info} );
+				if (Method.ReturnType == typeof (Task)) {
+					var t = (Task) Method.Invoke (cmdTarget, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				}
+				else
+					Method.Invoke (cmdTarget, new object [] { info });
 
 				sw.Stop ();
 				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
@@ -2570,7 +2635,11 @@ namespace MonoDevelop.Components.Commands
 
 				var sw = Stopwatch.StartNew ();
 
-				Method.Invoke (cmdTarget, new object[] {info} );
+				if (Method.ReturnType == typeof (Task)) {
+					var t = (Task)Method.Invoke (cmdTarget, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				} else
+					Method.Invoke (cmdTarget, new object [] { info });
 
 				sw.Stop ();
 				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
@@ -2586,15 +2655,26 @@ namespace MonoDevelop.Components.Commands
 		public void CommandUpdate (object target, CommandInfo info)
 		{
 			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
-			if (mi != null)
-				mi.Invoke (target, new object[] {info} );
+			if (mi != null) {
+				if (mi.ReturnType == typeof (Task)) {
+					var t = (Task) mi.Invoke (target, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				}
+				else
+					mi.Invoke (target, new object [] { info });
+			}
 		}
 		
 		public void CommandUpdate (object target, CommandArrayInfo info)
 		{
 			MethodInfo mi = (MethodInfo) info.UpdateHandlerData;
-			if (mi != null)
-				mi.Invoke (target, new object[] {info} );
+			if (mi != null) {
+				if (mi.ReturnType == typeof (Task)) {
+					var t = (Task)mi.Invoke (target, new object [] { info, info.AsyncUpdateCancellationToken });
+					info.SetUpdateTask (t);
+				} else
+					mi.Invoke (target, new object [] { info });
+			}
 		}
 
 		public void Run (object target, Command cmd)

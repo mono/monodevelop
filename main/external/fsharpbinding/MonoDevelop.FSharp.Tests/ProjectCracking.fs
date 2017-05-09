@@ -25,7 +25,7 @@ module ``Project Cracking`` =
         let s = w :?> Solution
         let fsproj = s.Items.[0] :?> DotNetProject
         let opts = languageService.GetProjectOptionsFromProjectFile fsproj
-        return opts.OtherOptions
+        return opts.Value.OtherOptions
     }
 
     do

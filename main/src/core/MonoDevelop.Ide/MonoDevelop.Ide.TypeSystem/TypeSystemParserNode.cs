@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 
 			foreach (var action in buildActions) {
-				if (string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase))
+ 				if (string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase) || action == "*")
 					return true;
 			}
 			return false;

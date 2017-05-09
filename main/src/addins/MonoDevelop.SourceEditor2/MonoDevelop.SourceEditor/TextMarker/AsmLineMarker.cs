@@ -31,16 +31,16 @@ namespace MonoDevelop.SourceEditor
 {
 	class AsmLineMarker: TextLineMarker, MonoDevelop.Ide.Editor.ITextLineMarker
 	{
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override MonoDevelop.Ide.Editor.Highlighting.ChunkStyle GetStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle)
 		{
-			var st = new ChunkStyle (baseStyle);
+			var st = new MonoDevelop.Ide.Editor.Highlighting.ChunkStyle (baseStyle);
 			st.Foreground = new Cairo.Color (125, 125, 125);
 			return st;
 		}
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
 			get {
-				return new DocumentLineWrapper (LineSegment);
+				return LineSegment;
 			}
 		}
 	}

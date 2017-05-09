@@ -26,8 +26,11 @@
 using System;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.MSBuild;
+using System.IO;
 using System.Linq;
+using System.Xml;
 using ValueSet = MonoDevelop.Projects.ConditionedPropertyCollection.ValueSet;
 
 namespace MonoDevelop.Projects
@@ -63,6 +66,8 @@ namespace MonoDevelop.Projects
 			var pg = p.GetGlobalPropertyGroup ();
 			Assert.AreEqual ("8.0.50727", pg.GetValue ("ProductVersion"));
 			Assert.AreEqual ("$(TestProp)", pg.GetValue ("EvalProp"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -82,6 +87,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("ExtraVal", pg.GetValue ("EvalExtraProp"));
 			Assert.AreEqual ("value2", pg.GetValue ("Case2"));
 			Assert.AreEqual ("value2", pg.GetValue ("Case3"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -108,19 +115,41 @@ namespace MonoDevelop.Projects
 
 			ig = igs [1];
 			ar = ig.Items.ToArray ();
-			Assert.AreEqual (3, ig.Items.Count());
+			Assert.AreEqual (7, ig.Items.Count());
 
 			it = ar [0];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.Include);
+			Assert.AreEqual ("Test", it.Metadata.GetValue ("AttributeMetadata"));
+			Assert.AreEqual ("$(Platform)", it.Metadata.GetValue ("OverriddenAttributeMetadata"));
 
 			it = ar [1];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file1.txt", it.Include);
+
+			it = ar [2];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("*.txt", it.Update);
+			Assert.AreEqual ("$(Configuration)", it.Metadata.GetValue ("MetaUpdate"));
+
+			it = ar [3];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.Include);
+
+			it = ar [4];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.Update);
+			Assert.AreEqual ("$(Platform)", it.Metadata.GetValue ("MetaUpdate2"));
+
+			it = ar [5];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.Include);
 
-			it = ar [2];
+			it = ar [6];
 			Assert.AreEqual ("Transformed", it.Name);
 			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.Include);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -158,38 +187,41 @@ namespace MonoDevelop.Projects
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[0]);
 
 			it = items [4];
-			Assert.AreEqual ("None", it.Name);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file1.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file1.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("MetaUpdate"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[1]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+
+			// [2] is an Update element, no real elements by itself.
 
 			it = items [5];
+			Assert.AreEqual ("Files", it.Name);
+			Assert.AreEqual ("file2.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("file2.txt", it.Include);
+			Assert.AreEqual (null, it.Metadata.GetValue ("MetaUpdate"));
+			Assert.AreEqual ("AnyCPU", it.Metadata.GetValue ("MetaUpdate2"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [4]);
+
+			// [4] is an Update element, no real elements by itself.
+
+			it = items [6];
+			Assert.AreEqual ("None", it.Name);
+			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
+			Assert.AreEqual ("file1.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
+
+			it = items [7];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 			Assert.AreEqual ("file2.txt", it.Include);
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[1]);
-
-			it = items [6];
-			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
-			Assert.AreEqual ("file1.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
-			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
-
-			it = items [7];
-			Assert.AreEqual ("Transformed", it.Name);
-			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
-			Assert.AreEqual ("file2.txt", it.Include);
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
-			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
-			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[5]);
 
 			it = items [8];
 			Assert.AreEqual ("Transformed", it.Name);
@@ -198,7 +230,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
 
 			it = items [9];
 			Assert.AreEqual ("Transformed", it.Name);
@@ -207,7 +239,27 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
 			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
 			Assert.IsNotNull (it.SourceItem);
-			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [2]);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			it = items [10];
+			Assert.AreEqual ("Transformed", it.Name);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
+			Assert.AreEqual ("file1.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			it = items [11];
+			Assert.AreEqual ("Transformed", it.Name);
+			Assert.AreEqual ("@(None -> WithMetadataValue('Meta2', 'Debug'))", it.UnevaluatedInclude);
+			Assert.AreEqual ("file2.txt", it.Include);
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta2"));
+			Assert.AreEqual ("Debug", it.Metadata.GetValue ("Meta3"));
+			Assert.IsNotNull (it.SourceItem);
+			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray () [1].Items.ToArray () [6]);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -223,6 +275,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
 			Assert.IsFalse (tn.Contains ("Conditioned"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -238,6 +292,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
 			Assert.IsTrue (tn.Contains ("Conditioned"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -247,6 +303,8 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 			var res = p.EvaluatedProperties.GetValue ("ExistsTest");
 			Assert.AreEqual ("OK", res);
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -258,6 +316,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("one", p.EvaluatedProperties.GetValue ("PropFromTest1"));
 			Assert.AreEqual ("two", p.EvaluatedProperties.GetValue ("PropFromTest2"));
 			Assert.AreEqual ("three", p.EvaluatedProperties.GetValue ("PropFromFoo"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -275,6 +335,8 @@ namespace MonoDevelop.Projects
 			pi.SetGlobalProperty ("Configuration", "Alt");
 			pi.Evaluate ();
 			Assert.AreEqual ("Three", pi.EvaluatedProperties.GetValue ("Foo"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -282,6 +344,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual (new [] {"aa","vv","test"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -289,6 +352,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-tests", "property-eval-order.csproj");
 			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+			p.Dispose ();
 		}
 
 		[Test]
@@ -297,6 +361,7 @@ namespace MonoDevelop.Projects
 			var p = LoadAndEvaluate ("msbuild-tests", "functions.csproj");
 
 			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("Substring"));
+			Assert.AreEqual ("bcd", p.EvaluatedProperties.GetValue ("SubstringIgnoreCase"));
 			Assert.AreEqual ("ab", p.EvaluatedProperties.GetValue ("MethodWithParams1"));
 			Assert.AreEqual ("abc", p.EvaluatedProperties.GetValue ("MethodWithParams2"));
 			Assert.AreEqual ("abcd", p.EvaluatedProperties.GetValue ("MethodWithParams3"));
@@ -320,9 +385,13 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("2", p.EvaluatedProperties.GetValue ("SplitLength"));
 			Assert.AreEqual ("abcdefg", p.EvaluatedProperties.GetValue ("NewString"));
 			Assert.AreEqual ("100", p.EvaluatedProperties.GetValue ("CharConvert"));
+			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("StringAtIndex0"));
+			Assert.AreEqual ("b", p.EvaluatedProperties.GetValue ("StringAtIndex1"));
 
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (p.FileName), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -371,6 +440,8 @@ namespace MonoDevelop.Projects
 				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_4", "val14_3" }),
 				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_5", "val14_6" }),
 			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1", "cond2").ToArray ()));
+
+			p.Dispose ();
 		}
 
 		[Test]
@@ -382,6 +453,8 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
 			Assert.AreEqual ("  ", import.StartWhitespace);
+
+			p.Dispose ();
 		}
 
 		/// <summary>
@@ -398,6 +471,7 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
 			Assert.AreEqual ("  ", import.StartWhitespace);
+			p.Dispose ();
 		}
 
 		[Test]
@@ -407,6 +481,7 @@ namespace MonoDevelop.Projects
 			var p = LoadAndEvaluate ("msbuild-tests", "condition-parse.csproj");
 			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -414,6 +489,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadAndEvaluate ("msbuild-project-test", "test-user.csproj");
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("TestProp"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -435,6 +511,7 @@ namespace MonoDevelop.Projects
 			// Includes can contain several transforms
 			Assert.AreEqual ("a.txt;b.txt;t1.txt;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue"));
 			Assert.AreEqual ("a;b;t1;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue2"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -458,6 +535,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("@", p.EvaluatedProperties.GetValue ("Func2"));
 
 			Assert.AreEqual ("t0 - []", p.EvaluatedProperties.GetValue ("FadaResPrev"));
+			p.Dispose ();
 		}
 
 		[Test]
@@ -508,6 +586,875 @@ namespace MonoDevelop.Projects
 
 			// get_Chars
 			Assert.AreEqual ("t;t;.", p.EvaluatedProperties.GetValue ("get_Chars"));
+			p.Dispose ();
+		}
+
+		[Test]
+		public void AddKnownAttributeToMSBuildItem ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+			p.AddKnownItemAttribute ("Test", "Known");
+
+			var item = p.AddNewItem ("Test", "Include");
+			item.Metadata.SetValue ("Known", "KnownAttributeValue");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var itemElement = (XmlElement)itemGroupElement.ChildNodes[0];
+
+			Assert.AreEqual ("Test", itemElement.Name);
+			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
+			Assert.AreEqual (0, itemElement.ChildNodes.Count);
+			Assert.IsTrue (itemElement.IsEmpty);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void AddKnownAttributeToMSBuildItemForExistingAttribute ()
+		{
+			var p = new MSBuildProject ();
+			string projectXml =
+				"<Project ToolsVersion=\"15.0\">\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Test Include=\"Include\" Known=\"KnownAttributeValue\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			p.LoadXml (projectXml);
+
+			p.AddKnownItemAttribute ("Test", "Known", "Another");
+			var item = p.ItemGroups.Single ().Items.Single ();
+			item.Metadata.SetValue ("Another", "AnotherValue");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var itemGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var itemElement = (XmlElement)itemGroupElement.ChildNodes[0];
+
+			Assert.AreEqual ("Test", itemElement.Name);
+			Assert.AreEqual ("KnownAttributeValue", itemElement.GetAttribute ("Known"));
+			Assert.AreEqual ("AnotherValue", itemElement.GetAttribute ("Another"));
+			Assert.AreEqual (0, itemElement.ChildNodes.Count);
+			Assert.IsTrue (itemElement.IsEmpty);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void Remove ()
+		{
+			var p = LoadAndEvaluate ("msbuild-project-test", "test-remove.csproj");
+
+			var items = p.EvaluatedItems.Where (it => it.Name == "Test1").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file1.txt", "support\\file1.txt" }, items);
+
+			items = p.EvaluatedItems.Where (it => it.Name == "Test2").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file2.txt", "support\\file1.txt" }, items);
+
+			items = p.EvaluatedItems.Where (it => it.Name == "Test3").Select (it => it.Include).ToArray ();
+			Assert.AreEqual (new [] { "file2.txt" }, items);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void SdkProjectMSBuildXmlNamespaceIsNotSaved ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+			p.Dispose ();
+		}
+
+		[Test]
+		public void NonSdkProjectMSBuildXmlNamespaceIsAddedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
+			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void ExistingSdkProjectMSBuildXmlNamespaceRemovedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			Assert.IsFalse (doc.DocumentElement.HasAttribute ("xmlns"));
+			p.Dispose ();
+		}
+
+		[Test]
+		public void NonSdkProjectMSBuildXmlNamespaceIsNotRemovedOnSaving ()
+		{
+			var p = new MSBuildProject ();
+			p.LoadXml ("<Project ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" />");
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var xmlnsAttributeValue = doc.DocumentElement.GetAttribute ("xmlns");
+			Assert.AreEqual ("http://schemas.microsoft.com/developer/msbuild/2003", xmlnsAttributeValue);
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToChildElementsOnSaving (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var propertyGroup = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			Assert.IsFalse (propertyGroup.HasAttribute ("xmlns"));
+			Assert.AreEqual ("PropertyGroup", propertyGroup.Name);
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToCustomCommand (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <PropertyGroup Condition=\" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' \">\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var propertyGroup = (MSBuildPropertyGroup)p.ChildNodes[1];
+			var customCommand = new CustomCommand {
+				Command = "Test"
+			};
+			var config = new ItemConfiguration ("Debug", "AnyCPU");
+			config.CustomCommands.Add (customCommand);
+			propertyGroup.WriteObjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var propertyGroupElement = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var commandsElement = (XmlElement)propertyGroupElement.ChildNodes[0];
+			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+			Assert.AreEqual (1, propertyGroupElement.ChildNodes.Count);
+
+			commandsElement = (XmlElement)commandsElement.ChildNodes[0];
+			Assert.IsFalse (commandsElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("CustomCommands", commandsElement.Name);
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void MSBuildXmlNamespaceNotAddedToExternalProperties (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			Assert.IsFalse (monoDevelopElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("MonoDevelop", monoDevelopElement.Name);
+
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			Assert.IsFalse (propertiesElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("Properties", propertiesElement.Name);
+
+			var externalElement = (XmlElement)propertiesElement.ChildNodes[0];
+			Assert.IsFalse (externalElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("External", externalElement.Name);
+			p.Dispose ();
+		}
+
+		public class TestExternalPropertiesConfig : ItemConfiguration
+		{
+			public TestExternalPropertiesConfig ()
+				: base ("Debug", "AnyCPU")
+			{
+			}
+
+			[ItemProperty("External", IsExternal=true)]
+			TestExternalPropertyObject external = new TestExternalPropertyObject ();
+		}
+
+		[DataItem ("TestExternalPropertyObject")]
+		public class TestExternalPropertyObject
+		{
+			[ItemProperty ("Value1")]
+			string value1 = "Test";
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void RemoveMonoDevelopProjectExtension (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			var externalElement = p.GetMonoDevelopProjectExtension ("External");
+			Assert.IsNotNull (externalElement);
+
+			p.RemoveMonoDevelopProjectExtension ("External");
+
+			externalElement = p.GetMonoDevelopProjectExtension ("External");
+			Assert.IsNull (externalElement);
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\"")]
+		public void UpdatingMonoDevelopProjectExtensionShouldNotAddAnotherXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+			var config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			// Update existing extension.
+			config = new TestExternalPropertiesConfig ();
+			p.WriteExternalProjectProperties (config, config.GetType (), true);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			var externalElement = (XmlElement)propertiesElement.ChildNodes[0];
+
+			Assert.AreEqual ("External", externalElement.Name);
+			Assert.AreEqual (1, monoDevelopElement.ChildNodes.Count);
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"",
+			"<ExtensionData>Value</ExtensionData>",
+			false)]
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"",
+			"<ExtensionData xmlns=\"\">Value</ExtensionData>",
+			false)]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"",
+			"<ExtensionData>Value</ExtensionData>",
+			true)] // xmlns=''
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"",
+			"<ExtensionData xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">Value</ExtensionData>",
+			false)]
+		public void SetMonoDevelopProjectExtension (
+			string projectElementAttributes,
+			string extensionXml,
+			bool expectedHasXmlAttribute)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var doc = new XmlDocument ();
+			doc.LoadXml (extensionXml);
+			var element = doc.DocumentElement;
+			p.SetMonoDevelopProjectExtension ("Test", element);
+
+			string xml = p.SaveToString ();
+			doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var projectExtensions = (XmlElement)doc.DocumentElement.ChildNodes[1];
+			var monoDevelopElement = (XmlElement)projectExtensions.ChildNodes[0];
+			var propertiesElement = (XmlElement)monoDevelopElement.ChildNodes[0];
+			var extensionDataElement = (XmlElement)propertiesElement.ChildNodes[0];
+
+			Assert.AreEqual (expectedHasXmlAttribute, extensionDataElement.HasAttribute ("xmlns"));
+			Assert.AreEqual ("ExtensionData", extensionDataElement.Name);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// This works without any changes to MSBuildProperty using the full
+		/// MSBuild xmlns value.
+		/// </summary>
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void PropertyWithChildXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1>\r\n" +
+				"      <Test2>\r\n" +
+				"        <Test3></Test3>\r\n" +
+				"      </Test2>\r\n" +
+				"    </Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var properties = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var test1Element = (XmlElement)properties.ChildNodes[1];
+			var test2Element = (XmlElement)test1Element.ChildNodes[0];
+			var test3Element = test2Element.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1", test1Element.Name);
+			Assert.AreEqual ("Test2", test2Element.Name);
+			Assert.AreEqual ("Test3", test3Element.Name);
+			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// This works without any changes to MSBuildProperty using the full
+		/// MSBuild xmlns value.
+		/// </summary>
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void SetPropertyWithChildXmlElement (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1></Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			string propertyValue =
+				"<Test2 xmlns='" + p.Namespace + "'>\r\n" +
+				"  <Test3>Value</Test3>\r\n" +
+				"</Test2>";
+			var globalGroup = p.GetGlobalPropertyGroup ();
+			var test1Property = globalGroup.GetProperty ("Test1");
+			test1Property.SetValue (propertyValue);
+
+			string xml = p.SaveToString ();
+			var doc = new XmlDocument ();
+			doc.LoadXml (xml);
+
+			var properties = (XmlElement)doc.DocumentElement.ChildNodes[0];
+			var test1Element = (XmlElement)properties.ChildNodes[1];
+			var test2Element = (XmlElement)test1Element.ChildNodes[0];
+			var test3Element = test2Element.ChildNodes.OfType<XmlElement> ().First ();
+
+			Assert.AreEqual ("Test1", test1Element.Name);
+			Assert.AreEqual ("Test2", test2Element.Name);
+			Assert.AreEqual ("Test3", test3Element.Name);
+			Assert.IsFalse (test1Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test2Element.HasAttribute ("xmlns"));
+			Assert.IsFalse (test3Element.HasAttribute ("xmlns"));
+			p.Dispose ();
+		}
+
+		[TestCase ("Sdk=\"Microsoft.NET.Sdk\" ToolsVersion=\"15.0\"")]
+		[TestCase ("ToolsVersion=\"15.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"")]
+		public void PatchedImport (string projectElementAttributes)
+		{
+			string projectXml =
+				"<Project " + projectElementAttributes + ">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"    <Test1></Test1>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <Import Project=\"Original.targets\" />\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var import = p.Imports.Single ();
+
+			var sw = new StringWriter ();
+			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
+				OmitXmlDeclaration = true,
+				NewLineChars = "\r\n",
+				NewLineHandling = NewLineHandling.Replace
+			});
+
+			xw.WriteStartElement (string.Empty, "Root", p.Namespace);
+			import.WritePatchedImport (xw, "Updated.targets");
+			xw.WriteEndElement ();
+			xw.Dispose ();
+
+			var doc = new XmlDocument ();
+			doc.LoadXml (sw.ToString ());
+
+			var import1 = (XmlElement)doc.DocumentElement.ChildNodes [0];
+			var import2 = (XmlElement)doc.DocumentElement.ChildNodes [1];
+
+			Assert.AreEqual ("Original.targets", import1.GetAttribute ("Project"));
+			Assert.AreEqual ("Exists('Original.targets')", import1.GetAttribute ("Condition"));
+			Assert.AreEqual ("Updated.targets", import2.GetAttribute ("Project"));
+			Assert.AreEqual ("!Exists('Original.targets')", import2.GetAttribute ("Condition"));
+			Assert.IsFalse (import1.HasAttribute ("xmlns"));
+			Assert.IsFalse (import2.HasAttribute ("xmlns"));
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Remove items should be grouped together with MSBuildItems with the same type.
+		/// </summary>
+		[Test]
+		public void AddRemoveItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Remove items should be added before Include items in their own ItemGroup.
+		/// </summary>
+		[Test]
+		public void AddRemoveItemBeforeIncludeItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void AddRemoveItemBeforeIncludeItemOfTheSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Reference Include=\"System.Xml\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Reference Include=\"System.Xml\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Remove items should be added before Update items in their own ItemGroup.
+		/// </summary>
+		[Test]
+		public void AddRemoveItemBeforeUpdateItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text1.txt");
+			updateItem.Update = "Text1.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void AddRemoveItemBeforeUpdateItemOfSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text1.txt");
+			updateItem.Update = "Text1.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Remove items should be added before Include items in their own ItemGroup.
+		/// </summary>
+		[Test]
+		public void AddRemoveItemAfterWildcardIncludeItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			MSBuildItem item = p.AddNewItem ("None", @"**\*.txt");
+			item.EvaluatedItemCount = 2;
+
+			var removeItem = p.CreateItem ("None", "Text2.txt");
+			removeItem.Remove = "Text2.txt";
+			removeItem.Include = null;
+			p.AddItem (removeItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"**\\*.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Remove=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Update items should be grouped together with MSBuildItems with the same type.
+		/// </summary>
+		[Test]
+		public void AddUpdateItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			var updateItem = p.CreateItem ("None", "Text2.txt");
+			updateItem.Update = "Text2.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		/// <summary>
+		/// Include items should be inserted before existing Update items
+		/// in their own ItemGroup.
+		/// </summary>
+		[Test]
+		public void AddIncludeItemBeforeUpdateItem ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text2.txt");
+			updateItem.Update = "Text2.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
+		}
+
+		[Test]
+		public void AddIncludeItemBeforeUpdateItemOfSameKind ()
+		{
+			string projectXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+
+			var p = new MSBuildProject ();
+			p.LoadXml (projectXml);
+
+			var updateItem = p.CreateItem ("None", "Text2.txt");
+			updateItem.Update = "Text2.txt";
+			updateItem.Include = null;
+			p.AddItem (updateItem);
+
+			p.AddNewItem ("None", "Text1.txt");
+
+			string xml = p.SaveToString ();
+
+			string expectedXml =
+				"<Project Sdk=\"Microsoft.NET.Sdk\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"    <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <Compile Update=\"a.cs\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Include=\"Text1.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"  <ItemGroup>\r\n" +
+				"    <None Update=\"Text2.txt\" />\r\n" +
+				"  </ItemGroup>\r\n" +
+				"</Project>";
+			Assert.AreEqual (expectedXml, xml);
+			p.Dispose ();
 		}
 	}
 }

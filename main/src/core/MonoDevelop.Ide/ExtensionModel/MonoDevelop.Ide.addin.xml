@@ -1,4 +1,10 @@
 <ExtensionModel>
+	<Runtime>
+		<Import assembly="Microsoft.VisualStudio.CoreUtility.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Data.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.Logic.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
+	</Runtime>
 	
 	<!-- Extension ponts -->
 	
@@ -177,24 +183,24 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
-		<Description>Syntax modes</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/Bundles" name = "TextMate bundles">
+		<Description>TextMate language bundles with syntax highlighting definitions, code snippets and syntax color themes</Description>
+		<ExtensionNode name="Bundle" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
-		<Description>Styles</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/Themes" name = "Editor color themes">
+		<Description>Color themes for the source editor</Description>
+		<ExtensionNode name="Theme" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/EditorFactory" name = "Editor factories">
 		<Description>Allows providing a platform-specific implementation for the text editor</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/TooltipProviders" name = "Tooltip providers">
 		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
-		<ExtensionNode name="Class" type="MonoDevelop.Ide.Editor.TooltipExtensionNode" />
+		<ExtensionNode name="Provider" type="MonoDevelop.Ide.Editor.TooltipExtensionNode" />
 		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
 			<Description>Type of the file being edited.</Description>
 		</ConditionType>
@@ -202,7 +208,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/BraceMatcher" name = "Brace matcher">
 		<Description>Algorithm for providing matching braces in a file.</Description>
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Matcher" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/AutoInsertBracketHandler" name = "Automatic bracket handler">
@@ -215,11 +221,24 @@
 		<ExtensionNode name = "ErrorDocumentationProvider" type = "MonoDevelop.Ide.Extensions.ErrorDocumentationProvider" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
+		<Description>Setting what languages are supported for user selection.</Description>
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
-		       description = "Graphical add-in setup utility"
+		       description = "Graphical extension setup utility"
 		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
 	</Extension>
 	
@@ -243,7 +262,7 @@
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
 		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
-		<Scheme id="VS14MAC" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
+		<Scheme id="VS14MAC" _name = "Visual Studio (Mixed)" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
 		<Scheme id="VS14MAC2" _name = "Visual Studio (Windows)" resource="KeyBindingSchemeVisualStudio.xml" forMac="true"/>
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
@@ -293,6 +312,10 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.ErrorHandlerTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.AutoInsertBracketTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.HighlightUrlExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateFoldingTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateIndentationTextEditorExtension" />
+		<Class class = "MonoDevelop.Ide.Editor.TextMate.TextMateCompletionTextEditorExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
@@ -368,8 +391,7 @@
 		<Class class = "MonoDevelop.Ide.GettingStarted.GettingStartedProjectExtension"/>
 	</Extension>
 
-	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
-		<Description>Setting what languages are supported for user selection.</Description>
-		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
-	</ExtensionPoint>
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
+	</Extension>
 </ExtensionModel>

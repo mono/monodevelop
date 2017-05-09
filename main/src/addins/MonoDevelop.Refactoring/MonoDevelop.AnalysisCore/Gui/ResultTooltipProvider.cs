@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = item.Item as List<Result>;
 
@@ -81,23 +82,23 @@ namespace MonoDevelop.AnalysisCore.Gui
 					switch (r.Level) {
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
 						severity = GettextCatalog.GetString ("Info");
-						color = editor.Options.GetColorStyle ().UnderlineHint.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
 						break;
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
 						severity = GettextCatalog.GetString ("Warning");
-						color = editor.Options.GetColorStyle ().UnderlineWarning.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineWarning, out color);
 						break;
 					case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
 						severity = GettextCatalog.GetString ("Error");
-						color = editor.Options.GetColorStyle ().UnderlineError.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineError, out color);
 						break;
 					default:
 						severity = "?";
-						color = editor.Options.GetColorStyle ().UnderlineSuggestion.Color;
+						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
 						break;
 					}
 
-					sb.Append (string.Format ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ()));
+					sb.AppendFormat ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ());
 				} else {
 					sb.Append (escapedMessage);
 				}
@@ -108,7 +109,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return window;
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (LanguageItemWindow) tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);

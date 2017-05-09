@@ -46,7 +46,7 @@ type FSharpProject() as self =
     let invalidateProjectFile() =
         try
             if File.Exists (self.FileName.ToString()) then
-                languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+                languageService.TryGetProjectCheckerOptionsFromCache(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
                 |> Option.iter(fun options ->
                     languageService.InvalidateConfiguration(options)
                     languageService.ClearProjectInfoCache())
@@ -126,7 +126,7 @@ type FSharpProject() as self =
             | [_single, items] when items = sortedItems -> false
             | _ -> true
 
-        if needsSort then
+        if needsSort && sortedItems.Length > 0 then
             let newGroup = project.AddNewItemGroup()
 
             for item in sortedItems do
@@ -260,6 +260,18 @@ type FSharpProject() as self =
     override x.OnGetDefaultResourceId(projectFile) =
         projectFile.FilePath.FileName
 
+    override x.OnModified(e) =
+        base.OnModified(e)
+        if not self.Loading && not self.IsReevaluating then invalidateProjectFile()
+
+    override x.OnReevaluateProject(e) =
+        let task = base.OnReevaluateProject (e)
+
+        async {
+            do! task |> Async.AwaitTask
+            invalidateProjectFile()
+        } |> Async.startAsPlainTask    
+            
     override x.OnDispose () =
         //if not self.Loading then invalidateProjectFile()
 

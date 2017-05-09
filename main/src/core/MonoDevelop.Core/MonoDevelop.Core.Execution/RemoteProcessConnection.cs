@@ -508,21 +508,30 @@ namespace MonoDevelop.Core.Execution
 					return;
 				}
 
-				lock (pendingMessageTasks) {
-					var t = Task.Run (() => {
-						msg = LoadMessageData (msg);
-						if (type == 0)
-							ProcessResponse (msg);
-						else
-							ProcessRemoteMessage (msg);
-					});
-					t.ContinueWith (ta => {
-						lock (pendingMessageTasks) {
-							pendingMessageTasks.Remove (ta);
-						}
-					}).Ignore ();
+				HandleMessage (msg, type);
+			}
+		}
+
+		async void HandleMessage (BinaryMessage msg, byte type)
+		{
+			var t = Task.Run (() => {
+				msg = LoadMessageData (msg);
+				if (type == 0)
+					ProcessResponse (msg);
+				else
+					ProcessRemoteMessage (msg);
+			});
+
+			try {
+				lock (pendingMessageTasks)
 					pendingMessageTasks.Add (t);
-				}
+
+				await t.ConfigureAwait (false);
+			} catch (Exception e) {
+				LoggingService.LogError ("RemoteProcessConnection.HandleMessage failed", e);
+			} finally {
+				lock (pendingMessageTasks)
+					pendingMessageTasks.Remove (t);
 			}
 		}
 
@@ -530,7 +539,8 @@ namespace MonoDevelop.Core.Execution
 
 		public Task ProcessPendingMessages ()
 		{
-			return Task.WhenAll (pendingMessageTasks.ToArray ());
+			lock (pendingMessageTasks)
+				return Task.WhenAll (pendingMessageTasks.ToArray ());
 		}
 
 		BinaryMessage LoadMessageData (BinaryMessage msg)
@@ -547,9 +557,9 @@ namespace MonoDevelop.Core.Execution
 		void ProcessResponse (BinaryMessage msg)
 		{
 			DateTime respTime = DateTime.Now;
+			MessageRequest req;
 
 			lock (messageWaiters) {
-				MessageRequest req;
 				if (messageWaiters.TryGetValue (msg.Id, out req)) {
 					messageWaiters.Remove (msg.Id);
 					try {
@@ -568,12 +578,15 @@ namespace MonoDevelop.Core.Execution
 						LogMessage (MessageType.Response, msg, time);
 					}
 
-					if (!req.Request.OneWay)
-						NotifyResponse (req, msg);
-				}
-				else if (DebugMode)
+				} else if (DebugMode) {
+					req = null;
 					LogMessage (MessageType.Response, msg, -1);
+				}
 			}
+
+			// Notify the response outside the lock to avoid deadlocks
+			if (req != null && !req.Request.OneWay)
+				NotifyResponse (req, msg);
 		}
 
 		void NotifyResponse (MessageRequest req, BinaryMessage res)
@@ -602,10 +615,11 @@ namespace MonoDevelop.Core.Execution
 				return;
 			}
 
-			Runtime.RunInMainThread (delegate {
-				if (MessageReceived != null)
-					MessageReceived (null, new MessageEventArgs () { Message = msg });
-			});
+			if (MessageReceived != null) {
+				Runtime.RunInMainThread (delegate {
+					MessageReceived?.Invoke (null, new MessageEventArgs () { Message = msg });
+				});
+			}
 
 			try {
 				foreach (var li in listeners) {

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Extension
@@ -58,7 +59,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// </summary>
 		/// <param name="offset">The offset the text was pasted at.</param>
 		/// <param name="length">The length of the text pasted.</param>
-		public abstract void PostFomatPastedText (int offset, int length);
+		public abstract Task PostFomatPastedText (int offset, int length);
 	}
 }
 

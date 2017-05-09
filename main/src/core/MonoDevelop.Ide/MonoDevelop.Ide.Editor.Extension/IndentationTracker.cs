@@ -29,9 +29,10 @@ using MonoDevelop.Core.Text;
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	[Flags]
-	public enum IndentatitonTrackerFeatures {
+	public enum IndentationTrackerFeatures {
 		None = 0,
 		SmartBackspace = 1,
+        CustomIndentationEngine = 2,
 		All = SmartBackspace
 	}
 
@@ -40,9 +41,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// </summary>
 	public abstract class IndentationTracker
 	{
-		public virtual IndentatitonTrackerFeatures SupportedFeatures {
+		public virtual IndentationTrackerFeatures SupportedFeatures {
 			get {
-				return IndentatitonTrackerFeatures.All;
+				return IndentationTrackerFeatures.None;
 			}
 		}
 

@@ -24,9 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
-using NuGet;
+using NuGet.ProjectManagement;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests

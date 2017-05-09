@@ -24,23 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
-using NuGet;
+using System.Linq;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class FakeLicenseAcceptanceService : ILicenseAcceptanceService
 	{
 		public bool AcceptLicensesReturnValue = true;
-		public List<IPackage> PackagesAccepted;
-
-		public bool AcceptLicenses (IEnumerable<IPackage> packages)
-		{
-			PackagesAccepted = packages.ToList ();
-			return AcceptLicensesReturnValue;
-		}
 
 		public List<NuGetPackageLicense> PackageLicensesAccepted;
 

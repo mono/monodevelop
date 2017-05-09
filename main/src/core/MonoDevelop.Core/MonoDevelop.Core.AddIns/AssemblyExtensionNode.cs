@@ -33,7 +33,7 @@ using Mono.Addins;
 namespace MonoDevelop.Core.AddIns
 {
 	[ExtensionNode("Assembly")]
-	class AssemblyExtensionNode: TypeExtensionNode
+	public class AssemblyExtensionNode: TypeExtensionNode
 	{
 		[NodeAttribute ("file", Required=true)]
 		string file = null;

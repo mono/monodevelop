@@ -253,7 +253,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CommandBar">
-		<ItemSet id = "Debug">
+		<ItemSet id = "Debug" _label="Debugger">
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Continue" />
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" />
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOver" />

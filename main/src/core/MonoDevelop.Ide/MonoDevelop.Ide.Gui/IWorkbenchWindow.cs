@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Docking;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 		void SwitchView (BaseViewContent subViewContent);
 		int FindView <T>();
 		
-		bool CloseWindow (bool force);
+		Task<bool> CloseWindow (bool force);
 		void SelectWindow ();
 
 		/// <summary>
@@ -63,11 +64,12 @@ namespace MonoDevelop.Ide.Gui
 
 		event EventHandler DocumentChanged;
 		event WorkbenchWindowEventHandler Closed;
-		event WorkbenchWindowEventHandler Closing;
+		event WorkbenchWindowAsyncEventHandler Closing;
 		event ActiveViewContentEventHandler ActiveViewContentChanged;
 		event EventHandler ViewsChanged;
 	}
 
+	public delegate Task WorkbenchWindowAsyncEventHandler (object o, WorkbenchWindowEventArgs e);
 	public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);
 	public class WorkbenchWindowEventArgs : CancelEventArgs
 	{

@@ -1,10 +1,11 @@
 using System;
-using System.Reflection;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Collections;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Stetic
 {
@@ -119,9 +120,10 @@ namespace Stetic
 				CodeExpression createDelegate;
 				
 				if (options.UsePartialClasses) {
+					var rgx = new Regex (@"`\d+");
 					createDelegate =
 						new CodeDelegateCreateExpression (
-							new CodeTypeReference (descriptor.HandlerTypeName, CodeTypeReferenceOptions.GlobalReference),
+							new CodeTypeReference (rgx.Replace (descriptor.HandlerTypeName, ""), CodeTypeReferenceOptions.GlobalReference),
 							new CodeThisReferenceExpression (),
 							signal.Handler);
 				} else {

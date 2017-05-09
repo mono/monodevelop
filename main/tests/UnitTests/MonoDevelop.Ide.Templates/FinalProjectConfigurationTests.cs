@@ -296,6 +296,7 @@ namespace MonoDevelop.Ide.Templates
 		[TestCase ("a", true)]
 		[TestCase ("a.b", true)]
 		[TestCase ("a_b", true)]
+		[TestCase ("a-b", true)]
 		[TestCase ("a&b", false)]
 		[TestCase ("a<b", false)]
 		[TestCase ("a*b", false)]

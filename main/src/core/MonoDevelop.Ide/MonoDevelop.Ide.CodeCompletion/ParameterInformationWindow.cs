@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	class ParameterInformationWindow : PopoverWindow
+	class ParameterInformationWindow : XwtThemedPopup
 	{
 		CompletionTextEditorExtension ext;
 		public CompletionTextEditorExtension Ext {
@@ -69,13 +69,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public ParameterInformationWindow ()
 		{
-			TypeHint = Gdk.WindowTypeHint.Tooltip;
-			this.SkipTaskbarHint = true;
-			this.SkipPagerHint = true;
-			this.AllowShrink = false;
-			this.AllowGrow = false;
-			this.CanFocus = false;
-			this.CanDefault = false;
 			WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
@@ -94,32 +87,32 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
-			ContentBox.Add (vb2);
+			Content = BackendHost.ToolkitEngine.WrapWidget (vb2, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 
 			UpdateStyle ();
 			Styles.Changed += HandleThemeChanged;
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
-			ShowAll ();
-			DesktopService.RemoveWindowShadow (this);
+			vb2.ShowAll ();
+			//DesktopService.RemoveWindowShadow (this);
 		}
 
 		void UpdateStyle ()
 		{
-			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			
 			Theme.SetSchemeColors (scheme);
-			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
+			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 
 			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
 
-			if (this.Visible)
-				QueueDraw ();
+			//if (this.Visible)
+			//	QueueDraw ();
 		}
 
 		void HandleThemeChanged (object sender, EventArgs e)
@@ -127,11 +120,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateStyle ();
 		}
 
-		protected override void OnDestroyed ()
+		protected override void Dispose (bool disposing)
 		{
-			base.OnDestroyed ();
-			Styles.Changed -= HandleThemeChanged;
-			IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
+			if (disposing) {
+				Styles.Changed -= HandleThemeChanged;
+				IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
+			}
+			base.Dispose (disposing);
 		}
 
 		int lastParam = -2;
@@ -156,7 +151,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var parameterHintingData = (ParameterHintingData)provider [overload];
 
 			ResetTooltipInformation ();
-			ClearDescriptions ();
 			if (ext == null) {
 				// ext == null means HideParameterInfo was called aka. we are not in valid context to display tooltip anymore
 				lastParam = -2;
@@ -204,7 +198,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				descriptionBox.PackStart (CreateCategory (TooltipInformationWindow.GetHeaderMarkup (GettextCatalog.GetString ("Summary")), currentTooltipInformation.SummaryMarkup), true, true, 4);
 			}
 			descriptionBox.ShowAll ();
-			QueueResize ();
+			Content.QueueForReallocate ();
 			Show ();
 		}
 
@@ -233,7 +227,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
-			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor, Theme.Font);
+			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor, Theme.Font.ToPangoFont ());
 		}
 
 		public void ChangeOverload ()
@@ -242,18 +236,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ResetTooltipInformation ();
 		}
 
-		protected override void OnPagerLeftClicked ()
+		protected override bool OnPagerLeftClicked ()
 		{
 			if (Ext != null && Widget != null)
-				ParameterInformationWindowManager.OverloadUp (Ext, Widget);
-			base.OnPagerRightClicked ();
+				return ParameterInformationWindowManager.OverloadUp (Ext, Widget);
+			return base.OnPagerRightClicked ();
 		}
 
-		protected override void OnPagerRightClicked ()
+		protected override bool OnPagerRightClicked ()
 		{
 			if (Ext != null && Widget != null)
-				ParameterInformationWindowManager.OverloadDown (Ext, Widget);
-			base.OnPagerRightClicked ();
+				return ParameterInformationWindowManager.OverloadDown (Ext, Widget);
+			return base.OnPagerRightClicked ();
 		}
 		
 		public void HideParameterInfo ()

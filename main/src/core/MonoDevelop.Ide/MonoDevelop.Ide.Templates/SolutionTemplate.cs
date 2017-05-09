@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class SolutionTemplate
+	public class SolutionTemplate : IEquatable<SolutionTemplate>
 	{
 		public static readonly string DefaultImageId = "md-project";
 
@@ -209,6 +209,39 @@ namespace MonoDevelop.Ide.Templates
 		internal bool IsMatch (SolutionTemplateVisibility visibility)
 		{
 			return (Visibility == visibility) || (Visibility == SolutionTemplateVisibility.All);
+		}
+
+		public static bool operator == (SolutionTemplate template1, SolutionTemplate template2)
+		{
+			if (ReferenceEquals (template1, template2))
+				return true;
+			
+			if (((object)template1 == null) || ((object)template2 == null))
+				return false;
+			
+			return template1.Equals (template2);
+		}
+
+		public static bool operator != (SolutionTemplate template1, SolutionTemplate template2)
+		{
+			return !(template1 == template2);
+		}
+
+		public bool Equals (SolutionTemplate other)
+		{
+			return other != null && Id == other.Id && Name == other.Name && Category == other.Category;
+		}
+
+		public override bool Equals (object obj)
+		{
+			return Equals (obj as SolutionTemplate);
+		}
+
+		public override int GetHashCode ()
+		{
+			return (Id != null ? Id.GetHashCode () : 0)
+				^ (Name != null ? Name.GetHashCode () : 0)
+				^ (Category != null ? Category.GetHashCode () : 0);
 		}
 	}
 }

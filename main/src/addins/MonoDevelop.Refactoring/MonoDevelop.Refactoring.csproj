@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Refactoring</AssemblyName>
     <RootNamespace>MonoDevelop.Refactoring</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -116,19 +117,9 @@
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\AnalysisOptionsPanel.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultMarker.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Fixes\RenameMemberFix.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisTypeExtensionNode.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\FixHandlerExtensionNode.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Extensions\AnalysisRuleAddinNode.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisCommands.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\AnalysisExtensions.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisOptions.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
@@ -158,15 +149,15 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
     <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\JumpToDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalyzeWholeSolutionHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalyzeCurrentProjectHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeFixMenuService.cs" />
+    <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -174,7 +165,6 @@
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.CodeIssues\" />
     <Folder Include="MonoDevelop.CodeActions\" />
-    <Folder Include="MonoDevelop.AnalysisCore\Rules\" />
     <Folder Include="MonoDevelop.CodeIssues\Pad\" />
   </ItemGroup>
   <ItemGroup>
@@ -300,21 +290,20 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding" />
+    <InternalsVisibleTo Include="MonoDevelop.PackageManagement" />
+    <InternalsVisibleTo Include="MonoDevelop.MonoDroid" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="MonoDevelop.AnalysisCore\README.txt" />
-    <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
@@ -355,9 +344,4 @@
     <None Include="MonoDevelop.CodeIssues\Pad\AnalysisStateChangeEventArgs.cs" />
     <None Include="MonoDevelop.CodeIssues\Pad\CategoryGroupingProvider.cs" />
   </ItemGroup>
-
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
-    <Copy SourceFiles="..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll" DestinationFolder="..\..\..\build\bin" ContinueOnError="true" />
-  </Target>
-  </Project>
+</Project>

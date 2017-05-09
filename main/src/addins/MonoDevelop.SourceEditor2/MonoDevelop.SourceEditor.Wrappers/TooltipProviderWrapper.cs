@@ -36,8 +36,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 	class TooltipProviderWrapper : TooltipProvider, IDisposable
 	{
 		readonly MonoDevelop.Ide.Editor.TooltipProvider provider;
-		TooltipItem lastWrappedItem;
-		Ide.Editor.TooltipItem lastUnwrappedItem;
+		Ide.Editor.TooltipItem lastItem;
 
 		public MonoDevelop.Ide.Editor.TooltipProvider OriginalProvider {
 			get {
@@ -66,7 +65,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return null;
 		}
 
-		public override async Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken))
+		public override async Task<MonoDevelop.Ide.Editor.TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken))
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
@@ -82,18 +81,18 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var item = await task;
 			if (item == null)
 				return null;
-			if (lastUnwrappedItem != null) {
-				if (lastUnwrappedItem.Offset == item.Offset &&
-					lastUnwrappedItem.Length == item.Length &&
-					lastUnwrappedItem.Item.Equals (item.Item)) {
-					return lastWrappedItem;
+			if (lastItem != null) {
+				if (lastItem.Offset == item.Offset &&
+					lastItem.Length == item.Length &&
+					lastItem.Item.Equals (item.Item)) {
+					return lastItem;
 				}
 			}
-			lastUnwrappedItem = item;
-			return lastWrappedItem = new TooltipItem (item.Item, item.Offset, item.Length);
+			lastItem = item;
+			return item;
 		}
 
-		public override bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
+		public override bool IsInteractive (MonoTextEditor editor, Xwt.WindowFrame tipWindow)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
@@ -101,18 +100,18 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return provider.IsInteractive (wrappedEditor, tipWindow);
 		}
 
-		public override Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Xwt.WindowFrame CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, Ide.Editor.TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState.ToXwtValue ());
+			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, item, offset, modifierState.ToXwtValue ());
 			if (control == null)
 				return null;
-			return (Gtk.Window)control;
+			return control;
 		}
 
-		protected override void GetRequiredPosition (MonoTextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (MonoTextEditor editor, Xwt.WindowFrame tipWindow, out int requiredWidth, out double xalign)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null) {
@@ -123,13 +122,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			provider.GetRequiredPosition (wrappedEditor, tipWindow, out requiredWidth, out xalign);
 		}
 
-		public override Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public override Xwt.WindowFrame ShowTooltipWindow (MonoTextEditor editor, Xwt.WindowFrame tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, Ide.Editor.TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null) {
 				return tipWindow;
 			}
-			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState.ToXwtValue (), mouseX, mouseY);
+			provider.ShowTooltipWindow (wrappedEditor, tipWindow, item, modifierState.ToXwtValue (), mouseX, mouseY);
 			return tipWindow;
 		}
 
@@ -139,8 +138,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (disposableProvider != null) {
 				disposableProvider.Dispose ();
 			}
-			lastWrappedItem = null;
-			lastUnwrappedItem = null;
+			lastItem = null;
 		}
 		#endregion
 	}

@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open System.Collections.Immutable
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Highlighting
@@ -18,18 +19,13 @@ module Patterns =
     type TokenSymbol =
         { TokenInfo : FSharpTokenInfo
           SymbolUse : FSharpSymbolUse option
-          ExtraColorInfo : (Range.range * FSharpTokenColorKind) option }
+          ExtraColorInfo : (Range.range * SemanticClassificationType) option }
 
     let (|Keyword|_|) ts =
         match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
         | FSharpTokenColorKind.Keyword, _ -> Some ts
         | _ -> None
         
-    let (|CustomKeyword|_|) ts =
-        match ts.ExtraColorInfo with
-        | Some(_range, extra) when extra = FSharpTokenColorKind.Keyword -> Some ts
-        | _ -> None
-
     let (|Punctuation|_|) (ts : TokenSymbol) =
         if ts.TokenInfo.Tag = FSharpTokenTag.PLUS_MINUS_OP
            || ts.TokenInfo.Tag = FSharpTokenTag.MINUS
@@ -258,35 +254,12 @@ module Patterns =
         | _ -> None
 
     let (|ComputationExpression|_|) ts =
-        match ts with
-        | IdentifierSymbol symbolUse ->
-            match symbolUse with
-            | SymbolUse.ComputationExpression _ -> Some symbolUse.Symbol.DisplayName
-            | _ -> None
+        match ts.ExtraColorInfo with
+        | Some(_range, extra) when extra = SemanticClassificationType.ComputationExpression -> Some ts
         | _ -> None
 
-    module internal Rules =
-        let baseMode =
-            let assembly = Reflection.Assembly.GetExecutingAssembly()
-            let manifest = assembly.GetManifestResourceNames() |> Seq.tryFind (fun s -> s.Contains("FSharpSyntaxMode"))
-            manifest
-            |> Option.map (fun manifest ->
-                               let provider = ResourceStreamProvider(assembly, manifest)
-                               use stream = provider.Open()
-                               let baseMode = SyntaxMode.Read(stream)
-                               baseMode)
-    
-    module Keywords =
-        let getType (scheme : ColorScheme) (token : TokenSymbol) =
-          match Rules.baseMode with
-          | Some mode ->
-              Option.ofNull (mode.GetKeyword(token.TokenInfo.TokenName.ToLowerInvariant()))
-              |> Option.map (fun keywords -> scheme.GetChunkStyle keywords.Color)
-              |> Option.fill scheme.KeywordTypes
-          | None -> scheme.KeywordTypes
-
     module SyntaxMode =
-        let makeChunk (symbolsInFile:IDictionary<_,_>) lineNo lineOffset colourisations (style : ColorScheme) token =
+        let makeChunk (symbolsInFile:IDictionary<_,_>) lineNo lineOffset (colourisations:(Range.range * SemanticClassificationType) [] option) token =
             let symbol =
                 if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
                     match symbolsInFile.TryGetValue(Range.mkPos lineNo (token.RightColumn + 1)) with
@@ -302,53 +275,50 @@ module Patterns =
     
             let highlightMutable isMut = isMut && PropertyService.Get("FSharpBinding.HighlightMutables", false)
 
-            let makeSeg (chunkStyle:ChunkStyle) =
-               ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
+            let makeSeg (chunkStyle:string) =
+               ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, ScopeStack.Empty.Push(chunkStyle))
                |> Some
                 //Uncomment to visualise tokens segments
                 //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
          
-            
             let tryGetStyle =
                 match { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor } with
                 | InactiveCode ->
-                    makeSeg style.ExcludedCode
+                    makeSeg "punctuation.definition.comment.source"
                 | ComputationExpression _name ->
-                    makeSeg style.KeywordTypes
-                | CustomKeyword _ ->   
-                    makeSeg style.KeywordTypes
+                    makeSeg "keyword.other.source"
                 | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ ->
-                    makeSeg style.UserTypes
+                    makeSeg EditorThemeColors.UserTypes
                 | GenericParameter _ ->
-                    makeSeg style.UserTypesTypeParameters
+                    makeSeg EditorThemeColors.UserTypesTypeParameters
                 | Namespace _ ->
-                    makeSeg style.PlainText
+                    makeSeg "source.fs"
                 | Property fromDef ->
-                    if fromDef then makeSeg style.UserPropertyDeclaration 
-                    else makeSeg style.UserPropertyUsage
+                    if fromDef then makeSeg EditorThemeColors.UserPropertyDeclaration 
+                    else makeSeg EditorThemeColors.UserPropertyUsage
                 | Field (fromDef, isMut) ->
-                    if highlightMutable isMut then makeSeg style.UserTypesMutable
-                    elif fromDef then makeSeg style.UserFieldDeclaration
-                    else makeSeg style.UserFieldUsage
+                    if highlightMutable isMut then makeSeg EditorThemeColors.UserTypesMutable
+                    elif fromDef then makeSeg EditorThemeColors.UserFieldDeclaration
+                    else makeSeg EditorThemeColors.UserFieldUsage
                 | Function fromDef ->
-                    if fromDef then makeSeg style.UserMethodDeclaration
-                    else makeSeg style.UserMethodUsage
+                    if fromDef then makeSeg EditorThemeColors.UserMethodDeclaration
+                    else makeSeg EditorThemeColors.UserMethodUsage
                 | Val (su, isMut) ->
-                    if highlightMutable isMut then makeSeg style.UserTypesMutable
+                    if highlightMutable isMut then makeSeg EditorThemeColors.UserTypesMutable
                     //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode 
-                    elif su.IsFromDefinition then makeSeg style.UserFieldDeclaration
-                    else makeSeg style.UserFieldUsage
+                    elif su.IsFromDefinition then makeSeg EditorThemeColors.UserFieldDeclaration
+                    else makeSeg EditorThemeColors.UserFieldUsage
                 | UnionCase | Enum _ ->
-                    makeSeg style.UserTypesEnums
+                    makeSeg EditorThemeColors.UserTypes
                 | Delegate _ ->
-                    makeSeg style.UserTypesDelegates
+                    makeSeg EditorThemeColors.UserTypesDelegates
                 | Event fromDef ->
-                    if fromDef then makeSeg style.UserEventDeclaration
-                    else makeSeg style.UserEventUsage
+                    if fromDef then makeSeg EditorThemeColors.UserEventDeclaration
+                    else makeSeg EditorThemeColors.UserEventUsage
                 | Interface ->
-                    makeSeg style.UserTypesInterfaces
+                    makeSeg EditorThemeColors.UserTypesInterfaces
                 | ValueType _ ->
-                    makeSeg style.UserTypesValueTypes
+                    makeSeg EditorThemeColors.UserTypesValueTypes
                 //| Keyword ts -> makeSeg (Keywords.getType style ts)
                 //| Comment -> makeSeg style.CommentsSingleLine
                 //| StringLiteral -> makeSeg style.String
@@ -365,17 +335,17 @@ module Patterns =
                 let! checkResults = pd.TryGetAst()
                 let! tokens = pd.Tokens 
                 let symbolsInFile = pd.AllSymbolsKeyed
-                let colourisations = checkResults.GetExtraColorizations()
+                let colourisations = checkResults.GetExtraColorizations None
                 let formatters = checkResults.GetStringFormatterColours()
                 return tokens, symbolsInFile, colourisations, formatters }
 
-        let getColouredSegment tokenssymbolscolours lineNumber lineOffset txt style =
+        let getColouredSegment tokenssymbolscolours lineNumber lineOffset txt =
             match tokenssymbolscolours with
             | Some (tokens:_ list, symbols, colours, _formatters) when tokens.Length >= lineNumber ->
                 let tokens, _state = tokens.[lineNumber-1]
                 tokens
                 |> Lexer.fixTokens txt
-                |> List.choose (fun draft -> makeChunk symbols lineNumber lineOffset colours style {draft.Token with RightColumn = draft.RightColumn} )
+                |> List.choose (fun draft -> makeChunk symbols lineNumber lineOffset colours {draft.Token with RightColumn = draft.RightColumn} )
                 |> List.toSeq
             | _ -> Seq.empty
 
@@ -383,12 +353,12 @@ module Patterns =
 type FSharpSyntaxMode(editor, context) =
     inherit SemanticHighlighting(editor, context)
     let tokenssymbolscolours = ref None
-    let style = ref (getColourScheme())
-    let colourSchemChanged =
-        IdeApp.Preferences.ColorScheme.Changed.Subscribe
-            (fun _ (eventArgs:EventArgs) ->
-                              let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
-                              style := colourStyles )
+    //let style = ref (getColourScheme())
+    //let colourSchemChanged =
+    //    IdeApp.Preferences.ColorScheme.Changed.Subscribe
+    //        (fun _ (eventArgs:EventArgs) ->
+    //                          let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
+    //                          (*style := colourStyles*) )
                                   
     override x.DocumentParsed() =
         if MonoDevelop.isDocumentVisible context.Name then
@@ -401,6 +371,6 @@ type FSharpSyntaxMode(editor, context) =
         let lineNumber = line.LineNumber
         let txt = editor.GetLineText line
 
-        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt !style
+        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt// !style
         
-    interface IDisposable with member x.Dispose() = colourSchemChanged.Dispose()
+    //interface IDisposable with member x.Dispose() = colourSchemChanged.Dispose()

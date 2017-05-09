@@ -72,15 +72,14 @@ namespace MonoDevelop.Refactoring.Rename
 		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
 		{
 			for (int i = textChanges.Count - 1; i >= 0; i--) {
-				var v = textChanges [i];
-				editor.ReplaceText (v.Offset, v.InsertionLength, v.RemovedText);
+				foreach (var v in textChanges[i].TextChanges)
+					editor.ReplaceText (v.Offset, v.InsertionLength, v.RemovedText);
 			}
 		}
 
 		public async Task Rename (ISymbol symbol)
 		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			var ws = TypeSystemService.GetWorkspace (solution);
+			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var currentSolution = ws.CurrentSolution;
 			var cts = new CancellationTokenSource ();
@@ -121,7 +120,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, default(CancellationToken))) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default(CancellationToken))) {
 				foreach (var loc in mref.Locations) {
 					TextSpan span = loc.Location.SourceSpan;
 					var root = loc.Location.SourceTree.GetRoot ();
@@ -147,11 +146,13 @@ namespace MonoDevelop.Refactoring.Rename
 				//If user cancel renaming revert changes
 				if (!arg.Success) {
 					var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
-					foreach (var v in textChanges) {
-						editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+					foreach (var change in textChanges) {
+						foreach (var v in change.TextChanges.Reverse ()) {
+							editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+						}
 					}
 				}
-			}));
+			}) { TextLinkPurpose = TextLinkPurpose.Rename });
 		}
 		
 		public class RenameProperties
@@ -174,8 +175,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			var ws = TypeSystemService.GetWorkspace (solution);
+			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();

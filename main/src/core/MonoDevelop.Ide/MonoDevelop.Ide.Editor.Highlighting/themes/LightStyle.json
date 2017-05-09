@@ -1,0 +1,249 @@
+﻿{
+	"name": "Light",
+	"version": "1.4.4",
+	"description": "Bright and friendly, just like Xamarin",
+	"originator": "Xamarin Inc. (http://xamarin.com)",
+
+	"palette": [
+		{ "name": "text-black", "value": "#222222" },
+		{ "name": "comment-gray", "value": "#888a85" },
+		{ "name": "chameleon1", "value": "#8ae234" },
+		{ "name": "chameleon2", "value": "#73d216" },
+		{ "name": "chameleon3", "value": "#4e9a06" },
+		{ "name": "skyblue2", "value": "#3465a4" },
+		{ "name": "plum2", "value": "#75507b" },
+		{ "name": "scarletred1", "value": "#ef2929" },
+		{ "name": "aluminium1", "value": "#eeeeec" },
+		{ "name": "aluminium2", "value": "#d3d7cf" },
+		{ "name": "aluminium3", "value": "#babdb6" },
+		{ "name": "aluminium4", "value": "#888a85" },
+		{ "name": "literal-orange", "value": "#db7100" },
+		{ "name": "literal-escape", "value": "#A53E00" },
+		{ "name": "keyword-teal", "value": "#009695" },
+		{ "name": "selection-bg", "value": "#b5d5ff" },
+		{ "name": "invalid-red", "value": "#C44D58" },
+		{ "name": "orangesicle", "value": "#fdab75" },
+		{ "name": "orangesicle-light", "value": "#fed9c0" }
+	],
+
+	"colors": [
+		{ "name": "Background(Read Only)", "color": "white" },
+
+		{ "name": "Search result background", "color": "#fffeb7" },
+		{ "name": "Search result background (highlighted)", "color": "#fffc38" },
+
+		{ "name": "Column Ruler", "color": "#eeeeee" },
+
+		{ "name": "Fold Square", "color": "#cdcecc", "secondcolor": "white" },
+		{ "name": "Fold Cross", "color": "#b1b2b0", "secondcolor": "white" },
+
+		{ "name": "Indentation Guide", "color": "#e5e5e5" },
+
+		{ "name": "Indicator Margin", "color": "#f6f6f6" },
+		{ "name": "Indicator Margin(Separator)", "color": "#f6f6f6" },
+
+		{ "name": "Tooltip Pager Top", "color": "#ffffff" },
+		{ "name": "Tooltip Pager Triangle", "color": "#737373" },
+		{ "name": "Tooltip Pager Text", "color": "#828282" },
+
+		{ "name": "Notification Border", "color": "#D2B457" },
+
+		{ "name": "Completion Window", "color": "#F0F6F8", "bordercolor": "#b2b2b2" },
+		{ "name": "Completion Tooltip Window", "color": "#fafae2", "bordercolor": "#b2b2b2" },
+		{ "name": "Completion Selection Bar Border", "color": "#C9C9C9" },
+		{ "name": "Completion Selection Bar Border(Inactive)", "color": "#666666" },
+		{ "name": "Completion Selection Bar Background", "color": "#f8fcfc", "secondcolor": "#dff4f0" },
+		{ "name": "Completion Selection Bar Background(Inactive)", "color": "white", "secondcolor": "white" },
+
+		{ "name": "Bookmarks", "color": "white", "secondcolor": "skyblue" },
+
+		{ "name": "Underline(Error)", "color": "#E896A0" },
+		{ "name": "Underline(Warning)", "color": "#FEB958" },
+		{ "name": "Underline(Suggestion)", "color": "#9CC0EA" },
+		{ "name": "Underline(Hint)", "color": "#9CC0EA" },
+
+		{ "name": "Quick Diff(Dirty)", "color": "orangesicle-light" },
+		{ "name": "Quick Diff(Changed)", "color": "orangesicle" },
+
+		{ "name": "Brace Matching(Rectangle)", "color": "#fde5d6", "secondcolor": "#fde5d6" },
+		{ "name": "Usages(Rectangle)", "color": "#B1DFF9", "secondcolor": "#B1DFF9", "bordercolor": "#B1DFF9" },
+		{ "name": "Changing usages(Rectangle)", "color": "#FFD6DD", "secondcolor": "#FFD6DD", "bordercolor": "#FFD6DD" },
+
+		{ "name": "Breakpoint Marker", "color": "#f9dbda", "bordercolor": "#f9dbda" },
+		{ "name": "Breakpoint Marker(Disabled)", "color": "#e9e9e9", "bordercolor": "#e9e9e9" },
+		{ "name": "Breakpoint Marker(Invalid)", "color": "#f1e3e3", "bordercolor": "#f1e3e3" },
+
+		{ "name": "Current Line Marker", "color": "#f7f7f7", "secondcolor": "#f7f7f7" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#f7f7f7", "secondcolor": "#f7f7f7" },
+
+		{ "name": "Debugger Current Line Marker", "color": "#f8f4a1", "bordercolor": "#f8f4a1" },
+		{ "name": "Debugger Stack Line Marker", "color": "#d0efa9", "bordercolor": "#d0efa9" },
+
+		{ "name": "Primary Link", "color": "#E4D0E2", "secondcolor": "chameleon2" },
+		{ "name": "Primary Link(Highlighted)", "color": "#E4D0E2", "secondcolor": "chameleon1" },
+		{ "name": "Secondary Link", "color": "aluminium2", "secondcolor": "white" },
+		{ "name": "Secondary Link(Highlighted)", "color": "aluminium3", "secondcolor": "aluminium1" },
+
+		{ "name": "Message Bubble Error Marker", "color": "#df6962" },
+		{ "name": "Message Bubble Error Tag", "color": "#d83f3f", "secondcolor": "white" },
+		{ "name": "Message Bubble Error Counter", "color": "white", "secondcolor": "#d83f3f" },
+		{ "name": "Message Bubble Error IconMargin", "color": "#d83f3f", "bordercolor": "#d83f3f" },
+		{ "name": "Message Bubble Error Line", "color": "#fbe4e6" },
+		{ "name": "Message Bubble Error Tooltip", "color": "#D10B0B" },
+
+		{ "name": "Message Bubble Warning Marker", "color": "#b28d37" },
+		{ "name": "Message Bubble Warning Tag", "color": "#e68100", "secondcolor": "white" },
+		{ "name": "Message Bubble Warning Counter", "color": "white", "secondcolor": "#e68100" },
+		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" },
+		{ "name": "Message Bubble Warning Line", "color": "#fff1da" },
+		{ "name": "Message Bubble Warning Tooltip", "color": "#D1590B" },
+
+		{ "name": "Link Color", "color": "#26c8b1" },
+		{ "name": "Link Color(Active)", "color": "#26c8b1" }
+	],
+
+	"text": [
+		{ "name": "Plain Text", "fore": "text-black", "back": "white" },
+		{ "name": "Selected Text", "back": "selection-bg" },
+		{ "name": "Selected Text(Inactive)", "back": "aluminium2" },
+
+		{ "name": "Collapsed Text", "fore": "comment-gray", "back": "white" },
+
+		{ "name": "Line Numbers", "fore": "aluminium4", "back": "white" },
+
+		{ "name": "Punctuation", "fore": "text-black" },
+		{ "name": "Punctuation(Brackets)", "fore": "text-black" },
+
+		{ "name": "Comment(Line)", "fore": "comment-gray" },
+		{ "name": "Comment(Block)", "fore": "comment-gray" },
+		{ "name": "Comment(Doc)", "fore": "#97b488" },
+		{ "name": "Comment(DocTag)", "fore": "#c8b97c" },
+		{ "name": "Comment Tag", "fore": "#ff00ff" },
+
+		{ "name": "Excluded Code", "fore": "comment-gray" },
+
+		{ "name": "String", "fore": "literal-orange" },
+		{ "name": "String(Escape)", "fore": "literal-escape" },
+		{ "name": "String(C# @ Verbatim)", "fore": "literal-orange" },
+		{ "name": "String(Regex Set Constructs)", "fore": "#e5ae41" },
+		{ "name": "String(Regex Character Class)", "fore": "#6fb3f8" },
+		{ "name": "String(Regex Grouping Constructs)", "fore": "#2b922b" },
+		{ "name": "String(Regex Escape Character)", "fore": "#ff0d80" },
+		{ "name": "String(Regex Alt Escape Character)", "fore": "#faafba" },
+
+		{ "name": "Number", "fore": "literal-orange" },
+
+		{ "name": "Preprocessor", "fore": "#c12dad" },
+		{ "name": "Preprocessor(Region Name)", "fore": "#c12dad" },
+
+		{ "name": "Xml Text", "fore": "text-black" },
+		{ "name": "Xml Delimiter", "fore": "text-black" },
+		{ "name": "Xml Name", "fore": "skyblue2" },
+		{ "name": "Xml Attribute", "fore": "text-black" },
+		{ "name": "Xml Attribute Quotes", "fore": "literal-orange" },
+		{ "name": "Xml Attribute Value", "fore": "literal-orange" },
+		{ "name": "Xml Comment", "fore": "comment-gray" },
+		{ "name": "Xml CData Section", "fore": "text-black" },
+
+		{ "name": "Html Attribute Name", "fore": "text-black" },
+		{ "name": "Html Attribute Value", "fore": "literal-orange" },
+		{ "name": "Html Comment", "fore": "comment-gray" },
+		{ "name": "Html Element Name", "fore": "skyblue2" },
+		{ "name": "Html Entity", "fore": "#c12dad" },
+		{ "name": "Html Operator", "fore": "skyblue2" },
+		{ "name": "Html Server-Side Script", "fore": "text-black", "back": "#fdf0bd" },
+		{ "name": "Html Tag Delimiter", "fore": "skyblue2" },
+		{ "name": "Razor Code", "fore": "text-black", "back": "#fdfaed" },
+
+		{ "name": "Tooltip Text", "fore": "text-black", "back": "#fafae3" },
+		{ "name": "Notification Text", "fore": "text-black", "back": "#feffe9" },
+
+		{ "name": "Completion Text", "fore": "#434343" },
+		{ "name": "Completion Matching Substring", "fore": "#BA3373" },
+
+		{ "name": "Completion Selected Text", "fore": "#434343" },
+		{ "name": "Completion Selected Matching Substring", "fore": "#BA3373" },
+
+		{ "name": "Completion Selected Text(Inactive)", "fore": "#434343" },
+		{ "name": "Completion Selected Matching Substring(Inactive)", "fore": "#BA3373" },
+
+		{ "name": "Keyword(Access)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Type)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Operator)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Selection)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Iteration)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Jump)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Context)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Exception)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Modifiers)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Constants)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Void)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Namespace)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Property)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Declaration)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Parameter)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Operator Declaration)", "fore": "keyword-teal" },
+		{ "name": "Keyword(Other)", "fore": "keyword-teal" },
+
+		{ "name": "User Types", "fore": "skyblue2" },
+		{ "name": "User Types(Enums)", "fore": "skyblue2" },
+		{ "name": "User Types(Interfaces)", "fore": "skyblue2" },
+		{ "name": "User Types(Delegates)", "fore": "skyblue2" },
+		{ "name": "User Types(Value types)", "fore": "skyblue2" },
+		{ "name": "User Types(Type parameters)", "fore": "skyblue2" },
+		{ "name": "User Types(Mutable)", "fore": "#a08000" },
+
+		{ "name": "User Field Usage", "fore": "text-black" },
+		{ "name": "User Field Declaration", "fore": "text-black" },
+
+		{ "name": "User Property Usage", "fore": "text-black" },
+		{ "name": "User Property Declaration", "fore": "text-black" },
+
+		{ "name": "User Event Usage", "fore": "text-black" },
+		{ "name": "User Event Declaration", "fore": "text-black" },
+
+		{ "name": "User Method Usage", "fore": "text-black" },
+		{ "name": "User Method Declaration", "fore": "text-black" },
+
+		{ "name": "User Parameter Usage", "fore": "text-black" },
+		{ "name": "User Parameter Declaration", "fore": "text-black" },
+
+		{ "name": "User Variable Usage", "fore": "text-black" },
+		{ "name": "User Variable Declaration", "fore": "text-black" },
+
+		{ "name": "Syntax Error", "fore": "invalid-red" },
+
+		{ "name": "String Format Items", "fore": "#FF0000" },
+
+		{ "name": "Breakpoint Text", "fore": "text-black", "back": "#ffe8e7" },
+
+		{ "name": "Debugger Current Statement", "fore": "text-black", "back": "#f8f4a1" },
+		{ "name": "Debugger Stack Line", "fore": "text-black", "back": "#ccfca6" },
+
+		{ "name": "Diff Line(Added)", "fore": "skyblue2" },
+		{ "name": "Diff Line(Removed)", "fore": "scarletred1" },
+		{ "name": "Diff Line(Changed)", "fore": "plum2" },
+		{ "name": "Diff Header", "fore": "chameleon3", "weight": "bold" },
+		{ "name": "Diff Header(Separator)", "fore": "chameleon3", "weight": "bold" },
+		{ "name": "Diff Header(Old)", "fore": "scarletred1", "weight": "bold" },
+		{ "name": "Diff Header(New)", "fore": "skyblue2", "weight": "bold" },
+		{ "name": "Diff Location", "fore": "plum2", "weight": "bold" },
+
+		{ "name": "Preview Diff Removed Line", "fore": "#a14d4d", "back": "#fcf8f8" },
+		{ "name": "Preview Diff Added Line", "fore": "#419b41", "back": "#edf8ed" },
+
+		{ "name": "Css Comment", "fore": "comment-gray", "weight": "bold" },
+		{ "name": "Css Property Name", "fore": "text-black", "weight": "bold" },
+		{ "name": "Css Property Value", "fore": "literal-orange", "weight": "bold" },
+		{ "name": "Css Selector", "fore": "comment-gray", "weight": "bold" },
+		{ "name": "Css String Value", "fore": "literal-orange", "weight": "bold" },
+		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
+
+		{ "name": "Script Comment", "fore": "comment-gray" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore": "keyword-teal" },
+		{ "name": "Script Number", "fore": "literal-orange" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore": "literal-orange" }
+	]
+}

@@ -147,13 +147,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public bool AllowReuse {
 			get { return !progressStarted && !buttonPin.Active; }
 		}
+
+		internal bool ClearOnBeginProgress { get; set; } = true;
 		
 		public OutputProgressMonitor BeginProgress (string title)
 		{
 			progressStarted = true;
-			
-			logView.Clear ();
-			monitor = (LogViewProgressMonitor) logView.GetProgressMonitor ();
+
+			if (ClearOnBeginProgress)
+				logView.Clear ();
+
+			monitor = (LogViewProgressMonitor) logView.GetProgressMonitor (ClearOnBeginProgress);
 
 			Runtime.RunInMainThread (delegate {
 				Window.HasNewData = false;

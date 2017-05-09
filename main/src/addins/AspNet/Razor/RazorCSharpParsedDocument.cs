@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNet.Razor
 		public RazorCSharpParsedDocument (string fileName, RazorCSharpPageInfo pageInfo) : base (fileName)
 		{
 			PageInfo = pageInfo;
-			Flags |= ParsedDocumentFlags.NonSerializable;
+			Flags |= ParsedDocumentFlags.NonSerializable | ParsedDocumentFlags.HasCustomCompletionExtension;
 			if (PageInfo.Errors != null)
 				AddRange (PageInfo.Errors);
 		}
@@ -62,5 +62,6 @@ namespace MonoDevelop.AspNet.Razor
 				}
 			}
 		}
+
 	}
 }

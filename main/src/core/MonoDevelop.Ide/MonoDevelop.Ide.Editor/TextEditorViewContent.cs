@@ -77,6 +77,16 @@ namespace MonoDevelop.Ide.Editor
 
 		}
 
+		protected override void OnContentNameChanged ()
+		{
+			base.OnContentNameChanged ();
+			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
+			textEditorImpl.ContentName = this.ContentName;
+			if (this.WorkbenchWindow?.Document != null)
+				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+		}
+
 		void ViewContent_ContentNameChanged (object sender, EventArgs e)
 		{
 			this.ContentName = textEditorImpl.ViewContent.ContentName;
@@ -215,7 +225,6 @@ namespace MonoDevelop.Ide.Editor
 				var res = await TextFileUtility.GetTextAsync (content);
 				text = textEditor.Text = res.Text;
 				textEditor.Encoding = res.Encoding;
-				textEditor.UseBOM = res.HasBom;
 			}
 			await RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();
@@ -297,6 +306,12 @@ namespace MonoDevelop.Ide.Editor
 		public override string TabPageLabel {
 			get {
 				return textEditorImpl.ViewContent.TabPageLabel;
+			}
+		}
+
+		public override string TabAccessibilityDescription {
+			get {
+				return textEditorImpl.ViewContent.TabAccessibilityDescription;
 			}
 		}
 

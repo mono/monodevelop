@@ -53,6 +53,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Projection;
+using System.Runtime.Remoting.Messaging;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -86,6 +88,51 @@ namespace MonoDevelop.AspNet.Razor
 			lock (currentDocument) {
 				return Parse (context, cancellationToken);
 			}
+		}
+
+		public override bool CanGenerateProjection (string mimeType, string buildAction, string [] supportedLanguages)
+		{
+			return mimeType == "text/x-cshtml";
+		}
+
+		public override async System.Threading.Tasks.Task<IReadOnlyList<Projection>> GenerateProjections (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var razorDocument = (RazorCSharpParsedDocument)await Parse (options, cancellationToken);
+			return await GenerateProjections (razorDocument, options, cancellationToken);
+		}
+
+		async System.Threading.Tasks.Task<IReadOnlyList<Projection>> GenerateProjections (RazorCSharpParsedDocument razorDocument, Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var code = razorDocument.PageInfo.CSharpCode;
+			if (string.IsNullOrEmpty (code))
+				return new List<Projection> ();
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (code), razorDocument.PageInfo.ParsedDocument.FileName, "text/x-csharp");
+			var currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+			var segments = new List<ProjectedSegment> ();
+
+			foreach (var map in currentMappings) {
+
+				string pattern = "#line " + map.Key + " ";
+				var idx = razorDocument.PageInfo.CSharpCode.IndexOf (pattern, StringComparison.Ordinal);
+				if (idx < 0)
+					continue;
+				var line = doc.GetLineByOffset (idx);
+				var offset = line.NextLine.Offset + map.Value.StartGeneratedColumn - 1;
+
+				var seg = new ProjectedSegment (map.Value.StartOffset.Value, offset, map.Value.CodeLength);
+				segments.Add (seg);
+			}
+
+			var projections = new List<Projection> ();
+			projections.Add (new Projection (doc, segments));
+			return projections;
+		}
+
+		public override async System.Threading.Tasks.Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var razorDocument = (RazorCSharpParsedDocument)await Parse (options, cancellationToken);
+			var projections = await GenerateProjections (razorDocument, options, cancellationToken);
+			return new ParsedDocumentProjection (razorDocument, projections);
 		}
 
 		OpenRazorDocument GetDocument (string fileName)
@@ -141,13 +188,13 @@ namespace MonoDevelop.AspNet.Razor
 				kind = RazorHostKind.Template;
 			}
 
-			var model = context.AnalysisDocument.GetSemanticModelAsync (cancellationToken).Result;
+			// var model = context.AnalysisDocument.GetSemanticModelAsync (cancellationToken).Result;
 			var pageInfo = new RazorCSharpPageInfo () {
 				HtmlRoot = context.HtmlParsedDocument,
 				GeneratorResults = context.CapturedArgs.GeneratorResults,
 				Spans = context.EditorParser.CurrentParseTree.Flatten (),
 				CSharpSyntaxTree = context.ParsedSyntaxTree,
-				ParsedDocument = new DefaultParsedDocument ("generated.cs") { Ast = model },
+				ParsedDocument = new DefaultParsedDocument ("generated.cs") { /* Ast = model */},
 				AnalysisDocument = context.AnalysisDocument,
 				CSharpCode = context.CSharpCode,
 				Errors = errors,
@@ -277,15 +324,15 @@ namespace MonoDevelop.AspNet.Razor
 			return host;
 		}
 
-		static TextChange CreateTextChange (RazorCSharpParserContext context, SeekableTextReader source)
+		static System.Web.Razor.Text.TextChange CreateTextChange (RazorCSharpParserContext context, SeekableTextReader source)
 		{
 			ChangeInfo lastChange = context.GetLastTextChange ();
 			if (lastChange == null)
-				return new TextChange (0, 0, new SeekableTextReader (String.Empty), 0, source.Length, source);
+				return new System.Web.Razor.Text.TextChange (0, 0, new SeekableTextReader (String.Empty), 0, source.Length, source);
 			if (lastChange.DeleteChange)
-				return new TextChange (lastChange.StartOffset, lastChange.AbsoluteLength, lastChange.Buffer,
+				return new System.Web.Razor.Text.TextChange (lastChange.StartOffset, lastChange.AbsoluteLength, lastChange.Buffer,
 					lastChange.StartOffset,	0, source);
-			return new TextChange (lastChange.StartOffset, 0, lastChange.Buffer, lastChange.StartOffset,
+			return new System.Web.Razor.Text.TextChange (lastChange.StartOffset, 0, lastChange.Buffer, lastChange.StartOffset,
 				lastChange.AbsoluteLength, source);
 		}
 

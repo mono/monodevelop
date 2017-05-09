@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	public class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
+	class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"))
+		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"))
 		{
 			this.info = info;
 		}
@@ -215,7 +215,7 @@ namespace MonoDevelop.VersionControl.Views
 				var editor = this.widget.FocusedEditor;
 				if (editor == null)
 					return false;
-				return editor.IsSomethingSelected && !editor.Document.ReadOnly;
+				return editor.IsSomethingSelected && !editor.Document.IsReadOnly;
 			}
 		}
 
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Views
 				var editor = this.widget.FocusedEditor;
 				if (editor == null)
 					return false;
-				return !editor.Document.ReadOnly;
+				return !editor.Document.IsReadOnly;
 			}
 		}
 
@@ -242,7 +242,7 @@ namespace MonoDevelop.VersionControl.Views
 				var editor = this.widget.FocusedEditor;
 				if (editor == null)
 					return false;
-				return !editor.Document.ReadOnly;
+				return !editor.Document.IsReadOnly;
 			}
 		}
 

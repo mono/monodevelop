@@ -70,6 +70,7 @@ namespace MonoDevelop.Projects
 				return LoadElement (p.FileName, it.Include);
 			} finally {
 				System.IO.File.Delete (p.FileName);
+				p.Dispose ();
 			}
 		}
 
@@ -194,6 +195,7 @@ namespace MonoDevelop.Projects
 				prop = item.Metadata.GetProperty ("Test");
 				Assert.AreEqual (testFile.ToString (), prop.GetPathValue ().ToString ());
 				Assert.AreEqual ("$(MSBuildProjectDirectory)\\Test.txt", prop.UnevaluatedValue);
+				p.Dispose ();
 
 			} finally {
 				if (File.Exists (p.FileName))

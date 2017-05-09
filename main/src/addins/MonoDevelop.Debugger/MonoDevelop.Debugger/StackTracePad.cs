@@ -92,8 +92,8 @@ namespace MonoDevelop.Debugger
 		{
 			this.ShadowType = ShadowType.None;
 
-			store = new ListStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Pango.Style), typeof(object), typeof(int), typeof(bool));
-			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Method","store_File",
+			store = new ListStore (typeof (bool), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (int), typeof (bool));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Method", "store_File",
 				"store_Lang", "store_Addr", "store_Foreground", "store_Style", "store_Frame", "store_FrameIndex");
 			TypeDescriptor.AddAttributes (store, modelAttr);
 
@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger
 			crp.Image = pointerImage;
 			col.AddAttribute (crp, "visible", IconColumn);
 			tree.AppendColumn (col);
-			
+
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Name");
 			col.PackStart (tree.TextRenderer, true);
@@ -145,47 +145,19 @@ namespace MonoDevelop.Debugger
 			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
 			col.Visible = false;//By default Address column is hidden
 			tree.AppendColumn (col);
-			
+
 			Add (tree);
 
 			LoadColumnsVisibility ();
-			LoadSettings ();
 
 			ShowAll ();
 			UpdateDisplay ();
-			
+
 			DebuggingService.CallStackChanged += OnClassStackChanged;
 			DebuggingService.CurrentFrameChanged += OnFrameChanged;
 			DebuggingService.StoppedEvent += OnDebuggingServiceStopped;
 
 			tree.RowActivated += OnRowActivated;
-		}
-
-		bool ShowModuleName;
-		bool ShowParameterType;
-		bool ShowParameterName;
-		bool ShowParameterValue;
-		bool ShowLineNumber;
-		bool ShowExternalCode;
-
-		void LoadSettings ()
-		{
-			ShowModuleName = PropertyService.Get ("Monodevelop.StackTrace.ShowModuleName", false);
-			ShowParameterType = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterType", true);
-			ShowParameterName = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterName", true);
-			ShowParameterValue = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterValue", false);
-			ShowLineNumber = PropertyService.Get ("Monodevelop.StackTrace.ShowLineNumber", true);
-			ShowExternalCode = PropertyService.Get ("Monodevelop.StackTrace.ShowExternalCode", false);
-		}
-
-		void StoreSettings ()
-		{
-			PropertyService.Set ("Monodevelop.StackTrace.ShowModuleName", ShowModuleName);
-			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterType", ShowParameterType);
-			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterName", ShowParameterName);
-			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterValue", ShowParameterValue);
-			PropertyService.Set ("Monodevelop.StackTrace.ShowLineNumber", ShowLineNumber);
-			PropertyService.Set ("Monodevelop.StackTrace.ShowExternalCode", ShowExternalCode);
 		}
 
 		void LoadColumnsVisibility ()
@@ -238,51 +210,9 @@ namespace MonoDevelop.Debugger
 				needsUpdate = true;
 		}
 
-		string EvaluateMethodName (StackFrame frame)
+		bool GetExternalCodeValue (DebuggerSessionOptions options)
 		{
-			var methodNameBuilder = new StringBuilder (frame.SourceLocation.MethodName);
-			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
-			if (ShowParameterValue) {
-				options.AllowMethodEvaluation = true;
-				options.AllowToStringCalls = true;
-				options.AllowTargetInvoke = true;
-			} else {
-				options.AllowMethodEvaluation = false;
-				options.AllowToStringCalls = false;
-				options.AllowTargetInvoke = false;
-			}
-
-			var args = frame.GetParameters (options);
-
-			//MethodName starting with "["... it's something like [ExternalCode]
-			if (!frame.SourceLocation.MethodName.StartsWith ("[", StringComparison.Ordinal)) {
-				if (ShowModuleName && !string.IsNullOrEmpty (frame.FullModuleName)) {
-					methodNameBuilder.Insert (0, System.IO.Path.GetFileName (frame.FullModuleName) + "!");
-				}
-				if (ShowParameterType || ShowParameterName || ShowParameterValue) {
-					methodNameBuilder.Append ("(");
-					for (int n = 0; n < args.Length; n++) {
-						if (n > 0)
-							methodNameBuilder.Append (", ");
-						if (ShowParameterType) {
-							methodNameBuilder.Append (args [n].TypeName);
-							if (ShowParameterName)
-								methodNameBuilder.Append (" ");
-						}
-						if (ShowParameterName)
-							methodNameBuilder.Append (args [n].Name);
-						if (ShowParameterValue) {
-							if (ShowParameterType || ShowParameterName)
-								methodNameBuilder.Append (" = ");
-							var val = args [n].Value ?? "";
-							methodNameBuilder.Append (val.Replace ("\r\n", " ").Replace ("\n", " "));
-						}
-					}
-					methodNameBuilder.Append (")");
-				}
-			}
-
-			return methodNameBuilder.ToString ();
+			return options.EvaluationOptions.StackFrameFormat.ExternalCode ?? options.ProjectAssembliesOnly;
 		}
 
 		void Update ()
@@ -305,7 +235,7 @@ namespace MonoDevelop.Debugger
 				if (frame.IsDebuggerHidden)
 					continue;
 
-				if (!ShowExternalCode && frame.IsExternalCode) {
+				if (!GetExternalCodeValue (frame.DebuggerSession.Options) && frame.IsExternalCode) {
 					if (externalCodeIter.Equals (TreeIter.Zero)) {
 						externalCodeIter = store.AppendValues (icon, GettextCatalog.GetString ("[External Code]"), string.Empty, string.Empty, string.Empty, null, Pango.Style.Italic, null, -1);
 					} else if (icon) {
@@ -315,19 +245,19 @@ namespace MonoDevelop.Debugger
 					continue;
 				}
 				externalCodeIter = TreeIter.Zero;
-				var method = EvaluateMethodName (frame);
-				
+				var method = frame.FullStackframeText;
+
 				string file;
 				if (!string.IsNullOrEmpty (frame.SourceLocation.FileName)) {
 					file = frame.SourceLocation.FileName;
-					if (frame.SourceLocation.Line != -1 && ShowLineNumber)
+					if (frame.SourceLocation.Line != -1 && frame.DebuggerSession.EvaluationOptions.StackFrameFormat.Line)
 						file += ":" + frame.SourceLocation.Line;
 				} else {
 					file = string.Empty;
 				}
 
 				var style = frame.IsExternalCode ? Pango.Style.Italic : Pango.Style.Normal;
-				
+
 				store.AppendValues (icon, method, file, frame.Language, "0x" + frame.Address.ToString ("x"), null,
 					style, frame, i);
 			}
@@ -403,54 +333,62 @@ namespace MonoDevelop.Debugger
 			context_menu.Items.Add (new SeparatorContextMenuItem ());
 			var showExternalCodeCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show External Code"));
 			showExternalCodeCheckbox.Clicked += delegate {
-				showExternalCodeCheckbox.Checked = ShowExternalCode = !ShowExternalCode;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.ExternalCode = showExternalCodeCheckbox.Checked = !GetExternalCodeValue(opts);
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			showExternalCodeCheckbox.Checked = ShowExternalCode;
+			var userOptions = DebuggingService.GetUserOptions ();
+			var frameOptions = userOptions.EvaluationOptions.StackFrameFormat;
+			showExternalCodeCheckbox.Checked = GetExternalCodeValue (userOptions);
 			context_menu.Items.Add (showExternalCodeCheckbox);
 
 			context_menu.Items.Add (new SeparatorContextMenuItem ());
 
 			var assemblyCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Module Name"));
 			assemblyCheckbox.Clicked += delegate {
-				assemblyCheckbox.Checked = ShowModuleName = !ShowModuleName;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.Module = assemblyCheckbox.Checked = !opts.EvaluationOptions.StackFrameFormat.Module;
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			assemblyCheckbox.Checked = ShowModuleName;
+			assemblyCheckbox.Checked = frameOptions.Module;
 			context_menu.Items.Add (assemblyCheckbox);
 			var typeCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Type"));
 			typeCheckbox.Clicked += delegate {
-				typeCheckbox.Checked = ShowParameterType = !ShowParameterType;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.ParameterTypes = typeCheckbox.Checked = !opts.EvaluationOptions.StackFrameFormat.ParameterTypes;
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			typeCheckbox.Checked = ShowParameterType;
+			typeCheckbox.Checked = frameOptions.ParameterTypes;
 			context_menu.Items.Add (typeCheckbox);
 			var nameCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Name"));
 			nameCheckbox.Clicked += delegate {
-				nameCheckbox.Checked = ShowParameterName = !ShowParameterName;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.ParameterNames = nameCheckbox.Checked = !opts.EvaluationOptions.StackFrameFormat.ParameterNames;
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			nameCheckbox.Checked = ShowParameterName;
+			nameCheckbox.Checked = frameOptions.ParameterNames;
 			context_menu.Items.Add (nameCheckbox);
 			var valueCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Value"));
 			valueCheckbox.Clicked += delegate {
-				valueCheckbox.Checked = ShowParameterValue = !ShowParameterValue;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.ParameterValues = valueCheckbox.Checked = !opts.EvaluationOptions.StackFrameFormat.ParameterValues;
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			valueCheckbox.Checked = ShowParameterValue;
+			valueCheckbox.Checked = frameOptions.ParameterValues;
 			context_menu.Items.Add (valueCheckbox);
 			var lineCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Line Number"));
 			lineCheckbox.Clicked += delegate {
-				lineCheckbox.Checked = ShowLineNumber = !ShowLineNumber;
-				StoreSettings ();
+				var opts = DebuggingService.GetUserOptions ();
+				opts.EvaluationOptions.StackFrameFormat.Line = lineCheckbox.Checked = !opts.EvaluationOptions.StackFrameFormat.Line;
+				DebuggingService.SetUserOptions (opts);
 				UpdateDisplay ();
 			};
-			lineCheckbox.Checked = ShowLineNumber;
+			lineCheckbox.Checked = frameOptions.Line;
 			context_menu.Items.Add (lineCheckbox);
 
 			context_menu.Items.Add (new SeparatorContextMenuItem ());
@@ -484,7 +422,7 @@ namespace MonoDevelop.Debugger
 			};
 			addressColumnVisibilityCheckbox.Checked = tree.Columns [AddrColumn].Visible;
 			columnsVisibilitySubMenu.Items.Add (addressColumnVisibilityCheckbox);
-			context_menu.Items.Add (new ContextMenuItem (GettextCatalog.GetString ("Columns")){ SubMenu = columnsVisibilitySubMenu });
+			context_menu.Items.Add (new ContextMenuItem (GettextCatalog.GetString ("Columns")) { SubMenu = columnsVisibilitySubMenu });
 
 
 			context_menu.Show (this, evt);
@@ -498,8 +436,9 @@ namespace MonoDevelop.Debugger
 			if (selected.Length > 0 && store.GetIter (out iter, selected [0])) {
 				var frameIndex = (int)store.GetValue (iter, FrameIndexColumn);
 				if (frameIndex == -1) {
-					ShowExternalCode = true;
-					StoreSettings ();
+					var opts = DebuggingService.GetUserOptions ();
+					opts.EvaluationOptions.StackFrameFormat.ExternalCode = true;
+					DebuggingService.SetUserOptions (opts);
 					UpdateDisplay ();
 					return;
 				}

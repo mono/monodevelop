@@ -39,6 +39,8 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -78,14 +80,15 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			CancelHighlightingTask ();
 			var token = src.Token;
-
+			var theme = editor.Options.GetEditorTheme ();
 			Task.Run (async delegate {
 				try {
 					var root = await resolver.SyntaxTree.GetRootAsync (token);
 					var newTree = new HighlightingSegmentTree ();
 
-					var visitor = new HighlightingVisitior (resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
+					var visitor = new HighlightingVisitior (theme, resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
 					visitor.Visit (root);
+					var doNotify = !AreEqual (highlightTree, newTree, token);
 
 					if (!token.IsCancellationRequested) {
 						Gtk.Application.Invoke (delegate {
@@ -96,7 +99,9 @@ namespace MonoDevelop.CSharp.Highlighting
 							}
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
-							NotifySemanticHighlightingUpdate ();
+							if (doNotify) {
+								NotifySemanticHighlightingUpdate ();
+							}
 						});
 					}
 				} catch (OperationCanceledException) {
@@ -104,6 +109,29 @@ namespace MonoDevelop.CSharp.Highlighting
 					ae.Flatten ().Handle (x => x is OperationCanceledException); 
 				}
 			}, token);
+		}
+
+		bool AreEqual (HighlightingSegmentTree highlightTree, HighlightingSegmentTree newTree, CancellationToken token)
+		{
+			if (newTree == null || highlightTree == null ||  highlightTree.Count != newTree.Count)
+				return false;
+			var e1 = highlightTree.GetEnumerator ();
+			var e2 = newTree.GetEnumerator ();
+			int i = 0;
+			while (e1.MoveNext () && e2.MoveNext ()) {
+				var i1 = e1.Current;
+				var i2 = e2.Current;
+				if (i++ % 1000 == 0) {
+					if (token.IsCancellationRequested)
+						return false;
+				}
+				if (i1.Offset != i2.Offset ||
+					i1.Length != i2.Length ||
+					i1.Style != i2.Style)
+					return false;
+			}
+
+			return true;
 		}
 
 		void CancelHighlightingTask ()
@@ -134,7 +162,13 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class StyledTreeSegment : TreeSegment
 	{
-		string style;
+		readonly string style;
+		
+		public string Style {
+			get {
+				return style;
+			}
+		}
 
 		public StyledTreeSegment (int offset, int length, string colorStyleKey) : base (offset, length)
 		{
@@ -143,8 +177,11 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public ColoredSegment GetColoredSegment ()
 		{
-			return new ColoredSegment (Offset, Length, style);
+			return new ColoredSegment (Offset, Length,  csScope.Push(style));
 		}
+
+		static readonly ScopeStack csScope = new ScopeStack ("source.cs");
+		
 	}
 
 	class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>
@@ -154,68 +191,81 @@ namespace MonoDevelop.CSharp.Highlighting
 	class HighlightingVisitior : SemanticHighlightingVisitor<string>
 	{
 		readonly Action<StyledTreeSegment> colorizeCallback;
+		readonly EditorTheme theme;
+		HslColor defaultColor;
 
-		public HighlightingVisitior (SemanticModel resolver, Action<StyledTreeSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
+		public HighlightingVisitior (EditorTheme theme, SemanticModel resolver, Action<StyledTreeSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException (nameof (resolver));
+			this.theme = theme;
 			this.cancellationToken = cancellationToken;
 			this.colorizeCallback = colorizeCallback;
 			this.region = new TextSpan (textSpan.Offset, textSpan.Length);
+			theme.TryGetColor (EditorThemeColors.Foreground, out defaultColor);
 			Setup ();
 		}
-		
+
 		void Setup ()
 		{
-			
-			defaultTextColor = ColorScheme.PlainTextKey;
-			referenceTypeColor = ColorScheme.UserTypesKey;
-			valueTypeColor = ColorScheme.UserTypesValueTypesKey;
-			interfaceTypeColor = ColorScheme.UserTypesInterfacesKey;
-			enumerationTypeColor = ColorScheme.UserTypesEnumsKey;
-			typeParameterTypeColor = ColorScheme.UserTypesTypeParametersKey;
-			delegateTypeColor = ColorScheme.UserTypesDelegatesKey;
+			defaultTextColor = CheckScopeExists ("");
+			referenceTypeColor = CheckScopeExists (EditorThemeColors.UserTypes);
+			valueTypeColor = CheckScopeExists (EditorThemeColors.UserTypesValueTypes);
+			interfaceTypeColor = CheckScopeExists (EditorThemeColors.UserTypesInterfaces);
+			enumerationTypeColor = CheckScopeExists (EditorThemeColors.UserTypesEnums);
+			typeParameterTypeColor = CheckScopeExists (EditorThemeColors.UserTypesTypeParameters);
+			delegateTypeColor = CheckScopeExists (EditorThemeColors.UserTypesDelegates);
 
-			methodCallColor = ColorScheme.UserMethodUsageKey;
-			methodDeclarationColor = ColorScheme.UserMethodDeclarationKey;
+			methodCallColor = CheckScopeExists (EditorThemeColors.UserMethodUsage);
+			methodDeclarationColor = CheckScopeExists (EditorThemeColors.UserMethodDeclaration);
 
-			eventDeclarationColor = ColorScheme.UserEventDeclarationKey;
-			eventAccessColor = ColorScheme.UserEventUsageKey;
+			eventDeclarationColor = CheckScopeExists (EditorThemeColors.UserEventDeclaration);
+			eventAccessColor = CheckScopeExists (EditorThemeColors.UserEventUsage);
 
-			fieldDeclarationColor = ColorScheme.UserFieldDeclarationKey;
-			fieldAccessColor = ColorScheme.UserFieldUsageKey;
+			fieldDeclarationColor = CheckScopeExists (EditorThemeColors.UserFieldDeclaration);
+			fieldAccessColor = CheckScopeExists (EditorThemeColors.UserFieldUsage);
 
-			propertyDeclarationColor = ColorScheme.UserPropertyDeclarationKey;
-			propertyAccessColor = ColorScheme.UserPropertyUsageKey;
+			propertyDeclarationColor = CheckScopeExists (EditorThemeColors.UserPropertyDeclaration);
+			propertyAccessColor = CheckScopeExists (EditorThemeColors.UserPropertyUsage);
 
-			variableDeclarationColor = ColorScheme.UserVariableDeclarationKey;
-			variableAccessColor = ColorScheme.UserVariableUsageKey;
+			variableDeclarationColor = CheckScopeExists (EditorThemeColors.UserVariableDeclaration);
+			variableAccessColor = CheckScopeExists(EditorThemeColors.UserVariableUsage);
 
-			parameterDeclarationColor = ColorScheme.UserParameterDeclarationKey;
-			parameterAccessColor = ColorScheme.UserParameterUsageKey;
+			parameterDeclarationColor = CheckScopeExists(EditorThemeColors.UserParameterDeclaration);
+			parameterAccessColor = CheckScopeExists(EditorThemeColors.UserParameterUsage);
 
-			valueKeywordColor = ColorScheme.KeywordContextKey;
-			externAliasKeywordColor = ColorScheme.KeywordNamespaceKey;
-			varKeywordTypeColor = ColorScheme.KeywordTypesKey;
+			valueKeywordColor = CheckScopeExists("keyword.other.source.cs");
+			externAliasKeywordColor = CheckScopeExists("keyword.other.source.cs");
+			varKeywordTypeColor = CheckScopeExists("keyword.other.source.cs");
 
-			parameterModifierColor = ColorScheme.KeywordParameterKey;
-			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
+			parameterModifierColor = CheckScopeExists("keyword.other.source.cs");
+			inactiveCodeColor = CheckScopeExists("comment.inactivecode.source.cs");
 
-			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
-			nameofKeywordColor = ColorScheme.KeywordOtherKey;
-			whenKeywordColor = ColorScheme.KeywordOtherKey; 
+			stringFormatItemColor = CheckScopeExists("constant.character.escape.source.cs");
+			nameofKeywordColor = CheckScopeExists("keyword.other.source.cs");
+			whenKeywordColor = CheckScopeExists("keyword.other.source.cs");
 
-			stringRegexCharacterClass = ColorScheme.RegexCharacterClassKey;
-			stringRegexGroupingConstructs = ColorScheme.RegexGroupingConstructsKey;
-			stringRegexSetConstructs = ColorScheme.RegexSetConstructsKey;
-			stringRegexErrors = ColorScheme.SyntaxErrorKey;
-			stringRegexComments = ColorScheme.CommentsSingleLineKey;
-			stringRegexEscapeCharacter = ColorScheme.RegexEscapeCharacterKey;
-			stringRegexAltEscapeCharacter = ColorScheme.RegexAltEscapeCharacterKey;
+			stringRegexCharacterClass = CheckScopeExists("constant.character.regex.characterclass.source.cs");
+			stringRegexGroupingConstructs = CheckScopeExists("constant.character.regex.grouping.source.cs");
+			stringRegexSetConstructs = CheckScopeExists("constant.character.regex.set.source.cs");
+			stringRegexErrors = CheckScopeExists("constant.character.regex.errors.source.cs");
+			stringRegexComments = CheckScopeExists("constant.character.regex.comments.source.cs");
+			stringRegexEscapeCharacter = CheckScopeExists("constant.character.regex.escape.source.cs");
+			stringRegexAltEscapeCharacter = CheckScopeExists("constant.character.regex.altescape.source.cs");
+		}
+
+		string CheckScopeExists (string color)
+		{
+			HslColor c;
+			if (!theme.TryGetColor (color, EditorThemeColors.Foreground, out c) || c.Equals (defaultColor))
+				return null;
+			return color;
 		}
 
 		protected override void Colorize (TextSpan span, string color)
 		{
+			if (color == null)
+				return;
 			colorizeCallback (new StyledTreeSegment (span.Start, span.Length, color));
 		}
 

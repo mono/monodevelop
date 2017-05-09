@@ -51,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		public NuGetActionType ActionType { get; set; }
 		public XDocument OriginalPackagesConfig { get; set; }
 		public PackageExtractionContext PackageExtractionContext { get; set; }
+		public TelemetryServiceHelper TelemetryService { get; set; }
 
 		public ISourceControlManagerProvider SourceControlManagerProvider {
 			get { return null; }
@@ -58,16 +59,21 @@ namespace MonoDevelop.PackageManagement
 
 		public void Log (MessageLevel level, string message, params object [] args)
 		{
-			packageManagementEvents.OnPackageOperationMessageLogged ((NuGet.MessageLevel)level, message, args);
+			packageManagementEvents.OnPackageOperationMessageLogged (level, message, args);
 		}
 
 		public void ReportError (string message)
 		{
-			packageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Error, message);
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Error, message);
 		}
+
+		public FileConflictAction? FileConflictResolution { get; set; }
 
 		public FileConflictAction ResolveFileConflict (string message)
 		{
+			if (FileConflictResolution.HasValue && FileConflictResolution != FileConflictAction.PromptUser)
+				return FileConflictResolution.Value;
+
 			return packageManagementEvents.OnResolveFileConflict (message);
 		}
 	}

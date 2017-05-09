@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 
@@ -35,7 +36,7 @@ namespace MonoDevelop.Ide.Templates
 		IEnumerable<SolutionTemplate> GetTemplates ();
 
 		bool CanProcessTemplate (SolutionTemplate template);
-		ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder);
+		Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder);
 	}
 }
 

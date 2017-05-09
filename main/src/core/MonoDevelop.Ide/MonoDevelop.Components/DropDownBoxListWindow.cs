@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide;
 using Gtk;
 using System.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
@@ -77,12 +78,16 @@ namespace MonoDevelop.Components
 
 		public DropDownBoxListWindow (IListDataProvider provider, WindowType windowType) : base (windowType)
 		{
+			Accessible.Name = "DropDownBoxListWindow";
+
 			this.DataProvider = provider;
 			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.TypeHint = Gdk.WindowTypeHint.DropdownMenu;
 			this.Decorated = false;
 			this.BorderWidth = 1;
 			list = new ListWidget (this);
+			list.Accessible.Name = "DropDownBoxListWindow.List";
+
 			list.SelectItem += delegate {
 				var sel = list.Selection;
 				if (sel >= 0 && sel < DataProvider.IconCount) {
@@ -235,12 +240,57 @@ namespace MonoDevelop.Components
 
 			public ListWidget (DropDownBoxListWindow win)
 			{
+				Accessible.Role = Atk.Role.List;
 				this.win = win;
 				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 				this.CanFocus = true;
 				layout = new Pango.Layout (this.PangoContext);
 				CalcRowHeight ();
 				CalcVisibleRows ();
+
+				CalcAccessibility ();
+			}
+
+			class TextElement : AtkCocoaHelper.AccessibilityElementProxy
+			{
+				public int RowIndex { get; set; }
+				internal TextElement ()
+				{
+				}
+			}
+
+			void CalcAccessibility ()
+			{
+				var columnElement = new AtkCocoaHelper.AccessibilityElementProxy ();
+				columnElement.GtkParent = this;
+				columnElement.SetRole (AtkCocoa.Roles.AXColumn);
+				Accessible.AddAccessibleElement (columnElement);
+
+				for (int i = 0; i < win.DataProvider.IconCount; i++) {
+					var rowElement = new AtkCocoaHelper.AccessibilityElementProxy ();
+					rowElement.GtkParent = this;
+					rowElement.SetRole (AtkCocoa.Roles.AXRow);
+					Accessible.AddAccessibleElement (rowElement);
+
+					var cellElement = new AtkCocoaHelper.AccessibilityElementProxy ();
+					cellElement.GtkParent = this;
+					cellElement.SetRole (AtkCocoa.Roles.AXCell);
+					columnElement.AddAccessibleChild (cellElement);
+					rowElement.AddAccessibleChild (cellElement);
+
+					var textElement = new TextElement ();
+					textElement.RowIndex = i;
+					textElement.PerformPress += PerformPress;
+					textElement.GtkParent = this;
+					textElement.Value = win.DataProvider.GetMarkup (i);
+					cellElement.AddAccessibleChild (textElement);
+				}
+			}
+
+			void PerformPress (object sender, EventArgs args)
+			{
+				var element = sender as TextElement;
+				win.DataProvider.ActivateItem (element.RowIndex);
 			}
 
 			internal void CalcRowHeight ()

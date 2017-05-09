@@ -32,6 +32,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -52,9 +53,9 @@ namespace MonoDevelop.Ide.Templates
 			return template is DefaultSolutionTemplate;
 		}
 
-		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
+		public Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
-			return ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder);
+			return Task.FromResult (ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder));
 		}
 
 		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)

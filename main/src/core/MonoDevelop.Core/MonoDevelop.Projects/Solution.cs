@@ -1181,7 +1181,7 @@ namespace MonoDevelop.Projects
 				EntryModified (this, args);
 		}
 		
-		internal /*protected virtual*/ void OnEntrySaved (SolutionItemEventArgs args)
+		internal /*protected virtual*/ void OnEntrySaved (SolutionItemSavedEventArgs args)
 		{
 			if (EntrySaved != null)
 				EntrySaved (this, args);
@@ -1210,7 +1210,7 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler EntryModified;
-		public event SolutionItemEventHandler EntrySaved;
+		public event SolutionItemSavedEventHandler EntrySaved;
 		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()

@@ -41,7 +41,6 @@ namespace MonoDevelop.SourceEditor
 		internal static Xwt.Drawing.Image warningPixbuf = Xwt.Drawing.Image.FromResource ("gutter-warning-15.png");
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
-		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal MonoTextEditor editor;
 
@@ -146,7 +145,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 			{
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				g.SetSourceColor (marker.TooltipColor.Color);
+				g.SetSourceColor (marker.TooltipColor);
 				g.Fill ();
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
@@ -176,7 +175,7 @@ namespace MonoDevelop.SourceEditor
 						g.Save ();
 
 						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2);
-						g.SetSourceColor (marker.TagColor.SecondColor);
+						g.SetSourceColor (marker.TagColor2);
 						g.ShowLayout (drawingLayout);
 
 						g.Restore ();
@@ -250,14 +249,6 @@ namespace MonoDevelop.SourceEditor
 			editor.QueueDraw ();
 		}
 
-		public bool RemoveLine (DocumentLine line)
-		{
-			if (!lineWidthDictionary.ContainsKey (line))
-				return false;
-			lineWidthDictionary.Remove (line);
-			return true;
-		}
-
 		internal void DestroyPopoverWindow ()
 		{
 			if (popoverWindow != null) {
@@ -309,7 +300,6 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEditorEditorOptionsChanged (object sender, EventArgs e)
 		{
-			lineWidthDictionary.Clear ();
 			OnChanged (EventArgs.Empty);
 		}	
 

@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.MSBuild
 			base.Write (writer, context);
 		}
 
-		void WritePatchedImport (XmlWriter writer, string newTarget)
+		internal void WritePatchedImport (XmlWriter writer, string newTarget)
 		{
 			/* If an import redirect exists, add a fake import to the project which will be used only
 			   if the original import doesn't exist. That is, the following import:
@@ -99,9 +99,10 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!string.IsNullOrEmpty (Condition))
 				cond = "( " + Condition + " ) AND " + cond;
 			
-			writer.WriteStartElement ("Import", MSBuildProject.Schema);
+			writer.WriteStartElement ("Import", Namespace);
 			writer.WriteAttributeString ("Project", target);
 			writer.WriteAttributeString ("Condition", cond);
+			writer.WriteEndElement ();
 
 			// Now add the fake import, with a condition so that it will be used only if the original
 			// import does not exist.
@@ -110,9 +111,10 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!string.IsNullOrEmpty (Condition))
 				cond = "( " + Condition + " ) AND " + cond;
 
-			writer.WriteStartElement ("Import", MSBuildProject.Schema);
+			writer.WriteStartElement ("Import", Namespace);
 			writer.WriteAttributeString ("Project", MSBuildProjectService.ToMSBuildPath (null, newTarget));
 			writer.WriteAttributeString ("Condition", cond);
+			writer.WriteEndElement ();
 		}
 	}
 

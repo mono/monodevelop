@@ -1,7 +1,0 @@
-<AddinProject appVersion="2.4">
-	<Project platforms="Linux Win32 Mac">
-		<AddinFile>build/debug/MonoDevelop.GtkCore2.dll</AddinFile>
-		<BuildFile>MonoDevelop.GtkCore2.sln</BuildFile>
-		<BuildConfiguration>Debug</BuildConfiguration>
-	</Project>
-</AddinProject>

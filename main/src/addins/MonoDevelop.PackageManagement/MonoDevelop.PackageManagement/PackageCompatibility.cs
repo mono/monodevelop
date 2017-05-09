@@ -24,94 +24,119 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Versioning;
-using MonoDevelop.PackageManagement;
-using NuGet;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageCompatibility
 	{
-		IDotNetProject project;
-		IPackage package;
-		FrameworkName packageTargetFramework;
-		List<IPackageFile> packageFiles;
-		IEnumerable<IPackageFile> oldProjectFrameworkCompatibleItems;
-		IEnumerable<IPackageFile> newProjectFrameworkCompatibleItems;
+		PackageIdentity package;
+		string packageFileName;
+		IEnumerable<FrameworkSpecificGroup> libItemGroups;
+		IEnumerable<FrameworkSpecificGroup> referenceItemGroups;
+		IEnumerable<FrameworkSpecificGroup> frameworkReferenceGroups;		IEnumerable<FrameworkSpecificGroup> contentFileGroups;
+		IEnumerable<FrameworkSpecificGroup> buildFileGroups;
+		IEnumerable<FrameworkSpecificGroup> toolItemGroups;
+		NuGetFramework newProjectTargetFramework;
+		NuGetFramework oldProjectTargetFramework;
 
-		public PackageCompatibility (IDotNetProject project, IPackage package, FrameworkName packageTargetFramework)
+		public PackageCompatibility (
+			NuGetFramework projectTargetFramework,
+			PackageReference packageReference,
+			string packageFileName)
 		{
-			this.project = project;
-			this.package = package;
-			this.packageTargetFramework = packageTargetFramework;
+			oldProjectTargetFramework = packageReference.TargetFramework;
+			newProjectTargetFramework = projectTargetFramework;
+			package = packageReference.PackageIdentity;
+			this.packageFileName = packageFileName;
 		}
 
 		public void CheckCompatibility ()
 		{
-			GetPackageFiles ();
-			CheckCompatibilityWithOriginalProjectTargetFramework ();
-			CheckCompatibilityWithNewProjectTargetFramework ();
+			using (var packageArchiveReader = GetPackageFiles ()) {
 
-			ShouldReinstallPackage = !IsCompatibleWithOriginalAndNewProjectTargetFramework;
+				IsCompatibleWithNewProjectTargetFramework = true;
 
-			if (!ShouldReinstallPackage) {
-				ShouldReinstallPackage = !PackageItemsUnchangedForNewProjectTargetFramework ();
+				CheckCompatibilityWithNewProjectTargetFramework ();
+
+				ClearUp ();
 			}
 		}
 
-		public IPackage Package {
+		public PackageIdentity Package {
 			get { return package; }
 		}
 
 		public bool ShouldReinstallPackage { get; private set; }
 		public bool IsCompatibleWithNewProjectTargetFramework { get; private set; }
-		public bool IsCompatibleWithOriginalProjectTargetFramework { get; private set; }
 
-		public bool IsCompatibleWithOriginalAndNewProjectTargetFramework {
-			get {
-				return IsCompatibleWithOriginalProjectTargetFramework &&
-					IsCompatibleWithNewProjectTargetFramework;
-			}
+		IPackageFilesReader GetPackageFiles ()
+		{
+			var packageReader = CreatePackageFilesReader (packageFileName);
+			libItemGroups = packageReader.GetLibItems ();
+			referenceItemGroups = packageReader.GetReferenceItems ();
+			frameworkReferenceGroups = packageReader.GetFrameworkItems ();
+			contentFileGroups = packageReader.GetContentItems ();
+			buildFileGroups = packageReader.GetBuildItems ();
+			toolItemGroups = packageReader.GetToolItems ();
+			return packageReader;
 		}
 
-		void GetPackageFiles ()
+		protected virtual IPackageFilesReader CreatePackageFilesReader (string fileName)
 		{
-			packageFiles = package.GetFiles ().ToList ();
-		}
-
-		void CheckCompatibilityWithOriginalProjectTargetFramework ()
-		{
-			IsCompatibleWithOriginalProjectTargetFramework =
-				VersionUtility.TryGetCompatibleItems (
-					packageTargetFramework,
-					packageFiles,
-					out oldProjectFrameworkCompatibleItems);
+			return new PackageFilesReader (fileName);
 		}
 
 		void CheckCompatibilityWithNewProjectTargetFramework ()
 		{
-			var projectTargetFramework = new ProjectTargetFramework (project);
+			CheckCompatibility (libItemGroups);
 
-			IsCompatibleWithNewProjectTargetFramework =
-				VersionUtility.TryGetCompatibleItems (
-					projectTargetFramework.TargetFrameworkName,
-					packageFiles,
-					out newProjectFrameworkCompatibleItems);
+			if (!ShouldReinstallPackage)
+				CheckCompatibility (referenceItemGroups);
+
+			if (!ShouldReinstallPackage)
+				CheckCompatibility (frameworkReferenceGroups);
+
+			if (!ShouldReinstallPackage)
+				CheckCompatibility (contentFileGroups);
+
+			if (!ShouldReinstallPackage)
+				CheckCompatibility (buildFileGroups);
+
+			if (!ShouldReinstallPackage)
+				CheckCompatibility (toolItemGroups);
 		}
 
-		bool PackageItemsUnchangedForNewProjectTargetFramework ()
+		void CheckCompatibility (IEnumerable<FrameworkSpecificGroup> items)
 		{
-			return Enumerable.SequenceEqual<IPackageFile> (
-				oldProjectFrameworkCompatibleItems,
-				newProjectFrameworkCompatibleItems);
+			if (!items.Any ())
+				return;
+
+			var newNearestFramework = NuGetFrameworkUtility.GetNearest (items, newProjectTargetFramework);
+			var oldNearestFramework = NuGetFrameworkUtility.GetNearest (items, oldProjectTargetFramework);
+
+			if (newNearestFramework != null && oldNearestFramework != null) {
+				ShouldReinstallPackage = !newNearestFramework.Equals (oldNearestFramework);
+			} else if (newNearestFramework == null && oldNearestFramework == null) {
+				// Compatible.
+			} else {
+				ShouldReinstallPackage = true;
+				IsCompatibleWithNewProjectTargetFramework = false;
+			}
 		}
 
-		public string GenerateReport ()
+		void ClearUp ()
 		{
-			return null;
+			libItemGroups = null;
+			referenceItemGroups = null;
+			frameworkReferenceGroups = null;
+			contentFileGroups = null;
+			buildFileGroups = null;
+			toolItemGroups = null;
 		}
 	}
 }

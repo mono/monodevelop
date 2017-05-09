@@ -29,10 +29,8 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
-using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 {
@@ -48,10 +46,10 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 
 		static readonly DiagnosticDescriptor descriptor = new DiagnosticDescriptor(
 			IDEDiagnosticIds.MonoTODODiagnosticDiagnosticId,
-			"Find usages of mono todo items",
+			"Find APIs marked as TODO in Mono",
 			"{0}",
-			DiagnosticAnalyzerCategories.Notifications,
-			DiagnosticSeverity.Warning,
+			DiagnosticCategory.Style,
+			defaultSeverity: DiagnosticSeverity.Warning,
 			isEnabledByDefault: true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics {
@@ -81,7 +79,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 		{
 			var info = semanticModel.GetSymbolInfo (node);
 			diagnostic = default(Diagnostic);
-			if (info.Symbol == null || semanticModel.IsFromGeneratedCode (cancellationToken))
+			if (info.Symbol == null)
 				return false;
 
 			foreach (var attr in info.Symbol.GetAttributes ()) {

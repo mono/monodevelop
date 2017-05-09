@@ -37,6 +37,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -55,12 +57,12 @@ namespace MonoDevelop.VersionControl.Views
 		DiffScrollbar rightDiffScrollBar, leftDiffScrollBar;
 		MiddleArea[] middleAreas;
 
-		protected MonoTextEditor[] editors;
+		internal MonoTextEditor[] editors;
 		protected Widget[] headerWidgets;
 
 		
 		List<Hunk> leftDiff;
-		protected List<Hunk> LeftDiff {
+		internal List<Hunk> LeftDiff {
 			get { return leftDiff; }
 			set {
 				leftDiff = value;
@@ -69,7 +71,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		List<Hunk> rightDiff;
-		protected List<Hunk> RightDiff {
+		internal List<Hunk> RightDiff {
 			get { return rightDiff; }
 			set {
 				rightDiff = value;
@@ -77,11 +79,11 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		protected internal abstract MonoTextEditor MainEditor {
+		internal abstract MonoTextEditor MainEditor {
 			get;
 		}
 		
-		public MonoTextEditor FocusedEditor {
+		internal MonoTextEditor FocusedEditor {
 			get {
 				foreach (MonoTextEditor editor in editors) {
 					
@@ -235,7 +237,7 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (var editor in editors) {
 				editor.Document.IgnoreFoldings = true;
 				editor.Document.MimeType = mimeType;
-				editor.Document.ReadOnly = true;
+				editor.Document.IsReadOnly = true;
 
 				editor.Options.ShowFoldMargin = false;
 				editor.Options.ShowIconMargin = false;
@@ -251,7 +253,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected abstract void CreateComponents ();
 		
-		public static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
+		internal static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
 		{
 			ICollection<Cairo.Rectangle> rectangles = new List<Cairo.Rectangle> ();
 			var startLine = editor.GetLineByOffset (startOffset);
@@ -274,12 +276,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<TextSegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
+		static List<ISegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
+		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
@@ -379,11 +381,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		internal static void CaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			Caret caret = (Caret)sender;
+			CaretImpl caret = (CaretImpl)sender;
 			UpdateCaretPosition (caret);
 		}
 
-		static void UpdateCaretPosition (Caret caret)
+		static void UpdateCaretPosition (CaretImpl caret)
 		{
 //			int offset = caret.Offset;
 //			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
@@ -519,7 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
+		internal static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
 		{
 			Xwt.Drawing.Color result;
 			if (hunk.Removed > 0 && hunk.Inserted > 0) {
@@ -582,12 +584,14 @@ namespace MonoDevelop.VersionControl.Views
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			foreach (var data in localUpdate.ToArray ()) {
-				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
-				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
+				foreach (var change in e.TextChanges.Reverse ()) {
+					data.Replace (change.Offset, change.RemovalLength, change.InsertedText.Text);
+				}
+				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
 		}
@@ -596,14 +600,14 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var text = info.Document.GetContent<ITextFile> ();
 			foreach (var data in dict.Values) {
-				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 				data.Document.Text = text.Text;
-				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 			}
 			CreateDiff ();
 		}
 
-		public void SetLocal (TextEditorData data)
+		internal void SetLocal (TextEditorData data)
 		{
 			if (info == null)
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
@@ -612,34 +616,36 @@ namespace MonoDevelop.VersionControl.Views
 			var editor = info.Document.ParentDocument.Editor;
 			if (editor != null) {
 				data.Document.Text = editor.Text;
-				data.Document.ReadOnly = editor.IsReadOnly;
+				data.Document.IsReadOnly = editor.IsReadOnly;
 			}
 			
 			CreateDiff ();
-			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+			data.Document.TextChanged += HandleDataDocumentTextReplaced;
 		}
 
-		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleDataDocumentTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.ParentDocument.Editor;
-			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText.Text);
+			foreach (var change in e.TextChanges.Reverse ()) {
+				editor.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText);
+			}
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}
 
-		public void RemoveLocal (TextEditorData data)
+		internal void RemoveLocal (TextEditorData data)
 		{
 			localUpdate.Remove (data);
-			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+			data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 		}
 
-		protected virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
+		internal virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
-				int toOffset = start != null ? start.Offset : toEditor.Document.TextLength;
+				int toOffset = start != null ? start.Offset : toEditor.Document.Length;
 
 				int replaceLength = 0;
 				if (start != null && hunk.Inserted > 0) {
@@ -699,7 +705,7 @@ namespace MonoDevelop.VersionControl.Views
 			Hunk selectedHunk = Hunk.Empty;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
-				bool hideButton = widget.MainEditor.Document.ReadOnly;
+				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				Hunk selectedHunk = Hunk.Empty;
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
@@ -803,7 +809,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
-				bool hideButton = widget.MainEditor.Document.ReadOnly;
+				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
 					cr.Clip ();

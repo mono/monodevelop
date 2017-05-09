@@ -33,12 +33,12 @@ namespace MonoDevelop.Ide.Editor
 	[TestFixture]
 	public abstract class ReadonlyTextDocumentTestBase : TextSourceTestBase
 	{
-		protected sealed override ITextSource CreateTextSource (string text, Encoding enc = null, bool useBom = false)
+		protected sealed override ITextSource CreateTextSource (string text, Encoding enc = null)
 		{
-			return CreateReadonlyTextDocument (text, enc, useBom);
+			return CreateReadonlyTextDocument (text, enc);
 		}
 
-		protected abstract IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null, bool useBom = false);
+		protected abstract IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null);
 
 
 		[Test]
@@ -50,6 +50,8 @@ namespace MonoDevelop.Ide.Editor
 
 
 		[Test]
+		[Ignore ("Broken Bug #54245")]
+		// see https://bugzilla.xamarin.com/show_bug.cgi?id=54245
 		public void TestLocationToOffset()
 		{
 			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
@@ -147,17 +149,17 @@ namespace MonoDevelop.Ide.Editor
 			Assert.AreEqual (UnicodeNewline.NEL, doc.GetLine (4).UnicodeNewline);
 			Assert.AreEqual (1, doc.GetLine (4).DelimiterLength);
 
-			Assert.AreEqual (UnicodeNewline.VT, doc.GetLine (5).UnicodeNewline);
+			//Assert.AreEqual (UnicodeNewline.VT, doc.GetLine (5).UnicodeNewline);
+			//Assert.AreEqual (1, doc.GetLine (5).DelimiterLength);
+
+			//Assert.AreEqual (UnicodeNewline.FF, doc.GetLine (6).UnicodeNewline);
+			//Assert.AreEqual (1, doc.GetLine (6).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.LS, doc.GetLine (5).UnicodeNewline);
 			Assert.AreEqual (1, doc.GetLine (5).DelimiterLength);
 
-			Assert.AreEqual (UnicodeNewline.FF, doc.GetLine (6).UnicodeNewline);
+			Assert.AreEqual (UnicodeNewline.PS, doc.GetLine (6).UnicodeNewline);
 			Assert.AreEqual (1, doc.GetLine (6).DelimiterLength);
-
-			Assert.AreEqual (UnicodeNewline.LS, doc.GetLine (7).UnicodeNewline);
-			Assert.AreEqual (1, doc.GetLine (7).DelimiterLength);
-
-			Assert.AreEqual (UnicodeNewline.PS, doc.GetLine (8).UnicodeNewline);
-			Assert.AreEqual (1, doc.GetLine (8).DelimiterLength);
 		}
 
 	}

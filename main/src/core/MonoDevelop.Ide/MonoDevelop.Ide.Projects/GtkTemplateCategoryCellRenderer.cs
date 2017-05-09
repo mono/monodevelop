@@ -54,17 +54,28 @@ namespace MonoDevelop.Ide.Projects
 
 		protected override void Render (Drawable window, Widget widget, Rectangle background_area, Rectangle cell_area, Rectangle expose_area, CellRendererState flags)
 		{
+			StateType state = GetState (widget, flags);
+			var isSelected = state == StateType.Selected || state == StateType.Active;
 			int iconTextPadding = iconTextXPadding;
 			int textYOffset = 0;
 			Rectangle iconRect = GetIconRect (cell_area);
 
-			if (CategoryIcon != null) {
-				iconRect = DrawIcon (window, widget, cell_area, flags);
-				iconTextPadding = topLevelIconTextXPadding;
-				textYOffset = topLevelTemplateHeadingYOffset;
-			}
+			using (var ctx = CairoHelper.Create (window)) {
+				if (CategoryIcon != null) {
+					iconRect = DrawIcon (ctx, widget, cell_area, flags);
+					iconTextPadding = topLevelIconTextXPadding;
+					textYOffset = (Category == null ? 0 : topLevelTemplateHeadingYOffset);
+				}
 
-			DrawTemplateCategoryText (window, widget, cell_area, iconRect, iconTextPadding, textYOffset, flags);
+				DrawTemplateCategoryText (window, widget, cell_area, iconRect, iconTextPadding, textYOffset, flags);
+				if (Category == null && !isSelected) {
+						ctx.MoveTo (cell_area.X + (int)Xpad, cell_area.Y + cell_area.Height + 1);
+						ctx.SetSourceColor (Gui.Styles.ThinSplitterColor.ToCairoColor ());
+						ctx.LineWidth = 1;
+						ctx.LineTo (cell_area.X + cell_area.Width - (int)Xpad, cell_area.Y + cell_area.Height + 1);
+						ctx.Stroke ();
+				}
+			}
 		}
 
 		Rectangle GetIconRect (Rectangle cell_area)
@@ -86,17 +97,15 @@ namespace MonoDevelop.Ide.Projects
 			return stateType;
 		}
 
-		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
+		Rectangle DrawIcon (Cairo.Context ctx, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
+			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + (Category == null ? 0 : topLevelTemplateHeadingYOffset);
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, (int)CategoryIcon.Width, (int)CategoryIcon.Height);
 
 			var img = CategoryIcon;
 			if ((flags & Gtk.CellRendererState.Selected) != 0)
 				img = img.WithStyles ("sel");
-			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
-			}
+			ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 			return iconRect;
 		}
 

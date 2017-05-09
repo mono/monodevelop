@@ -71,10 +71,14 @@ namespace MonoDevelop.WebReferences
 				if (dref == null)
 					continue;
 				if (dref is ContractReference) {
-					text.AppendFormat ("<b>" + GettextCatalog.GetString ("Service: {0}") + "</b>\n<span size='small'>{1}</span>", Path.GetFileNameWithoutExtension (dref.DefaultFilename), dref.Url);
+					text.Append ("<b>")
+					    .Append (GettextCatalog.GetString ("Service: {0}", Path.GetFileNameWithoutExtension (dref.DefaultFilename)))
+					    .AppendFormat ("</b>\n<span size='small'>{0}</span>", dref.Url);
 				}
 				else if (dref is DiscoveryDocumentReference) {
-					text.AppendFormat ("<b>" + GettextCatalog.GetString ("Discovery document") + "</b>\n<small>{0}</small>", dref.Url);
+					text.Append ("<b>")
+					    .Append (GettextCatalog.GetString ("Discovery document"))
+					    .AppendFormat ("</b>\n<small>{0}</small>", dref.Url);
 				}
 				text.Append ("\n\n");
 			}

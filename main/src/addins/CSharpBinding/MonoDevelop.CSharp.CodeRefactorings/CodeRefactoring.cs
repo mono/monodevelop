@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 
-namespace RefactoringEssentials
+namespace MonoDevelop.CSharp.CodeRefactorings
 {
 	/// <summary>
 	/// Represents a set of transformations that can be applied to a piece of code.

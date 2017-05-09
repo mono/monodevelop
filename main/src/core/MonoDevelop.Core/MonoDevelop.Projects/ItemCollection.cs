@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Immutable;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -70,6 +71,32 @@ namespace MonoDevelop.Projects
 			AssertCanWrite ();
 			list = list.AddRange (items);
 			OnItemsAdded (items);
+		}
+
+		public void SetItems (IEnumerable<T> items)
+		{
+			AssertCanWrite ();
+			items = ReuseExistingItems (items);
+			var newItems = items.Except (list);
+			var removedItems = list.Except (items);
+			list = ImmutableList<T>.Empty.AddRange (items);
+			if (newItems.Any ())
+				OnItemsAdded (newItems);
+			if (removedItems.Any ())
+				OnItemsRemoved (removedItems);
+		}
+
+		IEnumerable<T> ReuseExistingItems (IEnumerable<T> items)
+		{
+			var updatedItems = new List<T> ();
+			foreach (var item in items) {
+				int index = list.IndexOf (item);
+				if (index == -1)
+					updatedItems.Add (item);
+				else
+					updatedItems.Add (list [index]);
+			}
+			return updatedItems;
 		}
 
 		public void Insert (int index, T item)
@@ -148,9 +175,14 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		public ImmutableList<T>.Enumerator GetEnumerator ()
+		{
+			return list.GetEnumerator ();
+		}
+
 		#region IEnumerable implementation
 
-		public IEnumerator<T> GetEnumerator ()
+		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
 		{
 			return list.GetEnumerator ();
 		}

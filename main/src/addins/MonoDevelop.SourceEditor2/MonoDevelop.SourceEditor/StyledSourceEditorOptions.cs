@@ -271,9 +271,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override string ColorScheme {
+		public override string EditorThemeName {
 			get {
-				return optionsCore.ColorScheme;
+				return optionsCore.EditorTheme;
 			}
 			set {
 				throw new NotSupportedException ();

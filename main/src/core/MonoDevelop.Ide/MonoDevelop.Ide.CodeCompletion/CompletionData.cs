@@ -192,9 +192,34 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
 
+		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
 		public virtual bool IsOverload (CompletionData other)
 		{
+			return true;
+		}
+
+		public virtual bool OverloadGroupEquals (CompletionData other)
+		{
+			if (!IsOverload (other))
+				return false;
 			return DisplayText == other.DisplayText;
+		}
+
+		public virtual int GetOverloadGroupHashCode ()
+		{
+			return DisplayText.GetHashCode ();
+		}
+
+		const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
+		
+		public virtual bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			return commitChars.Contains (keyChar);
+		}
+
+		public virtual bool MuteCharacter (char keyChar, string partialWord)
+		{
+			return false;
 		}
 	}
 

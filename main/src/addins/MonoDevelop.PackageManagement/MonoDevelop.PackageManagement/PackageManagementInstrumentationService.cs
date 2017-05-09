@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
-using NuGet;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 

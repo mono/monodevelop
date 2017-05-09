@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<IDotNetProject> GetAllProjects ();
 		bool Equals (ISolution solution);
+		IDotNetProject ResolveProject (ProjectReference projectReference);
 
 		event EventHandler<DotNetProjectEventArgs> ProjectAdded;
 		event EventHandler<DotNetProjectEventArgs> ProjectRemoved;

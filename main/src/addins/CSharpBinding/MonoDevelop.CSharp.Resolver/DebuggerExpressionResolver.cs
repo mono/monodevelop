@@ -35,6 +35,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.TypeSystem;

@@ -50,12 +50,10 @@ namespace MonoDevelop.Components.Mac
 			Submenu = sub;
 		}
 
-		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
+		public void Update (MDMenu parent, ref int index)
 		{
 			Enabled = true;
 			Hidden = Submenu != NSApplication.SharedApplication.ServicesMenu;
-			if (!Hidden)
-				MDMenu.ShowLastSeparator (ref lastSeparator);
 		}
 	}
 }

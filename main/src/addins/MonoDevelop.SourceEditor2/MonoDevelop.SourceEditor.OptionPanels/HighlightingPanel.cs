@@ -34,13 +34,15 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Diagnostics;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
+	partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
-		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme), typeof(bool));
+		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.EditorTheme), typeof (bool));
 		static Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
 		public HighlightingPanel ()
@@ -56,7 +58,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			styleTreeview.SearchColumn = -1; // disable the interactive search
-			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
+			schemeName = DefaultSourceEditorOptions.Instance.EditorTheme;
 			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
 		}
 
@@ -76,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		protected override void OnDestroyed ()
 		{
-			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
+			DefaultSourceEditorOptions.Instance.EditorTheme = schemeName;
 
 			MonoDevelop.Ide.Gui.Styles.Changed -= HandleThemeChanged;
 			base.OnDestroyed ();
@@ -84,6 +86,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		string GetMarkup (string name, string description)
 		{
+			if (string.IsNullOrEmpty (description)) 
+				return String.Format ("<b>{0}</b>", GLib.Markup.EscapeText (name));
 			return String.Format ("<b>{0}</b> - {1}", GLib.Markup.EscapeText (name), GLib.Markup.EscapeText (description));
 		}
 
@@ -91,9 +95,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.addButton.Clicked += AddColorScheme;
 			this.removeButton.Clicked += RemoveColorScheme;
-			this.buttonEdit.Clicked += HandleButtonEdithandleClicked;
-			this.buttonNew.Clicked += HandleButtonNewClicked;
-			this.buttonExport.Clicked += HandleButtonExportClicked;
+			this.buttonOpenFolder.Clicked += ButtonOpenFolder_Clicked;;
 			this.styleTreeview.Selection.Changed += HandleStyleTreeviewSelectionChanged;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			ShowStyles ();
@@ -101,23 +103,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			return this;
 		}
 
-		void HandleButtonNewClicked (object sender, EventArgs e)
-		{
-			using (var newShemeDialog = new NewColorShemeDialog ()) {
-				MessageService.ShowCustomDialog (newShemeDialog, dialog);
-			}
-			ShowStyles ();
-		}
-
 		void HandleStyleTreeviewSelectionChanged (object sender, EventArgs e)
 		{
 			this.removeButton.Sensitive = false;
-			this.buttonEdit.Sensitive = false;
-			this.buttonExport.Sensitive = false;
 			Gtk.TreeIter iter;
 			if (!styleTreeview.Selection.GetSelected (out iter)) 
 				return;
-			var sheme = (Mono.TextEditor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
+			var sheme = (MonoDevelop.Ide.Editor.Highlighting.EditorTheme)styleStore.GetValue (iter, 1);
 			if (sheme == null)
 				return;
 			var isError = (bool)styleStore.GetValue (iter, 2);
@@ -125,55 +117,25 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				this.removeButton.Sensitive = true;
 				return;
 			}
-			DefaultSourceEditorOptions.Instance.ColorScheme = sheme.Name;
-			this.buttonExport.Sensitive = true;
+			DefaultSourceEditorOptions.Instance.EditorTheme = sheme.Name;
 			string fileName = sheme.FileName;
 			if (fileName == null)
 				return;
 			this.removeButton.Sensitive = true;
-			this.buttonEdit.Sensitive = true;
 		}
 
-		void HandleButtonEdithandleClicked (object sender, EventArgs e)
-		{
-			TreeIter selectedIter;
-			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				using (var editor = new ColorShemeEditor (this)) {
-					var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
-					editor.SetSheme (colorScheme);
-					MessageService. ShowCustomDialog (editor, dialog);
-				}
-			}
-		}
-		
-		Mono.TextEditor.Highlighting.ColorScheme LoadStyle (string styleName, out bool error)
+		EditorTheme LoadStyle (string styleName, out bool error)
 		{
 			try {
 				error = false;
-				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
-			} catch (StyleImportException e) {
+				return SyntaxHighlightingService.GetEditorTheme (styleName);
+			} catch (StyleImportException) {
 				error = true;
-
-				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
-				style.Name = styleName;
-				switch (e.Reason) {
-				case StyleImportException.ImportFailReason.NoValidColorsFound:
-					style.Description = GettextCatalog.GetString ("No valid colors found inside the settings. (Maybe only theme is defined - check <FontsAndColors> node?)");
-					break;
-				default:
-					style.Description = GettextCatalog.GetString ("Loading error");
-					break;
-				}
-				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
-				return style;
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading color style " + styleName, e);
+				LoggingService.LogError ("Error while loading color theme " + styleName, e);
 				error = true;
-				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
-				style.Name = styleName;
-				style.Description = GettextCatalog.GetString ("Loading error: {0}", e.Message);
-				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
-				return style;
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			}
 		
 		}
@@ -182,14 +144,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			styleStore.Clear ();
 			bool error;
-			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle, out error);
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, defaultStyle.Description), defaultStyle);
-			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
-				if (styleName == MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle)
+			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName, out error);
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, ""), defaultStyle);
+			foreach (string styleName in SyntaxHighlightingService.Styles) {
+				if (styleName == MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName)
 					continue;
 				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";
-				string description = style.Description ?? "";
+				if (string.IsNullOrEmpty (name))
+					continue;
+				string description = "";
 				// translate only build-in sheme names
 				if (string.IsNullOrEmpty (style.FileName)) {
 					try {
@@ -200,7 +164,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					}
 				}
 				TreeIter iter = styleStore.AppendValues (GetMarkup (name, description), style, error);
-				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
+				if (style.Name == DefaultSourceEditorOptions.Instance.EditorTheme)
 					selectedIter = iter;
 			}
 			if (styleTreeview.Selection != null)
@@ -210,66 +174,61 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void RemoveColorScheme (object sender, EventArgs args)
 		{
 			TreeIter selectedIter;
-			if (!styleTreeview.Selection.GetSelected (out selectedIter)) 
+			if (!styleTreeview.Selection.GetSelected (out selectedIter))
 				return;
-			var sheme = (ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+			var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 			
 			string fileName = sheme.FileName;
 
 			if (fileName != null && fileName.StartsWith (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.Remove (sheme);
+				SyntaxHighlightingService.Remove (sheme);
 				File.Delete (fileName);
 				ShowStyles ();
 			}
 		}
-		
-		void HandleButtonExportClicked (object sender, EventArgs e)
-		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Save) {
-				TransientFor = this.Toplevel as Gtk.Window,
-			};
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
-			if (!dialog.Run ())
-				return;
-			TreeIter selectedIter;
-			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var sheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
-				var selectedFile = dialog.SelectedFile.ToString ();
-				if (!selectedFile.EndsWith (".json", StringComparison.Ordinal))
-					selectedFile += ".json";
-				sheme.Save (selectedFile);
-			}
 
-		}
-		
 		void AddColorScheme (object sender, EventArgs args)
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Open) {
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Import Color Theme"), MonoDevelop.Components.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
-			dialog.AddFilter (GettextCatalog.GetString ("Visual Studio .NET settings"), "*.vssettings");
+
+			dialog.AddFilter (GettextCatalog.GetString ("Color themes (Visual Studio, Xamarin Studio, TextMate) "), "*.json", "*.vssettings", "*.tmTheme");
 			if (!dialog.Run ())
 				return;
 
-			string newFileName = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
+			var fileName = dialog.SelectedFile.FileName;
+			var filePath = dialog.SelectedFile.FullPath;
+			string newFilePath = TextEditorDisplayBinding.SyntaxModePath.Combine (fileName);
+
+			if (!SyntaxHighlightingService.IsValidTheme (filePath)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Could not import color theme."));
+				return;
+			}
 
 			bool success = true;
 			try {
-				if (File.Exists (newFileName)) {
-					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Highlighting with the same name already exists. Remove {0} first."), System.IO.Path.GetFileNameWithoutExtension (newFileName)));
-					return;
+				if (File.Exists (newFilePath)) {
+					var answer = MessageService.AskQuestion (
+						GettextCatalog.GetString (
+							"A color theme with the name '{0}' already exists in your theme folder. Would you like to replace it?",
+							fileName
+						),
+						AlertButton.Cancel,
+						AlertButton.Replace
+					);
+					if (answer != AlertButton.Replace)
+						return;
+					File.Delete (newFilePath);
 				}
-
-				File.Copy (dialog.SelectedFile.FullPath, newFileName);
+				File.Copy (filePath, newFilePath);
 			} catch (Exception e) {
 				success = false;
-				LoggingService.LogError ("Can't copy syntax mode file.", e);
+				LoggingService.LogError ("Can't copy color theme file.", e);
 			}
 			if (success) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
-				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
-				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
+				SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
+				TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
 		}
@@ -294,8 +253,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				ColorScheme sheme = ((Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
-				DefaultSourceEditorOptions.Instance.ColorScheme = schemeName = sheme != null ? sheme.Name : null;
+				var sheme = ((EditorTheme)this.styleStore.GetValue (selectedIter, 1));
+				DefaultSourceEditorOptions.Instance.EditorTheme = schemeName = sheme != null ? sheme.Name : null;
 			}
 		}
 
@@ -314,6 +273,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public bool ValidateChanges ()
 		{
 			return true;
+		}
+
+		void ButtonOpenFolder_Clicked (object sender, EventArgs e)
+		{
+			DesktopService.OpenFolder (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
 		}
 	}
 }

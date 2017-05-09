@@ -746,6 +746,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				tooltipTimeout = 0;
 			}
 			if (tooltipWindow != null) {
+				tooltipWindow.Hide ();
 				tooltipWindow.Destroy ();
 				tooltipWindow = null;
 			}
@@ -758,8 +759,10 @@ namespace MonoDevelop.Components.PropertyGrid
 				return;
 			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
 			if (row != null) {
-				tooltipWindow = new TooltipPopoverWindow ();
-				tooltipWindow.ShowArrow = true;
+				if (tooltipWindow == null) {
+						tooltipWindow = TooltipPopoverWindow.Create ();
+						tooltipWindow.ShowArrow = true;
+				}
 				var s = new System.Text.StringBuilder ("<b>" + row.Property.DisplayName + "</b>");
 				s.AppendLine ();
 				s.AppendLine ();
@@ -771,7 +774,7 @@ namespace MonoDevelop.Components.PropertyGrid
 						var multiLineValue = string.Join (Environment.NewLine, Enumerable.Range (0, (int)Math.Ceiling ((double)value.Length / chunkLength)).Select (n => string.Concat (value.Skip (n * chunkLength).Take (chunkLength))));
 						s.AppendLine ();
 						s.AppendLine ();
-						s.Append ("Value: " + multiLineValue);
+						s.Append ("Value: ").Append (multiLineValue);
 					}
 				}
 				tooltipWindow.Markup = s.ToString ();

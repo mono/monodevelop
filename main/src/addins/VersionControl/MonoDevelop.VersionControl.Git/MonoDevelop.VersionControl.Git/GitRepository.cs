@@ -396,12 +396,22 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
 		{
-			return GetDirectoryVersionInfo (FilePath.Null, paths, getRemoteStatus, false);
+			try {
+				return GetDirectoryVersionInfo (FilePath.Null, paths, getRemoteStatus, false);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to query git status", e);
+				return paths.Select (x => VersionInfo.CreateUnversioned (x, false));
+			}
 		}
 
 		protected override VersionInfo[] OnGetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
-			return GetDirectoryVersionInfo (localDirectory, null, getRemoteStatus, recursive);
+			try {
+				return GetDirectoryVersionInfo (localDirectory, null, getRemoteStatus, recursive);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to get git directory status", e);
+				return new VersionInfo [0];
+			}
 		}
 
 		// Used for checking if we will dupe data.

@@ -27,13 +27,11 @@
 using System;
 using Gtk;
 using Mono.TextEditor;
-using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -47,7 +45,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			minimap = new Minimpap (parent);
 			PackStart (minimap, true, true, 0);
-			
+
 			rightMap = new QuickTaskOverviewMode (parent);
 			PackStart (rightMap, true, true, 0);
 			vadjustment = parent.VAdjustment;
@@ -81,7 +79,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			public Minimpap (QuickTaskStrip parent) : base (parent)
 			{
 				doc = parent.TextEditor.Document;
-				doc.TextReplaced += TextReplaced;
+				doc.TextChanged += TextReplaced;
 				doc.Folded += HandleFolded;
 			}
 
@@ -93,12 +91,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				RequestRedraw ();
 			}
-			
-			void TextReplaced (object sender, DocumentChangeEventArgs args)
+
+			void TextReplaced (object sender, TextChangeEventArgs args)
 			{
 				RequestRedraw ();
 			}
-	
+
 			public void RemoveRedrawTimer ()
 			{
 				if (redrawTimeout != 0) {
@@ -106,7 +104,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					redrawTimeout = 0;
 				}
 			}
-	
+
 			public void RequestRedraw ()
 			{
 				RemoveRedrawTimer ();
@@ -121,7 +119,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return false;
 				});
 			}
-			
+
 			protected override void DrawBar (Cairo.Context cr)
 			{
 				/*
@@ -158,7 +156,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				base.OnSizeRequested (ref requisition);
 				requisition.Width = 150;
 			}
-			
+
 			void DestroyBgBuffer ()
 			{
 				if (curUpdate != null)
@@ -170,36 +168,36 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					curWidth = curHeight = -1;
 				}
 			}
-			
+
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();
 				doc.Folded -= HandleFolded;
-				doc.TextReplaced -= TextReplaced;
+				doc.TextChanged -= TextReplaced;
 				RemoveRedrawTimer ();
 				DestroyBgBuffer ();
 			}
-			
+
 			protected override void OnSizeAllocated (Rectangle allocation)
 			{
 				base.OnSizeAllocated (allocation);
 				if (allocation.Width > 1 && (allocation.Width != curWidth || allocation.Height != curHeight))
 					CreateBgBuffer ();
 			}
-			
+
 			protected override void OnMapped ()
 			{
 				if (backgroundPixbuf == null && Allocation.Width > 1)
 					CreateBgBuffer ();
 				base.OnMapped ();
 			}
-			
+
 			protected override void OnUnmapped ()
 			{
 				DestroyBgBuffer ();
 				base.OnUnmapped ();
 			}
-			
+
 			BgBufferUpdate curUpdate = null;
 			void SwapBuffer ()
 			{
@@ -207,7 +205,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				backgroundPixbuf = backgroundBuffer;
 				backgroundBuffer = tmp;
 			}
-			
+
 			int curWidth = -1, curHeight = -1;
 			void CreateBgBuffer ()
 			{
@@ -220,50 +218,51 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				backgroundPixbuf = new Pixmap (GdkWindow, (int)(curWidth * displayScale), (int)(curHeight * displayScale));
 				backgroundBuffer = new Pixmap (GdkWindow, (int)(curWidth * displayScale), (int)(curHeight * displayScale));
 				
-				if (TextEditor.ColorStyle != null) {
+				if (TextEditor.EditorTheme != null) {
 					using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
 						cr.Rectangle (0, 0, curWidth * displayScale, curHeight * displayScale);
-						cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+						cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background));
 						cr.Fill ();
 					}
 				}
 				curUpdate = new BgBufferUpdate (this);
 			}
-			
-			class BgBufferUpdate {
+
+			class BgBufferUpdate
+			{
 				int maxLine;
 				double sx;
 				double sy;
 				uint handler;
-				
+
 				Cairo.Context cr;
-				
+
 				Minimpap mode;
-				
+
 				int curLine = 1;
-				
+
 				public BgBufferUpdate (Minimpap mode)
 				{
 					this.mode = mode;
-					
+
 					cr = Gdk.CairoHelper.Create (mode.backgroundBuffer);
 					
 					cr.LineWidth = 1;
 					int w = mode.backgroundBuffer.ClipRegion.Clipbox.Width;
 					int h = mode.backgroundBuffer.ClipRegion.Clipbox.Height;
 					cr.Rectangle (0, 0, w, h);
-					if (mode.TextEditor.ColorStyle != null)
-						cr.SetSourceColor (mode.TextEditor.ColorStyle.PlainText.Background);
+					if (mode.TextEditor.EditorTheme != null)
+						cr.SetSourceColor (SyntaxHighlightingService.GetColor (mode.TextEditor.EditorTheme, EditorThemeColors.Background));
 					cr.Fill ();
-					
+
 					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
 					sx = w / (double)mode.TextEditor.Allocation.Width;
-					sy = Math.Min (1, lineHeight * maxLine / (double)mode.TextEditor.GetTextEditorData ().TotalHeight );
+					sy = Math.Min (1, lineHeight * maxLine / (double)mode.TextEditor.GetTextEditorData ().TotalHeight);
 					cr.Scale (sx, sy);
-					
+
 					handler = GLib.Idle.Add (BgBufferUpdater);
 				}
-				
+
 				public void RemoveHandler ()
 				{
 					if (cr == null)
@@ -274,7 +273,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr = null;
 					mode.curUpdate = null;
 				}
-			
+
 				bool BgBufferUpdater ()
 				{
 					if (mode.TextEditor.Document == null || handler == 0)
@@ -287,14 +286,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 								var layout = mode.TextEditor.TextViewMargin.GetLayout (line);
 								cr.MoveTo (0, (curLine - 1) * mode.TextEditor.LineHeight);
 								cr.ShowLayout (layout.Layout);
-									
+
 								if (layout.IsUncached)
 									layout.Dispose ();
 							}
-							
+
 							curLine++;
 						}
-						
+
 						if (curLine >= maxLine) {
 							mode.SwapBuffer ();
 							((IDisposable)cr).Dispose ();
@@ -330,8 +329,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						e.Window.DrawDrawable (Style.BlackGC, backgroundPixbuf, 0, GetBufferYOffset (), 0, 0, Allocation.Width, Allocation.Height);
 					} else {
 						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-						if (TextEditor.ColorStyle != null)
-							cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+						if (TextEditor.EditorTheme != null)
+							cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background));
 						cr.Fill ();
 					}
 					/*
@@ -348,21 +347,21 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						int startLine = TextEditor.YToLine (vadjustment.Value);
 						double dy = TextEditor.LogicalToVisualLocation (startLine, 1).Line * lineHeight;
 
-						cr.Rectangle (0, 
-						              dy - y,
-						              Allocation.Width, 
-						              lineHeight * vadjustment.PageSize / TextEditor.LineHeight);
-						var c = (Cairo.Color)(HslColor)Style.Dark (State); 
+						cr.Rectangle (0,
+									  dy - y,
+									  Allocation.Width,
+									  lineHeight * vadjustment.PageSize / TextEditor.LineHeight);
+						var c = (Cairo.Color)(HslColor)Style.Dark (State);
 						c.A = 0.2;
 						cr.SetSourceColor (c);
 						cr.Fill ();
 					}
 					DrawLeftBorder (cr);
 				}
-				
+
 				return true;
 			}
 		}
 	}
-	
+
 }

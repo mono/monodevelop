@@ -31,11 +31,6 @@ namespace MonoDevelop.PackageManagement
 {
 	static class PackageRepositoryNodeExtensions
 	{
-		public static NuGet.PackageSource GetPackageSource (this PackageRepositoryNode node)
-		{
-			return new NuGet.PackageSource (node.Source, node.Id);
-		}
-
 		public static PackageSource CreatePackageSource (this PackageRepositoryNode node)
 		{
 			return new PackageSource (node.Source, node.Id);

@@ -28,6 +28,7 @@ NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelPro
 #       see: https://github.com/kzu/NuGet.Restore
 restore-packages:
 	@$(NUGET_RESTORE)
+	msbuild /t:Restore /p:RestoreDisableParallel=true external/RefactoringEssentials/RefactoringEssentials.2017/RefactoringEssentials.csproj
 
 vcrevision:
 	touch vcrevision
@@ -127,6 +128,16 @@ endif
 
 run-bundle: $(PROGRAM)
 	LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
+
+run-leaks: $(PROGRAM)
+	@if [ -a `pwd`/build/bin/libgobject-tracker.dylib ]; then \
+		DYLD_FORCE_FLAT_NAMESPACE=1 DYLD_INSERT_LIBRARIES=`pwd`/build/bin/libgobject-tracker.dylib LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect; \
+	else \
+		echo '\033[0;31m' \
+		&& echo "You need to compile and install libgobject-tracker.dylib from https://github.com/alanmcgovern/gobject-tracker to run gobject leak checking" \
+		&& echo '\033[0m'; \
+	fi
+
 run-64: run-sgen-64
 
 run-boehm: runmd

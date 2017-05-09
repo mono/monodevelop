@@ -31,6 +31,7 @@ using System.Drawing.Design;
 using Cairo;
 using Gtk;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
 
@@ -73,6 +74,7 @@ namespace MonoDevelop.Components
 		
 		public Tabstrip ()
 		{
+			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		
@@ -101,8 +103,31 @@ namespace MonoDevelop.Components
 			else if (activeTab >= index)
 				activeTab++;
 			QueueResize ();
+
+			tab.Allocation = GetBounds (tab);
+			Accessible.AddAccessibleElement (tab.Accessible);
+			tab.AccessibilityPressed += OnTabPressed;
+
+			UpdateAccessibilityTabs ();
 		}
-		
+
+		void OnTabPressed (object sender, EventArgs args)
+		{
+			ActiveTab = tabs.IndexOf ((Tab)sender);
+		}
+
+		void UpdateAccessibilityTabs ()
+		{
+			int i = 0;
+			var proxies = new AtkCocoaHelper.AccessibilityElementProxy [tabs.Count];
+			foreach (var tab in tabs) {
+				proxies [i] = tab.Accessible;
+				i++;
+			}
+
+			Accessible.SetTabs (proxies);
+		}
+
 		Cairo.Rectangle GetBounds (Tab tab)
 		{
 			if (tab == null)
@@ -242,6 +267,23 @@ namespace MonoDevelop.Components
 			get;
 			set;
 		}
+
+		Cairo.Rectangle allocation;
+		public Cairo.Rectangle Allocation {
+			get {
+				return allocation;
+			}
+
+			set {
+				allocation = value;
+
+				Gdk.Rectangle gdkRect = new Gdk.Rectangle ((int)allocation.X, (int)allocation.Y, (int)allocation.Width, (int)allocation.Height);
+				Accessible.FrameInGtkParent = gdkRect;
+				// If Y != 0, then we need to flip the y axis
+
+				Accessible.FrameInParent = gdkRect;
+			}
+		}
 		
 		public Tab (Tabstrip parent, string label) : this (parent, label, TabPosition.Left)
 		{
@@ -257,7 +299,9 @@ namespace MonoDevelop.Components
 			if (layout != null)
 				layout.Dispose ();
 		}
-		
+
+		public AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
+
 		public Tab (Tabstrip parent, string label, TabPosition tabPosition)
 		{
 			//this.parent = parent;
@@ -273,6 +317,11 @@ namespace MonoDevelop.Components
 				w = SpacerWidth * 2;
 			
 			this.TabPosition = tabPosition;
+
+			Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+			Accessible.Title = label;
+			Accessible.GtkParent = parent;
+			Accessible.PerformPress += OnTabPressed;
 		}
 		
 		public Cairo.PointD Size {
@@ -336,7 +385,14 @@ namespace MonoDevelop.Components
 				handler (this, e);
 		}
 
+		void OnTabPressed (object sender, EventArgs e)
+		{
+			// Proxy the event to the tab bar so it can set this tab as active
+			AccessibilityPressed?.Invoke (this, e);
+		}
+
 		public event EventHandler Activated;
+		public event EventHandler AccessibilityPressed;
 	}
 }
 

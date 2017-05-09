@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects
 
 				expectedSetting = !expectedSetting;
 			}
+
+			solution.Dispose ();
 		}
 
 		/// <summary>
@@ -74,9 +76,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveSolutionAfterChangingCSharpFormattingPolicyForTheFirstTime ()
 		{
 			string dir = Util.CreateTmpDir ("FormattingPolicyChangedOnce");
-			var pset = PolicyService.GetPolicySet ("Mono");
-			var monoFormattingPolicy = pset.Get<CSharpFormattingPolicy> ("text/x-csharp");
-			var formattingPolicy = monoFormattingPolicy.Clone ();
+			var formattingPolicy = new CSharpFormattingPolicy ();
 			var solution = new Solution ();
 			solution.Policies.Set (formattingPolicy);
 
@@ -95,6 +95,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentBlock")));
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("SpaceBeforeDot")));
 			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("NewLineForElse")));
+
+			solution.Dispose ();
 		}
 	}
 }

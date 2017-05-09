@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -32,8 +33,11 @@ namespace MonoDevelop.Components
 	/// </summary>
 	public class ContextMenuTreeView : Gtk.TreeView
 	{
+		internal ActionDelegate ActionHandler { get; private set; }
 		public ContextMenuTreeView ()
 		{
+			ActionHandler = new ActionDelegate (this);
+			ActionHandler.PerformShowMenu += PerformShowMenu;
 		}
 
 		public ContextMenuTreeView (Gtk.TreeModel model) : base (model)
@@ -173,6 +177,11 @@ namespace MonoDevelop.Components
 			}
 			
 			return res;
+		}
+
+		void PerformShowMenu (object sender, EventArgs args)
+		{
+			OnPopupMenu ();
 		}
 
 		protected override bool OnPopupMenu ()

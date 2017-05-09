@@ -31,11 +31,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	delegate void TabsReorderedHandler (Widget widget, int oldPlacement, int newPlacement);
+	delegate void TabsReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement);
 
 	class DockNotebook : Gtk.VBox
 	{
@@ -72,6 +73,7 @@ namespace MonoDevelop.Components.DockNotebook
 			PackStart (tabStrip, false, false, 0);
 
 			contentBox = new EventBox ();
+			contentBox.Accessible.SetShouldIgnore (true);
 			PackStart (contentBox, true, true, 0);
 
 			ShowAll ();
@@ -133,8 +135,8 @@ namespace MonoDevelop.Components.DockNotebook
 		public event EventHandler<TabEventArgs> TabClosed;
 		public event EventHandler<TabEventArgs> TabActivated;
 
-		public event EventHandler PageAdded;
-		public event EventHandler PageRemoved;
+		public event EventHandler<TabEventArgs> PageAdded;
+		public event EventHandler<TabEventArgs> PageRemoved;
 		public event EventHandler SwitchPage;
 
 		public event EventHandler PreviousButtonClicked {
@@ -177,7 +179,8 @@ namespace MonoDevelop.Components.DockNotebook
 					if (currentTab != null) {
 						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
-							contentBox.ChildFocus (DirectionType.Down);
+							// Focus the last child, as some editors like the JSON one have a dropdown at the top.
+							contentBox.ChildFocus (DirectionType.Up);
 						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
@@ -312,8 +315,7 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.Update ();
 			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 
-			if (PageAdded != null)
-				PageAdded (this, EventArgs.Empty);
+			PageAdded?.Invoke (this, new TabEventArgs { Tab = tab, });
 
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 
@@ -349,8 +351,7 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.Update ();
 			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 
-			if (PageRemoved != null)
-				PageRemoved (this, EventArgs.Empty);
+			PageRemoved?.Invoke (this, new TabEventArgs { Tab = tab });
 
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
@@ -367,7 +368,8 @@ namespace MonoDevelop.Components.DockNotebook
 				pages.Insert (targetPos + 1, tab);
 				pages.RemoveAt (tab.Index);
 			}
-			IdeApp.Workbench.ReorderDocuments (tab.Index, targetPos);
+			if (TabsReordered != null)
+				TabsReordered (tab, tab.Index, targetPos);
 			UpdateIndexes (Math.Min (tab.Index, targetPos));
 			tabStrip.Update ();
 		}

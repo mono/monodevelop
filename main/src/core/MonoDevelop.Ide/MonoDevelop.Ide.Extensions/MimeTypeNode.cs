@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Extensions
 		
 		[NodeAttribute (Required=false)]
 		protected bool isText;
-		
+
 		IFileNameEvaluator regex;
 		
 		public IconId Icon {
@@ -80,6 +80,12 @@ namespace MonoDevelop.Ide.Extensions
 					return baseType;
 			}
 		}
+
+		/// <summary>
+		/// The name used by Roslyn to identify this language.
+		/// </summary>
+		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
+		public string RoslynName { get; private set; }
 		
 		interface IFileNameEvaluator
 		{

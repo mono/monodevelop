@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	created="2017/05/01"
+	lastModified="2017/05/01">
+
+	<TemplateConfiguration>
+		<_Name>Razor Tag Helper</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Core</_Category>
+		<LanguageName>C#</LanguageName>
+		<DefaultFilename>RazorTagHelper</DefaultFilename>
+		<_Description>Creates a class to write a Tag Helper.</_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<AspNetCore />
+	</Conditions>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.cs" src="RazorTagHelperTemplate.cs" />
+	</TemplateFiles>
+</Template>

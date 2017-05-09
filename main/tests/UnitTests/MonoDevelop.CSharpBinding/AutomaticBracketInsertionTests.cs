@@ -210,8 +210,9 @@ namespace MonoDevelop.CSharpBinding
 			Ide.IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true);
 			Ide.IdeApp.Preferences.AddOpeningOnly.Set (false);
 
-			var t = model.Compilation.GetTypeByMetadataName (type); 
-			var method = member != null ? t.GetMembers().First (m => m.Name == member) : t.GetMembers ().OfType<IMethodSymbol> ().First (m => m.MethodKind == MethodKind.Constructor);
+			var t = model.Compilation.GetTypeByMetadataName (type);
+
+			var method = member != null ? model.LookupSymbols (s.Item1.Editor.CaretOffset).OfType<IMethodSymbol> ().First (m => m.Name == member) : t.GetMembers ().OfType<IMethodSymbol> ().First (m => m.MethodKind == MethodKind.Constructor);
 			var factory = new RoslynCodeCompletionFactory (ext, model);
 			var data = new RoslynSymbolCompletionData (null, factory, method);
 			data.IsDelegateExpected = isDelegateExpected;
@@ -482,6 +483,25 @@ class MyClass
 			Assert.AreEqual ("Test(|);", completion);
 		}
 
+		/// <summary>
+		/// Bug 54423 - Code completion automatically closes parenthesis, instead of offering completions
+		/// </summary> 
+		[Test]
+		public async Task TestBug54423 ()
+		{
+			string completion = await Test (@"
+class MyClass
+{
+	void FooBar ()
+	{
+		void Test (int foo)
+		{
+		}
+		$
+	}
+}", "MyClass", "Test");
+			Assert.AreEqual ("Test(|);", completion);
+		}
 
 	}
 }

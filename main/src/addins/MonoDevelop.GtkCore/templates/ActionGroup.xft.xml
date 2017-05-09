@@ -13,6 +13,7 @@
 	
 	<Conditions>
 		<PartialTypeSupport Requirement="Disabled" />
+		<HasReference Assembly="gtk-sharp" />
 	</Conditions>
 	
 	<TemplateFiles>

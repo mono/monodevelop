@@ -1,3 +1,4 @@
 ExtCore
 FSharp.Core
 FSharp.Compiler.Service
+StrongNamer

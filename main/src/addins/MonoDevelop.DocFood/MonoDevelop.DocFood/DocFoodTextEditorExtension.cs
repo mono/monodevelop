@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DocFood
 {
@@ -167,42 +168,50 @@ namespace MonoDevelop.DocFood
 			if (parsedDocument == null)
 				return null;
 
-			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (DocumentContext.AnalysisDocument, cancellationToken).ConfigureAwait (false);
-			var semanticModel = await partialDoc.GetSemanticModelAsync ();
-			if (semanticModel == null)
-				return null;
-			var caretOffset = Editor.CaretOffset;
-			var offset = caretOffset;
-			var root = semanticModel.SyntaxTree.GetRoot ();
-			var tokenAtCaret = root.FindTrivia (offset - 1, true);
-			if (!tokenAtCaret.IsKind (SyntaxKind.SingleLineCommentTrivia))
-				return null;
-			while (offset < Editor.Length) {
-				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
-
-				if (node == null || node.GetLastToken ().SpanStart < caretOffset) {
-					offset++;
-					continue;
-				}
-                var fieldDeclarationSyntax = node as FieldDeclarationSyntax;
-                if (fieldDeclarationSyntax != null) {
-					node = fieldDeclarationSyntax.Declaration.Variables.First ();
-				}
-
-				var eventDeclaration = node as EventFieldDeclarationSyntax;
-				if (eventDeclaration != null) {
-					node = eventDeclaration.Declaration.Variables.First ();
-				}
-
-				if (node.Span.Contains (caretOffset))
+			try {
+				var analysisDoc = DocumentContext.AnalysisDocument;
+				if (analysisDoc == null)
 					return null;
+				var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDoc, cancellationToken).ConfigureAwait (false);
+				var semanticModel = await partialDoc.GetSemanticModelAsync ();
+				if (semanticModel == null)
+					return null;
+				var caretOffset = Editor.CaretOffset;
+				var offset = caretOffset;
+				var root = semanticModel.SyntaxTree.GetRoot ();
+				var tokenAtCaret = root.FindTrivia (offset - 1, true);
+				if (!tokenAtCaret.IsKind (SyntaxKind.SingleLineCommentTrivia))
+					return null;
+				while (offset < Editor.Length) {
+					var node = root.FindNode (TextSpan.FromBounds (offset, offset));
 
-				var declaredSymbol = semanticModel.GetDeclaredSymbol (node); 
-				if (declaredSymbol != null)
-					return declaredSymbol;
-				offset = node.FullSpan.End + 1;
+					if (node == null || node.GetLastToken ().SpanStart < caretOffset) {
+						offset++;
+						continue;
+					}
+	                var fieldDeclarationSyntax = node as FieldDeclarationSyntax;
+	                if (fieldDeclarationSyntax != null) {
+						node = fieldDeclarationSyntax.Declaration.Variables.First ();
+					}
+
+					var eventDeclaration = node as EventFieldDeclarationSyntax;
+					if (eventDeclaration != null) {
+						node = eventDeclaration.Declaration.Variables.First ();
+					}
+
+					if (node.Span.Contains (caretOffset))
+						return null;
+
+					var declaredSymbol = semanticModel.GetDeclaredSymbol (node); 
+					if (declaredSymbol != null)
+						return declaredSymbol;
+					offset = node.FullSpan.End + 1;
+				}
+				return null;
+			} catch (Exception e) {
+				LoggingService.LogError("Error wihle getting member to document.", e);
+				return null;
 			}
-			return null;
 		}
 	}
 }

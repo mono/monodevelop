@@ -449,7 +449,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			base.VisitGenericName(node);
 			var info = semanticModel.GetSymbolInfo(node, cancellationToken);
 			TColor color;
-			if (TryGetSymbolColor(info, out color)) {
+			if (TryGetSymbolColor(info.Symbol, out color)) {
 				Colorize(node.Identifier.Span, color);
 			}
 		}
@@ -527,8 +527,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		public override void VisitIdentifierName(Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax node)
 		{
 			base.VisitIdentifierName(node);
+			ISymbol symbol = null;
 			if (node.IsVar) {
-				var symbolInfo = semanticModel.GetSymbolInfo(node, cancellationToken);
 				if (node.Parent is ForEachStatementSyntax) {
 					var sym = semanticModel.GetDeclaredSymbol(node.Parent, cancellationToken);
 					if (sym != null) {
@@ -536,13 +536,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 						return;
 					}
 				}
+
+				// We don't need to lookup symbol information here, based on semantics.
 				var vds = node.Parent as VariableDeclarationSyntax;
 				if (vds != null && vds.Variables.Count == 1) {
-					// var sym = vds.Variables[0].Initializer != null ? vds.Variables[0].Initializer.Value as LiteralExpressionSyntax : null;
-					if (symbolInfo.Symbol == null || symbolInfo.Symbol.Name != "var") {
-						Colorize(node.Span, varKeywordTypeColor);
-						return;
-					}
+					Colorize(node.Span, varKeywordTypeColor);
+					return;
 				}
 			}
 			
@@ -584,17 +583,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			// "alias" is handled in VisitExternAliasDeclaration()
 
 			TColor color;
-			if (TryGetSymbolColor (semanticModel.GetSymbolInfo (node, cancellationToken), out color)) {
+			if (TryGetSymbolColor (symbol ?? semanticModel.GetSymbolInfo (node, cancellationToken).Symbol, out color)) {
 				if (node.Parent is AttributeSyntax || node.Parent is QualifiedNameSyntax && node.Parent.Parent is AttributeSyntax)
 					color = referenceTypeColor;
 				Colorize (node.Span, color);
 			}
 		}
 		
-		bool TryGetSymbolColor(SymbolInfo info, out TColor color)
+		bool TryGetSymbolColor(ISymbol symbol, out TColor color)
 		{
-			var symbol = info.Symbol;
-
 			if (symbol == null) {
 				color = default(TColor);
 			return false;

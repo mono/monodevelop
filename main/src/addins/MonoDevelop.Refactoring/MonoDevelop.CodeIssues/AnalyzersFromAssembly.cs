@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -37,6 +38,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -65,46 +67,92 @@ namespace MonoDevelop.CodeIssues
 
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
+			//FIXME; this is a really hacky arbitrary heuristic
+			//we should be using proper MEF composition APIs as part of the addin scan
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
-				if (assemblyName == "MonoDevelop.AspNet" ||
-				    assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
-				    assemblyName.Contains ("FSharpBinding")  ||
-					assemblyName != "RefactoringEssentials" &&
-					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
+				switch (assemblyName) {
+				//whitelist
+				case "RefactoringEssentials":
+				case "Refactoring Essentials":
+				case "Microsoft.CodeAnalysis.Features":
+				case "Microsoft.CodeAnalysis.VisualBasic.Features":
+				case "Microsoft.CodeAnalysis.CSharp.Features":
+					break;
+				//blacklist
+				case "FSharpBinding":
 					return;
-			}
-			foreach (var type in asm.GetTypes ()) {
-				var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
-				if (notPortedYetAttribute!= null) {
-					continue;
+				//addin assemblies that reference roslyn
+				default:
+					var refAsm = asm.GetReferencedAssemblies ();
+					if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+						break;
+					return;
 				}
-				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				if (analyzerAttr != null) {
-					var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
-					foreach (var diag in analyzer.SupportedDiagnostics) {
+			}
+
+			try {
+				foreach (var type in asm.GetTypes ()) {
+					var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
+					if (notPortedYetAttribute!= null) {
+						continue;
+					}
+
+					//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
+					//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
+					if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
+						type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeRefactoringProvider) ||
+						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeRefactoringProvider) ||
+						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
+						continue;
+
+					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
+					if (analyzerAttr != null) {
 						try {
-							Analyzers.Add (new CodeDiagnosticDescriptor (diag, analyzerAttr.Languages, type));
+							var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
+
+							if (analyzer.SupportedDiagnostics.Any (IsDiagnosticSupported)) {
+								Analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Languages, type));
+							}
+							foreach (var diag in analyzer.SupportedDiagnostics) {
+								//filter out E&C analyzers as we don't support E&C
+								if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+									continue;
+								}
+							}
 						} catch (Exception e) {
-							LoggingService.LogError ("error while adding diagnostic analyzer: " + diag.Id + " from assembly " + asm.FullName, e);
+							LoggingService.LogError ($"error while adding diagnostic analyzer {type}  from assembly {asm.FullName}", e);
 						}
 					}
-				}
 
-				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
-				if (codeFixAttr != null) {
-					Fixes.Add (new CodeDiagnosticFixDescriptor (type, codeFixAttr));
-				}
+					var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
+					if (codeFixAttr != null) {
+						Fixes.Add (new CodeDiagnosticFixDescriptor (type, codeFixAttr));
+					}
 
-				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
-				if (exportAttr != null) {
-					Refactorings.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
+					var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
+					if (exportAttr != null) {
+						Refactorings.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
+					}
 				}
+			} catch (ReflectionTypeLoadException ex) {
+				foreach (var subException in ex.LoaderExceptions) {
+					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, subException);
+				}
+				throw;
 			}
 		}
 
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
-	}
+		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
+		{
+			//filter out E&C analyzers as we don't support E&C
+			if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+				return false;
+			}
 
+			return true;
+		}
+	}
 }

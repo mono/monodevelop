@@ -45,6 +45,10 @@ namespace MonoDevelop.PackageManagement
 
 		public Task<CredentialResponse> GetAsync (Uri uri, IWebProxy proxy, CredentialRequestType type, string message, bool isRetry, bool nonInteractive, CancellationToken cancellationToken)
 		{
+			if (nonInteractive) {
+				return Task.FromResult (GetExistingCredential (uri, proxy, type));
+			}
+
 			var cp = WebRequestHelper.CredentialProvider;
 			if (cp == null)
 				return null;
@@ -69,6 +73,43 @@ namespace MonoDevelop.PackageManagement
 				default:
 					return CredentialType.RequestCredentials;
 			}
+		}
+
+		/// <summary>
+		/// Gets an existing credential without prompting the user.
+		/// </summary>
+		CredentialResponse GetExistingCredential (Uri uri, IWebProxy proxy, CredentialRequestType type)
+		{
+			CredentialType credentialType = GetCredentialType (type);
+
+			Tuple<string, string> existing = null;
+
+			if (credentialType == CredentialType.ProxyCredentials) {
+				Uri proxyUri = proxy?.GetProxy (uri);
+				if (proxyUri != null) {
+					existing = PasswordService.GetWebUserNameAndPassword (proxyUri);
+				}
+			}
+
+			if (existing == null) {
+				var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+				existing =
+					PasswordService.GetWebUserNameAndPassword (uri) ??
+					PasswordService.GetWebUserNameAndPassword (rootUri);
+			}
+
+			if (existing != null && existing.Item1 != null && existing.Item2 != null) {
+				var credentials = new NetworkCredential (existing.Item1, existing.Item2);
+
+				// For some reason even though the proxy.Credentials is assigned the
+				// ProxyCache.Instance the credentials are not found so they are
+				// explicitly set on the proxy here.
+				if (credentialType == CredentialType.ProxyCredentials && proxy != null)
+					proxy.Credentials = credentials;
+				return new CredentialResponse (credentials);
+			}
+
+			return new CredentialResponse (CredentialStatus.ProviderNotApplicable);
 		}
 	}
 }

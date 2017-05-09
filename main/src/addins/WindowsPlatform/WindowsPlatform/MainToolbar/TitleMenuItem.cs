@@ -61,7 +61,7 @@ namespace WindowsPlatform.MainToolbar
 
 				// FIXME: Use proper keybinding text.
 				if (actionCommand.KeyBinding != null)
-					InputGestureText = actionCommand.KeyBinding.ToString ();
+					InputGestureText = KeyBindingManager.BindingToDisplayLabel (actionCommand.KeyBinding, true);
 				
 				try {
 					if (!actionCommand.Icon.IsNull)

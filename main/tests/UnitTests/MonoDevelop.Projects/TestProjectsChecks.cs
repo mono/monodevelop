@@ -1,4 +1,4 @@
-// TestProjectsChecks.cs
+﻿// TestProjectsChecks.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -271,6 +271,8 @@ namespace Foo {
 			
 			it = (GenericItem) sol2.Items [0];
 			Assert.AreEqual ("hi", it.SomeValue);
+
+			sol.Dispose ();
 		}
 		
 		public static async Task TestLoadSaveSolutionFolders (MSBuildFileFormat fileFormat)
@@ -360,6 +362,8 @@ namespace Foo {
 			Assert.AreEqual ("p4", f2.Items [1].Name);
 			Assert.AreEqual (idp3, f2.Items [0].ItemId, "idp4");
 			Assert.AreEqual (idp4, f2.Items [1].ItemId, "idp4");
+
+			sol.Dispose ();
 		}
 		
 		public static async Task TestCreateLoadSaveConsoleProject (MSBuildFileFormat fileFormat)
@@ -377,6 +381,8 @@ namespace Foo {
 			await sol.SaveAsync (Util.GetMonitor ());
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckConsoleProject (sol);
+
+			sol.Dispose ();
 		}
 		
 		public static async Task TestLoadSaveResources (MSBuildFileFormat fileFormat)
@@ -388,7 +394,9 @@ namespace Foo {
 			
 			await sol.SaveAsync (Util.GetMonitor ());
 			solFile = sol.FileName;
-			
+
+			sol.Dispose ();
+
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ProjectTests.CheckResourcesSolution (sol);
 			
@@ -397,12 +405,16 @@ namespace Foo {
 			ProjectFile pf = p.Files.GetFile (f);
 			pf.ResourceId = "SomeBitmap.bmp";
 			await sol.SaveAsync (Util.GetMonitor ());
-			
+
+			sol.Dispose ();
+
 			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			p = (DotNetProject) sol.Items [0];
 			f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			pf = p.Files.GetFile (f);
 			Assert.AreEqual ("SomeBitmap.bmp", pf.ResourceId);
+
+			sol.Dispose ();
 		}
 	}
 	

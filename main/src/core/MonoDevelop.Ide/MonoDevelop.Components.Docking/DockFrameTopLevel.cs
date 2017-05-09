@@ -139,6 +139,12 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		internal Gtk.Window ContainerWindow { get; set; }
-	}
 
+		internal string Title {
+			set {
+				if (ContainerWindow != null)
+					ContainerWindow.Title = value;
+			}
+		}
+	}
 }

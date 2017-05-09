@@ -116,6 +116,15 @@ namespace MonoDevelop.PackageManagement
 
 			return Solution == solution.Solution;
 		}
+
+		public IDotNetProject ResolveProject (ProjectReference projectReference)
+		{
+			var project = projectReference.ResolveProject (solution) as DotNetProject;
+			if (project != null)
+				return new DotNetProjectProxy (project);
+
+			return null;
+		}
 	}
 }
 

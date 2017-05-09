@@ -13,7 +13,6 @@ open ExtCore.Control.Collections
 [<TestFixture>]
 type ``Expandselection``() =
     let rec getSelections(doc:TestDocument, selections:list<_>) =
-
         let selectionOpt = ExpandSelection.getExpandRange (doc.Editor, doc.Ast.ParseTree.Value)
         match selectionOpt with
         | None -> selections

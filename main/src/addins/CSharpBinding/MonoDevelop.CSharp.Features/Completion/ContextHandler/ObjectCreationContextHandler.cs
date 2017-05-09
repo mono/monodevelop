@@ -32,6 +32,10 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Roslyn.Utilities;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 
@@ -142,7 +146,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			for (int i = 0; i < primitiveTypesKeywords.Length; i++) {
 				var keyword = primitiveTypesKeywords [i];
-				list.Add (engine.Factory.CreateKeywordCompletion (this, keyword, primitiveTypesKeywordKinds[i]));
+				list.Add (engine.Factory.CreateKeywordCompletion (this, keyword));
 			}
 
 			return list;
@@ -239,7 +243,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			return null;
 		}
-
 	}
 }
 

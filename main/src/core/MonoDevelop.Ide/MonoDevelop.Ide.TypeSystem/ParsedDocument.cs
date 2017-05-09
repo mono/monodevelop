@@ -38,7 +38,17 @@ namespace MonoDevelop.Ide.TypeSystem
 	public enum ParsedDocumentFlags
 	{
 		None            = 0,
-		NonSerializable = 1
+		NonSerializable = 1,
+
+		/// <summary>
+		/// Used for files where a custom folding extension is taken.
+		/// </summary>
+		SkipFoldings   = 2,
+
+		/// <summary>
+		/// Used for files that have a custom completion extension.
+		/// </summary>
+		HasCustomCompletionExtension = 4
 	}
 
 	public abstract class ParsedDocument

@@ -24,16 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.CSharp.Refactoring;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -83,7 +80,7 @@ namespace MonoDevelop.CodeGeneration
 
 
 				var result = new HashSet<ISymbol> ();
-				var cancellationToken = default(CancellationToken);
+				var cancellationToken = default (CancellationToken);
 				var baseTypes = encType.GetBaseTypes ().Reverse ();
 				foreach (var type in baseTypes) {
 					RemoveOverriddenMembers (result, type, cancellationToken);
@@ -96,7 +93,7 @@ namespace MonoDevelop.CodeGeneration
 
 			static void AddOverridableMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)
 			{
-				foreach (var member in type.GetMembers()) {
+				foreach (var member in type.GetMembers ()) {
 					if (IsOverridable (member, containingType)) {
 						result.Add (member);
 					}
@@ -105,7 +102,7 @@ namespace MonoDevelop.CodeGeneration
 
 			protected static void RemoveOverriddenMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, CancellationToken cancellationToken)
 			{
-				foreach (var member in containingType.GetMembers()) {
+				foreach (var member in containingType.GetMembers ()) {
 					var overriddenMember = member.OverriddenMember ();
 					if (overriddenMember != null) {
 						result.Remove (overriddenMember);

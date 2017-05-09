@@ -33,12 +33,13 @@ using Mono.TextEditor.Utils;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
 	public class MergeWidget : EditorCompareWidgetBase
 	{
-		protected internal override MonoTextEditor MainEditor {
+		internal override MonoTextEditor MainEditor {
 			get {
 				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}
@@ -46,10 +47,10 @@ namespace MonoDevelop.VersionControl.Views
 
 		public MergeWidget ()
 		{
-			MainEditor.Document.TextReplaced += UpdateConflictsOnTextReplace;
+			MainEditor.Document.TextChanged += UpdateConflictsOnTextReplace;
 		}
 
-		protected override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
+		internal override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			base.UndoChange (fromEditor, toEditor, hunk);
 			int i = leftConflicts.IndexOf (hunk);
@@ -79,7 +80,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Load (string fileName)
 		{
 			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-			MainEditor.Document.Text = TextFileUtility.ReadAllText (fileName);
+			MainEditor.Document.Text = StringTextSource.ReadFrom (fileName).Text;
 
 			this.CreateDiff ();
 			Show ();
@@ -88,7 +89,7 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			if (MainEditor != null && MainEditor.Document != null)
-				MainEditor.Document.TextReplaced -= UpdateConflictsOnTextReplace;
+				MainEditor.Document.TextChanged -= UpdateConflictsOnTextReplace;
 			base.OnDestroyed ();
 		}
 		
@@ -105,8 +106,8 @@ namespace MonoDevelop.VersionControl.Views
 				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
 			};
 			
-			this.editors[0].Document.ReadOnly = true;
-			this.editors[2].Document.ReadOnly = true;
+			this.editors[0].Document.IsReadOnly = true;
+			this.editors[2].Document.IsReadOnly = true;
 			
 			Label myVersion = new Label (GettextCatalog.GetString ("My"));
 			Label currentVersion = new Label (GettextCatalog.GetString ("Current"));
@@ -150,14 +151,14 @@ namespace MonoDevelop.VersionControl.Views
 
 		class Conflict
 		{
-			public TextSegment MySegment;
-			public TextSegment TheirSegment;
+			public ISegment MySegment;
+			public ISegment TheirSegment;
 
-			public TextSegment StartSegment;
-			public TextSegment DividerSegment;
-			public TextSegment EndSegment;
+			public ISegment StartSegment;
+			public ISegment DividerSegment;
+			public ISegment EndSegment;
 
-			public Conflict (TextSegment mySegment, TextSegment theirSegment, TextSegment startSegment, TextSegment dividerSegment, TextSegment endSegment)
+			public Conflict (ISegment mySegment, ISegment theirSegment, ISegment startSegment, ISegment dividerSegment, ISegment endSegment)
 			{
 				this.MySegment = mySegment;
 				this.TheirSegment = theirSegment;
@@ -212,14 +213,14 @@ namespace MonoDevelop.VersionControl.Views
 				Conflict conflict = currentConflicts[i];
 
 				string above = MainEditor.Document.GetTextBetween (curOffset, conflict.StartSegment.Offset);
-				editors[0].Insert (editors[0].Document.TextLength, above);
+				editors[0].Insert (editors[0].Document.Length, above);
 				int leftA = editors[0].Document.LineCount;
-				editors[0].Insert (editors[0].Document.TextLength, MainEditor.Document.GetTextAt (conflict.MySegment));
+				editors[0].Insert (editors[0].Document.Length, MainEditor.Document.GetTextAt (conflict.MySegment));
 				int leftB = editors[0].Document.LineCount;
 
-				editors[2].Insert (editors[2].Document.TextLength, above);
+				editors[2].Insert (editors[2].Document.Length, above);
 				int rightA = editors[2].Document.LineCount;
-				editors[2].Insert (editors[2].Document.TextLength, MainEditor.Document.GetTextAt (conflict.TheirSegment));
+				editors[2].Insert (editors[2].Document.Length, MainEditor.Document.GetTextAt (conflict.TheirSegment));
 				int rightB = editors[2].Document.LineCount;
 
 				int middleA = MainEditor.Document.OffsetToLineNumber (conflict.StartSegment.Offset);
@@ -232,14 +233,14 @@ namespace MonoDevelop.VersionControl.Views
 			if (currentConflicts.Count > 0)
 				endOffset = currentConflicts.Last ().EndSegment.EndOffset;
 
-			string lastPart = MainEditor.Document.GetTextBetween (endOffset, MainEditor.Document.TextLength);
-			editors[0].Insert (editors[0].Document.TextLength, lastPart);
-			editors[2].Insert (editors[2].Document.TextLength, lastPart);
+			string lastPart = MainEditor.Document.GetTextBetween (endOffset, MainEditor.Document.Length);
+			editors[0].Insert (editors[0].Document.Length, lastPart);
+			editors[2].Insert (editors[2].Document.Length, lastPart);
 
 			UpdateDiff ();
 		}
 
-		void UpdateConflictsOnTextReplace (object sender, DocumentChangeEventArgs e)
+		void UpdateConflictsOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			this.UpdateDiff ();
 			foreach (var conflict in currentConflicts) {

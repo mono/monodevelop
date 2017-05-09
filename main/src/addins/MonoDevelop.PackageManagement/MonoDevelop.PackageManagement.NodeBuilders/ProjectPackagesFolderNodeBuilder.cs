@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using NuGet.Packaging;
@@ -124,10 +125,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (builder != null) {
 				builder.UpdateAll ();
 				builder.MoveToParent ();
-			}
 
-			if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
-				builder.UpdateAll ();
+				if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
+					builder.UpdateAll ();
+				}
 			}
 		}
 	}

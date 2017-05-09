@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static bool HasValidProjectNameCharacters (string name)
 		{
-			foreach (char c in name.ToCharArray ()) {
+			foreach (char c in name) {
 				if (!IsValidProjectNameCharacter (c))
 					return false;
 			}
@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Projects
 
 		static bool IsValidProjectNameCharacter (char c)
 		{
-			return Char.IsLetterOrDigit (c) || c == '.' || c == '_';
+			return Char.IsLetterOrDigit (c) || c == '.' || c == '_' || c == '-';
 		}
 
 		bool CreateSeparateSolutionDirectory {

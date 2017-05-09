@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.MD1
 			
 			if (project.LanguageBinding == null) {
 				BuildResult langres = new BuildResult ();
-				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", project.LanguageName);
+				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional extension to support this language.", project.LanguageName);
 				langres.AddError (msg);
 				monitor.ReportError (msg, null);
 				return langres;

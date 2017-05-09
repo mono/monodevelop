@@ -151,10 +151,10 @@ module Completion =
 
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
-            let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
+            let! parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
             if residue.Length > 0 && residue.[0] = '#' then
-                return hashDirectives
+                return hashDirectives |> Array.ofList
             else
                 let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
                 let results = symbols
@@ -162,7 +162,7 @@ module Completion =
 
                 let completions, symbols = results |> List.unzip
                 symbolList <- symbols
-                return completions
+                return completions |> Array.ofList
         }
 
     let getCompletionTooltip filter =
@@ -185,7 +185,7 @@ module Completion =
 
     let getParameterHints (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
-            let _parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
+            let! _parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
 
             let lineToCaret = input.[0..column-1]
             let column = lineToCaret |> Seq.tryFindIndexBack (fun c -> c <> '(' && c <> ' ')

@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects
 				Assert.IsNotNull (sourceFile, msg);
 			}
 			Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Foo.cs"));
+			project.Dispose ();
 		}
 
 		[Test()]
@@ -91,6 +92,7 @@ namespace MonoDevelop.Projects
 				var sourceFile = sourceFiles.FirstOrDefault (sf => sf.FilePath == file.FilePath);
 				Assert.IsNotNull (sourceFile, msg + ": " + file.FilePath.FileName + " not found");
 			}
+			project.Dispose ();
 		}
 
 		[Test()]
@@ -119,6 +121,7 @@ namespace MonoDevelop.Projects
 			});
 			          
 			Assert.IsTrue (fileChangeNotification.Task.IsCompleted, "Performing the generator should have fired a file change event");
+			project.Dispose ();
 		}
 
 		[Test()]
@@ -138,6 +141,7 @@ namespace MonoDevelop.Projects
 				var sourceFile = sourceFiles.FirstOrDefault (sf => sf.FilePath == file.FilePath);
 				Assert.IsNotNull (sourceFile, msg);
 			}
+			project.Dispose ();
 		}
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
@@ -146,6 +150,23 @@ namespace MonoDevelop.Projects
 			if (tcs != null) {
 				tcs.TrySetResult (null);
 			}
+		}
+
+		[Test ()]
+		public async Task FilesWithConfigurationCondition ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-corecompiledepends", "project-with-conditioned-file.csproj");
+			var project = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+
+			var projectFiles = project.Files.Where (f => f.Subtype != Subtype.Directory).ToList ();
+			var sourceFiles = await project.GetSourceFilesAsync (project.Configurations ["Debug|x86"].Selector);
+
+			Assert.IsTrue (sourceFiles.Any (f => f.FilePath.FileName == "Conditioned.cs"));
+
+			sourceFiles = await project.GetSourceFilesAsync (project.Configurations ["Release|x86"].Selector);
+
+			Assert.IsFalse (sourceFiles.Any (f => f.FilePath.FileName == "Conditioned.cs"));
+			project.Dispose ();
 		}
 	}
 }

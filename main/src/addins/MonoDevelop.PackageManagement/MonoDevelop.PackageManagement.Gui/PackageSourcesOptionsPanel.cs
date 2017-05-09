@@ -34,6 +34,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
+using NuGet.Common;
+using NuGet.Configuration;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
@@ -41,16 +43,41 @@ namespace MonoDevelop.PackageManagement.Gui
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 		PackageSourcesWidget packageSourcesWidget;
+		bool loadError;
 
 		public override Control CreatePanelWidget()
 		{
-			var settings = SettingsLoader.LoadDefaultSettings (reportError: true);
+			try {
+				return CreatePackageSourcesWidget ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to show package sources in NuGet.Config file.", ex);
+
+				loadError = true;
+
+				return new PackageSourcesLoadErrorWidget (
+					GetLoadErrorMessage (ex),
+					ex.Message,
+					GetGlobalNuGetConfigFileName ());
+			}
+		}
+
+		PackageSourcesWidget CreatePackageSourcesWidget ()
+		{
+			var settings = SettingsLoader.LoadDefaultSettings (throwError: true);
 			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (settings);
 			viewModel = new RegisteredPackageSourcesViewModel (repositoryProvider);
 			viewModel.Load ();
 			
 			packageSourcesWidget = new PackageSourcesWidget (viewModel);
 			return packageSourcesWidget;
+		}
+
+		string GetLoadErrorMessage (Exception ex)
+		{
+			if (ex is CryptographicException)
+				return GettextCatalog.GetString ("Unable to decrypt passwords stored in the NuGet.Config file.");
+
+			return GettextCatalog.GetString ("Unable to read the NuGet.Config file.");
 		}
 
 		/// <summary>
@@ -71,7 +98,7 @@ namespace MonoDevelop.PackageManagement.Gui
 		/// </summary>
 		public override bool ValidateChanges ()
 		{
-			if (Platform.IsWindows) {
+			if (Platform.IsWindows || loadError) {
 				return true;
 			}
 
@@ -123,6 +150,9 @@ namespace MonoDevelop.PackageManagement.Gui
 
 		public override void ApplyChanges()
 		{
+			if (loadError)
+				return;
+
 			try {
 				if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
 					viewModel.Save (
@@ -162,6 +192,20 @@ namespace MonoDevelop.PackageManagement.Gui
 			if (packageSourcesWidget != null) {
 				packageSourcesWidget.Dispose ();
 			}
+		}
+
+		string GetGlobalNuGetConfigFileName ()
+		{
+			try {
+				FilePath fileName = GlobalNuGetConfigFilePath.GetFileName ();
+				if (fileName.IsNotNull) {
+					if (File.Exists (fileName))
+						return fileName;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to get global NuGet.Config filename.", ex);
+			}
+			return null;
 		}
 	}
 }

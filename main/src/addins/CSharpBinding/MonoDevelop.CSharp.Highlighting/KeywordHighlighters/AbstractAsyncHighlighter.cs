@@ -49,10 +49,9 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighli
                     }
                 });
 
-            // Highlight await keywords
-            node.TypeSwitch(
-                (AwaitExpressionSyntax awaitExpression) =>
-                {
+			// Highlight await keywords
+			var awaitExpression = node as AwaitExpressionSyntax;
+			if (awaitExpression != null) {
                     // Note if there is already a highlight for the previous token, merge it
                     // with this span. That way, we highlight nested awaits with a single span.
                     var handled = false;
@@ -73,7 +72,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighli
                     {
                         spans.Add(awaitToken.Span);
                     }
-                });
+			};
 
             foreach (var child in node.ChildNodes())
             {

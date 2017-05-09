@@ -34,7 +34,7 @@ type FSharpOutlineTextEditorExtension() as x =
                                    |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
 
                     for item in toplevel do
-                        let iter = treeStore.AppendValues(item.Declaration)
+                        let iter = treeStore.AppendValues([| item.Declaration |])
                         let children = item.Nested
                                        |> Array.sortBy(fun xs -> xs.Range.StartLine)
 
@@ -78,19 +78,27 @@ type FSharpOutlineTextEditorExtension() as x =
 
                 let setCellIcon _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let pixRenderer = cellRenderer :?> CellRendererImage
-                    let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
-                    pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item, Gtk.IconSize.Menu)
+                    treeModel.GetValue(iter, 0)
+                    |> Option.tryCast<FSharpNavigationDeclarationItem[]>
+                    |> Option.iter(fun item ->
+                        pixRenderer.Image <- ImageService.GetIcon(ServiceUtils.getIcon item.[0], Gtk.IconSize.Menu))
 
                 let setCellText _column (cellRenderer : CellRenderer) (treeModel : TreeModel) (iter : TreeIter) =
                     let renderer = cellRenderer :?> CellRendererText
-                    let item = treeModel.GetValue(iter, 0) :?> FSharpNavigationDeclarationItem
-                    renderer.Text <- item.Name
+                    treeModel.GetValue(iter, 0)
+                    |> Option.tryCast<FSharpNavigationDeclarationItem[]>
+                    |> Option.iter(fun item -> renderer.Text <- item.[0].Name)
+
                 let jumpToDeclaration focus =
                     let iter : TreeIter ref = ref Unchecked.defaultof<_>
                     if padTreeView.Selection.GetSelected(iter) then
-                        let node = padTreeView.Model.GetValue(!iter, 0) :?> FSharpNavigationDeclarationItem
-                        let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
-                        IdeApp.Workbench.OpenDocument (x.Editor.FileName, null, max 1 sline, max 1 scol) |> ignore
+                        padTreeView.Model.GetValue(!iter, 0)
+                        |> Option.tryCast<FSharpNavigationDeclarationItem[]>
+                        |> Option.iter(fun item ->
+                            let node = item.[0]
+                            let (scol,sline) = node.Range.StartColumn+1, node.Range.StartLine
+                            IdeApp.Workbench.OpenDocument (x.Editor.FileName, null, max 1 sline, max 1 scol) |> ignore)
+
                     if focus then
                         x.Editor.GrabFocus()
 

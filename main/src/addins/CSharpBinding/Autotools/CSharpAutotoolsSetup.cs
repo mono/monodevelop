@@ -78,17 +78,9 @@ namespace CSharpBinding.Autotools
 					writer.Write (" -define:DEBUG");
 			}
 
-			switch (parameters.LangVersion) {
-			case LangVersion.Default:
-				break;
-			case LangVersion.ISO_1:
-				writer.Write (" -langversion:ISO-1 ");
-				break;
-			case LangVersion.ISO_2:
-				writer.Write (" -langversion:ISO-2 ");
-				break;
-			default:
-				throw new Exception ("Invalid LangVersion enum value '" + parameters.LangVersion.ToString () + "'");
+			var langVersion = config.Properties.GetValue<string> ("LangVersion");
+			if (!string.IsNullOrEmpty (langVersion)) {
+				writer.Write (" -langversion:" + langVersion + " ");
 			}
 			
 			

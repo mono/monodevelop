@@ -19,7 +19,7 @@ type ProjectTests() =
     let (/) a b = Path.Combine (a, b)
 
     [<Test>]
-    member this.Can_reorder_nodes() =
+    member this.``Can reorder nodes``() =
         if not MonoDevelop.Core.Platform.IsWindows then
             let xml =
                 """
@@ -48,6 +48,39 @@ type ProjectTests() =
     <Compile Include="test1.fs" />
   </ItemGroup>
 </Project>"""
+            newXml |> should equal expected
+
+    [<Test>]
+    member this.``Can reorder dotnet core project files``() =
+        if not MonoDevelop.Core.Platform.IsWindows then
+            let xml =
+                """
+                <Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+                  <ItemGroup>
+                    <Compile Include="test1.fs" />
+                    <Compile Include="test2.fs" />
+                  </ItemGroup>
+                </Project>
+                """
+            let path = Path.GetTempPath() + Guid.NewGuid().ToString() + ".fsproj"
+            File.WriteAllText (path, xml)
+            let project = Services.ProjectService.CreateDotNetProject ("F#")
+            project.FileName <- new FilePath(path)
+            let movingNode = project.AddFile("test1.fs")
+            let moveToNode = project.AddFile("test2.fs")
+
+            let fsp = new FSharpProjectNodeCommandHandler()
+            fsp.MoveNodes moveToNode movingNode DropPosition.After
+          
+            let newXml = File.ReadAllText path
+            let expected =
+                """<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="test2.fs" />
+    <Compile Include="test1.fs" />
+  </ItemGroup>
+</Project>"""
+
             newXml |> should equal expected
 
     [<Test;AsyncStateMachine(typeof<Task>)>]

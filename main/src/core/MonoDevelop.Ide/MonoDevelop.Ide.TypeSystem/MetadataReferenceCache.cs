@@ -34,6 +34,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	//FIXME: this mechanism is not correct, we should be implementing IMetadataService instead
 	static class MetadataReferenceCache
 	{
 		static Dictionary<string, MetadataReferenceCacheItem> cache = new Dictionary<string, MetadataReferenceCacheItem> ();
@@ -94,7 +95,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MetadataReferenceCache ()
 		{
-			timer = new Timer ((o) => CheckForChanges (), null, 5000, 5000);
+			timer = new Timer ((o) => Runtime.RunInMainThread ((Action)CheckForChanges), null, 5000, 5000);
 		}
 
 		//TODO: Call this method when focus returns to MD or even better use FileSystemWatcher
@@ -161,8 +162,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			readonly static DateTime NonExistentFile = new DateTime (1601, 1, 1);
 
-			static Type docProviderType;
-
 			void CreateNewReference ()
 			{
 				timeStamp = File.GetLastWriteTimeUtc (path);
@@ -174,9 +173,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						try {
 							string xmlName = Path.ChangeExtension (path, ".xml");
 							if (File.Exists (xmlName)) {
-								if (docProviderType == null)
-									docProviderType = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop").GetType ("Microsoft.CodeAnalysis.FileBasedXmlDocumentationProvider");
-								provider = (DocumentationProvider)Activator.CreateInstance (docProviderType, xmlName);
+								provider = Microsoft.CodeAnalysis.XmlDocumentationProvider.CreateFromFile (xmlName);
 							}
 						} catch (Exception e) {
 							LoggingService.LogError ("Error while creating xml documentation provider for: " + path, e);

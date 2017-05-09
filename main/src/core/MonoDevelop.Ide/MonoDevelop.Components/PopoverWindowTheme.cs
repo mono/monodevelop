@@ -242,12 +242,13 @@ namespace MonoDevelop.Components
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
 
-		public void SetSchemeColors (ColorScheme scheme)
+		public void SetSchemeColors (EditorTheme scheme)
 		{
-			BackgroundColor = scheme.TooltipText.Background;
-			PagerTextColor = scheme.TooltipPagerText.Color;
-			PagerBackgroundColor = scheme.TooltipPager.Color;
-			PagerTriangleColor = scheme.TooltipPagerTriangle.Color;
+			;
+			BackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipBackground);
+			PagerTextColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerText);
+			PagerBackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPager);
+			PagerTriangleColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerTriangle);
 		}
 		
 		void EmitRedrawNeeded ()

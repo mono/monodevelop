@@ -44,6 +44,7 @@ namespace MonoDevelop.Xml.Formatting
 			XmlDocument doc;
 			try {
 				doc = new XmlDocument ();
+				doc.XmlResolver = null; // Prevent DTDs from being downloaded.
 				doc.LoadXml (input);
 			} catch (XmlException ex) {
 				// handle xml files without root element (https://bugzilla.xamarin.com/show_bug.cgi?id=4748)

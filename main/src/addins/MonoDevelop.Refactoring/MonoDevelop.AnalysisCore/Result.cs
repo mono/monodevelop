@@ -25,9 +25,8 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.AnalysisCore.Extensions;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -68,7 +67,5 @@ namespace MonoDevelop.AnalysisCore
 		public TextSpan Region { get; private set; }
 		
 		public bool Underline { get; private set; }
-		
-		internal AnalysisRuleAddinNode Source { get; set; }
 	}
 }

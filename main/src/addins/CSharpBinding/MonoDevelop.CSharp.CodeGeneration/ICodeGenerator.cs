@@ -52,7 +52,7 @@ namespace MonoDevelop.CodeGeneration
 	
 	interface IGenerateAction 
 	{
-		void GenerateCode ();
+		void GenerateCode (Gtk.TreeView treeView);
 	}
 	
 	static class CodeGenerationService

@@ -29,6 +29,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -53,22 +55,24 @@ namespace MonoDevelop.CSharp.Formatting
 			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
 
-		public override void PostFomatPastedText (int insertionOffset, int insertedChars)
+		public override async Task PostFomatPastedText (int insertionOffset, int insertedChars)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
 				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
 			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				int lineStartOffset = indent.Editor.GetLineByOffset (insertionOffset).Offset;
-				int formatCharsCount = insertedChars + (lineStartOffset - insertionOffset);
-				var newText = CSharpFormatter.FormatText (
-					indent.DocumentContext.GetFormattingPolicy (),
-					indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (),
-					indent.Editor.GetTextBetween (lineStartOffset, insertionOffset + insertedChars),
-					0,
-					formatCharsCount
-				);
-				indent.Editor.ReplaceText (lineStartOffset, formatCharsCount, newText);
+				var tree = await indent.DocumentContext.AnalysisDocument.GetSyntaxTreeAsync ();
+				var startLine = indent.Editor.GetLineByOffset (insertionOffset);
+				var endLine = indent.Editor.GetLineByOffset (insertionOffset + insertedChars);
+				int lineStartOffset = startLine.Offset != endLine.Offset ? startLine.Offset : insertionOffset;
+				int formatCharsCount = insertedChars + (insertionOffset - lineStartOffset);
+				var policy = indent.DocumentContext.GetFormattingPolicy ();
+				var textPolicy = indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (indent.Editor.MimeType);
+				var optionSet = policy.CreateOptions (textPolicy);
+				var span = new TextSpan (lineStartOffset, formatCharsCount);
+				var doc = await Formatter.FormatAsync (indent.DocumentContext.AnalysisDocument, span, optionSet);
+
+				OnTheFlyFormatter.ApplyNewTree (indent.Editor, lineStartOffset, true, span, tree, await doc.GetSyntaxTreeAsync ());
 				return;
 			}
 			// Just correct the start line of the paste operation - the text is already indented.
@@ -79,7 +83,6 @@ namespace MonoDevelop.CSharp.Formatting
 				int pos = curLineOffset;
 				string curIndent = curLine.GetIndentation (indent.Editor);
 				int nlwsp = curIndent.Length;
-
 				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.Editor.GetCharAt (curLineOffset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					indent.SafeUpdateIndentEngine (curLineOffset + curLine.Length);

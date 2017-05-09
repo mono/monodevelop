@@ -108,6 +108,9 @@
 		<ConditionType id="ItemType" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
 			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 		</ConditionType>
+		<ConditionType id="AppliesTo" type="MonoDevelop.Projects.Extensions.AppliesToCondition">
+			<Description>Project capability expression.</Description>
+		</ConditionType>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/LanguageBindings" name = "Language bindings">
@@ -160,8 +163,12 @@
 		<ExtensionNode name="Item" customAttributeType="MonoDevelop.Projects.ExportProjectItemTypeAttribute" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportSearchPaths" name = "MSBuild project import search paths">
+		<Description>Allows defining fallback search paths for MSBuild project imports</Description>
+		<ExtensionNode name="SearchPath" type="MonoDevelop.Projects.Extensions.ImportSearchPathExtensionNode" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
-	
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<ModeSet id="Run" _name="Run" />
@@ -230,10 +237,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Mono" _name="Mono" allowDiffSerialize="true">
-		<!--	<Policies resource="" /> -->
+		<PolicySet id="Default" _name="Default" allowDiffSerialize="true">
+		<!-- Policies registered in the Default policy set are considered the default for the Ide.
+			 Those policies will be used when no specific options are set
+		-->
 		</PolicySet>
 		<PolicySet id="VisualStudio" _name="Microsoft Visual Studio" allowDiffSerialize="true">
+		<!--	<Policies resource="" /> -->
+		</PolicySet>
+		<PolicySet id="Mono" _name="Mono" allowDiffSerialize="true">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
 		<PolicySet id="Invariant" _name="Invariant" visible="false"/>
@@ -320,6 +332,7 @@
 		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
 		<ProjectType guid = "{14182A97-F7F0-4C62-8B27-98AA8AE2109A}" name = "VB.NET Portable Library" />
 		<ProjectType guid = "{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}" name = "Universal Windows Platform (UWP)" />
+		<ProjectType guid = "{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}" name = "ASP.NET Core (DNX)" extension="xproj" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects">

@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -94,8 +95,9 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return false;
 			}
 
+			var enclosingSymbol = semanticModel.GetEnclosingNamedTypeOrAssembly (position, cancellationToken);
 			// Non-exclusive if initializedType can be initialized as a collection.
-			if (initializedType.CanSupportCollectionInitializer ()) {
+			if (initializedType.CanSupportCollectionInitializer (enclosingSymbol)) {
 				return false;
 			}
 
@@ -123,18 +125,20 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (initializedType == null)
 				return Enumerable.Empty<CompletionData> ();
 
+			var enclosing = semanticModel.GetEnclosingNamedType (position, cancellationToken);
+
 			// Find the members that can be initialized. If we have a NamedTypeSymbol, also get the overridden members.
 			IEnumerable<ISymbol> members = semanticModel.LookupSymbols (position, initializedType);
 			members = members.Where (m => IsInitializable (m, initializedType) &&
-				 m.CanBeReferencedByName &&
-				 IsLegalFieldOrProperty (m) &&
-				 !m.IsImplicitlyDeclared);
+				m.CanBeReferencedByName &&
+				IsLegalFieldOrProperty (m, enclosing) &&
+				!m.IsImplicitlyDeclared);
 
 			// Filter out those members that have already been typed
 			var alreadyTypedMembers = GetInitializedMembers (semanticModel.SyntaxTree, position, cancellationToken);
 			var uninitializedMembers = members.Where (m => !alreadyTypedMembers.Contains (m.Name));
 
-			uninitializedMembers = uninitializedMembers.Where (SymbolExtensions.IsEditorBrowsable);
+			uninitializedMembers = uninitializedMembers.Where (PortingExtensions.IsEditorBrowsable);
 
 			// var text = await semanticModel.SyntaxTree.GetTextAsync(cancellationToken).ConfigureAwait(false);
 			// var changes = GetTextChangeSpan(text, position);
@@ -147,10 +151,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return list;
 		}
 
-		static bool IsLegalFieldOrProperty (ISymbol symbol)
+		private bool IsLegalFieldOrProperty (ISymbol symbol, ISymbol within)
 		{
 			var type = symbol.GetMemberType ();
-			if (type != null && type.CanSupportCollectionInitializer ()) {
+			if (type != null && type.CanSupportCollectionInitializer (within)) {
 				return true;
 			}
 

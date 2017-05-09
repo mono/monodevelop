@@ -8,6 +8,7 @@
 #build stuff
 obj/
 /main/build/bin
+/main/build/lib
 /main/build/AddIns
 /main/build/data/
 /main/build/locale/
@@ -35,6 +36,7 @@ obj/
 /scripts/configure.exe
 /main/packages
 /main/.nuget/
+pull-package.exe
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files

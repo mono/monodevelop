@@ -33,11 +33,13 @@ using Gtk;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -100,6 +102,7 @@ namespace MonoDevelop.Ide.Gui
 			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
 			
 			box = new VBox ();
+			box.Accessible.SetShouldIgnore (true);
 
 			viewContents.Add (content);
 
@@ -443,17 +446,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool CloseWindow (bool force)
+		public Task<bool> CloseWindow (bool force)
 		{
 			return CloseWindow (force, false);
 		}
 
-		public bool CloseWindow (bool force, bool animate)
+		public async Task<bool> CloseWindow (bool force, bool animate)
 		{
 			bool wasActive = workbench.ActiveWorkbenchWindow == this;
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
 			args.Cancel = false;
-			OnClosing (args);
+			await OnClosing (args);
 			if (args.Cancel)
 				return false;
 			
@@ -620,6 +623,7 @@ namespace MonoDevelop.Ide.Gui
 			var tab = new Tab (subViewToolbar, label) {
 				Tag = viewContent
 			};
+			tab.Accessible.Help = viewContent.TabAccessibilityDescription;
 			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {
@@ -808,10 +812,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		protected virtual void OnClosing (WorkbenchWindowEventArgs e)
+		protected virtual async Task OnClosing (WorkbenchWindowEventArgs e)
 		{
 			if (Closing != null) {
-				Closing (this, e);
+				foreach (var handler in Closing.GetInvocationList ().Cast<WorkbenchWindowAsyncEventHandler> ())
+					await handler (this, e);
 			}
 		}
 
@@ -830,7 +835,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closed;
-		public event WorkbenchWindowEventHandler Closing;
+		public event WorkbenchWindowAsyncEventHandler Closing;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
 }

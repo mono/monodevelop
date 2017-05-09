@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.VersionControl.Views
 {
 	[System.ComponentModel.ToolboxItem(false)]
-	public partial class DiffWidget : Gtk.Bin
+	partial class DiffWidget : Gtk.Bin
 	{
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.MonoTextEditor diffTextEditor;
@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffTextEditor.Options.ShowFoldMargin = false;
 			diffTextEditor.Options.ShowIconMargin = false;
 			diffTextEditor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
-			diffTextEditor.Document.ReadOnly = true;
+			diffTextEditor.Document.IsReadOnly = true;
 			scrolledwindow1.Child = diffTextEditor;
 			diffTextEditor.Show ();
 			SetButtonSensitivity ();
@@ -147,7 +147,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static string GetRevisionText (Mono.TextEditor.MonoTextEditor editor, Revision rev)
 		{
-			if (!editor.Document.ReadOnly)
+			if (!editor.Document.IsReadOnly)
 				return GettextCatalog.GetString ("(working copy)");
 			if (rev == null)
 				return GettextCatalog.GetString ("(base)");

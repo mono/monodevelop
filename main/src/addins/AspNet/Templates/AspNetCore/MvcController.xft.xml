@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<Template
+	originator="Matt Ward"
+	created="2017/05/01"
+	lastModified="2017/05/01">
+
+	<TemplateConfiguration>
+		<_Name>MVC Controller Class</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Core</_Category>
+		<LanguageName>C#</LanguageName>
+		<DefaultFilename>HomeController</DefaultFilename>
+		<_Description><![CDATA[Creates an MVC Application Controller class.
+
+The ASP.NET MVC Framework requires Controller names to be suffixed with "Controller".]]></_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<AspNetCore />
+	</Conditions>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.cs" src="MvcControllerTemplate.cs" />
+	</TemplateFiles>
+</Template>

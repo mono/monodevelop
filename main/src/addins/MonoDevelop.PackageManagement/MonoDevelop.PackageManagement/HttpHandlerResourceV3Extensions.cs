@@ -22,7 +22,6 @@
 // limitations under the License.
 //
 
-using NuGet;
 using NuGet.Credentials;
 using NuGet.Protocol;
 
@@ -32,16 +31,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static void InitializeHttpHandlerResourceV3 (CredentialService credentialService)
 		{
-			// Set up proxy handling for v3 sources.
-			// We need to sync the v2 proxy cache and v3 proxy cache so that the user will not
-			// get prompted twice for the same authenticated proxy.
-			var v2ProxyCache = ProxyCache.Instance;
-
 			HttpHandlerResourceV3.CredentialService = credentialService;
-
-			HttpHandlerResourceV3.CredentialsSuccessfullyUsed = (uri, credentials) => {
-				NuGet.CredentialStore.Instance.Add (uri, credentials);
-			};
 		}
 	}
 }

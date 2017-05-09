@@ -53,6 +53,8 @@ namespace MonoDevelop.Projects.MSBuild
 		FilePath GetPathValue (bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
 
 		bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+
+		string Condition { get; }
 	}
 	
 }

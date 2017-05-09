@@ -51,7 +51,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-vb" _description="Visual Basic source code" icon="md-vb-file" isText="true">
+		<MimeType id="text/x-vb" _description="Visual Basic source code" icon="md-vb-file" isText="true" roslynName="Visual Basic">
 			<File pattern="*.vb" />
 		</MimeType>
 	</Extension>
@@ -67,6 +67,11 @@
 		<DataType class = "MonoDevelop.VBNetBinding.VBCompilerParameters" />
 		<DataType class = "MonoDevelop.VBNetBinding.Import" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions = ".vb" class = "MonoDevelop.VBNet.VBNetTextEditorExtension" />
+	</Extension>
+
 	<!--
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />

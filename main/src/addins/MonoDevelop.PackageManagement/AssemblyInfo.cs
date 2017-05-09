@@ -7,7 +7,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("NuGet addin for MonoDevelop")]
 [assembly: AssemblyVersion ("1.0")]
 [assembly: AssemblyCopyright ("MIT X11")]
-[assembly: InternalsVisibleTo ("MonoDevelop.PackageManagement.Cmdlets")]
-[assembly: InternalsVisibleTo ("MonoDevelop.PackageManagement.Extensions")]
-[assembly: InternalsVisibleTo ("MonoDevelop.PackageManagement.Tests")]
-[assembly: InternalsVisibleTo ("MonoDevelop.Packaging")]

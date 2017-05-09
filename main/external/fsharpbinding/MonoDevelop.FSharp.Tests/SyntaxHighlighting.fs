@@ -1,145 +1,156 @@
-namespace MonoDevelopTests
+﻿namespace MonoDevelopTests
 
 open System
 open NUnit.Framework
 open MonoDevelop.FSharp
 open Mono.TextEditor
-open Mono.TextEditor.Highlighting
+open MonoDevelop.Ide.Editor.Highlighting
 open MonoDevelop.Ide.Editor
 open FsUnit
+open System.Threading
+open System.IO
 
 [<TestFixture>]
 type SyntaxHighlighting() =
+    do
+        FixtureSetup.initialiseMonoDevelop()
+
+    let getEditor() =
+        let editor = TextEditorFactory.CreateNewEditor()
+        editor.MimeType <- "text/x-fsharp"
+        let assembly = typeof<MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting>.Assembly
+        use stream = assembly.GetManifestResourceStream("F#.sublime-syntax")
+        use reader = new StreamReader(stream)
+        let highlighting = Sublime3Format.ReadHighlighting(reader)
+        highlighting.PrepareMatches()
+        editor.SyntaxHighlighting <- MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlighting(highlighting, editor)
+        editor
+
     let assertStyle (input:string, expectedStyle:string) =
         let offset = input.IndexOf("$")
         let length = input.LastIndexOf("$") - offset - 1
         let input = input.Replace("$", "")
-        let data = new TextEditorData (new TextDocument (input))
-        let syntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
-        let style = SyntaxModeService.GetColorStyle ("Gruvbox")
-        let line = data.Lines |> Seq.head
-        let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
-        let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
+        let editor = getEditor ()
+        editor.Text <- " " + input
+        let stack = editor.GetScopeStackAsync(offset+1, CancellationToken.None) |> Async.AwaitTask |> Async.RunSynchronously
+        let first = stack |> Seq.head
 
-        let chunks = syntaxMode.GetChunks(style, line, 0, line.Length)
-        let printChunks() =
-            chunks |> Seq.iter (fun chunk -> printfn "%A %s" chunk input.[chunk.Offset..chunk.Offset+chunk.Length-1])
+        Assert.AreEqual(expectedStyle, first)
 
-        
-        match chunk with
-        | Some (c) -> c.Style |> should equal expectedStyle
-        | _ -> printfn "Offset - %d, Length - %d" offset length
-               printChunks()
-               Assert.Fail()
-
-        let assertOffsets expectedOffset (chunk:Chunk) =
-            //printfn "%d %d" chunk.Offset expectedOffset
-            if chunk.Offset <> expectedOffset then
-                printChunks()
-                Assert.Fail("Overlapping chunks detected")
-            chunk.Offset + chunk.Length
-
-        Seq.fold assertOffsets 0 chunks |> ignore
-
-    [<TestCase("let simpleBinding = $1$", "Number")>]
-    [<TestCase("$let$ simpleBinding = 1", "Keyword(Iteration)")>]
-    [<TestCase("$let!$ simpleBinding = 1", "Keyword(Iteration)")>]
-    [<TestCase("let $simpleBinding$ = 1", "User Field Declaration")>]
-    [<TestCase("let $offset$ = 1", "User Field Declaration")>]
-    [<TestCase("let $add$ x y = x + y", "User Method Declaration")>]
-    [<TestCase("let simpleBinding$ = $1", "Plain Text")>]
-    [<TestCase("$open$ MonoDevelop", "Keyword(Namespace)")>]
-    [<TestCase("open$ MonoDevelop$", "Plain Text")>]
-    [<TestCase("open$ Mono.Text$", "Plain Text")>]
-    [<TestCase("Seq.$find$ (", "User Method Declaration")>]
-    [<TestCase("SyntaxModeService.$GetColorStyle$ (\"Gruvbox\")", "User Method Declaration")>]
-    [<TestCase("Seq.find ($fun$ c", "Keyword(Jump)")>]
-    [<TestCase("$type$ SyntaxHighlighting() =", "Keyword(Namespace)")>]
-    [<TestCase("type $SyntaxHighlighting$ () =", "User Types")>]
-    [<TestCase("type $``Completion Tests``$ () =", "User Types")>]
-    [<TestCase("$module$ MyModule =", "Keyword(Namespace)")>]
-    [<TestCase("module $MyModule$ =", "User Types")>]
-    [<TestCase("[<$TestCase$(", "User Types")>]
-    [<TestCase("$[<$TestCase(", "Punctuation(Brackets)")>]
-    [<TestCase("inherits $SyntaxHighlighting$ () =", "User Types")>]
-    [<TestCase("new $DefaultBraceMatcher$()", "User Types")>]
-    [<TestCase("$match$ (startOffset, endOffset) with", "Keyword(Iteration)")>]
-    [<TestCase("$else$", "Keyword(Iteration)")>]
-    [<TestCase("let x (y: $string$", "User Types")>]
-    [<TestCase("string.$Length$", "User Property Declaration")>]
-    [<TestCase("$($", "Punctuation(Brackets)")>]
-    [<TestCase("$<$", "Punctuation(Brackets)")>]
-    [<TestCase("$[$", "Punctuation(Brackets)")>]
-    [<TestCase("${$", "Punctuation(Brackets)")>]
-    [<TestCase("do Something() |> $ignore$", "User Method Declaration")>]
-    [<TestCase("let $mutable$ x   = 1", "Keyword(Modifiers)")>]
-    [<TestCase("let mutable  $x$ = 1", "User Field Declaration")>]
-    [<TestCase("let mutable x$ = $1", "Plain Text")>]
-    [<TestCase("c.Style$ |> $should equal", "Plain Text")>]
-    [<TestCase("c.Style |> $should$ equal", "User Method Declaration")>]
-    [<TestCase("match $x$ with", "User Field Declaration")>]
-    [<TestCase("Unchecked.defaultof<$_$>", "Plain Text")>]
-    [<TestCase("Seq.$add$", "User Method Declaration")>]
-    [<TestCase("let inline$ add$ x y = x + y", "User Method Declaration")>]
-    [<TestCase("$override$ x.Something()", "Keyword(Modifiers)")>]
-    [<TestCase("member x.$``some identifier``$ = 1", "User Field Declaration")>]
-    [<TestCase("member x.$``some identifier``$ () = 1", "User Method Declaration")>]
-    [<TestCase("let mutable $vbox4$ : Gtk.VBox = null", "User Field Declaration")>]
-    [<TestCase("$return$ x", "Keyword(Iteration)")>]
-    [<TestCase("$return!$ x", "Keyword(Iteration)")>]
-    [<TestCase("member val IndentOnTryWith = false with $get, set$", "Plain Text")>]
-    [<TestCase("| Some $funion$ -> ", "User Field Declaration")>]
-    [<TestCase("yield $sprintf$ \"%A\"", "User Method Declaration")>]
-    [<TestCase("$doc$.Editor", "User Field Declaration")>]
-    [<TestCase(":> $SomeType$", "User Types")>]
-    [<TestCase("($'c'$)", "String")>]
-    [<TestCase("| Type of $string$", "User Types")>]
-    [<TestCase("$DisplayFlags$ = DisplayFlags.DescriptionHasMarkup", "User Field Declaration")>]
-    [<TestCase("let shouldEqual (x: $'a$) (y: 'a) =", "User Types")>]
-    [<TestCase("| :? $string$", "User Types")>]
-    [<TestCase("let inline $private$ is expr s =", "Keyword(Modifiers)")>]
-    [<TestCase("let inline private$ is$ expr s =", "User Method Declaration")>]
-    [<TestCase("override x.$CanHandle$ editor", "User Method Declaration")>]
-    [<TestCase("let addEdge ((n1, n2): 'n * $'n$)", "User Types")>]
-    [<TestCase("Map<'n, Set<'n$>>$", "Punctuation(Brackets)")>]
-    [<TestCase("let docs = $openDocuments$()", "User Method Declaration")>]
-    [<TestCase("let x = $true$", "Keyword(Constants)")>]
-    [<TestCase("let $``simple binding``$ = 1", "User Field Declaration")>]
-    [<TestCase("let inline$ ``add number``$ x y = x + y", "User Method Declaration")>]
-    [<TestCase("$|>$ Option.bind", "Punctuation(Brackets)")>]
-    [<TestCase("$typeof$<int>", "User Field Declaration")>]
-    [<TestCase("editor.CaretOffset $<-$ offset", "Punctuation(Brackets)")>]
-    [<TestCase("let x$  = $1", "Plain Text")>]
-    [<TestCase("let $x$     = ", "User Field Declaration")>]
-    [<TestCase(@"type thing = TP<$""$32""", "String")>]
-    [<TestCase(@"type thing = TP<$MyParam$=""32"", MyOtherParam=42>", "User Field Declaration")>]
-    [<TestCase(@"let rec computeSomeFunction $x$ =", "User Field Declaration")>]
-    [<TestCase(@"Option.tryCast<MonoTextEditor$>($fun e", "Punctuation(Brackets)")>]
-    [<TestCase(@"let mutable session$ = $setupSession()", "Plain Text")>]
-    [<TestCase(@"$0b010101$", "Number")>]
-    [<TestCase(@"w11.Position <- $0$", "Number")>]
-    [<TestCase(@" $-1$", "Number")>]
-    [<TestCase(@"[0$..$1]", "Plain Text")>]
-    [<TestCase("let mutable x$   = $1", "Plain Text")>]
-    [<TestCase("$and$ Forest =", "Keyword(Namespace)")>]
-    [<TestCase("let rec go $xs$ =", "User Field Declaration")>]
-    [<TestCase("let x = $Some$ 1", "User Types(Enums)")>]
-    [<TestCase("type $A$ =", "User Types")>]
-    [<TestCase("type $A $", "User Types")>]
-    [<TestCase("type A$ = $A of a", "Plain Text")>]
-    [<TestCase("type A = A of $a$:int", "User Types")>]
-    [<TestCase("type A = A of a:$int$", "User Types")>]
-    [<TestCase("type string=$String$", "User Types")>]
-    [<TestCase("module A$=$", "Plain Text")>]
-    [<TestCase("let $defaultKeyword$ =", "User Field Declaration")>]
+    [<TestCase("let assertStyle $($input", "punctuation.section.brackets")>]
+    [<TestCase("printfn $\"string\"$", "string.quoted.double.source.fs")>]
+    [<TestCase("override x.CompareTo $other$", "entity.name.field")>]
+    [<TestCase("let $getEditor$()", "entity.name.function")>]
+    [<TestCase("$\"_underline_\"$", "string.quoted.double.source.fs")>]
+    [<TestCase("let $_x$, y = 1,2", "source.fs")>]
+    [<TestCase("$yield$ x", "keyword.source.fs")>]
+    [<TestCase("$let$ (|Event|_|) = function", "keyword.source.fs")>]
+    [<TestCase("$namespace$ MonoDevelop", "keyword.source.fs")>]
+    [<TestCase("namespace $MonoDevelop$", "source.fs")>]
+    [<TestCase("let simpleBinding = $1$", "constant.numeric.source.fs")>]
+    [<TestCase("$let$ simpleBinding = 1", "keyword.source.fs")>]
+    [<TestCase("$let!$ simpleBinding = 1", "keyword.source.fs")>]
+    [<TestCase("let $simpleBinding$ = 1", "entity.name.field")>]
+    [<TestCase("let $offset$ = 1", "entity.name.field")>]
+    [<TestCase("let $add$ x y = x + y", "entity.name.function")>]
+    [<TestCase("let add $param$", "entity.name.field")>]
+    [<TestCase("let $add$ param y = param + y", "entity.name.function")>]
+    [<TestCase("let simpleBinding$ = $1", "source.fs")>]
+    [<TestCase("$open$ MonoDevelop", "keyword.source.fs")>]
+    [<TestCase("open$ MonoDevelop$", "source.fs")>]
+    [<TestCase("open$ Mono.Text$", "source.fs")>]
+    [<TestCase("Seq.$find$ (", "entity.name.function")>]
+    [<TestCase("SyntaxModeService.$GetColorStyle$ (\"Gruvbox\")", "entity.name.function")>]
+    [<TestCase("Seq.find ($fun$ c", "keyword.source.fs")>]
+    [<TestCase("$type$ SyntaxHighlighting() =", "keyword.source.fs")>]
+    [<TestCase("type $SyntaxHighlighting$ () =", "entity.name.class")>]
+    [<TestCase("type $``Completion Tests``$ () =", "entity.name.class")>]
+    [<TestCase("$module$ MyModule =", "keyword.source.fs")>]
+    [<TestCase("module $MyModule$ =", "entity.name.class")>]
+    [<TestCase("[<$TestCase$(", "entity.name.class")>]
+    [<TestCase("$[<$TestCase(", "punctuation.section.brackets")>]
+    [<TestCase("inherits $SyntaxHighlighting$ () =", "entity.name.class")>]
+    [<TestCase("new $DefaultBraceMatcher$()", "entity.name.class")>]
+    [<TestCase("$match$ (startOffset, endOffset) with", "keyword.source.fs")>]
+    [<TestCase("$else$", "keyword.source.fs")>]
+    [<TestCase("let x (y: $string$", "entity.name.class")>]
+    [<TestCase("string.$Length$", "entity.name.property")>]
+    [<TestCase("$($", "punctuation.section.brackets")>]
+    [<TestCase("$<$", "punctuation.section.brackets")>]
+    [<TestCase("$[$", "punctuation.section.brackets")>]
+    [<TestCase("${$", "punctuation.section.brackets")>]
+    [<TestCase("do Something() |> $ignore$", "entity.name.function")>]
+    [<TestCase("let $mutable$ x   = 1", "keyword.source.fs")>]
+    [<TestCase("let mutable  $x$ = 1", "entity.name.field")>]
+    [<TestCase("let mutable x$ = $1", "source.fs")>]
+    [<TestCase("c.Style$ |> $should equal", "source.fs")>]
+    [<TestCase("c.Style |> $should$ equal", "entity.name.function")>]
+    [<TestCase("match $x$ with", "entity.name.field")>]
+    [<TestCase("Unchecked.defaultof<$_$>", "source.fs")>]
+    [<TestCase("Seq.$add$", "entity.name.function")>]
+    [<TestCase("let inline$ add$ x y = x + y", "entity.name.function")>]
+    [<TestCase("$override$ x.Something()", "keyword.source.fs")>]
+    [<TestCase("member x.$``some identifier``$ = 1", "entity.name.field")>]
+    [<TestCase("member x.$``some identifier``$ () = 1", "entity.name.function")>]
+    [<TestCase("let mutable $vbox4$ : Gtk.VBox = null", "entity.name.field")>]
+    [<TestCase("$return$ x", "keyword.source.fs")>]
+    [<TestCase("$return!$ x", "keyword.source.fs")>]
+    [<TestCase("member val IndentOnTryWith = false with $get, set$", "source.fs")>]
+    [<TestCase("| Some $funion$ -> ", "entity.name.field")>]
+    //[<TestCase("yield $sprintf$ \"%A\"", "entity.name.function")>]
+    [<TestCase("$doc$.Editor", "entity.name.field")>]
+    [<TestCase(":> $SomeType$", "entity.name.class")>]
+    [<TestCase("($'c'$)", "string.quoted.single.source.fs")>]
+    [<TestCase("| Type of $string$", "entity.name.class")>]
+    [<TestCase("$DisplayFlags$ = DisplayFlags.DescriptionHasMarkup", "entity.name.field")>]
+    [<TestCase("let shouldEqual (x: $'a$) (y: 'a) =", "entity.name.class")>]
+    [<TestCase("| :? $string$", "entity.name.class")>]
+    [<TestCase("let inline $private$ is expr s =", "keyword.source.fs")>]
+    [<TestCase("let inline private$ is$ expr s =", "entity.name.function")>]
+    [<TestCase("override x.$CanHandle$ editor", "entity.name.function")>]
+    [<TestCase("let addEdge ((n1, n2): 'n * $'n$)", "entity.name.class")>]
+    [<TestCase("Map<'n, Set<'n$>>$", "punctuation.section.brackets")>]
+    [<TestCase("let docs = $openDocuments$()", "entity.name.function")>]
+    [<TestCase("let x = $true$", "constant.language.source.fs")>]
+    [<TestCase("let $``simple binding``$ = 1", "entity.name.field")>]
+    [<TestCase("let inline$ ``add number``$ x y = x + y", "entity.name.function")>]
+    [<TestCase("$|>$ Option.bind", "punctuation.section.brackets")>]
+    [<TestCase("$typeof$<int>", "entity.name.field")>]
+    [<TestCase("editor.CaretOffset $<-$ offset", "punctuation.section.brackets")>]
+    [<TestCase("let x$  = $1", "source.fs")>]
+    [<TestCase("let $x$     = ", "entity.name.field")>]
+    [<TestCase(@"type thing = TP<$""$32""", "string.quoted.double.source.fs")>]
+    [<TestCase(@"type thing = TP<$MyParam$=""32"", MyOtherParam=42>", "entity.name.field")>]
+    [<TestCase(@"let rec computeSomeFunction $x$ =", "entity.name.field")>]
+    [<TestCase(@"Option.tryCast<MonoTextEditor$>($fun e", "punctuation.section.brackets")>]
+    [<TestCase(@"let mutable session$ = $setupSession()", "source.fs")>]
+    [<TestCase(@"$0b010101$", "constant.numeric.source.fs")>]
+    [<TestCase(@"w11.Position <- $0$", "constant.numeric.source.fs")>]
+    [<TestCase(@" $-1$", "constant.numeric.source.fs")>]
+    [<TestCase(@"[0$..$1]", "source.fs")>]
+    [<TestCase("let mutable x$   = $1", "source.fs")>]
+    [<TestCase("$and$ Forest =", "keyword.source.fs")>]
+    [<TestCase("let x = $Some$ 1", "entity.name.class")>]
+    [<TestCase("type $A$ =", "entity.name.class")>]
+    [<TestCase("type $A $", "entity.name.class")>]
+    [<TestCase("type A$ = $A of a", "source.fs")>]
+    [<TestCase("type A = A of $a$:int", "entity.name.class")>]
+    [<TestCase("type A = A of a:$int$", "entity.name.class")>]
+    [<TestCase("type string=$String$", "entity.name.class")>]
+    [<TestCase("module A$=$", "source.fs")>]
+    [<TestCase("let $defaultKeyword$ =", "entity.name.field")>]
+    [<TestCase("addButton (\"$gtk-save$\"", "string.quoted.double.source.fs")>]
+    [<TestCase(@"namespace $rec$ MonoDevelop", "keyword.source.fs")>]
+    [<TestCase(@"$type$ internal SomeType", "keyword.source.fs")>]
+    [<TestCase(@"$#I$ /some/path", "meta.preprocessor.source.fs")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
-    [<TestCase(@"static member $GetDefaultConfiguration$ :", "User Method Declaration")>]
-    [<TestCase(@"member $``Syntax Highlighting``$ :", "User Method Declaration")>]
-    [<TestCase(@"-> $^T$ :", "User Types")>]
-    [<TestCase(@"   -> $seq$<'T>", "User Types")>]
-    [<TestCase(@"   $list$ :", "User Field Declaration")>]
+    [<TestCase(@"static member $GetDefaultConfiguration$ :", "entity.name.function")>]
+    [<TestCase(@"member $``Syntax Highlighting``$ :", "entity.name.function")>]
+    [<TestCase(@"-> $^T$ :", "entity.name.class")>]
+    [<TestCase(@"   -> $seq$<'T>", "entity.name.class")>]
+    [<TestCase(@"   $list$ :", "entity.name.field")>]
 
     member x.``Tooltip highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)

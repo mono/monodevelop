@@ -101,13 +101,5 @@ namespace UnitTests
 		{
 			return Path.Combine (Path.GetTempPath (), "test-file-" + (pcount++) + extension);
 		}
-		
-		public static string GetMdb (string file)
-		{
-			if (Runtime.SystemAssemblyService.DefaultRuntime is MonoTargetRuntime)
-				return file + ".mdb";
-			else
-				return Path.ChangeExtension (file, ".pdb");
-		}
 	}
 }

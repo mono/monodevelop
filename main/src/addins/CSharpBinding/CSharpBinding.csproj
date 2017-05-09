@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CSharpBinding</AssemblyName>
     <RootNamespace>CSharpBinding</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
@@ -15,7 +16,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <DefineConstants>GMCS_SOURCE;NET_2_0;MS_COMPATIBLE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <DefineConstants>GMCS_SOURCE;NET_2_0;MS_COMPATIBLE;FULL_AST;BOOTSTRAP_BASIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -97,33 +98,19 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.IKVM\ICSharpCode.NRefactory.IKVM.csproj">
-      <Project>{A727169F-D94F-443F-B305-B057D7F3B420}</Project>
-      <Name>ICSharpCode.NRefactory.IKVM</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
-      <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
-      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
-      <Name>ICSharpCode.NRefactory.Xml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
-      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>RefactoringEssentials</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -177,6 +164,18 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -220,9 +219,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\MonoNameConventionPolicy.xml">
-      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -285,7 +281,6 @@
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
@@ -313,54 +308,12 @@
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\CSharpAddImportCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\AbstractAddImportCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\CSharpFullyQualifyCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\PredefinedCodeFixProviderNames.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpConvertToAsyncMethodCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAwaitCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAsyncCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\AbstractAsyncCodeFix.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\GenerateConstructorCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\AbstractGenerateMemberCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\GenerateEnumMemberCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateConversionCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateMethodCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\GenerateVariableCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\ImplementAbstractClassCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\ImplementInterfaceCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\IntroduceVariableCodeRefactoringProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.InitializerRewriter.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.ReferenceRewriter.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\ExtractMethodCodeRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateType\GenerateTypeCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\DiagnosticCustomTags.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.SimplifyTypeNamesFixAllProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\RemoveUnnecessaryUsingsCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\CSharpRemoveUnnecessaryCastDiagnosticAnalyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\RemoveUnnecessaryImportsDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsDiagnosticAnalyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\SimplifyTypeNamesDiagnosticAnalyzerBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\CSharpSimplifyTypeNamesDiagnosticAnalyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.RemoveUnnecessaryCastFixAllProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionEditRuleDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionRule.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFeaturesTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindReferencesHandler.cs" />
@@ -368,51 +321,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpBraceMatcher.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindProjectReferenceUsagesHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\GenerateConstructor\AbstractGenerateConstructorService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\GenerateConstructor\CSharpGenerateConstructorService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\GenerateConstructor\GenerateConstructorResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\AbstractCodeRefactoringResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\AbstractGenerateFromMembersService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateFromMembers\GenerateFromMembersHelpers.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateConstructor\AbstractGenerateConstructorService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateConstructor\CSharpGenerateConstructorService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateConstructor\GenerateConstructorHelpers.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateDefaultConstructors\AbstractGenerateDefaultConstructorsService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateDefaultConstructors\CSharpGenerateDefaultConstructorsService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateDefaultConstructors\GenerateDefaultConstructorsResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateEnumMember\AbstractGenerateEnumMemberService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateEnumMember\CSharpGenerateEnumMemberService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\AbstractGenerateConversionService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\AbstractGenerateMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\AbstractGenerateParameterizedMemberService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\CSharpCommonGenerationServiceMethods.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\CSharpGenerateConversionService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\CSharpGenerateMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\CSharpGenerateParameterizedMemberService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateParameterizedMember\MethodGenerationKind.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateVariable\AbstractGenerateVariableService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\GenerateVariable\CSharpGenerateVariableService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\AbstractCodeRefactoringResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateMember\AbstractGenerateMemberService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateType\AbstractGenerateTypeService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateType\CSharpGenerateTypeService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateType\GenerateTypeDialogOptions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateType\GenerateTypeOptionsResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GenerateType\TypeKindOptions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementAbstractClass\AbstractImplementAbstractClassService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementAbstractClass\AbstractImplementAbstractClassService.Editor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementAbstractClass\AbstractImplementAbstractClassService.State.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementAbstractClass\CSharpImplementAbstractClassService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.CodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.CodeAction_Conflicts.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.CodeAction_Method.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.CodeAction_Property.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.DisposePatternCodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\AbstractImplementInterfaceService.State.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ImplementInterface\CSharpImplementInterfaceService.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\CacheIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\CSharpIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\IDocumentIndentEngine.cs" />
@@ -421,226 +329,19 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.AbstractIntroduceVariableCodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.CodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.IntroduceVariableAllOccurrenceCodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_Attribute.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_Block.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_ConstructorInitializer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_Field.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_Parameter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\AbstractIntroduceVariableService.State_Query.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\CSharpIntroduceVariableService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\CSharpIntroduceVariableService.Rewriter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\CSharpIntroduceVariableService_IntroduceField.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\CSharpIntroduceVariableService_IntroduceLocal.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\CSharpIntroduceVariableService_IntroduceQueryLocal.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IntroduceVariable\IntroduceVariableResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\OrganizeImports\CSharpOrganizeImportsService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\OrganizeImports\CSharpOrganizeImportsService.Rewriter.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingData.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\IParameterHintingDataFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterHintingResult.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\ParameterUtil.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsService.Rewriter.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\SemanticHighlighting\SemanticHighlightingVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Formatter\CommonFormattingHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingRangeHelper.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpExtractMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.Analyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.CSharpCodeGenerator.CallSiteContainerRewriter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.CSharpCodeGenerator.ExpressionCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.CSharpCodeGenerator.MultipleStatementsCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.CSharpCodeGenerator.SingleStatementCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.FormattingProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.PostProcessor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpMethodExtractor.TriviaResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSelectionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSelectionResult.ExpressionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSelectionResult.StatementResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSelectionValidator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSelectionValidator.Validator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSyntaxTriviaService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\CSharpSyntaxTriviaServiceFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\CSharp\Extensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\AbstractExtractMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\AbstractSyntaxTriviaService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\AbstractSyntaxTriviaService.Result.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\Enums.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\Extensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ExtractMethodMatrix.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ExtractMethodOptions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ExtractMethodResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ExtractMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\FailedExtractMethodResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\IExtractMethodService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\InsertionPoint.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ISyntaxTriviaService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.Analyzer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.Analyzer.SymbolMapBuilder.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.AnalyzerResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.CodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.GeneratedCode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.TriviaResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.TypeParameterCollector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.VariableInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\MethodExtractor.VariableSymbol.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\OperationStatus.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\OperationStatus_Statics.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\OperationStatus`1.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ParameterStyle.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\ReturnStyle.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\SelectionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\SelectionValidator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\SelectionValidator.NullSelectionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\SimpleExtractMethodResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\UniqueNameGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\ExtractMethod\VariableStyle.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\AttributeNamedParameterContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AbstractKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AbstractSyntacticSingleKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AddKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AliasKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AscendingKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AsKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AssemblyKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AsyncKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\AwaitKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\BaseKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\BoolKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\BreakKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ByKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ByteKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\CaseKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\CatchKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\CharKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\CheckedKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ChecksumKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ClassKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ConstKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ContinueKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DecimalKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DefaultKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DefineKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DelegateKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DescendingKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DisableKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DoKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DoubleKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\DynamicKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ElifKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ElseKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\EndIfKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\EndRegionKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\EnumKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\EqualsKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ErrorKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\EventKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ExplicitKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ExternKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FalseKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FieldKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FinallyKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FixedKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FloatKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ForEachKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ForKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\FromKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\GetKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\GlobalKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\GotoKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\GroupKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\HiddenKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\IfKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ImplicitKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\InKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\InterfaceKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\InternalKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\IntKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\IntoKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\IsKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\JoinKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\LetKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\LineKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\LockKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\LongKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\MethodKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ModuleKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\NameOfKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\NamespaceKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\NewKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\NullKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ObjectKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\OnKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\OperatorKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\OrderByKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\OutKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\OverrideKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ParamKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ParamsKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\PartialKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\PragmaKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\PrivateKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\PropertyKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ProtectedKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\PublicKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ReadOnlyKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ReferenceKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\RefKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\RegionKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\RemoveKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\RestoreKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ReturnKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SByteKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SealedKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SelectKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SetKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ShortKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SizeOfKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\StackAllocKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\StaticKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\StringKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\StructKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\SwitchKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ThisKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ThrowKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\TrueKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\TryKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\TypeKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\TypeOfKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\TypeVarKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UIntKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\ULongKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UncheckedKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UndefKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UnsafeKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UShortKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\UsingKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\VarKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\VirtualKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\VoidKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\VolatileKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\WarningKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\WhenKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\WhereKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\WhileKeywordRecommender.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\KeywordRecommender\YieldKeywordRecommender.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionContext.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionTriggerInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionTriggerReason.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\EditorBrowsableBehavior.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ICompletionDataFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CastCompletionContextHandler.cs" />
@@ -665,123 +366,24 @@
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\XmlDocCommentContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationDestination.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationHelpers.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationOptions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationTypeParameterSymbol.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CSharpCodeGenerationService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\SyntaxAnnotationExtensions.cs" />
     <Compile Include="Util\7BitEncodedInts.cs" />
-    <Compile Include="Util\AnnotationTable.cs" />
     <Compile Include="Util\ArgumentSyntaxExtensions.cs" />
-    <Compile Include="Util\CastExpressionSyntaxExtensions.cs" />
     <Compile Include="Util\CloneableStack.cs" />
-    <Compile Include="Util\CodeFixContextExtensions.cs" />
-    <Compile Include="Util\CodeGenerationSymbolFactory.cs" />
-    <Compile Include="Util\CodeRefactoringContextExtensions.cs" />
-    <Compile Include="Util\CommonAccessibilityUtilities.cs" />
-    <Compile Include="Util\CommonLocationExtensions.cs" />
-    <Compile Include="Util\CommonSyntaxNodeOrTokenExtensions.cs" />
     <Compile Include="Util\CompilationExtensions.cs" />
     <Compile Include="Util\CompilationUnitSyntaxExtensions.cs" />
-    <Compile Include="Util\CrefSyntaxExtensions.cs" />
-    <Compile Include="Util\CSharpSemanticFactsService.cs" />
-    <Compile Include="Util\CSharpSyntaxContext.cs" />
-    <Compile Include="Util\CSharpSyntaxFactsService.cs" />
     <Compile Include="Util\CSharpUtil.cs" />
-    <Compile Include="Util\DocumentExtensions.cs" />
-    <Compile Include="Util\EnumerableExtensions.cs" />
-    <Compile Include="Util\EnumValueUtilities.cs" />
-    <Compile Include="Util\ExpressionSyntaxExtensions.cs" />
     <Compile Include="Util\FastSerializer.cs" />
-    <Compile Include="Util\FindTokenHelper.cs" />
     <Compile Include="Util\FormatStringHelper.cs" />
     <Compile Include="Util\GeneratedCodeRecognitionService.cs" />
-    <Compile Include="Util\Hash.cs" />
-    <Compile Include="Util\HelpLink.cs" />
-    <Compile Include="Util\IAssemblySymbolExtensions.cs" />
-    <Compile Include="Util\ICodeDefinitionFactoryExtensions.cs" />
-    <Compile Include="Util\ICompilationExtensions.cs" />
-    <Compile Include="Util\IDictionaryExtensions.cs" />
-    <Compile Include="Util\IDocumentExtensions.cs" />
-    <Compile Include="Util\IMethodSymbolExtensions.cs" />
-    <Compile Include="Util\ImmutableArrayExtensions.cs" />
-    <Compile Include="Util\INamedTypeSymbolExtensions.cs" />
-    <Compile Include="Util\INamespaceOrTypeSymbolExtensions.cs" />
-    <Compile Include="Util\IParameterSymbolExtensions.cs" />
-    <Compile Include="Util\IPropertySymbolExtensions.cs" />
-    <Compile Include="Util\ISymbolExtensions.cs" />
-    <Compile Include="Util\ITypeParameterSymbolExtensions.cs" />
-    <Compile Include="Util\ITypeSymbolExtensions.cs" />
-    <Compile Include="Util\LinkedListExtension.cs" />
-    <Compile Include="Util\Matcher.cs" />
-    <Compile Include="Util\MemberDeclarationSyntaxExtensions.cs" />
-    <Compile Include="Util\NameGenerator.cs" />
-    <Compile Include="Util\NamespaceDeclarationSyntaxExtensions.cs" />
-    <Compile Include="Util\NameSyntaxComparer.cs" />
-    <Compile Include="Util\NameSyntaxExtensions.cs" />
     <Compile Include="Util\NRefactory6Host.cs" />
-    <Compile Include="Util\ObjectExtensions.cs" />
-    <Compile Include="Util\PredefinedOperator.cs" />
-    <Compile Include="Util\QueryExpressionSyntaxExtensions.cs" />
-    <Compile Include="Util\RefactoringHelpers.cs" />
     <Compile Include="Util\ReferenceComparer.cs" />
-    <Compile Include="Util\ReflectionCompatibilityExtensions.cs" />
-    <Compile Include="Util\SemanticDocument.cs" />
-    <Compile Include="Util\SemanticEquivalence.cs" />
-    <Compile Include="Util\SemanticMap.cs" />
-    <Compile Include="Util\SemanticModelExtensions.cs" />
-    <Compile Include="Util\SignatureComparer.cs" />
-    <Compile Include="Util\SimpleNameSyntaxExtensions.cs" />
-    <Compile Include="Util\SourceTextExtensions.cs" />
-    <Compile Include="Util\SpecializedCollections.cs" />
-    <Compile Include="Util\SpeculationAnalyzer.cs" />
-    <Compile Include="Util\StringExtensions.cs" />
-    <Compile Include="Util\StringPclExtensions.cs" />
-    <Compile Include="Util\SymbolEquivalenceComparer.cs" />
-    <Compile Include="Util\SymbolExtensions.cs" />
-    <Compile Include="Util\SymbolInfoExtensions.cs" />
-    <Compile Include="Util\SymbolKeyExtensions.cs" />
-    <Compile Include="Util\SymbolKeyResolutionExtensions.cs" />
-    <Compile Include="Util\SyntacticDocument.cs" />
     <Compile Include="Util\SyntaxContext.cs" />
-    <Compile Include="Util\SyntaxExtensions.cs" />
     <Compile Include="Util\SyntaxKindSet.cs" />
-    <Compile Include="Util\SyntaxListExtension.cs" />
-    <Compile Include="Util\SyntaxNodeExtensions.cs" />
-    <Compile Include="Util\SyntaxTokenExtensions.cs" />
-    <Compile Include="Util\SyntaxTreeExtensions.cs" />
-    <Compile Include="Util\SyntaxTriviaExtensions.cs" />
-    <Compile Include="Util\SyntaxTriviaListExtensions.cs" />
-    <Compile Include="Util\TaskExtensions.cs" />
-    <Compile Include="Util\TextLineExtension.cs" />
-    <Compile Include="Util\TokenComparer.cs" />
-    <Compile Include="Util\TypeDeclarationSyntaxExtensions.cs" />
-    <Compile Include="Util\TypeExtensions.cs" />
-    <Compile Include="Util\TypeGenerator.cs" />
-    <Compile Include="Util\TypeSyntaxComparer.cs" />
-    <Compile Include="Util\TypeSyntaxExtensions.cs" />
-    <Compile Include="Util\UsingsAndExternAliasesDirectiveComparer.cs" />
-    <Compile Include="Util\UsingsAndExternAliasesOrganizer.cs" />
-    <Compile Include="Util\ValueTuple.cs" />
-    <Compile Include="Util\ValueTuple`2.cs" />
     <Compile Include="Util\WordParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\CodeRefactoring.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\CSharpSyntaxContext.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\TypeGuessing.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\Resources.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpNavigationTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\AbstractEncapsulateFieldService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldCodeAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\EncapsulateFieldResult.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\EncapsulateFieldCodeRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\AbstractEncapsulateFieldRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\EncapsulateField\CSharpEncapsulateFieldService.cs" />
-    <Compile Include="Util\ConflictResolver.cs" />
-    <Compile Include="Util\AccessibilityUtilities.cs" />
-    <Compile Include="Util\Glyph.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RegexContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
@@ -796,6 +398,15 @@
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\ParenthesisCompletionSession.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\StringLiteralCompletionSession.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolationCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\OrganizeImportsCommandHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\SortImportsCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindMemberOverloadsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindExtensionMethodsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindBaseSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindImplementingMembersHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ConstructFixer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\AbstractKeywordHighlighter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AbstractAsyncHighlighter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncAnonymousMethodHighlighter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncMethodHighlighter.cs" />
@@ -815,16 +426,9 @@
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UnsafeStatementHighlighter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UsingStatementHighlighter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\YieldStatementHighlighter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Highlighting\AbstractKeywordHighlighter.cs" />
-    <Compile Include="Util\DirectiveSyntaxExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\OrganizeImportsCommandHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\SortImportsCodeRefactoringProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Navigation\FindMemberOverloadsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Navigation\FindExtensionMethodsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Navigation\FindDerivedSymbolsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Navigation\FindBaseSymbolsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Navigation\FindImplementingMembersHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ConstructFixer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
+    <Compile Include="Util\PortingExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -833,55 +437,23 @@
     <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnitTests" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.AspNet" />
+    <InternalsVisibleTo Include="MonoDevelop.CSharpBinding.Tests" />
+    <InternalsVisibleTo Include="MonoDevelop.DocFood" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
+    <InternalsVisibleTo Include="MonoDevelop.GtkCore" />
+    <InternalsVisibleTo Include="MonoDevelop.IPhone" />
+    <InternalsVisibleTo Include="MonoDevelop.Unity">
+      <PublicKey>0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9</PublicKey>
+    </InternalsVisibleTo>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="MonoDevelop.CSharp.Parser\" />
-    <Folder Include="MonoDevelop.CSharp.Resolver\" />
-    <Folder Include="MonoDevelop.CSharp.Highlighting\" />
-    <Folder Include="MonoDevelop.CSharp.Formatting\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\" />
-    <Folder Include="MonoDevelop.CSharp.Project\" />
-    <Folder Include="MonoDevelop.CSharp\" />
-    <Folder Include="MonoDevelop.CSharp.Completion\" />
-    <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
-    <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
-    <Folder Include="MonoDevelop.CSharp.Tooltips\" />
-    <Folder Include="MonoDevelop.CSharp.UnitTests\" />
     <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
-    <Folder Include="MonoDevelop.JSon\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\AddImport\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\Async\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateType\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\" />
-    <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\" />
-    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\" />
-    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\" />
-    <Folder Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\" />
-    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
-    <Folder Include="MonoDevelop.CSharp.Navigation\" />
   </ItemGroup>
 </Project>

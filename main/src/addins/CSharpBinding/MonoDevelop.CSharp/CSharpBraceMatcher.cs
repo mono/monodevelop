@@ -31,8 +31,11 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 using MonoDevelop.Core.Text;
 using MonoDevelop.CSharp.Completion;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -46,11 +49,6 @@ namespace MonoDevelop.CSharp
 			SyntaxKind.OpenParenToken, SyntaxKind.CloseParenToken
 		};
 
-		public override bool CanHandle (TextEditor editor)
-		{
-			return editor.MimeType == CSharpFormatter.MimeType;
-		}
-
 		public override async Task<BraceMatchingResult?> GetMatchingBracesAsync (IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (context.ParsedDocument == null)
@@ -59,10 +57,30 @@ namespace MonoDevelop.CSharp
 			var analysisDocument = context.AnalysisDocument;
 			if (analysisDocument == null)
 				return null;
-			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (analysisDocument, cancellationToken).ConfigureAwait (false);
+			var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (cancellationToken).ConfigureAwait (false);
 			var root = await partialDoc.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			if (offset < 0 || root.Span.End <= offset)
 				return null;
+			var trivia = root.FindTrivia (offset).GetStructure () as DirectiveTriviaSyntax;
+			if (trivia != null && (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind (SyntaxKind.EndRegionDirectiveTrivia))) {
+				var matching = trivia.GetMatchingDirective (cancellationToken);
+				if (matching == null)
+					return null;
+				if (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia)) {
+					return new BraceMatchingResult (
+						new TextSegment (trivia.Span.Start, trivia.Span.Length),
+						new TextSegment (matching.Span.Start, matching.Span.Length),
+						true,
+						BraceMatchingProperties.Hidden);
+				} else {
+					return new BraceMatchingResult (
+						new TextSegment (matching.Span.Start, matching.Span.Length),
+						new TextSegment (trivia.Span.Start, trivia.Span.Length),
+						false,
+						BraceMatchingProperties.Hidden);
+				}
+			}
+
 			var token = root.FindToken (offset);
 			var tokenSpan = token.Span;
 			if (offset < tokenSpan.Start || offset >= tokenSpan.End)

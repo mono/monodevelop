@@ -88,6 +88,8 @@ namespace MonoDevelop.Projects
 			Assert.That (tt.Contains ("TargetPath"));
 			Assert.That (tt.Contains ("TargetName"));
 			Assert.That (tt.Contains ("TargetDir"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -110,6 +112,8 @@ namespace MonoDevelop.Projects
 			Assert.That (tt.Contains ("SolutionFile"));
 			Assert.That (tt.Contains ("SolutionName"));
 			Assert.That (tt.Contains ("SolutionDir"));
+
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -129,6 +133,8 @@ namespace MonoDevelop.Projects
 
 				var model = project.GetStringTagModel (ConfigurationSelector.Default);
 				Assert.AreEqual ("bar", model.GetValue ("foo"));
+
+				project.Dispose ();
 			}
 			finally {
 				StringParserService.UnregisterStringTagProvider (p);

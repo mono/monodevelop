@@ -1,4 +1,4 @@
-// CustomCommandWidget.cs
+﻿// CustomCommandWidget.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -30,6 +30,8 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+
 using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
@@ -86,9 +88,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			tagSelectorDirectory.TagModel = tagModel;
 			tagSelectorDirectory.TargetEntry = workingdirEntry;
+			tagSelectorDirectory.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelectorDirectory",
+										  							   GettextCatalog.GetString ("Tag Selector"),
+																	   GettextCatalog.GetString ("Insert a custom tag into the directory entry"));
 			
 			tagSelectorCommand.TagModel = tagModel;
 			tagSelectorCommand.TargetEntry = entryCommand;
+			tagSelectorCommand.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelector",
+				                                                     GettextCatalog.GetString ("Tag Selector"),
+					                                                 GettextCatalog.GetString ("Insert a custom tag into the command entry"));
 		}
 		
 		public CustomCommand CustomCommand {

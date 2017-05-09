@@ -30,7 +30,7 @@
     <binding command="MonoDevelop.FSharp.FSharpCommands.SendLine" shortcut="" />
     <binding command="MonoDevelop.FSharp.FSharpCommands.SendReferences" shortcut="" />
     <binding command="MonoDevelop.FSharp.FSharpCommands.SendSelection" shortcut="" />
-    <binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="Meta+E|D Meta+K|D Meta+K|Meta+D" />
+    <binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="Meta+K|D Meta+K|Meta+D Meta+E|D" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" shortcut="Meta+E|C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />

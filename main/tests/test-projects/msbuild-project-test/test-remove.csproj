@@ -1,0 +1,25 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+  </PropertyGroup>
+  <ItemGroup>
+    <Test1 Include="**\*.txt" />
+    <Test1 Remove="file2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Test2 Include="**\*.txt" />
+    <Test2 Remove="*1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Test3 Include="**\*.txt" />
+    <Test3 Remove="**\*1.txt" />
+  </ItemGroup>
+	<Target Name="Test1">
+		<Message Text="@(Test1)" />
+	</Target>
+	<Target Name="Test2">
+		<Message Text="@(Test2)" />
+	</Target>
+	<Target Name="Test3">
+		<Message Text="@(Test3)" />
+	</Target>
+</Project>

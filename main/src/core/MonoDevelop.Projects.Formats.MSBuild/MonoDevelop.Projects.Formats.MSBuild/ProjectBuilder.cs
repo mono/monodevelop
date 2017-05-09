@@ -50,6 +50,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public ProjectBuilder (BuildEngine buildEngine, string file)
 		{
+			if (file == null) {
+				throw new ArgumentNullException ("file");
+			}
 			this.file = file;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);

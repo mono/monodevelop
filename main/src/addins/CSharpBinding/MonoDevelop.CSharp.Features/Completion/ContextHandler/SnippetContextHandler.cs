@@ -25,13 +25,15 @@
 // THE SOFTWARE.
 
 
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 
@@ -44,21 +46,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 
-			var syntaxTree = await document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+			var syntaxTree = await document.GetCSharpSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
 
-			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
-				syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken) ||
-				syntaxTree.GetContainingTypeOrEnumDeclaration(position, cancellationToken) is EnumDeclarationSyntax)
-			{
-				return Enumerable.Empty<CompletionData>();
+			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
+				syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken) ||
+				syntaxTree.GetContainingTypeOrEnumDeclaration (position, cancellationToken) is EnumDeclarationSyntax) {
+				return Enumerable.Empty<CompletionData> ();
 			}
 
 			// var span = new TextSpan(position, 0);
-//			var semanticModel = await document.GetCSharpSemanticModelForSpanAsync(span, cancellationToken).ConfigureAwait(false);
-			if (syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
-			{
-				var directive = syntaxTree.GetRoot(cancellationToken).FindTokenOnLeftOfPosition(position, includeDirectives: true).GetAncestor<DirectiveTriviaSyntax>();
-				if (directive.DirectiveNameToken.IsKind(
+			//			var semanticModel = await document.GetCSharpSemanticModelForSpanAsync(span, cancellationToken).ConfigureAwait(false);
+			if (syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken)) {
+				var directive = syntaxTree.GetRoot (cancellationToken).FindTokenOnLeftOfPosition (position, includeDirectives: true).GetAncestor<DirectiveTriviaSyntax> ();
+				if (directive.DirectiveNameToken.IsKind (
 					SyntaxKind.IfKeyword,
 					SyntaxKind.RegionKeyword,
 					SyntaxKind.ElseKeyword,
@@ -69,34 +69,32 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					SyntaxKind.EndIfKeyword,
 					SyntaxKind.UndefKeyword,
 					SyntaxKind.EndRegionKeyword,
-					SyntaxKind.WarningKeyword))
-				{
-					return Enumerable.Empty<CompletionData>();
+					SyntaxKind.WarningKeyword)) {
+					return Enumerable.Empty<CompletionData> ();
 				}
 
-				return await GetSnippetCompletionItemsAsync(cancellationToken).ConfigureAwait(false);
+				return await GetSnippetCompletionItemsAsync (cancellationToken).ConfigureAwait (false);
 			}
 			var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
 
-			if (syntaxTree.IsGlobalStatementContext(position, cancellationToken) ||
-				syntaxTree.IsExpressionContext(position, tokenLeftOfPosition, true, cancellationToken) ||
-				syntaxTree.IsStatementContext(position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsTypeContext(position, cancellationToken) ||
-				syntaxTree.IsTypeDeclarationContext(position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsNamespaceContext(position, cancellationToken) ||
-				syntaxTree.IsMemberDeclarationContext(position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsLabelContext(position, cancellationToken))
-			{
-				return await GetSnippetCompletionItemsAsync(cancellationToken).ConfigureAwait(false);
+			if (syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
+				syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
+				syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
+				syntaxTree.IsTypeContext (position, cancellationToken) ||
+				syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+				syntaxTree.IsNamespaceContext (position, cancellationToken) ||
+				syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+				syntaxTree.IsLabelContext (position, cancellationToken)) {
+				return await GetSnippetCompletionItemsAsync (cancellationToken).ConfigureAwait (false);
 			}
 
-			return Enumerable.Empty<CompletionData>();
+			return Enumerable.Empty<CompletionData> ();
 		}
 
-		Task<IEnumerable<CompletionData>> GetSnippetCompletionItemsAsync(CancellationToken cancellationToken)
+		Task<IEnumerable<CompletionData>> GetSnippetCompletionItemsAsync (CancellationToken cancellationToken)
 		{
 			if (CompletionEngine.SnippetCallback == null)
-				return Task.FromResult (Enumerable.Empty<CompletionData>());
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			return CompletionEngine.SnippetCallback (cancellationToken);
 		}
 

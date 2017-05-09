@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Gui
 				Application.Invoke (delegate {
 					var img = ImageService.GetIcon (iconName, IconSize.Menu);
 					icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
+					icon.Title = GettextCatalog.GetString ("Background Progress");
+					icon.Help = GettextCatalog.GetString ("An operation is occuring in the background");
 					if (icon == null)
 						LoggingService.LogError ("Icon '" + iconName + "' not found.");
 				});

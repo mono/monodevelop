@@ -1,4 +1,4 @@
-//
+﻿//
 // GtkWorkarounds.cs
 //
 // Authors: Jeffrey Stedfast <jeff@xamarin.com>
@@ -1120,6 +1120,7 @@ namespace MonoDevelop.Components
 			} catch (DllNotFoundException) {
 			} catch (EntryPointNotFoundException) {
 			}
+			canSetOverlayScrollbarPolicy = false;
 		}
 
 		public static void GetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy)
@@ -1173,8 +1174,21 @@ namespace MonoDevelop.Components
 		[DllImport (PangoUtil.LIBGOBJECT, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_object_get_data (IntPtr source, string name);
 
+		[DllImport (PangoUtil.LIBGOBJECT, CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_object_set_data (IntPtr source, string name, IntPtr dataHandle);
+
 		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtk_icon_set_render_icon_scaled (IntPtr handle, IntPtr style, int direction, int state, int size, IntPtr widget, IntPtr intPtr, ref double scale);
+
+		public static IntPtr GetData (GLib.Object o, string name)
+		{
+			return g_object_get_data (o.Handle, name);
+		}
+
+		public static void SetData (GLib.Object o, string name, IntPtr dataHandle)
+		{
+			g_object_set_data (o.Handle, name, dataHandle);
+		}
 
 		public static bool SetSourceScale (Gtk.IconSource source, double scale)
 		{

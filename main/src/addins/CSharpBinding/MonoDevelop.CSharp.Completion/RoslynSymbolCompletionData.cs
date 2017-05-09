@@ -174,7 +174,25 @@ namespace MonoDevelop.CSharp.Completion
 				return tooltipInfo;
 			});
 		}
-
+		 
+		static string GetCurrentWordForMethods (CompletionListWindow window, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+		{
+			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
+			int replaceLength;
+			if (descriptor.SpecialKey == SpecialKey.Return || descriptor.SpecialKey == SpecialKey.Tab) {
+				replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
+			} else {
+				replaceLength = partialWordLength;
+			}
+			int endOffset = Math.Min (window.StartOffset + replaceLength, window.CompletionWidget.TextLength);
+			if (descriptor.KeyChar == '(' && IdeApp.Preferences.AddParenthesesAfterCompletion) {
+				endOffset++;
+				if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) 
+					endOffset++;
+			}
+			var result = window.CompletionWidget.GetText (window.StartOffset, endOffset);
+			return result;
+		}
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			string partialWord = GetCurrentWord (window, descriptor);
@@ -187,9 +205,11 @@ namespace MonoDevelop.CSharp.Completion
 			bool addOpeningOnly = IdeApp.Preferences.AddOpeningOnly;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
+			var ctx = window.CodeCompletionContext;
 			string insertionText = this.GetInsertionText();
 
 			if (addParens && !IsDelegateExpected && method != null && !IsBracketAlreadyInserted (ext, method)) {
+				partialWord = GetCurrentWordForMethods (window, descriptor);
 				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
@@ -209,7 +229,7 @@ namespace MonoDevelop.CSharp.Completion
 				//int pos;
 
 				var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
-				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.') {
+				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.' || descriptor.KeyChar == '(') {
 					if (HasAnyOverloadWithParameters (method)) {
 						if (addOpeningOnly) {
 							insertionText += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
@@ -281,6 +301,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				ka |= KeyActions.Ignore;
 			}
+
 			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
 				IdeApp.Preferences.AddParenthesesAfterCompletion &&
 				(descriptor.SpecialKey == SpecialKey.Tab ||
@@ -293,7 +314,7 @@ namespace MonoDevelop.CSharp.Completion
 					insertionText += " ";
 				runCompletionCompletionCommand = true;
 			}
-			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
+			window.CompletionWidget.SetCompletionText (ctx, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
 			for (int i = skipChars; i --> 0;) {
 				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset + i)));
@@ -365,19 +386,22 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal static bool HasAnyOverloadWithParameters (IMethodSymbol method)
 		{
-			if (method.MethodKind == MethodKind.Constructor) 
-				return method.ContainingType.GetMembers()
-					.OfType<IMethodSymbol>()
-					.Where(m => m.MethodKind == MethodKind.Constructor)
+			switch (method.MethodKind) {
+			case MethodKind.Constructor:
+				return method.ContainingType.GetMembers ()
+					.OfType<IMethodSymbol> ()
+					.Where (m => m.MethodKind == MethodKind.Constructor)
 					.Any (m => m.Parameters.Length > 0);
-			return method.ContainingType
-				.GetMembers()
-				.OfType<IMethodSymbol>()
-				.Any (m => m.Name == method.Name && m.Parameters.Length > 0);
+			case MethodKind.LocalFunction:
+				return method.Parameters.Length > 0;
+			default:
+				return method.ContainingType
+					         .GetMembers ()
+					         .OfType<IMethodSymbol> ()
+					         .Any (m => m.Name == method.Name && m.Parameters.Length > 0);
+			}
 		}
-
-
-
+		
 		static bool RequireGenerics (IMethodSymbol method)
 		{
 			System.Collections.Immutable.ImmutableArray<ITypeSymbol> typeArgs;
@@ -444,7 +468,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool IsObsolete (ISymbol symbol)
 		{
-			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" && attr.AttributeClass.ContainingNamespace.GetFullName () == "System");
+			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" || attr.AttributeClass.Name == "ObsoletedAttribute" || attr.AttributeClass.Name == "DeprecatedAttribute");
 		}
 
 

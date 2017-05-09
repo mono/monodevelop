@@ -45,11 +45,6 @@ namespace MonoDevelop.Core.Text
 		readonly ITextSourceVersion version;
 
 		/// <summary>
-		/// Determines if a byte order mark was read or is going to be written.
-		/// </summary>
-		public bool UseBOM { get; private set; }
-
-		/// <summary>
 		/// Encoding of the text that was read from or is going to be saved to.
 		/// </summary>
 		public Encoding Encoding { get; private set; }
@@ -57,25 +52,23 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource (string text, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, Encoding encoding = null)
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
-			this.UseBOM = useBom;
 			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource (string text, ITextSourceVersion version, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, ITextSourceVersion version, Encoding encoding = null)
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.version = version;
-			this.UseBOM = useBom;
 			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
@@ -126,36 +119,40 @@ namespace MonoDevelop.Core.Text
 
 		public StringTextSource WithEncoding (Encoding encoding)
 		{
-			return new StringTextSource (text, encoding, UseBOM);
+			return new StringTextSource (text, encoding);
 		}
 
 		public StringTextSource WithBom (bool useBom)
 		{
-			return new StringTextSource (text, Encoding, useBom);
+			var newEncoding = this.Encoding;
+			if ((newEncoding?.WindowsCodePage == 1200 /*UTF8*/) && ((newEncoding.GetPreamble().Length > 0) != useBom))
+			{
+				newEncoding = useBom ? Encoding.UTF8 : TextFileUtility.DefaultEncoding;
+			}
+
+			return new StringTextSource(text, newEncoding);
 		}
 
 		public static StringTextSource ReadFrom (string fileName)
 		{
-			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.ReadAllText (fileName, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		public static StringTextSource ReadFrom (Stream stream)
 		{
 			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.GetText (stream, out encoding, out hadBom);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.GetText (stream, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		public static StringTextSource ReadFrom (byte[] data)
 		{
-			bool hadBom;
 			Encoding encoding;
-			var text = TextFileUtility.GetText (data, out encoding, out hadBom);
-			return new StringTextSource (text, encoding, hadBom);
+			var text = TextFileUtility.GetText (data, out encoding);
+			return new StringTextSource (text, encoding);
 		}
 
 		/// <inheritdoc/>

@@ -1,0 +1,4 @@
+﻿<DotNetNamingPolicy>
+	<DirectoryNamespaceAssociation>PrefixedHierarchical</DirectoryNamespaceAssociation>
+	<ResourceNamePolicy>FileFormatDefault</ResourceNamePolicy>
+</DotNetNamingPolicy>

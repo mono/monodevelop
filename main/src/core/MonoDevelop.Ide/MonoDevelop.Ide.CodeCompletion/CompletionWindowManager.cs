@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			var completionWidget = wnd.CompletionWidget;
 			var ext = wnd.Extension;
-
+			wnd.EndOffset = wnd.CompletionWidget.CaretOffset;
 			try {
 				isShowing = false;
 				if (!wnd.ShowListWindow (list, completionContext)) {
@@ -161,9 +161,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return false;
-			if (descriptor.KeyChar != '\0') {
-				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
-			}
 			return wnd.PreProcessKeyEvent (descriptor);
 		}
 
@@ -174,7 +171,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (wnd.IsInCompletion || isShowing)
 				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
-			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset) {
+			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset + 1) {
 				HideWindow ();
 			}
 		}

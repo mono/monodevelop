@@ -37,8 +37,8 @@
     <Compile Include="Program.cs" />
     <Content Include="*.txt" />
     <Content Include="Content\Data\*.txt" />
-    <Compile Include="Content\Data\Data2.cs" />
     <Compile Include="Content\Data3.cs" />
+    <Compile Include="Content\Data\Data2.cs" />
     <Content Include="Content\text1-1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -114,12 +114,21 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			return ShowPackagesFolderForProject ((DotNetProject)dataObject);
+		}
+
+		bool ShowPackagesFolderForProject (DotNetProject project)
+		{
+			return !project.IsDotNetCoreProject ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (DotNetProject)dataObject;
+
+			if (!ShowPackagesFolderForProject (project))
+				return;
+
 			var folderNode = new ProjectPackagesFolderNode (project);
 			folderNode.RefreshPackages ();
 			treeBuilder.AddChild (folderNode);

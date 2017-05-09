@@ -1,4 +1,4 @@
-<TargetFramework id=".NETFramework,Version=v3.0" _name="Mono / .NET 3.0" clrVersion="Net_2_0" IncludesFramework="v2.0">
+﻿<TargetFramework id=".NETFramework,Version=v3.0" _name=".NET Framework 3.0" clrVersion="Net_2_0" IncludesFramework="v2.0">
 <Assemblies>
   <Assembly name="System.Workflow.Runtime" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" package="olive" />
   <Assembly name="PresentationBuildTasks" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" package="olive" />

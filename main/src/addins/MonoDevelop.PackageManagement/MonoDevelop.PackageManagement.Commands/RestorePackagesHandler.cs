@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
@@ -46,9 +47,17 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		public static void Run (Solution solution)
 		{
+			RestorePackages (solution, action => {});
+		}
+
+		static void RestorePackages (Solution solution, Action<RestoreNuGetPackagesAction> modifyRestoreAction)
+		{
+			Runtime.AssertMainThread ();
+
 			try {
 				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
 				var action = new RestoreNuGetPackagesAction (solution);
+				modifyRestoreAction (action);
 				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
@@ -59,6 +68,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
 			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
+		}
+
+		public static void RestoreBuildIntegratedNuGetProjects (Solution solution)
+		{
+			RestorePackages (solution, action => action.RestorePackagesConfigProjects = false);
 		}
 	}
 }

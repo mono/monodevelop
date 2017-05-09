@@ -59,6 +59,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public virtual string TabAccessibilityDescription {
+			get {
+				return string.Empty;
+			}
+		}
+
 		public virtual bool CanReuseView (string fileName)
 		{
 			return false;

@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.Projection
@@ -44,10 +45,21 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		internal override CodeCompletion.ICompletionWidget CompletionWidget {
+			get {
+				return completionTextEditorExtension.CompletionWidget;
+			}
+			set {
+				completionTextEditorExtension.CompletionWidget = value;
+				completionTextEditorExtension.UnsubscribeCompletionContextChanged ();
+			}
+		}
+
 		public ProjectedFilterCompletionTextEditorExtension (CompletionTextEditorExtension completionTextEditorExtension, IReadOnlyList<Projection> projections)
 		{
 			this.completionTextEditorExtension = completionTextEditorExtension;
 			this.projections = projections;
+			completionTextEditorExtension.UnsubscribeCompletionContextChanged ();
 		}
 
 		internal protected override bool IsActiveExtension ()
@@ -129,9 +141,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.CanRunParameterCompletionCommand ();
 		}
 
-		public override System.Threading.Tasks.Task<CodeCompletion.ICompletionDataList> HandleCodeCompletionAsync (CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		public override System.Threading.Tasks.Task<CodeCompletion.ICompletionDataList> HandleCodeCompletionAsync (CodeCompletion.CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, System.Threading.CancellationToken token)
 		{
-			return completionTextEditorExtension.HandleCodeCompletionAsync (completionContext, completionChar, token);
+			return completionTextEditorExtension.HandleCodeCompletionAsync (completionContext, triggerInfo, token);
 		}
 
 		public override System.Threading.Tasks.Task<CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
@@ -158,12 +170,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.ShowCodeTemplatesCommand (completionContext);
-		}
-
-		public override Task<CodeCompletion.ICompletionDataList> CodeCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
-		{
-			if (!IsActiveExtension()) return null;
-			return completionTextEditorExtension.CodeCompletionCommand (completionContext);
 		}
 
 		public override Task<CodeCompletion.ParameterHintingResult> ParameterCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)

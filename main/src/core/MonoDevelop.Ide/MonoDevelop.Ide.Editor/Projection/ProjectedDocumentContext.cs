@@ -52,6 +52,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		public override bool IsUntitled {
+			get {
+				return originalContext.IsUntitled;
+			}
+		}
+
 		Microsoft.CodeAnalysis.Document projectedDocument;
 
 		public ProjectedDocumentContext (TextEditor projectedEditor, DocumentContext originalContext)

@@ -163,9 +163,6 @@ namespace MonoDevelop.PackageManagement.Commands
 				return;
 			}
 
-			//check that the projects have the correct backing system for project.json
-			RefreshProjectsIfNecessary (projects);
-
 			//queue up in a timeout in case this was kicked off from a command
 			GLib.Timeout.Add (0, () => {
 				if (projects.Count == 1) {
@@ -184,20 +181,6 @@ namespace MonoDevelop.PackageManagement.Commands
 				//TODO: handle project.json changing in multiple solutions at once
 				return false;
 			});
-		}
-
-		static void RefreshProjectsIfNecessary (List<DotNetProject> projects)
-		{
-			foreach (var solution in projects.GroupBy (p => p.ParentSolution)) {
-				var solutionManager = (MonoDevelopSolutionManager)PackageManagementServices.Workspace.GetSolutionManager (solution.Key);
-				foreach (var nugetProject in solutionManager.GetNuGetProjects ()) {
-					var msbuildProject = nugetProject as NuGet.ProjectManagement.MSBuildNuGetProject;
-					if (msbuildProject != null && solution.Any (p => p.FileName == msbuildProject.MSBuildNuGetProjectSystem.ProjectFullPath)) {
-						solutionManager.ClearProjectCache ();
-						break;
-					}
-				}
-			}
 		}
 	}
 }

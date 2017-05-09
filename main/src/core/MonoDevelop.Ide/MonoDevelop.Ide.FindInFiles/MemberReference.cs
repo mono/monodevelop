@@ -35,7 +35,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		Unknown    = 0,
 		Read       = 1,
 		Write      = 2,
+		[Obsolete("Please use Declaration")]
 		Declariton = 4,
+		Declaration = 4,
 		Keyword    = 8,
 		ReadWrite  = Read | Write
 	}
@@ -81,12 +83,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			return ((IVariable)EntityOrVariable).Name;
 		}
 
-		public override AmbientColor GetBackgroundMarkerColor (ColorScheme style)
+		public override Components.HslColor GetBackgroundMarkerColor (EditorTheme style)
 		{
-			return (ReferenceUsageType & ReferenceUsageType.Write) != 0 ||
-				(ReferenceUsageType & ReferenceUsageType.Declariton) != 0?
-				style.ChangingUsagesRectangle :
-				style.UsagesRectangle;
+			var key = (ReferenceUsageType & ReferenceUsageType.Write) != 0 ||
+				(ReferenceUsageType & ReferenceUsageType.Declaration) != 0 ?
+				EditorThemeColors.ChangingUsagesRectangle : EditorThemeColors.UsagesRectangle;
+
+			return SyntaxHighlightingService.GetColor (style, key);
 		}
 	}
 }

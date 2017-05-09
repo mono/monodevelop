@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Microsoft.VisualStudio.Text.Implementation.BaseStringRebuilder">
+    <Position X="3.5" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="Assemble" Hidden="true" />
+      <Method Name="CompareTo" Hidden="true" />
+      <Method Name="CopyTo" Hidden="true" />
+      <Method Name="Delete" Hidden="true" />
+      <Method Name="Equals" Hidden="true" />
+      <Method Name="GetEnumerator" Hidden="true" />
+      <Method Name="GetLineFromLineNumber" Hidden="true" />
+      <Method Name="GetLineNumberFromPosition" Hidden="true" />
+      <Method Name="GetText" Hidden="true" />
+      <Method Name="IEnumerable.GetEnumerator" Hidden="true" />
+      <Method Name="Insert" Hidden="true" />
+      <Property Name="Length" Hidden="true" />
+      <Property Name="LineBreakCount" Hidden="true" />
+      <Method Name="Replace" Hidden="true" />
+      <Method Name="Substring" Hidden="true" />
+      <Property Name="this" Hidden="true" />
+      <Method Name="ToCharArray" Hidden="true" />
+      <Method Name="Write" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Class Name="Microsoft.VisualStudio.Text.Implementation.BaseStringRebuilder.RebuilderEnumerator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>StringRebuilder\BaseStringRebuilder.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAMAAAEAAABQJiAAAAABAAAEAAAQECAAAAAEAKCA=</HashCode>
+      <FileName>StringRebuilder\BaseStringRebuilder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.VisualStudio.Text.Implementation.BinaryStringRebuilder">
+    <Position X="1.5" Y="2.5" Width="2.25" />
+    <Members>
+      <Field Name="_crlf" Hidden="true" />
+      <Field Name="_depth" Hidden="true" />
+      <Field Name="_left" Hidden="true" />
+      <Field Name="_length" Hidden="true" />
+      <Field Name="_lineBreakCount" Hidden="true" />
+      <Field Name="_maxCharactersToConsolidate" Hidden="true" />
+      <Field Name="_maxLinesToConsolidate" Hidden="true" />
+      <Field Name="_right" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Microsoft.VisualStudio.Text.Implementation.BinaryStringRebuilder.SimpleTreeNode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>StringRebuilder\BinaryStringRebuilder.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAMAAAAAEQAGMQNCAgAAABAACAAAUwgBAAAAAEAKAA=</HashCode>
+      <FileName>StringRebuilder\BinaryStringRebuilder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.VisualStudio.Text.Implementation.SimpleStringRebuilder">
+    <Position X="5" Y="2.5" Width="2.75" />
+    <Members>
+      <Field Name="_empty" Hidden="true" />
+      <Field Name="_lineBreakSpans" Hidden="true" />
+      <Field Name="_source" Hidden="true" />
+      <Field Name="_span" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Microsoft.VisualStudio.Text.Implementation.SimpleStringRebuilder.LineBreak" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>StringRebuilder\SimpleStringRebuilder.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAACMQNCAABAABAAAAAAEQgACAAAAEAKAA=</HashCode>
+      <FileName>StringRebuilder\SimpleStringRebuilder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Microsoft.VisualStudio.Text.Implementation.IStringRebuilder">
+    <Position X="8.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAMAAAEAAAAQJCAAAAABAAAEAAAQAAAAAAAEAKCA=</HashCode>
+      <FileName>StringRebuilder\IStringRebuilder.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Text.Implementation.ITreeNode">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACMAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>StringRebuilder\ITreeNode.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

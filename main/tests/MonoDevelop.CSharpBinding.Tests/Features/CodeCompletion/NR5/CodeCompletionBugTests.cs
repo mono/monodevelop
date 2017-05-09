@@ -34,10 +34,11 @@ using System.Text;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using NUnit.Framework;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeGeneration;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.CodeGeneration;
 using System.Collections.Immutable;
-using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
@@ -98,7 +99,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 				return new CompletionData (format);
 			}
 
-			CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+			CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data)
 			{
 				return new CompletionData (data);
 			}
@@ -322,14 +323,17 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			Compilation compilation;
 			try {
 				compilation = project.GetCompilationAsync().Result;
-				var service = new CSharpCodeGenerationService(workspace);
+				var provider = workspace.Services.GetLanguageServices(LanguageNames.CSharp);
+				var factory = new CSharpCodeGenerationServiceFactory ();
+				var languageService = factory.CreateLanguageService (provider);
+				var service = languageService as ICodeGenerationService;
 
 				var ts = compilation.GetTypeSymbol("System", "Object", 0);
 				foreach (var member in ts.GetMembers ()) {
 					var method = member as IMethodSymbol;
 					if (method == null)
 						continue;
-					service.CreateMethodDeclaration(method, CodeGenerationDestination.Unspecified);
+					service.CreateMethodDeclaration(method, CodeGenerationDestination.Unspecified, new CodeGenerationOptions());
 				}
 
 
@@ -1887,7 +1891,7 @@ public class MyClass
         C myclass = new C ();
         $myclass.$
     }
-}", provider => Assert.AreEqual(1, provider.Count(c => c.DisplayText == "MouseClick")));
+}", provider => Assert.AreEqual(1, provider.Data.Count(c => c.DisplayText == "MouseClick")));
 		}
 		
 		/// <summary>
@@ -4925,7 +4929,7 @@ class B : A
 }
 
 ");
-			Assert.AreEqual(2, provider.Count(d => d.DisplayText == "Method"));
+			Assert.AreEqual(2, provider.Data.Count(d => d.DisplayText == "Method"));
 		}
 
 		/// <summary>
@@ -6082,9 +6086,9 @@ class Test
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "async delegate"));
-			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "() =>"));
-			Assert.AreEqual(1, provider.Count(cd => cd.DisplayText == "async () =>"));
+			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "async delegate"));
+			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "() =>"));
+			Assert.AreEqual(1, provider.Data.Count(cd => cd.DisplayText == "async () =>"));
 		}
 
 		[Ignore]
@@ -6150,7 +6154,7 @@ namespace Foo
         }
     }
 }
-", provider => provider.Single(d => d.DisplayText == "Foo"));
+", provider => provider.Data.Single(d => d.DisplayText == "Foo"));
 		}
 	
 		/// <summary>

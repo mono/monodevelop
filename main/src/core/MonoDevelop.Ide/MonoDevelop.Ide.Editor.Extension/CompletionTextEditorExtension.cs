@@ -1,4 +1,4 @@
-// CompletionTextEditorExtension.cs
+﻿// CompletionTextEditorExtension.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -49,20 +49,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		// (Settings have been moved to IdeApp.Preferences)
 
-		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
+		bool autoHideCompletionWindow, autoHideParameterWindow;
 
 		ICompletionWidget completionWidget;
 		internal virtual ICompletionWidget CompletionWidget
 		{
 			get { return completionWidget; }
-			set
-			{
-				if (completionWidget != null)
-					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+			set {
+				UnsubscribeCompletionContextChanged ();
 				completionWidget = value;
 				if (completionWidget != null)
 					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			}
+		}
+		internal void UnsubscribeCompletionContextChanged ()
+		{
+			if (completionWidget != null)
+				completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 		}
 
 
@@ -96,6 +99,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			if (!IsActiveExtension ())
+				return base.KeyPress (descriptor);
 			bool res;
 			if (CurrentCompletionContext != null) {
 				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
@@ -126,6 +131,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
 			
 			res = base.KeyPress (descriptor);
+			if (Editor.EditMode == EditMode.TextLink && Editor.TextLinkPurpose == TextLinkPurpose.Rename) {
+				return res;
+			}
 			if (descriptor.KeyChar == (char)16 || descriptor.KeyChar == (char)17)
 				return res;
 
@@ -146,13 +154,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 			// Handle code completion
 			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
-				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
+				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc = new CancellationTokenSource ();
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleCodeCompletionAsync (CurrentCompletionContext, descriptor.KeyChar, token);
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -161,7 +169,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 							completionTokenSrc.Cancel ();
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
-
 						task.ContinueWith (t => {
 							CompletionWindowManager.WindowClosed -= windowClosed;
 							if (token.IsCancellationRequested)
@@ -169,10 +176,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 							var result = t.Result;
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
-
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									if (result.TriggerWordStart >= 0)
+										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.
@@ -187,13 +195,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						CurrentCompletionContext = null;
 					}
 				} catch (TaskCanceledException) {
-					CurrentCompletionContext = null;
 				} catch (AggregateException) {
-					CurrentCompletionContext = null;
 				}
 			}
 
 			if ((descriptor.SpecialKey == SpecialKey.Delete || descriptor.SpecialKey == SpecialKey.BackSpace) && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
+				if (!char.IsLetterOrDigit (deleteOrBackspaceTriggerChar) && deleteOrBackspaceTriggerChar != '_')
+					return res;
 				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 
 				int cpos, wlen;
@@ -201,6 +209,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					cpos = Editor.CaretOffset;
 					wlen = 0;
 				}
+
 				CurrentCompletionContext.TriggerOffset = cpos;
 				CurrentCompletionContext.TriggerWordLength = wlen;
 				
@@ -209,7 +218,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
 				try {
-					var task = HandleBackspaceOrDeleteCodeCompletionAsync (CurrentCompletionContext, descriptor.SpecialKey, deleteOrBackspaceTriggerChar, token);
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.BackspaceOrDeleteCommand, deleteOrBackspaceTriggerChar), token);
 					if (task != null) {
 						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
 						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
@@ -230,6 +239,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									if (result.TriggerWordStart >= 0)
+										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
 								// Now show the window for real.
@@ -237,7 +248,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = null;
 								} else {
 									CompletionWindowManager.Wnd.StartOffset = CurrentCompletionContext.TriggerOffset;
-									CompletionWindowManager.Wnd.EndOffset = Editor.CaretOffset;
 								}
 							} else {
 								CompletionWindowManager.HideWindow ();
@@ -314,6 +324,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (autoHideCompletionWindow) {
 				CompletionWindowManager.HideWindow ();
 			}
+
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
@@ -327,17 +338,22 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler(TextEditorCommands.ShowCompletionWindow)]
 		internal void OnUpdateCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunCompletionCommand () && !CompletionWindowManager.IsVisible;
+			info.Bypass = !IsActiveExtension () || (!CanRunCompletionCommand () && !CompletionWindowManager.IsVisible);
 		}
 
 		[CommandUpdateHandler(TextEditorCommands.ShowParameterCompletionWindow)]
 		internal void OnUpdateParameterCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunParameterCompletionCommand ();
+			info.Bypass = !IsActiveExtension () || !CanRunParameterCompletionCommand ();
 		}
 
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual async void RunCompletionCommand ()
+		{
+			await TriggerCompletion(CompletionTriggerReason.CompletionCommand);
+		}
+
+		public virtual async Task TriggerCompletion(CompletionTriggerReason reason)
 		{
 			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
@@ -346,6 +362,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
 			}
+			Editor.EnsureCaretIsNotVirtual ();
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -354,7 +371,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			CurrentCompletionContext.TriggerWordLength = wlen;
-			completionList = await CodeCompletionCommand (CurrentCompletionContext);
+			completionList = await HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (reason));
+			if (completionList != null && completionList.TriggerWordStart >= 0) {
+				CurrentCompletionContext.TriggerOffset = completionList.TriggerWordStart;
+				CurrentCompletionContext.TriggerWordLength = completionList.TriggerWordLength;
+			}
 			if (completionList == null || !CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext)) {
 				CurrentCompletionContext = null;
 			}
@@ -364,6 +385,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
 		public virtual void RunShowCodeTemplatesWindow ()
 		{
+			Editor.EnsureCaretIsNotVirtual ();
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -386,7 +408,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
 			info.Enabled = !Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -409,7 +431,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateSelectionSurroundWith (CommandInfo info)
 		{
 			info.Enabled = Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -456,14 +478,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static readonly ICompletionDataList emptyList = new CompletionDataList ();
 
-		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
 			return Task.FromResult (emptyList);
 		}
 
-		public virtual Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
+		[Obsolete("Use HandleCodeCompletionAsync")]
+		public Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
-			return Task.FromResult (emptyList);
+			return HandleCodeCompletionAsync (completionContext, CompletionTriggerInfo.CodeCompletionCommand);
 		}
 
 		public virtual Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
@@ -510,7 +533,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
 				ctx = templateWidget.GetCodeTemplateContext ();
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (Editor).WaitAndGetResult (CancellationToken.None)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith) {
 					if (ctx == template.CodeTemplateContext)
 						list.Add (new CodeTemplateCompletionData (this, template));
@@ -525,33 +548,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 			list.AutoSelect = true;
 			list.AutoCompleteEmptyMatch = true;
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith) {
 					list.Add (new CodeTemplateCompletionData (this, template));
 				}
 			}
 			return list;
-		}
-
-		public virtual async Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
-		{
-			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
-			// the char at the cursor position. If it returns a provider, just return it.
-			
-			completionTokenSrc.Cancel ();
-			completionTokenSrc = new CancellationTokenSource ();
-			var ctoken = completionTokenSrc.Token;
-
-			int pos = completionContext.TriggerOffset;
-			if (pos > 0) {
-				char ch = Editor.GetCharAt (pos - 1);
-				try {
-					return await HandleCodeCompletionAsync (completionContext, ch, ctoken);
-				} catch (TaskCanceledException) {
-				} catch (AggregateException) {
-				}
-			}
-			return null;
 		}
 		
 		public virtual async Task<ParameterHintingResult> ParameterCompletionCommand (CodeCompletionContext completionContext)
@@ -618,7 +620,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
+			CompletionWidget = CompletionWidget ?? DocumentContext.GetContent <ICompletionWidget> ();
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 			Editor.FocusLost += HandleFocusOutEvent;

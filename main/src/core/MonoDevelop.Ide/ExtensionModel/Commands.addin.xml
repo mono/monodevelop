@@ -696,8 +696,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 			icon = "gtk-plugin"
-			_description = "Manage add-ins"
-			_label = "_Add-ins..." />
+			_description = "Manage extensions"
+			_label = "_Extensions..." />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 			type="array"
@@ -819,6 +819,15 @@
 			_label = "Send Feedback"
 			icon = "md-feedback"
 			_description = "Send feedback to the MonoDevelop development team" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpUITreeHandler"
+			 _label = "Dump UI Tree" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpA11yTreeHandler"
+			 _label = "Dump Accessibility Tree" />
+	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTreeDelayed"
+			 defaultHandler = "MonoDevelop.Ide.Commands.DumpA11yTreeDelayedHandler"
+			 _label = "Dump Accessibility Tree (10s)" />
 	</Category>
 
 	<!-- SearchCommands -->
@@ -946,18 +955,18 @@
 	<Category _name = "Text Editor" id = "TextEditor">
 
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-			_label = "Show Code Completion"
+			_label = "Complete Word"
 			macShortcut="Control|space"
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
 			_label = "Toggle Completion Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
-			_description="Inserts a template"
-			_label = "_Template..."
-			_displayName = "Insert Template..."/>
+			_description="Inserts a snippet"
+			_label = "_Snippet..."
+			_displayName = "Insert Snippet..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
-			_description="Surrounds selection with a template when something is selected"
+			_description="Surrounds selection with a snippet when something is selected"
 			_label = "_Surround With..."
 			_displayName = "Surround Selection With..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
@@ -1135,6 +1144,11 @@
 			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
 			_label = "Toggle Issues"
 			type="radio|array"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowTextMateScopesHandler"
+			defaultHandler = "MonoDevelop.Ide.Editor.TextMate.ShowTextMateScopesHandler"
+			_label = "Show Scopes"
+			macShortcut = "Meta|Alt|Shift|p"
+			shortcut = "Ctrl|Alt|Shift|p"/>
 	</Category>
 </Extension>
 </ExtensionModel>

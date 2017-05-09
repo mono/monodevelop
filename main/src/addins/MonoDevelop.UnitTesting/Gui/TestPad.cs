@@ -1,4 +1,4 @@
-//
+﻿//
 // TestPad.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Gui.Components;
@@ -47,6 +48,7 @@ using MonoDevelop.Ide.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Components.AutoTest;
+
 using SCM = System.ComponentModel;
 
 namespace MonoDevelop.UnitTesting
@@ -96,6 +98,8 @@ namespace MonoDevelop.UnitTesting
 			hbox.PackStart (new ImageView (ImageService.GetIcon ("md-execute-all", IconSize.Menu)), false, false, 0);
 			hbox.PackStart (new Label (GettextCatalog.GetString ("Run All")), false, false, 0);
 			buttonRunAll = new Button (hbox);
+			buttonRunAll.Accessible.Name = "TestPad.RunAll";
+			buttonRunAll.Accessible.Description = GettextCatalog.GetString ("Start a test run and run all the tests");
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
 			buttonRunAll.Sensitive = true;
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
@@ -105,6 +109,9 @@ namespace MonoDevelop.UnitTesting
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
 			buttonStop.TooltipText = GettextCatalog.GetString ("Cancel running test");
+			buttonStop.Accessible.Name = "TestPad.StopAll";
+			buttonStop.Accessible.SetTitle (GettextCatalog.GetString (("Cancel")));
+			buttonStop.Accessible.Description = GettextCatalog.GetString ("Stops the current test run");
 			topToolbar.Add (buttonStop);
 			topToolbar.ShowAll ();
 			

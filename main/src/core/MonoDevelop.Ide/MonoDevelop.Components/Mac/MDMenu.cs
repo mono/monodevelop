@@ -55,7 +55,8 @@ namespace MonoDevelop.Components.Mac
 
 			AutoEnablesItems = false;
 
-			Title = (ces.Name ?? "").Replace ("_", "");
+			var label = ces.Name ?? "";
+			Title = ContextMenuItem.SanitizeMnemonics (label);
 			foreach (CommandEntry ce in ces) {
 				if (ce.CommandId == Command.Separator) {
 					AddItem (NSMenuItem.SeparatorItem);
@@ -146,13 +147,34 @@ namespace MonoDevelop.Components.Mac
 
 				var mdItem = item as IUpdatableMenuItem;
 				if (mdItem != null) {
-					mdItem.Update (this, ref lastSeparator, ref i);
+					mdItem.Update (this, ref i);
 					continue;
 				}
 
 				//hide unknown builtins
 				item.Hidden = true;
 			}
+			UpdateSeparators ();
+		}
+
+		public void UpdateSeparators ()
+		{
+			bool previousWasSeparator = true;
+			NSMenuItem lastSeparator = null;
+
+			for (int i = 0; i < Count; i++) {
+				var item = this.ItemAt (i);
+
+				if (item.IsSeparatorItem) {
+					item.Hidden = previousWasSeparator;
+					previousWasSeparator = true;
+					lastSeparator = item;
+				} else if (!item.Hidden) {
+					previousWasSeparator = false;
+				}
+			}
+			if (previousWasSeparator && lastSeparator != null)
+				lastSeparator.Hidden = true;
 		}
 
 		[Export ("menuNeedsUpdate:")]
@@ -170,11 +192,40 @@ namespace MonoDevelop.Components.Mac
 				UpdateCommands ();
 		}
 
+		[Export ("menuWillOpen:")]
+		void MenuWillOpen (NSMenu menu)
+		{
+			StartBumpingGtkLoop ();
+		}
+
 		[Export ("menuDidClose:")]
 		void MenuDidClose (NSMenu menu)
 		{
+			EndBumpingGtkLoop ();
 			if (CloseHandler != null) {
 				CloseHandler (this, null);
+			}
+		}
+
+		static int bumperCount;
+		static NSTimer bumperTimer;
+
+		static void StartBumpingGtkLoop ()
+		{
+			if (bumperCount++ == 0) {
+				var runLoop = NSRunLoop.Current;
+				bumperTimer = NSTimer.CreateRepeatingTimer (0.1d, delegate {
+					Gtk.Application.RunIteration (false);
+				});
+				runLoop.AddTimer (bumperTimer, NSRunLoop.NSRunLoopCommonModes);
+			}
+		}
+
+		static void EndBumpingGtkLoop ()
+		{
+			if (--bumperCount == 0) {
+				bumperTimer.Invalidate ();
+				bumperTimer = null;
 			}
 		}
 
@@ -189,7 +240,7 @@ namespace MonoDevelop.Components.Mac
 
 	interface IUpdatableMenuItem
 	{
-		void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index);
+		void Update (MDMenu parent, ref int index);
 	}
 }
 #endif

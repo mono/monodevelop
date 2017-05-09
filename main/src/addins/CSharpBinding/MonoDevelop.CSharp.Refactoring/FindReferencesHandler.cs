@@ -25,34 +25,29 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.Threading;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
-using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.FindInFiles;
-using MonoDevelop.Ide.Tasks;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.CSharp.Highlighting;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
 	class FindReferencesHandler
 	{
-		internal static void FindRefs (ISymbol symbol)
+		internal static void FindRefs (ISymbol symbol, Solution solution)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
 			if (workspace == null)
 				return;
-			var solution = workspace.CurrentSolution;
 			Task.Run (async delegate {
 				try {
 					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
@@ -71,7 +66,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							offset = projectedOffset;
 						}
 						var sr = new MemberReference (symbol, fileName, offset, loc.SourceSpan.Length);
-						sr.ReferenceUsageType = ReferenceUsageType.Declariton;
+						sr.ReferenceUsageType = ReferenceUsageType.Declaration;
 						antiDuplicatesSet.Add (sr);
 						monitor.ReportResult (sr);
 					}
@@ -134,7 +129,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindRefs (sym);
+					FindRefs (sym, doc.AnalysisDocument.Project.Solution);
 				} else {
 					RefactoringService.FindReferencesAsync (FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}
@@ -177,7 +172,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindReferencesHandler.FindRefs (sym);
+					FindReferencesHandler.FindRefs (sym, doc.AnalysisDocument.Project.Solution);
 				} else {
 					RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}

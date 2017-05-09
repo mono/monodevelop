@@ -767,9 +767,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 					var cmdDuplicates = keyDuplicates.Where (cmd => cmd != hit.Command);
 					if (tooltipWindow == null) {
-						tooltipWindow = new TooltipPopoverWindow ();
+						tooltipWindow = TooltipPopoverWindow.Create ();
 						tooltipWindow.ShowArrow = true;
-						tooltipWindow.LeaveNotifyEvent += delegate { HideConflictTooltip (); };
+						//tooltipWindow.LeaveNotifyEvent += delegate { HideConflictTooltip (); };
 					}
 
 					var text = string.Empty;

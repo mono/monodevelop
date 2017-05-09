@@ -51,6 +51,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 
+		List<RemoteProjectBuilder> remoteProjectBuilders = new List<RemoteProjectBuilder> ();
+
 		public RemoteBuildEngine (RemoteProcessConnection connection)
 		{
 			this.connection = connection;
@@ -66,10 +68,25 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<ProjectBuilder> LoadProject (string projectFile)
+		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile, string sdksPath)
+		{
+			var builder = await LoadProject (projectFile, sdksPath).ConfigureAwait (false);
+			var pb = new RemoteProjectBuilder (projectFile, builder, this);
+			pb.SdksPath = sdksPath;
+			lock (remoteProjectBuilders) {
+				remoteProjectBuilders.Add (pb);
+
+				// Unlikely, but it may happen
+				if (IsShuttingDown)
+					pb.Shutdown ();
+			}
+			return pb;
+		}
+
+		async Task<ProjectBuilder> LoadProject (string projectFile, string sdksPath)
 		{
 			try {
-				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile})).ProjectId;
+				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile, SDKsPath = sdksPath })).ProjectId;
 				return new ProjectBuilder (connection, pid);
 			} catch {
 				await CheckDisconnected ();
@@ -77,8 +94,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 		
-		public async Task UnloadProject (ProjectBuilder builder)
+		internal async Task UnloadProject (RemoteProjectBuilder remoteBuilder, ProjectBuilder builder)
 		{
+			lock (remoteProjectBuilders)
+				remoteProjectBuilders.Remove (remoteBuilder);
+			
 			try {
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = ((ProjectBuilder)builder).ProjectId});
 			} catch (Exception ex) {
@@ -87,6 +107,22 @@ namespace MonoDevelop.Projects.MSBuild
 					throw;
 			}
 		}
+
+		/// <summary>
+		/// Marks this instance as being shutdown, so it should not be used to create new project builders.
+		/// </summary>
+		public void Shutdown ()
+		{
+			lock (remoteProjectBuilders) {
+				if (IsShuttingDown)
+					return;
+				IsShuttingDown = true;
+				foreach (var pb in remoteProjectBuilders)
+					pb.Shutdown ();
+			}
+		}
+
+		public bool IsShuttingDown { get; private set; }
 
 		public async Task CancelTask (int taskId)
 		{
@@ -258,20 +294,21 @@ namespace MonoDevelop.Projects.MSBuild
 		ProjectBuilder builder;
 		Dictionary<string,AssemblyReference[]> referenceCache;
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
+		Dictionary<string, PackageDependency[]> packageDependenciesCache;
+		AsyncCriticalSection packageDependenciesCacheLock = new AsyncCriticalSection ();
 		string file;
 		static int lastTaskId;
 
-		internal RemoteProjectBuilder (string file, RemoteBuildEngine engine)
+		internal RemoteProjectBuilder (string file, ProjectBuilder builder, RemoteBuildEngine engine)
 		{
 			this.file = file;
 			this.engine = engine;
+			this.builder = builder;
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
+			packageDependenciesCache = new Dictionary<string, PackageDependency[]> ();
 		}
 
-		internal async Task Load ()
-		{
-			builder = await engine.LoadProject (file).ConfigureAwait (false);
-		}
+		internal string SdksPath { get; set; }
 
 		public event EventHandler Disconnected;
 
@@ -380,10 +417,61 @@ namespace MonoDevelop.Projects.MSBuild
 			return refs;
 		}
 
+		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		{
+			PackageDependency[] packageDependencies = null;
+			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
+
+			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false)) {
+				// Check the cache before starting the task
+				if (packageDependenciesCache.TryGetValue (id, out packageDependencies))
+					return packageDependencies;
+
+				// Get an id for the task, it will be used later on to cancel the task if necessary
+				var taskId = Interlocked.Increment (ref lastTaskId);
+				IDisposable cr = RegisterCancellation (cancellationToken, taskId);
+
+				MSBuildResult result;
+				try {
+					BeginOperation ();
+					result = await builder.Run (
+						configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
+						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, null, taskId
+					);
+				} catch (Exception ex) {
+					await CheckDisconnected ();
+					LoggingService.LogError ("ResolvePackageDependencies failed", ex);
+					return new PackageDependency [0];
+				} finally {
+					cr.Dispose ();
+					EndOperation ();
+				}
+
+				MSBuildEvaluatedItem[] items;
+				if (result == null)
+					return new PackageDependency[0];
+				else if (result.Items.TryGetValue ("_DependenciesDesignTime", out items) && items != null) {
+					packageDependencies = items
+						.Select (i => PackageDependency.Create (i))
+						.Where (dependency => dependency != null)
+						.ToArray ();
+				} else
+					packageDependencies = new PackageDependency [0];
+
+				packageDependenciesCache [id] = packageDependencies;
+			}
+
+			return packageDependencies;
+		}
+
+
 		public async Task Refresh ()
 		{
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
 				referenceCache.Clear ();
+
+			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
+				packageDependenciesCache.Clear ();
 
 			try {
 				BeginOperation ();
@@ -401,6 +489,9 @@ namespace MonoDevelop.Projects.MSBuild
 			using (await referenceCacheLock.EnterAsync ().ConfigureAwait (false))
 				referenceCache.Clear ();
 
+			using (await packageDependenciesCacheLock.EnterAsync ().ConfigureAwait (false))
+				packageDependenciesCache.Clear ();
+
 			try {
 				BeginOperation ();
 				await builder.RefreshWithContent (projectContent).ConfigureAwait (false);
@@ -417,7 +508,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!MSBuildProjectService.ShutDown && engine != null) {
 				try {
 					if (builder != null)
-						await engine.UnloadProject (builder).ConfigureAwait (false);
+						await engine.UnloadProject (this, builder).ConfigureAwait (false);
 					MSBuildProjectService.ReleaseProjectBuilder (engine);
 				} catch {
 					// Ignore

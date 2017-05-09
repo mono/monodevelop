@@ -64,7 +64,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Ide.Gui.Styles.Changed += (o, e) => LayoutButtonBars ();
 		}
 
-		const float segmentWidth = 33.0f;
+		internal const float SegmentWidth = 33.0f;
 		const float buttonBarSpacing = 8.0f;
 		const float extraPadding = 6.0f;
 
@@ -88,7 +88,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			foreach (ButtonBar bar in buttonBars) {
-				var frame = new CGRect (nextX, y, extraPadding + (bar.SegmentCount * segmentWidth), height);
+				var frame = new CGRect (nextX, y, extraPadding + (bar.SegmentCount * SegmentWidth), height);
 				bar.Frame = frame;
 
 				nextX = frame.GetMaxX () + buttonBarSpacing;

@@ -92,8 +92,17 @@ namespace MonoDevelop.Components.DockNotebook
 			foreach (var d in documents) {
 				if (howManyDirtyFiles > 1)
 					d.Window.CloseWindow (true);
-				else if (!d.Close ())
-					return true;
+				else {
+					// d.Close() could leave the UI synchronization context, letting the Gtk signal handler pass
+					// and Gtk would destroy the window immediately. Since we need to preserve the window
+					// state until the async document.Close () has finished, we interrupt the signal (return true)
+					// and destoy the window in a continuation task after the document has been closed.
+					d.Close ().ContinueWith ((arg) => {
+						if (arg.Result)
+							Destroy ();
+					}, Core.Runtime.MainTaskScheduler);
+					return true; 
+				}
 			}
 			return base.OnDeleteEvent (evnt);
 		}

@@ -1,4 +1,4 @@
-<ExtensionModel>
+﻿<ExtensionModel>
 
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/CSharp/Completion/ContextHandler">
@@ -181,7 +181,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
+		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true" roslynName="C#">
 			<File pattern="*.cs" />
 		</MimeType>
 		<MimeType id="application/x-csproject" _description="C# project file" baseType="application/x-msbuild">
@@ -211,7 +211,6 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoCSharpPolicy.xml" />
-		<Policies resource="MonoNameConventionPolicy.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
@@ -280,18 +279,8 @@
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
-	</Extension>
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
-	</Extension>
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanel" icon="md-prefs-name-conventions" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="CSharp" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" mimeType="text/x-csharp" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
@@ -300,11 +289,10 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" mimeTypes="text/x-csharp">
-			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 
 			<ItemSet id = "Navigate" _label = "Navigate">
-				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"/>
 				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"/>
@@ -324,12 +312,8 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
-		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
-		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
+		<Matcher class="MonoDevelop.CSharp.CSharpBraceMatcher" mimeType="text/x-csharp"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">

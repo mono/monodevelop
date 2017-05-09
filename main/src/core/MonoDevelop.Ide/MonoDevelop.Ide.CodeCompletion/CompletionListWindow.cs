@@ -1,4 +1,4 @@
-// CompletionListWindow.cs
+﻿// CompletionListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -42,6 +42,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionListWindow : IListDataProvider
 	{
 		CompletionListWindowGtk window;
+
+		public CompletionData SelectedItem {
+			get {
+				return window.SelectedItem;
+			}
+		}
+
+		public int SelectedItemIndex {
+			get { return window.SelectedItemIndex; }
+		}
+
+		public event EventHandler SelectionChanged {
+			add { window.SelectionChanged += value; }
+			remove { window.SelectionChanged += value; }
+		}
+
+
 
 		public CompletionListWindow ()
 		{
@@ -132,7 +149,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CodeCompletionContext CodeCompletionContext {
 			get { return window.CodeCompletionContext; }
 			set { window.CodeCompletionContext = value; }
-		}
+		} 
 
 		internal int StartOffset {
 			get { return window.StartOffset; }
@@ -372,7 +389,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return completionDataList; }
 			set {
 				completionDataList = value;
-				defaultComparer = null;
+				ListWidget.defaultComparer = null;
 			}
 		}
 
@@ -486,7 +503,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					((IDisposable)completionDataList).Dispose ();
 				CloseCompletionList ();
 				completionDataList = null;
-				defaultComparer = null;
+				ListWidget.defaultComparer = null;
 			}
 
 			HideDeclarationView ();
@@ -501,6 +518,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
+			if (this.CompletionDataList == null)
+				return;
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			if (CompletionDataList != null) {
@@ -511,11 +530,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			
 			if (!keyHandled)
 				ka = PostProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, descriptor);
+			UpdateLastWordChar ();
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
 				OnWindowClosed (EventArgs.Empty);
@@ -668,10 +687,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
-					UpdateWordSelection ();
 					initialWordLength = 0;
 					//completionWidget.SelectedLength;
-					StartOffset = CompletionWidget.CaretOffset;
+					StartOffset = completionContext.TriggerOffset;
+					UpdateWordSelection ();
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
@@ -704,21 +723,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		class DataItemComparer : IComparer<CompletionData>
-		{
-			public int Compare (CompletionData a, CompletionData b)
-			{
-				if (a is IComparable && b is IComparable)
-					return ((IComparable)a).CompareTo (b);
-				return CompletionData.Compare (a, b);
-			}
-		}
 
-		IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
-		{
-			var concrete = dataList as CompletionDataList;
-			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
-		}
 		
 		bool FillList ()
 		{
@@ -726,13 +731,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return false;
 
 			Style = CompletionWidget.GtkStyle;
-			
+
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
-			if (!completionDataList.IsSorted)
-				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
-
+			if (!completionDataList.IsSorted) {
+				try {
+					completionDataList.Sort (ListWidget.GetComparerForCompletionList (completionDataList));
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Can't sort completion list.", e);
+				}
+			}
 			Reposition (true);
 			return true;
 		}
@@ -791,16 +800,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool CompleteWord ()
 		{
 			KeyActions ka = KeyActions.None;
-			return CompleteWord (ref ka, KeyDescriptor.Empty);
+			return CompleteWord (ref ka, KeyDescriptor.Tab);
 		}
 
 		internal bool IsInCompletion { get; set;  }
 
 		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			if (SelectedItem == -1 || completionDataList == null)
+			if (SelectedItemIndex == -1 || completionDataList == null)
 				return false;
-			var item = completionDataList [SelectedItem];
+			var item = completionDataList [SelectedItemIndex];
 			if (item == null)
 				return false;
 			IsInCompletion = true; 
@@ -813,7 +822,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
+				if (item.HasOverloads && declarationviewwindow != null && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
 					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (facade, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (facade, ref ka, descriptor);
@@ -879,18 +888,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			RemoveDeclarationViewTimer ();
 			// no selection, try to find a selection
-			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
+			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
-				bool hasMismatches;
-				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString, out hasMismatches);
+				var match = FindMatchedEntry (List.CompletionString);
+				List.SelectEntry (match);
 			}
 			// no success, hide declaration view
-			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
+			if (List.SelectedItemIndex < 0 || List.SelectedItemIndex >= completionDataList.Count) {
 				HideDeclarationView ();
 				return;
 			}
 
-			var data = completionDataList [List.SelectedItem];
+			var data = completionDataList [List.SelectedItemIndex];
 			if (data != currentData)
 				HideDeclarationView ();
 
@@ -925,8 +934,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				declarationviewwindow.SetDefaultScheme ();
 			}
-			declarationviewwindow.CaretSpacing = Gui.Styles.TooltipInfoSpacing;
-			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor.ToCairoColor ());
+			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor);
 		}
 
 		void RepositionDeclarationViewWindow ()
@@ -936,7 +944,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			EnsureDeclarationViewWindow ();
 			if (declarationviewwindow.Overloads == 0)
 				return;
-			var selectedItem = List.SelectedItem;
+			var selectedItem = List.SelectedItemIndex;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
 				return;
@@ -957,12 +965,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 
-		static readonly DataItemComparer overloadComparer = new DataItemComparer ();
 
 
 		async void DelayedTooltipShowAsync ()
 		{
-			var selectedItem = List.SelectedItem;
+			var selectedItem = List.SelectedItemIndex;
 			if (selectedItem < 0 || selectedItem >= completionDataList.Count)
 				return;
 			
@@ -982,7 +989,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var cs = new CancellationTokenSource ();
 				declarationViewCancelSource = cs;
 				var overloads = new List<CompletionData> (filteredOverloads);
-				overloads.Sort (overloadComparer);
+				overloads.Sort (ListWidget.overloadComparer);
 				foreach (var overload in overloads) {
 					await declarationviewwindow.AddOverload ((CompletionData)overload, cs.Token);
 				}
@@ -1072,13 +1079,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return completionDataList[n];
 		}
 
-		IComparer<CompletionData> defaultComparer;
 
 		internal int CompareTo (int n, int m)
 		{
-			var item1 = completionDataList [n];
-			var item2 = completionDataList [m];
-			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
+			return ListWidget.CompareTo (completionDataList, n, m);
 		}
 		
 		internal Xwt.Drawing.Image GetIcon (int n)

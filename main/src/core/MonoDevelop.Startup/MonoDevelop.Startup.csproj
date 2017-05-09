@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +11,7 @@
     <AssemblyName>MonoDevelop</AssemblyName>
     <RootNamespace>MonoDevelop.Startup</RootNamespace>
     <ApplicationIcon>..\..\..\theme-icons\Windows\monodevelop.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
@@ -85,6 +86,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <Commandlineparameters>-no-redirect</Commandlineparameters>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' != 'Unix'">
+    <LargeAddressAware>true</LargeAddressAware>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -123,18 +127,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <Target Name="MakeLargeAddressAware" AfterTargets="Build" Condition=" '$(OS)' != 'Unix' ">
-    <PropertyGroup>
-      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS150COMNTOOLS)</VsComnTools>
-      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS140COMNTOOLS)</VsComnTools>
-      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS130COMNTOOLS)</VsComnTools>
-      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS120COMNTOOLS)</VsComnTools>
-      <VsComnTools Condition=" '$(VsComnTools)' == '' ">$(VS110COMNTOOLS)</VsComnTools>
-      <VsComnTools Condition=" '$(VsComnTools)' != '' And !HasTrailingSlash('$(VsComnTools)') ">$(VsComnTools)\</VsComnTools>
-      <EditBin Condition=" '$(VsComnTools)' != '' ">$(VsComnTools)..\..\VC\bin\editbin.exe</EditBin>
-    </PropertyGroup>
-
-    <Exec Command='"$(EditBin)" /largeaddressaware "$(TargetPath)"' Condition="Exists('$(EditBin)')" />
-  </Target>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.0\build\LargeAddressAware.targets" Condition="$(OS) != 'Unix' AND Exists('$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.0\build\LargeAddressAware.targets')" />
 </Project>

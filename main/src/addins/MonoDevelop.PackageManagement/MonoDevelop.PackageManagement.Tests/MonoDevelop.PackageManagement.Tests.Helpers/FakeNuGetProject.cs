@@ -44,6 +44,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeNuGetProject (IDotNetProject project)
 		{
 			Project = project;
+			if (project.Name != null) {
+				InternalMetadata.Add (NuGetProjectMetadataKeys.Name, project.Name);
+			}
 		}
 
 		public IDotNetProject Project { get; private set; }
@@ -102,6 +105,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PostProcessCancellationToken = token;
 
 			return Task.FromResult (0);
+		}
+
+		public void NotifyProjectReferencesChanged ()
+		{
 		}
 	}
 }

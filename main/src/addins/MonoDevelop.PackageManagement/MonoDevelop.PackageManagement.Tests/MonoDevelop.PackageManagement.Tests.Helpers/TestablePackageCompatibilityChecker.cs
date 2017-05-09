@@ -25,28 +25,51 @@
 // THE SOFTWARE.
 
 using System;
-using NuGet;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using NuGet.Frameworks;
+using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
-		public TestablePackageCompatibilityChecker (
-			FakeSolutionPackageRepository packageRepository)
-			: base (packageRepository)
-		{
-		}
-
-		public PackageReferenceFile PackageReferenceFile;
-
-		protected override PackageReferenceFile CreatePackageReferenceFile (string fileName)
-		{
-			return PackageReferenceFile;
-		}
-
 		protected override void GuiDispatch (Action handler)
 		{
 			handler.Invoke ();
+		}
+
+		public Dictionary<PackageReference, PackageReference> PackageReferencesToUpdate;
+
+		protected override void UpdatePackageReferences (string packageReferenceFileName, Dictionary<PackageReference, PackageReference> packageReferencesToUpdate)
+		{
+			PackageReferencesToUpdate = packageReferencesToUpdate;
+		}
+
+		public FakePackageCompatibilityNuGetProject NuGetProject = new FakePackageCompatibilityNuGetProject ();
+
+		protected override Task<IPackageCompatibilityNuGetProject> GetNuGetProject (IDotNetProject project)
+		{
+			return Task.FromResult (NuGetProject as IPackageCompatibilityNuGetProject);
+		}
+
+		public Action<TestablePackageCompatibility> OnCreatePackageCompatibility = item => { };
+
+		protected override PackageCompatibility CreatePackageCompatibility (
+			NuGetFramework targetFramework,
+			PackageReference packageReference,
+			string packageFileName)
+		{
+			var packageCompatibility = new TestablePackageCompatibility (targetFramework, packageReference, packageFileName);
+			OnCreatePackageCompatibility (packageCompatibility);
+			return packageCompatibility;
+		}
+
+		public bool FileExistsReturnValue = true;
+
+		protected override bool FileExists (string fileName)
+		{
+			return FileExistsReturnValue;
 		}
 	}
 }

@@ -48,6 +48,7 @@ namespace MonoDevelop.Components.Mac
 		bool isArrayItem;
 		object initialCommandTarget;
 		CommandSource commandSource;
+		CommandInfo lastInfo;
 
 		public MDMenuItem (CommandManager manager, CommandEntry ce, ActionCommand command, CommandSource commandSource, object initialCommandTarget)
 		{
@@ -62,6 +63,11 @@ namespace MonoDevelop.Components.Mac
 			Action = ActionSel;
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+		}
+
 		public CommandEntry CommandEntry { get { return ce; } }
 
 		[Export (ActionSelName)]
@@ -71,9 +77,9 @@ namespace MonoDevelop.Components.Mac
 			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
 			GLib.Timeout.Add (1, () => {
 				if (a != null) {
-					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource);
+					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource, lastInfo);
 				} else {
-					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource);
+					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource, lastInfo);
 				}
 				return false;
 			});
@@ -87,14 +93,38 @@ namespace MonoDevelop.Components.Mac
 			}
 		}
 
-		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
+		int FindMeInParent (MDMenu parent)
+		{
+			for (int n = 0; n < parent.Count; n++)
+				if (parent.ItemAt (n) == this)
+					return n;
+			return -1;
+		}
+
+		public void Update (MDMenu parent, ref int index)
 		{
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
+			if (lastInfo != info) {
+				if (lastInfo != null)
+					lastInfo.CancelAsyncUpdate ();
+				lastInfo = info;
+				if (lastInfo.IsUpdatingAsynchronously) {
+					lastInfo.Changed += delegate {
+						var ind = FindMeInParent (parent);
+						if (info == lastInfo) {
+							Update (parent, ref ind, info);
+							parent.UpdateSeparators ();
+						}
+					};
+				}
+			}
+			Update (parent, ref index, info);
+		}
 
+		void Update (MDMenu parent, ref int index, CommandInfo info)
+		{
 			if (!isArrayItem) {
 				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
-				if (!Hidden)
-					MDMenu.ShowLastSeparator (ref lastSeparator);
 				return;
 			}
 
@@ -111,10 +141,10 @@ namespace MonoDevelop.Components.Mac
 			}
 
 			index++;
-			PopulateArrayItems (info.ArrayInfo, parent, ref lastSeparator, ref index);
+			PopulateArrayItems (info.ArrayInfo, parent, ref index);
 		}
 
-		void PopulateArrayItems (CommandArrayInfo infos, NSMenu parent, ref NSMenuItem lastSeparator, ref int index)
+		void PopulateArrayItems (CommandArrayInfo infos, NSMenu parent, ref int index)
 		{
 			if (infos == null)
 				return;
@@ -124,7 +154,6 @@ namespace MonoDevelop.Components.Mac
 					var n = NSMenuItem.SeparatorItem;
 					n.Hidden = true;
 					n.Target = this;
-					lastSeparator = n;
 					if (parent.Count > index)
 						parent.InsertItem (n, index);
 					else
@@ -142,13 +171,10 @@ namespace MonoDevelop.Components.Mac
 				if (ci is CommandInfoSet) {
 					item.Submenu = new NSMenu ();
 					int i = 0;
-					NSMenuItem sep = null;
-					PopulateArrayItems (((CommandInfoSet)ci).CommandInfos, item.Submenu, ref sep, ref i);
+					PopulateArrayItems (((CommandInfoSet)ci).CommandInfos, item.Submenu, ref i);
 				}
 				SetItemValues (item, ci, true);
 
-				if (!item.Hidden)
-					MDMenu.ShowLastSeparator (ref lastSeparator);
 				if (parent.Count > index)
 					parent.InsertItem (item, index);
 				else
@@ -260,11 +286,17 @@ namespace MonoDevelop.Components.Mac
 			if (txt == null)
 				return "";
 
+			bool isSpecial = ContextMenuItem.ContainsSpecialMnemonics;
 			//FIXME: markup stripping could be done better
 			var sb = new StringBuilder ();
 			for (int i = 0; i < txt.Length; i++) {
 				char ch = txt[i];
-				if (ch == '_') {
+
+				if (isSpecial && ch == '(') {
+					if (i + 3 < txt.Length && txt [i + 1] == '_' && txt [i + 3] == ')') {
+						i += 3;
+					}
+				} else if (ch == '_') {
 					if (i + 1 < txt.Length && txt[i + 1] == '_') {
 						sb.Append ('_');
 						i++;

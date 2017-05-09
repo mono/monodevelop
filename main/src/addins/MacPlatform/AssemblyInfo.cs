@@ -8,5 +8,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription ("Mac Platform Support for MonoDevelop")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]
-
-[assembly: InternalsVisibleTo ("MacPlatform.Tests")]

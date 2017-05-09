@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -38,28 +39,31 @@ namespace MonoDevelop.SourceEditor
 
 		ITextDocument ITextEditorFactory.CreateNewDocument ()
 		{
-			return new TextDocumentWrapper (new TextDocument ());
+			return new TextDocument ();
 		}
 
-		ITextDocument ITextEditorFactory.CreateNewDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
+        ITextDocument ITextEditorFactory.CreateNewDocument(string fileName, string mimeType)
+        {
+            return new TextDocument(fileName, mimeType);
+        }
+
+        ITextDocument ITextEditorFactory.CreateNewDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		IReadonlyTextDocument ITextEditorFactory.CreateNewReadonlyDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
-				ReadOnly = true,
+				IsReadOnly = true,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor ()
@@ -67,20 +71,26 @@ namespace MonoDevelop.SourceEditor
 			return new SourceEditorView ();
 		}
 
-		ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document)
+        ITextEditorImpl ITextEditorFactory.CreateNewEditor(string fileName, string mimeType)
+        {
+            return new SourceEditorView(fileName, mimeType);
+        }
+
+        ITextEditorImpl ITextEditorFactory.CreateNewEditor (IReadonlyTextDocument document)
 		{
 			return new SourceEditorView (document);
 		}
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
 		{
-			var mode = SyntaxModeService.GetSyntaxMode (null, mimeType);
+			var mode = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (null, mimeType);
 			if (mode == null)
 				return null;
-			System.Collections.Generic.List<string> value;
-			if (!mode.Properties.TryGetValue (name, out value))
+			// TODO: EditorTheme - remove the syntax properties or translate them to new language properties/services
+//			System.Collections.Generic.List<string> value;
+//			if (!mode.Properties.TryGetValue (name, out value))
 				return null;
-			return value.ToArray ();
+//			return value.ToArray ();
 		}
 		#endregion
 	}

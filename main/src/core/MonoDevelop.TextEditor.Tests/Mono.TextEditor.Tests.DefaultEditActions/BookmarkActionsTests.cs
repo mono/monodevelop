@@ -31,7 +31,7 @@ using System.Linq;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class BookmarkActionsTests : TextEditorTestBase
+	class BookmarkActionsTests : TextEditorTestBase
 	{
 		internal static TextEditorData Create (string text)
 		{
@@ -45,7 +45,7 @@ namespace Mono.TextEditor.Tests.Actions
 			}
 			for (int i = 1; i <= result.Document.LineCount; i++) {
 				if (result.Document.GetLineText (i).StartsWith ("@"))
-					result.GetLine (i).IsBookmarked = true;
+					result.Document.SetIsBookmarked (result.GetLine (i), true);
 			}
 			return result;
 			
@@ -107,9 +107,9 @@ $8
 7
 $8
 9");
-			Assert.AreEqual (3, data.Lines.Count (l => l.IsBookmarked));
+			Assert.AreEqual (3, data.Lines.Count (l => data.Document.IsBookmarked (l)));
 			BookmarkActions.ClearAll (data);
-			Assert.AreEqual (0, data.Lines.Count (l => l.IsBookmarked));
+			Assert.AreEqual (0, data.Lines.Count (l => data.Document.IsBookmarked (l)));
 		}
 	}
 }

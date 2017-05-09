@@ -278,10 +278,17 @@
 			<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
 		</Condition>
 		<SeparatorItem id = "Separator3" />
-		<LinkItem id = "ReportBug" _label = "Report Problem..." link = "http://xamar.in/r/file_studio_bug" />
+		<Condition id = "Branding" value = "MonoDevelop">
+			<LinkItem id = "ReportBug" _label = "Report Problem..." link = "http://xamar.in/r/file_studio_bug" />
+		</Condition>
 		<SeparatorItem id = "DiagnosticToolsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
+		<ItemSet id="Diagnostics">
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTree" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.DumpA11yTreeDelayed" />
+		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
 			<SeparatorItem id = "SeparatorAbout" />
 			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
@@ -306,4 +313,5 @@
 <Extension path="/MonoDevelop/Ide/TargetSelectorCommands">
 </Extension>
 
+	
 </ExtensionModel>

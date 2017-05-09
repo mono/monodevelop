@@ -61,6 +61,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, started);
 			Assert.AreEqual (1, finished);
 			Assert.IsTrue (targetStarted > 0);
+
+			item.Dispose ();
 		}
 
 		[Test]
@@ -79,6 +81,8 @@ namespace MonoDevelop.Projects
 			myLogger.EventRaised += (sender, e) => events++;
 			await item.Build (Util.GetMonitor (), "Debug", ctx);
 			Assert.AreEqual (0, events);
+
+			item.Dispose ();
 		}
 
 		[Test]
@@ -117,6 +121,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (taskStarted, taskFinished);
 			Assert.AreEqual (targetStarted, targetFinished);
 			Assert.AreNotEqual (string.Empty, mon.GetLogText ());
+
+			item.Dispose ();
 		}
 
 		[Test]
@@ -130,6 +136,8 @@ namespace MonoDevelop.Projects
 			var mon = new StringMonitor ();
 			await item.Build (mon, "Debug", ctx);
 			Assert.AreEqual (string.Empty, mon.GetLogText ());
+
+			item.Dispose ();
 		}
 	}
 

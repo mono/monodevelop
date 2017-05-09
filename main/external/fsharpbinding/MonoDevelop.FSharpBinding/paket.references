@@ -4,3 +4,5 @@ FSharp.Core
 FSharp.Compiler.CodeDom
 Mono.Cecil
 Newtonsoft.Json
+System.ValueTuple
+StrongNamer

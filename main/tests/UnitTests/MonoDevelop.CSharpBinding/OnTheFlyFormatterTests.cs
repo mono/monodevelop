@@ -355,7 +355,7 @@ class Foo
 		public async Task TestBug16174_AutoIndent ()
 		{
 			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
-				var options = DefaultSourceEditorOptions.Instance;
+				var options = new CustomEditorOptions ();
 				options.IndentStyle = IndentStyle.Auto;
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
@@ -374,8 +374,11 @@ class Foo
 		public async Task TestBug16174_VirtualIndent ()
 		{
 			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
-				var options = DefaultSourceEditorOptions.Instance;
-				options.IndentStyle = IndentStyle.Virtual;
+				var options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual,
+					TabsToSpaces = false
+				};
+
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
@@ -413,26 +416,26 @@ class Foo
 			await Simulate (@"
 namespace FormatSelectionTest
 {
-	public class EmptyClass
-	{
-		<-public EmptyClass ()
-		{
-		}->
-	}
+    public class EmptyClass
+    {
+        <-public EmptyClass ()
+        {
+        }->
+    }
 }", (content, ext) => {
 
-				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset);
 
 
 				Assert.AreEqual (@"
 namespace FormatSelectionTest
 {
-	public class EmptyClass
-	{
-		public EmptyClass()
-		{
-		}
-	}
+    public class EmptyClass
+    {
+        public EmptyClass()
+        {
+        }
+    }
 }", ext.Editor.Text);
 			});
 		}
@@ -598,5 +601,70 @@ namespace FormatSelectionTest
 }", newText);
 		});
 		}
+
+		/// <summary>
+		/// Bug 46817 - Xamarin Studio hides characters in auto format
+		/// </summary>
+		[Test]
+		public async Task TestBug46817 ()
+		{
+			await Simulate ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t\t\t}$\r\n", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual,
+					DefaultEolMarker = "\r\n"
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'}', '}', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual ("public class Application\r\n{\r\n\tstatic void Main (string[] args)\r\n\t{\r\n\t\t// abcd\r\n\t\t{\r\n\t\t}\r\n", newText);
+			});
+		}
+
+		/// <summary>
+		/// Bug 38954 - Format document changes position of caret
+		/// </summary>
+		[Test]
+		public async Task TestBug38954 ()
+		{
+			await Simulate (@"
+class EmptyClass
+{
+    public EmptyClass()
+    {
+        $Console.WriteLine() ;
+    }
+}", (content, ext) => { 
+				var oldOffset = ext.Editor.CaretOffset;
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
+				var newOffset = ext.Editor.CaretOffset;
+				Assert.AreEqual (oldOffset, newOffset);
+			});
+
+		} 
+
+
+		/// <summary>
+		/// Bug 51549 - Format document changes position of caret
+		/// </summary>
+		[Test]
+		public async Task TestBug51549 ()
+		{
+			await Simulate (@"
+using System;
+
+class MyContext
+{
+    public static void Main()
+    {
+        Console.WriteLine   $   (""Hello world!"");
+    }
+}", (content, ext) => {
+				var oldOffset = ext.Editor.CaretOffset;
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext);
+				var newOffset = ext.Editor.CaretOffset;
+				Assert.AreEqual (oldOffset - 3, newOffset);
+			});
+		}
+
 	}
 }

@@ -30,7 +30,7 @@ using Gtk;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class SearchAndReplaceTests : TextEditorTestBase
+	class SearchAndReplaceTests : TextEditorTestBase
 	{
 		/// <summary>
 		/// Bug 14716 - Search and replace All doesn't

@@ -83,6 +83,12 @@ namespace MonoDevelop.Components.Docking
 			topFrame.BackgroundColor = style.PadBackgroundColor.Value.ToGdkColor ();
 		}
 
+		internal Atk.Object Accessible {
+			get {
+				return box.Accessible;
+			}
+		}
+
 		public DockItem DockItem {
 			get { return parentItem; }
 		}

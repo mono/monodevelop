@@ -29,6 +29,9 @@ using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
 
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageTipOfTheDaySection: WelcomePageSection
@@ -52,8 +55,13 @@ namespace MonoDevelop.Ide.WelcomePage
 				currentTip = -1;
 
 			Gtk.VBox box = new Gtk.VBox (false, 12);
+			box.Accessible.SetShouldIgnore (true);
 
 			label = new Gtk.Label ();
+
+			label.Accessible.Name = "WelcomePage.TipOfTheDay.TipLabel";
+			label.Accessible.Description = "A tip for using MonoDevelop";
+
 			label.Xalign = 0;
 			label.Wrap = true;
 			label.WidthRequest = 200;
@@ -64,6 +72,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			box.PackStart (label, true, true, 0);
 
 			var next = new Gtk.Button (GettextCatalog.GetString ("Next Tip"));
+			next.Accessible.Name = "WelcomePage.TipOfTheDay.NextButton";
+			next.Accessible.Description = "Show the next tip";
+
 			next.Relief = Gtk.ReliefStyle.Normal;
 			next.Clicked += delegate {
 				if (tips.Count == 0)
@@ -75,9 +86,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			};
 
 			var al = new Gtk.Alignment (0, 0, 0, 0);
+			al.Accessible.SetShouldIgnore (true);
 			al.Add (next);
 			box.PackStart (al, false, false, 0);
 			SetContent (box);
+
+			SetTitledWidget (label);
+			SetTitledWidget (next);
 		}
 	}
 }

@@ -38,6 +38,8 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading.Tasks;
@@ -164,7 +166,7 @@ namespace MonoDevelop.CSharp
 			SubscribeCaretPositionChange ();
 
 			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
-			if (ownerProjects.Count > 1) {
+			if (ownerProjects?.Count > 1) {
 				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (TypeSystemService.GetCodeAnalysisProject).ToList ();
 				CancelDocumentParsedUpdate ();
 				var token = documentParsedCancellationTokenSource.Token;
@@ -701,7 +703,7 @@ namespace MonoDevelop.CSharp
 		SyntaxNode lastMember;
 		string lastMemberMarkup;
 		MonoDevelop.Projects.Project lastProject;
-		AstAmbience amb;
+		AstAmbience? amb;
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool caretPositionChangedSubscribed;
 		uint updatePathTimeoutId;
@@ -711,7 +713,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (amb == null || node == null)
 				return "";
-			return amb.GetEntityMarkup (node);
+			return amb.Value.GetEntityMarkup (node);
 		}
 
 

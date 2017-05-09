@@ -54,6 +54,18 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueResize ();
 			}
 		}
+
+		public IEnumerable<ButtonBarGroup> Groups {
+			set {
+				var buttonList = new List<IButtonBarButton> ();
+				foreach (var g in value) {
+					buttonList.AddRange (g.Buttons);
+				}
+
+				Buttons = buttonList;
+			}
+		}
+
 		Dictionary<IButtonBarButton, Gdk.Rectangle> allocations = new Dictionary<IButtonBarButton, Gdk.Rectangle> ();
 		IButtonBarButton[] visibleButtons;
 

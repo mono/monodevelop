@@ -4,10 +4,6 @@
 		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
-		<Templates resource="T4SyntaxMode.xml" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/t4-template" _description="Text template" icon="md-template" isText="true">
 			<File pattern="*.tt" />

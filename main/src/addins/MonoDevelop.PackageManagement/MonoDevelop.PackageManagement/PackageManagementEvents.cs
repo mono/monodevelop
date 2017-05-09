@@ -64,7 +64,7 @@ namespace MonoDevelop.PackageManagement
 		
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		
-		public void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args)
+		public void OnPackageOperationMessageLogged (MessageLevel level, string message, params object[] args)
 		{
 			if (PackageOperationMessageLogged != null) {
 				var eventArgs = new PackageOperationMessageLoggedEventArgs(level, message, args);

@@ -31,11 +31,8 @@ type FSharpFormatter()  =
         searchPos 0 (positions.Length - 1)
 
     let getConfig (textStylePolicy:TextStylePolicy) (formattingPolicy: FSharpFormattingPolicy) =
-        match textStylePolicy, formattingPolicy with
-        | null, null ->
-            LoggingService.LogWarning("**Fantomas**: Fall back to default config")
-            FormatConfig.Default
-        | null, _ ->
+        match textStylePolicy with
+        | null ->
             let format = formattingPolicy.DefaultFormat
             { FormatConfig.Default with
                 IndentOnTryWith = format.IndentOnTryWith
@@ -46,10 +43,6 @@ type FSharpFormatter()  =
                 SpaceBeforeArgument = format.SpaceBeforeArgument
                 SpaceBeforeColon = format.SpaceBeforeColon
                 SemicolonAtEndOfLine = false }
-        | _, null ->
-            { FormatConfig.Default with
-                PageWidth = textStylePolicy.FileWidth
-                IndentSpaceNum = textStylePolicy.IndentWidth }
         | _ ->
             let format = formattingPolicy.DefaultFormat
             { FormatConfig.Default with
@@ -70,18 +63,23 @@ type FSharpFormatter()  =
         else output
 
     let format (editor : Editor.TextEditor option) style formatting input options : ITextSource =
-        let isFsiFile =
+        let filename, projFileName =
             match editor with
-            | Some d -> d.FileName.Extension.Equals(".fsi", StringComparison.OrdinalIgnoreCase)
-            | _ -> false
-
+            | Some ed ->
+                match ed.DocumentContext.HasProject with
+                | true -> ed.FileName.FullPath.ToString(), ed.DocumentContext.Project.FileName.FullPath.ToString()
+                | false -> ed.FileName.FullPath.ToString(), ed.FileName.FullPath.ToString()
+            | _ -> "tmp.fsx", "tmp.fsx"
+        let projOptions =  languageService.GetCheckerOptions(filename, projFileName, input)
         let config = getConfig style formatting
-
-        match options with
-        | Document ->
+        match options, projOptions with
+        | Document, Some projectOptions  ->
             let output =
                 try
-                    let result = trimIfNeeded input (CodeFormatter.formatSourceString isFsiFile input config)
+                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, projectOptions, languageService.Checker)
+                                    |> Async.RunSynchronously
+
+                    let result = trimIfNeeded input formatted
                     //If onTheFly do the replacements in the document
                     editor
                     |> Option.iter (fun editor ->
@@ -89,13 +87,13 @@ type FSharpFormatter()  =
                         let col = editor.CaretColumn
                         editor.ReplaceText(0, input.Length, result)
                         editor.SetCaretLocation (line, col, false))
-                    StringTextSource (result)
+                    StringTextSource result
                 with exn ->
-                    LoggingService.LogError("Error occured: {0}", exn.Message)
+                    LoggingService.LogError("**Fantomas**: Error occured: {0}", exn.Message)
                     StringTextSource input
             output :> ITextSource
 
-        | Selection(fromOffset, toOffset) ->
+        | Selection(fromOffset, toOffset), Some projectOptions ->
             // Convert from offsets to line and column position
             let positions =
                 input.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n')
@@ -113,8 +111,9 @@ type FSharpFormatter()  =
                     let! result =
                         try
                             let selection = input.Substring(fromOffset, toOffset - fromOffset)
-                            let result = trimIfNeeded selection (CodeFormatter.formatSelectionOnly isFsiFile range input config)
-
+                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, projectOptions, languageService.Checker)
+                                            |> Async.RunSynchronously
+                            let result = trimIfNeeded input formatted
                             match editor with
                             | Some editor ->
                                 //If onTheFly do the replacements in the document
@@ -130,8 +129,8 @@ type FSharpFormatter()  =
                 match tryFormat with
                 | Some newCode -> StringTextSource (newCode)
                 | None -> StringTextSource.Empty
-            formatted :> ITextSource
-
+            formatted :> _
+        | _, None -> StringTextSource input :> _
     let formatText (editor : Editor.TextEditor option) (policyParent : PolicyContainer) (mimeType:string) input formattingOption =
         let textStylePolicy = policyParent.Get<TextStylePolicy>(mimeType)
         let formattingPolicy = policyParent.Get<FSharpFormattingPolicy>(mimeType)

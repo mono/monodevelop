@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 	}
 
-	class DotNetRunConfigurationEditorWidget: Notebook
+	public class DotNetRunConfigurationEditorWidget: Notebook
 	{
 		RadioButton radioStartProject;
 		RadioButton radioStartApp;
@@ -80,6 +80,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		InformationPopoverWidget appEntryInfoIcon;
 
 		public DotNetRunConfigurationEditorWidget ()
+			: this (true)
+		{
+
+		}
+
+		public DotNetRunConfigurationEditorWidget (bool includeAdvancedTab)
 		{
 			VBox mainBox = new VBox ();
 
@@ -140,7 +146,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (box, 1, 1, hexpand: true);
 			adBox.PackStart (table);
 
-			Add (adBox, GettextCatalog.GetString ("Advanced"));
+			if (includeAdvancedTab)
+				Add (adBox, GettextCatalog.GetString ("Advanced"));
 
 			monoSettingsButton.Clicked += EditRuntimeClicked;
 			radioStartProject.ActiveChanged += (sender, e) => UpdateStatus ();
@@ -240,7 +247,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			envVars.StoreValues (config.EnvironmentVariables);
 		}
 
-		void NotifyChanged ()
+		protected void NotifyChanged ()
 		{
 			Changed?.Invoke (this, EventArgs.Empty);
 		}

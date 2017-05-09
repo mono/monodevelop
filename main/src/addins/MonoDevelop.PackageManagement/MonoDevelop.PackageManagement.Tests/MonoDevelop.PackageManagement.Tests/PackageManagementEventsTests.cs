@@ -111,7 +111,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			object eventSender = null;
 			events.PackageOperationMessageLogged += (sender, e) => eventSender = sender;
 
-			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test");
+			events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test");
 
 			Assert.AreEqual (events, eventSender);
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void OnPackageOperationMessageLogged_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
 		{
 			CreateEvents ();
-			Assert.DoesNotThrow (() => events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test"));
+			Assert.DoesNotThrow (() => events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test"));
 		}
 
 		[Test]
@@ -130,9 +130,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageOperationMessageLoggedEventArgs eventArgs = null;
 			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
 
-			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test");
+			events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test");
 
-			Assert.AreEqual (NuGet.MessageLevel.Info, eventArgs.Message.Level);
+			Assert.AreEqual (MessageLevel.Info, eventArgs.Message.Level);
 		}
 
 		[Test]
@@ -143,7 +143,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
 
 			string format = "Test {0}";
-			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, format, "B");
+			events.OnPackageOperationMessageLogged (MessageLevel.Info, format, "B");
 
 			string message = eventArgs.Message.ToString ();
 

@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public static FilePath SyntaxModePath {
 			get {
-				return UserProfile.Current.UserDataRoot.Combine ("HighlightingSchemes");
+				return UserProfile.Current.UserDataRoot.Combine ("ColorThemes");
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			if (success)
-				SyntaxModeService.LoadStylesAndModes (SyntaxModePath);
+				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
 		}
 
 		public string Name {
@@ -95,10 +95,22 @@ namespace MonoDevelop.Ide.Editor
 
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			var editor = TextEditorFactory.CreateNewEditor ();
-			editor.MimeType = mimeType;
+			TextEditor editor;
+
+			// HACK: this is a very poor test for whether to load the document. Maybe add an IsPlaceholder property to FilePath.
+			// Another alternative would be to add a parameter to CreateContent.
+			if (File.Exists(fileName))
+			{
+				editor = TextEditorFactory.CreateNewEditor(fileName, mimeType);
+			}
+			else
+			{
+				editor = TextEditorFactory.CreateNewEditor();
+				editor.FileName = fileName;
+				editor.MimeType = mimeType;
+			}
+
 			editor.GetViewContent ().Project = ownerProject;
-			editor.GetViewContent ().ContentName = fileName;
 			return editor.GetViewContent (); 
 		}
 

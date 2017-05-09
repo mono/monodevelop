@@ -48,6 +48,8 @@ namespace MonoDevelop.Projects
 			Project project = solution.GetAllProjects ().First ();
 
 			Assert.That (project.FlavorGuids, Contains.Item ("{349C5851-65DF-11DA-9384-00065B846F21}"));
+
+			solution.Dispose ();
 		}
 	}
 }

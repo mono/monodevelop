@@ -43,9 +43,20 @@
     </Foo>
   </ItemGroup>
   <ItemGroup>
-    <None Include="*.txt">
+    <None Include="*.txt" AttributeMetadata="Test" OverriddenAttributeMetadata="$(Configuration)">
     	<Meta2>$(Configuration)</Meta2>
+		<OverriddenAttributeMetadata>$(Platform)</OverriddenAttributeMetadata>
     </None>
+	<Files Include="file1.txt">
+	</Files>
+	<Files Update="*.txt">
+		<MetaUpdate>$(Configuration)</MetaUpdate>
+	</Files>
+	<Files Include="file2.txt">
+	</Files>
+	<Files Update="file2.txt">
+		<MetaUpdate2>$(Platform)</MetaUpdate2>
+	</Files>
     <None Include="*.txt">
     	<Meta2>$(Configuration)</Meta2>
     </None>

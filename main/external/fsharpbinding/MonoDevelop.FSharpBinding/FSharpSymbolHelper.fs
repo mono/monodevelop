@@ -1,7 +1,9 @@
 ﻿namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
+open System.IO
 open System.Text
+open System.Threading
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
@@ -9,6 +11,9 @@ open Mono.TextEditor.Highlighting
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Editor.Highlighting
+open MonoDevelop.Components
 open MonoDevelop.FSharp.Shared
 open ExtCore.Control
 
@@ -330,32 +335,42 @@ module SymbolUse =
 //  | ToolTip of signature:string * doc:XmlDoc * footer:string
 //    ///A empty tip
 //  | EmptyTip
-
+[<AutoOpen>]
+module PrintParameter =
+    let print sb = Printf.bprintf sb "%s"
 
 [<AutoOpen>]
-module internal Highlight =
+module Highlight =
     type HighlightType =
     | Symbol | Brackets | Keyword | UserType | Number
 
-    let getColourScheme () =
-        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
     let getColourPart x = round(x * 255.0) |> int
 
     let argbToHex (c : Cairo.Color) =
         sprintf "#%02X%02X%02X" (getColourPart c.R) (getColourPart c.G) (getColourPart c.B)
 
+    let getEditor() =
+        let editor = TextEditorFactory.CreateNewEditor()
+        editor.MimeType <- "text/x-fsharp"
+        let assembly = typeof<SyntaxHighlighting>.Assembly
+        use stream = assembly.GetManifestResourceStream("F#.sublime-syntax")
+        use reader = new StreamReader(stream)
+        let highlighting = Sublime3Format.ReadHighlighting(reader)
+        highlighting.PrepareMatches()
+        editor.SyntaxHighlighting <- SyntaxHighlighting(highlighting, editor)
+        editor
+
+    let editor =
+        Runtime.RunInMainThread getEditor
+        |> Async.AwaitTask 
+        |> Async.RunSynchronously
+
     let syntaxHighlight s =
-        let data = new TextEditorData (new TextDocument (s))
-        data.Document.SyntaxMode <- SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
-        data.ColorStyle <- getColourScheme()
-        data.GetMarkup (0, data.Length, false)
+        Runtime.RunInMainThread(fun() -> editor.Text <- s) |> Async.AwaitTask |> Async.RunSynchronously
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+        data.GetMarkup(0, s.Length, false, true, false, true)
 
     let asUnderline = sprintf "_STARTUNDERLINE_%s_ENDUNDERLINE_" // we replace with real markup after highlighting
-
-[<AutoOpen>]
-module PrintParameter =
-    let print sb = Printf.bprintf sb "%s"
-
 
 module SymbolTooltips =
     let maxPadding = 20
@@ -757,8 +772,9 @@ module SymbolTooltips =
     let returnType (symbol:FSharpSymbolUse) =
         match symbol with
         | MemberFunctionOrValue m ->
-            Some m.ReturnParameter.Type
-        //| Entity c ->
+            try
+                Some m.ReturnParameter.Type
+            with _ -> None
         | _ -> None
 
     let footerForType (entity:FSharpSymbolUse) =

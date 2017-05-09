@@ -8,5 +8,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription ("Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers.")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]
-[assembly: InternalsVisibleTo("MonoDevelop.AspNet.Tests")]
-[assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]

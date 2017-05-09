@@ -1,4 +1,4 @@
-// IdePreferences.cs
+﻿// IdePreferences.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> AddImportedItemsToCompletionList = ConfigurationProperty.Create ("AddImportedItemsToCompletionList", false);
 		public readonly ConfigurationProperty<bool> IncludeKeywordsInCompletionList = ConfigurationProperty.Create ("IncludeKeywordsInCompletionList", true);
 		public readonly ConfigurationProperty<bool> IncludeCodeSnippetsInCompletionList = ConfigurationProperty.Create ("IncludeCodeSnippetsInCompletionList", true);
-		public readonly ConfigurationProperty<bool> AddParenthesesAfterCompletion = ConfigurationProperty.Create ("AddParenthesesAfterCompletion", false);
+		public readonly ConfigurationProperty<bool> AddParenthesesAfterCompletion = ConfigurationProperty.Create ("AddParenthesesAfterCompletion", true);
 		public readonly ConfigurationProperty<bool> AddOpeningOnly = ConfigurationProperty.Create ("AddOpeningOnly", false);
 		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
@@ -214,13 +214,13 @@ namespace MonoDevelop.Ide
 			protected override string OnGetValue ()
 			{
 				var style = base.OnGetValue ();
-				if (SyntaxModeService.Styles.Contains (style))
+				if (SyntaxHighlightingService.Styles.Contains (style))
 					return style;
 
-				var defaultStyle = SyntaxModeService.GetDefaultColorStyleName ();
+				var defaultStyle = SyntaxHighlightingService.GetDefaultColorStyleName ();
 				LoggingService.LogWarning ("Highlighting Theme \"{0}\" not found, using default \"{1}\" instead", style, defaultStyle);
 				Value = defaultStyle;
-				return SyntaxModeService.GetDefaultColorStyleName ();
+				return SyntaxHighlightingService.GetDefaultColorStyleName ();
 			}
 		}
 	}

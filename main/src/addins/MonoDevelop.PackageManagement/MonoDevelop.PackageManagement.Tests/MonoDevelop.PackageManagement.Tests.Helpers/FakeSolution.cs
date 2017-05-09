@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -79,6 +80,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return this == solution;
 		}
+
+		public IDotNetProject ResolveProject (ProjectReference projectReference)
+		{
+			if (OnResolveProject != null)
+				return OnResolveProject (projectReference);
+			return Projects.FirstOrDefault (project => project.Name == projectReference.Include);
+		}
+
+		public Func<ProjectReference, IDotNetProject> OnResolveProject;
 	}
 }
 

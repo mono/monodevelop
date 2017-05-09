@@ -27,6 +27,8 @@
 using Gtk;
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
@@ -46,7 +48,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5, int spacing = Styles.WelcomeScreen.Pad.News.Item.MarginBottom): base (title)
 		{
+			Accessible.Name = "WelcomePage.NewsFeed";
+			Accessible.Description = "A list of new items";
+
 			box = new VBox (false, spacing);
+			box.Accessible.SetShouldIgnore (true);
+
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
 			if (string.IsNullOrEmpty (id))
@@ -81,6 +88,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected virtual void AddNewsItem (VBox box, Gtk.Widget newsItem)
 		{
 			box.PackStart (newsItem, true, false, 0);
+
+			SetTitledWidget (newsItem);
 		}
 
 		void LoadNews ()
@@ -90,6 +99,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				return;
 
 			foreach (var c in box.Children) {
+				RemoveAccessibiltyTitledWidget (c);
 				box.Remove (c);
 				c.Destroy ();
 			}
@@ -98,13 +108,21 @@ namespace MonoDevelop.Ide.WelcomePage
 				var news = GetNewsXml ();
 				if (news.FirstNode == null) {
 					var label = new Label (GettextCatalog.GetString ("No news found.")) { Xalign = 0, Xpad = 6 };
+					label.Accessible.Name = "WelcomePage.NewsFeed.NoNews";
 
 					box.PackStart (label, true, false, 0);
 				} else {
-					foreach (var child in OnLoadNews (news).Take (limit))
+					int idx = 1;
+					foreach (var child in OnLoadNews (news).Take (limit)) {
+						child.Accessible.Name = string.Format ("WelcomePage.NewsFeed.NewsItem-{0}", idx);
 						AddNewsItem (box, child);
+						idx++;
+					}
 				}
-				box.PackStart (new Label(), true, false, 4);
+
+				var spacerLabel = new Label ();
+				spacerLabel.Accessible.SetShouldIgnore (true);
+				box.PackStart (spacerLabel, true, false, 4);
 
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Error loading news feed.", ex);

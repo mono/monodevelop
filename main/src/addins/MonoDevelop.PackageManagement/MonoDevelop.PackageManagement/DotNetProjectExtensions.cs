@@ -30,12 +30,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using MonoDevelop.Projects;
-using NuGet;
-using NuGet.Common;
 using MonoDevelop.Core;
-using NuGet.PackageManagement;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
+using NuGet.Common;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.ProjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -76,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			if (nugetAwareProject != null)
 				return nugetAwareProject.HasPackages ();
 
-			return HasPackages (project.BaseDirectory, project.Name);
+			return HasPackages (project.BaseDirectory, project.Name) || project.HasPackageReferences ();
 		}
 
 		public static string GetPackagesConfigFilePath (this DotNetProject project)
@@ -123,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetDefaultPackagesConfigFilePath (string projectDirectory)
 		{
-			return Path.Combine (projectDirectory, NuGet.Constants.PackageReferenceFile);
+			return Path.Combine (projectDirectory, NuGet.Configuration.NuGetConstants.PackageReferenceFile);
 		}
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
@@ -151,6 +152,69 @@ namespace MonoDevelop.PackageManagement
 				return FilePath.Null;
 
 			return nugetProject.GetPackagesFolderPath (solutionManager);
+		}
+
+		public static IEnumerable<string> GetDotNetCoreTargetFrameworks (this Project project)
+		{
+			foreach (MSBuildPropertyGroup propertyGroup in project.MSBuildProject.PropertyGroups) {
+				string framework = propertyGroup.GetValue ("TargetFramework", null);
+				if (framework != null)
+					return new [] { framework };
+
+				string frameworks = propertyGroup.GetValue ("TargetFrameworks", null);
+				if (frameworks != null)
+					return frameworks.Split (';');
+			}
+
+			return Enumerable.Empty<string> ();
+		}
+
+		public static bool IsDotNetCoreProject (this Project project)
+		{
+			return project.GetDotNetCoreTargetFrameworks ().Any ();
+		}
+
+		public static bool HasPackageReferences (this DotNetProject project)
+		{
+			return project.Items.OfType<ProjectPackageReference> ().Any () ||
+				project.MSBuildProject.HasEvaluatedPackageReferences ();
+		}
+
+		public static ProjectPackageReference GetPackageReference (
+			this DotNetProject project,
+			PackageIdentity packageIdentity,
+			bool matchVersion = true)
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.FirstOrDefault (projectItem => projectItem.Equals (packageIdentity, matchVersion));
+		}
+
+		public static bool HasPackageReference (this DotNetProject project, string packageId)
+		{
+			return project.Items.OfType<ProjectPackageReference> ()
+				.Any (projectItem => StringComparer.OrdinalIgnoreCase.Equals (projectItem.Include, packageId));
+		}
+
+		public static FilePath GetNuGetAssetsFilePath (this DotNetProject project)
+		{
+			return project.BaseIntermediateOutputPath.Combine (LockFileFormat.AssetsFileName);
+		}
+
+		public static bool NuGetAssetsFileExists (this DotNetProject project)
+		{
+			string assetsFile = project.GetNuGetAssetsFilePath ();
+			return File.Exists (assetsFile);
+		}
+
+		public static bool DotNetCoreNuGetMSBuildFilesExist (this DotNetProject project)
+		{
+			var baseDirectory = project.BaseIntermediateOutputPath;
+			string projectFileName = project.FileName.FileName;
+			string propsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.props");
+			string targetsFileName = baseDirectory.Combine (projectFileName + ".nuget.g.targets");
+
+			return File.Exists (propsFileName) &&
+				File.Exists (targetsFileName);
 		}
 	}
 }

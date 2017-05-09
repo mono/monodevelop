@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
@@ -57,6 +58,8 @@ namespace MonoDevelop.Components.Docking
 		public DockContainer (DockFrame frame)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
+
+			Accessible.SetRole (AtkCocoa.Roles.AXSplitGroup);
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
@@ -202,6 +205,11 @@ namespace MonoDevelop.Components.Docking
 
 		protected override void OnAdded (Widget widget)
 		{
+			// Break the add signal cycle
+			if (widget.Parent == this) {
+				return;
+			}
+
 			System.Diagnostics.Debug.Assert (
 				widget.Parent == null,
 				"Widget is already parented on another widget");
@@ -256,6 +264,8 @@ namespace MonoDevelop.Components.Docking
 					ts.Show ();
 					notebooks.Add (ts);
 					ts.Parent = this;
+
+					GLib.Signal.Emit (this, "add", ts);
 				}
 				frame.UpdateRegionStyle (grp);
 				ts.VisualStyle = grp.VisualStyle;
@@ -485,6 +495,8 @@ namespace MonoDevelop.Components.Docking
 	
 			public SplitterWidget ()
 			{
+				Accessible.SetRole (AtkCocoa.Roles.AXSplitter);
+
 				this.VisibleWindow = false;
 				this.AboveChild = true;
 			}
@@ -497,6 +509,7 @@ namespace MonoDevelop.Components.Docking
 
 			protected override void OnSizeAllocated (Rectangle allocation)
 			{
+				Accessible.SetOrientation (allocation.Height > allocation.Width ? Orientation.Vertical : Orientation.Horizontal);
 				base.OnSizeAllocated (allocation);
 			}
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolVersion="14.0">
+	<PropertyGroup>
+		<MonoDevelopRootDir>$(MSBuildThisFileDirectory)</MonoDevelopRootDir>
+		<CustomBeforeMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
+		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+	<!-- import common targets if they were not imported already by an MSBuild Sdk -->
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(MicrosoftCommonPropsHasBeenImported)' != 'true'" />
+	<Import Project="$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.props" />
+</Project>

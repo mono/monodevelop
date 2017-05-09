@@ -183,8 +183,13 @@ namespace MonoDevelop.Ide.Tasks
 		public int Count {
 			get { return tasks.Count; }
 		}
+
+		public List<TaskListEntry>.Enumerator GetEnumerator ()
+		{
+			return tasks.GetEnumerator ();
+		}
 		
-		public IEnumerator<TaskListEntry> GetEnumerator ()
+		IEnumerator<TaskListEntry> IEnumerable<TaskListEntry>.GetEnumerator ()
 		{
 			return tasks.GetEnumerator ();
 		}

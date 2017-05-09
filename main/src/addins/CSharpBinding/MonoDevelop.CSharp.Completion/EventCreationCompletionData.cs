@@ -88,8 +88,8 @@ namespace MonoDevelop.CSharp.Completion
 			var parsedDocument = document.UpdateParseDocument ().Result;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 
-			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));
-			var enclosingSymbol = semanticModel.GetEnclosingSymbol<ISymbol> (position, default(CancellationToken));
+			var declaringType = semanticModel.GetEnclosingSymbol (position, default(CancellationToken)) as ITypeSymbol;
+			var enclosingSymbol = semanticModel.GetEnclosingSymbol (position, default(CancellationToken));
 
 			var insertionPoints = InsertionPointService.GetInsertionPoints (
 				document.Editor,

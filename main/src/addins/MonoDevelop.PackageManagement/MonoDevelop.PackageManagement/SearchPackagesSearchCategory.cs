@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 			if (IsProjectSelected ()) {
 				searchResultCallback.ReportResult (new SearchPackageSearchResult (pattern));
 			}
-			return SpecializedTasks.EmptyTask;
+			return Task.CompletedTask;
 		}
 
 		class SearchPackageSearchResult : SearchResult

@@ -237,17 +237,17 @@ namespace MonoDevelop.AspNet.WebForms
 //			};
 		}
 		
-		
+	/*		
 		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
-/*			//completion for ASP.NET expressions
+		//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is WebFormsExpressionState) {
 				InitializeCodeCompletion ('\0');
 				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, documentInfo, localDocumentInfo);
-			}*/
+			}
 			return base.CodeCompletionCommand (completionContext);
-		}
+		}*/
 
 		protected override void Initialize ()
 		{

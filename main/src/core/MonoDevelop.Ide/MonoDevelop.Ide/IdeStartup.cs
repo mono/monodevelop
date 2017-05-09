@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide
 		
 		int Run (MonoDevelopOptions options)
 		{
-			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
+			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
 			//ensure native libs initialized before we hit anything that p/invokes
@@ -96,7 +96,12 @@ namespace MonoDevelop.Ide
 			SetupExceptionManager ();
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
-			IdeApp.Customizer.Initialize ();
+			try {
+				IdeApp.Customizer.Initialize ();
+			} catch (UnauthorizedAccessException ua) {
+				LoggingService.LogError ("Unauthorized access: " + ua.Message);
+				return 1;
+			}
 
 			try {
 				GLibLogging.Enabled = true;
@@ -111,7 +116,7 @@ namespace MonoDevelop.Ide
 
 			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
-			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
+			Platform.AssemblyLoad(p.ParentDirectory.Combine("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
@@ -622,7 +627,7 @@ namespace MonoDevelop.Ide
 				foreach (var path in paths) {
 					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
 					if (File.Exists (file)) {
-						Assembly asm = Assembly.LoadFrom (file);
+						Assembly asm = Platform.AssemblyLoad(file);
 						var t = asm.GetType (type, true);
 						var c = Activator.CreateInstance (t) as IdeCustomizer;
 						if (c == null)

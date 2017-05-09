@@ -35,8 +35,8 @@ using NUnit.Framework;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.CodeGeneration;
 using System.Collections.Immutable;
-using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
 
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			var ext = new CSharpCompletionTextEditorExtension ();
 			var list = new CSharpCompletionTextEditorExtension.CSharpCompletionDataList ();
 			var result = CodeCompletionBugTests.CreateProvider (text);
-			list.AddRange (result);
+			list.AddRange (result.Data);
 			ext.AddImportCompletionData (result, list, new RoslynCodeCompletionFactory (ext, semanticModel), semanticModel, cursorPosition);
 
 			return list;

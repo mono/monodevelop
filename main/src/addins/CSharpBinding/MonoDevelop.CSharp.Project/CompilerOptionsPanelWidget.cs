@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -100,16 +101,28 @@ namespace MonoDevelop.CSharp.Project
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
 			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
 
-			ListStore langVerStore = new ListStore (typeof (string));
-			langVerStore.AppendValues (GettextCatalog.GetString ("Default"));
-			langVerStore.AppendValues ("ISO-1");
-			langVerStore.AppendValues ("ISO-2");
-			langVerStore.AppendValues ("Version 3");
-			langVerStore.AppendValues ("Version 4");
-			langVerStore.AppendValues ("Version 5");
-			langVerStore.AppendValues ("Version 6");
+			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
+			langVerStore.AppendValues (GettextCatalog.GetString ("Default"), LanguageVersion.Default);
+			langVerStore.AppendValues ("ISO-1", LanguageVersion.CSharp1);
+			langVerStore.AppendValues ("ISO-2", LanguageVersion.CSharp2);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 3"), LanguageVersion.CSharp3);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 4"), LanguageVersion.CSharp4);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 5"), LanguageVersion.CSharp5);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 6"), LanguageVersion.CSharp6);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 7"), LanguageVersion.CSharp7);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Latest"), LanguageVersion.Latest);
 			langVerCombo.Model = langVerStore;
-			langVerCombo.Active = (int) compilerParameters.LangVersion;
+
+			TreeIter iter;
+			if (langVerStore.GetIterFirst (out iter)) {
+				do {
+					var val = (LanguageVersion)(int)langVerStore.GetValue (iter, 1);
+					if (val == compilerParameters.LangVersion) {
+						langVerCombo.SetActiveIter (iter);
+						break;
+					}
+				} while (langVerStore.IterNext (ref iter));
+			}
 		}
 
 		public bool ValidateChanges ()
@@ -137,10 +150,14 @@ namespace MonoDevelop.CSharp.Project
 		public void Store (ItemConfigurationCollection<ItemConfiguration> configs)
 		{
 			int codePage;
-			CompileTarget compileTarget =  (CompileTarget) compileTargetCombo.Active;
-			LangVersion langVersion = (LangVersion) langVerCombo.Active; 
-			
-			
+			var compileTarget =  (CompileTarget) compileTargetCombo.Active;
+
+			var langVersion = LanguageVersion.Default;
+			TreeIter iter;
+			if (langVerCombo.GetActiveIter (out iter)) {
+				langVersion = (LanguageVersion)langVerCombo.Model.GetValue (iter, 1);
+			}
+
 			if (codepageEntry.Entry.Text.Length > 0) {
 				// Get the codepage. If the user specified an encoding name, find it.
 				int trialCodePage = -1;

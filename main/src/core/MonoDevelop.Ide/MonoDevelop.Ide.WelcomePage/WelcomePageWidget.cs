@@ -38,6 +38,7 @@ using Gtk;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Desktop;
@@ -77,17 +78,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			LogoHeight = 90;
 
 			var background = new WelcomePageWidgetBackground ();
+			background.Accessible.SetShouldIgnore (true);
 			Background = background;
 			background.Owner = this;
 			var mainAlignment = new Gtk.Alignment (0f, 0f, 1f, 1f);
+			mainAlignment.Accessible.SetShouldIgnore (true);
 			background.Add (mainAlignment);
 
 			BuildContent (mainAlignment);
 
 			if (ShowScrollbars) {
 				var scroller = new ScrolledWindow ();
+				scroller.Accessible.SetShouldIgnore (true);
 				scroller.AddWithViewport (background);
 				((Gtk.Viewport)scroller.Child).ShadowType = ShadowType.None;
+				scroller.Child.Accessible.SetShouldIgnore (true);
+
 				scroller.ShadowType = ShadowType.None;
 				scroller.FocusChain = new Widget[] { background };
 				scroller.Show ();

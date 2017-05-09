@@ -95,15 +95,18 @@ type MDLanguageService() =
   static let mutable instance =
     lazy
         let _ = vfs.Force()
+        // VisualFSharp sets extraProjectInfo to be the Roslyn Workspace
+        // object, but we don't have that level of integration yet
+        let extraProjectInfo = None 
         new LanguageService(
-            (fun changedfile ->
+            (fun (changedfile, _) ->
                 try
                     let doc = IdeApp.Workbench.ActiveDocument
                     if doc <> null && doc.FileName.FullPath.ToString() = changedfile then
                         LoggingService.LogDebug("FSharp Language Service: Compiler notifying document '{0}' is dirty and needs reparsing.  Reparsing as its the active document.", (Path.GetFileName changedfile))
                         doc.ReparseDocument()
                 with exn  ->
-                   LoggingService.LogDebug("FSharp Language Service: Error while attempting to notify document '{0}' needs reparsing", (Path.GetFileName changedfile), exn) ))
+                   LoggingService.LogDebug("FSharp Language Service: Error while attempting to notify document '{0}' needs reparsing", (Path.GetFileName changedfile), exn) ), extraProjectInfo)
 
   static member Instance with get () = instance.Force ()
                          and  set v  = instance <- lazy v

@@ -1,4 +1,4 @@
-//
+﻿//
 // FolderNodeBuilder.cs
 //
 // Author:
@@ -427,7 +427,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public async void AddNewFileToProject()
 		{
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
-			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
+			if (!IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem))) {
+				return;
+			}
 			CurrentNode.Expanded = true;
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();

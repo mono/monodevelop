@@ -138,6 +138,20 @@ namespace MonoDevelop.Ide
 			PlatformService.OpenFolder (folderPath, selectFiles);
 		}
 
+		public static string GetMimeTypeForRoslynLanguage (string language)
+		{
+			return PlatformService.GetMimeTypeForRoslynLanguage (language);
+		}
+
+		public static IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string language)
+		{
+			var mime = GetMimeTypeForRoslynLanguage (language);
+			if (mime == null) {
+				return null;
+			}
+			return GetMimeTypeInheritanceChain (mime);
+		}
+
 		public static string GetMimeTypeForUri (string uri)
 		{
 			return PlatformService.GetMimeTypeForUri (uri);

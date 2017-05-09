@@ -27,10 +27,8 @@
 //
 
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -57,7 +55,7 @@ namespace MonoDevelop.PackageManagement
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
 		void OnPackageOperationError(Exception ex);
-		void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args);
+		void OnPackageOperationMessageLogged (MessageLevel level, string message, params object[] args);
 		FileConflictAction OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);

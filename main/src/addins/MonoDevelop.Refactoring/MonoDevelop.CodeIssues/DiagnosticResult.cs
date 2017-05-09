@@ -29,6 +29,8 @@ using MonoDevelop.AnalysisCore;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using RefactoringEssentials;
+using System.Linq;
+using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -42,30 +44,24 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		public DiagnosticResult (Diagnostic diagnostic) : base (GetSpan (diagnostic), diagnostic.GetMessage ())
+		public DiagnosticResult (Diagnostic diagnostic) : base (diagnostic.Location.SourceSpan, diagnostic.GetMessage ())
 		{
 			if (diagnostic == null)
-				throw new ArgumentNullException ("diagnostic");
+				throw new ArgumentNullException (nameof (diagnostic));
 			this.diagnostic = diagnostic;
 
 			SetSeverity (diagnostic.Severity, GetIssueMarker ()); 
 		}
 
-		static TextSpan GetSpan (Diagnostic diagnostic)
+		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
-			int start = diagnostic.Location.SourceSpan.Start;
-			int end = diagnostic.Location.SourceSpan.End;
-
-			foreach (var loc in diagnostic.AdditionalLocations) {
-				start = Math.Min (start, loc.SourceSpan.Start);
-				end = Math.Max (start, loc.SourceSpan.End);
-			}
-
-			return TextSpan.FromBounds (start, end);
+			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
 		IssueMarker GetIssueMarker ()
 		{
+			if (DescriptorHasTag (diagnostic.Descriptor, WellKnownDiagnosticTags.Unnecessary))
+				return IssueMarker.GrayOut;
 			if (diagnostic.Descriptor.Category == DiagnosticAnalyzerCategories.RedundanciesInCode || diagnostic.Descriptor.Category == DiagnosticAnalyzerCategories.RedundanciesInDeclarations)
 				return IssueMarker.GrayOut;
 			if (diagnostic.Severity == DiagnosticSeverity.Info)

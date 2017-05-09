@@ -146,6 +146,11 @@ namespace MonoDevelop.Projects
 			((ICollection<KeyValuePair<string, string>>)dict).CopyTo (array, arrayIndex);
 		}
 
+		public List<KeyValuePair<string, string>>.Enumerator GetEnumerator ()
+		{
+			return dict.GetEnumerator ();
+		}
+
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
 			return ((IEnumerable)dict).GetEnumerator ();

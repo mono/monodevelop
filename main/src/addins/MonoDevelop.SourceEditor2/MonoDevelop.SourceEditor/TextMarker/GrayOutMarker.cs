@@ -28,12 +28,14 @@ using System;
 using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
 	class GrayOutMarker : UnderlineTextSegmentMarker, IChunkMarker, MonoDevelop.Ide.Editor.IGenericTextSegmentMarker
 	{
-		public GrayOutMarker (TextSegment segment) : base ("", segment)
+		public GrayOutMarker (ISegment segment) : base ("", segment)
 		{
 		}
 
@@ -44,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region IChunkMarker implementation
 
-		void IChunkMarker.TransformChunks (List<Chunk> chunks)
+		void IChunkMarker.TransformChunks (List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunks)
 		{
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
@@ -54,17 +56,39 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
 					return;
-				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
-					chunks.Insert (i, newChunk);
-					chunk.Offset += newChunk.Length;
-					chunk.Length -= newChunk.Length;
+				if (chunk.Contains (markerStart) && chunk.Contains (markerEnd)) {
+					var chunkBefore = new ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+					var chunkAfter = new ColoredSegment (markerEnd, chunk.EndOffset - markerEnd, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (markerStart, markerEnd - markerStart, chunk.ScopeStack);
+					if (chunkAfter.Length > 0) {
+						chunks.Insert (i + 1, chunkAfter);
+					}
+					if (chunkBefore.Length > 0) {
+						chunks.Insert (i, chunkBefore);
+						i++;
+					}
+					if (chunkAfter.Length > 0)
+						i++;
+					continue;
+				}
+				if (chunk.Contains (markerStart)) {
+					var chunkBefore = new ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (markerStart, chunk.EndOffset - markerStart, chunk.ScopeStack);
+					chunks.Insert (i, chunkBefore);
+					i++;
+					continue;
+				}
+				if (chunk.Contains (markerEnd)) {
+					var chunkAfter = new ColoredSegment (markerEnd, chunk.EndOffset - markerEnd, chunk.ScopeStack);
+					chunks [i] = new ColoredSegment (chunk.Offset, markerEnd - chunk.Offset, chunk.ScopeStack);
+					chunks.Insert (i + 1, chunkAfter);
+					i++;
 					continue;
 				}
 			}
 		}
 
-		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color)
+		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, MonoDevelop.Ide.Editor.Highlighting.ColoredSegment chunk, ref Cairo.Color color)
 		{
 			if (Debugger.DebuggingService.IsDebugging)
 				return;
@@ -72,12 +96,12 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-			var bgc = editor.ColorStyle.PlainText.Background;
-			double alpha = 0.6;
+			
 			color = new Cairo.Color (
-				color.R * alpha + bgc.R * (1.0 - alpha),
-				color.G * alpha + bgc.G * (1.0 - alpha),
-				color.B * alpha + bgc.B * (1.0 - alpha)
+				color.R,
+				color.G,
+				color.B,
+				0.6
 			);
 		}
 		#endregion

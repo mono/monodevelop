@@ -99,7 +99,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (type == null)
 				return;
 			
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}"), type.FullName));
+			result.Append (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}", type.FullName));
 			result.AppendLine ();
 		}
 		

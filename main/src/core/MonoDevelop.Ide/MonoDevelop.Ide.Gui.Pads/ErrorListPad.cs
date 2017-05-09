@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.Linq;
 using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
@@ -121,68 +122,84 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 
+		ToggleButton MakeButton (string image, string name, bool active, out Label label)
+		{
+			var btnBox = new HBox (false, 2);
+			btnBox.Accessible.SetShouldIgnore (true);
+			var imageView = new ImageView (image, Gtk.IconSize.Menu);
+			imageView.Accessible.SetShouldIgnore (true);
+			btnBox.PackStart (imageView);
+
+			label = new Label ();
+			label.Accessible.SetShouldIgnore (true);
+			btnBox.PackStart (label);
+
+			var btn = new ToggleButton { Name = name };
+			btn.Active = active;
+			btn.Child = btnBox;
+
+			return btn;
+		}
+
 		protected override void Initialize (IPadWindow window)
 		{
 			window.Title = GettextCatalog.GetString ("Errors");
 
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
+			toolbar.Accessible.Name = "ErrorPad.Toolbar";
+			toolbar.Accessible.SetLabel ("Error Pad Toolbar");
+			toolbar.Accessible.SetRole ("AXToolbar", "Pad toolbar");
+			toolbar.Accessible.Description = GettextCatalog.GetString ("The Error pad toolbar");
 
-			var btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Error, Gtk.IconSize.Menu));
-			errorBtnLbl = new Label ();
-			btnBox.PackStart (errorBtnLbl);
+			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
+			errorBtn.Accessible.Name = "ErrorPad.ErrorButton";
 
-			errorBtn = new ToggleButton { Name = "toggleErrors" };
-			errorBtn.Active = ShowErrors;
-			errorBtn.Child = btnBox;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
+			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Warning, Gtk.IconSize.Menu));
-			warnBtnLbl = new Label ();
-			btnBox.PackStart (warnBtnLbl);
-
-			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
-			warnBtn.Active = ShowWarnings;
-			warnBtn.Child = btnBox;
+			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
+			warnBtn.Accessible.Name = "ErrorPad.WarningButton";
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
+			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView (Stock.Information, Gtk.IconSize.Menu));
-			msgBtnLbl = new Label ();
-			btnBox.PackStart (msgBtnLbl);
-
-			msgBtn = new ToggleButton  { Name = "toggleMessages" };
-			msgBtn.Active = ShowMessages;
-			msgBtn.Child = btnBox;
+			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
+			msgBtn.Accessible.Name = "ErrorPad.MessageButton";
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
+			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum();
 			toolbar.Add (msgBtn);
-			
-			toolbar.Add (new SeparatorToolItem ());
 
-			btnBox = new HBox (false, 2);
-			btnBox.PackStart (new ImageView ("md-message-log", Gtk.IconSize.Menu));
-			logBtnLbl = new Label (GettextCatalog.GetString ("Build Output"));
-			btnBox.PackStart (logBtnLbl);
+			var sep = new SeparatorToolItem ();
+			sep.Accessible.SetShouldIgnore (true);
+			toolbar.Add (sep);
 
-			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
-			logBtn.Child = btnBox;
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
+			logBtn.Accessible.Name = "ErrorPad.LogButton";
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
+			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
+
+			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
+			logBtn.Accessible.SetTitle (logBtnLbl.Text);
+
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
 
 			//Dummy widget to take all space between "Build Output" button and SearchEntry
-			toolbar.Add (new HBox (), true);
+			var spacer = new HBox ();
+			spacer.Accessible.SetShouldIgnore (true);
+			toolbar.Add (spacer, true);
 
 			searchEntry = new SearchEntry ();
+			searchEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
+			searchEntry.Accessible.Name = "ErrorPad.Search";
+			searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the error data");
 			searchEntry.Entry.Changed += searchPatternChanged;
 			searchEntry.WidthRequest = 200;
 			searchEntry.Visible = true;
@@ -280,6 +297,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+
+			// Set the model to null as it makes Gtk clean up faster
+			view.Model = null;
 
 			base.Dispose ();
 		}
@@ -518,7 +538,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					}
 					text.Append (": ");
 				}
-				text.Append (task.Severity);
+				text.Append (task.Severity.ToString ());
 				if (!string.IsNullOrEmpty (task.Code)) {
 					text.Append (" ").Append (task.Code);
 				}
@@ -618,12 +638,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			descriptionCol.AddNotification("width", delegate
 			{
+				if (descriptionCellRenderer.WrapWidth == descriptionCol.Width)
+					return;
 				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
-				store.Foreach((model, path, iter) =>
-				{
-					model.EmitRowChanged(path, iter);
-					return false;
-				});
+				descriptionCol.QueueResize ();
 			});
 			
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);
@@ -911,16 +929,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdateErrorsNum () 
 		{
 			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
+			errorBtn.Accessible.SetTitle (errorBtnLbl.Text);
 		}
 
 		void UpdateWarningsNum ()
 		{
 			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
+			warnBtn.Accessible.SetTitle (warnBtnLbl.Text);
 		}
 
 		void UpdateMessagesNum ()
 		{
 			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
+			msgBtn.Accessible.SetTitle (msgBtnLbl.Text);
 		}
 
 		void UpdatePadIcon ()

@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						break;
 					case "term": {
 						string inner = "<root>" + xml.ReadInnerXml () + "</root>";
-						result.Append ("<i>" + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options) + " </i>");
+						result.Append ("<i>").Append (ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options)).Append (" </i>");
 						break;
 					}
 					case "description": {
@@ -430,7 +430,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							prefix = "    ";
 							break;
 						}
-						result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+						result.Append (prefix);
+						result.AppendLine (ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
 						break;
 					}
 					case "item": {
@@ -447,7 +448,8 @@ namespace MonoDevelop.Ide.TypeSystem
 								prefix = "  \u2022 ";
 								break;
 							}
-							result.AppendLine (prefix + ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
+							result.Append (prefix);
+							result.AppendLine (ParseBody (member, new XmlTextReader (new StringReader (inner)), "root", options));
 						break;
 					}
 					case "see":
@@ -529,6 +531,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (summaryEnd < 0)
 								summaryEnd = ret.Length;
 							break;
+						case "member":
 						case "summary":
 							var summary = options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							if (!IsEmptyDocumentation (summary)) {
@@ -603,7 +606,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						case "seealso":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
 								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
-								ret.Append (" " + EscapeText (xml ["cref"] + xml ["langword"]));
+								ret.Append (" ");
+								ret.Append (EscapeText (xml ["cref"]));
+								ret.Append (EscapeText (xml ["langword"]));
 							}
 							break;
 						}

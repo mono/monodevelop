@@ -57,7 +57,7 @@ namespace MonoDevelop.SourceEditor
 			return Task.FromResult (new TooltipItem (errorInformation, editor.GetLineByOffset (offset)));
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = new LanguageItemWindow (GetExtensibleTextEditor (editor), modifierState, null, (string)item.Item, null);
 			if (result.IsEmpty)
@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (LanguageItemWindow) tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);

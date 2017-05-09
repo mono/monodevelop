@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectBuilder.cs
 //  
 // Author:
@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System.Collections.Generic;
@@ -43,10 +44,12 @@ namespace MonoDevelop.Projects.MSBuild
 		readonly ProjectCollection engine;
 		readonly string file;
 		readonly BuildEngine buildEngine;
+		readonly string sdksPath;
 
-		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
+		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file, string sdksPath)
 		{
 			this.file = file;
+			this.sdksPath = sdksPath;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			Refresh ();
@@ -61,8 +64,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (taskId, delegate {
+				Project project = null;
+				Dictionary<string, string> originalGlobalProperties = null;
 				try {
-					var project = SetupProject (configurations);
+					if (sdksPath != null)
+						Environment.SetEnvironmentVariable ("MSBuildSDKsPath", sdksPath);
+					project = SetupProject (configurations);
 					InitLogger (logWriter);
 
 					ILogger[] loggers;
@@ -75,12 +82,21 @@ namespace MonoDevelop.Projects.MSBuild
 						loggers = new ILogger[] { logger };
 					}
 
+					if (globalProperties != null || sdksPath != null) {
+						originalGlobalProperties = new Dictionary<string, string> ();
+						foreach (var p in project.GlobalProperties)
+							originalGlobalProperties [p.Key] = p.Value;
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.SetGlobalProperty (p.Key, p.Value);
+						}
+						if (sdksPath != null)
+							project.SetGlobalProperty ("MSBuildSDKsPath", sdksPath);
+						project.ReevaluateIfNecessary ();
+					}
+
 					//building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
-
-					if (globalProperties != null)
-						foreach (var p in globalProperties)
-							pi.SetProperty (p.Key, p.Value);
 					
 					pi.Build (runTargets, loggers);
 
@@ -116,6 +132,13 @@ namespace MonoDevelop.Projects.MSBuild
 					result = new MSBuildResult (new [] { r });
 				} finally {
 					DisposeLogger ();
+					if (project != null && globalProperties != null) {
+						foreach (var p in globalProperties)
+							project.RemoveGlobalProperty (p.Key);
+						foreach (var p in originalGlobalProperties)
+							project.SetGlobalProperty (p.Key, p.Value);
+						project.ReevaluateIfNecessary ();
+					}
 				}
 			});
 			return result;
@@ -133,7 +156,9 @@ namespace MonoDevelop.Projects.MSBuild
 					project = p;
 			}
 
-			Environment.CurrentDirectory = Path.GetDirectoryName (file);
+			var projectDir = Path.GetDirectoryName (file);
+			if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
+				Environment.CurrentDirectory = projectDir;
 			return project;
 		}
 
@@ -141,21 +166,39 @@ namespace MonoDevelop.Projects.MSBuild
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
+
+				var projectDir = Path.GetDirectoryName (file);
+
+				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
+				// loading the project.
+				if (!string.IsNullOrEmpty (projectDir))
+					Directory.CreateDirectory (Path.Combine (projectDir, "obj"));
+
 				var content = buildEngine.GetUnsavedProjectContent (file);
 				if (content == null)
 					p = engine.LoadProject (file);
 				else {
-					Environment.CurrentDirectory = Path.GetDirectoryName (file);
-					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
-					p.FullPath = file;
+					if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
+						Environment.CurrentDirectory = projectDir;
+					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
+					projectRootElement.FullPath = file;
+
+					// Use the engine's default tools version to load the project. We want to build with the latest
+					// tools version.
+					string toolsVersion = engine.DefaultToolsVersion;
+					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
 				}
 			}
-			p.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-			p.SetProperty ("Configuration", configuration);
+
+			p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
+			p.SetGlobalProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
-				p.SetProperty ("Platform", platform);
+				p.SetGlobalProperty ("Platform", platform);
 			else
-				p.SetProperty ("Platform", "");
+				p.RemoveGlobalProperty ("Platform");
+
+			p.ReevaluateIfNecessary ();
+
 			return p;
 		}
 	}

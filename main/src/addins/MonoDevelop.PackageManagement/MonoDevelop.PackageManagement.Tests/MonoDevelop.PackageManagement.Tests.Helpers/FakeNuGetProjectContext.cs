@@ -41,6 +41,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public PackageExtractionContext PackageExtractionContext { get; set; }
 
+		public TelemetryServiceHelper TelemetryService { get; set; }
+
 		public ISourceControlManagerProvider SourceControlManagerProvider {
 			get { return null; }
 		}

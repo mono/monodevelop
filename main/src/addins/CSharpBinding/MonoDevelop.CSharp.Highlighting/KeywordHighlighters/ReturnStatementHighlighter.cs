@@ -3,9 +3,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using ICSharpCode.NRefactory6;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
@@ -15,49 +12,43 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters
 {
-    internal class ReturnStatementHighlighter : AbstractKeywordHighlighter<ReturnStatementSyntax>
-    {
-        protected override IEnumerable<TextSpan> GetHighlights(
-            ReturnStatementSyntax returnStatement, CancellationToken cancellationToken)
-        {
-            var parent = returnStatement
-                             .GetAncestorsOrThis<SyntaxNode>()
-                             .FirstOrDefault(n => n.IsReturnableConstruct());
+	internal class ReturnStatementHighlighter : AbstractKeywordHighlighter<ReturnStatementSyntax>
+	{
+		protected override IEnumerable<TextSpan> GetHighlights (
+			ReturnStatementSyntax returnStatement, CancellationToken cancellationToken)
+		{
+			var parent = returnStatement
+							 .GetAncestorsOrThis<SyntaxNode> ()
+							 .FirstOrDefault (n => n.IsReturnableConstruct ());
 
-            if (parent == null)
-            {
-                return SpecializedCollections.EmptyEnumerable<TextSpan>();
-            }
+			if (parent == null) {
+				return SpecializedCollections.EmptyEnumerable<TextSpan> ();
+			}
 
-            var spans = new List<TextSpan>();
+			var spans = new List<TextSpan> ();
 
-            HighlightRelatedKeywords(parent, spans);
+			HighlightRelatedKeywords (parent, spans);
 
-            return spans;
-        }
+			return spans;
+		}
 
-        /// <summary>
-        /// Finds all returns that are children of this node, and adds the appropriate spans to the spans list.
-        /// </summary>
-        private void HighlightRelatedKeywords(SyntaxNode node, List<TextSpan> spans)
-        {
-            node.TypeSwitch(
-                (ReturnStatementSyntax statement) =>
-                {
-                    spans.Add(statement.ReturnKeyword.Span);
-                    spans.Add(EmptySpan(statement.SemicolonToken.Span.End));
-                },
-                _ =>
-                {
-                    foreach (var child in node.ChildNodes())
-                    {
-                        // Only recurse if we have anything to do
-                        if (!child.IsReturnableConstruct())
-                        {
-                            HighlightRelatedKeywords(child, spans);
-                        }
-                    }
-                });
-        }
-    }
+		/// <summary>
+		/// Finds all returns that are children of this node, and adds the appropriate spans to the spans list.
+		/// </summary>
+		private void HighlightRelatedKeywords (SyntaxNode node, List<TextSpan> spans)
+		{
+			var statement = node as ReturnStatementSyntax;
+			if (statement != null) {
+				spans.Add (statement.ReturnKeyword.Span);
+				spans.Add (EmptySpan (statement.SemicolonToken.Span.End));
+			} else {
+				foreach (var child in node.ChildNodes ()) {
+					// Only recurse if we have anything to do
+					if (!child.IsReturnableConstruct ()) {
+						HighlightRelatedKeywords (child, spans);
+					}
+				}
+			}
+		}
+	}
 }

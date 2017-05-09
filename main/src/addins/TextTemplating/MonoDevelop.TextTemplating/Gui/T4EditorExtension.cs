@@ -99,19 +99,20 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		#region Code completion
 
-		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, CompletionTriggerInfo triggerInfo, CancellationToken token = default(CancellationToken))
 		{
-			int pos = completionContext.TriggerOffset;
-			if (pos <= 0)
-				return null;
-			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true);
-		}
+			if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CharTyped) {
+				char completionChar = triggerInfo.TriggerCharacter.Value;
+				int pos = completionContext.TriggerOffset;
+				if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
+					return HandleCodeCompletion (completionContext, false);
+				}
+			} else if (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand) {
+				int pos = completionContext.TriggerOffset;
+				if (pos <= 0)
+					return null;
+				return HandleCodeCompletion ((CodeCompletionContext)completionContext, true);
 
-		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
-		{
-			int pos = completionContext.TriggerOffset;
-			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
-				return HandleCodeCompletion (completionContext, false);
 			}
 			return null;
 		}

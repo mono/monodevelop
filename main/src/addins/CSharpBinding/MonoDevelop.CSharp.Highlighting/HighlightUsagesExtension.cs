@@ -23,27 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.FindInFiles;
-using System.Threading;
-using MonoDevelop.SourceEditor;
-using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
-using Microsoft.CodeAnalysis.FindSymbols;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading.Tasks;
 using System.Collections.Immutable;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Editor.Extension;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using ICSharpCode.NRefactory6.CSharp;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Roslyn.Utilities;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -129,10 +132,12 @@ namespace MonoDevelop.CSharp.Highlighting
 					return result;
 				var root = await resolveResult.Document.GetSyntaxRootAsync (token).ConfigureAwait (false);
 				var doc2 = resolveResult.Document;
-
+				var offset = resolveResult.Offset;
+				if (!root.Span.Contains (offset))
+					return result;
 				foreach (var highlighter in highlighters) {
 					try {
-						foreach (var span in highlighter.GetHighlights (root, resolveResult.Offset, token)) {
+						foreach (var span in highlighter.GetHighlights (root, offset, token)) {
 							result.Add (new MemberReference (span, doc2.FilePath, span.Start, span.Length) {
 								ReferenceUsageType = ReferenceUsageType.Keyword
 							});
@@ -150,11 +155,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			foreach (var loc in symbol.Locations) {
 				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
 					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
-						ReferenceUsageType = ReferenceUsageType.Declariton	
+						ReferenceUsageType = ReferenceUsageType.Declaration	
 					});
 			}
 
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, DocumentContext.AnalysisDocument.Project.Solution, documents, token)) {
 				foreach (var loc in mref.Locations) {
 					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
 					var root = loc.Location.SourceTree.GetRoot ();

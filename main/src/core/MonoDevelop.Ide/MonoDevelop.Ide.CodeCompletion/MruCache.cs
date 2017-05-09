@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	class MruCache
+	public class MruCache
 	{
 		const int MaxItems = 42;
 

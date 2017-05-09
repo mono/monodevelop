@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PolicySet.cs
 // 
 // Author:
@@ -61,6 +61,10 @@ namespace MonoDevelop.Projects.Policies
 			get { return true; }
 		}
 
+		internal bool IsDefaultSet {
+			get { return Id == "Default"; }
+		}
+
 		/// <summary>
 		/// When set to false, this policy set is not visible to the user. This flag can be used
 		/// to deprecate existing policy sets (since registered policy sets can't be modified/removed).
@@ -76,18 +80,23 @@ namespace MonoDevelop.Projects.Policies
 			get { return null; }
 		}
 		
-		protected override T GetDefaultPolicy<T> ()
+		protected override object GetDefaultPolicy (Type type)
 		{
+			// The default policy set always resturns a value for any type of policy.
+			if (IsDefaultSet)
+				return Activator.CreateInstance (type);
 			return null;
 		}
 		
-		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
+			if (IsDefaultSet)
+				return Activator.CreateInstance (type);
 			return null;
 		}
 		
 		public string Name { get; set; }
-		public string Id { get; private set; }
+		public string Id { get; internal set; }
 		
 		internal PolicyKey[] AddSerializedPolicies (StreamReader reader)
 		{
@@ -131,7 +140,7 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		internal void SaveToXml (XmlWriter xw)
+		internal void SaveToXml (XmlWriter xw, PolicySet diffBasePolicySet = null)
 		{
 			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
 			cw.StoreAllInElements = true;
@@ -142,8 +151,8 @@ namespace MonoDevelop.Projects.Policies
 			if (!string.IsNullOrEmpty (Id))
 				xw.WriteAttributeString ("id", Id);
 			if (policies != null) {
-				foreach (KeyValuePair<PolicyKey,object> policyPair in policies)
-					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
+				foreach (KeyValuePair<PolicyKey, object> policyPair in policies)
+					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope, diffBasePolicySet: diffBasePolicySet));
 			}
 			xw.WriteEndElement ();
 		}

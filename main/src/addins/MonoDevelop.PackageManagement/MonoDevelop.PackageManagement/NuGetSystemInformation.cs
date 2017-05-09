@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using MonoDevelop.Core;
 using NuGet.ProjectManagement;
 
@@ -40,16 +41,22 @@ namespace MonoDevelop.PackageManagement
 			get {
 				return GetDescription ();
 			}
-		}
+		}
 
 		static string GetDescription ()
 		{
 			return GettextCatalog.GetString ("Version: {0}", GetNuGetVersion ());
 		}
 
-		static Version GetNuGetVersion ()
+		static string GetNuGetVersion ()
 		{
-			return typeof(NuGetProject).Assembly.GetName ().Version;
+			var assembly = typeof(NuGetProject).Assembly;
+			try {
+				var fileVersionInfo = FileVersionInfo.GetVersionInfo (assembly.Location);
+				return fileVersionInfo.FileVersion;
+			} catch {
+				return assembly.GetName ().Version.ToString ();
+			}
 		}
 	}
 }

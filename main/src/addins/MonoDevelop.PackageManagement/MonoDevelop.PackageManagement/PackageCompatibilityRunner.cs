@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -72,7 +73,7 @@ namespace MonoDevelop.PackageManagement
 			using (progressMonitor = CreateProgressMonitor ()) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
 					try {
-						CheckCompatibility ();
+						CheckCompatibility ().Wait ();
 					} catch (Exception ex) {
 						eventMonitor.ReportError (progressMessage, ex);
 					}
@@ -102,10 +103,10 @@ namespace MonoDevelop.PackageManagement
 			return new PackageManagementEventsMonitor (monitor, packageManagementEvents);
 		}
 
-		void CheckCompatibility ()
+		async Task CheckCompatibility ()
 		{
-			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (project.ParentSolution);
-			checker.CheckProjectPackages (project);
+			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker ();
+			await checker.CheckProjectPackages (project);
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
 				MarkPackagesForReinstallation (checker);
@@ -118,9 +119,9 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (ISolution solution)
+		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker ()
 		{
-			return new PackageCompatibilityChecker (solution);
+			return new PackageCompatibilityChecker ();
 		}
 
 		void MarkPackagesForReinstallation (PackageCompatibilityChecker checker)

@@ -6,6 +6,7 @@ open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor.Extension
+open MonoDevelop.Ide.FindInFiles
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
@@ -50,7 +51,16 @@ type HighlightUsagesExtension() =
                         //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
                         // If we could then we could remove the Parsing.findLongIdents in GetUsesOfSymbolAtLocationInFile.
                         references
-                        |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, symbolUse, fsSymbolName))
+                        |> Seq.map (fun symbolUse ->
+                                        let start, finish = Symbol.trimSymbolRegion symbolUse fsSymbolName
+                                        let startOffset = x.Editor.LocationToOffset (start.Line, start.Column+1)
+                                        let endOffset = x.Editor.LocationToOffset (finish.Line, finish.Column+1)
+                                        let referenceType =
+                                            if symbolUse.IsFromDefinition then
+                                                ReferenceUsageType.Declaration
+                                            else
+                                                ReferenceUsageType.Unknown
+                                        new MemberReference (symbolUse, symbolUse.FileName, startOffset, endOffset-startOffset, ReferenceUsageType=referenceType))
                     | _ -> Seq.empty
 
                 with

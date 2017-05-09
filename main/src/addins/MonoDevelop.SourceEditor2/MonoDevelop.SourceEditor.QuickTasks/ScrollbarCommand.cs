@@ -24,16 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using Gtk;
-using Mono.TextEditor;
-using System.Collections.Generic;
-using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory;
-
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public enum ScrollbarCommand
@@ -42,10 +32,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		Bottom,
 		PgUp,
 		PgDown,
-		
+
 		ShowScrollBar,
 		ShowTasks,
 		ShowMinimap
 	}
-	
 }

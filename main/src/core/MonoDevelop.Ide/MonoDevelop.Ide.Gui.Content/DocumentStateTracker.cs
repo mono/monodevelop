@@ -61,8 +61,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		void textChanged (object sender, TextChangeEventArgs args)
 		{
-			if (args.Offset< currentEngine.Position)
-				ResetEngineToPosition (args.Offset);
+			foreach (var change in args.TextChanges) {
+				if (change.Offset < currentEngine.Position)
+					ResetEngineToPosition (change.Offset);
+			}
 		}
 		
 		public void ResetEngineToPosition (int position)

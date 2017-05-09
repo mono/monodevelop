@@ -218,7 +218,7 @@ namespace MonoDevelop.Projects
 				try {
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName)) {
 						using (var ctx = new SolutionLoadContext (ParentSolution))
-							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx);
+							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx, itemGuid: item.ItemId);
 					}
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {
@@ -294,6 +294,7 @@ namespace MonoDevelop.Projects
 				folder.FileRenamedInProject += NotifyFileRenamedInProject;
 				folder.ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
 				folder.ReferenceAddedToProject += NotifyReferenceAddedToProject;
+				folder.ItemSaved += NotifyItemSaved;
 			}
 			
 			if (item is SolutionItem) {
@@ -380,6 +381,7 @@ namespace MonoDevelop.Projects
 				cce.FileRenamedInProject -= NotifyFileRenamedInProject;
 				cce.ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
 				cce.ReferenceAddedToProject -= NotifyReferenceAddedToProject;
+				cce.ItemSaved -= NotifyItemSaved;
 			}
 			
 			if (entry is SolutionItem) {
@@ -835,7 +837,7 @@ namespace MonoDevelop.Projects
 			OnItemModified (e);
 		}
 		
-		internal void NotifyItemSaved (object sender, SolutionItemEventArgs e)
+		internal void NotifyItemSaved (object sender, SolutionItemSavedEventArgs e)
 		{
 			OnItemSaved (e);
 		}
@@ -976,7 +978,7 @@ namespace MonoDevelop.Projects
 				ItemModified (this, e);
 		}
 		
-		void OnItemSaved (SolutionItemEventArgs e)
+		void OnItemSaved (SolutionItemSavedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntrySaved (e);
@@ -1017,7 +1019,7 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler ItemModified;
-		public event SolutionItemEventHandler ItemSaved;
+		public event SolutionItemSavedEventHandler ItemSaved;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileAdded;
 		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileRemoved;
 //		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;

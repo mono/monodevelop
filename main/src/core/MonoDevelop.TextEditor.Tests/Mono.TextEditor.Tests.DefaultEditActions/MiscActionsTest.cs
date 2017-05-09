@@ -26,12 +26,12 @@
 
 using System;
 using NUnit.Framework;
-using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class MiscActionsTest : TextEditorTestBase
+	class MiscActionsTest : TextEditorTestBase
 	{
 		/// <summary>
 		/// Bug 615191 - When using multiline selection to indent/outdent, the indenter selects too much
@@ -63,16 +63,6 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.AreEqual ("\n\n\n\t\t\n\n", data.Document.Text);
 		}
 	
-		[Test()]
-		public void TestGotoMatchingBracket ()
-		{
-			var data = Create ("$(foo(bar))");
-			MiscActions.GotoMatchingBracket (data);
-			Check (data, "(foo(bar)$)");
-			MiscActions.GotoMatchingBracket (data);
-			Check (data, "$(foo(bar))");
-		}
-
 		[Test()]
 		public void TestInsertNewLine ()
 		{

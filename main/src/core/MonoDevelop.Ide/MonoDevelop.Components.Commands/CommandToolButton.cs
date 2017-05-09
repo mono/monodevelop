@@ -37,6 +37,7 @@ namespace MonoDevelop.Components.Commands
 		object commandId;
 		string lastDesc;
 		object initialTarget;
+		CommandInfo lastCmdInfo;
 		
 		public CommandToolButton (object commandId, CommandManager commandManager): base ("")
 		{
@@ -69,7 +70,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 				
-			commandManager.DispatchCommand (commandId, null, initialTarget, CommandSource.MainToolbar);
+			commandManager.DispatchCommand (commandId, null, initialTarget, CommandSource.MainToolbar, lastCmdInfo);
 		}
 		
 		IconId stockId = null;
@@ -77,6 +78,7 @@ namespace MonoDevelop.Components.Commands
 		
 		void Update (CommandInfo cmdInfo)
 		{
+			lastCmdInfo = cmdInfo;
 			if (lastDesc != cmdInfo.Description) {
 				string toolTip;
 				if (string.IsNullOrEmpty (cmdInfo.AccelKey)) {

@@ -1,0 +1,37 @@
+{
+	"name": "cpp",
+	"version": "0.1.0",
+	"publisher": "vscode",
+	"engines": { "vscode": "*" },
+	"scripts": {
+		"update-grammar": "node ../../build/npm/update-grammar.js atom/language-c grammars/c.cson ./syntaxes/c.json grammars/c%2B%2B.cson ./syntaxes/c++.json"
+	},
+	"contributes": {
+		"languages": [{
+			"id": "c",
+			"extensions": [ ".c"],
+			"aliases": [ "C", "c" ],
+			"configuration": "./language-configuration.json"
+		},
+		{
+			"id": "cpp",
+			"extensions": [ ".cpp", ".cc", ".cxx", ".hpp", ".hh", ".hxx", ".h", ".mm", ".ino", ".inl" ],
+			"aliases": [ "C++", "Cpp", "cpp"],
+			"configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "c",
+			"scopeName": "source.c",
+			"path": "./syntaxes/c.json"
+		},
+		{
+			"language": "cpp",
+			"scopeName": "source.cpp",
+			"path": "./syntaxes/c++.json"
+		},
+		{
+			"scopeName": "source.c.platform",
+			"path": "./syntaxes/Platform.tmLanguage"
+		}]
+	}
+}

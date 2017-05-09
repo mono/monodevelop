@@ -1,5 +1,4 @@
 <ExtensionModel>
-	
 	<!-- Extension points --> 
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
@@ -39,9 +38,9 @@
 	</ExtensionPoint>
 
 	<!-- Extensions -->
-	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
-		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
+	<Extension path = "/MonoDevelop/Ide/Editor/TooltipProviders">
+		<Provider id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
+		<Provider id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -150,12 +149,12 @@
 		<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" icon="md-prefs-text-editor-general" />
 		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
 		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
-		<Section id="CodeCompletion" _label="Code Completion" icon="md-prefs-completion">
+		<Section id="CodeCompletion" _label="IntelliSense" icon="md-prefs-completion">
 			<Panel id="CompletionBehavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion" />
 			<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> -->
 			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion" />
 		</Section>
-		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
+		<Section id="SyntaxHighlighting" _label="Color Theme" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
@@ -168,7 +167,7 @@
 		</ItemSet>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
+	<Extension path = "/MonoDevelop/Ide/Editor/EditorFactory">
 		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
 
@@ -190,5 +189,8 @@
 		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-completion" resource="prefs-completion-16.png" size="Menu" />
 	</Extension>
-	
+
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="MonoDevelop.SourceEditor.dll"/>
+	</Extension>
 </ExtensionModel>

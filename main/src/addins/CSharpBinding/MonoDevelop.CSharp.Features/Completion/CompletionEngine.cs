@@ -26,22 +26,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
-
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Text;
-using Microsoft.CodeAnalysis.Recommendations;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	partial class CompletionEngine 
+	partial class CompletionEngine
 	{
-		static CompletionContextHandler[] handlers = {
+		static CompletionContextHandler [] handlers = {
 			new RoslynRecommendationsCompletionContextHandler (),
 			new OverrideContextHandler(),
 			new PartialContextHandler(),
@@ -59,7 +57,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			new ObjectCreationContextHandler(),
 			new SenderCompletionContextHandler(),
 			new CastCompletionContextHandler(),
-			new PreProcessorExpressionContextHandler(), 
+			new PreProcessorExpressionContextHandler(),
 			new RegexContextHandler(),
 			new KeywordContextHandler(),
 		};
@@ -79,23 +77,23 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			}
 		}
 
-		public CompletionEngine(Workspace workspace, ICompletionDataFactory factory)
+		public CompletionEngine (Workspace workspace, ICompletionDataFactory factory)
 		{
 			if (workspace == null)
-				throw new ArgumentNullException("workspace");
+				throw new ArgumentNullException ("workspace");
 			if (factory == null)
-				throw new ArgumentNullException("factory");
+				throw new ArgumentNullException ("factory");
 			this.workspace = workspace;
 			this.factory = factory;
 		}
 
-		public async Task<CompletionResult> GetCompletionDataAsync(CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<CompletionResult> GetCompletionDataAsync (CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (completionContext == null)
 				throw new ArgumentNullException ("completionContext");
 
 			var document = completionContext.Document;
-			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait(false);
+			var semanticModel = await completionContext.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			var position = completionContext.Position;
 			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
 			var ctx = await completionContext.GetSyntaxContextAsync (workspace, cancellationToken);
@@ -104,7 +102,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			// case lambda parameter (n1, $
 			if (ctx.TargetToken.IsKind (SyntaxKind.CommaToken) &&
 				ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null &&
-				ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.ParenthesizedLambdaExpression)) 
+				ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.ParenthesizedLambdaExpression))
 				return CompletionResult.Empty;
 
 			var result = new CompletionResult { SyntaxContext = ctx };
@@ -121,7 +119,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in handlerList) {
-					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || handler.IsTriggerCharacter (text, position - 1)) {
+					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || info.CompletionTriggerReason == CompletionTriggerReason.BackspaceOrDeleteCommand || handler.IsTriggerCharacter (text, position - 1)) {
 						if (await handler.IsExclusiveAsync (completionContext, ctx, info, cancellationToken)) {
 							exclusiveHandlers.Add (handler);
 						} else {
@@ -133,7 +131,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in exclusiveHandlers) {
-					var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+					var handlerResult = await handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken);
 					//if (handlerResult != null) {
 					//	Console.WriteLine ("-----" + handler);
 					//	foreach (var item in handlerResult) {
@@ -176,19 +174,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			}
 
 			// prevent auto selection for "<number>." case
-			if (ctx.TargetToken.IsKind(SyntaxKind.DotToken)) {
+			if (ctx.TargetToken.IsKind (SyntaxKind.DotToken)) {
 				var accessExpr = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
 				if (accessExpr != null &&
 					accessExpr.Expression != null &&
-					accessExpr.Expression.IsKind(SyntaxKind.NumericLiteralExpression))  {
+					accessExpr.Expression.IsKind (SyntaxKind.NumericLiteralExpression)) {
 					result.AutoSelect = false;
 				}
 			}
 
 			if (ctx.LeftToken.Parent != null &&
 				ctx.LeftToken.Parent.Parent != null &&
-				ctx.TargetToken.Parent != null && !ctx.TargetToken.Parent.IsKind(SyntaxKind.NameEquals) &&
-				ctx.LeftToken.Parent.Parent.IsKind(SyntaxKind.AnonymousObjectMemberDeclarator))
+				ctx.TargetToken.Parent != null && !ctx.TargetToken.Parent.IsKind (SyntaxKind.NameEquals) &&
+				ctx.LeftToken.Parent.Parent.IsKind (SyntaxKind.AnonymousObjectMemberDeclarator))
 				result.AutoSelect = false;
 
 			if (ctx.TargetToken.IsKind (SyntaxKind.OpenParenToken) && ctx.TargetToken.GetPreviousToken ().IsKind (SyntaxKind.OpenParenToken)) {
@@ -202,7 +200,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					break;
 				}
 			}
-			
+
 			return result;
 		}
 
@@ -210,10 +208,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			if (type == null)
 				yield break;
-			foreach (var member in type.GetMembers()) {
+			foreach (var member in type.GetMembers ()) {
 				yield return member;
 			}
-			foreach (var baseMember in GetAllMembers(type.BaseType))
+			foreach (var baseMember in GetAllMembers (type.BaseType))
 				yield return baseMember;
 		}
 

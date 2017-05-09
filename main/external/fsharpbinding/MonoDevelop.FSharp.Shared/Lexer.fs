@@ -46,7 +46,7 @@ module Lexer =
                 | Some _, newLexState ->
                     loop lineTokenizer newLexState
 
-            let sourceTokenizer = SourceTokenizer(defines, None)
+            let sourceTokenizer = FSharpSourceTokenizer(defines, None)
             let lines = String.getLines source
             let mutable lexState = 0L
             for line in lines do
@@ -83,7 +83,7 @@ module Lexer =
         let defines =
             args |> Seq.choose (fun s -> if s.StartsWith "--define:" then Some s.[9..] else None)
                  |> Seq.toList
-        let sourceTokenizer = SourceTokenizer(defines, None)
+        let sourceTokenizer = FSharpSourceTokenizer(defines, None)
         let lineTokenizer = sourceTokenizer.CreateLineTokenizer lineStr
         let rec loop lexState acc =
             match lineTokenizer.ScanToken lexState with
@@ -155,7 +155,7 @@ module Lexer =
     
     let getTokensWithInitialState state lines filename defines =
         [ let mutable state = state
-          let sourceTok = SourceTokenizer(defines, filename)
+          let sourceTok = FSharpSourceTokenizer(defines, filename)
           for lineText in lines do
               let tokenizer = sourceTok.CreateLineTokenizer(lineText)
               let rec parseLine() =

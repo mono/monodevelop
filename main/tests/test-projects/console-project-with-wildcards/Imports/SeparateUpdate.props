@@ -1,0 +1,4 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="AllTextFiles.props" />
+  <Import Project="UpdateContentFolderTextFiles.props" />
+</Project>

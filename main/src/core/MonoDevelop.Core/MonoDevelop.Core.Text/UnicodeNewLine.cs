@@ -52,12 +52,12 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Vertical Tab, U+000B
 		/// </summary>
-		VT = 0x0B,
+		// VT = 0x0B,
 
 		/// <summary>
 		/// Form Feed, U+000C
 		/// </summary>
-		FF = 0x0C,
+		// FF = 0x0C,
 
 		/// <summary>
 		/// Line Separator, U+2028
@@ -182,14 +182,14 @@ namespace MonoDevelop.Core.Text
 				type = UnicodeNewline.NEL;
 				length = 1;
 				return true;
-			case VT:
-				type = UnicodeNewline.VT;
-				length = 1;
-				return true;
-			case FF:
-				type = UnicodeNewline.FF;
-				length = 1;
-				return true;
+			//case VT:
+			//	type = UnicodeNewline.VT;
+			//	length = 1;
+			//	return true;
+			//case FF:
+			//	type = UnicodeNewline.FF;
+			//	length = 1;
+			//	return true;
 			case LS:
 				type = UnicodeNewline.LS;
 				length = 1;
@@ -235,14 +235,14 @@ namespace MonoDevelop.Core.Text
 				type = UnicodeNewline.NEL;
 				length = 1;
 				return true;
-			case VT:
-				type = UnicodeNewline.VT;
-				length = 1;
-				return true;
-			case FF:
-				type = UnicodeNewline.FF;
-				length = 1;
-				return true;
+			//case VT:
+			//	type = UnicodeNewline.VT;
+			//	length = 1;
+			//	return true;
+			//case FF:
+			//	type = UnicodeNewline.FF;
+			//	length = 1;
+			//	return true;
 			case LS:
 				type = UnicodeNewline.LS;
 				length = 1;
@@ -274,10 +274,10 @@ namespace MonoDevelop.Core.Text
 				return UnicodeNewline.LF;
 			case NEL:
 				return UnicodeNewline.NEL;
-			case VT:
-				return UnicodeNewline.VT;
-			case FF:
-				return UnicodeNewline.FF;
+			//case VT:
+			//	return UnicodeNewline.VT;
+			//case FF:
+			//	return UnicodeNewline.FF;
 			case LS:
 				return UnicodeNewline.LS;
 			case PS:
@@ -303,10 +303,10 @@ namespace MonoDevelop.Core.Text
 				return UnicodeNewline.LF;
 			case NEL:
 				return UnicodeNewline.NEL;
-			case VT:
-				return UnicodeNewline.VT;
-			case FF:
-				return UnicodeNewline.FF;
+			//case VT:
+			//	return UnicodeNewline.VT;
+			//case FF:
+			//	return UnicodeNewline.FF;
 			case LS:
 				return UnicodeNewline.LS;
 			case PS:
@@ -349,10 +349,10 @@ namespace MonoDevelop.Core.Text
 				return "\r";
 			case UnicodeNewline.NEL:
 				return "\u0085";
-			case UnicodeNewline.VT:
-				return "\u000B";
-			case UnicodeNewline.FF:
-				return "\u000C";
+			//case UnicodeNewline.VT:
+			//	return "\u000B";
+			//case UnicodeNewline.FF:
+			//	return "\u000C";
 			case UnicodeNewline.LS:
 				return "\u2028";
 			case UnicodeNewline.PS:

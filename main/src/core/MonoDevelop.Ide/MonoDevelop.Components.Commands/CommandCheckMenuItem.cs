@@ -99,7 +99,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 			
-			commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget, CommandMenuItem.GetMenuCommandSource (this));
+			commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget, CommandMenuItem.GetMenuCommandSource (this), lastCmdInfo);
 		}
 		
 		protected override void OnSelected ()

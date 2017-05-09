@@ -23,25 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Core.Text;
-using Gtk;
-using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Collections.Concurrent;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp
 {
@@ -64,7 +63,7 @@ namespace MonoDevelop.CSharp
 			sortOrder = FirstCategory;
 		}
 
-		public override void Initialize (Components.PopoverWindow popupWindow)
+		public override void Initialize (Components.XwtPopup popupWindow)
 		{
 			lastResult = new WorkerResult ();
 		}
@@ -231,7 +230,7 @@ namespace MonoDevelop.CSharp
 				foreach (var kind in AllKinds) {
 					infos [kind] = new List<DeclaredSymbolInfo> ();
 				}
-				foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
+				foreach (var current in root.DescendantNodesAndSelf (n => !(n is BlockSyntax))) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					DeclaredSymbolInfo declaredSymbolInfo;
 					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
@@ -250,10 +249,7 @@ namespace MonoDevelop.CSharp
 
 			static void RemoveDocument (ConcurrentDictionary<DocumentId, Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>>> result, Microsoft.CodeAnalysis.DocumentId documentId)
 			{
-				if (result.ContainsKey (documentId)) {
-					Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val;
-					result.TryRemove (documentId, out val);
-				}
+				result.TryRemove (documentId, out Dictionary<DeclaredSymbolInfoKind, List<DeclaredSymbolInfo>> val);
 			}
 
 			public void Dispose ()

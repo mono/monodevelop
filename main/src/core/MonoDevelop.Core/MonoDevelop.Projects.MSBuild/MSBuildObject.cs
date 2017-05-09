@@ -37,8 +37,8 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public abstract class MSBuildObject: MSBuildNode
 	{
-		UnknownAttribute[] unknownAttributes;
-		string [] attributeOrder;
+		List<UnknownAttribute> unknownAttributes;
+		internal string [] attributeOrder;
 		ImmutableList<MSBuildNode> children = ImmutableList<MSBuildNode>.Empty;
 		EmptyElementMode emptyElementMode;
 
@@ -83,7 +83,6 @@ namespace MonoDevelop.Projects.MSBuild
 					int attOrderIndex = 0;
 					int expectedKnownAttIndex = 0;
 					bool attOrderIsUnexpected = false;
-					List<UnknownAttribute> unknownAttsList = null;
 					attributeOrder = new string [knownAtts.Length];
 					string lastAttr = null;
 					do {
@@ -92,21 +91,10 @@ namespace MonoDevelop.Projects.MSBuild
 						if (i == -1) {
 							if (attName == "xmlns")
 								continue;
-							
-							#if ATTR_STATS
+#if ATTR_STATS
 							UnknownAtts.Add (GetType ().Name + " " + attName);
-							#endif
-
-							var ua = new UnknownAttribute {
-								LocalName = attName,
-								Prefix = !string.IsNullOrEmpty (reader.Prefix) ? reader.Prefix : null,
-								Namespace = reader.NamespaceURI,
-								Value = reader.Value,
-								AfterAttribute = lastAttr
-							};
-							if (unknownAttsList == null)
-								unknownAttsList = new List<UnknownAttribute> ();
-							unknownAttsList.Add (ua);
+#endif
+							ReadUnknownAttribute (reader, lastAttr);
 							lastAttr = null;
 						} else {
 							if (attOrderIndex >= attributeOrder.Length)
@@ -122,8 +110,6 @@ namespace MonoDevelop.Projects.MSBuild
 						}
 					} while (reader.MoveToNextAttribute ());
 
-					if (unknownAttsList != null)
-						unknownAttributes = unknownAttsList.ToArray ();
 					if (!attOrderIsUnexpected)
 						attributeOrder = null;
 					else {
@@ -158,6 +144,20 @@ namespace MonoDevelop.Projects.MSBuild
 				reader.ReadAndStoreWhitespace ();
 
 			EndWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
+		}
+
+		internal virtual void ReadUnknownAttribute (MSBuildXmlReader reader, string lastAttr)
+		{
+			var ua = new UnknownAttribute {
+				LocalName = reader.LocalName,
+				Prefix = !string.IsNullOrEmpty (reader.Prefix) ? reader.Prefix : null,
+				Namespace = reader.NamespaceURI,
+				Value = reader.Value,
+				AfterAttribute = lastAttr
+			};
+			if (unknownAttributes == null)
+				unknownAttributes = new List<UnknownAttribute> ();
+			unknownAttributes.Add (ua);
 		}
 
 		internal virtual void ReadContent (MSBuildXmlReader reader)
@@ -228,7 +228,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var knownAtts = attributeOrder ?? GetKnownAttributes ();
 				string lastAttr = null;
 				do {
-					if (unknownIndex < unknownAttributes.Length && (lastAttr == unknownAttributes [unknownIndex].AfterAttribute || unknownAttributes [unknownIndex].AfterAttribute == null)) {
+					if (unknownIndex < unknownAttributes.Count && (lastAttr == unknownAttributes [unknownIndex].AfterAttribute || unknownAttributes [unknownIndex].AfterAttribute == null)) {
 						var att = unknownAttributes [unknownIndex++];
 						writer.WriteAttributeString (att.Prefix, att.LocalName, att.Namespace, att.Value);
 						lastAttr = att.LocalName;
@@ -240,7 +240,7 @@ namespace MonoDevelop.Projects.MSBuild
 							writer.WriteAttributeString (aname, val);
 					} else
 						lastAttr = null;
-				} while (unknownIndex < unknownAttributes.Length || knownIndex < knownAtts.Length);
+				} while (unknownIndex < unknownAttributes.Count || knownIndex < knownAtts.Length);
 			} else {
 				var knownAtts = attributeOrder ?? GetKnownAttributes ();
 				for (int i = 0; i < knownAtts.Length; i++) {
@@ -264,8 +264,10 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal virtual string Namespace {
+		public virtual string Namespace {
 			get {
+				if (ParentObject != null)
+					return ParentObject.Namespace;
 				return MSBuildProject.Schema;
 			}
 		}
@@ -286,7 +288,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			var children = GetChildren ();
+			var children = GetChildren ().Where (c => !c.SkipSerialization);
 			var hasChildren = children.Any ();
 
 			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
@@ -294,7 +296,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (hasChildren || emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknown && !PreferEmptyElement)) {
 				MSBuildWhitespace.Write (StartInnerWhitespace, writer);
 
-				foreach (var c in GetChildren ()) {
+				foreach (var c in children) {
 					c.Write (writer, context);
 					hasContent = true;
 				}

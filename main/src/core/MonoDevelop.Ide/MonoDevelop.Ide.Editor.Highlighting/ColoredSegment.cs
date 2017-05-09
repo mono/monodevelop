@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -35,30 +36,52 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// </summary>
 	public sealed class ColoredSegment : AbstractSegment
 	{
-		readonly string colorStyleKey;
+		readonly ScopeStack scopeStack;
 
 		/// <summary>
 		/// Gets the color style. The style is looked up in the current color scheme.
 		/// </summary>
 		public string ColorStyleKey {
 			get {
-				return colorStyleKey;
+				return scopeStack.IsEmpty ? "" : scopeStack.Peek ();
 			}
 		}
 
-		public ColoredSegment (int offset, int length, string colorStyleKey) : base (offset, length)
-		{
-			this.colorStyleKey = colorStyleKey;
+		internal ScopeStack ScopeStack {
+			get {
+				return scopeStack;
+			}
 		}
 
-		public ColoredSegment (ISegment segment, string colorStyleKey) : base (segment)
+		public ColoredSegment (int offset, int length, ScopeStack scopeStack) : base (offset, length)
 		{
-			this.colorStyleKey = colorStyleKey;
+			this.scopeStack = scopeStack;
+		}
+
+		public ColoredSegment (ISegment segment, ScopeStack scopeStack) : base (segment)
+		{
+			this.scopeStack = scopeStack;
+		}
+
+		public ColoredSegment WithOffsetAndLength (int offset, int length)
+		{
+			return new ColoredSegment (offset, length, scopeStack);
+		}
+
+		public ColoredSegment WithOffset (int offset)
+		{
+			return new ColoredSegment (offset, Length, scopeStack);
+		}
+
+		public ColoredSegment WithLength (int length)
+		{
+			return new ColoredSegment (Offset, length, scopeStack);
 		}
 
 		public override string ToString ()
 		{
 			return string.Format ("[ColoredSegment: Offset={0}, Length={1},ColorStyleKey={2}]", Offset, Length, ColorStyleKey);
 		}
-	}
+
+}
 }

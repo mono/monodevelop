@@ -37,9 +37,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
 using RefactoringEssentials;
-using MonoDevelop.Core.Text;
 using System.Linq;
-using System.ComponentModel;
 
 namespace MonoDevelop.CodeActions
 {
@@ -48,10 +46,10 @@ namespace MonoDevelop.CodeActions
 		readonly static List<CodeDiagnosticProvider> providers = new List<CodeDiagnosticProvider> ();
 
 		static CodeRefactoringService ()
-		{	
+		{
 			providers.Add (new BuiltInCodeDiagnosticProvider ());
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate (object sender, ExtensionNodeEventArgs args) {
 				var node = (TypeExtensionNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -102,10 +100,14 @@ namespace MonoDevelop.CodeActions
 			var actions = new List<ValidCodeAction> ();
 			if (parsedDocument == null)
 				return actions;
-			var model = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return actions;
+
+			var model = await analysisDocument.GetSemanticModelAsync (cancellationToken);
 			if (model == null)
 				return actions;
-			var root = await model.SyntaxTree.GetRootAsync(cancellationToken).ConfigureAwait (false);
+			var root = await model.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 			if (span.End > root.Span.End)
 				return actions;
 			TextSpan tokenSegment = span;
@@ -114,12 +116,11 @@ namespace MonoDevelop.CodeActions
 				tokenSegment = token.Span;
 			try {
 				if (codeRefactoringCache == null) {
-					codeRefactoringCache = (await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)).ToList ();
+					codeRefactoringCache = (await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage (editor.MimeType), cancellationToken).ConfigureAwait (false)).ToList ();
 				}
 				foreach (var descriptor in codeRefactoringCache) {
 					if (!descriptor.IsEnabled)
 						continue;
-					var analysisDocument = doc.AnalysisDocument;
 					if (cancellationToken.IsCancellationRequested || analysisDocument == null)
 						return Enumerable.Empty<ValidCodeAction> ();
 					try {
@@ -139,7 +140,7 @@ namespace MonoDevelop.CodeActions
 						if (cancellationToken.IsCancellationRequested)
 							return Enumerable.Empty<ValidCodeAction> ();
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
+						LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e);
 						continue;
 					}
 				}

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using NuGet;
+using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
-			if (e.Message.Level == NuGet.MessageLevel.Warning) {
+			if (e.Message.Level == MessageLevel.Warning) {
 				ReportWarning (e.Message.ToString ());
 			} else {
 				LogMessage (e.Message.ToString ());

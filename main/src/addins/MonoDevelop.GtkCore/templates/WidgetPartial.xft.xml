@@ -13,12 +13,9 @@
 	
 	<Conditions>
 		<PartialTypeSupport Requirement="Enabled" />
+		<HasReference Assembly="gtk-sharp" />
 	</Conditions>
-	
-	<Conditions>
-		<PartialTypeSupport Requirement="Enabled" />
-	</Conditions>
-	
+
 	<TemplateFiles>
 		<Widget DefaultName="${Name}">
 			<SteticTemplate>

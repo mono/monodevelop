@@ -346,6 +346,9 @@ namespace WindowsPlatform.MainToolbar
 			set { base.ToolTip = value; }
 		}
 
+		public string Title { get; set; }
+		public string Help { get; set; }
+
 		protected override void OnMouseUp (MouseButtonEventArgs e)
 		{
 			base.OnMouseUp (e);

@@ -112,14 +112,14 @@ namespace MonoDevelop.Projects.Extensions
 			}
 
 			if (!string.IsNullOrEmpty (requiresAddin)) {
-				return GettextCatalog.GetString ("The {0} add-in is not installed.", requiresAddin);
+				return GettextCatalog.GetString ("The {0} extension is not installed.", requiresAddin);
 			}
 
 			if (!string.IsNullOrEmpty (instructions)) {
 				return BrandingService.BrandApplicationName (Addin.Localizer.GetString (instructions));
 			}
 
-			return BrandingService.BrandApplicationName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop."));
+			return BrandingService.BrandApplicationLongName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop."));
 		}
 	}
 }

@@ -39,7 +39,7 @@ using System.Threading;
 namespace MonoDevelop.Ide.CodeCompletion
 {
 
-	public class TooltipInformationWindow : PopoverWindow
+	public class TooltipInformationWindow : XwtThemedPopup
 	{
 		readonly List<TooltipInformation> overloads = new List<TooltipInformation> ();
 		int current_overload;
@@ -88,12 +88,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (tooltipInformation == null || tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
 					return;
 
-				using (var layout = new Pango.Layout (PangoContext)) {
-					layout.FontDescription = Theme.Font;
+				using (var layout = new Pango.Layout (headLabel.PangoContext)) {
+					layout.FontDescription = Theme.Font.ToPangoFont ();
 					layout.SetMarkup (tooltipInformation.SignatureMarkup);
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					if (w >= Allocation.Width - 10) {
+					if (w >= Size.Width - 10) {
 						tooltipInformation = await data.CreateTooltipInformation (true, cancelToken);
 					}
 				}
@@ -105,25 +105,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-			var w = Math.Max (headLabel.WidthRequest, headLabel.RealWidth);
-			requisition.Width = (int)Math.Max (w + ContentBox.LeftPadding + ContentBox.RightPadding, requisition.Width);
-		}
-
 		void ShowOverload ()
 		{
+			Opacity = 0;
 			ClearDescriptions ();
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
 				headLabel.Markup = o.SignatureMarkup;
 				headLabel.Visible = !string.IsNullOrEmpty (o.SignatureMarkup);
-				int x, y;
-				GetPosition (out x, out y);
-				var geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
-				headLabel.MaxWidth = Math.Max ((int)geometry.Width / 5, 480);
+
+				headLabel.MaxWidth = 480;
+				if (Visible)
+					headLabel.MaxWidth = ((int) (Screen?.VisibleBounds.Width / 5 ?? 480));
 
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headLabel.WidthRequest = headLabel.RealWidth + 70;
@@ -131,11 +125,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					headLabel.WidthRequest = -1;
 				}
 				foreach (var cat in o.Categories) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font.ToPangoFont ()), true, true, 4);
 				}
 
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font.ToPangoFont ()), true, true, 4);
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
@@ -146,7 +140,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					contentLabel.MaxWidth = 400;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-					contentLabel.FontDescription = Theme.Font;
+					contentLabel.FontDescription = Theme.Font.ToPangoFont ();
 
 					descriptionBox.PackEnd (contentLabel, true, true, 4);
 				}
@@ -162,8 +156,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!CurrentPosition.HasFlag (PopupPosition.Left) &&
 				    !CurrentPosition.HasFlag (PopupPosition.Top))
 					RepositionWindow ();
-				else
-					QueueResize ();
+
+				// Setting the opicity delayed to 1 is a hack to ensure smooth animation popup see "Bug 32046 - Janky animations on tooltips"
+				Xwt.Application.TimeoutInvoke (50, delegate {
+					Opacity = 1;
+					return false;
+				});
 			}
 		}
 
@@ -256,31 +254,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void SetDefaultScheme ()
 		{
-			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 
 			Theme.SetSchemeColors (scheme);
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
-			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
-			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
+			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			if (this.Visible)
 				ShowOverload ();
 		}
 
-		public TooltipInformationWindow () : base ()
+		public TooltipInformationWindow ()
 		{
-			TypeHint = Gdk.WindowTypeHint.Tooltip;
-			this.SkipTaskbarHint = true;
-			this.SkipPagerHint = true;
-			this.AllowShrink = false;
-			this.AllowGrow = false;
-			this.CanFocus = false;
-			this.CanDefault = false;
-			this.Events |= Gdk.EventMask.EnterNotifyMask; 
-			
 			headLabel = new FixedWidthWrapLabel ();
 			headLabel.Indent = -20;
 			headLabel.Wrap = Pango.WrapMode.WordChar;
@@ -300,7 +289,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
-			ContentBox.Add (vb2);
+
+			vb2.SizeRequested += (o, args) => {
+				var w = Math.Max (headLabel.WidthRequest, headLabel.RealWidth);
+				var req = new Gtk.Requisition ();
+				req.Height = args.Requisition.Height;
+				req.Width = (int)Math.Max (w + PaddingLeft + PaddingTop, args.Requisition.Width);
+				args.Args[0] = req;
+			};
+
+			Content = BackendHost.ToolkitEngine.WrapWidget (vb2, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 
 			vb2.ShowAll ();
 			SetDefaultScheme ();
@@ -308,28 +306,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
-		public override void RepositionWindow (Gdk.Rectangle? newCaret = null)
-		{
-			// Setting the opicity delayed to 1 is a hack to ensure smooth animation popup see "Bug 32046 - Janky animations on tooltips"
-			Opacity = 0;
-			base.RepositionWindow(newCaret);
-			GLib.Timeout.Add (50, delegate {
-				if (Visible)
-					Opacity = 1;
-				return false;
-			});
-		}
-
-		protected override void OnPagerLeftClicked ()
+		protected override bool OnPagerLeftClicked ()
 		{
 			OverloadLeft ();
-			base.OnPagerLeftClicked ();
+			return base.OnPagerLeftClicked ();
 		}
 
-		protected override void OnPagerRightClicked ()
+		protected override bool OnPagerRightClicked ()
 		{
 			OverloadRight ();
-			base.OnPagerRightClicked ();
+			return base.OnPagerRightClicked ();
 		}
 
 		void HandleThemeChanged (object sender, EventArgs e)
@@ -337,11 +323,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			SetDefaultScheme ();
 		}
 
-		protected override void OnDestroyed ()
+		protected override void Dispose (bool disposing)
 		{
-			base.OnDestroyed ();
-			Styles.Changed -= HandleThemeChanged;
-			IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
+			if (disposing) {
+				Styles.Changed -= HandleThemeChanged;
+				IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
+			}
+			base.Dispose (disposing);
 		}
 	}
 }

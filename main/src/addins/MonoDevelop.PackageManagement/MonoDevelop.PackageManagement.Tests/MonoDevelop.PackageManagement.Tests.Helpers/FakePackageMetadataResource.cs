@@ -44,6 +44,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return Task.FromResult (packages);
 		}
 
+		public override Task<IPackageSearchMetadata> GetMetadataAsync (PackageIdentity package, ILogger log, CancellationToken token)
+		{
+			var metadata = packageMetadataList.Where (p => IsMatch (p, package.Id, true)).FirstOrDefault ();
+			return Task.FromResult (metadata);
+		}
+
 		static bool IsMatch (IPackageSearchMetadata package, string packageId, bool includePrerelease)
 		{
 			if (package.Identity.Id == packageId) {

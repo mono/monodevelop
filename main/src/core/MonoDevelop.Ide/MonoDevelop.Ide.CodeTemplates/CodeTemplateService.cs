@@ -37,6 +37,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Text;
+using MonoDevelop.Ide.Editor.TextMate;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -88,10 +94,134 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var savedTemplates = templates;
 			if (savedTemplates == null || string.IsNullOrEmpty (mimeType))
-				return new CodeTemplate[0];
-			return savedTemplates.ToArray ().Where (t => t != null && t.MimeType == mimeType);
+				return new CodeTemplate [0];
+			return savedTemplates.ToArray ().Where (delegate (CodeTemplate t) {
+				try {
+					return t != null && DesktopService.GetMimeTypeIsSubtype (mimeType, t.MimeType);
+				} catch (Exception) {
+					// required for some unit tests
+					return t != null && mimeType == t.MimeType;
+				}	
+			});
 		}
-		
+
+		public static async Task<IEnumerable<CodeTemplate>> GetCodeTemplatesAsync (TextEditor editor, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var result = new List<CodeTemplate> ();
+			result.AddRange (GetCodeTemplates (editor.MimeType));
+			var scope = await editor.SyntaxHighlighting.GetScopeStackAsync (editor.CaretOffset, cancellationToken);
+			foreach (var setting in TextMateLanguage.Create (scope).Snippets) {
+				var convertedTemplate = ConvertToTemplate (setting);
+				if (convertedTemplate != null)
+					result.Add (convertedTemplate);
+			}
+			return result;
+		}
+
+		static CodeTemplate ConvertToTemplate (TmSnippet setting)
+		{
+			var result = new CodeTemplate ();
+			result.Shortcut = setting.TabTrigger;
+			var sb = new StringBuilder ();
+			var nameBuilder = new StringBuilder ();
+			bool readDollar = false;
+			bool inBracketExpression = false;
+			bool inExpressionContent = false;
+			bool inVariable = false;
+			int number = 0;
+			foreach (var ch in setting.Content) {
+				if (inVariable) {
+					if (char.IsLetter (ch)) {
+						nameBuilder.Append (ch);
+					} else {
+						sb.Append (ConvertVariable (nameBuilder.ToString ()));
+						nameBuilder.Length = 0;
+						inVariable = false;
+					}
+				}
+
+				if (ch == '$') {
+					readDollar = true;
+					continue;
+				}
+				if (readDollar) {
+					if (ch == '{') {
+						number = 0;
+						inBracketExpression = true;
+						readDollar = false;
+						continue;
+					} else if (char.IsLetter (ch)) {
+						inVariable = true;
+					} else {
+						sb.Append ("$$");
+						readDollar = false;
+					}	
+				}
+				if (inBracketExpression) {
+					if (ch == ':') {
+						inBracketExpression = false;
+						inExpressionContent = true;
+						continue;
+					}
+					number = number * 10 + (ch - '0');
+					continue;
+				}
+
+
+				if (inExpressionContent) {
+					if (ch == '}') {
+						if (number == 0) {
+							sb.Append ("$end$");
+							sb.Append (nameBuilder);
+						} else {
+							sb.Append ("$");
+							sb.Append (nameBuilder);
+							sb.Append ("$");
+							result.AddVariable (new CodeTemplateVariable (nameBuilder.ToString ()) { Default = nameBuilder.ToString (), IsEditable = true });
+						}
+						nameBuilder.Length = 0;
+						number = 0;
+						inExpressionContent = false;
+						continue;
+					}
+					nameBuilder.Append (ch);
+					continue;
+				}
+				sb.Append (ch);
+			}
+			if (inVariable) {
+				sb.Append (ConvertVariable (nameBuilder.ToString ()));
+				nameBuilder.Length = 0;
+				inVariable = false;
+			}
+
+			result.Code = sb.ToString ();
+			result.CodeTemplateContext = CodeTemplateContext.Standard;
+			result.CodeTemplateType = CodeTemplateType.Expansion;
+			result.Description = setting.Name;
+			return result;
+		}
+
+		static string ConvertVariable (string textmateVariable)
+		{
+			switch (textmateVariable) {
+			case "SELECTION":
+			case "TM_SELECTED_TEXT":
+				return "$selected$";
+			case "TM_CURRENT_LINE":
+			case "TM_CURRENT_WORD":
+			case "TM_FILENAME":
+			case "TM_FILEPATH":
+			case "TM_FULLNAME":
+			case "TM_LINE_INDEX":
+			case "TM_LINE_NUMBER":
+			case "TM_SOFT_TABS":
+			case "TM_TAB_SIZE":
+				return "$" + textmateVariable + "$";
+			}
+			return "";
+		}
+
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
 		{
 			return GetCodeTemplates (DesktopService.GetMimeTypeForUri (fileName));

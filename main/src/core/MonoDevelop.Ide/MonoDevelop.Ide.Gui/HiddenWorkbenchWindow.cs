@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui
@@ -74,9 +75,9 @@ namespace MonoDevelop.Ide.Gui
 			set {}
 		}
 		
-		public bool CloseWindow (bool force)
+		public Task<bool> CloseWindow (bool force)
 		{
-			return true;
+			return Task.FromResult (true);
 		}
 		
 		public void SelectWindow ()
@@ -112,7 +113,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler TitleChanged { add {} remove {} }
 		public event EventHandler DocumentChanged { add {} remove {} }
-		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing { add {} remove {} }
+		public event MonoDevelop.Ide.Gui.WorkbenchWindowAsyncEventHandler Closing { add {} remove {} }
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closed { add {} remove {} }
 		public event MonoDevelop.Ide.Gui.ActiveViewContentEventHandler ActiveViewContentChanged { add {} remove {} }
 		public event EventHandler ViewsChanged { add {} remove {} }

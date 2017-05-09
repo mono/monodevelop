@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Templates
 				Id = GetAttribute (xmlElement, "id"),
 				Version = GetAttribute (xmlElement, "version"),
 				CreateCondition = GetAttribute (xmlElement, "if"),
+				RequireLicenseAcceptance = GetLocalOrParentBoolAttribute (xmlElement, "requireLicenseAcceptance", true),
 				IsLocalPackage = GetBoolAttribute (xmlElement, "local"),
 				Directory = GetPath (xmlElement, "directory", baseDirectory)
 			};
@@ -53,6 +54,7 @@ namespace MonoDevelop.Ide.Templates
 		public string CreateCondition { get; private set; }
 
 		internal bool IsLocalPackage { get; private set; }
+		internal bool RequireLicenseAcceptance { get; private set; }
 		internal FilePath Directory { get; private set; }
 
 		static string GetAttribute (XmlElement xmlElement, string attributeName, string defaultValue = "")
@@ -68,12 +70,34 @@ namespace MonoDevelop.Ide.Templates
 		static bool GetBoolAttribute (XmlElement xmlElement, string attributeName)
 		{
 			string attributeValue = GetAttribute (xmlElement, attributeName);
+			return GetBoolValue (attributeValue);
+		}
 
+		static bool GetBoolValue (string value, bool defaultValue = false)
+		{
 			bool result = false;
-			if (bool.TryParse (attributeValue, out result))
+			if (bool.TryParse (value, out result))
 				return result;
 
-			return false;
+			return defaultValue;
+		}
+
+		static bool GetLocalOrParentBoolAttribute (XmlElement xmlElement, string attributeName, bool defaultValue = false)
+		{
+			string attributeValue = GetLocalOrParentAttribute (xmlElement, attributeName);
+			return GetBoolValue (attributeValue, defaultValue);
+		}
+
+		/// <summary>
+		/// Local attribute value overrides parent attribute value.
+		/// </summary>
+		static string GetLocalOrParentAttribute (XmlElement xmlElement, string attributeName)
+		{
+			string attributeValue = GetAttribute (xmlElement, attributeName, null);
+			if (attributeValue != null)
+				return attributeValue;
+
+			return GetAttribute ((XmlElement)xmlElement.ParentNode, attributeName);
 		}
 
 		static FilePath GetPath (XmlElement xmlElement, string attributeName, FilePath baseDirectory)

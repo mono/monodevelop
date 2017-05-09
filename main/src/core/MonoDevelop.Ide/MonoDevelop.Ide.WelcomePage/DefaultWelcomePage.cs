@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using Gtk;
 
 namespace MonoDevelop.Ide.WelcomePage
@@ -37,8 +39,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			TopBorderImage = Xwt.Drawing.Image.FromResource ("welcome-tile.png");
 
 			var mainAlignment = new Gtk.Alignment (0.5f, 0.5f, 0f, 1f);
+			mainAlignment.Accessible.SetShouldIgnore (true);
 
 			var mainCol = new WelcomePageColumn ();
+			mainCol.Accessible.SetShouldIgnore (true);
 			mainAlignment.Add (mainCol);
 
 			var row1 = new WelcomePageRow ();
@@ -49,6 +53,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				new WelcomePageBarButton (GettextCatalog.GetString ("Q&A"), "http://stackoverflow.com/questions/tagged/monodevelop", "welcome-link-chat-16.png")
 				)
 			);
+			row1.Accessible.SetShouldIgnore (true);
 			mainCol.PackStart (row1, false, false, 0);
 
 			var row2 = new WelcomePageRow (
@@ -62,6 +67,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					new WelcomePageTipOfTheDaySection ()
 				)
 			);
+			row2.Accessible.SetShouldIgnore (true);
 			mainCol.PackStart (row2, false, false, 0);
 
 			parent.Add (mainAlignment);

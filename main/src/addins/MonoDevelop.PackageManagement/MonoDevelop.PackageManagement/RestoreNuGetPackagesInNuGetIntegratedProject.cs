@@ -48,9 +48,7 @@ namespace MonoDevelop.PackageManagement
 			this.nugetProject = nugetProject;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			packageRestorer = new MonoDevelopBuildIntegratedRestorer (
-				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings);
+			packageRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 		}
 
 		public void Execute ()

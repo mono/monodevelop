@@ -99,6 +99,7 @@ class MyTest
 		}
 		
 		[Test]
+		[Ignore ()]
 		public void TestNameProposalForeach ()
 		{
 			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (

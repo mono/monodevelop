@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PolicyService.cs
 // 
 // Author:
@@ -53,8 +53,12 @@ namespace MonoDevelop.Projects.Policies
 		static Dictionary<Type, string> policyTypes = new Dictionary<Type, string> ();
 		static List<string> deletedUserSets = new List<string> ();
 		
-		static PolicySet defaultPolicies;
-		static PolicyBag defaultPolicyBag = new PolicyBag ();
+		static PolicySet systemDefaultPolicies; // Policy set that has the IDE defined default value for all types of policies.
+		static PolicySet userDefaultPolicies; // Policy set that has user defined values.
+
+		static PolicyBag systemDefaultPolicyBag = new SystemDefaultPolicyBag { ReadOnly = true };
+		static PolicyBag defaultPolicyBag = new PolicyBag { ReadOnly = true };
+
 		static InvariantPolicyBag invariantPolicies = new InvariantPolicyBag ();
 		
 		static PolicyService ()
@@ -62,8 +66,7 @@ namespace MonoDevelop.Projects.Policies
 			AddinManager.AddExtensionNodeHandler (TYPE_EXT_POINT, HandlePolicyTypeUpdated);
 			AddinManager.AddExtensionNodeHandler (SET_EXT_POINT, HandlePolicySetUpdated);
 			LoadPolicies ();
-			defaultPolicyBag.ReadOnly = true;
-			
+
 			PolicySet pset = GetPolicySetById ("Invariant");
 			pset.PolicyChanged += HandleInvariantPolicySetChanged;
 			foreach (var pol in pset.Policies)
@@ -257,6 +260,12 @@ namespace MonoDevelop.Projects.Policies
 			DataValue inheritScope = item.ItemData.Extract ("inheritsScope") as DataValue;
 			
 			object baseItem = set.Get (t, inheritScope != null ? inheritScope.Value : null);
+
+			// If the policy was not found for the specified scope, try using the default policy.
+			// Imprecise values are better than just crashing.
+			if (baseItem == null && inheritScope != null)
+				baseItem = set.Get (t);
+			
 			if (baseItem == null) {
 				string msg = "Policy set '" + set.Id + "' does not contain a policy for '" + item.Name + "'";
 				if (inheritScope != null)
@@ -279,40 +288,56 @@ namespace MonoDevelop.Projects.Policies
 			return null;
 		}
 		
-		internal static DataNode DiffSerialize (Type policyType, object policy, string scope, bool keepDeletedNodes = false)
+		internal static DataNode DiffSerialize (Type policyType, object policy, string scope, bool keepDeletedNodes = false, PolicySet diffBasePolicySet = null)
 		{
-			string minSetId = null;
-			int min = Int32.MaxValue;
 			DataNode node = null;
 			DataItem baseNode = null;
-			string baseScope = null;
-			
+
 			if (policy is UnknownPolicy)
 				return ((UnknownPolicy)policy).Data;
 			
 			DataNode raw = RawSerialize (policyType, policy);
 			
 			if (policy != null) {
-				//find the policy with the fewest differences
-				foreach (PolicySet set in sets) {
-					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
-						if (!set.SupportsDiffSerialize (sp))
-							continue;
-						DataNode baseline = RawSerialize (policyType, sp.Policy);
-						int size = 0;
-						DataNode tempNode = ExtractOverlay (baseline, raw, ref size);
-						if (size < min) {
-							minSetId = set.Id;
-							min = size;
-							node = tempNode;
-							baseNode = baseline as DataItem;
-							baseScope = sp.Scope;
-						}
+				
+				// By default, diff-serialize against the default instance of the policy. Much safer than
+				// diffing against sets, which can change or not be present
+
+				bool usedBaseSet = false, usedBaseScope = false;
+				object diffBasePolicy = null;
+
+				if (diffBasePolicySet != null) {
+					// A set was given for diff serialization. Find a policy for this scope.
+					diffBasePolicy = diffBasePolicySet.Get (policyType, scope);
+					if (diffBasePolicy != null) {
+						usedBaseSet = true;
+						usedBaseScope = scope != null;
+					} else {
+						diffBasePolicy = diffBasePolicySet.Get (policyType);
+						if (diffBasePolicy != null)
+							usedBaseSet = true;
 					}
 				}
+				if (diffBasePolicy == null)
+					diffBasePolicy = Activator.CreateInstance (policyType);
+
+				baseNode = RawSerialize (policyType, diffBasePolicy) as DataItem;
+				int size = 0;
+				node = ExtractOverlay (baseNode, raw, ref size);
+
+				// Store the set and scope that was used for the diff serialization, if necessary
+				if (usedBaseSet)
+					((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", diffBasePolicySet.Id));
+				else if (keepDeletedNodes)
+					((DataItem)node).ItemData.Add (new DataDeletedNode ("inheritsSet"));
+				if (usedBaseScope)
+					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", scope));
+				else if (keepDeletedNodes)
+					((DataItem)node).ItemData.Add (new DataDeletedNode ("inheritsScope"));
+				
 			} else {
-				minSetId = "null";
 				node = raw;
+				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", "null"));
 			}
 			
 			if (node != null) {
@@ -329,10 +354,6 @@ namespace MonoDevelop.Projects.Policies
 					}
 					node = baseNode;
 				}
-
-				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", minSetId));
-				if (baseScope != null)
-					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", baseScope));
 				raw = node;
 			}
 			if (scope != null)
@@ -516,7 +537,7 @@ namespace MonoDevelop.Projects.Policies
 					if (removed.Length > 0)
 						removed.Append (' ');
 					if (baseline.UniqueNames && node is DataValue)
-						removed.Append ("@" + node.Name);
+						removed.Append ("@").Append (node.Name);
 					else
 						removed.Append (n.ToString (CultureInfo.InvariantCulture));
 				}
@@ -648,8 +669,10 @@ namespace MonoDevelop.Projects.Policies
 		/// </typeparam>
 		public static IEnumerable<PolicySet> GetPolicySets<T> (bool includeHidden)
 		{
+			// The default policy set is always included, since it returns a default
+			// instance for all types of policies.
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> () && (s.Visible || includeHidden))
+				if (s.DirectHas<T> () && (s.Visible || includeHidden) || s.IsDefaultSet)
 					yield return s;
 		}
 		
@@ -687,8 +710,10 @@ namespace MonoDevelop.Projects.Policies
 		/// </typeparam>
 		public static IEnumerable<PolicySet> GetPolicySets<T> (string scope, bool includeHidden)
 		{
+			// The default policy set is always included, since it returns a default
+			// instance for all types of policies.
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> (scope) && (s.Visible || includeHidden))
+				if (s.DirectHas<T> (scope) && (s.Visible || includeHidden) || s.IsDefaultSet)
 					yield return s;
 		}
 		
@@ -726,8 +751,10 @@ namespace MonoDevelop.Projects.Policies
 		/// </typeparam>
 		public static IEnumerable<PolicySet> GetPolicySets<T> (IEnumerable<string> scopes, bool includeHidden)
 		{
+			// The default policy set is always included, since it returns a default
+			// instance for all types of policies.
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> (scopes) && (s.Visible || includeHidden))
+				if (s.DirectHas<T> (scopes) && (s.Visible || includeHidden) || s.IsDefaultSet)
 					yield return s;
 		}
 		
@@ -970,7 +997,14 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static T GetDefaultPolicy<T> () where T : class, IEquatable<T>, new ()
 		{
-			return defaultPolicies.Get<T> () ?? new T ();
+			return (T) GetDefaultPolicy (typeof (T));
+		}
+
+		internal static object GetDefaultPolicy (Type type)
+		{
+			// If the user has customized the default policy, return that. If not, return the IDE default.
+			// (systemDefaultPolicies always returns a default policy, even if not explicitly defined)
+			return userDefaultPolicies.Get (type) ?? systemDefaultPolicies.Get (type);
 		}
 
 		/// <summary>
@@ -991,33 +1025,11 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static T GetDefaultPolicy<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
-			return defaultPolicies.Get<T> (scope) ?? new T ();
+			// If the user has customized the default policy, return that. If not, return the IDE default.
+			// (systemDefaultPolicies always returns a default policy, even if not explicitly defined)
+			return userDefaultPolicies.Get<T> (scope) ?? systemDefaultPolicies.Get<T> (scope);
 		}
 
-		/// <summary>
-		/// Gets a default policy for a specific scope
-		/// </summary>
-		/// <returns>
-		/// The default policy, or NULL if the policy is not defined and createDefault is False
-		/// </returns>
-		/// <param name='scope'>
-		/// Scope under which the policy has to be defined
-		/// </param>
-		/// <param name='createDefault'>
-		/// When set to False and there is no default policy defined of this type, the method returns null.
-		/// When set to True, a policy value is always returned (it can be the system default).
-		/// </param>
-		/// <typeparam name='T'>
-		/// Type of the policy to be returned
-		/// </typeparam>
-		/// <remarks>
-		/// This method returns the default value for the specified policy type and scope.
-		/// </remarks>
-		public static T GetDefaultPolicy<T> (string scope, bool createDefault) where T : class, IEquatable<T>, new ()
-		{
-			return defaultPolicies.Get<T> (scope) ?? (createDefault ? new T () : null);
-		}
-		
 		/// <summary>
 		/// Gets a default policy for a specific set of scopes
 		/// </summary>
@@ -1037,31 +1049,32 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static T GetDefaultPolicy<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
 		{
-			return defaultPolicies.Get<T> (scopes) ?? new T ();
+			return (T)GetDefaultPolicy (typeof (T), scopes);
 		}
-		
-		/// <summary>
-		/// Sets a default policy value.
-		/// </summary>
-		/// <param name='value'>
-		/// Policy to be set
-		/// </param>
-		/// <typeparam name='T'>
-		/// Type of the policy to be set
-		/// </typeparam>
-		public static void SetDefaultPolicy<T> (T value) where T : class, IEquatable<T>, new ()
+
+		internal static object GetDefaultPolicy (Type policyType, IEnumerable<string> scopes)
 		{
-			defaultPolicies.Set (value);
+			// If the user has customized the default policy, return that. If not, return the IDE default.
+			// (systemDefaultPolicies always returns a default policy, even if not explicitly defined)
+			return userDefaultPolicies.Get (policyType, scopes) ?? systemDefaultPolicies.Get (policyType, scopes);
 		}
-		
+
 		/// <summary>
 		/// Gets default user-defined policy set
 		/// </summary>
 		public static PolicySet GetUserDefaultPolicySet ()
 		{
-			return defaultPolicies;
+			return userDefaultPolicies;
 		}
 		
+		/// <summary>
+		/// Gets default system-defined policy set
+		/// </summary>
+		public static PolicySet GetSystemDefaultPolicySet ()
+		{
+			return systemDefaultPolicies;
+		}
+
 		/// <summary>
 		/// Gets the invariant policy set
 		/// </summary>
@@ -1081,6 +1094,19 @@ namespace MonoDevelop.Projects.Policies
 		/// </value>
 		/// <remarks>
 		/// The returned PolicyContainer can be used to query the system default value of policies
+		/// </remarks>
+		public static PolicyContainer SystemDefaultPolicies {
+			get { return defaultPolicyBag; }
+		}
+
+		/// <summary>
+		/// Gets the user default policies
+		/// </summary>
+		/// <value>
+		/// The default policies.
+		/// </value>
+		/// <remarks>
+		/// The returned PolicyContainer can be used to query the user default value of policies
 		/// </remarks>
 		public static PolicyContainer DefaultPolicies {
 			get { return defaultPolicyBag; }
@@ -1185,12 +1211,19 @@ namespace MonoDevelop.Projects.Policies
 					File.Delete (file);
 			}
 			deletedUserSets.Clear ();
-			SavePolicy (defaultPolicies);
+
+			// User policies are saved using the system default policies as diff base.
+			// In this way we ensure that only the smallest set of changes is serialized
+			// WRT the system default. If the system defaults change, the new user defaults
+			// will have the new values, with the exception of the values that the user
+			// explicitly changed.
+
+			SavePolicy (userDefaultPolicies, systemDefaultPolicies);
 			foreach (PolicySet ps in userSets)
 				SavePolicy (ps);
 		}
 		
-		static void SavePolicy (PolicySet set)
+		static void SavePolicy (PolicySet set, PolicySet diffBasePolicySet = null)
 		{
 			string file = GetPolicyFile (set);
 			string friendlyName = string.Format ("policy '{0}'", set.Name);
@@ -1200,7 +1233,7 @@ namespace MonoDevelop.Projects.Policies
 				};
 				using (var xw = XmlTextWriter.Create (writer, xws)) {
 					xw.WriteStartElement ("Policies");
-					set.SaveToXml (xw);
+					set.SaveToXml (xw, diffBasePolicySet);
 					xw.WriteEndElement ();
 				}
 			});
@@ -1213,29 +1246,46 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void LoadPolicies ()
 		{
-			if (defaultPolicies != null)
-				defaultPolicies.PolicyChanged -= DefaultPoliciesPolicyChanged;
+			systemDefaultPolicies = GetPolicySetById ("Default");
+
+			if (userDefaultPolicies != null)
+				userDefaultPolicies.PolicyChanged -= DefaultPoliciesPolicyChanged;
 			
 			userSets.Clear ();
-			defaultPolicies = null;
-			
-			if (Directory.Exists (PoliciesFolder)) {
-				foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.xml")) {
-					try {
-						LoadPolicy (file);
-					} catch (Exception ex) {
-						LoggingService.LogError (
-							string.Format ("Failed to load policy file '{0}'", Path.GetFileName (file)),
-							ex
-						);
+			userDefaultPolicies = null;
+
+			try {
+				if (Directory.Exists (PoliciesFolder)) {
+					// Remove duplicate generated by a bug in the policy saving code
+					foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.mdpolicy.xml"))
+						File.Delete (file);
+					foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.mdpolicy.xml.previous"))
+						File.Delete (file);
+
+					// User defaults are now stored in UserDefault.mdpolicy.xml, so if that file already exists we can
+					// delete the old Default.mdpolicy.xml.
+					if (File.Exists (PoliciesFolder.Combine ("Default.mdpolicy.xml")) && File.Exists (PoliciesFolder.Combine ("UserDefault.mdpolicy.xml")))
+						File.Delete (PoliciesFolder.Combine ("Default.mdpolicy.xml"));
+
+					foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.xml")) {
+						try {
+							LoadPolicy (file);
+						} catch (Exception ex) {
+							LoggingService.LogError (
+								string.Format ("Failed to load policy file '{0}'", Path.GetFileName (file)),
+								ex
+							);
+						}
 					}
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Policy load failed", ex);
 			}
 			
-			if (defaultPolicies == null) {
-				defaultPolicies = new PolicySet ("Default", "Default");
+			if (userDefaultPolicies == null) {
+				userDefaultPolicies = new PolicySet ("UserDefault", "User Default");
 			}
-			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
+			userDefaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
 		}
 		
 		static void LoadPolicy (FilePath file)
@@ -1245,16 +1295,18 @@ namespace MonoDevelop.Projects.Policies
 				var xr = XmlReader.Create (reader);
 				xr.MoveToContent ();
 				if (xr.LocalName == "PolicySet") {
-					defaultPolicies = new PolicySet ("Default", null);
-					defaultPolicies.LoadFromXml (xr);
+					userDefaultPolicies = new PolicySet ("UserDefault", null);
+					userDefaultPolicies.LoadFromXml (xr);
 				} else if (xr.LocalName == "Policies" && !xr.IsEmptyElement) {
 					xr.ReadStartElement ();
 					xr.MoveToContent ();
 					while (xr.NodeType != XmlNodeType.EndElement) {
 						PolicySet pset = new PolicySet ();
 						pset.LoadFromXml (xr);
-						if (pset.Id == "Default") {
-							defaultPolicies = pset;
+						if (pset.Id == "Default" || pset.Id == "UserDefault") {
+							pset.Id = "UserDefault";
+							pset.Name = "User Default";
+							userDefaultPolicies = pset;
 						} else {
 							// if the policy file does not have a name, use the file name as one
 							if (string.IsNullOrEmpty (pset.Name)) {
@@ -1405,14 +1457,27 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		protected override T GetDefaultPolicy<T> ()
+		protected override object GetDefaultPolicy (Type type)
 		{
-			return new T ();
+			return Activator.CreateInstance (type);
 		}
 		
-		protected override T GetDefaultPolicy<T> (IEnumerable<string> scopes)
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
 		{
-			return new T ();
+			return Activator.CreateInstance (type);
+		}
+	}
+
+	class SystemDefaultPolicyBag: PolicyBag
+	{
+		protected override object GetDefaultPolicy (Type type)
+		{
+			return PolicyService.GetSystemDefaultPolicySet ().Get (type) ?? Activator.CreateInstance (type);
+		}
+
+		protected override object GetDefaultPolicy (Type type, IEnumerable<string> scopes)
+		{
+			return PolicyService.GetSystemDefaultPolicySet ().Get (type, scopes) ?? Activator.CreateInstance (type);
 		}
 	}
 }

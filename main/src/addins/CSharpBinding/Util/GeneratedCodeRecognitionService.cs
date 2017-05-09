@@ -23,11 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.IO;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
@@ -65,7 +69,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			// First return visible source locations if we have them.  Else, go to the non-visible 
 			// source locations.  
-			var visibleSourceLocations = locations.Where(CommonLocationExtensions.IsVisibleSourceLocation);
+			var visibleSourceLocations = locations.Where(LocationExtensions.IsVisibleSourceLocation);
 			return visibleSourceLocations.Any()
 				? visibleSourceLocations
 					: locations.Where(loc => loc.IsInSource);

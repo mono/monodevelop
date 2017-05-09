@@ -37,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 		NuGetProject GetNuGetProject (IDotNetProject project);
 		ISourceRepositoryProvider CreateSourceRepositoryProvider ();
 		void ReloadSettings ();
+		void ClearProjectCache ();
 	}
 }
 

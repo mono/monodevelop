@@ -425,8 +425,8 @@ namespace MonoDevelop.Components.MainToolbar
 					foreach (var item in confs) {
 						string config = item.OriginalId;
 						if (config == name) {
-							IdeApp.Workspace.ActiveConfigurationId = config;
 							ToolbarView.ActiveConfiguration = item;
+							UpdateBuildConfiguration ();
 							selected = true;
 							break;
 						}
@@ -434,7 +434,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					if (!selected) {
 						ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.First ();
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
+						UpdateBuildConfiguration ();
 					}
 				}
 			} finally {
@@ -472,7 +472,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				var target = item.ExecutionTarget;
-				if (target == null || !target.Enabled || item.Project != project)
+				if (target == null || item.Project != project)
 					continue;
 
 				if (target is ExecutionTargetGroup)
@@ -547,16 +547,16 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged -= HandleStartupItemChanged;
-				currentSolution.Saved -= HandleUpdateCombosWidthDelay;
-				currentSolution.EntrySaved -= HandleUpdateCombosWidthDelay;
+				currentSolution.Saved -= HandleSolutionSaved;
+				currentSolution.EntrySaved -= HandleSolutionEntrySaved;
 			}
 
 			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged += HandleStartupItemChanged;
-				currentSolution.Saved += HandleUpdateCombosWidthDelay;
-				currentSolution.EntrySaved += HandleUpdateCombosWidthDelay;
+				currentSolution.Saved += HandleSolutionSaved;
+				currentSolution.EntrySaved += HandleSolutionEntrySaved;
 			}
 
 			TrackStartupProject ();
@@ -589,17 +589,16 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		bool updatingCombos;
-		void HandleUpdateCombosWidthDelay (object sender, EventArgs e)
+		void HandleSolutionSaved (object sender, EventArgs e)
 		{
-			if (!updatingCombos) {
-				updatingCombos = true;
-				GLib.Timeout.Add (100, () => {
-					updatingCombos = false;
-					UpdateCombos ();
-					return false;
-				});
-			}
+			UpdateCombos ();
+		}
+
+		void HandleSolutionEntrySaved (object sender, SolutionItemSavedEventArgs e)
+		{
+			// Skip the per-project update when a solution is being saved. The solution Saved callback will do the final update.
+			if (!e.SavingSolution)
+				HandleSolutionSaved (sender, e);
 		}
 
 		void HandleStartupItemChanged (object sender, EventArgs e)
@@ -630,22 +629,17 @@ namespace MonoDevelop.Components.MainToolbar
 			if (popup == null)
 				return;
 
-			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+			if (IdeApp.Workbench.RootWindow.Visible)
+				popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
 
-			var window = ToolbarView.PopupAnchor.GdkWindow;
-			if (window == null) {
-				if (popup.IsRealized) {
-					popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				} else {
-					popup.Realized += (sender, e) =>
-						popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				}
-			}
+			if (ToolbarView.PopupAnchor.GdkWindow == null)
+				popup.Location = new Xwt.Point (ToolbarView.PopupAnchor.Allocation.Width - popup.Size.Width, ToolbarView.PopupAnchor.Allocation.Y);
 		}
 
 		void DestroyPopup ()
 		{
 			if (popup != null) {
+				popup.Close ();
 				popup.Destroy ();
 				popup = null;
 			}
@@ -674,12 +668,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
 				popup.SearchForMembers = SearchForMembers;
-				popup.Destroyed += delegate {
+				popup.Disposed += delegate {
 					popup = null;
 					ToolbarView.SearchText = "";
 				};
 				PositionPopup ();
-				popup.ShowAll ();
+				popup.Show ();
 			}
 
 			popup.Update (pattern);
@@ -758,16 +752,22 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var bars = AddinManager.GetExtensionNodes<ItemSetCodon> (ToolbarExtensionPath)
 				.Where (n => visibleBars.Contains (n.Id))
-				.Select (b => b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id));
+                .Select (b => new { Label = b.Label, Buttons = b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id) });
 
+			var buttonGroups = new List<ButtonBarGroup> ();
 			buttonBarButtons.Clear ();
 			foreach (var bar in bars) {
-				foreach (string commandId in bar)
-					buttonBarButtons.Add (new ButtonBarButton (this, commandId));
-				buttonBarButtons.Add (new ButtonBarButton (this));
+				var group = new ButtonBarGroup (bar.Label);
+
+				buttonGroups.Add (group);
+				foreach (string commandId in bar.Buttons) {
+					var button = new ButtonBarButton (this, commandId);
+					group.Buttons.Add (button);
+					buttonBarButtons.Add (button);
+				}
 			}
 
-			ToolbarView.RebuildToolbar (buttonBarButtons);
+			ToolbarView.RebuildToolbar (buttonGroups);
 		}
 
 		static void HandleStartButtonClicked (object sender, EventArgs e)
@@ -837,6 +837,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		class ButtonBarButton : IButtonBarButton
 		{
+			CommandInfo lastCmdInfo;
 			MainToolbarController Controller { get; set; }
 			string CommandId { get; set; }
 
@@ -854,13 +855,14 @@ namespace MonoDevelop.Components.MainToolbar
 			public bool Enabled { get; set; }
 			public bool Visible { get; set; }
 			public string Tooltip { get; set; }
+			public string Title { get; set; }
 			public bool IsSeparator {
 				get { return CommandId == null; }
 			}
 
 			public void NotifyPushed ()
 			{
-				IdeApp.CommandService.DispatchCommand (CommandId, null, Controller.lastCommandTarget, CommandSource.MainToolbar);
+				IdeApp.CommandService.DispatchCommand (CommandId, null, Controller.lastCommandTarget, CommandSource.MainToolbar, lastCmdInfo);
 			}
 
 			public void Update ()
@@ -868,10 +870,21 @@ namespace MonoDevelop.Components.MainToolbar
 				if (IsSeparator)
 					return;
 
-				var ci = IdeApp.CommandService.GetCommandInfo (CommandId, new CommandTargetRoute (Controller.lastCommandTarget));
-				if (ci == null)
-					return;
+				if (lastCmdInfo != null) {
+					lastCmdInfo.CancelAsyncUpdate ();
+					lastCmdInfo.Changed -= LastCmdInfoChanged;
+				}
+				
+				lastCmdInfo = IdeApp.CommandService.GetCommandInfo (CommandId, new CommandTargetRoute (Controller.lastCommandTarget));
 
+				if (lastCmdInfo != null) {
+					lastCmdInfo.Changed += LastCmdInfoChanged;
+					Update (lastCmdInfo);
+				}
+			}
+
+			void Update (CommandInfo ci)
+			{
 				if (ci.Icon != Image) {
 					Image = ci.Icon;
 					if (ImageChanged != null)
@@ -892,12 +905,22 @@ namespace MonoDevelop.Components.MainToolbar
 					if (VisibleChanged != null)
 						VisibleChanged (this, null);
 				}
+				if (ci.Text != Title) {
+					Title = ci.Text;
+					TitleChanged?.Invoke (this, null);
+				}
+			}
+
+			void LastCmdInfoChanged (object sender, EventArgs e)
+			{
+				Update (lastCmdInfo); 
 			}
 
 			public event EventHandler EnabledChanged;
 			public event EventHandler ImageChanged;
 			public event EventHandler VisibleChanged;
 			public event EventHandler TooltipChanged;
+			public event EventHandler TitleChanged;
 		}
 
 		class RuntimeModel : IRuntimeModel
@@ -977,6 +1000,18 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public SolutionItem Project { get; }
 
+			public string Image {
+				get {
+					return ExecutionTarget?.Image;
+				}
+			}
+
+			public string Tooltip {
+				get {
+					return ExecutionTarget?.Tooltip;
+				}
+			}
+
 			public IRuntimeMutableModel GetMutableModel ()
 			{
 				if (Command != null)
@@ -1006,7 +1041,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public RuntimeMutableModel (ExecutionTarget target, bool fullName)
 			{
-				Enabled = !(target is ExecutionTargetGroup);
+				Enabled = !(target is ExecutionTargetGroup) && target.Enabled;
 				Visible = true;
 				if (target == null)
 					DisplayString = FullDisplayString = string.Empty;

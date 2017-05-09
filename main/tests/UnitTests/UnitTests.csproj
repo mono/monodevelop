@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +12,7 @@
     <RootNamespace>UnitTests</RootNamespace>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -110,11 +111,6 @@
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
@@ -153,11 +149,6 @@
     <ProjectReference Include="..\..\src\addins\TextTemplating\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
       <Project>{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}</Project>
       <Name>MonoDevelop.TextTemplating</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
-      <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
-      <Name>Mono.TextTemplating</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
@@ -296,14 +287,24 @@
     <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DiffTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\RegexTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest_TextMate.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMateDocumentIndentEngineTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMateFoldingTextEditorExtensionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestCSharpHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestYamlHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\StackMatchExpressionTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildProjectServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildGlobTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectCapabilityTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectReevaluationTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\md.targets" />
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
@@ -329,4 +330,5 @@
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
     <Folder Include="MonoDevelop.Components.PropertyGrid\" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -26,7 +26,7 @@
 
 using System;
 using MonoDevelop.CodeIssues;
-using MonoDevelop.PackageManagement;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Linq;
 using System.IO;
@@ -72,13 +72,13 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			return diags.Refactorings;
 		}
 
-		static Task<AnalyzersFromAssembly> GetProjectDiagnosticsAsync (Project project, string language, CancellationToken cancellationToken)
+		static async Task<AnalyzersFromAssembly> GetProjectDiagnosticsAsync (Project project, string language, CancellationToken cancellationToken)
 		{
 			if (project == null)
-				return Task.FromResult (AnalyzersFromAssembly.Empty);
+				return AnalyzersFromAssembly.Empty;
 			AnalyzersFromAssembly result;
 			if (diagnosticCache.TryGetValue(project, out result)) 
-				return Task.FromResult (result);
+				return result;
 
 			result = new AnalyzersFromAssembly ();
 
@@ -86,8 +86,8 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			if (dotNetProject != null) {
 				var proxy = new DotNetProjectProxy (dotNetProject);
 				if (proxy.HasPackages ()) {
-					var packagesPath = new SolutionPackageRepositoryPath (proxy);
-					foreach (var file in Directory.EnumerateFiles (packagesPath.PackageRepositoryPath, "*.dll", SearchOption.AllDirectories)) {
+					var packagesPath = await GetPackagesPath (proxy);
+					foreach (var file in Directory.EnumerateFiles (packagesPath, "*.dll", SearchOption.AllDirectories)) {
 						cancellationToken.ThrowIfCancellationRequested ();
 						try {
 							var asm = Assembly.LoadFrom (file);
@@ -98,7 +98,16 @@ namespace MonoDevelop.PackageManagement.Refactoring
 				}
 			}
 			diagnosticCache[project] = result;
-			return Task.FromResult (result);
+			return result;
+		}
+
+		static Task<FilePath> GetPackagesPath (IDotNetProject project)
+		{
+			return Runtime.RunInMainThread (() => {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				var nugetProject = solutionManager.GetNuGetProject (project);
+				return nugetProject.GetPackagesFolderPath (solutionManager);
+			});
 		}
 	}
 }

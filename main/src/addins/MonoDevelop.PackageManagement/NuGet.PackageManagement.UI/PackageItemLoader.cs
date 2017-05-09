@@ -20,9 +20,8 @@ namespace NuGet.PackageManagement.UI
 		private readonly IPackageFeed _packageFeed;
 		//private PackageCollection _installedPackages;
 
-		private SearchFilter SearchFilter => new SearchFilter
+		private SearchFilter SearchFilter => new SearchFilter(includePrerelease: _includePrerelease)
 		{
-			IncludePrerelease = _includePrerelease,
 			SupportedFrameworks = _context.GetSupportedFrameworks()
 		};
 

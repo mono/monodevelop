@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Debugger;
 using Pango;
 
@@ -44,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public GenericUnderlineMarker (TextSegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
+		public GenericUnderlineMarker (ISegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
 		{
 			this.effect = effect;
 		}
@@ -68,7 +69,7 @@ namespace MonoDevelop.SourceEditor
 				drawTo = endXPos;
 				var line = editor.GetLineByOffset (startOffset);
 				int offset = line.GetIndentation (editor.Document).Length;
-				drawFrom = startXPos + (layout.Layout.Layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
+				drawFrom = startXPos + (layout.Layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
 			} else {
 				int start;
 				if (startOffset < markerStart) {
@@ -81,9 +82,9 @@ namespace MonoDevelop.SourceEditor
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int x_pos;
 
-				x_pos = layout.Layout.Layout.IndexToPos (start - startOffset).X;
+				x_pos = layout.Layout.IndexToPos (start - startOffset).X;
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-				x_pos = layout.Layout.Layout.IndexToPos (end - startOffset).X;
+				x_pos = layout.Layout.IndexToPos (end - startOffset).X;
 	
 				drawTo = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

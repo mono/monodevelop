@@ -90,12 +90,27 @@ namespace MonoDevelop.Projects
 			}
 			var vars = XElement.Parse (xml);
 			if (vars != null) {
-				foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
+				foreach (var val in vars.Elements (XName.Get ("Variable", GetProjectNamespace ()))) {
 					var name = (string)val.Attribute ("name");
 					if (name != null)
 						dict [name] = (string)val.Attribute ("value");
 				}
 			}
+		}
+
+		string GetProjectNamespace ()
+		{
+			var msbuildProject = ParentItem?.MSBuildProject;
+			if (msbuildProject == null) {
+				var projectObject = properties as IMSBuildProjectObject;
+				if (projectObject != null)
+					msbuildProject = projectObject.ParentProject;
+			}
+
+			if (msbuildProject != null)
+				return msbuildProject.Namespace;
+
+			return MSBuildProject.Schema;
 		}
 
 		internal protected virtual void Write (IPropertySet pset)
@@ -131,9 +146,10 @@ namespace MonoDevelop.Projects
 
 			if (loadedEnvironmentVariables == null || loadedEnvironmentVariables.Count != environmentVariables.Count || loadedEnvironmentVariables.Any (e => !environmentVariables.ContainsKey (e.Key) || environmentVariables[e.Key] != e.Value)) {
 				if (environmentVariables.Count > 0) {
-					XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
+					string xmlns = GetProjectNamespace ();
+					XElement e = new XElement (XName.Get ("EnvironmentVariables", xmlns));
 					foreach (var v in environmentVariables) {
-						var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
+						var val = new XElement (XName.Get ("Variable", xmlns));
 						val.SetAttributeValue ("name", v.Key);
 						val.SetAttributeValue ("value", v.Value);
 						e.Add (val);

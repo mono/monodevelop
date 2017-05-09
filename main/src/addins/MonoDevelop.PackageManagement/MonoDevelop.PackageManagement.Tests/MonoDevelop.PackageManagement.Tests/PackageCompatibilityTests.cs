@@ -24,33 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.IO;
-using System.Runtime.Versioning;
+using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using NUnit.Framework;
-
+ 
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
 	public class PackageCompatibilityTests
 	{
-		FakePackage package;
-		PackageCompatibility packageCompatibility;
+		FakePackageFilesReader packageFilesReader;
+		TestablePackageCompatibility packageCompatibility;
 		FakeDotNetProject project;
-
-		NetPortableProfileTable profileTable;
-
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			string appDataFolder = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify);
-			string dummyPath = Path.Combine (appDataFolder, "MonoDevelopPackageManagementTests");
-			Environment.SetEnvironmentVariable ("NuGetPortableReferenceAssemblyPath", dummyPath);
-			profileTable = NetPortableProfileTable.Instance;
-		}
 
 		void CreateProject (string frameworkVersion)
 		{
@@ -60,15 +50,29 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageCompatibility (string packageFrameworkName)
 		{
-			package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.2.3.4");
-			FrameworkName packageFramework = VersionUtility.ParseFrameworkName (packageFrameworkName);
-			packageCompatibility = new PackageCompatibility (project, package, packageFramework);
+			var packageFramework = NuGetFramework.Parse (packageFrameworkName);
+			var packageReference = new PackageReference (
+				new PackageIdentity ("MyPackage", new NuGetVersion ("1.2.3.4")),
+				packageFramework);
+
+			var projectFramework = NuGetFramework.Parse (project.TargetFrameworkMoniker.ToString ());
+			packageCompatibility = new TestablePackageCompatibility (projectFramework, packageReference, null);
+			packageFilesReader = packageCompatibility.PackageFilesReader;
 		}
 
 		void AssertReportsAreEqual (string expected, string actual)
 		{
 			expected = expected.Replace ("\r\n", "\n");
 			actual = actual.Replace ("\r\n", "n");
+		}
+
+		void AddPackageLibFile (string framework, string fileName)
+		{
+			var files = new List<string> ();
+			files.Add (fileName);
+			var nugetFramework = NuGetFramework.Parse (framework);
+			var item = new FrameworkSpecificGroup (nugetFramework, files);
+			packageFilesReader.LibItems.Add (item);
 		}
 
 		[Test]
@@ -88,13 +92,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateProject ("v4.0");
 			CreatePackageCompatibility ("net45");
-			package.AddFile (@"lib\net45\MyPackage.dll");
+			AddPackageLibFile ("net45", @"lib\net45\MyPackage.dll");
 
 			packageCompatibility.CheckCompatibility ();
 
 			Assert.IsTrue (packageCompatibility.ShouldReinstallPackage);
 			Assert.IsFalse (packageCompatibility.IsCompatibleWithNewProjectTargetFramework);
-			Assert.IsTrue (packageCompatibility.IsCompatibleWithOriginalProjectTargetFramework);
 		}
 
 		[Test]
@@ -102,7 +105,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateProject ("v4.5");
 			CreatePackageCompatibility ("net45");
-			package.AddFile (@"lib\net45\MyPackage.dll");
+			AddPackageLibFile ("net45", @"lib\net45\MyPackage.dll");
 
 			packageCompatibility.CheckCompatibility ();
 
@@ -115,13 +118,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateProject ("v4.0");
 			CreatePackageCompatibility ("net45");
-			package.AddFile (@"lib\MyPackage.dll");
+			AddPackageLibFile ("any", @"lib\MyPackage.dll");
 
 			packageCompatibility.CheckCompatibility ();
 
 			Assert.IsFalse (packageCompatibility.ShouldReinstallPackage);
 			Assert.IsTrue (packageCompatibility.IsCompatibleWithNewProjectTargetFramework);
-			Assert.IsTrue (packageCompatibility.IsCompatibleWithOriginalProjectTargetFramework);
 		}
 	}
 }

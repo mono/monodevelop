@@ -26,18 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
-using System.Linq;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CodeIssues;
-using System.Collections.Immutable;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -207,13 +205,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			{
 				switch (result.Level) {
 				case DiagnosticSeverity.Hidden:
-					return DefaultSourceEditorOptions.Instance.GetColorStyle ().PlainText.Background;
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.Background);
 				case DiagnosticSeverity.Error:
-					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.UnderlineError);
 				case DiagnosticSeverity.Warning:
-					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.UnderlineWarning);
 				case DiagnosticSeverity.Info:
-					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), EditorThemeColors.UnderlineSuggestion);
 				default:
 					throw new System.ArgumentOutOfRangeException ();
 				}

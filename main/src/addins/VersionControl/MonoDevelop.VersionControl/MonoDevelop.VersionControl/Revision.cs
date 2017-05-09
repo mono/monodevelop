@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl
 				int idx = text.IndexOf (':');
 				if (text.StartsWith ("*", StringComparison.Ordinal) && idx >= 0 && idx < text.Length - 1) {
 					int offset = line.EndOffsetIncludingDelimiter;
-					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
+					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.Length - offset);
 					break;
 				}
 			}

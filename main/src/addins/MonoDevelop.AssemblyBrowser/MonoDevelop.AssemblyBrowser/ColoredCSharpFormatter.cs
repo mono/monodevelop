@@ -140,9 +140,13 @@ namespace MonoDevelop.AssemblyBrowser
 			if (value == null) {
 				sb.Append ("null");
 			} else if (value is string) {
-				sb.Append ("\"" + value + "\"");
+				sb.Append ("\"");
+				sb.Append (value);
+				sb.Append ("\"");
 			} else if (value is char) {
-				sb.Append ("'" + value + "'");
+				sb.Append ("'");
+				sb.Append (value);
+				sb.Append ("'");
 			} else if (value is bool) {
 				sb.Append ((bool)value ? "true" : "false");
 			} else {

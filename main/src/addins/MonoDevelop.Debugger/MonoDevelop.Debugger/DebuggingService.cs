@@ -438,8 +438,6 @@ namespace MonoDevelop.Debugger
 			session.OutputWriter = null;
 			session.LogWriter = null;
 
-			sessionManager.Dispose ();
-
 			Runtime.RunInMainThread (delegate {
 				if (cleaningCurrentSession)
 					HideExceptionCaughtDialog ();
@@ -455,8 +453,9 @@ namespace MonoDevelop.Debugger
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
+			}).ContinueWith ((t) => {
+				sessionManager.Dispose ();
 			});
-
 		}
 
 		static string oldLayout;
@@ -618,6 +617,14 @@ namespace MonoDevelop.Debugger
 			eval.EllipsizedLength = 260; // Instead of random default(100), lets use 260 which should cover 99.9% of file path cases
 			eval.GroupStaticMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", true);
 			eval.MemberEvaluationTimeout = eval.EvaluationTimeout * 2;
+			eval.StackFrameFormat = new StackFrameFormat () {
+				Module = PropertyService.Get ("Monodevelop.StackTrace.ShowModuleName", eval.StackFrameFormat.Module),
+				ParameterTypes = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterType", eval.StackFrameFormat.ParameterTypes),
+				ParameterNames = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterName", eval.StackFrameFormat.ParameterNames),
+				ParameterValues = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterValue", eval.StackFrameFormat.ParameterValues),
+				Line = PropertyService.Get ("Monodevelop.StackTrace.ShowLineNumber", eval.StackFrameFormat.Line),
+				ExternalCode = PropertyService.Get ("Monodevelop.StackTrace.ShowExternalCode", eval.StackFrameFormat.ExternalCode)
+			};
 			return new DebuggerSessionOptions {
 				StepOverPropertiesAndOperators = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", true),
 				ProjectAssembliesOnly = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true),
@@ -636,6 +643,14 @@ namespace MonoDevelop.Debugger
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", options.EvaluationOptions.FlattenHierarchy);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", options.EvaluationOptions.GroupPrivateMembers);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", options.EvaluationOptions.GroupStaticMembers);
+
+
+			PropertyService.Set ("Monodevelop.StackTrace.ShowModuleName", options.EvaluationOptions.StackFrameFormat.Module);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterType", options.EvaluationOptions.StackFrameFormat.ParameterTypes);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterName", options.EvaluationOptions.StackFrameFormat.ParameterNames);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterValue", options.EvaluationOptions.StackFrameFormat.ParameterValues);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowLineNumber", options.EvaluationOptions.StackFrameFormat.Line);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowExternalCode", options.EvaluationOptions.StackFrameFormat.ExternalCode);
 
 			foreach (var session in sessions.Keys.ToArray ()) {
 				session.Options.EvaluationOptions = GetUserOptions ().EvaluationOptions;
@@ -767,7 +782,9 @@ namespace MonoDevelop.Debugger
 					if (busyStatusIcon == null) {
 						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
+						busyStatusIcon.Title = GettextCatalog.GetString ("Debugger");
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
+						busyStatusIcon.Help = GettextCatalog.GetString ("Debugger information");
 						busyStatusIcon.Clicked += OnBusyStatusIconClicked;
 					}
 				} else {

@@ -366,13 +366,13 @@ namespace MonoDevelop.Platform
 			if (command != null) {
 				sb.Append ("/C \"");
 				if (title != null)
-					sb.Append ("title " + title + " && ");
-				sb.Append ("\"" + command + "\" " + arguments);
+					sb.Append ("title ").Append (title).Append (" && ");
+				sb.Append ("\"").Append (command).Append ("\" ").Append (arguments);
 				if (pauseWhenFinished)
 					sb.Append (" & pause");
 				sb.Append ("\"");
 			} else if (title != null) {
-				sb.Append ("/K \"title " + title + "\"");
+				sb.Append ("/K \"title ").Append (title).Append ("\"");
 			}
 			var psi = new ProcessStartInfo ("cmd.exe", sb.ToString ()) {
 				CreateNoWindow = false,

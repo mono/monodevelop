@@ -1,4 +1,3 @@
-/*
 // 
 // CSharpTextEditorIndentationTests.cs
 //  
@@ -29,51 +28,55 @@ using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Refactoring;
-using Mono.TextEditor;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
 
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharpBinding
 {
-
 	[TestFixture]
-	public class CSharpTextEditorIndentationTests : TestBase
+	class CSharpTextEditorIndentationTests : TestBase
 	{
 		const string eolMarker = "\n";
 
-		public static TextEditorData Create (string content, ITextEditorOptions options = null)
+		internal static TestViewContent Create (string input, Ide.Editor.ITextEditorOptions options = null, bool createWithProject = false)
 		{
-			var data = new TextEditorData ();
-			data.Options.DefaultEolMarker = eolMarker;
-			data.Options.IndentStyle = IndentStyle.Smart;
-			if (options != null)
-				data.Options = options;
+			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			content.Data.Options = options ?? new CustomEditorOptions {
+				DefaultEolMarker = eolMarker,
+				IndentStyle = IndentStyle.Smart
+			};
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+			  
+			var doc = new Document (tww);
+
 			var sb = new StringBuilder ();
 			int caretIndex = -1, selectionStart = -1, selectionEnd = -1;
-			var foldSegments = new List<FoldSegment> ();
-			var foldStack = new Stack<FoldSegment> ();
-
-			for (int i = 0; i < content.Length; i++) {
-				var ch = content [i];
+			var foldSegments = new List<IFoldSegment> ();
+			var foldStack = new Stack<Mono.TextEditor.FoldSegment> ();
+			for (int i = 0; i < input.Length; i++) {
+				var ch = input [i];
 				switch (ch) {
 					case '$':
 					caretIndex = sb.Length;
 					break;
 					case '<':
-					if (i + 1 < content.Length) {
-						if (content [i + 1] == '-') {
+					if (i + 1 < input.Length) {
+						if (input [i + 1] == '-') {
 							selectionStart = sb.Length;
 							i++;
 							break;
@@ -81,16 +84,16 @@ namespace MonoDevelop.CSharpBinding
 					}
 					goto default;
 					case '-':
-					if (i + 1 < content.Length) {
-						var next = content [i + 1];
+					if (i + 1 < input.Length) {
+						var next = input [i + 1];
 						if (next == '>') {
 							selectionEnd = sb.Length;
 							i++;
 							break;
 						}
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
-							segment.IsFolded = false;
+							var segment = new Mono.TextEditor.FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
+							segment.IsCollapsed = false;
 							foldStack.Push (segment);
 							i++;
 							break;
@@ -98,11 +101,11 @@ namespace MonoDevelop.CSharpBinding
 					}
 					goto default;
 					case '+':
-					if (i + 1 < content.Length) {
-						var next = content [i + 1];
+					if (i + 1 < input.Length) {
+						var next = input [i + 1];
 						if (next == '[') {
-							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
-							segment.IsFolded = true;
+							var segment = new Mono.TextEditor.FoldSegment ("...", sb.Length, 0, FoldingType.Unknown);
+							segment.IsCollapsed = true;
 							foldStack.Push (segment);
 							i++;
 							break;
@@ -111,7 +114,7 @@ namespace MonoDevelop.CSharpBinding
 					goto default;
 					case ']':
 					if (foldStack.Count > 0) {
-						FoldSegment segment = foldStack.Pop ();
+						var segment = foldStack.Pop ();
 						segment.Length = sb.Length - segment.Offset;
 						foldSegments.Add (segment);
 						break;
@@ -122,42 +125,48 @@ namespace MonoDevelop.CSharpBinding
 					break;
 				}
 			}
-			
-			data.Text = sb.ToString ();
+			content.Data.Text = sb.ToString ();
 
 			if (caretIndex >= 0)
-				data.Caret.Offset = caretIndex;
+				content.Data.CaretOffset = caretIndex;
 			if (selectionStart >= 0) {
 				if (caretIndex == selectionStart) {
-					data.SetSelection (selectionEnd, selectionStart);
+					content.Data.SetSelection (selectionEnd, selectionStart);
 				} else {
-					data.SetSelection (selectionStart, selectionEnd);
+					content.Data.SetSelection (selectionStart, selectionEnd);
 					if (caretIndex < 0)
-						data.Caret.Offset = selectionEnd;
+						content.Data.CaretOffset = selectionEnd;
 				}
 			}
 			if (foldSegments.Count > 0)
-				data.Document.UpdateFoldSegments (foldSegments);
-			return data;
+				content.Data.SetFoldings (foldSegments);
+
+			if (createWithProject) {
+				var project = Services.ProjectService.CreateProject ("C#");
+				project.Name = "test";
+				project.FileName = "test.csproj";
+				project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+				project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
+				doc.SetProject (project);
+			}
+			return content;
 		}
 
-		IStateMachineIndentEngine CreateTracker (TextEditorData data)
+		ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine CreateTracker (TextEditor data)
 		{
-			var policy = PolicyService.InvariantPolicies.Get <CSharpFormattingPolicy> ("text/x-csharp").CreateOptions();
+			var textStylePolicy = PolicyService.InvariantPolicies.Get<TextStylePolicy> ("text/x-csharp");
+			var policy = PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> ("text/x-csharp").CreateOptions (textStylePolicy);
 
-			var textStylePolicy = data.CreateNRefactoryTextEditorOptions();
-
-			textStylePolicy.IndentBlankLines = true;
-			var result = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(data.Document, textStylePolicy, policy));
-			result.Update (data.Caret.Offset);
+			var result = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine(new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine(policy));
+			result.Update (data, data.CaretOffset);
 			return result;
 		}
 
-		void CheckOutput (TextEditorData data, string output, CSharpTextEditorIndentation engine = null)
+		void CheckOutput (TextEditor data, string output, CSharpTextEditorIndentation engine = null)
 		{
 			if (engine == null)
 				engine = new CSharpTextEditorIndentation ();
-			engine.FixLineStart (data, CreateTracker (data), data.Caret.Line);
+			engine.FixLineStart (data, CreateTracker (data), data.CaretLine);
 			int idx = output.IndexOf ('$');
 			if (idx > 0)
 				output = output.Substring (0, idx) + output.Substring (idx + 1);
@@ -168,7 +177,7 @@ namespace MonoDevelop.CSharpBinding
 				Console.WriteLine (data.Text.Replace ("\t", "\\t").Replace (" ", "."));
 			}
 			Assert.AreEqual (output, data.Text);
-			Assert.AreEqual (idx, data.Caret.Offset, "Caret offset mismatch.");
+			Assert.AreEqual (idx, data.CaretOffset, "Caret offset mismatch.");
 		}
 
 		[Test]
@@ -178,9 +187,9 @@ namespace MonoDevelop.CSharpBinding
 				"\t\t///" + eolMarker + 
 					"\t\t/// Hello$" + eolMarker +
 					"\t\tclass Foo {}"
-			);
+			).Data;
 
-			MiscActions.InsertNewLine (data);
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data,
 				"\t\t///" + eolMarker +
@@ -194,8 +203,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			var data = Create ("\t\t///" + eolMarker +
 "\t\t/// Hel$lo" + eolMarker +
-"\t\tclass Foo {}");
-			MiscActions.InsertNewLine (data);
+"\t\tclass Foo {}").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data, "\t\t///" + eolMarker +
 "\t\t/// Hel" + eolMarker +
@@ -206,8 +215,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestMultiLineCommentContinuation ()
 		{
-			var data = Create ("\t\t/*$" + eolMarker + "\t\tclass Foo {}");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("\t\t/*$" + eolMarker + "\t\tclass Foo {}").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data, "\t\t/*" + eolMarker + "\t\t * $" + eolMarker + "\t\tclass Foo {}");
 		}
@@ -218,8 +227,8 @@ namespace MonoDevelop.CSharpBinding
 			var data = Create (
 				"\t\t/*" + eolMarker +
 				"\t\t * Hello$" + eolMarker +
-				"\t\tclass Foo {}");
-			MiscActions.InsertNewLine (data);
+				"\t\tclass Foo {}").Data;
+			EditActions.InsertNewLine (data);
 			CheckOutput (data, 
 			             "\t\t/*" + eolMarker +
 			             "\t\t * Hello" + eolMarker +
@@ -232,8 +241,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			var data = Create ("\t\t/*" + eolMarker +
 			             "\t\t * Hel$lo" + eolMarker +
-			             "class Foo {}");
-			MiscActions.InsertNewLine (data);
+			             "class Foo {}").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data,
 			             "\t\t/*" + eolMarker +
@@ -245,8 +254,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestStringContination ()
 		{
-			var data = Create ("\t\t\"Hello$World\"");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("\t\t\"Hello$World\"").Data;
+			EditActions.InsertNewLine (data);
 
 			var engine = new CSharpTextEditorIndentation {
 				wasInStringLiteral = true
@@ -260,8 +269,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug17896 ()
 		{
-			var data = Create ("\t\t\"This is a long test string.$        It contains spaces.\"");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("\t\t\"This is a long test string.$        It contains spaces.\"").Data;
+			EditActions.InsertNewLine (data);
 
 			var engine = new CSharpTextEditorIndentation {
 				wasInStringLiteral = true
@@ -277,9 +286,9 @@ namespace MonoDevelop.CSharpBinding
 		public void TestBug3214 ()
 		{
 			var data = Create ("\"Hello\n\t$");
-			MiscActions.InsertNewLine (data);
+			EditActions.InsertNewLine (data.Data);
 
-			CheckOutput (data, "\"Hello\n\t" + eolMarker + "\t$");
+			CheckOutput (data.Data, "\"Hello\n\t" + eolMarker + "\t$");
 		}
 
 		void TestGuessSemicolonInsertionOffset (string fooBar, bool expected = true)
@@ -297,7 +306,7 @@ namespace MonoDevelop.CSharpBinding
 					sb.Append (ch);
 				}
 			}
-			var data = new TextEditorData ();
+			var data = TextEditorFactory.CreateNewEditor ();
 			data.Text = sb.ToString ();
 			int guessed;
 			Assert.AreEqual (expected, CSharpTextEditorIndentation.GuessSemicolonInsertionOffset (data, data.GetLineByOffset (semicolonOffset), semicolonOffset, out guessed));
@@ -368,8 +377,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug11966 ()
 		{
-			var data = Create ("///<summary>This is a long comment $ </summary>");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("///<summary>This is a long comment $ </summary>").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data, @"///<summary>This is a long comment 
 /// $ </summary>");
@@ -379,8 +388,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestEnterSelectionBehavior ()
 		{
-			var data = Create ("\tfirst\n<-\tsecond\n->$\tthird");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("\tfirst\n<-\tsecond\n->$\tthird").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data, "\tfirst\n\t$third");
 		}
@@ -392,8 +401,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug15335 ()
 		{
-			var data = Create ("namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo$\n\t\t}\n\t}\n}\n");
-			MiscActions.InsertNewLine (data);
+			var data = Create ("namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo$\n\t\t}\n\t}\n}\n").Data;
+			EditActions.InsertNewLine (data);
 
 			CheckOutput (data, "namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
 		}
@@ -427,7 +436,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug17766 ()
 		{
-			var data = Create (@"
+			var content = Create (@"
 class Foo 
 {
 	$void Bar ()
@@ -435,25 +444,53 @@ class Foo
 	}
 }
 ");
-			var engine = new CSharpTextEditorIndentation ();
-
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent (data);
-			tww.ViewContent = content;
-			content.ContentName = "a.cs";
-			engine.Initialize (new Document (tww)); 
-			MiscActions.RemoveTab (data); 
-			engine.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.ShiftMask); 
-			CheckOutput (data, @"
+			EditActions.RemoveTab (content.Data);
+			CheckOutput (content.Data, @"
 class Foo 
 {
 $void Bar ()
 	{
 	}
 }
-", engine);
+", content.GetContent<CSharpTextEditorIndentation> ());
+		}
+
+		/// <summary>
+		/// Bug 55907 - switch case does not auto-indent correctly
+		/// </summary>
+		[Test]
+		public void TestBug55907 ()
+		{
+			var content = Create (@"
+class Foo 
+{
+	void Bar ()
+	{
+		switch (foo) {
+			case 5:
+				break;
+				case 12:$
+		}
+	}
+}
+", createWithProject: true);
+			var indent = content.GetTextEditorData ().GetContent<CSharpTextEditorIndentation> ();
+			indent.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)':', ':', Gdk.ModifierType.None));
+
+			CheckOutput (content.Data, @"
+class Foo 
+{
+	void Bar ()
+	{
+		switch (foo) {
+			case 5:
+				break;
+			case 12:$
+		}
+	}
+}
+", indent);
 		}
 
 	}
 }
-*/

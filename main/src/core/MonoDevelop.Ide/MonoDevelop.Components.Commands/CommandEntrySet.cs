@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
@@ -66,6 +67,29 @@ namespace MonoDevelop.Components.Commands
 		
 		public void Add (CommandEntry entry)
 		{
+			var cset = entry as CommandEntrySet;
+			// If entry is just a normal CommandEntry then add it to the commands as normal
+			if (cset == null) {
+				cmds.Add (entry);
+				return;
+			}
+
+			// If entry is a CommandEntrySet then attempt to de-duplicate it
+			// by looking for an existing entry with the matching Id and adding
+			// entry's commands to it
+			foreach (var e in cmds) {
+				if (Equals (e.CommandId, entry.CommandId)) {
+					var eset = e as CommandEntrySet;
+					if (eset == null) {
+						continue;
+					}
+
+					eset.cmds.AddRange (cset.cmds);
+					return;
+				}
+			}
+
+			// Couldn't find a valid duplicate command set so just add as normal
 			cmds.Add (entry);
 		}
 		
@@ -97,8 +121,13 @@ namespace MonoDevelop.Components.Commands
 			cmds.Add (cmdset);
 			return cmdset;
 		}
+
+		public List<CommandEntry>.Enumerator GetEnumerator ()
+		{
+			return cmds.GetEnumerator ();
+		}
 		
-		public System.Collections.IEnumerator GetEnumerator ()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		{
 			return cmds.GetEnumerator ();
 		}

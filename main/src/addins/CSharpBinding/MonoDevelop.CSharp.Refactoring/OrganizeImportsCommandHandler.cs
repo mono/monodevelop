@@ -23,25 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory6.CSharp;
+using System.Collections.Generic;
 using System.Threading;
-using Microsoft.CodeAnalysis.Text;
-using System.Linq;
-using MonoDevelop.Refactoring;
-using MonoDevelop.Core;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp.Features.OrganizeImports;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory6.CSharp.Features.RemoveUnnecessaryImports;
+using Microsoft.CodeAnalysis.RemoveUnnecessaryImports;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.OrganizeImports;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	internal static partial class IWorkspaceExtensions
+	static class IWorkspaceExtensions
 	{
 		/// <summary>
 		/// Update the workspace so that the document with the Id of <paramref name="newDocument"/>
@@ -58,30 +56,26 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 
-		internal static Solution UpdateDocument(this Solution solution, DocumentId id, IEnumerable<TextChange> textChanges, CancellationToken cancellationToken)
+		internal static Solution UpdateDocument (this Solution solution, DocumentId id, IEnumerable<TextChange> textChanges, CancellationToken cancellationToken)
 		{
-			var oldDocument = solution.GetDocument(id);
-			var oldText = oldDocument.GetTextAsync(cancellationToken).WaitAndGetResult(cancellationToken);
-			var newText = oldText.WithChanges(textChanges);
-			return solution.WithDocumentText(id, newText, PreservationMode.PreserveIdentity);
+			var oldDocument = solution.GetDocument (id);
+			var oldText = oldDocument.GetTextAsync (cancellationToken).WaitAndGetResult (cancellationToken);
+			var newText = oldText.WithChanges (textChanges);
+			return solution.WithDocumentText (id, newText, PreservationMode.PreserveIdentity);
 		}
 	}
 
 	class RemoveUnusedImportsCommandHandler : CommandHandler
 	{
-		internal static readonly CSharpRemoveUnnecessaryImportsService service = new CSharpRemoveUnnecessaryImportsService();
-
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)
 		{
 			var ad = doc.AnalysisDocument;
 			if (ad == null)
 				return;
 			try {
-
-				var model = await ad.GetSemanticModelAsync (default (CancellationToken));
-				var root = model.SyntaxTree.GetRoot (default (CancellationToken));
-				var newDocument = service.RemoveUnnecessaryImports(ad, model, root, default (CancellationToken));
-				ad.Project.Solution.Workspace.ApplyDocumentChanges(newDocument, CancellationToken.None);
+				var service = ad.GetLanguageService<IRemoveUnnecessaryImportsService> ();
+				var newDocument = await service.RemoveUnnecessaryImportsAsync (ad, default (CancellationToken));
+				ad.Project.Solution.Workspace.ApplyDocumentChanges (newDocument, CancellationToken.None);
 
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while removing unused usings", e);
@@ -99,8 +93,6 @@ namespace MonoDevelop.CSharp.Refactoring
 
 	class OrganizeImportsCommandHandler : CommandHandler
 	{
-		internal static readonly CSharpOrganizeImportsService service = new CSharpOrganizeImportsService ();
-
 		public async static Task Run (MonoDevelop.Ide.Gui.Document doc)
 		{
 			var ad = doc.AnalysisDocument;
@@ -111,14 +103,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				ad.Project.Solution.Workspace.ApplyDocumentChanges (newDocument, CancellationToken.None);
 
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while sotring usings", e);
+				LoggingService.LogError ("Error while sorting usings", e);
 			}
 		}
 
 		internal static async Task<Document> SortUsingsAsync (Document ad, CancellationToken token)
 		{
+			var service = ad.GetLanguageService<IOrganizeImportsService> ();
 			var policy = IdeApp.Workbench.ActiveDocument.GetFormattingPolicy ();
-			Console.WriteLine (policy.PlaceSystemDirectiveFirst);
 			return await service.OrganizeImportsAsync (ad, policy != null ? policy.PlaceSystemDirectiveFirst : true, token);
 		}
 
@@ -148,9 +140,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		internal static async Task<Document> SortAndRemoveAsync (Document ad, CancellationToken token)
 		{
-			var model = await ad.GetSemanticModelAsync (token);
-			var root = model.SyntaxTree.GetRoot (token);
-			var newDocument = RemoveUnusedImportsCommandHandler.service.RemoveUnnecessaryImports (ad, model, root, token);
+			var service = ad.GetLanguageService<IRemoveUnnecessaryImportsService> ();
+			var newDocument = await service.RemoveUnnecessaryImportsAsync (ad, token);
 			return await OrganizeImportsCommandHandler.SortUsingsAsync (newDocument, token);
 		}
 

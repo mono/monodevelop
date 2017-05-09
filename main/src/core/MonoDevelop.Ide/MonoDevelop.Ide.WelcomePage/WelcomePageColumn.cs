@@ -26,12 +26,17 @@
 using System;
 using Gtk;
 
+using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageColumn: Gtk.VBox
 	{
 		public WelcomePageColumn ()
 		{
+			Accessible.SetShouldIgnore (true);
+
 			Spacing = Styles.WelcomeScreen.Spacing;
 			MinWidth = -1;
 		}

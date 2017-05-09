@@ -76,7 +76,7 @@ namespace MonoDevelop.Xml.Completion
 		
 		public Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token)
 		{
-			return Task.FromResult (new CompletionDataList ());
+			return Task.FromResult (new CompletionDataList { AutoSelect = false });
 		}
 		
 		public Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token)
@@ -91,7 +91,7 @@ namespace MonoDevelop.Xml.Completion
 		
 		public Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token)
 		{
-			return Task.FromResult (new CompletionDataList ());
+			return Task.FromResult (new CompletionDataList { AutoSelect = false });
 		}
 		
 		public Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token)
@@ -106,12 +106,12 @@ namespace MonoDevelop.Xml.Completion
 		
 		public Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token)
 		{
-			return Task.FromResult (new CompletionDataList ());
+			return Task.FromResult (new CompletionDataList { AutoSelect = false });
 		}
 		
 		static Task<CompletionDataList> GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
 		{
-			var data = new CompletionDataList ();
+			var data = new CompletionDataList { AutoSelect = false };
 			HashSet<string> values;
 			if (map.TryGetValue (tagName, out values))
 				foreach (string s in values)
@@ -122,7 +122,7 @@ namespace MonoDevelop.Xml.Completion
 		static Task<CompletionDataList> GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
 		{
 			if (path == null || path.Elements.Count == 0)
-				return Task.FromResult (new CompletionDataList ());
+				return Task.FromResult (new CompletionDataList { AutoSelect = false });
 			return GetCompletions (map, path.Elements[path.Elements.Count - 1].Name, type);
 		}
 	}

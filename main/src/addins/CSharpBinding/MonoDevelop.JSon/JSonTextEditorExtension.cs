@@ -25,10 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.JSon
@@ -36,26 +38,38 @@ namespace MonoDevelop.JSon
 	class JSonTextEditorExtension : TextEditorExtension
 	{
 		CacheIndentEngine stateTracker;
-
+		bool jsonExtensionInstalled;
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			IStateMachineIndentEngine indentEngine;
-			indentEngine = new JSonIndentEngine (Editor, DocumentContext);
-			stateTracker = new CacheIndentEngine (indentEngine);
-			Editor.SetIndentationTracker (new JSonIndentationTracker (Editor, stateTracker));
+
+			// This extension needs to be turned off if the webtooling addin json extension is present.
+			//   That addin defines a "text/x-json" mimeType that has multiple levels of inheritance.
+			var mimeChain = DesktopService.GetMimeTypeInheritanceChain("text/x-json").ToList();
+			jsonExtensionInstalled = (mimeChain.Count > 2);
+
+			if (!jsonExtensionInstalled)
+			{
+				IStateMachineIndentEngine indentEngine;
+				indentEngine = new JSonIndentEngine(Editor, DocumentContext);
+				stateTracker = new CacheIndentEngine(indentEngine);
+				Editor.IndentationTracker = new JSonIndentationTracker(Editor, stateTracker);
+			}
 		}
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			var result = base.KeyPress (descriptor);
 
-			if (descriptor.SpecialKey == SpecialKey.Return) {
-				if (Editor.Options.IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Virtual) {
-					if (Editor.GetLine (Editor.CaretLine).Length == 0)
-						Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
-				} else {
-					DoReSmartIndent ();
+			if (!jsonExtensionInstalled)
+			{
+				if (descriptor.SpecialKey == SpecialKey.Return) {
+					if (Editor.Options.IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Virtual) {
+						if (Editor.GetLine (Editor.CaretLine).Length == 0)
+							Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
+					} else {
+						DoReSmartIndent ();
+					}
 				}
 			}
 

@@ -406,8 +406,8 @@ namespace Mono.MHex.Data
 		
 		void AppendNode (StringBuilder builder, RedBlackTreeNode node, int indent)
 		{
-			builder.Append (GetIndent (indent) + "Node (" + (node.color == red ? "r" : "b" ) + "):" + node.value.ToString () + Environment.NewLine);
-			builder.Append (GetIndent (indent) + "Left: ");
+			builder.Append (GetIndent (indent)).Append ("Node (").Append ((node.color == red ? "r" : "b")).Append ("):").AppendLine (node.value.ToString ());
+			builder.Append (GetIndent (indent)).Append ("Left: ");
 			if (node.left != null) {
 				builder.Append (Environment.NewLine);
 				AppendNode (builder, node.left, indent + 1);
@@ -416,7 +416,7 @@ namespace Mono.MHex.Data
 			}
 				
 			builder.Append (Environment.NewLine);
-			builder.Append (GetIndent (indent) +  "Right: ");
+			builder.Append (GetIndent (indent)).Append ("Right: ");
 			if (node.right != null) {
 				builder.Append (Environment.NewLine);
 				AppendNode (builder, node.right, indent + 1);

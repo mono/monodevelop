@@ -2,8 +2,7 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using ICSharpCode.NRefactory6;
-using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

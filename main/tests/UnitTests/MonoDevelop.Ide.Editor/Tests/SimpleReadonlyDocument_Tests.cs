@@ -32,9 +32,9 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class SimpleReadonlyDocument_Tests : ReadonlyTextDocumentTestBase
 	{
-		protected override IReadonlyTextDocument CreateReadonlyTextDocument (string text, System.Text.Encoding enc, bool useBom = false)
+		protected override IReadonlyTextDocument CreateReadonlyTextDocument (string text, System.Text.Encoding enc)
 		{
-			return SimpleReadonlyDocument.CreateReadonlyDocumentAsync (new StringTextSource (text, enc, useBom)).Result; 
+			return SimpleReadonlyDocument.CreateReadonlyDocumentAsync (new StringTextSource (text, enc)).Result; 
 		}
 	}
 }

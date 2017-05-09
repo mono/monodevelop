@@ -53,12 +53,27 @@
 		<Import file = "Templates/MvcCommon/_Layout.cshtml"/>
 		<Import file = "Templates/MvcCommon/_ViewStart.cshtml"/>
 
+		<Import file = "Templates/EmptyCssFile.xft.xml"/>
+		<Import file = "Templates/EmptyJsonFile.xft.xml"/>
 		<Import file = "Templates/GlobalAsax.xft.xml"/>
+		<Import file = "Templates/JsonFileTemplate.json"/>
 		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
 		<Import file = "Templates/RouteConfig.cs"/>
+		<Import file = "Templates/StyleSheetTemplate.css"/>
 		<Import file = "Templates/WebApiConfig.cs"/>
 		<Import file = "Templates/WebConfig-Application.xft.xml"/>
 		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
+
+		<Import file = "Templates/AspNetCore/MiddlewareClass.xft.xml" />
+		<Import file = "Templates/AspNetCore/MiddlewareClassTemplate.cs" />
+		<Import file = "Templates/AspNetCore/MvcController.xft.xml" />
+		<Import file = "Templates/AspNetCore/MvcControllerTemplate.cs" />
+		<Import file = "Templates/AspNetCore/RazorTaghelper.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorTagHelperTemplate.cs" />
+		<Import file = "Templates/AspNetCore/StartupClass.xft.xml" />
+		<Import file = "Templates/AspNetCore/StartupClassTemplate.cs" />
+		<Import file = "Templates/AspNetCore/WebApiController.xft.xml"/>
+		<Import file = "Templates/AspNetCore/WebApiControllerTemplate.cs" />
 
 		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
@@ -153,6 +168,22 @@
 		              file     = "Templates/Mvc/PartialViewPageRazor.xft.xml" />
 		<FileTemplate id       = "PreprocessedRazorTemplate"
 		              file     = "Templates/PreprocessedRazorTemplate.xft.xml" />
+
+		<FileTemplate id   = "EmptyCSSFile"
+		              file = "Templates/EmptyCssFile.xft.xml"/>
+		<FileTemplate id   = "EmptyJSONFile"
+		              file = "Templates/EmptyJsonFile.xft.xml"/>
+
+		<FileTemplate id   = "AspNetCoreMiddlewareClass"
+		              file = "Templates/AspNetCore/MiddlewareClass.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreMvcController"
+		              file = "Templates/AspNetCore/MvcController.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorTagHelper"
+		              file = "Templates/AspNetCore/RazorTagHelper.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreStartupClass"
+		              file = "Templates/AspNetCore/StartupClass.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreWebApiController"
+		              file = "Templates/AspNetCore/WebApiController.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
@@ -310,7 +341,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".aspx, .ascx, .master" class = "MonoDevelop.AspNet.WebForms.WebFormsEditorExtension" />
-		<Class fileExtensions=".html, .htm, .spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
+		<Class mimeTypes="text/html,application/x-spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
 		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Razor.RazorCSharpEditorExtension" />
 	</Extension>
 
@@ -368,6 +399,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
 		<FileTemplateConditionType name = "AspNetMvc" class = "MonoDevelop.AspNet.Projects.AspNetMvcFileTemplateCondition"/>
+		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNet.Projects.AspNetCoreFileTemplateCondition" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">

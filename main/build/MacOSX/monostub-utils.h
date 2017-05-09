@@ -63,7 +63,8 @@ xcode_get_dev_path ()
 	if ((len = readlink ("/var/db/xcode_select_link", (char*) &buf, PATH_MAX)) > 0) {
 		return strndup (buf, len);
 	}
-	return NULL;
+
+	return strdup("/Applications/Xcode.app/Contents/Developer");
 }
 
 static char *
@@ -260,6 +261,9 @@ update_environment (const char *contentsDir, bool need64Bit)
 	}
 
 	if (push_env_to_start ("PATH", "/Library/Frameworks/Mono.framework/Commands"))
+		updated = YES;
+
+	if (push_env_to_end ("PATH", "/usr/local/bin"))
 		updated = YES;
 
 	if (need64Bit) {

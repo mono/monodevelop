@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------
 // Common utilities for environment, debugging and working with project files
 // --------------------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open ExtCore
+open ExtCore.Control
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
@@ -45,6 +46,10 @@ module CompilerArguments =
 
       let isPortable (project: DotNetProject) =
           not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
+      
+      let isDotNetCoreProject (project:DotNetProject) =
+          let properties = project.MSBuildProject.EvaluatedProperties
+          properties.HasProperty ("TargetFramework") || properties.HasProperty ("TargetFrameworks")
 
       let isOrReferencesPortableProject (project: DotNetProject) =
           isPortable project ||
@@ -259,9 +264,10 @@ module CompilerArguments =
             |> Seq.tryFind (fun fn -> fn.EndsWith(assemblyName + ".dll", true, CultureInfo.InvariantCulture)
                                       || fn.EndsWith(assemblyName, true, CultureInfo.InvariantCulture))
 
+
         // If 'mscorlib.dll' or 'FSharp.Core.dll' is not in the set of references, we try to resolve and add them.
-        match find "FSharp.Core", find "mscorlib" with
-        | None, Some mscorlib ->
+        match find "FSharp.Core", find "mscorlib", Project.isDotNetCoreProject project with
+        | None, Some mscorlib, false ->
             // if mscorlib is founbd without FSharp.Core yield fsharp.core in the same base dir as mscorlib
             // falling back to one of the default directories
             let extraPath = Some (Path.GetDirectoryName (mscorlib))
@@ -269,13 +275,13 @@ module CompilerArguments =
             | Some ref -> yield "-r:" + wrapf(ref)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
 
-        | Some fsharpCore, None ->
+        | Some fsharpCore, None, false ->
             // If FSharp.Core is found without mscorlib yield an mscorlib thats referenced from FSharp.core
             match ReferenceResolution.tryGetReferenceFromAssembly fsharpCore "mscorlib" with
             | Some resolved -> yield "-r:" + wrapf(resolved)
             | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
 
-        | None, None ->
+        | None, None, false ->
             // If neither are found yield the default fsharp.core and mscorlib
             match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" None with
             | Some ref -> yield "-r:" + wrapf(ref)
@@ -324,7 +330,7 @@ module CompilerArguments =
        yield "--simpleresolution"
        yield "--noframework"
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
-       if Project.isPortable project then
+       if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
        yield "--platform:anycpu" //?
        yield "--fullpaths"
@@ -353,7 +359,9 @@ module CompilerArguments =
       IsIncompleteTypeCheckEnvironment = false
       UseScriptResolutionRules = false
       LoadTime = loadedTimeStamp
-      UnresolvedReferences = None }
+      UnresolvedReferences = None
+      OriginalLoadReferences = []
+      ExtraProjectInfo = None }
 
   /// Get source files of the current project (returns files that have
   /// build action set to 'Compile', but not e.g. scripts or resources)
@@ -482,10 +490,12 @@ module CompilerArguments =
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
   let getArgumentsFromProject (proj:DotNetProject) =
-        let config = getConfig()
-        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        maybe {
+            let config = getConfig()
+            let! projConfig = proj.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
+            let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
+            return generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        }
 
   let getReferencesFromProject (proj:DotNetProject) =
         let config = getConfig()

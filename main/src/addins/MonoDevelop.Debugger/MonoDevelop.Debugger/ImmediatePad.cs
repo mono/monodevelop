@@ -65,7 +65,7 @@ namespace MonoDevelop.Debugger
 				FinishPrinting ();
 			} else {
 				var frame = DebuggingService.CurrentFrame;
-				var ops = GetEvaluationOptions ();
+				var ops = GetEvaluationOptions (false);
 				var expression = e.Text;
 
 				var vres = frame.ValidateExpression (expression, ops);
@@ -85,15 +85,18 @@ namespace MonoDevelop.Debugger
 			}
 		}	
 
-		static EvaluationOptions GetEvaluationOptions ()
+		static EvaluationOptions GetEvaluationOptions (bool membersPrint)
 		{
-			var ops = EvaluationOptions.DefaultOptions;
-			ops.AllowMethodEvaluation = true;
-			ops.AllowToStringCalls = true;
-			ops.AllowTargetInvoke = true;
+			var ops = DebuggingService.GetUserOptions ().EvaluationOptions;
+			if (!membersPrint) {
+				ops.AllowMethodEvaluation = true;
+				ops.AllowToStringCalls = true;
+				ops.AllowTargetInvoke = true;
+			}
 			ops.EvaluationTimeout = 20000;
 			ops.EllipsizeStrings = false;
 			ops.MemberEvaluationTimeout = 20000;
+			ops.GroupPrivateMembers = false;
 			return ops;
 		}
 
@@ -116,7 +119,7 @@ namespace MonoDevelop.Debugger
 				view.WriteOutput (GetErrorText (val));
 				FinishPrinting ();
 			} else {
-				var ops = GetEvaluationOptions ();
+				var ops = GetEvaluationOptions (true);
 				var children = val.GetAllChildren (ops);
 				var hasMore = false;
 

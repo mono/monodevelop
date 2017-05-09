@@ -88,5 +88,37 @@ namespace MonoDevelop.PackageManagement
 		{
 			return project.GetImport (importedProjectFile) != null;
 		}
+
+		public static IEnumerable<ProjectPackageReference> GetEvaluatedPackageReferences (this MSBuildProject project)
+		{
+			return project.GetEvaluatedPackageReferenceItems ()
+				.Select (ProjectPackageReference.Create);
+		}
+
+		static IEnumerable<IMSBuildItemEvaluated> GetEvaluatedPackageReferenceItems (this MSBuildProject project)
+		{
+			if (project.EvaluatedItems != null) {
+				return project.EvaluatedItems
+					.Where (item => item.Name == "PackageReference");
+			}
+
+			return Enumerable.Empty<IMSBuildItemEvaluated> ();
+		}
+
+		public static bool HasEvaluatedPackageReferences (this MSBuildProject project)
+		{
+			return project.GetEvaluatedPackageReferenceItems ().Any ();
+		}
+
+		/// <summary>
+		/// Returns package references (e.g. NETStandard.Library) that are not directly defined
+		/// in the project file but included due to the sdk and target framework being used.
+		/// </summary>
+		public static IEnumerable<ProjectPackageReference> GetImportedPackageReferences (this MSBuildProject project)
+		{
+			return project.GetEvaluatedPackageReferenceItems ()
+				.Where (item => item.IsImported)
+				.Select (ProjectPackageReference.Create);
+		}
 	}
 }

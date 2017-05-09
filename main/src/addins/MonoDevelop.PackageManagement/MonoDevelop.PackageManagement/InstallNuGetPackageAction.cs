@@ -135,7 +135,8 @@ namespace MonoDevelop.PackageManagement
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			if (Version == null) {
-				Version = await GetLatestPackageVersion (PackageId, cancellationToken);
+				ResolvedPackage resolvedPackage = await GetLatestPackageVersion (PackageId, cancellationToken);
+				Version = resolvedPackage?.LatestVersion;
 			}
 
 			var identity = new PackageIdentity (PackageId, Version);
@@ -174,7 +175,7 @@ namespace MonoDevelop.PackageManagement
 			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
-		Task<NuGetVersion> GetLatestPackageVersion (string packageId, CancellationToken cancellationToken)
+		Task<ResolvedPackage> GetLatestPackageVersion (string packageId, CancellationToken cancellationToken)
 		{
 			return packageManager.GetLatestVersionAsync (
 				packageId,
