@@ -31,18 +31,19 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
 	class SourceEditorPrintOperation : PrintOperation
 	{
-		TextDocument doc;
+		TextEditor editor;
 		FilePath filename;
 		SourceEditorPrintSettings settings;
 		
-		public SourceEditorPrintOperation (TextDocument doc, FilePath filename)
+		public SourceEditorPrintOperation (TextEditor editor, FilePath filename)
 		{
-			this.doc = doc;
+			this.editor = editor;
 			this.filename = filename;
 			this.settings = SourceEditorPrintSettings.Load ();
 			
@@ -54,13 +55,11 @@ namespace MonoDevelop.SourceEditor
 			layout = PangoUtil.CreateLayout (context);
 			layout.FontDescription = settings.Font;
 			
-			layout.FontDescription.Weight = Pango.Weight.Bold;
-			layout.SetText (" ");
-			int w, h;
-			layout.GetSize (out w, out h);
-			this.lineHeight = h / Pango.Scale.PangoScale;
-			layout.FontDescription.Weight = Pango.Weight.Normal;
-			
+			using (var PangoContext = context.CreatePangoContext ())
+			using (var metrics = PangoContext.GetMetrics (settings.Font, PangoContext.Language)) {
+				lineHeight = Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+			}
+
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
@@ -72,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 				- (headerLines > 0? settings.HeaderPadding : 0) 
 				- (footerLines > 0? settings.FooterPadding : 0);
 			linesPerPage = (int)(contentHeight / lineHeight) - (headerLines + footerLines);
-			totalPages = (int)Math.Ceiling ((double)doc.LineCount / linesPerPage); 
+			totalPages = (int)Math.Ceiling ((double)editor.LineCount / linesPerPage); 
 			
 			NPages = totalPages;
 			
@@ -99,73 +98,74 @@ namespace MonoDevelop.SourceEditor
 		string headerText;
 		string footerText;
 		
-		protected override void OnDrawPage (PrintContext context, int pageNr)
+		protected override async void OnDrawPage (PrintContext context, int pageNr)
 		{
-			// TODO:
-			//using (var cr = context.CairoContext) {
-			//	double xPos = 0, yPos = 0;
+			using (var cr = context.CairoContext) {
+				double xPos = 0, yPos = 0;
 			
-			//	PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
+				PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
 			
-			//	int startLine = pageNr * linesPerPage;
-			//	int endLine = Math.Min (startLine + linesPerPage - 1, doc.LineCount);
-			
-			//	//FIXME: use proper 1-layout-per-line
-			//	for (int i = startLine; i < endLine; i++) {
-			//		var line = doc.GetLine (i + 1);
-			//		if (!settings.UseHighlighting) {
-			//			string text = doc.GetTextAt (line);
-			//			text = text.Replace ("\t", new string (' ', settings.TabSize));
-					
-			//			layout.SetText (text);
-			//			cr.MoveTo (xPos, yPos);
-			//			Pango.CairoHelper.ShowLayout (cr, layout);
-					
-			//			yPos += lineHeight;
-			//			continue;
-			//		}
-					
-			//		var startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.LengthIncludingDelimiter);
-			//		foreach (Chunk chunk in startChunk) {
-			//			var chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
-			//			string text = doc.GetTextAt (chunk);
-			//			text = text.Replace ("\t", new string (' ', settings.TabSize));
-			//			layout.SetText (text);
-					
-			//			var atts = ResetAttributes ();
+				int startLine = pageNr * linesPerPage;
+				int endLine = Math.Min (startLine + linesPerPage - 1, editor.LineCount);
+				var theme =editor.Options.GetEditorTheme ();
 
-			//			var foreground = (Cairo.Color)chunkStyle.Foreground;
-			//			atts.Insert (new Pango.AttrForeground ((ushort)(foreground.R * ushort.MaxValue), (ushort)(foreground.G * ushort.MaxValue), (ushort)(foreground.B * ushort.MaxValue)));
+				//FIXME: use proper 1-layout-per-line
+				for (int i = startLine; i < endLine; i++) {
+					var line = editor.GetLine (i + 1);
+					if (!settings.UseHighlighting) {
+						string text = editor.GetTextAt (line);
+						text = text.Replace ("\t", new string (' ', settings.TabSize));
 					
-			//			if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
-			//				atts.Insert (new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight));
-			//			}
-			//			if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
-			//				atts.Insert (new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle));
-			//			}
-			//			if (chunkStyle.Underline) {
-			//				atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
-			//			}
+						layout.SetText (text);
+						cr.MoveTo (xPos, yPos);
+						Pango.CairoHelper.ShowLayout (cr, layout);
 					
-			//			cr.MoveTo (xPos, yPos);
-			//			Pango.CairoHelper.ShowLayout (cr, layout);
+						yPos += lineHeight;
+						continue;
+					}
 					
-			//			int wout, hout;
-			//			layout.GetSize (out wout, out hout);
-			//			double w = wout / Pango.Scale.PangoScale;
+					var highlightedLine = await editor.SyntaxHighlighting.GetHighlightedLineAsync (line, default(CancellationToken));
+					var lineOffset = line.Offset;
+					foreach (var chunk in highlightedLine.Segments) {
+						var chunkStyle = theme.GetChunkStyle (chunk.ScopeStack);
+						string text = editor.GetTextAt (lineOffset + chunk.Offset, chunk.Length);
+						text = text.Replace ("\t", new string (' ', settings.TabSize));
+						layout.SetText (text);
+					
+						var atts = ResetAttributes ();
+
+						var foreground = (Cairo.Color)chunkStyle.Foreground;
+						atts.Insert (new Pango.AttrForeground ((ushort)(foreground.R * ushort.MaxValue), (ushort)(foreground.G * ushort.MaxValue), (ushort)(foreground.B * ushort.MaxValue)));
+					
+						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+							atts.Insert (new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight));
+						}
+						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+							atts.Insert (new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle));
+						}
+						if (chunkStyle.Underline) {
+							atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
+						}
+					
+						cr.MoveTo (xPos, yPos);
+						Pango.CairoHelper.ShowLayout (cr, layout);
+					
+						int wout, hout;
+						layout.GetSize (out wout, out hout);
+						double w = wout / Pango.Scale.PangoScale;
 						
-			//			xPos += w;
+						xPos += w;
 					
-			//			if (w > pageWidth)
-			//				break;
-			//		}
+						if (w > pageWidth)
+							break;
+					}
 
-			//		xPos = 0;
-			//		yPos += lineHeight;
-			//	}
+					xPos = 0;
+					yPos += lineHeight;
+				}
 			
-			//	PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
-			//}
+				PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
+			}
 		}
 		
 		Pango.AttrList ResetAttributes ()
