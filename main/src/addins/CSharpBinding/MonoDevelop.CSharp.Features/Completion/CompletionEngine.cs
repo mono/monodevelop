@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in handlerList) {
-					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || handler.IsTriggerCharacter (text, position - 1)) {
+					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || info.CompletionTriggerReason == CompletionTriggerReason.BackspaceOrDeleteCommand || handler.IsTriggerCharacter (text, position - 1)) {
 						if (await handler.IsExclusiveAsync (completionContext, ctx, info, cancellationToken)) {
 							exclusiveHandlers.Add (handler);
 						} else {
