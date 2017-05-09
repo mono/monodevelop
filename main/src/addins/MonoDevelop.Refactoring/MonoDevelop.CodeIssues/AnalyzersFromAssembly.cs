@@ -103,9 +103,9 @@ namespace MonoDevelop.CodeIssues
 					if (type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeAction) ||
 						type == typeof (Microsoft.CodeAnalysis.ChangeSignature.ChangeSignatureCodeRefactoringProvider) ||
 						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeRefactoringProvider) ||
-						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction))
+						type == typeof (Microsoft.CodeAnalysis.ExtractInterface.ExtractInterfaceCodeAction) || 
+					    type == typeof (Microsoft.CodeAnalysis.CodeRefactorings.MoveType.MoveTypeCodeRefactoringProvider))
 						continue;
-
 					var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 					if (analyzerAttr != null) {
 						try {
