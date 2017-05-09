@@ -259,6 +259,78 @@
     <EmbeddedResource Include="images\project-netcore-console-template~dark%402x.png">
       <LogicalName>project-netcore-console-template~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32.png">
+      <LogicalName>project-netcore-library-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32%402x.png">
+      <LogicalName>project-netcore-library-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark.png">
+      <LogicalName>project-netcore-library-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark%402x.png">
+      <LogicalName>project-netcore-library-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel.png">
+      <LogicalName>project-netcore-library-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel%402x.png">
+      <LogicalName>project-netcore-library-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~sel.png">
+      <LogicalName>project-netcore-library-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~sel%402x.png">
+      <LogicalName>project-netcore-library-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template.png">
+      <LogicalName>project-netcore-library-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template%402x.png">
+      <LogicalName>project-netcore-library-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template~dark.png">
+      <LogicalName>project-netcore-library-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template~dark%402x.png">
+      <LogicalName>project-netcore-library-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32.png">
+      <LogicalName>project-crossplatform-library-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32%402x.png">
+      <LogicalName>project-crossplatform-library-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark.png">
+      <LogicalName>project-crossplatform-library-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark%402x.png">
+      <LogicalName>project-crossplatform-library-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark~sel.png">
+      <LogicalName>project-crossplatform-library-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark~sel%402x.png">
+      <LogicalName>project-crossplatform-library-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~sel.png">
+      <LogicalName>project-crossplatform-library-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~sel%402x.png">
+      <LogicalName>project-crossplatform-library-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template.png">
+      <LogicalName>project-crossplatform-library-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template%402x.png">
+      <LogicalName>project-crossplatform-library-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template~dark.png">
+      <LogicalName>project-crossplatform-library-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template~dark%402x.png">
+      <LogicalName>project-crossplatform-library-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="images\project-netcore-template.png">
       <LogicalName>project-netcore-template.png</LogicalName>
     </EmbeddedResource>
