@@ -88,8 +88,8 @@ namespace MonoDevelop.Ide.Templates
 			var newTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
 			foreach (var template in TemplatesNodes) {
 				ITemplateInfo templateInfo;
-				if (!templateInfos.TryGetValue (template.Id, out templateInfo)) {
-					LoggingService.LogWarning ("Template {0} not found.", template.Id);
+				if (!templateInfos.TryGetValue (template.TemplateId, out templateInfo)) {
+					LoggingService.LogWarning ("Template {0} not found.", template.TemplateId);
 					continue;
 				}
 				newTemplates.Add (new MicrosoftTemplateEngineSolutionTemplate (template, templateInfo));

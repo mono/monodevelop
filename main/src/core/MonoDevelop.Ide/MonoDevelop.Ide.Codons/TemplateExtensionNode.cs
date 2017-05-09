@@ -85,5 +85,23 @@ namespace MonoDevelop.Ide.Codons
 				return overrideDescription;
 			}
 		}
+
+		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
+		string templateId;
+
+		public string TemplateId {
+			get {
+				return templateId ?? Id;
+			}
+		}
+
+		[NodeAttribute ("groupId", "Overrides the group id defined in the template. Allows the same template to be grouped differently.")]
+		string groupId;
+
+		public string GroupId {
+			get {
+				return groupId;
+			}
+		}
 	}
 }
