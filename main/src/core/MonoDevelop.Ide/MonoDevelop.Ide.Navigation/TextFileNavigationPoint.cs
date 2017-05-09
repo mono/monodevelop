@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Navigation
 			var location = editor.CaretLocation;
 			line = location.Line;
 			column = location.Column;
+			version = null;
 		}
 
 		public TextFileNavigationPoint (FilePath file, int line, int column)
