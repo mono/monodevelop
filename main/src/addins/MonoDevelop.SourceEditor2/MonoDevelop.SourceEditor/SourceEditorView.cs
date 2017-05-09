@@ -2112,7 +2112,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void RunPrintOperation (PrintOperationAction action, PrintingSettings settings)
 		{
-			var op = new SourceEditorPrintOperation (TextEditor.Document, Name);
+			var op = new SourceEditorPrintOperation (IdeApp.Workbench.ActiveDocument.Editor, Name);
 			
 			if (settings.PrintSettings != null)
 				op.PrintSettings = settings.PrintSettings;
