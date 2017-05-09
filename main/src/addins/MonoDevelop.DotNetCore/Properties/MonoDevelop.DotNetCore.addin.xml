@@ -142,6 +142,52 @@
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
 		</Condition>
+		<!--
+			.NET Core class library project in .NET Core - Library category.
+			Template id and group ids have been changed to keep them unique so both
+			the .NET Standard project template and the class library project template
+			can be displayed.
+
+			F# project templates for .NET Core 1.1 do not support specifying the framework so
+			they are not included here.
+		-->
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
+		<Template
+			_overrideName="Class Library"
+			_overrideDescription="Creates a new .NET Core class library project."
+			id="Microsoft.Common.Library.CSharp-netcoreapp1.1"
+			templateId="Microsoft.Common.Library.CSharp"
+			groupId="Microsoft.Common.Library-netcoreapp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			defaultParameters="framework=netcoreapp1.1"
+			category="netcore/library/general" />
+		</Condition>
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Template
+			_overrideName=".NET Core 2.0 Class Library"
+			_overrideDescription="Creates a new .NET Core class library project."
+			id="Microsoft.Common.Library.CSharp.2.0-netcoreapp2.0"
+			templateId="Microsoft.Common.Library.CSharp.2.0"
+			groupId="Microsoft.Common.Library-netcoreapp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			defaultParameters="framework=netcoreapp2.0"
+			category="netcore/library/general" />
+		<Template
+			_overrideName=".NET Core 2.0 Class Library"
+			_overrideDescription="Creates a new .NET Core class library project."
+			id="Microsoft.Common.Library.FSharp.2.0-netcoreapp2.0"
+			templateId="Microsoft.Common.Library.FSharp.2.0"
+			groupId="Microsoft.Common.Library-netcoreapp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170430-208.nupkg"
+			icon="md-netcore-empty-project"
+			imageId="md-netcore-empty-project"
+			defaultParameters="framework=netcoreapp2.0"
+			category="netcore/library/general" />
+		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
