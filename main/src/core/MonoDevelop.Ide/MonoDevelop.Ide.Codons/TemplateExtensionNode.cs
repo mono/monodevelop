@@ -86,6 +86,15 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 
+		[NodeAttribute ("defaultParameters", "Default parameters for project template.")]
+		string defaultParameters;
+
+		public string DefaultParameters {
+			get {
+				return defaultParameters;
+			}
+		}
+
 		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
 		string templateId;
 

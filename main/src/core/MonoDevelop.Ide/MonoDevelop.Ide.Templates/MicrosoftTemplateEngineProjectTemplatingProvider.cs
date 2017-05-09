@@ -135,14 +135,16 @@ namespace MonoDevelop.Ide.Templates
 
 		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
-			var templateInfo = ((MicrosoftTemplateEngineSolutionTemplate)template).templateInfo;
+			var solutionTemplate = (MicrosoftTemplateEngineSolutionTemplate)template;
+			var parameters = GetParameters (solutionTemplate);
+			var templateInfo = solutionTemplate.templateInfo;
 			var workspaceItems = new List<IWorkspaceFileObject> ();
 			var result = await templateCreator.InstantiateAsync (
 				templateInfo,
 				config.ProjectName,
 				config.GetValidProjectName (),
 				config.ProjectLocation,
-				new Dictionary<string, string> (),
+				parameters,
 				true,
 				false,
 				null);
@@ -206,6 +208,25 @@ namespace MonoDevelop.Ide.Templates
 			MoveNuGetConfigFilesToSolutionDirectory (parentFolder, workspaceItems.OfType<Project> ());
 
 			return processResult;
+		}
+
+		Dictionary<string, string> GetParameters (MicrosoftTemplateEngineSolutionTemplate template)
+		{
+			var parameters = new Dictionary<string, string> ();
+			if (string.IsNullOrEmpty (template.DefaultParameters))
+				return parameters;
+
+			foreach (TemplateParameter parameter in GetValidParameters (template.DefaultParameters)) {
+				parameters [parameter.Name] = parameter.Value;
+			}
+
+			return parameters;
+		}
+
+		static IEnumerable<TemplateParameter> GetValidParameters (string parameters)
+		{
+			return TemplateParameter.CreateParameters (parameters)
+				.Where (parameter => parameter.IsValid);
 		}
 
 		async Task FormatFile (Project p, FilePath file)

@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Templates
 			//ProjectFileExtension = template.FileExtension;
 			//Wizard = template.WizardPath;
 			//SupportedParameters = template.SupportedParameters;
-			//DefaultParameters = template.DefaultParameters;
+			DefaultParameters = template.DefaultParameters;
 			ImageId = template.ImageId;
 			//ImageFile = template.ImageFile;
 			//Visibility = GetVisibility (template.Visibility);
