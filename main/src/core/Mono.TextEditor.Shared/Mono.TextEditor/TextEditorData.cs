@@ -634,6 +634,7 @@ namespace Mono.TextEditor
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 			document.HeightChanged -= Document_HeightChanged;
+			document.Dispose ();
 			document = null;
 		}
 

@@ -279,10 +279,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			treeviewSearchResults.Model = newStore;
-
 			store = newStore;
-
+			newStore = null;
+			treeviewSearchResults.Model = store;
 			treeviewSearchResults.ThawChildNotify ();
 		}
 
@@ -384,12 +383,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			labelStatus.Text = text;
 		}
 		
-		void FileIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void FileIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var fileNamePixbufRenderer = (CellRendererImage) cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			fileNamePixbufRenderer.Image = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
@@ -405,8 +404,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var fileNameRenderer = (CellRendererText)cell;
-			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			bool didRead = (bool)model.GetValue (iter, DidReadColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			int lineNumber;
@@ -473,10 +472,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var pathRenderer = (CellRendererText)cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			bool didRead = (bool)model.GetValue (iter, DidReadColumn);
 
 			var fileName = searchResult.FileName;
 			string baseSolutionPath = null;
@@ -492,12 +491,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathRenderer.Markup = MarkupText (directory, didRead);
 		}
 
-		void ResultProjectIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void ResultProjectIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var fileNamePixbufRenderer = (CellRendererImage) cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			if (searchResult.Projects.Count > 0) {
@@ -507,15 +506,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		void ResultProjectDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void ResultProjectDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var pathRenderer = (CellRendererText)cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			bool didRead = (bool)model.GetValue (iter, DidReadColumn);
 			string projectNameMarkup;
 			if (searchResult.Projects.Count > 0)
 				projectNameMarkup = MarkupText (String.Join (", ", searchResult.Projects.Select (p => p.Name)), didRead);
@@ -535,7 +534,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (TreeIter.Zero.Equals (iter))
 				return;
 			var textRenderer = (CellRendererText)cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)model.GetValue (iter, SearchResultColumn);
 			if (searchResult == null || searchResult.Offset < 0) {
 				textRenderer.Markup = "Invalid search result";
 				return;

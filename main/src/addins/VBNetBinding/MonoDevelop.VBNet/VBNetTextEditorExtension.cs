@@ -1,4 +1,4 @@
-﻿//
+//
 // VBNetTextEditorExtension.cs
 //
 // Author:

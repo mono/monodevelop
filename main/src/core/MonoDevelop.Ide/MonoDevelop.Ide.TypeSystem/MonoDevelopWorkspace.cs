@@ -232,6 +232,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var mdProjects = solution.GetAllProjects ();
 				projectionList = projectionList.Clear ();
 				projectIdMap.Clear ();
+				projectIdToMdProjectMap = projectIdToMdProjectMap.Clear ();
 				projectDataMap.Clear ();
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
@@ -296,6 +297,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> ();
+		ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project> projectIdToMdProjectMap = ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project>.Empty;
 		ConcurrentDictionary<ProjectId, ProjectData> projectDataMap = new ConcurrentDictionary<ProjectId, ProjectData> ();
 
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
@@ -305,11 +307,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
 		{
-			foreach (var kv in projectIdMap) {
-				if (kv.Value == projectId)
-					return kv.Key;
-			}
-			return null;
+			projectIdToMdProjectMap.TryGetValue (projectId, out var result);
+			return result;
 		}
 
 		internal bool Contains (ProjectId projectId) 
@@ -334,6 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!projectIdMap.TryGetValue (p, out result)) {
 					result = ProjectId.CreateNewId (p.Name);
 					projectIdMap [p] = result;
+					projectIdToMdProjectMap = projectIdToMdProjectMap.Add (result, p);
 				}
 				return result;
 			}
@@ -1113,39 +1113,40 @@ namespace MonoDevelop.Ide.TypeSystem
 			// see https://github.com/dotnet/roslyn/pull/18043
 			// as a result, we can assume that the things it calls are _also_ main thread only
 			Runtime.CheckMainThread ();
+			lock (projectModifyLock) {
+				freezeProjectModify = true;
+				try {
+					var ret = base.TryApplyChanges (newSolution, progressTracker);
 
-			try {
-				var ret = base.TryApplyChanges (newSolution, progressTracker);
-
-				if (tryApplyState_documentTextChangedTasks.Count > 0) {
-					Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
-						try {
-							t.Wait ();
-						}
-						catch (Exception ex) {
-							LoggingService.LogError ("Error applying changes to documents", ex);
-						}
-						if (IdeApp.Workbench != null) {
-							var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
-							foreach (var w in IdeApp.Workbench.Documents) {
-								if (w.IsFile && changedFiles.Contains (w.FileName)) {
-									w.StartReparseThread ();
+					if (tryApplyState_documentTextChangedTasks.Count > 0) {
+						Task.WhenAll (tryApplyState_documentTextChangedTasks).ContinueWith (t => {
+							try {
+								t.Wait ();
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error applying changes to documents", ex);
+							}
+							if (IdeApp.Workbench != null) {
+								var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
+								foreach (var w in IdeApp.Workbench.Documents) {
+									if (w.IsFile && changedFiles.Contains (w.FileName)) {
+										w.StartReparseThread ();
+									}
 								}
 							}
-						}
-					}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
-				}
+						}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+					}
 
-				if (tryApplyState_changedProjects.Count > 0) {
-					IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
-				}
+					if (tryApplyState_changedProjects.Count > 0) {
+						IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
+					}
 
-				return ret;
-			}
-			finally {
-				tryApplyState_documentTextChangedContents.Clear ();
-				tryApplyState_documentTextChangedTasks.Clear ();
-				tryApplyState_changedProjects.Clear ();
+					return ret;
+				} finally {
+					tryApplyState_documentTextChangedContents.Clear ();
+					tryApplyState_documentTextChangedTasks.Clear ();
+					tryApplyState_changedProjects.Clear ();
+					freezeProjectModify = false; 
+				}
 			}
 		}
 
@@ -1249,14 +1250,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				// If the first namespace name matches the name of the project, then we don't want to
 				// generate a folder for that.  The project is implicitly a folder with that name.
 				IEnumerable<string> folders;
-				if (docFolders.FirstOrDefault () == monoProject.Name) {
+				if (docFolders != null && monoProject != null && docFolders.FirstOrDefault () == monoProject.Name) {
 					folders = docFolders.Skip (1);
 				} else {
 					folders = docFolders;
 				}
 
 				if (folders.Any ()) {
-					string baseDirectory = Path.Combine (monoProject.BaseDirectory, Path.Combine (folders.ToArray ()));
+					string baseDirectory = Path.Combine (monoProject?.BaseDirectory ?? monoDevelopSolution.BaseDirectory, Path.Combine (folders.ToArray ()));
 					try {
 						if (createDirectory && !Directory.Exists (baseDirectory))
 							Directory.CreateDirectory (baseDirectory);
@@ -1322,6 +1323,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				ProjectId val;
 				projectIdMap.TryRemove (project, out val);
+				projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
 				ProjectData val2;
 				projectDataMap.TryRemove (id, out val2);
 				MetadataReferenceCache.RemoveReferences (id);
@@ -1450,23 +1452,28 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
-
+		object projectModifyLock = new object ();
+		bool freezeProjectModify;
 		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
-			try {
-				if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
+			lock (projectModifyLock) {
+				if (freezeProjectModify)
 					return;
-				var project = sender as MonoDevelop.Projects.DotNetProject;
-				if (project == null)
-					return;
-				var projectId = GetProjectId (project);
-				if (CurrentSolution.ContainsProject (projectId)) {
-					HandleActiveConfigurationChanged (this, EventArgs.Empty);
-				} else {
-					modifiedProjects.Add (project);
+				try {
+					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
+						return;
+					var project = sender as MonoDevelop.Projects.DotNetProject;
+					if (project == null)
+						return;
+					var projectId = GetProjectId (project);
+					if (CurrentSolution.ContainsProject (projectId)) {
+						HandleActiveConfigurationChanged (this, EventArgs.Empty);
+					} else {
+						modifiedProjects.Add (project);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
 				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
 			}
 		}
 

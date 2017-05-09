@@ -100,7 +100,11 @@ namespace MonoDevelop.CodeActions
 			var actions = new List<ValidCodeAction> ();
 			if (parsedDocument == null)
 				return actions;
-			var model = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return actions;
+
+			var model = await analysisDocument.GetSemanticModelAsync (cancellationToken);
 			if (model == null)
 				return actions;
 			var root = await model.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
@@ -117,7 +121,6 @@ namespace MonoDevelop.CodeActions
 				foreach (var descriptor in codeRefactoringCache) {
 					if (!descriptor.IsEnabled)
 						continue;
-					var analysisDocument = doc.AnalysisDocument;
 					if (cancellationToken.IsCancellationRequested || analysisDocument == null)
 						return Enumerable.Empty<ValidCodeAction> ();
 					try {

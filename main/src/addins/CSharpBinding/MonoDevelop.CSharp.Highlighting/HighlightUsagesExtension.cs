@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			foreach (var loc in symbol.Locations) {
 				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
 					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
-						ReferenceUsageType = ReferenceUsageType.Declariton	
+						ReferenceUsageType = ReferenceUsageType.Declaration	
 					});
 			}
 

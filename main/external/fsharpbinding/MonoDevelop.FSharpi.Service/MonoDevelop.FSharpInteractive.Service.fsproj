@@ -65,6 +65,14 @@
     <Compile Include="Program.fs" />
     <None Include="paket.references" />
     <None Include="app.config" />
+    <None Include="..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata">
+      <Link>FSharp.Core.optdata</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata">
+      <Link>FSharp.Core.sigdata</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <Choose>

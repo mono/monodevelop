@@ -215,15 +215,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Samples\Xamarin.iOS.fsproj" />
+    <Compile Include="BraceMatcher.fs" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp">
+            <inheritsSet />
+            <inheritsScope />
+          </TextStylePolicy>
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" __added="0" />
+            <inheritsSet />
+            <inheritsScope />
           </FSharpFormattingPolicy>
           <TextStylePolicy inheritsSet="null" scope="application/fsproject+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/fsproject+xml" />

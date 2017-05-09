@@ -81,7 +81,7 @@ namespace MonoDevelop.SourceEditor
 			if (@from < to) {
 				HslColor colorStyle;
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
-					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
+					(usage.UsageType & ReferenceUsageType.Declaration) == ReferenceUsageType.Declaration) {
 					
 					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (colorStyle.Alpha == 0.0)

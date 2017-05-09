@@ -27,32 +27,53 @@
 		<Template
 			id="Microsoft.Common.Console.CSharp"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		<Template
 			id="Microsoft.Common.Console.FSharp"
 			_overrideDescription="Creates a new .NET Core console project."
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-console-project"
 			imageId="md-netcore-console-project"
 			category="netcore/app/general"/>
 		</Condition>
+		<!--
+			.NET Standard library project in Multiplatform - Library category.
+			Displayed if Mono's MSBuild includes the .NET Core SDK. The .NET Core
+			SDK or runtime does not have to be installed separately for this template
+			to be displayed since it can be compiled and does not need to be run.
+		-->
 		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
 			category="multiplat/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
+			id="Microsoft.Common.Library.FSharp"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
+			icon="md-library-project"
+			imageId="md-library-project"
+			category="multiplat/library/general" />
+		</Condition>
+		<!--
+			.NET Standard library project in .NET Core - Library category.
+			Not displayed if .NET Core SDK or runtime is not installed unlike the
+			.NET Standard library project in the Multiplatform section.
+		-->
+		<Condition id="DotNetCoreSdkInstalled">
+		<Template
+			_overrideName=".NET Standard Library"
+			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
@@ -60,15 +81,7 @@
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
-			icon="md-library-project"
-			imageId="md-library-project"
-			category="multiplat/library/general" />
-		<Template
-			_overrideName=".NET Standard Library"
-			_overrideDescription="Creates a new .NET Standard class library project."
-			id="Microsoft.Common.Library.FSharp"
-			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/library/general" />
@@ -77,42 +90,42 @@
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Test.xUnit.FSharp"
 			_overrideDescription="Creates a new xUnit test project."
-			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			category="netcore/test/general" />
 		<Template
 			id="Microsoft.Web.Empty.CSharp"
 			_overrideDescription="Creates a new ASP.NET Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.CSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.Mvc.FSharp"
 			_overrideDescription="Creates a new ASP.NET MVC Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />
 		<Template
 			id="Microsoft.Web.WebApi.CSharp"
 			_overrideDescription="Creates a new ASP.NET Web API Core web project."
-			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170223-126.nupkg"
+			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta1-20170427-174.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
 			category="netcore/app/aspnet" />

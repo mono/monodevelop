@@ -35,6 +35,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -312,7 +313,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (node);
+					AddOutputTrackingNode (node);
 					break;
 				case ExtensionChange.Remove:
 					outputTrackedProjects.Remove (node);
@@ -323,8 +324,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+		}
 
-
+		/// <summary>
+		/// Adds an output tracking node for unit testing purposes.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal static void AddOutputTrackingNode (TypeSystemOutputTrackingNode node)
+		{
+			outputTrackedProjects.Add (node);
 		}
 
 		static void HandleEndBuild (object sender, BuildEventArgs args)
