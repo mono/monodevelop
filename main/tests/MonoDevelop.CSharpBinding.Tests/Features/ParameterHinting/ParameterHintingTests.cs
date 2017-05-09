@@ -35,7 +35,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.SignatureHelp;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using System;
+using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 {
@@ -82,10 +86,19 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 			}
 			#endregion
 
-			
+
 		}
-		
-		internal static ParameterHintingResult CreateProvider(string text)
+
+		static Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
+			var workspace = TypeSystemService.Workspace;
+			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
+			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
+				.FilterToSpecificLanguage (LanguageNames.CSharp);
+
+			return helpProviders.ToArray ();
+		});
+
+		internal static MonoDevelop.Ide.CodeCompletion.ParameterHintingResult CreateProvider(string text)
 		{
 			string parsedText;
 			string editorText;
@@ -144,7 +157,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 					)
 			);
 			
-			var engine = new ParameterHintingEngine (workspace, new TestFactory ());
+			var engine = new MonoDevelop.CSharp.Completion.RoslynParameterHintingEngine ();
 			
 			var compilation = workspace.CurrentSolution.GetProject(projectId).GetCompilationAsync().Result;
 			
@@ -154,7 +167,8 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 			var document = workspace.CurrentSolution.GetDocument(documentId);
 			var semanticModel = document.GetSemanticModelAsync().Result;
 
-			return engine.GetParameterDataProviderAsync(document, semanticModel, cursorPosition).Result;
+			var providers = signatureProviders.Value.ToList ();
+			return engine.GetParameterDataProviderAsync(providers, document, cursorPosition, new SignatureHelpTriggerInfo(SignatureHelpTriggerReason.InvokeSignatureHelpCommand)).Result;
 		}
 		
 		/// <summary>
