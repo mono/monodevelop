@@ -32,10 +32,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Utilities;
-using Microsoft.CodeAnalysis.SignatureHelp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -54,23 +52,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			this.factory = factory;
 		}
 
-		public Task<ParameterHintingResult> GetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default (CancellationToken))
+		public Task<ParameterHintingResult> GetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, char completionChar, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return InternalGetParameterDataProviderAsync (document, semanticModel, position, cancellationToken, 0);
+			return InternalGetParameterDataProviderAsync (document, semanticModel, position, completionChar, cancellationToken, 0);
 		}
 
-		Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
-			var workspace = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace;
-			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
-			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
-				.FilterToSpecificLanguage (LanguageNames.CSharp);
-
-			return helpProviders.ToArray ();
-		});
-
-		public async Task<ParameterHintingResult> InternalGetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken, int recCount)
+		async Task<ParameterHintingResult> InternalGetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, char completionChar, CancellationToken cancellationToken, int recCount)
 		{
-			var providers = signatureProviders.Value;
 			if (position == 0 || recCount > 1)
 				return ParameterHintingResult.Empty;
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
@@ -113,7 +101,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (!(targetParent is BaseArgumentListSyntax) && !(targetParent is AttributeArgumentListSyntax) && !(targetParent is InitializerExpressionSyntax)) {
 					if (position == targetParent.Span.Start)
 						return ParameterHintingResult.Empty;
-					return await InternalGetParameterDataProviderAsync (document, semanticModel, targetParent.Span.Start, cancellationToken, recCount + 1).ConfigureAwait (false);
+					return await InternalGetParameterDataProviderAsync (document, semanticModel, targetParent.Span.Start, completionChar, cancellationToken, recCount + 1).ConfigureAwait (false);
 				}
 			}
 			switch (node.Kind()) {

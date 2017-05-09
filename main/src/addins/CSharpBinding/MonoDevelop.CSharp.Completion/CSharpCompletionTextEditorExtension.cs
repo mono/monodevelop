@@ -41,6 +41,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
+using Microsoft.CodeAnalysis.SignatureHelp;
 using Microsoft.CodeAnalysis.Text;
 
 using Mono.Addins;
@@ -55,6 +56,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -653,19 +655,37 @@ namespace MonoDevelop.CSharp.Completion
 		public override Task<Ide.CodeCompletion.ParameterHintingResult> ParameterCompletionCommand (CodeCompletionContext completionContext)
 		{
 			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-			return InternalHandleParameterCompletionCommand (completionContext, ch, true, default(CancellationToken));
+			return InternalHandleParameterCompletionCommand (completionContext, ch, SignatureHelpTriggerReason.InvokeSignatureHelpCommand, default(CancellationToken));
 		}
 
 		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default (CancellationToken))
 		{
-			return InternalHandleParameterCompletionCommand (completionContext, completionChar, false, token);
+			return InternalHandleParameterCompletionCommand (completionContext, completionChar, SignatureHelpTriggerReason.TypeCharCommand, token);
 		}
 
-		public Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
+		Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
+			var workspace = TypeSystemService.Workspace;
+			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
+			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
+				.FilterToSpecificLanguage (LanguageNames.CSharp);
+
+			return helpProviders.ToArray ();
+		});
+
+		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, SignatureHelpTriggerReason triggerReason, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
-			if (!force && completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
-				return null;
+			bool force = triggerReason != SignatureHelpTriggerReason.InvokeSignatureHelpCommand;
+			List<ISignatureHelpProvider> providers;
+			if (!force) {
+				// TODO: Handle retrigger chars when the window is already shown.
+				providers = signatureProviders.Value.Where (provider => provider.IsTriggerCharacter (completionChar)).ToList ();
+				if (providers.Count == 0)
+					return null;
+			}
+			else
+				providers = signatureProviders.Value.ToList ();
+
 			if (Editor.EditMode != EditMode.Edit)
 				return null;
 			var offset = Editor.CaretOffset;
