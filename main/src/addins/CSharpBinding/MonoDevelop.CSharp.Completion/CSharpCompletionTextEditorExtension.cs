@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionTextEditorExtension.cs
 //  
 // Author:
@@ -693,13 +693,22 @@ namespace MonoDevelop.CSharp.Completion
 				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
-				return Task.Run (async delegate {
-					var partialDoc = await analysisDocument.WithFrozenPartialSemanticsAsync (token);
-					var semanticModel = await partialDoc.GetSemanticModelAsync ();
-					var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-					var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
-					return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData> ().ToList (), result.StartOffset);
-				}, token);
+
+				var triggerInfo = new SignatureHelpTriggerInfo (triggerReason, completionChar);
+				var tasks = providers.Select (provider =>
+					provider.GetItemsAsync (analysisDocument, offset, triggerInfo, token)
+						.ContinueWith (y => y.Result.Items)
+					);
+
+				var res = await Task.WhenAll (tasks);
+
+				List<Ide.CodeCompletion.ParameterHintingData> hintingData = res
+					.SelectMany (list => list)
+					.Select(x => (Ide.CodeCompletion.ParameterHintingData)new SignatureHelpParameterHintingData (x))
+					.ToList();
+
+				var result = new Ide.CodeCompletion.ParameterHintingResult (hintingData, offset);
+				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 

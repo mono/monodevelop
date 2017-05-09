@@ -1,35 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ICSharpCode.NRefactory6.CSharp.Completion;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.SignatureHelp;
+﻿using Microsoft.CodeAnalysis.SignatureHelp;
 
-namespace CSharpBinding.MonoDevelop.CSharp.Features.ParameterHinting
+namespace MonoDevelop.CSharp.Completion
 {
 
-	class SignatureHelpParameterHintingData : IParameterHintingData
+	class SignatureHelpParameterHintingData : Ide.CodeCompletion.ParameterHintingData
 	{
-		SignatureHelpItem item;
-
-		public SignatureHelpParameterHintingData(SignatureHelpItem item)
+		public SignatureHelpParameterHintingData(SignatureHelpItem item) : base(null)
 		{
-			this.item = item;
+			Item = item;
 		}
 
-		public ISymbol Symbol => null;
+		public SignatureHelpItem Item { get; }
 
-		public SignatureHelpItem Item => item;
+		public override int ParameterCount => Item.Parameters.Length;
 
-		public int ParameterCount => item.Parameters.Length;
+		public override bool IsParameterListAllowed => Item.IsVariadic;
 
-		public bool IsParameterListAllowed => item.IsVariadic;
-
-		public string GetParameterName (int currentParameter)
-		{
-			return item.Parameters[currentParameter].Name;
-		}
+		public override string GetParameterName (int parameter) => Item.Parameters[parameter].Name;
 	}
 }
