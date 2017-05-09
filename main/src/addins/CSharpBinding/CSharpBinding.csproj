@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
@@ -224,6 +225,7 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\SignatureHelpParameterHintingData.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
