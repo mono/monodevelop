@@ -94,7 +94,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		CancellationTokenSource completionTokenSrc = new CancellationTokenSource ();
 		CancellationTokenSource parameterHintingSrc = new CancellationTokenSource ();
 		bool parameterHingtingCursorPositionChanged = false;
-		object handleCompletionLock = new object ();
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
@@ -156,51 +155,47 @@ namespace MonoDevelop.Ide.Editor.Extension
 			// Handle code completion
 			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				completionTokenSrc.Cancel ();
-				lock (handleCompletionLock) {
-					CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
-					completionTokenSrc = new CancellationTokenSource ();
-					var caretOffset = Editor.CaretOffset;
-					var token = completionTokenSrc.Token;
-					try {
-						var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
-						if (task != null) {
-							// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
-							// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
-							CompletionWindowManager.PrepareShowWindow (this, descriptor.KeyChar, CompletionWidget, CurrentCompletionContext);
-							EventHandler windowClosed = delegate (object o, EventArgs a) {
-								completionTokenSrc.Cancel ();
-							};
-							CompletionWindowManager.WindowClosed += windowClosed;
-							task.ContinueWith (t => {
-								CompletionWindowManager.WindowClosed -= windowClosed;
-								if (token.IsCancellationRequested)
-									return;
-								var result = t.Result;
-								if (result != null) {
-									int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
-									if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-																  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
-										CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
-										if (result.TriggerWordStart >= 0)
-											CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
-										CurrentCompletionContext.TriggerWordLength = triggerWordLength;
-									}
-									// Now show the window for real.
-									if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
-										CurrentCompletionContext = null;
-								} else {
-									CompletionWindowManager.HideWindow ();
-									CurrentCompletionContext = null;
+				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
+				completionTokenSrc = new CancellationTokenSource ();
+				var caretOffset = Editor.CaretOffset;
+				var token = completionTokenSrc.Token;
+				try {
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, descriptor.KeyChar), token);
+					if (task != null) {
+						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
+						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
+						CompletionWindowManager.PrepareShowWindow (this, descriptor.KeyChar, CompletionWidget, CurrentCompletionContext);
+						EventHandler windowClosed = delegate (object o, EventArgs a) {
+							completionTokenSrc.Cancel ();
+						};
+						CompletionWindowManager.WindowClosed += windowClosed;
+						task.ContinueWith (t => {
+							CompletionWindowManager.WindowClosed -= windowClosed;
+							if (token.IsCancellationRequested)
+								return;
+							var result = t.Result;
+							if (result != null) {
+								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
+								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
+															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+									if (result.TriggerWordStart >= 0)
+										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
+									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
-							}, Runtime.MainTaskScheduler);
-						} else {
-							CurrentCompletionContext = null;
-						}
-					} catch (TaskCanceledException) {
-						CurrentCompletionContext = null;
-					} catch (AggregateException) {
+								// Now show the window for real.
+								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
+									CurrentCompletionContext = null;
+							} else {
+								CompletionWindowManager.HideWindow ();
+								CurrentCompletionContext = null;
+							}
+						}, Runtime.MainTaskScheduler);
+					} else {
 						CurrentCompletionContext = null;
 					}
+				} catch (TaskCanceledException) {
+				} catch (AggregateException) {
 				}
 			}
 
