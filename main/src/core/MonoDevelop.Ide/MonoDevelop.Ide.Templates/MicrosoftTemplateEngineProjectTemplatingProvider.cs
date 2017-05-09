@@ -42,6 +42,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using Microsoft.TemplateEngine.Abstractions;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Templates
@@ -136,7 +137,7 @@ namespace MonoDevelop.Ide.Templates
 		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			var solutionTemplate = (MicrosoftTemplateEngineSolutionTemplate)template;
-			var parameters = GetParameters (solutionTemplate);
+			var parameters = GetParameters (solutionTemplate, config);
 			var templateInfo = solutionTemplate.templateInfo;
 			var workspaceItems = new List<IWorkspaceFileObject> ();
 			var result = await templateCreator.InstantiateAsync (
@@ -210,14 +211,23 @@ namespace MonoDevelop.Ide.Templates
 			return processResult;
 		}
 
-		Dictionary<string, string> GetParameters (MicrosoftTemplateEngineSolutionTemplate template)
+		Dictionary<string, string> GetParameters (MicrosoftTemplateEngineSolutionTemplate template, NewProjectConfiguration config)
 		{
 			var parameters = new Dictionary<string, string> ();
-			if (string.IsNullOrEmpty (template.DefaultParameters))
-				return parameters;
+			if (!string.IsNullOrEmpty (template.DefaultParameters)) {
+				foreach (TemplateParameter parameter in GetValidParameters (template.DefaultParameters)) {
+					parameters [parameter.Name] = parameter.Value;
+				}
+			}
 
-			foreach (TemplateParameter parameter in GetValidParameters (template.DefaultParameters)) {
-				parameters [parameter.Name] = parameter.Value;
+			// If the template has no wizard then no extra parameters will be set.
+			if (template.HasWizard) {
+				var model = (IStringTagModel)config.Parameters;
+				foreach (ITemplateParameter parameter in template.templateInfo.Parameters) {
+					string parameterValue = (string)model.GetValue (parameter.Name);
+					if (parameterValue != null)
+						parameters [parameter.Name] = parameterValue;
+				}
 			}
 
 			return parameters;

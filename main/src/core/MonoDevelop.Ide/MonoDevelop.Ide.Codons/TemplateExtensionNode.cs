@@ -112,5 +112,14 @@ namespace MonoDevelop.Ide.Codons
 				return groupId;
 			}
 		}
+
+		[NodeAttribute ("wizard", "Wizard identifier for this template.")]
+		string wizard;
+
+		public string Wizard {
+			get {
+				return wizard;
+			}
+		}
 	}
 }

@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Templates
 			//TODO: Support all this params
 			//Condition = template.Condition;
 			//ProjectFileExtension = template.FileExtension;
-			//Wizard = template.WizardPath;
+			Wizard = template.Wizard;
 			//SupportedParameters = template.SupportedParameters;
 			DefaultParameters = template.DefaultParameters;
 			ImageId = template.ImageId;
