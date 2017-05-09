@@ -104,8 +104,9 @@ namespace MonoDevelop.Ide.Projects
 			iconView.Accessible.Description = GettextCatalog.GetString ("Select a template for the new file");
 			iconView.Accessible.SetTitle (GettextCatalog.GetString ("Templates"));
 
-			nameEntry.Accessible.Name = "NewFileDialog.NameEntry";
-			nameEntry.Accessible.Description = GettextCatalog.GetString ("Enter the name of the new file");
+			nameEntry.SetCommonAccessibilityAttributes ("NewFileDialog.NameEntry",
+														GettextCatalog.GetString ("Name"),
+														GettextCatalog.GetString ("Enter the name of the new file"));
 			nameEntry.Accessible.SetTitleUIElement (label1.Accessible);
 
 			label1.Accessible.Name = "NewFileDialog.NameLabel";
