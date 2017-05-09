@@ -1,0 +1,28 @@
+﻿<ExtensionModel>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+		<Category id="cloud" name="Cloud" insertafter="netcore">
+			<Category id="general" name="General">
+				<Category id="general" name="General" />
+			</Category>
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Templates">
+		<Template
+			id="Microsoft.AzureFunctions.ProjectTemplate.CSharp"
+			_overrideDescription="Creates a new Azure Functions project."
+			path="Templates/Microsoft.AzureFunctions.ProjectTemplates.nupkg"
+			category="cloud/general/general"
+			icon="md-project-azurefunctions"
+			imageId="md-project-azurefunctions"
+		/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-project-azurefunctions" resource="project-azurefunctions-template.png" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-project-azurefunctions" resource="project-azurefunctions-32.png" size="Dnd" />
+	</Extension>
+</ExtensionModel>
