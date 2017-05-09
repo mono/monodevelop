@@ -225,6 +225,7 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\ParameterHinting\SignatureHelpParameterHintingData.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />

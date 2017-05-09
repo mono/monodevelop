@@ -663,7 +663,7 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleParameterCompletionCommand (completionContext, completionChar, SignatureHelpTriggerReason.TypeCharCommand, token);
 		}
 
-		Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
+		static Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
 			var workspace = TypeSystemService.Workspace;
 			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
@@ -672,7 +672,7 @@ namespace MonoDevelop.CSharp.Completion
 			return helpProviders.ToArray ();
 		});
 
-		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, SignatureHelpTriggerReason triggerReason, CancellationToken token = default(CancellationToken))
+		public Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, SignatureHelpTriggerReason triggerReason, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			bool force = triggerReason != SignatureHelpTriggerReason.InvokeSignatureHelpCommand;
@@ -695,19 +695,13 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 
 				var triggerInfo = new SignatureHelpTriggerInfo (triggerReason, completionChar);
-				var tasks = providers.Select (provider =>
-					provider.GetItemsAsync (analysisDocument, offset, triggerInfo, token)
-						.ContinueWith (y => y.Result.Items)
-					);
-
-				var res = await Task.WhenAll (tasks);
-
-				List<Ide.CodeCompletion.ParameterHintingData> hintingData = res
-					.SelectMany (list => list)
-					.Select(x => (Ide.CodeCompletion.ParameterHintingData)new SignatureHelpParameterHintingData (x))
-					.ToList();
-
-				var result = new Ide.CodeCompletion.ParameterHintingResult (hintingData, offset);
+				var result = new RoslynParameterHintingEngine ().GetParameterDataProviderAsync (
+					providers,
+					analysisDocument,
+					offset,
+					triggerInfo,
+					token
+				);
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
