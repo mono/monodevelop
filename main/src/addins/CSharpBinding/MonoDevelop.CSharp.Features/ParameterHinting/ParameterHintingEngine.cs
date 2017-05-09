@@ -32,8 +32,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Microsoft.CodeAnalysis.SignatureHelp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -57,8 +59,18 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return InternalGetParameterDataProviderAsync (document, semanticModel, position, cancellationToken, 0);
 		}
 
+		Lazy<ISignatureHelpProvider[]> signatureProviders = new Lazy<ISignatureHelpProvider[]> (() => {
+			var workspace = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace;
+			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
+			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
+				.FilterToSpecificLanguage (LanguageNames.CSharp);
+
+			return helpProviders.ToArray ();
+		});
+
 		public async Task<ParameterHintingResult> InternalGetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken, int recCount)
 		{
+			var providers = signatureProviders.Value;
 			if (position == 0 || recCount > 1)
 				return ParameterHintingResult.Empty;
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
