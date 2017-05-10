@@ -228,11 +228,8 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		internal static string FindSdkPath (TargetRuntime runtime, IEnumerable<string> sdks)
 		{
-			string binDir;
-			GetNewestInstalledToolsVersion (runtime, true, out binDir);
-
 			// Look for SDKs in the default SDKs path first, and then in the fallback paths
-			var defaultSdksPath = Path.Combine (binDir, "Sdks");
+			var defaultSdksPath = GetDefaultSdksPath (runtime);
 			var allPaths = Enumerable.Repeat (defaultSdksPath, 1).Concat (GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath").Select (sp => sp.Path));
 
 			foreach (var path in allPaths) {
@@ -241,6 +238,13 @@ namespace MonoDevelop.Projects.MSBuild
 					return path;
 			}
 			return null;
+		}
+
+		internal static string GetDefaultSdksPath (TargetRuntime runtime)
+		{
+			string binDir;
+			GetNewestInstalledToolsVersion (runtime, true, out binDir);
+			return Path.Combine (binDir, "Sdks");
 		}
 
 		static List<ImportSearchPathExtensionNode> LoadDefaultProjectImportSearchPaths (TargetRuntime runtime)
@@ -1027,7 +1031,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
+		internal static string GetNewestInstalledToolsVersion (TargetRuntime runtime, bool requiresMicrosoftBuild, out string binDir)
 		{
 			string [] supportedToolsVersions;
 			if (requiresMicrosoftBuild || Runtime.Preferences.BuildWithMSBuild || Platform.IsWindows)
@@ -1306,6 +1310,12 @@ namespace MonoDevelop.Projects.MSBuild
 							File.Copy (src, dest);
 					}
 				}
+
+				// Copy the resolvers directory since MSBuild looks for then in a directory relative
+				// to MSBuild.dll
+				var resolversDir = Path.Combine (binDir, "SdkResolvers");
+				if (Directory.Exists (resolversDir))
+					FileService.CopyDirectory (resolversDir, Path.Combine (exesDir, "SdkResolvers"));
 
 				searchPathConfigNeedsUpdate = true;
 			}

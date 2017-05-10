@@ -725,7 +725,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\AppliesToCondition.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\DefaultSdkResolver.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolution.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\SdkServerLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

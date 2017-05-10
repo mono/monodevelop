@@ -212,12 +212,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
 				var list = objects.ToList ();
+				var rootProject = pi.GetRootMSBuildProject ();
 				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
 				int index = 0;
 				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
 					if (!SdkReference.TryParse (sdkPath, out var sdkRef))
 						continue;
-					var path = SdkResolution.Instance.GetSdkPath (sdkRef, new CustomLoggingService (), null, pi.Project.FileName, pi.Project.SolutionDirectory);
+					var path = SdkResolution.GetResolver (rootProject.TargetRuntime).GetSdkPath (sdkRef, CustomLoggingService.Instance, null, pi.Project.FileName, pi.Project.SolutionDirectory);
 					if (path == null)
 						continue;
 					path = MSBuildProjectService.ToMSBuildPath (null, path);
