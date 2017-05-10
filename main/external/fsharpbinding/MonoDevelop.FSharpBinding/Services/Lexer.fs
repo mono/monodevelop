@@ -166,7 +166,7 @@ module Lexer =
                         yield tok
                         yield! parseLine()
                     | None, nstate -> state <- nstate ]
-              yield parseLine(), state ]
+              yield parseLine(), lineText ]
     
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
