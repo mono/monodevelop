@@ -40,10 +40,9 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
                         tokens 
                         |> List.mapi (fun line tokenList -> line+1, tokenListToComment tokenList)
                         |> List.choose(fun (line, s) ->
-                                            let tag =
-                                                specialCommentTags 
-                                                |> Set.tryFind(fun tag -> s.StartsWith tag)
-                                            tag |> Option.bind(fun t -> Some <| Tag(t, s, DocumentRegion(line, 1, line, 1))))
+                                            specialCommentTags 
+                                            |> Set.tryFind(fun tag -> s.StartsWith tag)
+                                            |> Option.bind(fun t -> Some <| Tag(t, s, DocumentRegion(line, 1, line, 1))))
 
                     return ResizeArray(tokensByLine) :> IReadOnlyList<_>
                 | None -> return ResizeArray() :> IReadOnlyList<_>
