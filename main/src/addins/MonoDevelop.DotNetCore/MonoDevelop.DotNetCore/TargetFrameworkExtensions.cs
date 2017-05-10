@@ -34,6 +34,12 @@ namespace MonoDevelop.DotNetCore
 			return framework.Id.Identifier == ".NETStandard";
 		}
 
+		public static bool IsNetStandard20 (this TargetFramework framework)
+		{
+			return framework.IsNetStandard () &&
+				framework.Id.Version == "2.0";
+		}
+
 		public static bool IsNetCoreApp (this TargetFramework framework)
 		{
 			return framework.Id.Identifier == ".NETCoreApp";

@@ -59,8 +59,16 @@ namespace MonoDevelop.DotNetCore
 		/// a preview version of .NET Core 2.0 is installed by mapping the Microsoft.NETCore.App
 		/// 2.0 package reference to the installed preview version. When MSBuild supports this
 		/// with the sdk resolver this code can be removed.
+		///
+		/// Also ensure NuGet packages are restored for .NET Standard 2.0 projects correctly.
+		/// By default the NETStandard.Library version 1.6.1 is used which is taken from the
+		/// SDK files included with Mono's MSBuild. Now the preview version of the
+		/// NETStandard.Library is used instead. The version used is taken from the
+		/// BundledNETStandardPackageVersion property from the Microsoft.NETCoreSdk.BundledVersions.props
+		/// file. This version is different to the preview version of the Microsoft.NETCore.App
+		/// package reference.
 		/// </summary>
-		static void ModifyImportedPackageReference (ProjectPackageReference packageReference)
+		static void ModifyImportedPackageReference (ProjectPackageReference packageReference, DotNetProject project)
 		{
 			if (packageReference.Include == "Microsoft.NETCore.App") {
 				string version = packageReference.Metadata.GetValue ("Version");
@@ -68,6 +76,15 @@ namespace MonoDevelop.DotNetCore
 					string previewVersion = DotNetCoreRuntime.PreviewNetCore20AppVersion;
 					if (previewVersion != null)
 						packageReference.Metadata.SetValue ("Version", previewVersion);
+				}
+			} else if (project.TargetFramework.IsNetStandard20 ()) {
+				if (packageReference.Include == "NETStandard.Library") {
+					string version = packageReference.Metadata.GetValue ("Version");
+					if (version != null && version.StartsWith ("1.", StringComparison.Ordinal)) {
+						string previewVersion = DotNetCoreSdk.PreviewNetStandard20LibraryVersion;
+						if (previewVersion != null)
+							packageReference.Metadata.SetValue ("Version", previewVersion);
+					}
 				}
 			}
 		}
