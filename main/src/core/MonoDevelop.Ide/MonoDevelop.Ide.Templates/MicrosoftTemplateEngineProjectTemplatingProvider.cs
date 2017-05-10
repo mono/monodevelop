@@ -73,6 +73,13 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (dontUpdateCache)//Avoid updating cache while scan paths are added during registration 
 				return;
+
+			// Prevent a TypeInitializationException in when calling SettingsLoader.Save when no templates
+			// are available, which throws an exception, by returning here. This prevents the MonoDevelop.Ide addin
+			// from loading. In practice this should not happen unless the .NET Core addin is disabled.
+			if (!TemplatesNodes.Any ())
+				return;
+
 			var paths = new Paths (environmentSettings);
 
 			//TODO: Uncomment this IF, but also add logic to invalidate/check if new templates were added from newly installed AddOns...
