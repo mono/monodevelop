@@ -372,7 +372,7 @@ namespace MonoDevelop.Ide.Projects
 
 		EventBoxTooltip CreateTooltip (EventBox eventBox, string tooltipText)
 		{
-			Xwt.Drawing.Image image = ImageService.GetIcon ("md-information");
+			Xwt.Drawing.Image image = ImageService.GetIcon ("md-help");
 			eventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 			eventBox.Add (new ImageView (image));
 			eventBox.ShowAll ();
