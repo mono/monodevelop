@@ -467,12 +467,6 @@ namespace MonoDevelop.DotNetCore
 			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
 		}
 
-		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
-		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
-			return supportedTargetFrameworks.GetFrameworks ();
-		}
-
 		/// <summary>
 		/// Handle a new project being created and added to a new solution. In this case
 		/// the NuGet packages should be restored. Need to avoid running a restore when

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using MonoDevelop.Core;
 
@@ -70,6 +71,16 @@ namespace MonoDevelop.DotNetCore
 			    latestInstalledVersion.IsPrerelease) {
 				PreviewNetCore20AppVersion = latestInstalledVersion.OriginalString;
 			}
+		}
+
+		internal static bool IsNetCore1xInstalled ()
+		{
+			return Versions.Any (version => version.Major == 1);
+		}
+
+		internal static bool IsNetCore20Installed ()
+		{
+			return Versions.Any (version => version.Major == 2 && version.Minor == 0);
 		}
 	}
 }

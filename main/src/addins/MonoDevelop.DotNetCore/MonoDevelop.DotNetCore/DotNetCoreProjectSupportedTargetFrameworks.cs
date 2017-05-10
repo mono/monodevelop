@@ -60,21 +60,35 @@ namespace MonoDevelop.DotNetCore
 
 		IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
-			return GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported);
+			if (DotNetCoreRuntime.IsNetCore20Installed ())
+				yield return CreateTargetFramework (".NETStandard", "2.0");
+
+			if (DotNetCoreRuntime.IsNetCore1xInstalled ()) {
+				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported))
+					yield return targetFramework;
+			}
 		}
 
 		IEnumerable<TargetFramework> GetTargetFrameworksVersion1x (string identifier, int maxMinorVersion)
 		{
 			for (int minorVersion = 0; minorVersion <= maxMinorVersion; ++minorVersion) {
 				string version = string.Format ($"1.{minorVersion}");
-				var moniker = new TargetFrameworkMoniker (identifier, version);
-				yield return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
+				yield return CreateTargetFramework (identifier, version);
 			}
 		}
 
 		IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
-			return GetTargetFrameworksVersion1x (".NETCoreApp", HighestNetCoreApp1xMinorVersionSupported);
+			foreach (DotNetCoreVersion runtimeVersion in DotNetCoreRuntime.Versions) {
+				string version = runtimeVersion.Version.ToString (2);
+				yield return CreateTargetFramework (".NETCoreApp", version);
+			}
+		}
+
+		static TargetFramework CreateTargetFramework (string identifier, string version)
+		{
+			var moniker = new TargetFrameworkMoniker (identifier, version);
+			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
 		IEnumerable<TargetFramework> GetNetFrameworkTargetFrameworks ()
