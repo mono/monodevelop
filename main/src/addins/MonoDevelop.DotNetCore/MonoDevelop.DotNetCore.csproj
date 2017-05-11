@@ -75,9 +75,6 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\SolutionExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\EmptyDirectoryRemover.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\FileTemplateProcessor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectFileRenamedHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReloadMonitor.cs" />
