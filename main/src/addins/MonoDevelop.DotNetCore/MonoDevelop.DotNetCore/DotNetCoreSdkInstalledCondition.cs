@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Mono.Addins;
 
 namespace MonoDevelop.DotNetCore
@@ -40,11 +41,11 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		public override bool Evaluate (NodeElement conditionNode)
 		{
-			if (DotNetCoreSdk.IsInstalled && SdkVersionSupported (conditionNode, DotNetCoreSdk.LatestSdkFullVersion))
+			if (DotNetCoreSdk.IsInstalled && SdkVersionSupported (conditionNode, DotNetCoreSdk.Versions))
 				return true;
 
 			// Mono's MSBuild SDKs currently includes .NET Core SDK 1.0.
-			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, DotNetCoreSdk.LatestSdkFullVersion ?? "1.0"))
+			if (MSBuildSdks.Installed && SdkVersionSupported (conditionNode, DotNetCoreVersion.MinimumSupportedVersion))
 				return DotNetCoreRuntime.IsInstalled || !RequiresRuntime (conditionNode);
 
 			return false;
@@ -54,14 +55,14 @@ namespace MonoDevelop.DotNetCore
 		/// Supports simple wildcards. 1.* => 1.0, 1.2, up to but not including 2.0.
 		/// Wildcards such as 1.*.3 are not supported.
 		/// </summary>
-		static bool SdkVersionSupported (NodeElement conditionNode, string sdkVersionInstalled)
+		static bool SdkVersionSupported (NodeElement conditionNode, params DotNetCoreVersion[] versions)
 		{
 			string requiredSdkversion = conditionNode.GetAttribute ("sdkVersion");
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
-			return sdkVersionInstalled.StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase);
+			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>

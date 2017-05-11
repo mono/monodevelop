@@ -41,7 +41,6 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
-			LatestSdkFullVersion = sdkPaths.LatestSdkFullVersion;
 			Versions = sdkPaths.SdkVersions;
 
 			if (IsInstalled)
@@ -55,11 +54,6 @@ namespace MonoDevelop.DotNetCore
 		public static string MSBuildSDKsPath { get; private set; }
 
 		internal static DotNetCoreVersion[] Versions { get; private set; }
-
-		/// <summary>
-		/// The latest .NET Core sdk version installed.
-		/// </summary>
-		internal static string LatestSdkFullVersion { get; private set; }
 
 		internal static void EnsureInitialized ()
 		{
