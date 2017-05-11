@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 
+		public Encoding CurrentEncoding { get; private set; }
+
 		public FileProvider(string fileName) : this(fileName, null)
 		{
 		}
@@ -107,7 +109,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 				if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
 					return null;
-				return TextFileUtility.OpenStream (FileName);
+				var sr =  TextFileUtility.OpenStream (FileName);
+				CurrentEncoding = sr.CurrentEncoding;
+				return sr;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
@@ -126,11 +130,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		IDisposable undoGroup;
 		Encoding encoding;
 
-		public async void BeginReplace (string content)
+		public async void BeginReplace (string content, Encoding encoding)
 		{
 			somethingReplaced = false;
 			buffer = new StringBuilder (content);
 			document = await SearchDocument ();
+			this.encoding = encoding; 
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {
 					undoGroup = document.Editor.OpenUndoGroup ();

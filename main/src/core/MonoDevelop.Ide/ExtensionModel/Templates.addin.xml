@@ -4,6 +4,15 @@
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
 	<Description>File templates to be shown in the New File dialog.</Description>
 	<ExtensionNode name="FileTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+	<ConditionType id="FlavorType" type="MonoDevelop.Projects.Extensions.FlavorTypeCondition">
+		<Description>Type of a flavor that a project must have. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+	</ConditionType>
+	<ConditionType id="ProjectTypeId" type="MonoDevelop.Projects.Extensions.ProjectTypeIdCondition">
+		<Description>The id can be a project type guid or a flavor guid, or the corresponding type alias</Description>
+	</ConditionType>
+	<ConditionType id="AppliesTo" type="MonoDevelop.Projects.Extensions.AppliesToCondition">
+		<Description>Project capability expression.</Description>
+	</ConditionType>
 </ExtensionPoint>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateTypes" name = "File template types">

@@ -86,6 +86,7 @@ namespace Mono.TextEditor
 				data.Caret.PositionChanged -= handler.DataCaretPositionChanged;
 				data.Caret.AutoScrollToCaret = true;
 				data.Caret.PreserveSelection = false;
+				data.ScrollToCaret ();
 			}
 		}
 

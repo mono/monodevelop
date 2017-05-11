@@ -39,7 +39,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	sealed class SemanticHighlightingSyntaxMode : ISyntaxHighlighting, IDisposable
+	sealed class SemanticHighlightingSyntaxMode : ISyntaxHighlighting
 	{
 		readonly ExtensibleTextEditor editor;
 		readonly ISyntaxHighlighting syntaxMode;
@@ -140,8 +140,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			if (isDisposed)
 				return;
-			isDisposed = true;
+			// Unregister before setting isDisposed=true, as that causes the method to bail out early.
 			UnregisterLineSegmentTrees ();
+			isDisposed = true;
 			lineSegments = null;
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
@@ -162,8 +163,16 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				var segments = new List<ColoredSegment> (syntaxLine.Segments);
 				int endOffset = segments [segments.Count - 1].EndOffset;
 				try {
-					var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
+					Tuple<IDocumentLine, HighlightingSegmentTree> tree = null;
+
+					// This code should not have any lambda capture linq, as it is a hot loop.
 					int lineOffset = line.Offset;
+					foreach (var segment in lineSegments) {
+						if (segment.Item1.Offset == lineOffset) {
+							tree = segment;
+							break;
+						}
+					}
 					if (tree == null) {
 						tree = Tuple.Create (line, new HighlightingSegmentTree ());
 						tree.Item2.InstallListener (editor.Document);

@@ -41,6 +41,12 @@ namespace Mono.TextEditor.Tests
 		{
 			string indentString;
 
+			public override IndentationTrackerFeatures SupportedFeatures {
+				get {
+					return IndentationTrackerFeatures.All;
+				}
+			}
+
 			public TestIndentTracker (string indentString = "\t\t")
 			{
 				this.indentString = indentString;

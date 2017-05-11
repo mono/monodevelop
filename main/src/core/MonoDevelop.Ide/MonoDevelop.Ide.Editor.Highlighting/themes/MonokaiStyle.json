@@ -231,7 +231,7 @@
 		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
 
 		{ "name": "Css Comment", "fore": "monokai-comment", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "black", "weight": "bold" },
+		{ "name": "Css Property Name", "fore": "monokai-white", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "monokai-string", "weight": "bold" },
 		{ "name": "Css Selector", "fore": "monokai-comment", "weight": "bold" },
 		{ "name": "Css Keyword", "fore": "monokai-keyword", "weight": "bold" },

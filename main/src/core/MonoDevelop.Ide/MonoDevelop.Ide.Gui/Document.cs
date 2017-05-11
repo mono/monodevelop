@@ -904,7 +904,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.WorkspaceChanged -= HandleRoslynProjectReload;
+				ws.WorkspaceChanged -= HandleRoslynProjectChange;
 			}
 		}
 
@@ -912,13 +912,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.WorkspaceChanged += HandleRoslynProjectReload;
+				ws.WorkspaceChanged += HandleRoslynProjectChange;
 			}
 		}
 
-		void HandleRoslynProjectReload (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
+		void HandleRoslynProjectChange (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
-			StartReparseThread ();
+			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectChanged ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectAdded ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectRemoved ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectReloaded) {
+				StartReparseThread ();
+			}
 		}
 
 		bool IsUnreferencedSharedProject (Project project)

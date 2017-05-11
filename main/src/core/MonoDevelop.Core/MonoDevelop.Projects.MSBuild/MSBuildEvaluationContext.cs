@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
@@ -957,7 +957,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.IndexOf (c) != -1)
+				if (pc == 0 && Array.IndexOf (closeChar, c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;

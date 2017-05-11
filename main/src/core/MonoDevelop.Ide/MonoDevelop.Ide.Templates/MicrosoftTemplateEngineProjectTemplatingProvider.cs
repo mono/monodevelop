@@ -41,6 +41,8 @@ using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using Microsoft.TemplateEngine.Abstractions;
+using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -166,6 +168,8 @@ namespace MonoDevelop.Ide.Templates
 			metadata ["Platform"] = string.Join(";", templateInfo.Classifications);
 			TemplateCounter.Inc (1, null, metadata);
 
+			MicrosoftTemplateEngineProcessedTemplateResult processResult;
+
 			if (parentFolder == null) {
 				var solution = new Solution ();
 				solution.SetLocation (config.SolutionLocation, config.SolutionName);
@@ -184,9 +188,36 @@ namespace MonoDevelop.Ide.Templates
 					}
 					solution.RootFolder.AddItem (item);
 				}
-				return new MicrosoftTemplateEngineProcessedTemplateResult (new [] { solution }, solution.FileName, config.ProjectLocation);
+				processResult = new MicrosoftTemplateEngineProcessedTemplateResult (new [] { solution }, solution.FileName, config.ProjectLocation);
 			} else {
-				return new MicrosoftTemplateEngineProcessedTemplateResult (workspaceItems.ToArray (), parentFolder.ParentSolution.FileName, config.ProjectLocation);
+				processResult = new MicrosoftTemplateEngineProcessedTemplateResult (workspaceItems.ToArray (), parentFolder.ParentSolution.FileName, config.ProjectLocation);
+			}
+
+			// Format all source files generated during the project creation
+			foreach (var p in workspaceItems.OfType<Project> ()) {
+				foreach (var file in p.Files)
+					await FormatFile (p, file.FilePath);
+			}
+
+			return processResult;
+		}
+
+		async Task FormatFile (Project p, FilePath file)
+		{
+			string mime = DesktopService.GetMimeTypeForUri (file);
+			if (mime == null)
+				return;
+
+			var formatter = CodeFormatterService.GetFormatter (mime);
+			if (formatter != null) {
+				try {
+					var content = await TextFileUtility.ReadAllTextAsync (file);
+					var formatted = formatter.FormatText (p.Policies, content.Text);
+					if (formatted != null)
+						TextFileUtility.WriteText (file, formatted, content.Encoding);
+				} catch (Exception ex) {
+					LoggingService.LogError ("File formatting failed", ex);
+				}
 			}
 		}
 

@@ -177,5 +177,26 @@ namespace Mono.TextEditor.Tests
 			  			"<span foreground=\"#e5da73\">$@\"test\"</span><span foreground=\"#eeeeec\"> </span><span foreground=\"#888a85\">// test</span>");
 		}
 
+		/// <summary>
+		/// Bug 55670 - color scheme not working on floating point literals without decimal points
+		/// </summary>
+		[Test]
+		public void Test55670 ()
+		{
+			TestOutput ("0.5f",
+			  			"<span foreground=\"#8ae232\">0.5f</span>");
+			TestOutput ("5f",
+			  			"<span foreground=\"#8ae232\">5f</span>");
+			TestOutput ("2e64",
+			  			"<span foreground=\"#8ae232\">2e64</span>");
+		}
+
+		[Test]
+		public void TestBinaryLiteral ()
+		{
+			TestOutput ("0b1111_0000",
+			  			"<span foreground=\"#8ae232\">0b1111_0000</span>");
+		}
+
 	}
 }

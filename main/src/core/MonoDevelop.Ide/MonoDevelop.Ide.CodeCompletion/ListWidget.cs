@@ -728,22 +728,33 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 			filteredItems.Sort (delegate (int left, int right) {
-				int rank1, rank2;
 				var data1 = dataList [left];
 				var data2 = dataList [right];
-				if (data1 == null || data2 == null)
-					return 0;
+				if (data1 != null && data2 == null)
+					return -1;
+				if (data1 == null && data2 != null)
+					return 1;
+				if (data1 == null && data2 == null)
+					return left.CompareTo (right);
+
 				if (data1.PriorityGroup != data2.PriorityGroup)
 					return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
+
 				if (string.IsNullOrEmpty (CompletionString))
 					return CompareTo (dataList, left, right);
 
-				if (!matcher.CalcMatchRank (data1.CompletionText, out rank1))
-					return 0;
-				if (!matcher.CalcMatchRank (data2.CompletionText, out rank2))
-					return 0;
+				int rank1, rank2;
+				bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
+				bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
+				if (!hasRank1 && hasRank2)
+					return 1;
+				if (hasRank1 && !hasRank2)
+					return -1;
 
-				return rank2.CompareTo (rank1);
+				if (rank1 != rank2)
+					return rank2.CompareTo (rank1);
+
+				return left.CompareTo (right);
 			});
 
 			// put the item from a lower priority group with the highest match rank always to position #2

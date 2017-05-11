@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -58,15 +59,34 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 			}
 		}
 
+		static IEnumerable<IAssemblySymbol> GetSearchAssemblies(Compilation compilation)
+		{
+			yield return compilation.Assembly;
+			foreach (var reference in compilation.References) {
+				var symbol = compilation.GetAssemblyOrModuleSymbol (reference);
+				if (symbol is IAssemblySymbol assemblySymbol)
+					yield return assemblySymbol;
+			}
+		}
+
+		const string MonoTODOAttributeName = "System.MonoTODOAttribute";
 		public override void Initialize(AnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(
-				(nodeContext) => {
-					Diagnostic diagnostic;
-					if (TryFindMonoTODO(nodeContext.SemanticModel, nodeContext.Node, out diagnostic, nodeContext.CancellationToken))
-						nodeContext.ReportDiagnostic (diagnostic);
-				},
-				syntaxKindsOfInterest);
+			context.RegisterCompilationStartAction (compilationContext => {
+				var compilation = compilationContext.Compilation;
+				var monoTodoAttributeExists = GetSearchAssemblies (compilation)
+				                                   .Any (assemblySymbol => assemblySymbol.GetTypeByMetadataName (MonoTODOAttributeName) != null);
+				if (!monoTodoAttributeExists)
+					return;
+
+				compilationContext.RegisterSyntaxNodeAction(
+					(nodeContext) => {
+						Diagnostic diagnostic;
+						if (TryFindMonoTODO(nodeContext.SemanticModel, nodeContext.Node, out diagnostic, nodeContext.CancellationToken))
+							nodeContext.ReportDiagnostic (diagnostic);
+					},
+					syntaxKindsOfInterest);
+			});
 		}
 
 		static readonly Dictionary<string, string> attributes = new Dictionary<string, string> {
@@ -77,7 +97,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 
 		bool TryFindMonoTODO (SemanticModel semanticModel, SyntaxNode node, out Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
-			var info = semanticModel.GetSymbolInfo (node);
+			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
 			diagnostic = default(Diagnostic);
 			if (info.Symbol == null)
 				return false;

@@ -61,9 +61,24 @@ namespace Mono.TextEditor
 						}
 					} else {
 						int offset = data.Caret.Offset - 1;
+						bool foundFolding = false;
 						foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset)) {
 							offset = System.Math.Min (offset, folding.Offset);
+							foundFolding = true;
 						}
+
+						if (!foundFolding) {
+							var layout = data.Parent?.TextViewMargin?.GetLayout (line);
+							if (layout != null && data.Caret.Column < line.Length) {
+								uint curIndex = 0, byteIndex = 0;
+								int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)(offset - line.Offset), ref curIndex, ref byteIndex);
+								layout.Layout.GetCursorPos (utf8ByteIndex, out var strong_pos, out var weak_pos);
+								if (strong_pos.X != weak_pos.X) {
+									offset--;
+								}
+							}
+						}
+
 						data.Caret.Offset = offset;
 					}
 				} else if (data.Caret.Line > DocumentLocation.MinLine) {
@@ -131,6 +146,15 @@ namespace Mono.TextEditor
 					}
 				} else {
 					data.Caret.Column++;
+					var layout = data.Parent?.TextViewMargin?.GetLayout (line);
+					if (layout != null && data.Caret.Column < line.Length) {
+						uint curIndex = 0, byteIndex = 0;
+						int utf8ByteIndex = (int)layout.TranslateToUTF8Index ((uint)data.Caret.Column - 1, ref curIndex, ref byteIndex);
+						layout.Layout.GetCursorPos (utf8ByteIndex, out var strong_pos, out var weak_pos);
+						if (strong_pos.X != weak_pos.X) {
+							data.Caret.Column++;
+						}
+					}
 				}
 			}
 		}

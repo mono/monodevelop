@@ -86,6 +86,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public string Include;
 			public Regex ExcludeRegex;
 			public Regex DirectoryExcludeRegex;
+			public Regex RemoveRegex;
 			public bool Condition;
 		}
 
@@ -218,6 +219,10 @@ namespace MonoDevelop.Projects.MSBuild
 					list.Insert (index++, new MSBuildImport { Project = propsPath, Condition = $"Exists('{propsPath}')" });
 					list.Add (new MSBuildImport { Project = targetsPath, Condition = $"Exists('{targetsPath}')" });
 				}
+				var nugetPropsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.props";
+				var nugetTargetsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.targets";
+				list.Insert (index, new MSBuildImport { Project = nugetPropsPath, Condition = $"Exists('{nugetPropsPath}')" });
+				list.Add (new MSBuildImport { Project = nugetTargetsPath, Condition = $"Exists('{nugetTargetsPath}')" });
 				objects = list;
 			}
 
@@ -391,12 +396,28 @@ namespace MonoDevelop.Projects.MSBuild
 		static void RemoveItem (ProjectInfo project, MSBuildItem item, string remove, bool trueCond)
 		{
 			if (IsWildcardInclude (remove)) {
+				AddRemoveToGlobInclude (project, item, remove);
 				var rootProject = project.GetRootMSBuildProject ();
 				var directoryExcludeRegex = GetDirectoryExcludeRegex (project, remove);
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove, directoryExcludeRegex))
 					RemoveEvaluatedItemFromAllProjects (project, item, f, trueCond);
 			} else
 				RemoveEvaluatedItemFromAllProjects (project, item, remove, trueCond);
+		}
+
+		/// <summary>
+		/// Adds a glob remove to the corresponding glob include. This remove is then checked
+		/// in FindGlobItemsIncludingFile so that a glob item is not returned if the file was removed
+		/// from that glob.
+		/// </summary>
+		static void AddRemoveToGlobInclude (ProjectInfo project, MSBuildItem item, string remove)
+		{
+			var exclude = ExcludeToRegex (remove);
+			foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+				if (globInclude.RemoveRegex != null)
+					exclude = globInclude.RemoveRegex + "|" + exclude;
+				globInclude.RemoveRegex = new Regex (exclude);
+			}
 		}
 
 		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
@@ -1256,6 +1277,10 @@ namespace MonoDevelop.Projects.MSBuild
 				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath)) {
 					if (g.ExcludeRegex != null) {
 						if (g.ExcludeRegex.IsMatch (include))
+							continue;
+					}
+					if (g.RemoveRegex != null) {
+						if (g.RemoveRegex.IsMatch (include))
 							continue;
 					}
 					yield return g.Item;

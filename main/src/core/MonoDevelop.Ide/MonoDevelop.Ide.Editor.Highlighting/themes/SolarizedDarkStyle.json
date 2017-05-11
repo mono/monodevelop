@@ -221,7 +221,7 @@
 		{ "name": "Diff Location", "fore": "Magenta", "weight": "bold" },
 
 		{ "name": "Css Comment", "fore": "base01", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "black", "weight": "bold" },
+		{ "name": "Css Property Name", "fore": "base00", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "cyan", "weight": "bold" },
 		{ "name": "Css Selector", "fore": "base01", "weight": "bold" },
 		{ "name": "Css String Value", "fore": "cyan", "weight": "bold" },
