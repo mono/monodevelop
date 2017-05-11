@@ -259,8 +259,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				GLib.Signal.Emit (lbl, "activate-link", new object[]{});
 				return true;
 			}
-			GLib.Signal.Emit (lbl, "button-press-event", new object [] { });
-			GLib.Signal.Emit (lbl, "button-release-event", new object [] { });
+			GLib.Signal.Emit (resultWidget, "button-press-event", new object [] { });
+			GLib.Signal.Emit (resultWidget, "button-release-event", new object [] { });
 
 			return true;
 		}
