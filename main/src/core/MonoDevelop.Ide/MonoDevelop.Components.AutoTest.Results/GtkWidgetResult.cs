@@ -249,12 +249,18 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override bool Click ()
 		{
 			Button button = resultWidget as Button;
-			if (button == null) {
-				return false;
+			if (button != null) {
+				button.Click ();
+				return true;
+			}
+			Label lbl = resultWidget as Label;
+			if(lbl != null)
+			{
+				GLib.Signal.Emit (lbl, "activate-link", new object[]{});
+				return true;
 			}
 
-			button.Click ();
-			return true;
+			return false;
 		}
 
 		void SendButtonEvent (Widget target, Gdk.EventType eventType, double x, double y, Gdk.ModifierType state, uint button)
