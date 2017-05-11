@@ -74,6 +74,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		public static bool ContainsStyle (string styleName)
+		{
+			foreach (var bundle in languageBundles) {
+				foreach (var style in bundle.EditorThemes) {
+					if (style.Name == styleName)
+						return true;
+				}
+			}
+			return false;
+		}
+
 		public static FilePath LanguageBundlePath {
 			get {
 				return UserProfile.Current.UserDataRoot.Combine ("LanguageBundles");
