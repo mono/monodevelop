@@ -304,10 +304,10 @@ namespace MonoDevelop.Components
 		public string ToPangoString ()
 		{
 			var resultColor = (Cairo.Color)this;
-			return string.Format ("#{0:x2}{1:x2}{2:x2}",
-				(int)(resultColor.R * 255),
-				(int)(resultColor.G * 255),
-				(int)(resultColor.B * 255));
+			return string.Format ("#{0}{1}{2}",
+				((int)(resultColor.R * 255)).ToString ("x2"),
+				((int)(resultColor.G * 255)).ToString ("x2"),
+				((int)(resultColor.B * 255)).ToString ("x2"));
 		}
 
 
@@ -316,11 +316,11 @@ namespace MonoDevelop.Components
 			if (Alpha == 1.0)
 				return ToPangoString ();
 			var resultColor = (Cairo.Color)this;
-			return string.Format ("#{0:x2}{1:x2}{2:x2}{3:x2}",
-				(int)(resultColor.R * 255),
-				(int)(resultColor.G * 255),
-				(int)(resultColor.B * 255),
-				(int)(resultColor.A * 255));
+			return string.Format ("#{0}{1}{2}{3}",
+				((int)(resultColor.R * 255)).ToString ("x2"),
+				((int)(resultColor.G * 255)).ToString ("x2"),
+				((int)(resultColor.B * 255)).ToString ("x2"),
+				((int)(resultColor.A * 255)).ToString ("x2"));
 		}
 
 		internal Gdk.GC CreateGC (Gdk.Drawable drawable)
