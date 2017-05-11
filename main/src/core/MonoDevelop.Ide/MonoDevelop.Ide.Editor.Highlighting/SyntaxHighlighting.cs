@@ -349,8 +349,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			{
 				if (scopeList == null)
 					return;
-				foreach (var scope in scopeList)
+				for (int i = 0; i < scopeList.Count; ++i) {
+					var scope = scopeList[i];
 					ScopeStack = ScopeStack.Push (scope);
+				}
 			}
 
 			void PopScopeStack (IReadOnlyList<string> scopeList)
