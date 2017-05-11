@@ -335,13 +335,15 @@ namespace MonoDevelop.Ide
 			//open the firsts sln/workspace file, and remove the others from the list
 		 	//FIXME: can we handle multiple slns?
 			bool foundSln = false;
+			Task<bool> openTaskOperation = null;
 			foreach (var file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName) ||
 				    Services.ProjectService.IsSolutionItemFile (file.FileName)) {
 					if (!foundSln) {
 						try {
-							Workspace.OpenWorkspaceItem (file.FileName);
+							var task = Workspace.OpenWorkspaceItem (file.FileName);
 							foundSln = true;
+							openTaskOperation = task;
 						} catch (Exception ex) {
 							MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
 						}
@@ -350,7 +352,14 @@ namespace MonoDevelop.Ide
 					filteredFiles.Add (file);
 				}
 			}
-			
+
+			// Wait for solution and it's open files to load, so we are sure
+			// that the files we open afterwards are actually opened in tabs
+			// after the solution's saved open files and that the last file
+			// in the filteredFiles gets focus, if specified as an option.
+			if (filteredFiles.Count > 0 && openTaskOperation != null)
+				openTaskOperation.Wait ();
+
 			foreach (var file in filteredFiles) {
 				try {
 					Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options);
