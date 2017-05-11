@@ -28,9 +28,10 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
         let tokenListToComment (tokenList: FSharpTokenInfo list, lineText: string) =
             let comment = 
                 tokenList
-                |> List.filter(fun token -> token.CharClass = FSharpTokenCharKind.LineComment)
-                |> List.map(fun token -> lineText.[token.LeftColumn..token.RightColumn])
-                |> String.concat ""
+                |> Array.ofList
+                |> Array.filter(fun token -> token.CharClass = FSharpTokenCharKind.LineComment)
+                |> Array.map(fun token -> lineText.[token.LeftColumn..token.RightColumn])
+                |> System.String.Concat
 
             comment.TrimStart('/', ' ')
 
