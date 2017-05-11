@@ -1,4 +1,4 @@
-//
+﻿//
 // DefaultMSBuildEngine.cs
 //
 // Author:
@@ -86,6 +86,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public string Include;
 			public Regex ExcludeRegex;
 			public Regex DirectoryExcludeRegex;
+			public Regex RemoveRegex;
 			public bool Condition;
 		}
 
@@ -218,6 +219,10 @@ namespace MonoDevelop.Projects.MSBuild
 					list.Insert (index++, new MSBuildImport { Project = propsPath, Condition = $"Exists('{propsPath}')" });
 					list.Add (new MSBuildImport { Project = targetsPath, Condition = $"Exists('{targetsPath}')" });
 				}
+				var nugetPropsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.props";
+				var nugetTargetsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.targets";
+				list.Insert (index, new MSBuildImport { Project = nugetPropsPath, Condition = $"Exists('{nugetPropsPath}')" });
+				list.Add (new MSBuildImport { Project = nugetTargetsPath, Condition = $"Exists('{nugetTargetsPath}')" });
 				objects = list;
 			}
 
@@ -391,12 +396,28 @@ namespace MonoDevelop.Projects.MSBuild
 		static void RemoveItem (ProjectInfo project, MSBuildItem item, string remove, bool trueCond)
 		{
 			if (IsWildcardInclude (remove)) {
+				AddRemoveToGlobInclude (project, item, remove);
 				var rootProject = project.GetRootMSBuildProject ();
 				var directoryExcludeRegex = GetDirectoryExcludeRegex (project, remove);
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, remove, directoryExcludeRegex))
 					RemoveEvaluatedItemFromAllProjects (project, item, f, trueCond);
 			} else
 				RemoveEvaluatedItemFromAllProjects (project, item, remove, trueCond);
+		}
+
+		/// <summary>
+		/// Adds a glob remove to the corresponding glob include. This remove is then checked
+		/// in FindGlobItemsIncludingFile so that a glob item is not returned if the file was removed
+		/// from that glob.
+		/// </summary>
+		static void AddRemoveToGlobInclude (ProjectInfo project, MSBuildItem item, string remove)
+		{
+			var exclude = ExcludeToRegex (remove);
+			foreach (var globInclude in project.GlobIncludes.Where (g => g.Item.Name == item.Name)) {
+				if (globInclude.RemoveRegex != null)
+					exclude = globInclude.RemoveRegex + "|" + exclude;
+				globInclude.RemoveRegex = new Regex (exclude);
+			}
 		}
 
 		static void RemoveEvaluatedItemFromAllProjects (ProjectInfo project, MSBuildItem item, string include, bool trueCond)
@@ -491,7 +512,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			foreach (var eit in transformItems) {
 				// Some item functions cause the erasure of metadata. Take that into account now.
-				context.SetItemContext (eit.Include, null, ignoreMetadata || item == null ? null : eit.Metadata);
+				context.SetItemContext (null, eit.Include, null, ignoreMetadata || item == null ? null : eit.Metadata);
 				try {
 					// If there is a function that transforms the include of the item, it needs to be applied now. Otherwise just use the transform expression
 					// as include, or the transformed item include if there is no expression.
@@ -563,7 +584,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int count = 0;
 			foreach (var eit in transformItems) {
-				context.SetItemContext (eit.Include, null, eit.Metadata);
+				context.SetItemContext (null, eit.Include, null, eit.Metadata);
 				try {
 					string evaluatedInclude; bool skip;
 					if (itemFunction != null && ExecuteTransformIncludeItemFunction (context, eit, itemFunction, itemFunctionArgs, out evaluatedInclude, out skip)) {
@@ -753,8 +774,7 @@ namespace MonoDevelop.Projects.MSBuild
 		
 			MSBuildProject project = pinfo.Project;
 			WildcardExpansionFunc<MSBuildItemEvaluated> func = delegate (string file, string include, string recursiveDir) {
-				context.SetItemContext (file, recursiveDir);
-				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include);
+				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include, file, recursiveDir);
 			};
 			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
 			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func, directoryExcludeRegex);
@@ -891,15 +911,20 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
 		}
 
-		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
+		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include, string evaluatedFile = null, string recursiveDir = null)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
 			// Only evaluate properties for non-transforms.
 			if (!IsIncludeTransform (include)) {
-				foreach (var c in sourceItem.Metadata.GetProperties ()) {
-					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
-						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value)) { Condition = c.Condition };
+				try {
+					context.SetItemContext (include, evaluatedFile, recursiveDir);
+					foreach (var c in sourceItem.Metadata.GetProperties ()) {
+						if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
+							md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value)) { Condition = c.Condition };
+					}
+				} finally {
+					context.ClearItemContext ();
 				}
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
@@ -1256,6 +1281,10 @@ namespace MonoDevelop.Projects.MSBuild
 				if (IsIncludedInGlob (g.Include, pi.Project.BaseDirectory, filePath)) {
 					if (g.ExcludeRegex != null) {
 						if (g.ExcludeRegex.IsMatch (include))
+							continue;
+					}
+					if (g.RemoveRegex != null) {
+						if (g.RemoveRegex.IsMatch (include))
 							continue;
 					}
 					yield return g.Item;

@@ -154,7 +154,7 @@ namespace Mono.TextEditor
 		
 		public string IndentationString {
 			get {
-				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
+				return this.TabsToSpaces ? new string (' ', this.TabSize) : "\t";
 			}
 		}
 		
@@ -576,28 +576,28 @@ namespace Mono.TextEditor
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
 			Zoom = other.Zoom;
-			highlightMatchingBracket = other.highlightMatchingBracket;
-			tabsToSpaces = other.tabsToSpaces;
-			indentationSize = other.indentationSize;
-			tabSize = other.tabSize;
-			showIconMargin = other.showIconMargin;
-			showLineNumberMargin = other.showLineNumberMargin;
-			showFoldMargin = other.showFoldMargin;
-			highlightCaretLine = other.highlightCaretLine;
-			rulerColumn = other.rulerColumn;
-			showRuler = other.showRuler;
-			indentStyle = other.indentStyle;
-			fontName = other.fontName;
-			enableSyntaxHighlighting = other.enableSyntaxHighlighting;
+			highlightMatchingBracket = other.HighlightMatchingBracket;
+			tabsToSpaces = other.TabsToSpaces;
+			indentationSize = other.IndentationSize;
+			tabSize = other.TabSize;
+			showIconMargin = other.ShowIconMargin;
+			showLineNumberMargin = other.ShowLineNumberMargin;
+			showFoldMargin = other.ShowFoldMargin;
+			highlightCaretLine = other.HighlightCaretLine;
+			rulerColumn = other.RulerColumn;
+			showRuler = other.ShowRuler;
+			indentStyle = other.IndentStyle;
+			fontName = other.FontName;
+			enableSyntaxHighlighting = other.EnableSyntaxHighlighting;
 			colorStyle = other.colorStyle;
-			overrideDocumentEolMarker = other.overrideDocumentEolMarker;
-			defaultEolMarker = other.defaultEolMarker;
-			enableAnimations = other.enableAnimations;
-			drawIndentationMarkers = other.drawIndentationMarkers;
-			showWhitespaces = other.showWhitespaces;
-			includeWhitespaces = other.includeWhitespaces;
-			generateFormattingUndoStep = other.generateFormattingUndoStep;
-			smartBackspace = other.smartBackspace;
+			overrideDocumentEolMarker = other.OverrideDocumentEolMarker;
+			defaultEolMarker = other.DefaultEolMarker;
+			enableAnimations = other.EnableAnimations;
+			drawIndentationMarkers = other.DrawIndentationMarkers;
+			showWhitespaces = other.ShowWhitespaces;
+			includeWhitespaces = other.IncludeWhitespaces;
+			generateFormattingUndoStep = other.GenerateFormattingUndoStep;
+			smartBackspace = other.SmartBackspace;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

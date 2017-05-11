@@ -54,6 +54,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Content;
 using System.IO;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -278,19 +279,8 @@ namespace MonoDevelop.AssemblyBrowser
 			notebook1.Page = 0;
 			//this.searchWidget.Visible = false;
 				
-			typeListStore = new Gtk.ListStore (typeof(Xwt.Drawing.Image), // type image
-			                                   typeof(string), // name
-			                                   typeof(string), // namespace
-			                                   typeof(string), // assembly
-				                               typeof(IMember)
-			                                  );
-			
-			memberListStore = new Gtk.ListStore (typeof(Xwt.Drawing.Image), // member image
-			                                   typeof(string), // name
-			                                   typeof(string), // Declaring type full name
-			                                   typeof(string), // assembly
-				                               typeof(IMember)
-			                                  );
+			resultListStore = new Gtk.ListStore (typeof(IUnresolvedEntity));
+
 			CreateColumns ();
 //			this.searchEntry.Changed += SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
@@ -362,7 +352,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IUnresolvedEntity)(searchMode == SearchMode.Member ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				var member = (IUnresolvedEntity)resultListStore.GetValue (selectedIter, 0);
 
 				var nav = SearchMember (member);
 				if (nav != null) {
@@ -656,14 +646,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Type   = 0,
 			Member = 1,
-			Disassembler = 2,
-			Decompiler = 3,
-			TypeAndMembers = 4
+			TypeAndMembers = 2
 		}
 		
 		SearchMode searchMode = SearchMode.Type;
-		Gtk.ListStore memberListStore;
-		Gtk.ListStore typeListStore;
+		Gtk.ListStore resultListStore;
 		
 		void CreateColumns ()
 		{
@@ -674,26 +661,26 @@ namespace MonoDevelop.AssemblyBrowser
 			Gtk.CellRenderer crp, crt;
 			switch (searchMode) {
 			case SearchMode.Member:
-			case SearchMode.Disassembler:
-			case SearchMode.Decompiler:
 				col = new TreeViewColumn ();
 				col.Title = GettextCatalog.GetString ("Member");
+				col.FixedWidth = 400;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 				crp = new CellRendererImage ();
 				crt = new Gtk.CellRendererText ();
 				col.PackStart (crp, false);
 				col.PackStart (crt, true);
-				col.AddAttribute (crp, "image", 0);
-				col.AddAttribute (crt, "text", 1);
+				col.SetCellDataFunc (crp, RenderImage);
+				col.SetCellDataFunc (crt, RenderText);
 				col.SortColumnId = 1;
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Declaring Type"), new Gtk.CellRendererText (), "text", 2);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Declaring Type"), crt = new Gtk.CellRendererText ());
+				col.FixedWidth = 300;
+				col.Sizing = TreeViewColumnSizing.Fixed;
+				col.SetCellDataFunc (crt, RenderDeclaringTypeOrNamespace);
 				col.SortColumnId = 2;
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
-				col.SortColumnId = 3;
-				col.Resizable = true;
-				searchTreeview.Model = memberListStore;
+				searchTreeview.Model = resultListStore;
 				break;
 			case SearchMode.TypeAndMembers:
 				col = new TreeViewColumn ();
@@ -702,21 +689,22 @@ namespace MonoDevelop.AssemblyBrowser
 				crt = new Gtk.CellRendererText ();
 				col.PackStart (crp, false);
 				col.PackStart (crt, true);
-				col.AddAttribute (crp, "image", 0);
-				col.AddAttribute (crt, "text", 1);
+				col.SetCellDataFunc (crp, RenderImage);
+				col.SetCellDataFunc (crt, RenderText);
 				col.SortColumnId = 1;
 
 				searchTreeview.AppendColumn (col);
+				col.FixedWidth = 400;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Parent"), new Gtk.CellRendererText (), "text", 2);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Parent"), crt = new Gtk.CellRendererText ());
+				col.SetCellDataFunc (crt, RenderDeclaringTypeOrNamespace);
 				col.SortColumnId = 2;
 
+				col.FixedWidth = 300;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 				col.Resizable = true;
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
-				col.SortColumnId = 3;
-
-				col.Resizable = true;
-				searchTreeview.Model = typeListStore;
+				searchTreeview.Model = resultListStore;
 				break;
 			case SearchMode.Type:
 				col = new TreeViewColumn ();
@@ -725,31 +713,62 @@ namespace MonoDevelop.AssemblyBrowser
 				crt = new Gtk.CellRendererText ();
 				col.PackStart (crp, false);
 				col.PackStart (crt, true);
-				col.AddAttribute (crp, "image", 0);
-				col.AddAttribute (crt, "text", 1);
+				col.SetCellDataFunc (crp, RenderImage);
+				col.SetCellDataFunc (crt, RenderText);
 				col.SortColumnId = 1;
 				searchTreeview.AppendColumn (col);
+				col.FixedWidth = 400;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 				col.Resizable = true;
 
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Namespace"), new Gtk.CellRendererText (), "text", 2);
+				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Namespace"), crt = new Gtk.CellRendererText ());
+				col.SetCellDataFunc (crt, RenderDeclaringTypeOrNamespace);
 				col.SortColumnId = 2;
+				col.FixedWidth = 300;
+				col.Sizing = TreeViewColumnSizing.Fixed;
 				col.Resizable = true;
-
-				col = searchTreeview.AppendColumn (GettextCatalog.GetString ("Assembly"), new Gtk.CellRendererText (), "text", 3);
-				col.SortColumnId = 3;
-				col.Resizable = true;
-				searchTreeview.Model = typeListStore;
+				searchTreeview.Model = resultListStore;
 				break;
 			}
 		}
-		System.ComponentModel.BackgroundWorker searchBackgoundWorker = null;
+
+		void RenderDeclaringTypeOrNamespace (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		{
+			var ct = (Gtk.CellRendererText)cell;
+			var entity = tree_model.GetValue (iter, 0) as IUnresolvedEntity;
+			if (entity != null) {
+				if (entity.DeclaringTypeDefinition != null) {
+					ct.Text = entity.DeclaringTypeDefinition.FullName;
+					return;
+				}
+				ct.Text = entity.Namespace;
+			}
+		}
+
+		void RenderText (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		{
+			var ct = (Gtk.CellRendererText)cell;
+			var entity = tree_model.GetValue (iter, 0) as IUnresolvedEntity;
+			if (entity != null)
+				ct.Text = entity.Name;
+		}
+
+		void RenderImage (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		{
+			var ct = (CellRendererImage)cell;
+			var entity = tree_model.GetValue (iter, 0) as IUnresolvedEntity;
+			if (entity != null)
+				ct.Image = ImageService.GetIcon (entity.GetStockIcon (), Gtk.IconSize.Menu);
+		}
+
+		CancellationTokenSource searchTokenSource = new CancellationTokenSource ();
 
 		public void StartSearch ()
 		{
 			string query = searchentry1.Query;
-			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy)
-				searchBackgoundWorker.CancelAsync ();
-			
+			searchTokenSource.Cancel ();
+			searchTokenSource = new CancellationTokenSource ();
+
 			if (string.IsNullOrEmpty (query)) {
 				notebook1.Page = 0;
 				return;
@@ -761,12 +780,6 @@ namespace MonoDevelop.AssemblyBrowser
 			case SearchMode.Member:
 				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching member..."));
 				break;
-			case SearchMode.Disassembler:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
-				break;
-			case SearchMode.Decompiler:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
-				break;
 			case SearchMode.Type:
 				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching type..."));
 				break;
@@ -774,213 +787,129 @@ namespace MonoDevelop.AssemblyBrowser
 		       	IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
-			memberListStore.Clear ();
-			typeListStore.Clear ();
-			
-			searchBackgoundWorker = new BackgroundWorker ();
-			searchBackgoundWorker.WorkerSupportsCancellation = true;
-			searchBackgoundWorker.WorkerReportsProgress = false;
-			searchBackgoundWorker.DoWork += SearchDoWork;
-			searchBackgoundWorker.RunWorkerCompleted += delegate {
-				searchBackgoundWorker = null;
-			};
-			
-			searchBackgoundWorker.RunWorkerAsync (query);
-		}
-	
-		void SearchDoWork (object sender, DoWorkEventArgs e)
-		{
+			resultListStore.Clear ();
+			var token = searchTokenSource.Token;
 			var publicOnly = PublicApiOnly;
-			BackgroundWorker worker = sender as BackgroundWorker;
-			try {
-				string pattern = e.Argument.ToString ();
-				int types = 0, curType = 0;
-				foreach (var unit in this.definitions) {
-					types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
-				}
-				var memberDict = new Dictionary<AssemblyLoader, List<IUnresolvedMember>> ();
-				switch (searchMode) {
-				case SearchMode.Member:
-					foreach (var unit in this.definitions) {
-						var members = new List<IUnresolvedMember> ();
-						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-							if (worker.CancellationPending)
-								return;
-							if (!type.IsPublic && publicOnly)
-								continue;
-							curType++;
-							foreach (var member in type.Members) {
-								if (worker.CancellationPending)
-									return;
-								if (!member.IsPublic && publicOnly)
-									continue;
-								if (member.Name.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) != -1) {
-									members.Add (member);
-								}
-							}
-						}
-						memberDict [unit] = members;
-					}
-					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var kv in memberDict) {
-							foreach (var member in kv.Value) {
-								if (worker.CancellationPending)
-									return;
-								memberListStore.AppendValues (ImageService.GetIcon (member.GetStockIcon (), Gtk.IconSize.Menu),
-								                              member.Name,
-								                              member.DeclaringTypeDefinition.FullName,
-								                              kv.Key.Assembly.FullName,
-								                              member);
-							}
-						}
-					}
-					);
-					break;
-				case SearchMode.Disassembler:
-					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
-					}
-					);
-					foreach (var unit in this.definitions) {
-						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-							if (worker.CancellationPending)
-								return;
-							curType++;
-							foreach (var method in type.Methods) {
-								if (worker.CancellationPending)
-									return;
-//								if (DomMethodNodeBuilder.Disassemble (rd => rd.DisassembleMethod (method)).ToUpper ().Contains (pattern)) {
-//									members.Add (method);
-//								}
-							}
-						}
-					}
-					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var kv in memberDict) {
-							foreach (var member in kv.Value) {
-								if (worker.CancellationPending)
-									return;
-								memberListStore.AppendValues ("", //iImageService.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
-								                              member.Name,
-								                              member.DeclaringTypeDefinition.FullName,
-								                              kv.Key.Assembly.FullName,
-								                              member);
-							}
-						}
-					}
-					);
-					break;
-				case SearchMode.Decompiler:
-					foreach (var unit in this.definitions) {
-						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-							if (worker.CancellationPending)
-								return;
-							curType++;
-							foreach (var method in type.Methods) {
-								if (worker.CancellationPending)
-									return;
-/*								if (DomMethodNodeBuilder.Decompile (domMethod, false).ToUpper ().Contains (pattern)) {
-									members.Add (method);*/
-							}
-						}
-					}
-					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var kv in memberDict) {
-							foreach (var member in kv.Value) {
-								if (worker.CancellationPending)
-									return;
-								memberListStore.AppendValues ("", //ImageService.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
-								                              member.Name,
-								                              member.DeclaringTypeDefinition.FullName,
-								                              kv.Key.Assembly.FullName,
-								                              member);
-							}
-						}
-					}
-					);
-					break;
-				case SearchMode.Type:
-					var typeDict = new Dictionary<AssemblyLoader, List<IUnresolvedTypeDefinition>> ();
-					foreach (var unit in this.definitions) {
-						var typeList = new List<IUnresolvedTypeDefinition> ();
-						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-							if (worker.CancellationPending)
-								return;
-							if (!type.IsPublic && publicOnly)
-								continue;
-							if (type.FullName.ToUpper ().IndexOf (pattern, StringComparison.Ordinal) >= 0)
-								typeList.Add (type);
-						}
-						typeDict [unit] = typeList;
-					}
-					Gtk.Application.Invoke (delegate {
-						foreach (var kv in typeDict) {
-							foreach (var type in kv.Value) {
-								if (worker.CancellationPending)
-									return;
-								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
-								                            type.Name,
-								                            type.Namespace,
-								                            kv.Key.Assembly.FullName,
-								                            type);
-							}
-						}
-					});
-					
-					break;
-				case SearchMode.TypeAndMembers:
-					var typeDict2 = new Dictionary<AssemblyLoader, List<Tuple<IUnresolvedEntity, string>>> ();
-					foreach (var unit in this.definitions) {
-						var typeList = new List<Tuple<IUnresolvedEntity, string>> ();
-						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
-							if (worker.CancellationPending)
-								return;
-							if (!type.IsPublic && publicOnly)
-								continue;
-							var parent = type.FullName;
-							if (parent.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) >= 0)
-								typeList.Add (Tuple.Create ((IUnresolvedEntity)type, type.Namespace));
-							
-							foreach (var member in type.Members) {
-								if (worker.CancellationPending)
-									return;
-								if (!member.IsPublic && publicOnly)
-									continue;
-								if (member.Name.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) != -1) {
-									typeList.Add (Tuple.Create ((IUnresolvedEntity)member, parent));
-								}
-							}
+			var defArray = definitions.ToArray ();
+			Task.Run (delegate {
+				var memberList = SearchDoWork (defArray, query, publicOnly, token);
+				if (memberList == null || token.IsCancellationRequested)
+					return;
+				Runtime.RunInMainThread (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					var updater = new Updater (this, memberList, token);
+					updater.Update ();
+				});
+			});
+		}
 
-						}
-						typeDict2 [unit] = typeList;
-					}
+		class Updater
+		{
+			readonly AssemblyBrowserWidget assemblyBrowserWidget;
+			readonly List<IUnresolvedEntity> memberList;
+			readonly CancellationToken token;
+			int i = 0;
 
-					Gtk.Application.Invoke (delegate {
-						foreach (var kv in typeDict2) {
-							foreach (var tuple in kv.Value) {
-								if (worker.CancellationPending)
-									return;
-								var type = tuple.Item1;
-								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
-								                        type.Name,
-								                        tuple.Item2,
-														kv.Key.Assembly.FullName,
-								                        type);
-							}
-						}
-					});
+			public Updater (AssemblyBrowserWidget assemblyBrowserWidget, List<IUnresolvedEntity> memberList, CancellationToken token)
+			{
+				this.assemblyBrowserWidget = assemblyBrowserWidget;
+				this.memberList = memberList;
+				this.token = token;
+			}
 
-					break;
-				}
-			} finally {
-				Gtk.Application.Invoke (delegate {
+			public void Update ()
+			{
+				GLib.Idle.Add (IdleHandler);
+			}
+
+			bool IdleHandler ()
+			{
+				if (token.IsCancellationRequested || i >= memberList.Count) {
 					IdeApp.Workbench.StatusBar.EndProgress ();
 					IdeApp.Workbench.StatusBar.ShowReady ();
-				});
+					return false;
+				}
+
+				assemblyBrowserWidget.searchTreeview.FreezeChildNotify ();
+				for (int j = 0; j < 100 && i < memberList.Count; j++) {
+					assemblyBrowserWidget.resultListStore.AppendValues (memberList [i++]);
+				}
+				assemblyBrowserWidget.searchTreeview.ThawChildNotify ();
+				return true;
 			}
+		}
+
+		List<IUnresolvedEntity> SearchDoWork (AssemblyLoader[] definitions, string pattern, bool publicOnly, CancellationToken cancellationToken)
+		{
+			var result = new List<IUnresolvedEntity> ();
+			int types = 0, curType = 0;
+			foreach (var unit in definitions) {
+				types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
+			}
+			var matcher = StringMatcher.GetMatcher (pattern, true);
+
+			switch (searchMode) {
+			case SearchMode.Member:
+				foreach (var unit in definitions) {
+					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
+						if (cancellationToken.IsCancellationRequested)
+							return null;
+						if (!type.IsPublic && publicOnly)
+							continue;
+						curType++;
+						foreach (var member in type.Members) {
+							if (cancellationToken.IsCancellationRequested)
+								return null;
+							if (!member.IsPublic && publicOnly)
+								continue;
+							if (matcher.IsMatch (member.Name)) {
+								result.Add (member);
+							}
+						}
+					}
+				}
+
+				break;
+			case SearchMode.Type:
+				foreach (var unit in definitions) {
+					var typeList = new List<IUnresolvedTypeDefinition> ();
+					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
+						if (cancellationToken.IsCancellationRequested)
+							return null;
+						if (!type.IsPublic && publicOnly)
+							continue;
+						if (matcher.IsMatch (type.FullName))
+							result.Add (type);
+					}
+				}
+				break;
+			case SearchMode.TypeAndMembers:
+				foreach (var unit in definitions) {
+					foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
+						if (cancellationToken.IsCancellationRequested)
+							return null;
+						if (!type.IsPublic && publicOnly)
+							continue;
+						var parent = type.FullName;
+						if (matcher.IsMatch (parent))
+							result.Add (type);
+
+						foreach (var member in type.Members) {
+							if (cancellationToken.IsCancellationRequested)
+								return null;
+							if (!member.IsPublic && publicOnly)
+								continue;
+							if (matcher.IsMatch (member.Name))
+								result.Add (member);
+						}
+
+					}
+				}
+				break;
+			}
+
+			return result;
 		}
 		
 		static bool preformat = false;
@@ -1484,14 +1413,12 @@ namespace MonoDevelop.AssemblyBrowser
 		protected override void OnDestroyed ()
 		{
 			ClearReferenceSegment ();
-			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy) {
-				searchBackgoundWorker.CancelAsync ();
-				searchBackgoundWorker.Dispose ();
-				searchBackgoundWorker = null;
-			}
-			
+			searchTokenSource.Cancel ();
+
 			if (this.TreeView != null) {
-				//	Dispose<IDisposable> (TreeView.GetRootNode ());				Dispose<AssemblyDefinition> (TreeView.GetRootNode ());
+				//	Dispose<IDisposable> (TreeView.GetRootNode ());
+				Dispose<AssemblyDefinition> (TreeView.GetRootNode ());
+				TreeView.SelectionChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
 			}
@@ -1504,8 +1431,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			ActiveMember = null;
-			memberListStore = null;
-			typeListStore = null;
+			resultListStore = null;
 
 			if (documentationPanel != null) {
 				documentationPanel.Destroy ();

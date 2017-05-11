@@ -179,7 +179,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					return new FontColorStyle (foreground, background, fontStyle);
 			}
 
-			foreach (var setting in settings.Skip (1)) {
+			for (int i = 1; i < settings.Count; ++i) {
+				var setting = settings[i];
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {

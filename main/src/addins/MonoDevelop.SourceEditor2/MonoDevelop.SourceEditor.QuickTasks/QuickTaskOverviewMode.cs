@@ -728,7 +728,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				var usageColor = (Cairo.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground);
 				usageColor.A = 0.4;
 				HslColor color;
-				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
+				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declaration) != 0) {
 					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (color.Alpha == 0.0)
 						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);

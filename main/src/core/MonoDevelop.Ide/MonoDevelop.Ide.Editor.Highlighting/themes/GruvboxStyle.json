@@ -220,7 +220,7 @@
 		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
 
 		{ "name": "Css Comment", "fore": "comment", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "black", "weight": "bold" },
+		{ "name": "Css Property Name", "fore": "foreground", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "bright-green", "weight": "bold" },
 		{ "name": "Css Selector", "fore": "comment", "weight": "bold" },
 		{ "name": "Css String Value", "fore": "literal-orange", "weight": "bold" },

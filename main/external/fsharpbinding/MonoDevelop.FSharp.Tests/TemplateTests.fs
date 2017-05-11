@@ -19,7 +19,7 @@ open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
 open NUnit.Framework
 
-[<TestFixture;Ignore>]
+[<TestFixture>]
 type ``Template tests``() =
     let toTask computation : Task = Async.StartAsTask computation :> _
 

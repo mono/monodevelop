@@ -370,6 +370,7 @@
     <Compile Include="Mono.Options.cs" />
     <Compile Include="MonoDevelop.Core.Logging\InstrumentationLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimerCounter.cs" />
+    <Compile Include="MonoDevelop.Projects\AppliesToAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectPathItemPropertyAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfiguration.cs" />
@@ -715,6 +716,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvent.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ImportSearchPathExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\AppliesToCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

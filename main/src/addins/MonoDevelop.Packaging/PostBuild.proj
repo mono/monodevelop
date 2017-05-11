@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <PrepareForRunDependsOn>$(PrepareForRunDependsOn);_MyPostBuildTarget</PrepareForRunDependsOn>
-    <_BuildPackagingVersion>0.1.157-dev</_BuildPackagingVersion>
+    <_BuildPackagingVersion>0.1.248</_BuildPackagingVersion>
   </PropertyGroup>
   <ItemGroup>
     <_MyNuGetPackage Include="$(MSBuildProjectDirectory)\..\..\..\packages\NuGet.Build.Packaging.$(_BuildPackagingVersion)\NuGet.Build.Packaging.$(_BuildPackagingVersion).nupkg" />

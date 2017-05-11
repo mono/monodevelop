@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.Formatting
 						var token = root.FindToken (endOffset);
 						var tokens = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 						if (tokens.HasValue) {
-							span = new TextSpan (tokens.Value.Item1.SpanStart, tokens.Value.Item2.Span.End - tokens.Value.Item1.SpanStart);
+							span = new TextSpan (tokens.Value.Item1.SpanStart, editor.CaretOffset - tokens.Value.Item1.SpanStart);
 						} else {
 							var parent = token.Parent;
 							if (parent != null)

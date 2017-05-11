@@ -378,21 +378,11 @@ namespace MonoDevelop.DotNetCore
 			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
-		/// <summary>
-		/// HACK: Remove any C# files found in the intermediate obj directory. This avoids
-		/// a type system error if a file in the obj directory is modified but the type
-		/// system does not have that file in the workspace. This can happen if the file
-		/// was not filtered out initially and added to the project by the wildcard import
-		/// and then later on after a re-evaluation of the project is filtered out from the
-		/// source files returned by Project.OnGetSourceFiles.
-		/// </summary>
 		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
-			sourceFiles = AddMissingProjectFiles (sourceFiles);
-
-			return RemoveFilesFromIntermediateDirectory (sourceFiles);
+			return AddMissingProjectFiles (sourceFiles);
 		}
 
 		ProjectFile[] AddMissingProjectFiles (ProjectFile[] files)
@@ -411,20 +401,6 @@ namespace MonoDevelop.DotNetCore
 
 			missingFiles.AddRange (files);
 			return missingFiles.ToArray ();
-		}
-
-		ProjectFile[] RemoveFilesFromIntermediateDirectory (ProjectFile[] files)
-		{
-			var filteredFiles = new List<ProjectFile> ();
-			FilePath intermediateOutputPath = Project.BaseIntermediateOutputPath;
-
-			foreach (var file in files) {
-				if (!file.FilePath.IsChildPathOf (intermediateOutputPath)) {
-					filteredFiles.Add (file);
-				}
-			}
-
-			return filteredFiles.ToArray ();
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)

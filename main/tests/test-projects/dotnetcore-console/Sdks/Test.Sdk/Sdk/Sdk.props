@@ -2,6 +2,7 @@
   <PropertyGroup>
    <EnableDefaultItems Condition=" '$(EnableDefaultItems)' == '' ">true</EnableDefaultItems>
    <EnableDefaultCompileItems Condition=" '$(EnableDefaultCompileItems)' == '' ">true</EnableDefaultCompileItems>
+   <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
    <ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' ">
     <Compile Include="**/*.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />

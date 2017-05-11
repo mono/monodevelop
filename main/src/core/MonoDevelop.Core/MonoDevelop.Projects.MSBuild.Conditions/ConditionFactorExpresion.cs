@@ -34,9 +34,6 @@ using System.Xml;
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
 	
-		readonly Token token;
-		readonly Func<IExpressionContext, Token> EvaluateToken;
-
 		static Hashtable allValues;
 		static Hashtable trueValues;
 		static Hashtable falseValues;
@@ -61,15 +58,18 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				allValues.Add (s, s);
 			}
 		}
-		
+
+		readonly Token token;
 		public ConditionFactorExpression (Token token)
 		{
 			this.token = token;
-			EvaluateToken = new Func<IExpressionContext, Token> (context => {
-				// FIXME: in some situations items might not be allowed
-				string val = context.EvaluateString (token.Value);
-				return new Token (val, TokenType.String, 0);
-			}).MemoizeWithLock();
+		}
+
+		Token EvaluateToken(IExpressionContext context)
+		{
+			// FIXME: in some situations items might not be allowed
+			string val = context.EvaluateString (token.Value);
+			return new Token (val, TokenType.String, 0);
 		}
 
 		public override bool BoolEvaluate (IExpressionContext context)

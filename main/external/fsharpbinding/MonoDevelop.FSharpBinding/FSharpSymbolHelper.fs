@@ -725,12 +725,9 @@ module SymbolTooltips =
             let basicName = modifier + typeName ++ name
 
             if fse.IsFSharpAbbreviation then
-                let unannotatedType = fse.UnAnnotate()
-                basicName ++ "=" ++ (unannotatedType.DisplayName)
+                basicName ++ "=" ++ (fse.AbbreviatedType.Format displayContext)
             else
                 basicName
-
-        
 
         if fse.IsFSharpUnion then typeDisplay + uniontip ()
         elif fse.IsEnum then typeDisplay + enumtip ()

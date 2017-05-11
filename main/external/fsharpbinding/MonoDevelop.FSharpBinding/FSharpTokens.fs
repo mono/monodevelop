@@ -15,7 +15,7 @@ module Tokens =
         let lineTokens =
             maybe { let! pd = context.TryGetFSharpParsedDocument()
                     let! tokens = pd.Tokens
-                    let lineTokens, _state = tokens |> List.item (line - 1)
+                    let lineTokens, _line = tokens |> List.item (line - 1)
                     return lineTokens }
                     |> Option.getOrElse getTokens
 

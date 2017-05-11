@@ -176,6 +176,7 @@ namespace MonoDevelop.MacIntegration
 			// 2 - All controls
 			if (keyboardMode == 2) {
 				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
+				Gtk.Rc.ParseString ("style \"radio-or-check-box\" { engine \"xamarin\" { focusstyle = 2 } } ");
 			}
 
 			return loaded;

@@ -122,7 +122,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		ParameterHintingResult HandleInvocationExpression(SemanticModel semanticModel, InvocationExpressionSyntax node, CancellationToken cancellationToken)
 		{
-			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
 			var result = new ParameterHintingResult(node.SpanStart);
 
 			var targetTypeInfo = semanticModel.GetTypeInfo (node.Expression);
@@ -131,108 +130,62 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return result;
 			}
 
-			var within = semanticModel.GetEnclosingNamedTypeOrAssembly(node.SpanStart, cancellationToken);
-			ITypeSymbol type;
-			string name = null;
-			bool staticLookup = false;
-			var ma = node.Expression as MemberAccessExpressionSyntax;
-			var mb = node.Expression as MemberBindingExpressionSyntax;
-			if (mb != null) {
-				info = semanticModel.GetSymbolInfo (mb, cancellationToken);
-				type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ())?.ContainingType;
-				name = mb.Name.Identifier.ValueText;
-			} else if (ma != null) {
-				staticLookup = semanticModel.GetSymbolInfo (ma.Expression).Symbol is ITypeSymbol;
-				type = semanticModel.GetTypeInfo (ma.Expression).Type;
-				name = info.Symbol?.Name ?? ma.Name.Identifier.ValueText;
-			} else {
-				type = within as ITypeSymbol;
-				name = info.Symbol?.Name ?? node.Expression.ToString ();
-				var sym = semanticModel.GetEnclosingSymbol (node.SpanStart, cancellationToken); 
-				staticLookup = sym.IsStatic;
+			var within = semanticModel.GetEnclosingNamedTypeOrAssembly (node.SpanStart, cancellationToken);
+			if (within == null)
+				return result;
+
+			var memberGroup = semanticModel.GetMemberGroup (node.Expression, cancellationToken).OfType<IMethodSymbol> ();
+			var matchedMethodSymbol = semanticModel.GetSymbolInfo (node, cancellationToken).Symbol as IMethodSymbol;
+			// if the symbol could be bound, replace that item in the symbol list
+			if (matchedMethodSymbol != null && matchedMethodSymbol.IsGenericMethod) {
+				memberGroup = memberGroup.Select (m => matchedMethodSymbol.OriginalDefinition == m ? matchedMethodSymbol : m);
 			}
-			var addedMethods = new List<IMethodSymbol> ();
-			var filterMethod = new HashSet<IMethodSymbol> ();
-			for (;type != null; type = type.BaseType) {
-				foreach (var method in type.GetMembers ().OfType<IMethodSymbol> ().Concat (GetExtensionMethods(semanticModel, type, node, cancellationToken)).Where (m => m.Name == name)) {
-					if (staticLookup && !method.IsStatic)
-						continue;
-					if (method.OverriddenMethod != null)
-						filterMethod.Add (method.OverriddenMethod);
-					if (filterMethod.Contains (method))
-						continue;
-					if (addedMethods.Any (added => SignatureComparer.Instance.HaveSameSignature (method, added, true)))
-						continue;
-					if (method.IsAccessibleWithin (within)) {
-						if (info.Symbol != null) {
-							var smethod = (IMethodSymbol)info.Symbol;
-							if (smethod != null && smethod.OriginalDefinition == method) {
-								continue;
-							}
-						}
-						addedMethods.Add (method); 
-						result.AddData (factory.CreateMethodDataProvider (method));
-					}
+
+			ITypeSymbol throughType = null;
+			if (node.Expression is MemberAccessExpressionSyntax) {
+				var throughExpression = ((MemberAccessExpressionSyntax)node.Expression).Expression;
+				var throughSymbol = semanticModel.GetSymbolInfo (throughExpression, cancellationToken).GetAnySymbol ();
+
+				// if it is via a base expression "base.", we know the "throughType" is the base class but
+				// we need to be able to tell between "base.M()" and "new Base().M()".
+				// currently, Access check methods do not differentiate between them.
+				// so handle "base." primary-expression here by nulling out "throughType"
+				if (!(throughExpression is BaseExpressionSyntax)) {
+					throughType = semanticModel.GetTypeInfo (throughExpression, cancellationToken).Type;
 				}
+
+				var includeInstance = !throughExpression.IsKind (SyntaxKind.IdentifierName) ||
+					semanticModel.LookupSymbols (throughExpression.SpanStart, name: throughSymbol.Name).Any (s => !(s is INamedTypeSymbol)) ||
+					(!(throughSymbol is INamespaceOrTypeSymbol) && semanticModel.LookupSymbols (throughExpression.SpanStart, container: throughSymbol.ContainingType).Any (s => !(s is INamedTypeSymbol)));
+
+				var includeStatic = throughSymbol is INamedTypeSymbol ||
+					(throughExpression.IsKind (SyntaxKind.IdentifierName) &&
+					semanticModel.LookupNamespacesAndTypes (throughExpression.SpanStart, name: throughSymbol.Name).Any (t => t.GetSymbolType () == throughType));
+				
+				memberGroup = memberGroup.Where (m => (m.IsStatic && includeStatic) || (!m.IsStatic && includeInstance));
+			} else if (node.Expression is SimpleNameSyntax && node.IsInStaticContext ()) {
+				memberGroup = memberGroup.Where (m => m.IsStatic);
 			}
-			if (info.Symbol != null && !addedMethods.Contains (info.Symbol)) {
-				if (!staticLookup || info.Symbol.IsStatic)
-					result.AddData (factory.CreateMethodDataProvider ((IMethodSymbol)info.Symbol));
+
+			var methodList = memberGroup.Where (member => member.IsAccessibleWithin (within, throughType)).ToList();
+
+			memberGroup = methodList.Where (m => !IsHiddenByOtherMethod (m, methodList));
+			foreach (var member in memberGroup) {
+				result.AddData (factory.CreateMethodDataProvider (member));
 			}
 			return result;
 		}
 
-		IEnumerable<IMethodSymbol> GetExtensionMethods (SemanticModel semanticModel, ITypeSymbol typeToExtend, InvocationExpressionSyntax node, CancellationToken cancellationToken)
+		bool IsHiddenByOtherMethod (IMethodSymbol method, List<IMethodSymbol> methodSet)
 		{
-			var usedNamespaces = new List<string> ();
-			foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
-				usedNamespaces.Add (MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (un));
-			}
-			var enclosingNamespaceName = MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (semanticModel.GetEnclosingNamespace (node.SpanStart, cancellationToken));
-
-			var stack = new Stack<INamespaceOrTypeSymbol> ();
-			stack.Push (semanticModel.Compilation.GlobalNamespace);
-
-			while (stack.Count > 0) {
-				if (cancellationToken.IsCancellationRequested)
-					break;
-				var current = stack.Pop ();
-				var currentNs = current as INamespaceSymbol;
-				if (currentNs != null) {
-
-					foreach (var member in currentNs.GetNamespaceMembers ()) {
-						var currentNsName = MonoDevelop.Ide.TypeSystem.NR5CompatibiltyExtensions.GetFullName (member);
-						if (usedNamespaces.Any (u => u.StartsWith (currentNsName, StringComparison.Ordinal)) ||
-							enclosingNamespaceName == currentNsName ||
-							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
-							enclosingNamespaceName [currentNsName.Length] == '.')) {
-							stack.Push (member);
-						}
-					}
-
-					foreach (var member in currentNs.GetTypeMembers ())
-						stack.Push (member);
-
-				} else {
-					var type = (INamedTypeSymbol)current;
-					if (type.IsImplicitClass || type.IsScriptClass)
-						continue;
-					if (type.DeclaredAccessibility != Accessibility.Public) {
-						if (type.DeclaredAccessibility != Accessibility.Internal)
-							continue;
-						if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
-							continue;
-					}
-					if (!type.MightContainExtensionMethods)
-						continue;
-					foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
-						var reducedMethod = extMethod.ReduceExtensionMethod (typeToExtend);
-						if (reducedMethod != null) {
-							yield return reducedMethod;
-						}
-					}
+			foreach (var m in methodSet) {
+				if (m != method) {
+					if (m.IsMoreSpecificThan (method) == true)
+						return true;
 				}
 			}
+
+			return false;
 		}
 
 		ParameterHintingResult HandleTypeParameterCase(SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)

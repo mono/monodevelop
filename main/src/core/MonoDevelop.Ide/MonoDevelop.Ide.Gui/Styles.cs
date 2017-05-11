@@ -435,6 +435,11 @@ namespace MonoDevelop.Ide.Gui
 			KeyBindingsPanel.KeyConflictBackgroundColor = StatusErrorBackgroundColor;
 			KeyBindingsPanel.KeyConflictForegroundColor = StatusErrorTextColor;
 
+			// Tooltips
+			StatusInformationBackgroundColor = Color.FromName ("#eeeeee");
+			StatusInformationTextColor = Color.FromName ("#272727");
+			InformationBoxForegroundColor = Color.FromName ("#272727");
+
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);
 		}
@@ -460,10 +465,7 @@ namespace MonoDevelop.Ide.Gui
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
 			// these colors need to match colors from status icons
-			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
-			StatusInformationTextColor = BaseBackgroundColor;
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
-			InformationBoxForegroundColor = Color.FromName ("#000000");
 			InformationForegroundColor = Color.FromName ("#5785bd");
 
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
@@ -579,10 +581,7 @@ namespace MonoDevelop.Ide.Gui
 			PropertyPadDividerColor = SeparatorColor;
 
 			// these colors need to match colors from status icons
-			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
-			StatusInformationTextColor = Color.FromName ("#394d66");
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
-			InformationBoxForegroundColor = Color.FromName ("#000000");
 			InformationForegroundColor = Color.FromName ("#9cc8ff");
 
 			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");

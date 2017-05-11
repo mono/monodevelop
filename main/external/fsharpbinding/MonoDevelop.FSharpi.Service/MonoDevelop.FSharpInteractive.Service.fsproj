@@ -50,7 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
   </ItemGroup>
@@ -65,6 +65,14 @@
     <Compile Include="Program.fs" />
     <None Include="paket.references" />
     <None Include="app.config" />
+    <None Include="..\packages\FSharp.Core\lib\net45\FSharp.Core.optdata">
+      <Link>FSharp.Core.optdata</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\packages\FSharp.Core\lib\net45\FSharp.Core.sigdata">
+      <Link>FSharp.Core.sigdata</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <Choose>

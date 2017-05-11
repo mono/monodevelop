@@ -162,24 +162,21 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
+		static Xwt.Drawing.Image stopIcon = Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), "stop.png").WithSize (Xwt.IconSize.Medium);
+		static Xwt.Drawing.Image executeIcon = Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), "execute.png").WithSize (Xwt.IconSize.Medium);
+		static Xwt.Drawing.Image buildIcon = Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), "build.png").WithSize (Xwt.IconSize.Medium);
 		static Xwt.Drawing.Image GetIcon (OperationIcon icon)
 		{
-			string img;
 			switch (icon) {
-				case OperationIcon.Stop:
-					img = "stop.png";
-					break;
-				case OperationIcon.Run:
-					img = "execute.png";
-					break;
-				case OperationIcon.Build:
-					img = "build.png";
-					break;
-				default:
-					throw new InvalidOperationException ();
+			case OperationIcon.Stop:
+				return stopIcon;
+			case OperationIcon.Run:
+				return executeIcon;
+			case OperationIcon.Build:
+				return buildIcon;
+			default:
+				throw new InvalidOperationException ();
 			}
-
-			return Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), img).WithSize (Xwt.IconSize.Medium);
 		}
 	}
 

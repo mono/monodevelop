@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		public virtual IndentationTrackerFeatures SupportedFeatures {
 			get {
-				return IndentationTrackerFeatures.All;
+				return IndentationTrackerFeatures.None;
 			}
 		}
 

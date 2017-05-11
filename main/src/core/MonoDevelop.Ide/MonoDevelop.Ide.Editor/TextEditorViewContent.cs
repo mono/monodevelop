@@ -80,6 +80,8 @@ namespace MonoDevelop.Ide.Editor
 		protected override void OnContentNameChanged ()
 		{
 			base.OnContentNameChanged ();
+			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.ContentName = this.ContentName;
 			if (this.WorkbenchWindow?.Document != null)
 				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
@@ -232,8 +234,6 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
 				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
-			if (textEditorImpl.ContentName != fileSaveInformation.FileName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
-				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			return textEditorImpl.ViewContent.Save (fileSaveInformation);
 		}
 

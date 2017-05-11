@@ -638,12 +638,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			descriptionCol.AddNotification("width", delegate
 			{
+				if (descriptionCellRenderer.WrapWidth == descriptionCol.Width)
+					return;
 				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
-				store.Foreach((model, path, iter) =>
-				{
-					model.EmitRowChanged(path, iter);
-					return false;
-				});
+				descriptionCol.QueueResize ();
 			});
 			
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);

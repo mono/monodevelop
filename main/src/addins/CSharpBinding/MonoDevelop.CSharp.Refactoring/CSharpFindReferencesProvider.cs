@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						offset = projectedOffset;
 					}
 					var sr = new MemberReference (lookup.Symbol, fileName, offset, loc.SourceSpan.Length);
-					sr.ReferenceUsageType = ReferenceUsageType.Declariton;
+					sr.ReferenceUsageType = ReferenceUsageType.Declaration;
 					antiDuplicatesSet.Add (sr);
 					result.Add (sr);
 				}

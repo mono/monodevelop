@@ -205,6 +205,11 @@ namespace MonoDevelop.Components.Docking
 
 		protected override void OnAdded (Widget widget)
 		{
+			// Break the add signal cycle
+			if (widget.Parent == this) {
+				return;
+			}
+
 			System.Diagnostics.Debug.Assert (
 				widget.Parent == null,
 				"Widget is already parented on another widget");

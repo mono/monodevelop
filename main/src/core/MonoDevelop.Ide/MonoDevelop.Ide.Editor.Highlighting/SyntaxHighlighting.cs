@@ -36,6 +36,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				((ITextDocument)document).TextChanged += Handle_TextChanged;
 		}
 
+		public void Dispose()
+		{
+			if (Document is ITextDocument)
+				((ITextDocument)Document).TextChanged -= Handle_TextChanged;
+		}
+
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
 			foreach (var change in e.TextChanges) {
@@ -164,7 +170,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				this.state = state;
 			}
 
-			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (100);
+			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (500);
 
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length)
 			{

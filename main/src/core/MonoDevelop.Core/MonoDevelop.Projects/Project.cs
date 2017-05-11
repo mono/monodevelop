@@ -549,15 +549,8 @@ namespace MonoDevelop.Projects
 
 			var buildActions = GetBuildActions ().Where (a => a != "Folder" && a != "--").ToArray ();
 
-			MSBuildProjectInstance pri = null;
-			var config = configuration != null ? (ProjectConfiguration)GetConfiguration (configuration) : null;
-			if (config != null) {
-				pri = config.ProjectInstance;
-			}
-
-			if (pri == null)
-				pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
-
+			var config = configuration != null ? GetConfiguration (configuration) : null;
+			var pri = await CreateProjectInstaceForConfigurationAsync (config?.Name, config?.Platform, false);
 			foreach (var it in pri.EvaluatedItems.Where (i => buildActions.Contains (i.Name)))
 				results.Add (CreateProjectFile (it));
 
@@ -1392,7 +1385,7 @@ namespace MonoDevelop.Projects
 		string GetMSBuildSdkPath (TargetRuntime runtime)
 		{
 			HashSet<string> sdks = null;
-			GetReferencedSDKs (this, ref sdks, new HashSet<string> ());
+			GetReferencedSDKs (this, ref sdks, new HashSet<string> (StringComparer.OrdinalIgnoreCase));
 			if (sdks != null)
 				return MSBuildProjectService.FindSdkPath (runtime, sdks);
 			return null;
@@ -3587,34 +3580,38 @@ namespace MonoDevelop.Projects
 		/// <remarks>
 		/// Reevaluates the underlying msbuild project and updates the project information acording to the new items and properties.
 		/// </remarks>
-		public async Task ReevaluateProject (ProgressMonitor monitor)
+		public Task ReevaluateProject (ProgressMonitor monitor)
 		{
-			var oldCapabilities = new HashSet<string> (projectCapabilities);
+			return BindTask (ct => Runtime.RunInMainThread (async () => {
+				using (await writeProjectLock.EnterAsync ()) {
+					var oldCapabilities = new HashSet<string> (projectCapabilities);
 
-			try {
-				IsReevaluating = true;
+					try {
+						IsReevaluating = true;
 
-				// Reevaluate the msbuild project
-				await sourceProject.EvaluateAsync ();
+						// Reevaluate the msbuild project
+						await sourceProject.EvaluateAsync ();
 
-				// Loads minimal data required to instantiate extensions and prepare for project loading
-				InitBeforeProjectExtensionLoad ();
+						// Loads minimal data required to instantiate extensions and prepare for project loading
+						InitBeforeProjectExtensionLoad ();
 
-				// Activate / deactivate extensions based on the new status
-				RefreshExtensions ();
+						// Activate / deactivate extensions based on the new status
+						RefreshExtensions ();
 
-				await ProjectExtension.OnReevaluateProject (monitor);
-		
-			} finally {
-				IsReevaluating = false;
-			}
+						await ProjectExtension.OnReevaluateProject (monitor);
 
-			ResetCachedCompileItems ();
+					} finally {
+						IsReevaluating = false;
+					}
 
-			if (!oldCapabilities.SetEquals (projectCapabilities))
-				NotifyProjectCapabilitiesChanged ();
+					ResetCachedCompileItems ();
 
-			NotifyExecutionTargetsChanged (); // Maybe...
+					if (!oldCapabilities.SetEquals (projectCapabilities))
+						NotifyProjectCapabilitiesChanged ();
+
+					NotifyExecutionTargetsChanged (); // Maybe...
+				}
+			}));
 		}
 
 		protected virtual async Task OnReevaluateProject (ProgressMonitor monitor)
