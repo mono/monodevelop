@@ -59,7 +59,7 @@
 		<Import file = "Templates/JsonFileTemplate.json"/>
 		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
 		<Import file = "Templates/RouteConfig.cs"/>
-		<Import file = "Templates/StyleSheetTemplate.css"/>
+		<Import file = "Templates/StylesheetTemplate.css"/>
 		<Import file = "Templates/WebApiConfig.cs"/>
 		<Import file = "Templates/WebConfig-Application.xft.xml"/>
 		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
@@ -68,7 +68,7 @@
 		<Import file = "Templates/AspNetCore/MiddlewareClassTemplate.cs" />
 		<Import file = "Templates/AspNetCore/MvcController.xft.xml" />
 		<Import file = "Templates/AspNetCore/MvcControllerTemplate.cs" />
-		<Import file = "Templates/AspNetCore/RazorTaghelper.xft.xml" />
+		<Import file = "Templates/AspNetCore/RazorTagHelper.xft.xml" />
 		<Import file = "Templates/AspNetCore/RazorTagHelperTemplate.cs" />
 		<Import file = "Templates/AspNetCore/StartupClass.xft.xml" />
 		<Import file = "Templates/AspNetCore/StartupClassTemplate.cs" />
