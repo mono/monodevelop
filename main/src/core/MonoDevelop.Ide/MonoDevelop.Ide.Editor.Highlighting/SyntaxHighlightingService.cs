@@ -65,7 +65,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			get {
 				var result = new List<string> ();
 				foreach (var bundle in languageBundles) {
-					foreach (var style in bundle.EditorThemes) {
+					for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+						var style = bundle.EditorThemes[i];
 						if (!result.Contains (style.Name))
 							result.Add (style.Name);
 					}
@@ -77,7 +78,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static bool ContainsStyle (string styleName)
 		{
 			foreach (var bundle in languageBundles) {
-				foreach (var style in bundle.EditorThemes) {
+				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+					var style = bundle.EditorThemes[i];
 					if (style.Name == styleName)
 						return true;
 				}
@@ -157,7 +159,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static EditorTheme GetEditorTheme (string name)
 		{
 			foreach (var bundle in languageBundles) {
-				var theme = bundle.EditorThemes.FirstOrDefault (t => t.Name == name);
+				EditorTheme theme = null;
+				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+					var style = bundle.EditorThemes[i];
+					if (style.Name == name)
+						theme = style;
+				}
 				if (theme != null)
 					return theme;
 			}
