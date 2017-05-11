@@ -1753,7 +1753,8 @@ namespace Mono.TextEditor
 
 		void HandleSplitterLineSegmentTreeLineRemoved (object sender, TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) { 
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var line = GetLineByOffset (change.Offset);
 				if (line == null)
 					continue;

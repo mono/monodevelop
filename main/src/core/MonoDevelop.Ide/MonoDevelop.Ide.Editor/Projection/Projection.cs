@@ -117,7 +117,8 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		void HandleTextChanging (object sender, TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				foreach (var segment in originalProjections) {
 					if (segment.Contains (change.Offset)) {
 						var projectedOffset = change.Offset - segment.Offset + segment.LinkedTo.Offset;
