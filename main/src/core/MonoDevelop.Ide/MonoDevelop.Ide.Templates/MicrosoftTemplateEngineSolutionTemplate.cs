@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Templates
 				Language = string.Empty;
 			GroupId = template.GroupId ?? templateInfo.GroupIdentity;
 			//TODO: Support all this params
-			//Condition = template.Condition;
+			Condition = template.Condition;
 			//ProjectFileExtension = template.FileExtension;
 			Wizard = template.Wizard;
 			//SupportedParameters = template.SupportedParameters;

@@ -121,5 +121,14 @@ namespace MonoDevelop.Ide.Codons
 				return wizard;
 			}
 		}
+
+		[NodeAttribute ("condition", "Allows a template to be conditionally selected.")]
+		string condition;
+
+		public string Condition {
+			get {
+				return condition;
+			}
+		}
 	}
 }
