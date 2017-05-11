@@ -245,7 +245,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					PushScopeStack (curMatch.Scope);
 
 					if (curMatch.Captures.Groups.Count > 0) {
-						foreach (var capture in curMatch.Captures.Groups) {
+						for (int i = 0; i < curMatch.Captures.Groups.Count; ++i) {
+							var capture = curMatch.Captures.Groups[i];
 							var grp = match.Groups [capture.Item1];
 							if (grp == null || grp.Length == 0)
 								continue;
@@ -258,7 +259,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 
 					if (curMatch.Captures.NamedGroups.Count > 0) {
-						foreach (var capture in curMatch.Captures.NamedGroups) {
+						for (int i = 0; i < curMatch.Captures.NamedGroups.Count; ++i) {
+							var capture = curMatch.Captures.NamedGroups[i];
 							var grp = match.Groups [capture.Item1];
 							if (grp == null || grp.Length == 0)
 								continue;
