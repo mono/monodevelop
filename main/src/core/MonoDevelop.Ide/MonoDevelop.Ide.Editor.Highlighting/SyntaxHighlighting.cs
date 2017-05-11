@@ -44,7 +44,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		async void Handle_TextChanged (object sender, Core.Text.TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var ln = Document.OffsetToLineNumber (change.NewOffset);
 				if (ln >= stateCache.Count)
 					continue;

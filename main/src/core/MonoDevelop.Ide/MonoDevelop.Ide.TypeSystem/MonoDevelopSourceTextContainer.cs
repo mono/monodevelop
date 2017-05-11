@@ -68,7 +68,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					var oldText = CurrentText;
 					var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
 					var changeRanges = new List<TextChangeRange> ();
-					foreach (var c in e.TextChanges) {
+					for (int i = 0; i < e.TextChanges.Count; ++i) {
+						var c = e.TextChanges[i];
 						var span = new TextSpan (c.Offset, c.RemovalLength);
 						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
 						changeRanges.Add (new TextChangeRange (span, c.InsertionLength));

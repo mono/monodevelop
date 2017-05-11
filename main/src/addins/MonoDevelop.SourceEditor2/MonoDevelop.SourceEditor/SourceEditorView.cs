@@ -322,7 +322,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				int startIndex = change.Offset;
 				foreach (var marker in currentErrorMarkers) {
 					var line = marker.LineSegment;
@@ -1093,7 +1094,8 @@ namespace MonoDevelop.SourceEditor
 		void OnTextReplaced (object s, TextChangeEventArgs a)
 		{
 			IsDirty = Document.IsDirty;
-			foreach (var change in a.TextChanges) {
+			for (int j = 0; j < a.TextChanges.Count; ++j) {
+				var change = a.TextChanges[j];
 				var location = Document.OffsetToLocation (change.NewOffset);
 
 				int i = 0, lines = 0;

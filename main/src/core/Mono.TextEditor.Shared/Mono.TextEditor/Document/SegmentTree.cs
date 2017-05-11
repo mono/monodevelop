@@ -89,7 +89,8 @@ namespace Mono.TextEditor
 		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			IsDirty = true;
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				if (change.RemovalLength == 0) {
 					var length = change.InsertionLength;
 					foreach (var segment in GetSegmentsAt (change.Offset).Where (s => s.Offset < change.Offset && change.Offset < s.EndOffset)) {
