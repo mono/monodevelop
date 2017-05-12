@@ -159,14 +159,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static EditorTheme GetEditorTheme (string name)
 		{
 			foreach (var bundle in languageBundles) {
-				EditorTheme theme = null;
 				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
 					var style = bundle.EditorThemes[i];
 					if (style.Name == name)
-						theme = style;
+						return style;
 				}
-				if (theme != null)
-					return theme;
 			}
 			LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
 			return GetEditorTheme (GetDefaultColorStyleName ());

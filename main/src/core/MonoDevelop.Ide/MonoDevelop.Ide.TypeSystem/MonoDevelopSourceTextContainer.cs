@@ -66,13 +66,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (handler != null) {
 				lock (replaceLock) {
 					var oldText = CurrentText;
-					var changes = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
-					var changeRanges = new List<TextChangeRange> ();
+					var changes = new Microsoft.CodeAnalysis.Text.TextChange[e.TextChanges.Count];
+					var changeRanges = new TextChangeRange[e.TextChanges.Count];
 					for (int i = 0; i < e.TextChanges.Count; ++i) {
 						var c = e.TextChanges[i];
 						var span = new TextSpan (c.Offset, c.RemovalLength);
-						changes.Add (new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text));
-						changeRanges.Add (new TextChangeRange (span, c.InsertionLength));
+						changes[i] = new Microsoft.CodeAnalysis.Text.TextChange (span, c.InsertedText.Text);
+						changeRanges[i] = new TextChangeRange (span, c.InsertionLength);
 					}
 					var newText = oldText.WithChanges (changes);
 					currentText = newText;
