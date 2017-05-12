@@ -911,7 +911,11 @@ namespace MonoDevelop.MacIntegration
 			var toplevels = GtkQuartz.GetToplevels ();
 
 			// Check GtkWindow's Modal flag or for a visible NSPanel
-			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
+			var ret = toplevels
+				.Where (x => !x.Key.DebugDescription.StartsWith ("<_NSFullScreenTileDividerWindow", StringComparison.Ordinal))
+				.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible));
+
+			return ret;
 		}
 
 		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
