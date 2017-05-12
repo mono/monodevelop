@@ -59,19 +59,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
-		
+
 		//NOTE: default toolsversion should match the default format.
 		// remember to update the builder process' app.config too
 		public const string DefaultFormat = "MSBuild12";
-		
+
 		static DataContext dataContext;
-		
-		static IMSBuildGlobalPropertyProvider[] globalPropertyProviders;
+
+		static IMSBuildGlobalPropertyProvider [] globalPropertyProviders;
 		static BuilderCache builders = new BuilderCache ();
-		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
-		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
-		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
-		static IDictionary<string,TypeExtensionNode> projecItemTypeNodes;
+		static Dictionary<string, Type> genericProjectTypes = new Dictionary<string, Type> ();
+		static Dictionary<string, string> importRedirects = new Dictionary<string, string> ();
+		static UnknownProjectTypeNode [] unknownProjectTypeNodes;
+		static IDictionary<string, TypeExtensionNode> projecItemTypeNodes;
 
 		static Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> defaultImportSearchPaths = new Dictionary<TargetRuntime, List<ImportSearchPathExtensionNode>> ();
 		static List<ImportSearchPathExtensionNode> importSearchPaths = new List<ImportSearchPathExtensionNode> ();
@@ -82,8 +82,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static bool ShutDown { get; private set; }
 
-		static ExtensionNode[] itemTypeNodes;
-		
+		static ExtensionNode [] itemTypeNodes;
+
 		public static DataContext DataContext {
 			get {
 				if (dataContext == null) {
@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return dataContext;
 			}
 		}
-		
+
 		static MSBuildProjectService ()
 		{
 			Services.ProjectService.DataContextChanged += delegate {
@@ -117,7 +117,27 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			CleanCachedMSBuildExes ();
+			SetupDotNetCore ();
 		}
+
+		static void SetupDotNetCore ()
+		{
+			if (Platform.IsWindows)
+				return;
+
+			// Add .NET Core root directory to PATH. Without this, the MSBuild SDK resolver doesn't work.
+
+			string dotnetDir;
+			if (Platform.IsMac)
+				dotnetDir = "/usr/local/share/dotnet";
+			else
+				dotnetDir = "/usr/share/dotnet";
+		
+			var systemPath = Environment.GetEnvironmentVariable ("PATH");
+			if (!systemPath.Split (new char [] { ':' }).Contains (dotnetDir))
+				Environment.SetEnvironmentVariable ("PATH", systemPath + ":" + dotnetDir);
+		}
+	
 
 		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
 		{

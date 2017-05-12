@@ -970,6 +970,8 @@ namespace MonoDevelop.Projects.MSBuild
 			return -1;
 		}
 
+		public string CustomFullDirectoryName { get; set; }
+
 		#region IExpressionContext implementation
 
 		public string EvaluateString (string value)
@@ -985,6 +987,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string FullDirectoryName {
 			get {
+				if (CustomFullDirectoryName != null)
+					return CustomFullDirectoryName;
 				if (FullFileName == String.Empty)
 					return null;
 				if (directoryName == null)

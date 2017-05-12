@@ -216,16 +216,8 @@ namespace MonoDevelop.Projects.MSBuild
 				var sdkPaths = pi.Project.Sdk.Replace ('/', '\\');
 				int index = 0;
 				foreach (var sdkPath in sdkPaths.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0)) {
-					if (!SdkReference.TryParse (sdkPath, out var sdkRef))
-						continue;
-					var path = SdkResolution.GetResolver (rootProject.TargetRuntime).GetSdkPath (sdkRef, CustomLoggingService.Instance, null, pi.Project.FileName, pi.Project.SolutionDirectory);
-					if (path == null)
-						continue;
-					path = MSBuildProjectService.ToMSBuildPath (null, path);
-					var propsPath = $"{path}\\Sdk.props";
-					var targetsPath = $"{path}\\Sdk.targets";
-					list.Insert (index++, new MSBuildImport { Project = propsPath, Condition = $"Exists('{propsPath}')" });
-					list.Add (new MSBuildImport { Project = targetsPath, Condition = $"Exists('{targetsPath}')" });
+					list.Insert (index++, new MSBuildImport { Sdk = sdkPath, Project = "Sdk.props" });
+					list.Add (new MSBuildImport { Sdk = sdkPath, Project = "Sdk.targets" });
 				}
 				var nugetPropsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.props";
 				var nugetTargetsPath = $"$(BaseIntermediateOutputPath)\\{pi.Project.FileName.FileName}.nuget.g.targets";
@@ -1051,17 +1043,28 @@ namespace MonoDevelop.Projects.MSBuild
 				context = tempCtx;
 			}
 
-			var pr = context.EvaluateString (import.Project);
-			project.Imports [import] = pr;
+			var projectPath = context.EvaluateString (import.Project);
+			project.Imports [import] = projectPath;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true)) {
+			string basePath;
+			if (!string.IsNullOrEmpty (import.Sdk) && SdkReference.TryParse (import.Sdk, out var sdkRef)) {
+				basePath = SdkResolution.GetResolver (project.GetRootMSBuildProject ().TargetRuntime).GetSdkPath (sdkRef, CustomLoggingService.Instance, null, project.Project.FileName, project.Project.SolutionDirectory);
+				if (basePath == null) {
+					keepSearching = true;
+					return null;
+				}
+			} else
+				basePath = project.Project.BaseDirectory;
+
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true, basePath)) {
 				// Condition evaluates to false. Keep searching because maybe another value for the path property makes
 				// the condition evaluate to true.
 				keepSearching = true;
 				return null;
 			}
 
-			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
+			string path = MSBuildProjectService.FromMSBuildPath (basePath, projectPath);
+
 			var fileName = Path.GetFileName (path);
 
 			if (fileName.IndexOfAny (new [] { '*', '?' }) == -1) {
@@ -1130,11 +1133,13 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		Dictionary<string, ConditionExpression> conditionCache = new Dictionary<string, ConditionExpression> ();
-		bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
+		bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false, string customEvalBasePath = null)
 		{
 			try {
 				if (String.IsNullOrEmpty (condition))
 					return true;
+
+				context.CustomFullDirectoryName = customEvalBasePath;
 
 				try {
 					ConditionExpression ce;
@@ -1165,6 +1170,9 @@ namespace MonoDevelop.Projects.MSBuild
 			catch {
 				// The condition is likely to be invalid
 				return false;
+			}
+			finally {
+				context.CustomFullDirectoryName = null;
 			}
 		}
 
