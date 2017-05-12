@@ -709,12 +709,10 @@ namespace Mono.TextEditor
 			cachedLine = null;
 			cachedLineNumber = -1;
 		}
-		int hit, total;
+
 		public DocumentLine GetLineByOffset (int offset)
 		{
-			total++;
 			if (cachedLine?.Contains (offset) == true) {
-				hit++;
 				return cachedLine;
 			}
 			var snapshot = this.currentSnapshot;
