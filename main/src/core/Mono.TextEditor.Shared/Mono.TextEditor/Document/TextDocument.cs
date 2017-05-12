@@ -263,6 +263,7 @@ namespace Mono.TextEditor
 			}
 
 			foldSegmentTree.UpdateOnTextReplace(this, textChange);
+			ClearTextMarkerCache ();
 			textSegmentMarkerTree.UpdateOnTextReplace (this, textChange);
 
 			TextChanged?.Invoke(this, textChange);
@@ -1703,7 +1704,7 @@ namespace Mono.TextEditor
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
-			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
+			return GetTextSegmentMarkersAt (line.Segment);
 		}
 
 		internal IEnumerable<TextSegmentMarker> GetVisibleTextSegmentMarkersAt (DocumentLine line)
@@ -1713,19 +1714,38 @@ namespace Mono.TextEditor
 					yield return marker;
 		}
 
+		int textSegmentCacheOffset = -1, textSegmentCacheLength;
+		List<TextSegmentMarker> textSegmentCache;
+
+		int textMarkerCacheOffset = -1;
+		List<TextSegmentMarker> textMarkerSegmentCache;
+
+		void ClearTextMarkerCache ()
+		{
+			textSegmentCacheOffset = textMarkerCacheOffset = -1;
+		}
+
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)
 		{
-			return textSegmentMarkerTree.GetSegmentsOverlapping (segment);
+			if (segment.Offset == textSegmentCacheOffset && segment.Length == textSegmentCacheLength)
+				return textSegmentCache;
+			textSegmentCacheOffset = segment.Offset;
+			textSegmentCacheLength = segment.Length;
+			return textSegmentCache = textSegmentMarkerTree.GetSegmentsOverlapping (segment).ToList ();
 		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (int offset)
 		{
-			return textSegmentMarkerTree.GetSegmentsAt (offset);
+			if (textMarkerCacheOffset == offset)
+				return textMarkerSegmentCache;
+			textMarkerCacheOffset = offset;
+			return textMarkerSegmentCache = textSegmentMarkerTree.GetSegmentsAt (offset).ToList ();
 		}
 		
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			ClearTextMarkerCache ();
 			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
@@ -1740,6 +1760,7 @@ namespace Mono.TextEditor
 		/// <param name="marker">Marker.</param>
 		public bool RemoveMarker (TextSegmentMarker marker)
 		{
+			ClearTextMarkerCache ();
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
 			if (wasRemoved) {
 				var startLine = OffsetToLineNumber (marker.Offset);
