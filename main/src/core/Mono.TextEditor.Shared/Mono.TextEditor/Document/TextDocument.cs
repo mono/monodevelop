@@ -265,7 +265,7 @@ namespace Mono.TextEditor
 			foldSegmentTree.UpdateOnTextReplace(this, textChange);
 			ClearTextMarkerCache ();
 			textSegmentMarkerTree.UpdateOnTextReplace (this, textChange);
-
+			ClearLineCache ();
 			TextChanged?.Invoke(this, textChange);
 			if (endUndo)
 				OnEndUndo(new UndoOperationEventArgs(operation));
@@ -700,14 +700,29 @@ namespace Mono.TextEditor
 			return GetLine (lineNumber);
 		}
 
+		DocumentLine cachedLine;
+		int cachedLineNumber = -1;
+		DocumentLine cachedLineFromLineNumber;
+
+		void ClearLineCache ()
+		{
+			cachedLine = null;
+			cachedLineNumber = -1;
+		}
+		int hit, total;
 		public DocumentLine GetLineByOffset (int offset)
 		{
+			total++;
+			if (cachedLine?.Contains (offset) == true) {
+				hit++;
+				return cachedLine;
+			}
 			var snapshot = this.currentSnapshot;
 
 			if (offset < 0 || offset > snapshot.Length)
 				return null;
 			var line = snapshot.GetLineFromPosition (offset);
-			return new DocumentLineFromTextSnapshotLine(line);
+			return cachedLine = new DocumentLineFromTextSnapshotLine(line);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
@@ -2159,12 +2174,14 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
+			if (cachedLineNumber == number)
+				return cachedLineFromLineNumber;
 			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
 			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
-
-			return new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
+			cachedLineNumber = number;
+			return cachedLineFromLineNumber = new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 
 		internal sealed class DocumentLineFromTextSnapshotLine : DocumentLine
