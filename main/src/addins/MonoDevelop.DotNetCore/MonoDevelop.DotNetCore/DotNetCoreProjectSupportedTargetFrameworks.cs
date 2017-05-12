@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
@@ -58,18 +59,28 @@ namespace MonoDevelop.DotNetCore
 			return new TargetFramework [0];
 		}
 
-		IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
+		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
 			if (DotNetCoreRuntime.IsNetCore20Installed ())
 				yield return CreateTargetFramework (".NETStandard", "2.0");
 
 			if (DotNetCoreRuntime.IsNetCore1xInstalled ()) {
-				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported))
+				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
 					yield return targetFramework;
 			}
 		}
 
-		IEnumerable<TargetFramework> GetTargetFrameworksVersion1x (string identifier, int maxMinorVersion)
+		/// <summary>
+		/// These are the .NET Standard target frameworks that the sdks that ship with 
+		/// Mono's MSBuild support.
+		/// </summary>
+		public static IEnumerable<TargetFramework> GetDefaultNetStandard1xTargetFrameworks ()
+		{
+			foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
+				yield return targetFramework;
+		}
+
+		static IEnumerable<TargetFramework> GetTargetFrameworksVersion1x (string identifier, int maxMinorVersion)
 		{
 			for (int minorVersion = 0; minorVersion <= maxMinorVersion; ++minorVersion) {
 				string version = string.Format ($"1.{minorVersion}");
@@ -77,7 +88,7 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
-		IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
+		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
 			foreach (DotNetCoreVersion runtimeVersion in DotNetCoreRuntime.Versions) {
 				string version = runtimeVersion.Version.ToString (2);

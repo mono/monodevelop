@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.12</target-gtk-version>
+  </configuration>
+  <import>
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.dll" internal="true" />
+  </import>
+  <widget class="Gtk.Bin" id="MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget" design-size="724 397">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.HBox" id="mainHBox">
+        <property name="MemberName" />
+        <child>
+          <widget class="Gtk.EventBox" id="leftBorderEventBox">
+            <property name="MemberName" />
+            <property name="WidthRequest">30</property>
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.VBox" id="configurationVBox">
+            <property name="MemberName" />
+            <property name="WidthRequest">440</property>
+            <child>
+              <widget class="Gtk.EventBox" id="configurationTopEventBox">
+                <property name="MemberName" />
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.EventBox" id="configurationTableEventBox">
+                <property name="MemberName" />
+                <child>
+                  <widget class="Gtk.Table" id="configurationTable">
+                    <property name="MemberName" />
+                    <property name="NColumns">3</property>
+                    <property name="RowSpacing">7</property>
+                    <property name="ColumnSpacing">6</property>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <widget class="Gtk.ComboBox" id="targetFrameworkComboBox">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">350</property>
+                        <property name="IsTextCombo">True</property>
+                        <property name="Items" translatable="yes" />
+                      </widget>
+                      <packing>
+                        <property name="LeftAttach">1</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="targetFrameworkLabel">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">132</property>
+                        <property name="Xpad">5</property>
+                        <property name="Xalign">1</property>
+                        <property name="LabelProp" translatable="yes">Target Framework:</property>
+                        <property name="Justify">Right</property>
+                      </widget>
+                      <packing>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.EventBox" id="configurationBottomEventBox">
+                <property name="MemberName" />
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.EventBox" id="backgroundLargeImageEventBox">
+            <property name="MemberName" />
+            <child>
+              <widget class="Gtk.VBox" id="backgroundLargeImageVBox">
+                <property name="MemberName" />
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>

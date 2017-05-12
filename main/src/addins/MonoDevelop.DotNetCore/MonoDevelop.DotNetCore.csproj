@@ -66,6 +66,8 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
       <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.0.0\lib\net46\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,6 +142,10 @@
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreVersion.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeVersions.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizardPage.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
@@ -304,6 +310,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="images\project-netcore-test-template~dark%402x.png">
       <LogicalName>project-netcore-test-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore.png">
+      <LogicalName>preview-netcore.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore%402x.png">
+      <LogicalName>preview-netcore@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore~dark.png">
+      <LogicalName>preview-netcore~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore~dark%402x.png">
+      <LogicalName>preview-netcore~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

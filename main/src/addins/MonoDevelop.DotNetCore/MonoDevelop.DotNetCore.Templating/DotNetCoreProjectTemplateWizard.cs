@@ -32,16 +32,15 @@ namespace MonoDevelop.DotNetCore.Templating
 	{
 		public override WizardPage GetPage (int pageNumber)
 		{
-			return null;
+			return new DotNetCoreProjectTemplateWizardPage (this);
 		}
 
 		public override int TotalPages {
-			get { return 0; }
+			get { return 1; }
 		}
 
 		public override string Id {
 			get { return "MonoDevelop.DotNetCore.ProjectTemplateWizard"; }
 		}
-
 	}
 }
