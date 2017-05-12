@@ -210,11 +210,6 @@ namespace MonoDevelop.Ide.Templates
 					await FormatFile (p, file.FilePath);
 			}
 
-			// HACK: The NuGet.Config file is only used if they are in the solution directory
-			// so move it there if it is created by the template. This can be removed when
-			// .NET Core 2.0 is released and the project templates are updated.
-			MoveNuGetConfigFilesToSolutionDirectory (parentFolder, workspaceItems.OfType<Project> ());
-
 			return processResult;
 		}
 
@@ -261,31 +256,6 @@ namespace MonoDevelop.Ide.Templates
 						TextFileUtility.WriteText (file, formatted, content.Encoding);
 				} catch (Exception ex) {
 					LoggingService.LogError ("File formatting failed", ex);
-				}
-			}
-		}
-
-		/// <summary>
-		/// No need to save the project since the NuGet.Config file is not an MSBuild item in the project.
-		/// </summary>
-		void MoveNuGetConfigFilesToSolutionDirectory (SolutionFolder parentFolder, IEnumerable<Project> projects)
-		{
-			foreach (var project in projects) {
-				ProjectFile nugetConfigFile = null;
-				foreach (var file in project.Files.Where (f => "NuGet.Config".Equals (f.FilePath.FileName, StringComparison.OrdinalIgnoreCase))) {
-					nugetConfigFile = file;
-					break;
-				}
-
-				if (nugetConfigFile != null) {
-					Solution solution = parentFolder?.ParentSolution ?? project.ParentSolution;
-					var nugetConfigDestination = solution.BaseDirectory.Combine ("NuGet.Config");
-					if (!File.Exists (nugetConfigDestination))
-						FileService.MoveFile (nugetConfigFile.FilePath, nugetConfigDestination);
-
-					// All projects belong to the same solution so no need to check the rest of
-					// the projects.
-					break;
 				}
 			}
 		}
