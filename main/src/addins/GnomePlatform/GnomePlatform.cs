@@ -213,7 +213,7 @@ namespace MonoDevelop.Platform
 				? BashPause.Replace ("'", "\"")
 					: String.Empty;
 
-			return String.Format (@" --nofork --caption ""{4}"" --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
+			return String.Format (@" -p tabtitle=""{4}"" --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
 			                      command,
 			                      args,
 			                      extra_commands,
