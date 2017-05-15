@@ -1409,6 +1409,20 @@ namespace MonoDevelop.AssemblyBrowser
 				nav.MoveToParent ();
 			}
 		}
+
+		void DisposeAssemblyDefinitions (ITreeNavigator nav)
+		{
+			// Dispose top level nodes
+			if (nav == null || !nav.HasChildren ())
+				return;
+			
+			nav.MoveToFirstChild ();
+			do {
+				if (nav.DataItem is AssemblyDefinition d)
+					d.Dispose ();
+			} while (nav.MoveNext ());
+			nav.MoveToParent ();
+		}
 		
 		protected override void OnDestroyed ()
 		{
@@ -1417,7 +1431,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (this.TreeView != null) {
 				//	Dispose<IDisposable> (TreeView.GetRootNode ());
-				Dispose<AssemblyDefinition> (TreeView.GetRootNode ());
+				DisposeAssemblyDefinitions (TreeView.GetRootNode ());
 				TreeView.SelectionChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
