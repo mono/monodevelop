@@ -87,7 +87,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
-			defaultParameters="IsNetStandard=true"
+			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
 			category="multiplat/library/general" />
@@ -98,7 +98,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
-			defaultParameters="IsNetStandard=true;IsFSharpNetStandard=true"
+			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
 			category="multiplat/library/general" />
@@ -112,7 +112,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
-			defaultParameters="IsNetStandard=true"
+			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
 			category="multiplat/library/general" />
@@ -124,7 +124,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-library-project"
 			imageId="md-library-project"
-			defaultParameters="IsNetStandard=true;IsFSharpNetStandard=true"
+			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
 			category="multiplat/library/general" />
@@ -142,7 +142,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			defaultParameters="IsNetStandard=true"
+			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
 			category="netcore/library/general" />
@@ -153,7 +153,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			defaultParameters="IsNetStandard=true;IsFSharpNetStandard=true"
+			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
 			category="netcore/library/general" />
@@ -167,7 +167,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			defaultParameters="IsNetStandard=true"
+			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
 			category="netcore/library/general" />
@@ -179,7 +179,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			defaultParameters="IsNetStandard=true;IsFSharpNetStandard=true"
+			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
 			category="netcore/library/general" />
@@ -229,7 +229,7 @@
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
 			imageId="md-netcore-empty-project"
-			defaultParameters="IsFSharpNetCoreLibrary=true"
+			supportedParameters="FSharpNetCoreLibrary"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore20=true"
 			category="netcore/library/general" />

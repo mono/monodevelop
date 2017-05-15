@@ -73,20 +73,20 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		void GetTargetFrameworks ()
 		{
-			if (wizard.Parameters.GetBoolValue ("IsNetStandard")) {
+			if (wizard.IsSupportedParameter ("NetStandard")) {
 				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
 
 				// Use 1.x target frameworks by default if none are available from the .NET Core sdk.
 				if (!targetFrameworks.Any ())
 					targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetDefaultNetStandard1xTargetFrameworks ().ToList ();
 
-				if (wizard.Parameters.GetBoolValue ("IsFSharpNetStandard")) {
+				if (wizard.IsSupportedParameter ("FSharpNetStandard")) {
 					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
 				}
 			} else {
 				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 
-				if (wizard.Parameters.GetBoolValue ("IsFSharpNetCoreLibrary")) {
+				if (wizard.IsSupportedParameter ("FSharpNetCoreLibrary")) {
 					RemoveUnsupportedNetCoreAppTargetFrameworksForFSharpLibrary (targetFrameworks);
 				}
 			}
