@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -166,8 +167,25 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			previewFrame.ShowAll ();
 			
 			UpdatePreview (null, EventArgs.Empty);
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			checkAssociateNamespacesDirectories.SetCommonAccessibilityAttributes ("NamespaceOptions.AssociateNamespace",
+			                                                                      null,
+			                                                                      GettextCatalog.GetString ("Check to associate namespaces with directory names"));
+			checkDefaultAsRoot.SetCommonAccessibilityAttributes ("NamespaceOptions.DefaultRoot", null,
+			                                                     GettextCatalog.GetString ("Check to use the default namespace as the root of all namespaces"));
+			radioFlat.SetCommonAccessibilityAttributes ("NamespaceOptions.Flat", null,
+			                                            GettextCatalog.GetString ("Check to use a flat folder structure"));
+			radioHierarch.SetCommonAccessibilityAttributes ("NamespaceOptions.Hierarchy", null,
+			                                                GettextCatalog.GetString ("Check to use a hierarchical folder structure"));
+			checkVSStyleResourceNames.SetCommonAccessibilityAttributes ("NamespaceOptions.VSNames", null,
+			                                                            GettextCatalog.GetString ("Check to use Visual Studio style resource names"));
+		}
+
 		public void LoadFrom (DotNetNamingPolicy policy)
 		{
 			checkAssociateNamespacesDirectories.Active = (policy.DirectoryNamespaceAssociation != DirectoryNamespaceAssociation.None);

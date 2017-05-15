@@ -28,6 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -87,6 +88,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public OutputOptionsPanelWidget ()
 		{
 			Build ();
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			assemblyNameEntry.SetCommonAccessibilityAttributes ("OutputOptionsPanel.AssemblyEntry",
+			                                                    GettextCatalog.GetString ("Assembly Name"),
+			                                                    GettextCatalog.GetString ("Enter the name of the output assembly"));
+			assemblyNameEntry.SetAccessibilityLabelRelationship (label98);
+			outputPathEntry.EntryAccessible.SetCommonAttributes ("OutputOptionsPanel.OutputEntry",
+				                                                 GettextCatalog.GetString ("Output Path"),
+				                                                 GettextCatalog.GetString ("Enter the output path"));
+			outputPathEntry.EntryAccessible.SetTitleUIElement (label99.Accessible);
+			label99.Accessible.SetTitleFor (outputPathEntry.EntryAccessible);
 		}
 		
 		public void Load (Project project, ItemConfiguration[] configs)

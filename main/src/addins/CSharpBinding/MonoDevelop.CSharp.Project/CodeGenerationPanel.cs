@@ -28,10 +28,12 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -50,6 +52,44 @@ namespace MonoDevelop.CSharp.Project
 		{
 			Build ();
 			xmlDocsEntry.DisplayAsRelativePath = true;
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			generateOverflowChecksCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.OverflowChecks", null, 
+			                                                                    GettextCatalog.GetString ("Check this to enable overflow checking"));
+			enableOptimizationCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.Optimizations", null,
+			                                                                GettextCatalog.GetString ("Check this to enable optimizations"));
+			generateXmlOutputCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.XmlDoc", null,
+			                                                               GettextCatalog.GetString ("Check this to generate XML documentation"));
+			xmlDocsEntry.EntryAccessible.Name = "CompilerOptions.XmlEntry";
+			xmlDocsEntry.EntryAccessible.SetLabel (GettextCatalog.GetString ("XML Filename"));
+			xmlDocsEntry.EntryAccessible.Description = GettextCatalog.GetString ("Enter the filename for the generated XML documentation");
+
+			comboDebug.SetCommonAccessibilityAttributes ("CompilerOptions.DebugCombo", GettextCatalog.GetString ("Debug Information"),
+			                                             GettextCatalog.GetString ("Select the level of debugging information to be generated"));
+			comboDebug.SetAccessibilityLabelRelationship (label2);
+
+			symbolsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.SymbolsEntry", GettextCatalog.GetString ("Define Symbols"),
+			                                               GettextCatalog.GetString ("Enter the symbols the compiler should define"));
+			symbolsEntry.SetAccessibilityLabelRelationship (label87);
+
+			comboPlatforms.SetCommonAccessibilityAttributes ("CompilerOptions.Platforms", GettextCatalog.GetString ("Platform Target"),
+			                                                 GettextCatalog.GetString ("Select the platform to target"));
+			comboPlatforms.SetAccessibilityLabelRelationship (label1);
+
+			warningLevelSpinButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsLevel", GettextCatalog.GetString ("Warning Level"),
+			                                                         GettextCatalog.GetString ("Select the warning level to use"));
+			warningLevelSpinButton.SetAccessibilityLabelRelationship (label85);
+
+			ignoreWarningsEntry.SetCommonAccessibilityAttributes ("CompilerOptions.IgnoreWarnings", GettextCatalog.GetString ("Ignore Warnings"),
+			                                                      GettextCatalog.GetString ("Enter the warning numbers separated by a comma that the compile should ignore"));
+			ignoreWarningsEntry.SetAccessibilityLabelRelationship (label86);
+
+			warningsAsErrorsCheckButton.SetCommonAccessibilityAttributes ("CompilerOptions.WarningsAsErrors", null,
+			                                                              GettextCatalog.GetString ("Check to treat warnings as errors"));
 		}
 
 		//doing just original.Split(whitespaces).Distinct().Join(";") would make modifications to .csproj with " "(space) seperator
