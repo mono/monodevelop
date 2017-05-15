@@ -142,7 +142,7 @@
 		{ "name": "Xml Text", "fore": "aluminium1" },
 		{ "name": "Xml Delimiter", "fore": "aluminium1" },
 		{ "name": "Xml Name", "fore": "skyblue1" },
-		{ "name": "Xml Attribute", "fore": "aluminium1" },
+		{ "name": "Xml Attribute", "fore": "#9CDCFE" },
 		{ "name": "Xml Attribute Quotes", "fore": "#E6DB74" },
 		{ "name": "Xml Attribute Value", "fore": "#E6DB74" },
 		{ "name": "Xml Comment", "fore": "aluminium4" },
