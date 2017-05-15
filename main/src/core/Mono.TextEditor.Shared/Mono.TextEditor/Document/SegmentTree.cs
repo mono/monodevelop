@@ -257,10 +257,8 @@ namespace Mono.TextEditor
 			if (tree.Root == null)
 				yield break;
 			var intervalStack = new Interval (null, tree.Root, offset, offset + length);
-			while (true) {
+			while (intervalStack != null) {
 				var interval = intervalStack;
-				if (interval == null)
-					break;
 				intervalStack = intervalStack.tail;
 				if (interval.end < 0)
 					continue;
