@@ -312,7 +312,7 @@
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
 		<Template
-			id="Microsoft.Test.xUnit.CSharp."
+			id="Microsoft.Test.xUnit.CSharp"
 			templateId="Microsoft.Test.xUnit.CSharp.2.0"
 			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
@@ -334,7 +334,7 @@
 			condition="UseNetCore20=true"
 			category="netcore/test/general" />
 		<Template
-			id="Microsoft.Test.MSTest.CSharp."
+			id="Microsoft.Test.MSTest.CSharp"
 			templateId="Microsoft.Test.MSTest.CSharp.2.0"
 			_overrideName="MSTest Project"
 			_overrideDescription="Creates a new MSTest project."
