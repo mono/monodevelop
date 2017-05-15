@@ -134,7 +134,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-			            "<span foreground=\"#888a85\">///&lt;summary&gt;foo bar&lt;/summary&gt;</span>");
+			            "<span foreground=\"#babdb6\">///</span><span foreground=\"#888a85\">&lt;</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span><span foreground=\"#babdb6\">foo bar</span><span foreground=\"#888a85\">&lt;/</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span>");
 		}
 
 		[Test]
