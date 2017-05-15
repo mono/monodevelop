@@ -250,7 +250,15 @@ namespace MonoDevelop.VersionControl.Views
 		protected virtual void OnSetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 		}
-		
+
+		internal virtual TextEditorOptions GetTextEditorOptions ()
+		{
+			var options = new TextEditorOptions ();
+			options.CopyFrom (CommonTextEditorOptions.Instance);
+			options.TabsToSpaces = false;
+			return options;
+		}
+
 		protected abstract void CreateComponents ();
 		
 		internal static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
