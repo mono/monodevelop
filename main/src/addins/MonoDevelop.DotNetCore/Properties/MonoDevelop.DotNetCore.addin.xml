@@ -254,6 +254,26 @@
 			condition="UseNetCore1x=true"
 			category="netcore/test/general" />
 		<Template
+			id="Microsoft.Test.MSTest.CSharp"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore1x=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.MSTest.FSharp"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore1x=true"
+			category="netcore/test/general" />
+		<Template
 			id="Microsoft.Web.Empty.CSharp"
 			_overrideDescription="Creates a new ASP.NET Core web project."
 			path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
@@ -307,6 +327,28 @@
 			templateId="Microsoft.Test.xUnit.FSharp.2.0"
 			_overrideName="xUnit Test Project"
 			_overrideDescription="Creates a new xUnit test project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore20=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.MSTest.CSharp."
+			templateId="Microsoft.Test.MSTest.CSharp.2.0"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
+			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore20=true"
+			category="netcore/test/general" />
+		<Template
+			id="Microsoft.Test.MSTest.FSharp"
+			templateId="Microsoft.Test.MSTest.FSharp.2.0"
+			_overrideName="MSTest Project"
+			_overrideDescription="Creates a new MSTest project."
 			path="Templates/Microsoft.DotNet.Test.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
