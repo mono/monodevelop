@@ -95,6 +95,15 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 
+		[NodeAttribute ("supportedParameters", "Parameters supported by the project template.")]
+		string supportedParameters;
+
+		public string SupportedParameters {
+			get {
+				return supportedParameters;
+			}
+		}
+
 		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
 		string templateId;
 

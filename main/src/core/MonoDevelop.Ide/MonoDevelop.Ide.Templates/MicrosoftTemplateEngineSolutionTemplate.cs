@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Templates
 			Condition = template.Condition;
 			//ProjectFileExtension = template.FileExtension;
 			Wizard = template.Wizard;
-			//SupportedParameters = template.SupportedParameters;
+			SupportedParameters = template.SupportedParameters;
 			DefaultParameters = template.DefaultParameters;
 			ImageId = template.ImageId;
 			//ImageFile = template.ImageFile;
