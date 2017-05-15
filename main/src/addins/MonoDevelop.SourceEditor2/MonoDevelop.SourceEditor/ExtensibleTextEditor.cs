@@ -102,7 +102,8 @@ namespace MonoDevelop.SourceEditor
 					Document.SyntaxMode = oldSemanticHighighting.UnderlyingSyntaxMode;
 			} else {
 				if (oldSemanticHighighting == null) {
-					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
+					var def = SyntaxHighlightingService.GetSyntaxHighlightingDefinition (FileName, this.MimeType);
+					Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, new SyntaxHighlighting (def, Document), semanticHighlighting);
 				} else {
 					oldSemanticHighighting.UpdateSemanticHighlighting (semanticHighlighting);
 				}
