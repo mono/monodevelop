@@ -90,7 +90,11 @@ namespace MonoDevelop.DotNetCore.Templating
 					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
 				}
 			}
-			SelectedTargetFrameworkIndex = 0;
+
+			if (targetFrameworks.Any ())
+				SelectedTargetFrameworkIndex = 0;
+			else
+				CanMoveToNextPage = false;
 		}
 
 		/// <summary>
