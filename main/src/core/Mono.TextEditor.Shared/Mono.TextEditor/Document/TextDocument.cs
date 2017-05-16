@@ -1265,7 +1265,7 @@ namespace Mono.TextEditor
 		object foldSegmentTaskLock = new object ();
 		Task foldSegmentTask;
 
-		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
+		public void UpdateFoldSegments (IEnumerable<IFoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
 		{
 			if (newSegments == null) {
 				return;
@@ -1317,14 +1317,16 @@ namespace Mono.TextEditor
 		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
 		/// Use UpdateFoldSegments instead.
 		/// </summary>
-		HashSet<FoldSegment> UpdateFoldSegmentWorker (List<FoldSegment> newSegments, out bool update, CancellationToken token = default(CancellationToken))
+		HashSet<FoldSegment> UpdateFoldSegmentWorker (IEnumerable<IFoldSegment> segments, out bool update, CancellationToken token = default(CancellationToken))
 		{
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			bool foldedSegmentAdded = false;
+			var newSegments = segments.ToList ();
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
-			foreach (FoldSegment newFoldSegment in newSegments) {
+			foreach (var fs in newSegments) {
+				FoldSegment newFoldSegment = (fs as FoldSegment) ?? new FoldSegment (fs);
 				if (token.IsCancellationRequested) {
 					update = false;
 					return null;
