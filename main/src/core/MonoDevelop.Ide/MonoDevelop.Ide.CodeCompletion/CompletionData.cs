@@ -159,7 +159,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int IComparer<CompletionData>.Compare (CompletionData a, CompletionData b)
 			{
-				return Compare (a, b);
+				if (a == b)
+					return 0;
+				if (a != null && b == null)
+					return -1;
+				if (a == null && b != null)
+					return 1;
+				return a.CompareTo (b);
 			}
 		}
 
