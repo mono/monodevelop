@@ -6,9 +6,7 @@ open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open FsUnit
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Mono.Addins
 open MonoDevelop.Core
-open MonoDevelop.Core.Instrumentation
 open MonoDevelop.Core.ProgressMonitoring
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
@@ -77,7 +75,7 @@ type ``Template tests``() =
         // but fixed in mono 4.9.3. However, it builds just fine from the IDE.
         // Remove this filter when we get a mono bump
         |> Seq.filter(fun id -> not (id = "MonoDevelop.FSharp.TutorialProject"))
-
+        //|> Seq.filter(fun id -> id = "Xamarin.Android.FSharp.ClassLibrary")
     [<Test>]
     member x.``FSharp portable project``() =
         let name = "FSharpPortableLibrary"
@@ -94,7 +92,6 @@ type ``Template tests``() =
     member x.``Build every template`` (tt:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
-
         if tt = "FSharpPortableLibrary" then
             Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
@@ -127,7 +124,7 @@ type ``Template tests``() =
                                 SolutionName = tt,
                                 Location = (dir |> string)
                              )
-                
+
                 templateService.ProcessTemplate(template, config, sln.RootFolder)
 
             let folder = new SolutionFolder()
@@ -140,20 +137,22 @@ type ``Template tests``() =
 
             do! NuGetPackageInstaller.InstallPackages (sln, projectTemplate.PackageReferencesForCreatedProjects) |> Async.AwaitTask
             do! sln.SaveAsync(monitor) |> Async.AwaitTask
+
             let getErrorsForProject (projects: DotNetProject list) =
                 asyncSeq {
-                    //let context = new Operation
                     let ctx = TargetEvaluationContext ()
                     ctx.LogVerbosity <- MSBuildVerbosity.Diagnostic
                     let! result = sln.Build(monitor, sln.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
-
                     match tt, result.HasWarnings, result.HasErrors with
                     | "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
                     | _, false, false ->
                         // xbuild worked, now check for editor squiggles
                         for project in projects do
                             let checker = FSharpChecker.Create()
-                            let projectOptions = languageService.GetProjectOptionsFromProjectFile project
+                            let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
+
+                            let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, refs)
+
                             let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                             for error in checkResult.Errors do
                                 yield "Editor error", error.FileName, error.Message

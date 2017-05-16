@@ -33,6 +33,7 @@ type FSharpResolverProvider() =
                     (fun () ->
                     let doc = IdeApp.Workbench.GetDocument(filename)
                     let newVersion = doc.Editor.Version
+
                     if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
                     then
                         false
