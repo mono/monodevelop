@@ -429,7 +429,16 @@ namespace MonoDevelop.Components.Commands
 				// incomplete accel
 				NotifyIncompleteKeyReleased (e.Event);
 			}
+
+#if MAC
+			throttleLastEventTime = 0;
+#endif
 		}
+
+#if MAC
+		const uint THROTTLE_TIME_SPREAD = 75;
+		static uint throttleLastEventTime = 0;
+#endif
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
@@ -497,6 +506,15 @@ namespace MonoDevelop.Components.Commands
 				}
 
 				if (cinfo.Enabled && cinfo.Visible) {
+#if MAC
+					string id = commands [i].Id as string;
+					if (id == "MonoDevelop.Ide.Commands.EditCommands.Undo" || id == "MonoDevelop.Ide.Commands.EditCommands.Redo") {
+						if (ev.Time - throttleLastEventTime < THROTTLE_TIME_SPREAD)
+							break;
+						throttleLastEventTime = ev.Time;
+					}
+#endif
+
 					if (!dispatched)
 						dispatched = DispatchCommand (commands [i].Id, null, null, CommandSource.Keybinding, ev.Time);
 					conflict.Add (commands [i]);
