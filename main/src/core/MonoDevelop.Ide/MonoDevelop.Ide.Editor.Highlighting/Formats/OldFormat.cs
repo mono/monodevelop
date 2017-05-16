@@ -72,9 +72,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			if (style.Foreground.Alpha == 0)
 				return new Dictionary<string, string> ();
-			return new Dictionary<string, string> {
+			var result = new Dictionary<string, string> {
 				{ "foreground", style.Foreground.ToPangoString () }
 			};
+			if (style.FontStyle != Xwt.Drawing.FontStyle.Normal || 
+			    style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+				var fontStyle = new StringBuilder ();
+				if (style.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+					fontStyle.Append (style.FontStyle.ToString ().ToLower ());
+					fontStyle.Append (" ");
+				}
+				if (style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+					fontStyle.Append (style.FontWeight.ToString ().ToLower ());
+				}
+				result ["fontStyle"] = fontStyle.ToString ();
+			}
+			return result;
 		}
 
 		static EditorTheme ConvertToEditorTheme (ColorScheme colorScheme)
