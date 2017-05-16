@@ -83,5 +83,16 @@ namespace MonoDevelop.DotNetCore
 		{
 			return framework.Id.IsNetFramework ();
 		}
+
+		public static string GetDisplayName (this TargetFramework framework)
+		{
+			if (framework.IsNetCoreApp ())
+				return string.Format (".NET Core {0}", framework.Id.Version);
+
+			if (framework.IsNetStandard ())
+				return string.Format (".NET Standard {0}", framework.Id.Version);
+
+			return framework.Name;
+		}
 	}
 }

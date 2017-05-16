@@ -71,12 +71,12 @@ namespace MonoDevelop.DotNetCore.Gui
 				var fx = frameworks[i];
 				if (project.TargetFramework.Id == fx.Id) {
 					if (notInstalled)
-						runtimeVersionCombo.AppendText (GettextCatalog.GetString ("{0} (Not installed)", fx.Name));
+						runtimeVersionCombo.AppendText (GettextCatalog.GetString ("{0} (Not installed)", fx.GetDisplayName ()));
 					else
-						runtimeVersionCombo.AppendText (fx.Name);
+						runtimeVersionCombo.AppendText (fx.GetDisplayName ());
 					runtimeVersionCombo.Active = i;
 				} else {
-					runtimeVersionCombo.AppendText (fx.Name);
+					runtimeVersionCombo.AppendText (fx.GetDisplayName ());
 				}
 			}
 

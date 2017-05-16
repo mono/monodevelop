@@ -72,7 +72,7 @@ namespace MonoDevelop.DotNetCore.Gui
 		void PopulateTargetFrameworks ()
 		{
 			foreach (TargetFramework framework in wizardPage.TargetFrameworks) {
-				targetFrameworkComboBox.AppendText (framework.Name);
+				targetFrameworkComboBox.AppendText (framework.GetDisplayName ());
 			}
 
 			targetFrameworkComboBox.Active = wizardPage.SelectedTargetFrameworkIndex;
