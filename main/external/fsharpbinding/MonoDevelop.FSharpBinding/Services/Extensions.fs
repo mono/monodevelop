@@ -263,4 +263,4 @@ type RetryBuilder(max) =
 
 [<AutoOpen>]
 module Retry =
-    let retry = RetryBuilder(4)
+    let retry = RetryBuilder(3)

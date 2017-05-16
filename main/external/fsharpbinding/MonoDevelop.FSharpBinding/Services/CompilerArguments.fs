@@ -5,7 +5,6 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.Collections.Concurrent
 open System.IO
 open System.Reflection
 open System.Globalization
@@ -227,13 +226,6 @@ module CompilerArguments =
                 project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
 
             LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
-            //let refs = referencedAssemblies.[project]
-
-            //let refs = 
-                //async {
-                //    return! project.GetReferencedAssemblies configSelector |> Async.AwaitTask
-                //} |> Async.RunSynchronously
-            //let refs = retry { return (project.GetReferencedAssemblies configSelector).Result }
 
             if hasExplicitFSharpCore then
                 projectAssemblyReferences |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))

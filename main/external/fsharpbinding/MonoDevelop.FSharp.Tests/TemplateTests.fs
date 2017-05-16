@@ -54,46 +54,11 @@ type ``Template tests``() =
 
     let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
 
-    [<TestFixtureSetUp>]
-    member x.Setup() =
-        let config = """
-<configuration>  
-  <config>
-    <add key="repositoryPath" value="packages" />
-  </config>
-</configuration>"""
-        if not (Directory.Exists templatesDir) then
-            Directory.CreateDirectory templatesDir |> ignore
-        let configFileName = templatesDir/"NuGet.Config"
-        File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
-
-    member x.Templates =
-        solutionTemplates 
-        |> Seq.map (fun t -> t.Id)
-        |> Seq.filter (fun id -> ProjectTemplate.ProjectTemplates |> Seq.exists(fun t -> t.Id = id))
-        // The tutorial project fails because of a bug in msbuild in mono 4.8.0
-        // but fixed in mono 4.9.3. However, it builds just fine from the IDE.
-        // Remove this filter when we get a mono bump
-        |> Seq.filter(fun id -> not (id = "MonoDevelop.FSharp.TutorialProject"))
-        //|> Seq.filter(fun id -> id = "Xamarin.Android.FSharp.ClassLibrary")
-    [<Test>]
-    member x.``FSharp portable project``() =
-        let name = "FSharpPortableLibrary"
-        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
-        let dir = FilePath (templatesDir/"fsportable")
-        dir.Delete()
-        let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
-        let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
-        let proj = sln.Items.[0] :?> FSharpProject
-        proj.IsPortableLibrary |> should equal true
-
-    [<Test;AsyncStateMachine(typeof<Task>)>]
-    [<TestCaseSource ("Templates")>]
-    member x.``Build every template`` (tt:string) =
+    let test (tt:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
-        if tt = "FSharpPortableLibrary" then
-            Assert.Ignore ("A platform service implementation has not been found")
+        //if tt = "FSharpPortableLibrary" then
+            //Assert.Ignore ("A platform service implementation has not been found")
         toTask <| async {
             let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
             let dir = FilePath (templatesDir/projectTemplate.Id)
@@ -140,8 +105,7 @@ type ``Template tests``() =
 
             let getErrorsForProject (projects: DotNetProject list) =
                 asyncSeq {
-                    let ctx = TargetEvaluationContext ()
-                    ctx.LogVerbosity <- MSBuildVerbosity.Diagnostic
+                    let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Diagnostic)
                     let! result = sln.Build(monitor, sln.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
                     match tt, result.HasWarnings, result.HasErrors with
                     | "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
@@ -167,3 +131,58 @@ type ``Template tests``() =
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)
         }
+    [<TestFixtureSetUp>]
+    member x.Setup() =
+        let config = """
+<configuration>  
+  <config>
+    <add key="repositoryPath" value="packages" />
+  </config>
+</configuration>"""
+        if not (Directory.Exists templatesDir) then
+            Directory.CreateDirectory templatesDir |> ignore
+        let configFileName = templatesDir/"NuGet.Config"
+        File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
+
+    member x.Templates =
+        let x =
+            solutionTemplates 
+            |> Seq.map (fun t -> t.Id)
+            |> Seq.filter (fun id -> ProjectTemplate.ProjectTemplates |> Seq.exists(fun t -> t.Id = id))
+            // The tutorial project fails because of a bug in msbuild in mono 4.8.0
+            // but fixed in mono 4.9.3. However, it builds just fine from the IDE.
+            // Remove this filter when we get a mono bump
+            |> Seq.filter(fun id -> not (id = "MonoDevelop.FSharp.TutorialProject"))
+        x |> Seq.iter (printfn "%A")
+        //printf "%A" x
+        x
+
+    [<Test>]
+    member x.``FSharp portable project``() =
+        let name = "FSharpPortableLibrary"
+        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
+        let dir = FilePath (templatesDir/"fsportable")
+        dir.Delete()
+        let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
+        let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
+        let proj = sln.Items.[0] :?> FSharpProject
+        proj.IsPortableLibrary |> should equal true
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp FormsApp``()= test "Xamarin.Forms.FSharp.FormsApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpPortableLibrary``()= test "FSharpPortableLibrary"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp ClassLibrary``()= test "Xamarin.Forms.FSharp.ClassLibrary"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Forms FSharp UITestApp-Mac``()= test "Xamarin.Forms.FSharp.UITestApp-Mac"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin iOS FSharp SingleViewApp``()= test "Xamarin.iOS.FSharp.SingleViewApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin iOS FSharp ClassLibrary``()= test "Xamarin.iOS.FSharp.ClassLibrary"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin iOS FSharp UnitTestsApp``()= test "Xamarin.iOS.FSharp.UnitTestsApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp AndroidApp``()= test "Xamarin.Android.FSharp.AndroidApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp OpenGLGame``()= test "Xamarin.Android.FSharp.OpenGLGame"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp ClassLibrary``()= test "Xamarin.Android.FSharp.ClassLibrary"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Android FSharp UnitTestApp``()= test "Xamarin.Android.FSharp.UnitTestApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp CocoaApp-XIB``()= test "Xamarin.Mac.FSharp.CocoaApp-XIB"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp ClassLibrary``()= test "Xamarin.Mac.FSharp.ClassLibrary"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin tvOS FSharp SingleViewApp``()= test "Xamarin.tvOS.FSharp.SingleViewApp"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp ConsoleProject``()= test "MonoDevelop.FSharp.ConsoleProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtkProject``()= test "FSharpGtkProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp LibraryProject``()= test "MonoDevelop.FSharp.LibraryProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
