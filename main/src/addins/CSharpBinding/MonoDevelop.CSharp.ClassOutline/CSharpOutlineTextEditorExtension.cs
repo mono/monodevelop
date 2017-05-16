@@ -225,6 +225,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			} else {
 				Editor.CaretOffset = ((SyntaxTrivia)o).SpanStart;
 			}
+			Editor.CenterToCaret ();
 
 			if (focusEditor) {
 				GLib.Timeout.Add (10, delegate {
