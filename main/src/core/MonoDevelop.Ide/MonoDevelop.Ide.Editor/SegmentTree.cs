@@ -117,11 +117,11 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (tree.Root == null)
 				yield break;
-			var intervalStack = new Stack<Interval> ();
-			intervalStack.Push (new Interval (tree.Root, offset, offset + length));
-			while (intervalStack.Count > 0) {
-				var interval = intervalStack.Pop ();
-				if (interval.end < 0) 
+			var intervalStack = new Interval (null, tree.Root, offset, offset + length);
+			while (intervalStack != null) {
+				var interval = intervalStack;
+				intervalStack = intervalStack.tail;
+				if (interval.end < 0)
 					continue;
 
 				var node = interval.node;
@@ -133,21 +133,21 @@ namespace MonoDevelop.Ide.Editor
 					nodeEnd -= leftNode.TotalLength;
 				}
 
-				if (node.DistanceToMaxEnd < nodeStart) 
+				if (node.DistanceToMaxEnd < nodeStart)
 					continue;
 
 				if (leftNode != null)
-					intervalStack.Push (new Interval (leftNode, interval.start, interval.end));
+					intervalStack = new Interval (intervalStack, leftNode, interval.start, interval.end);
 
-				if (nodeEnd < 0) 
+				if (nodeEnd < 0)
 					continue;
 
 				if (nodeStart <= node.Length)
 					yield return (T)node;
 
 				var rightNode = node.Right;
-				if (rightNode != null) 
-					intervalStack.Push (new Interval (rightNode, nodeStart, nodeEnd));
+				if (rightNode != null)
+					intervalStack = new Interval (intervalStack, rightNode, nodeStart, nodeEnd);
 			}
 		}
 
@@ -316,14 +316,17 @@ namespace MonoDevelop.Ide.Editor
 		
 		const bool Black = false;
 		const bool Red = true;
-		
-		struct Interval 
+
+		class Interval
 		{
+			internal Interval tail;
+
 			internal TreeSegment node;
 			internal int start, end;
 
-			public Interval (TreeSegment node,int start,int end)
+			public Interval (Interval tail, TreeSegment node, int start, int end)
 			{
+				this.tail = tail;
 				this.node = node;
 				this.start = start;
 				this.end = end;
