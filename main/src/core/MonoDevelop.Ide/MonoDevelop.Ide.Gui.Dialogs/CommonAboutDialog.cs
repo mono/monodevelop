@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Name = "wizard_dialog";
 			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationLongName);
 			TransientFor = IdeApp.Workbench.RootWindow;
+			Modal = true;
 			AllowGrow = false;
 			HasSeparator = false;
 			BorderWidth = 0;
