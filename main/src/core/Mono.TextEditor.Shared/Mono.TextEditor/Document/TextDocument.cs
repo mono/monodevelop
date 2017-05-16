@@ -1311,7 +1311,8 @@ namespace Mono.TextEditor
 			var newSegments = segments.ToList ();
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
-			foreach (FoldSegment newFoldSegment in newSegments) {
+			foreach (var fs in newSegments) {
+				FoldSegment newFoldSegment = (fs as FoldSegment) ?? new FoldSegment (fs);
 				if (token.IsCancellationRequested) {
 					update = false;
 					return null;
