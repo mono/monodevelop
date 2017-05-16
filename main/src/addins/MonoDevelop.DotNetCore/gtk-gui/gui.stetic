@@ -51,6 +51,7 @@
                 <child>
                   <widget class="Gtk.Table" id="configurationTable">
                     <property name="MemberName" />
+                    <property name="NRows">2</property>
                     <property name="NColumns">3</property>
                     <property name="RowSpacing">7</property>
                     <property name="ColumnSpacing">6</property>
@@ -58,11 +59,41 @@
                       <placeholder />
                     </child>
                     <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
                       <widget class="Gtk.ComboBox" id="targetFrameworkComboBox">
                         <property name="MemberName" />
-                        <property name="WidthRequest">350</property>
+                        <property name="WidthRequest">250</property>
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
+                        <property name="LeftAttach">1</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="targetFrameworkInformationLabel">
+                        <property name="MemberName" />
+                        <property name="Xpad">5</property>
+                        <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes">Select the target framework for your project.</property>
+                        <property name="Justify">Right</property>
                       </widget>
                       <packing>
                         <property name="LeftAttach">1</property>
@@ -88,6 +119,8 @@
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>

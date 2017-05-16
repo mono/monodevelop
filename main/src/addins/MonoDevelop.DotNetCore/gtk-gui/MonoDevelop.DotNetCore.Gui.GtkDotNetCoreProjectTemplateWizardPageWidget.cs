@@ -18,6 +18,8 @@ namespace MonoDevelop.DotNetCore.Gui
 
 		private global::Gtk.ComboBox targetFrameworkComboBox;
 
+		private global::Gtk.Label targetFrameworkInformationLabel;
+
 		private global::Gtk.Label targetFrameworkLabel;
 
 		private global::Gtk.EventBox configurationBottomEventBox;
@@ -57,20 +59,35 @@ namespace MonoDevelop.DotNetCore.Gui
 			this.configurationTableEventBox = new global::Gtk.EventBox();
 			this.configurationTableEventBox.Name = "configurationTableEventBox";
 			// Container child configurationTableEventBox.Gtk.Container+ContainerChild
-			this.configurationTable = new global::Gtk.Table(((uint)(1)), ((uint)(3)), false);
+			this.configurationTable = new global::Gtk.Table(((uint)(2)), ((uint)(3)), false);
 			this.configurationTable.Name = "configurationTable";
 			this.configurationTable.RowSpacing = ((uint)(7));
 			this.configurationTable.ColumnSpacing = ((uint)(6));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.targetFrameworkComboBox = global::Gtk.ComboBox.NewText();
-			this.targetFrameworkComboBox.WidthRequest = 350;
+			this.targetFrameworkComboBox.WidthRequest = 250;
 			this.targetFrameworkComboBox.Name = "targetFrameworkComboBox";
 			this.configurationTable.Add(this.targetFrameworkComboBox);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetFrameworkComboBox]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child configurationTable.Gtk.Table+TableChild
+			this.targetFrameworkInformationLabel = new global::Gtk.Label();
+			this.targetFrameworkInformationLabel.Name = "targetFrameworkInformationLabel";
+			this.targetFrameworkInformationLabel.Xpad = 5;
+			this.targetFrameworkInformationLabel.Xalign = 0F;
+			this.targetFrameworkInformationLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Select the target framework for your project.");
+			this.targetFrameworkInformationLabel.Justify = ((global::Gtk.Justification)(1));
+			this.configurationTable.Add(this.targetFrameworkInformationLabel);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetFrameworkInformationLabel]));
+			w4.LeftAttach = ((uint)(1));
+			w4.RightAttach = ((uint)(2));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.targetFrameworkLabel = new global::Gtk.Label();
 			this.targetFrameworkLabel.WidthRequest = 132;
@@ -80,24 +97,26 @@ namespace MonoDevelop.DotNetCore.Gui
 			this.targetFrameworkLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Target Framework:");
 			this.targetFrameworkLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add(this.targetFrameworkLabel);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetFrameworkLabel]));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetFrameworkLabel]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.configurationTableEventBox.Add(this.configurationTable);
 			this.configurationVBox.Add(this.configurationTableEventBox);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
-			w6.Position = 1;
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
+			w7.Position = 1;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Container child configurationVBox.Gtk.Box+BoxChild
 			this.configurationBottomEventBox = new global::Gtk.EventBox();
 			this.configurationBottomEventBox.Name = "configurationBottomEventBox";
 			this.configurationVBox.Add(this.configurationBottomEventBox);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
-			w7.Position = 2;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
+			w8.Position = 2;
 			this.mainHBox.Add(this.configurationVBox);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
-			w8.Position = 1;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
+			w9.Position = 1;
 			// Container child mainHBox.Gtk.Box+BoxChild
 			this.backgroundLargeImageEventBox = new global::Gtk.EventBox();
 			this.backgroundLargeImageEventBox.Name = "backgroundLargeImageEventBox";
@@ -106,8 +125,8 @@ namespace MonoDevelop.DotNetCore.Gui
 			this.backgroundLargeImageVBox.Name = "backgroundLargeImageVBox";
 			this.backgroundLargeImageEventBox.Add(this.backgroundLargeImageVBox);
 			this.mainHBox.Add(this.backgroundLargeImageEventBox);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.backgroundLargeImageEventBox]));
-			w10.Position = 2;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.backgroundLargeImageEventBox]));
+			w11.Position = 2;
 			this.Add(this.mainHBox);
 			if ((this.Child != null))
 			{
