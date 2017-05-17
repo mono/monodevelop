@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.DotNetCore.Gui
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public partial class GtkDotNetCoreProjectTemplateWizardPageWidget : Gtk.Bin
+	partial class GtkDotNetCoreProjectTemplateWizardPageWidget : Gtk.Bin
 	{
 		DotNetCoreProjectTemplateWizardPage wizardPage;
 		Color backgroundColor;
