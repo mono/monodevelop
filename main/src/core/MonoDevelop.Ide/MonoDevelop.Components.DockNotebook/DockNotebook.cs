@@ -42,12 +42,6 @@ namespace MonoDevelop.Components.DockNotebook
 	class DockNotebook : Gtk.VBox
 	{
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
-		List<DockNotebookTab> stickedPages { 
-			get { return pages.Where (p => p.IsPinned).OrderBy (p => p.Index).ToList (); }
-		}
-		List<DockNotebookTab> normalPages { 
-			get { return pages.Where (p => !p.IsPinned).OrderBy (p => p.Index).ToList (); }
-		}
 		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
@@ -342,6 +336,10 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (pages.Count == 1)
 				return;
+			
+			var stickedPages = pages.Where (p => p.IsPinned).OrderBy (p => p.Index).ToList ();
+			var normalPages = pages.Where (p => !p.IsPinned).OrderBy (p => p.Index).ToList ();
+
 			if (value) {
 				if (stickedPages.Count > 0) 
 					ReorderTab (sender, normalPages.Count > 0  ? normalPages [0] : stickedPages [stickedPages.Count - 1], false);

@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 
 			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-				if (deleteCache.Exists(d => d == doc))
+				if (deleteCache.Contains(doc))
 					doc.Close();
 			}
 		}
