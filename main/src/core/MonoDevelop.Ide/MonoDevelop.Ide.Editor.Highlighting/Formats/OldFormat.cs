@@ -170,6 +170,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			settings.Add (new ThemeSetting ("Comment", new List<string> { "comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
 			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));
+			settings.Add (new ThemeSetting ("Comment Block", new List<string> { "comment.block" }, ConvertChunkStyle (colorScheme.CommentsBlock)));
+			settings.Add (new ThemeSetting ("Comment XML Doc Comment", new List<string> { "comment.line.documentation" }, ConvertChunkStyle (colorScheme.CommentsForDocumentation)));
+			settings.Add (new ThemeSetting ("Comment XML Doc Tag", new List<string> { "comment.line.documentation.tag" }, ConvertChunkStyle (colorScheme.CommentsForDocumentationTags)));
 
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("punctuation.definition.string", new List<string> { "punctuation.definition.string" }, ConvertChunkStyle (colorScheme.String)));
