@@ -45,12 +45,16 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		/// <summary>
 		/// When only .NET Core 2.0 is installed there is only one option in the drop down
-		/// list for the target framework so there is no point in displaying the wizard since
-		/// nothing can be changed. If .NET Core 1.0 is installed then there is at least two
-		/// options available.
+		/// list for the target framework for .NET Core projects so there is no point in displaying
+		/// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
+		/// least two options available. If the .NET Standard project template is selected then there
+		/// are multiple options available.
 		/// </summary>
 		int GetTotalPages ()
 		{
+			if (IsSupportedParameter ("NetStandard"))
+				return 1;
+
 			if (IsOnlyDotNetCore2Installed ())
 				return 0;
 

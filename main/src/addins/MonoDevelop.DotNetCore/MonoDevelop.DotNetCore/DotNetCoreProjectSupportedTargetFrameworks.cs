@@ -64,7 +64,7 @@ namespace MonoDevelop.DotNetCore
 			if (DotNetCoreRuntime.IsNetCore20Installed ())
 				yield return CreateTargetFramework (".NETStandard", "2.0");
 
-			if (DotNetCoreRuntime.IsNetCore1xInstalled ()) {
+			if (DotNetCoreRuntime.IsNetCore20Installed () || DotNetCoreRuntime.IsNetCore1xInstalled ()) {
 				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
 					yield return targetFramework;
 			}
