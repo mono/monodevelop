@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Core.StringParsing;
 using MonoDevelop.DotNetCore.Gui;
 using MonoDevelop.Ide.Templates;
 
@@ -40,10 +39,17 @@ namespace MonoDevelop.DotNetCore.Templating
 		GtkDotNetCoreProjectTemplateWizardPageWidget view;
 		List<TargetFramework> targetFrameworks;
 
-		public DotNetCoreProjectTemplateWizardPage (DotNetCoreProjectTemplateWizard wizard)
+		public DotNetCoreProjectTemplateWizardPage (
+			DotNetCoreProjectTemplateWizard wizard,
+			List<TargetFramework> targetFrameworks)
 		{
 			this.wizard = wizard;
-			GetTargetFrameworks ();
+			this.targetFrameworks = targetFrameworks;
+
+			if (targetFrameworks.Any ())
+				SelectedTargetFrameworkIndex = 0;
+			else
+				CanMoveToNextPage = false;
 		}
 
 		public override string Title {
@@ -70,50 +76,6 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 
 		public bool ShowMultiplatformLibraryImage { get; private set; }
-
-		void GetTargetFrameworks ()
-		{
-			if (wizard.IsSupportedParameter ("NetStandard")) {
-				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
-
-				// Use 1.x target frameworks by default if none are available from the .NET Core sdk.
-				if (!targetFrameworks.Any ())
-					targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetDefaultNetStandard1xTargetFrameworks ().ToList ();
-
-				if (wizard.IsSupportedParameter ("FSharpNetStandard")) {
-					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
-				}
-			} else {
-				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
-
-				if (wizard.IsSupportedParameter ("FSharpNetCoreLibrary") || wizard.IsSupportedParameter ("RazorPages")) {
-					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
-				}
-			}
-
-			if (targetFrameworks.Any ())
-				SelectedTargetFrameworkIndex = 0;
-			else
-				CanMoveToNextPage = false;
-		}
-
-		/// <summary>
-		/// The F# project templates do not support .NET Standard below 1.6 so do not allow them to
-		/// be selected.
-		/// </summary>
-		static void RemoveUnsupportedNetStandardTargetFrameworksForFSharp (List<TargetFramework> targetFrameworks)
-		{
-			targetFrameworks.RemoveAll (framework => framework.IsLowerThanNetStandard16 ());
-		}
-
-		/// <summary>
-		/// FSharp class library project template and the Razor Pages project template do not support
-		/// targeting 1.x versions so remove these frameworks.
-		/// </summary>
-		static void RemoveUnsupportedNetCoreApp1xTargetFrameworks (List<TargetFramework> targetFrameworks)
-		{
-			targetFrameworks.RemoveAll (framework => framework.IsNetCoreApp1x ());
-		}
 
 		public IList<TargetFramework> TargetFrameworks {
 			get { return targetFrameworks; }

@@ -24,15 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
 	class DotNetCoreProjectTemplateWizard : TemplateWizard
 	{
+		List<TargetFramework> targetFrameworks;
+
 		public override WizardPage GetPage (int pageNumber)
 		{
-			return new DotNetCoreProjectTemplateWizardPage (this);
+			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks);
+			targetFrameworks = null;
+			return page;
 		}
 
 		public override int TotalPages {
@@ -48,23 +55,55 @@ namespace MonoDevelop.DotNetCore.Templating
 		/// list for the target framework for .NET Core projects so there is no point in displaying
 		/// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
 		/// least two options available. If the .NET Standard project template is selected then there
-		/// are multiple options available.
+		/// are multiple options available. So here a check is made to see if more than one target
+		/// framework is available. If not then the wizard will not be displayed.
 		/// </summary>
 		int GetTotalPages ()
 		{
-			if (IsSupportedParameter ("NetStandard"))
+			GetTargetFrameworks ();
+			if (targetFrameworks.Count > 1)
 				return 1;
 
-			if (IsOnlyDotNetCore2Installed ())
-				return 0;
-
-			return 1;
+			return 0;
 		}
 
-		bool IsOnlyDotNetCore2Installed ()
+		void GetTargetFrameworks ()
 		{
-			return DotNetCoreRuntime.IsNetCore20Installed () &&
-				!DotNetCoreRuntime.IsNetCore1xInstalled ();
+			if (IsSupportedParameter ("NetStandard")) {
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
+
+				// Use 1.x target frameworks by default if none are available from the .NET Core sdk.
+				if (!targetFrameworks.Any ())
+					targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetDefaultNetStandard1xTargetFrameworks ().ToList ();
+
+				if (IsSupportedParameter ("FSharpNetStandard")) {
+					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
+				}
+			} else {
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
+				}
+			}
+		}
+
+		/// <summary>
+		/// The F# project templates do not support .NET Standard below 1.6 so do not allow them to
+		/// be selected.
+		/// </summary>
+		static void RemoveUnsupportedNetStandardTargetFrameworksForFSharp (List<TargetFramework> targetFrameworks)
+		{
+			targetFrameworks.RemoveAll (framework => framework.IsLowerThanNetStandard16 ());
+		}
+
+		/// <summary>
+		/// FSharp class library project template and the Razor Pages project template do not support
+		/// targeting 1.x versions so remove these frameworks.
+		/// </summary>
+		static void RemoveUnsupportedNetCoreApp1xTargetFrameworks (List<TargetFramework> targetFrameworks)
+		{
+			targetFrameworks.RemoveAll (framework => framework.IsNetCoreApp1x ());
 		}
 	}
 }
