@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 		public void SetGlobalProperties (IDictionary<string, string> properties)
 		{
 			foreach (var p in properties)
-				engine.SetGlobalProperty (p.Key, p.Value);
+				engine.GlobalProperties[p.Key] = p.Value;
 		}
 
 		public ProjectBuilder LoadProject (string file, string sdksPath)
