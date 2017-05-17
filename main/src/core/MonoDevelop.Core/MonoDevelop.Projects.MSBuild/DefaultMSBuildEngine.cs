@@ -122,7 +122,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 		}
 
-		MSBuildProject LoadProject (FilePath fileName)
+		MSBuildProject LoadProject (MSBuildEvaluationContext context, FilePath fileName)
 		{
 			fileName = fileName.CanonicalPath;
 			lock (loadedProjects) {
@@ -136,10 +136,11 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 					return pi.Project;
 				}
+				LogBeginProjectFileLoad (context, fileName);
 				MSBuildProject p = new MSBuildProject (EngineManager);
 				p.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
 				loadedProjects [fileName] = new LoadedProjectInfo { Project = p, LastWriteTime = File.GetLastWriteTime (fileName) };
-				//Console.WriteLine ("Loaded: " + fileName);
+				LogEndProjectFileLoad (context);
 				return p;
 			}
 		}
@@ -196,9 +197,12 @@ namespace MonoDevelop.Projects.MSBuild
 					context.SetPropertyValue (p.Key, p.Value);
 					pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
 				}
+				//context.Log = new ConsoleMSBuildEngineLogger ();
+				LogBeginEvaluationStage (context, "Evaluating Project: " + pi.Project.FileName);
+				LogInitialEnvironment (context);
 				EvaluateProject (pi, context);
-			}
-			finally {
+				LogEndEvaluationStage (context);
+			} finally {
 				foreach (var p in oldRefProjects)
 					UnloadProject (p);
 				pi.ImportedProjects.Clear ();
@@ -228,10 +232,23 @@ namespace MonoDevelop.Projects.MSBuild
 
 			// If there is a .user project file load it using a fake import item added at the end of the objects list
 			if (File.Exists (pi.Project.FileName + ".user"))
-				objects = objects.Concat (new MSBuildImport {Project = pi.Project.FileName + ".user" });
+				objects = objects.Concat (new MSBuildImport { Project = pi.Project.FileName + ".user" });
+
+			LogBeginEvaluationStage (context, "Evaluating Properies");
+			LogBeginEvalProject (context, pi);
 
 			EvaluateObjects (pi, context, objects, false);
+
+			LogEndEvalProject (context, pi);
+			LogEndEvaluationStage (context);
+
+			LogBeginEvaluationStage (context, "Evaluating Items");
+			LogBeginEvalProject (context, pi);
+
 			EvaluateObjects (pi, context, objects, true);
+
+			LogEndEvalProject (context, pi);
+			LogEndEvaluationStage (context);
 
 			// Once items have been evaluated, we need to re-evaluate properties that contain item transformations
 			// (or that contain references to properties that have transformations).
@@ -252,7 +269,10 @@ namespace MonoDevelop.Projects.MSBuild
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context, bool evalItems)
 		{
 			context.InitEvaluation (pi.Project);
+			
+			LogBeginEvalProject (context, pi);
 			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), evalItems);
+			LogEndEvalProject (context, pi);
 		}
 
 		void EvaluateObjects (ProjectInfo pi, MSBuildEvaluationContext context, IEnumerable<MSBuildObject> objects, bool evalItems)
@@ -337,7 +357,7 @@ namespace MonoDevelop.Projects.MSBuild
 					else {
 						foreach (var inc in it.Include.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries))
 							AddItem (project, context, item, it, inc, excludeRegex, directoryExcludeRegex, trueCond);
-				}
+					}
 				}
 			}
 		}
@@ -1089,8 +1109,8 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			if (!File.Exists (file))
 				return;
-			
-			var pref = LoadProject (file);
+
+			var pref = LoadProject (context, file);
 			project.ReferencedProjects.Add (pref);
 
 			var prefProject = new ProjectInfo { Project = pref, Parent = project };
@@ -1365,5 +1385,120 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		#endregion
+
+		#region Logging
+
+
+		private void LogBeginEvaluationStage (MSBuildEvaluationContext context, string v)
+		{
+			if (context.Log != null) {
+				context.Log.PushTask (v);
+				context.Log.Indent += 2;
+			}
+		}
+
+		private void LogEndEvaluationStage (MSBuildEvaluationContext context)
+		{
+			if (context.Log != null) {
+				context.Log.PopTask ();
+				context.Log.LogMessage ("");
+			}
+		}
+
+		public void LogInitialEnvironment (MSBuildEvaluationContext context)
+		{
+			if (context.Log != null && context.Log.Flags.HasFlag (MSBuildLogFlags.Properties)) {
+				context.Log.LogMessage ("Environment at start of build:");
+				context.Dump ();
+				context.Log.LogMessage ("");
+			}
+		}
+
+		void LogBeginProjectFileLoad (MSBuildEvaluationContext context, FilePath fileName)
+		{
+			if (context.Log != null)
+				context.Log.PushTask ("Load Project: " + fileName);
+		}
+
+		void LogEndProjectFileLoad (MSBuildEvaluationContext context)
+		{
+			if (context.Log != null)
+				context.Log.PopTask ();
+		}
+
+		void LogBeginEvalProject (MSBuildEvaluationContext context, ProjectInfo pinfo)
+		{
+			if (context.Log != null) {
+				context.Log.PushTask ("Evaluate Project: " + pinfo.Project.FileName);
+				if (context.Log.Flags.HasFlag (MSBuildLogFlags.Properties)) {
+					context.Log.LogMessage ("");
+					context.Log.LogMessage ("Initial Properties:");
+					context.Dump ();
+					context.Log.LogMessage ("");
+				}
+			}
+		}
+
+		void LogEndEvalProject (MSBuildEvaluationContext context, ProjectInfo pinfo)
+		{
+			if (context.Log != null)
+				context.Log.PopTask ();
+		}
+
+		#endregion
+	}
+
+	abstract class MSBuildEngineLogger
+	{
+		class LogTask {
+			public string Name;
+			public long Timestamp;
+		}
+
+		long initialTimestamp;
+		Stack<LogTask> timeStack = new Stack<LogTask> ();
+
+		internal int Indent { get; set; }
+
+		public MSBuildLogFlags Flags { get; set; }
+
+		public MSBuildEngineLogger ()
+		{
+			initialTimestamp = System.Diagnostics.Stopwatch.GetTimestamp ();
+		}
+
+		public void PushTask (string name)
+		{
+			var tt = System.Diagnostics.Stopwatch.GetTimestamp ();
+			var elapsed = (tt - initialTimestamp) / (System.Diagnostics.Stopwatch.Frequency / 1000);
+			LogMessage (name + " (t:" + elapsed + ")");
+			Indent += 2;
+			timeStack.Push (new LogTask { Name = name, Timestamp = tt });
+		}
+
+		public void PopTask ()
+		{
+			var t = System.Diagnostics.Stopwatch.GetTimestamp ();
+			var task = timeStack.Pop ();
+			var elapsed = (t - task.Timestamp) / (System.Diagnostics.Stopwatch.Frequency / 1000);
+			Indent -= 2;
+			LogMessage ($"Done {task.Name} ({elapsed}ms)");
+		}
+
+		public abstract void LogMessage (string s);
+	}
+
+	enum MSBuildLogFlags
+	{
+		Properties = 0b0001,
+		Items = 0b0010
+	}
+
+	class ConsoleMSBuildEngineLogger: MSBuildEngineLogger
+	{
+		public override void LogMessage (string s)
+		{
+			Console.WriteLine (new string (' ', Indent) + s);
+		}
 	}
 }
