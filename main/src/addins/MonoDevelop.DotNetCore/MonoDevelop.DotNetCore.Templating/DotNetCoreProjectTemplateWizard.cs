@@ -36,11 +36,31 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 
 		public override int TotalPages {
-			get { return 1; }
+			get { return GetTotalPages (); }
 		}
 
 		public override string Id {
 			get { return "MonoDevelop.DotNetCore.ProjectTemplateWizard"; }
+		}
+
+		/// <summary>
+		/// When only .NET Core 2.0 is installed there is only one option in the drop down
+		/// list for the target framework so there is no point in displaying the wizard since
+		/// nothing can be changed. If .NET Core 1.0 is installed then there is at least two
+		/// options available.
+		/// </summary>
+		int GetTotalPages ()
+		{
+			if (IsOnlyDotNetCore2Installed ())
+				return 0;
+
+			return 1;
+		}
+
+		bool IsOnlyDotNetCore2Installed ()
+		{
+			return DotNetCoreRuntime.IsNetCore20Installed () &&
+				!DotNetCoreRuntime.IsNetCore1xInstalled ();
 		}
 	}
 }
