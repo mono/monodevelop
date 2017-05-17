@@ -109,6 +109,10 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\external\fsharpbinding\packages\System.ValueTuple\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -165,6 +169,7 @@
     <Compile Include="MonoDevelop.Refactoring.GenerateType\GenerateTypeOptionsService.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.PackageInstaller\PackageInstallerService.cs" />
+    <Compile Include="MonoDevelop.Refactoring.PackageInstaller\SymbolSearchService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

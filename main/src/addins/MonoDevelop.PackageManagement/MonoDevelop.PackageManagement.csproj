@@ -149,6 +149,10 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\external\fsharpbinding\packages\System.ValueTuple\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -416,6 +420,7 @@
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Refactoring\NuGetPackageServicesProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

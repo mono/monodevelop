@@ -381,6 +381,10 @@ namespace MonoDevelop.CodeActions
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;
 			Editor.EndAtomicUndoOperation += Editor_EndAtomicUndoOperation;
+
+			DocumentContext.RoslynWorkspace.Options = DocumentContext.RoslynWorkspace.Options.WithChangedOption (
+				Microsoft.CodeAnalysis.SymbolSearch.SymbolSearchOptions.SuggestForTypesInNuGetPackages, LanguageNames.CSharp, true);
+
 		}
 
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)

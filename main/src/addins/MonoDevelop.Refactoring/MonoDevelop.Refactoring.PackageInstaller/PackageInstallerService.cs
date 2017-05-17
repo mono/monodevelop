@@ -37,17 +37,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Concurrent;
+using System.Linq;
+using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.SymbolSearch;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring.PackageInstaller
 {
 	[ExportWorkspaceServiceFactory (typeof (IPackageInstallerService)), Shared]
 	class PackageInstallerServiceFactory : IWorkspaceServiceFactory
 	{
+		public static IPackageServicesProxy PackageServices;
+
 		static Lazy<IPackageInstallerService> service = new Lazy<IPackageInstallerService> (() => new PackageInstallerService ());
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
-			Console.WriteLine ("create package installer service !!!");
 			return service.Value;
 		}
 
@@ -66,6 +72,13 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 			void InstallLatestPackage (string source, MonoDevelop.Projects.Project project, string packageId, bool includePrerelease, bool ignoreDependencies);
 
 			void UninstallPackage (MonoDevelop.Projects.Project project, string packageId, bool removeDependencies);
+
+			Task<IEnumerable<(string PackageName, string Version, int Rank)>> FindPackagesWithAssemblyAsync (string source, string assemblyName, CancellationToken cancellationToken);
+			Task<IEnumerable<(string PackageName, string TypeName, string Version, int Rank, IReadOnlyList<string> ContainingNamespaceNames)>> FindPackagesWithTypeAsync (string source, string name, int arity, CancellationToken cancellationToken);
+			Task<IEnumerable<(string AssemblyName, string TypeName, IReadOnlyList<string> ContainingNamespaceNames)>> FindReferenceAssembliesWithTypeAsync (string name, int arity, CancellationToken cancellationToken);
+			ImmutableArray<string> GetInstalledVersions (string packageName);
+			IEnumerable<MonoDevelop.Projects.Project> GetProjectsWithInstalledPackage (MonoDevelop.Projects.Solution solution, string packageName, string version);
+			void ShowManagePackagesDialog (string packageName);
 		}
 
 		internal class PackageMetadata
@@ -84,34 +97,42 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 		{
 			readonly ConcurrentDictionary<ProjectId, Dictionary<string, string>> _projectToInstalledPackageAndVersion = new ConcurrentDictionary<ProjectId, Dictionary<string, string>> ();
 
-			public bool IsEnabled => true;
+			public bool IsEnabled {
+				get {
+					return true;
+				}
+			}
 
-			public static IPackageServicesProxy PackageServices;
 
-			public ImmutableArray<PackageSource> PackageSources { get; private set; } = ImmutableArray<PackageSource>.Empty;
+			public ImmutableArray<PackageSource> PackageSources {
+				get {
+					return PackageServices.GetSources (false, false).Select (kv => new PackageSource (kv.Key, kv.Value)) .ToImmutableArray ();
+				}
+				private set {
+				}
+			}
 
 			public event EventHandler PackageSourcesChanged;
 
 			public ImmutableArray<string> GetInstalledVersions (string packageName)
 			{
-				Console.WriteLine ("get installed versions !!!");
-				return ImmutableArray<string>.Empty;
+				return PackageServices.GetInstalledVersions (packageName);
 			}
 
 			public IEnumerable<Project> GetProjectsWithInstalledPackage (Solution solution, string packageName, string version)
 			{
-				var result = new List<Project> ();
-				return result;
+				return PackageServices.GetProjectsWithInstalledPackage (IdeApp.ProjectOperations.CurrentSelectedSolution, packageName, version).Select (p => TypeSystemService.GetCodeAnalysisProject (p));
 			}
 
 			public bool IsInstalled (Workspace workspace, ProjectId projectId, string packageName)
 			{
 				return _projectToInstalledPackageAndVersion.TryGetValue (projectId, out var installedPackages) &&
-					installedPackages.ContainsKey (packageName);			}
+					installedPackages.ContainsKey (packageName);
+			}
 
 			public void ShowManagePackagesDialog (string packageName)
 			{
-				Console.WriteLine ("show managed packages dialog : " + packageName);
+				PackageServices.ShowManagePackagesDialog (packageName);
 			}
 
 			public bool TryInstallPackage (Workspace workspace, DocumentId documentId, string source, string packageName, string versionOpt, bool includePrerelease, CancellationToken cancellationToken)
