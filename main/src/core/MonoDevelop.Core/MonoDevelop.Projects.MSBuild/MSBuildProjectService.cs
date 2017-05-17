@@ -243,28 +243,23 @@ namespace MonoDevelop.Projects.MSBuild
 			return result;
 		}
 
-		/// <summary>
-		/// Finds an SDKs path that contains the specified SDK.
-		/// </summary>
-		internal static string FindSdkPath (TargetRuntime runtime, IEnumerable<string> sdks)
-		{
-			// Look for SDKs in the default SDKs path first, and then in the fallback paths
-			var defaultSdksPath = GetDefaultSdksPath (runtime);
-			var allPaths = Enumerable.Repeat (defaultSdksPath, 1).Concat (GetProjectImportSearchPaths (runtime, true).Where (n => n.Property == "MSBuildSDKsPath").Select (sp => sp.Path));
-
-			foreach (var path in allPaths) {
-				// We need to find a path that contains all required SDKs, since we can only read SDKs from one place for a project.
-				if (sdks.All (sdk => Directory.Exists (Path.Combine (path, sdk))))
-					return path;
-			}
-			return null;
-		}
-
 		internal static string GetDefaultSdksPath (TargetRuntime runtime)
 		{
 			string binDir;
 			GetNewestInstalledToolsVersion (runtime, true, out binDir);
 			return Path.Combine (binDir, "Sdks");
+		}
+
+		internal static IEnumerable<SdkInfo> FindRegisteredSdks ()
+		{
+			foreach (var node in GetProjectImportSearchPaths (null, false).Where (n => n.Property == "MSBuildSDKsPath")) {
+				if (Directory.Exists (node.Path)) {
+					foreach (var dir in Directory.GetDirectories (node.Path)) {
+						if (File.Exists (Path.Combine (dir, "Sdk", "Sdk.props")))
+							yield return new SdkInfo { Name = Path.GetFileName (dir), Path = Path.Combine (dir, "Sdk") };
+					}
+				}
+			}
 		}
 
 		static List<ImportSearchPathExtensionNode> LoadDefaultProjectImportSearchPaths (TargetRuntime runtime)
@@ -1085,7 +1080,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, string sdksPath, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool requiresMicrosoftBuild, bool lockBuilder = false)
 		{
 			Version mtv = Version.Parse (minToolsVersion);
 			if (mtv >= new Version (15,0))
@@ -1124,7 +1119,7 @@ namespace MonoDevelop.Projects.MSBuild
 				
 				if (builder != null) {
 					builder.ReferenceCount++;
-					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
+					return await builder.CreateRemoteProjectBuilder (file).ConfigureAwait (false);
 				}
 
 				return await Task.Run (async () => {
@@ -1171,7 +1166,7 @@ namespace MonoDevelop.Projects.MSBuild
 					};
 					if (lockBuilder)
 						builder.Lock ();
-					return await builder.CreateRemoteProjectBuilder (file, sdksPath).ConfigureAwait (false);
+					return await builder.CreateRemoteProjectBuilder (file).ConfigureAwait (false);
 				});
 			}
 		}
@@ -1265,6 +1260,10 @@ namespace MonoDevelop.Projects.MSBuild
 			var destinationExe = exesDir.Combine (Path.GetFileName (originalExe));
 			var destinationExeConfig = destinationExe + ".config";
 
+			var localResolversDir = Path.Combine (exesDir, "SdkResolvers");
+			var mdResolverDir = Path.Combine (localResolversDir, "MonoDevelop.MSBuildResolver");
+			var mdResolverConfig = Path.Combine (mdResolverDir, "sdks.config");
+
 			string binDir;
 			GetNewestInstalledToolsVersion (runtime, true, out binDir);
 
@@ -1335,7 +1334,15 @@ namespace MonoDevelop.Projects.MSBuild
 				// to MSBuild.dll
 				var resolversDir = Path.Combine (binDir, "SdkResolvers");
 				if (Directory.Exists (resolversDir))
-					FileService.CopyDirectory (resolversDir, Path.Combine (exesDir, "SdkResolvers"));
+					FileService.CopyDirectory (resolversDir, localResolversDir);
+				else
+					Directory.CreateDirectory (localResolversDir);
+
+				// Copy the MonoDevelop resolver, used for sdks registered by add-ins.
+				// This resolver will load registered sdks from the file sdks.config
+				var builderDir = new FilePath (typeof (MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
+				Directory.CreateDirectory (mdResolverDir);
+				File.Copy (Path.Combine (builderDir, "MonoDevelop.MSBuildResolver.dll"), Path.Combine (mdResolverDir, "MonoDevelop.MSBuildResolver.dll"));
 
 				searchPathConfigNeedsUpdate = true;
 			}
@@ -1343,12 +1350,12 @@ namespace MonoDevelop.Projects.MSBuild
 			if (searchPathConfigNeedsUpdate) {
 				// There is already a local copy of the builder, but the config file needs to be updated.
 				searchPathConfigNeedsUpdate = false;
-				UpdateMSBuildExeConfigFile (runtime, originalExeConfig, destinationExeConfig, binDir);
+				UpdateMSBuildExeConfigFile (runtime, originalExeConfig, destinationExeConfig, mdResolverConfig, binDir);
 			}
 			return destinationExe;
 		}
 
-		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string sourceConfigFile, string destinationConfigFile, string binDir)
+		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string sourceConfigFile, string destinationConfigFile, string mdResolverConfig, string binDir)
 		{
 			// Creates an MSBuild config file with the search paths registered by add-ins.
 
@@ -1402,6 +1409,9 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				doc.Save (destinationConfigFile);
 			}
+
+			// Update the sdk list for the MD resolver
+			SdkInfo.SaveConfig (mdResolverConfig, FindRegisteredSdks ());
 		}
 
 		static void SetMSBuildConfigProperty (XElement elem, string name, string value, bool append = false, bool insertBefore = false)

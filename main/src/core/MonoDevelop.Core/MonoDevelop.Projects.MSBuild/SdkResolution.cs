@@ -98,8 +98,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		IList<SdkResolver> LoadResolvers (ILoggingService logger)
 		{
-			// Always add the default resolver
-			var resolvers = new List<SdkResolver> { new DefaultSdkResolver { TargetRuntime = runtime } };
+			// Add the MonoDevelop resolver, which resolves SDKs registered by add-ins.
+			// Also add the default resolver.
+
+			var resolvers = new List<SdkResolver> { new MonoDevelop.Projects.MSBuild.Resolver (MSBuildProjectService.FindRegisteredSdks), new DefaultSdkResolver { TargetRuntime = runtime } };
 			MSBuildProjectService.GetNewestInstalledToolsVersion (runtime, true, out var binDir);
 			var potentialResolvers = FindPotentialSdkResolvers (Path.Combine (binDir, "SdkResolvers"));
 

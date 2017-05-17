@@ -105,14 +105,6 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildProjectDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
 				InitEngineProperties (project.TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime, properties, out searchPaths);
-
-				if (project.Sdk != null) {
-					string sdksPath = MSBuildProjectService.FindSdkPath (project.TargetRuntime, project.GetReferencedSDKs ());
-
-					if (sdksPath != null) {
-						properties.Add ("MSBuildSDKsPath", MSBuildProjectService.ToMSBuildPath (null, sdksPath));
-					}
-				}
 			}
 		}
 

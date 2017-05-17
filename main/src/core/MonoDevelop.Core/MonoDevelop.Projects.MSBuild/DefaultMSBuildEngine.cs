@@ -1028,10 +1028,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 			bool keepSearching;
 
-			var files = GetImportFiles (project, context, import, null, null, out keepSearching);
+			// If the import is an SDK import, this will contain the SDKs path used to resolve the import.
+			string resolvedSdksPath;
+
+			var files = GetImportFiles (project, context, import, null, null, out resolvedSdksPath, out keepSearching);
 			if (files != null) {
 				foreach (var f in files)
-					ImportFile (project, context, import, f);
+					ImportFile (project, context, import, f, resolvedSdksPath);
 			}
 
 			// We may need to keep searching if the import was not found, or if the import had a wildcard.
@@ -1041,10 +1044,10 @@ namespace MonoDevelop.Projects.MSBuild
 				foreach (var prop in context.GetProjectImportSearchPaths ()) {
 					if (import.Project.IndexOf ("$(" + prop.Property + ")", StringComparison.OrdinalIgnoreCase) == -1)
 						continue;
-					files = GetImportFiles (project, context, import, prop.Property, prop.Path, out keepSearching);
+					files = GetImportFiles (project, context, import, prop.Property, prop.Path, out resolvedSdksPath, out keepSearching);
 					if (files != null) {
 						foreach (var f in files)
-							ImportFile (project, context, import, f);
+							ImportFile (project, context, import, f, resolvedSdksPath);
 					}
 					if (!keepSearching)
 						break;
@@ -1052,7 +1055,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string pathProperty, string pathPropertyValue, out bool keepSearching)
+		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string pathProperty, string pathPropertyValue, out string resolvedSdksPath, out bool keepSearching)
 		{
 			// This methods looks for targets in location specified by the import, and replacing pathProperty by a specific value.
 
@@ -1063,6 +1066,7 @@ namespace MonoDevelop.Projects.MSBuild
 				context = tempCtx;
 			}
 
+			resolvedSdksPath = null;
 			var projectPath = context.EvaluateString (import.Project);
 			project.Imports [import] = projectPath;
 
@@ -1072,7 +1076,9 @@ namespace MonoDevelop.Projects.MSBuild
 				if (basePath == null) {
 					keepSearching = true;
 					return null;
-				}
+				} else
+					// We return here the value of $(MSBuildSDKsPath) where this SDK is located
+					resolvedSdksPath = ((FilePath)basePath).ParentDirectory.ParentDirectory;
 			} else
 				basePath = project.Project.BaseDirectory;
 
@@ -1105,7 +1111,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string file)
+		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string file, string resolvedSdksPath)
 		{
 			if (!File.Exists (file))
 				return;
@@ -1117,6 +1123,11 @@ namespace MonoDevelop.Projects.MSBuild
 			AddImportedProject (project, import, prefProject);
 
 			var refCtx = new MSBuildEvaluationContext (context);
+
+			// If the imported file belongs to an SDK, set the MSBuildSDKsPath property since some
+			// sdk files use that to reference other targets from the same sdk.
+			if (resolvedSdksPath != null)
+				refCtx.SetContextualPropertyValue ("MSBuildSDKsPath", resolvedSdksPath);
 
 			EvaluateProject (prefProject, refCtx, false);
 

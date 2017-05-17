@@ -29,8 +29,20 @@ using Microsoft.Build.Framework;
 using System.IO;
 using System.Collections.Generic;
 
-namespace MonoDevelop.MSBuildResolver
+namespace MonoDevelop.Projects.MSBuild
 {
+	// This resolver is used to resolve SDKs provided by MonoDevelop add-ins.
+	// The class is used for two things:
+	// As part of MonoDevelop.Core, it is used by the internal msbuild project evaluator. In this case
+	// the resolver is created with an 'sdkFetcher' that returns the sdks currently registered
+	// by add-ins.
+	// The class is also used to generate a resolver assembly that is copied to the local copy
+	// of the msbuild environment that MD uses to build projects. In that case the list of
+	// sdks is loaded from a sdks.config file that is generated when the msbuild environment is created.
+
+#if PUBLIC_API
+	public
+#endif
 	class Resolver: SdkResolver
 	{
 		static IEnumerable<SdkInfo> sdks;
@@ -39,11 +51,17 @@ namespace MonoDevelop.MSBuildResolver
 
 		public override string Name => "MonoDevelop Resolver";
 
+		// MonoDevelop sdks have the highest priority
 		public override int Priority => 0;
 
-		public Resolver (Func<IEnumerable<SdkInfo>> sdkFetcher = null)
+		public Resolver ()
 		{
-			this.sdkFetcher = sdkFetcher ?? LoadSdks;
+			this.sdkFetcher = LoadSdks;
+		}
+
+		internal Resolver (Func<IEnumerable<SdkInfo>> sdkFetcher = null)
+		{
+			this.sdkFetcher = sdkFetcher;
 		}
 
 		static IEnumerable<SdkInfo> LoadSdks ()
@@ -52,8 +70,8 @@ namespace MonoDevelop.MSBuildResolver
 				return sdks;
 			
 			// Load paths from a file located in the same folder of the assembly
-			var file = Path.Combine (Path.GetDirectoryName (typeof (Resolver).Assembly.Location), "sdks.txt");
-			return sdks = SdkInfo.Load (file);
+			var file = Path.Combine (Path.GetDirectoryName (typeof (Resolver).Assembly.Location), "sdks.config");
+			return sdks = SdkInfo.LoadConfig (file);
 		}
 
 		public override SdkResult Resolve (SdkReference sdkReference, SdkResolverContext resolverContext, SdkResultFactory factory)
@@ -64,7 +82,7 @@ namespace MonoDevelop.MSBuildResolver
 			// Pick the SDK with the highest version
 
 			foreach (var sdk in sdkFetcher ()) {
-				if (sdk.Sdk == sdkReference.Name) {
+				if (sdk.Name == sdkReference.Name) {
 					if (sdk.Version != null) {
 						// If the sdk has a version, it must satisfy the min version requirement
 						if (minVersion != null && sdk.Version < minVersion)
@@ -87,19 +105,19 @@ namespace MonoDevelop.MSBuildResolver
 
 	class SdkInfo
 	{
-		public string Sdk { get; set; }
+		public string Name { get; set; }
 		public Version Version { get; set; }
 		public string Path { get; set; }
 
-		public static void Save (string file, SdkInfo[] sdks)
+		public static void SaveConfig (string file, IEnumerable<SdkInfo> sdks)
 		{
 			using (var sw = new StreamWriter (file)) {
 				foreach (var sdk in sdks)
-					sw.WriteLine ($"{sdk.Sdk},{sdk.Version}:{sdk.Path}");
+					sw.WriteLine ($"{sdk.Name},{sdk.Version}:{sdk.Path}");
 			}
 		}
 
-		public static SdkInfo[] Load (string file)
+		public static SdkInfo[] LoadConfig (string file)
 		{
 			if (!File.Exists (file))
 				return new SdkInfo [0];
@@ -113,7 +131,7 @@ namespace MonoDevelop.MSBuildResolver
 					sdkInfo.Path = line.Substring (i + 1);
 					var sdk = line.Substring (0, i);
 					i = sdk.IndexOf (',');
-					sdkInfo.Sdk = sdk.Substring (0, i);
+					sdkInfo.Name = sdk.Substring (0, i);
 					var ver = sdk.Substring (i + 1);
 					if (ver.Length > 0) {
 						Version.TryParse (ver, out Version v);
