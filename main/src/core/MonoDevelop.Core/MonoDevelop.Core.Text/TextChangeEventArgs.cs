@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.Text
 		public TextChange (int offset, ITextSource removedText, ITextSource insertedText)
 		{
 			if (offset < 0)
-				throw new ArgumentOutOfRangeException(nameof (offset), offset, "offset must not be negative");
+				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
 			this.offset = offset;
 			this.newOffset = offset;
 			this.removedText = removedText ?? StringTextSource.Empty;
@@ -66,6 +66,16 @@ namespace MonoDevelop.Core.Text
 			this.newOffset = newOffset;
 			this.removedText = removedText != null ? new StringTextSource(removedText) : StringTextSource.Empty;
 			this.insertedText = insertedText != null ? new StringTextSource(insertedText) : StringTextSource.Empty;
+		}
+
+		public TextChange (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = newOffset;
+			this.removedText = removedText ?? StringTextSource.Empty;
+			this.insertedText = insertedText ?? StringTextSource.Empty;
 		}
 
 		/// <summary>
@@ -133,20 +143,20 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, string removedText, string insertedText)
+		public TextChangeEventArgs(int offset, int newOffset, string removedText, string insertedText)
 		{
 			TextChanges = new List<TextChange> () {
-				new TextChange (offset, removedText, insertedText)
+				new TextChange (offset, newOffset, removedText, insertedText)
 			};
 		}
 
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, ITextSource removedText, ITextSource insertedText)
+		public TextChangeEventArgs(int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
 		{
 			TextChanges = new List<TextChange> () {
-				new TextChange (offset, removedText, insertedText)
+				new TextChange (offset, newOffset, removedText, insertedText)
 			};
 		}
 
