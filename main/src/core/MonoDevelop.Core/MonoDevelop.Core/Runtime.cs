@@ -481,6 +481,7 @@ namespace MonoDevelop.Core
 
 		static void LoadMSBuildLibraries ()
 		{
+			// Explicitly load the msbuild libraries since they are not installed in the GAC
 			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
 			System.Reflection.Assembly.LoadFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
 			System.Reflection.Assembly.LoadFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));

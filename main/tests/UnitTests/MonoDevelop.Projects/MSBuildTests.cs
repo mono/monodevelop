@@ -2498,8 +2498,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Ignore]
 		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
 		{
+			// This test is being ignored for now because relying on MSBuildSDKsPath is not entirely correct,
+			// the correct approach is to use the Sdk attribute in the import.
+			// In any case this currently works for web projects because MSBuildSDKsPath ends being resolved
+			// to the Mono's msbuild dir, which has the web targets.
+
 			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
 
 			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");

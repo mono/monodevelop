@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Shared;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 
@@ -27,10 +26,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public TargetRuntime TargetRuntime { get; set; }
 
-		public override SdkResult Resolve (SdkReference sdk, SdkResolverContext context, SdkResultFactory factory)
+		public override SdkResult Resolve (SdkReference sdkReference, SdkResolverContext resolverContext, SdkResultFactory factory)
 		{
 			var sdksPath = MSBuildProjectService.GetDefaultSdksPath (TargetRuntime);
-			var sdkPath = Path.Combine (sdksPath, sdk.Name, "Sdk");
+			var sdkPath = Path.Combine (sdksPath, sdkReference.Name, "Sdk");
 
 			// Note: On failure MSBuild will log a generic message, no need to indicate a failure reason here.
 			return System.IO.Directory.Exists (sdkPath)
