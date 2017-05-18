@@ -1980,7 +1980,7 @@ namespace MonoDevelop.Ide
 			// directory will be transfered, including the destination directory or file name.
 			// For example, if sourcePath is /a1/a2/a3 and targetPath is /b1/b2, the
 			// new folder or file will be /b1/b2
-			
+
 			if (targetProject == null)
 				throw new ArgumentNullException ("targetProject");
 
@@ -2004,7 +2004,7 @@ namespace MonoDevelop.Ide
 			// files so we do not create a 'file' in the VCS which corresponds
 			// to a directory in the project and blow things up.
 			List<ProjectFile> filesToRemove = null;
-			List<ProjectFile> filesToMove = null;
+
 			try {
 				//get the real ProjectFiles
 				if (sourceProject != null) {
@@ -2041,8 +2041,19 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			
-			// Strip out all the directories to leave us with just the files.
-			filesToMove = filesToRemove.Where (f => f.Subtype != Subtype.Directory).ToList ();
+			var dirsToMove = new List<ProjectFile> ();
+			var filesToMove = new List<ProjectFile> ();
+
+			// Split everything to directories and files. They will be moved separately
+			foreach (var file in filesToRemove) {
+				if (file.Subtype == Subtype.Directory) {
+					dirsToMove.Add (file);
+				} else {
+					filesToMove.Add (file);
+				}
+			}
+
+			dirsToMove.Reverse ();
 			
 			// If copying a single file, bring any grouped children along
 			ProjectFile sourceParent = null;
@@ -2152,6 +2163,16 @@ namespace MonoDevelop.Ide
 							projectFile.DependsOn = targetParent.Name;
 					}
 				}
+
+				monitor.Step (1);
+			}
+
+			foreach (var dir in dirsToMove) {
+				FilePath newName = dir.FilePath.ToRelative (sourcePath.ParentDirectory);
+				ProjectFile projectDir = new ProjectFile (targetPath.ParentDirectory.Combine(newName));
+				projectDir.Subtype = Subtype.Directory;
+
+				targetProject.Files.Add (projectDir);
 
 				monitor.Step (1);
 			}
