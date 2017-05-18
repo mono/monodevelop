@@ -394,7 +394,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			if (member == null || member.Kind != SymbolKind.Method)
 				return false;
 			var method = member as IMethodSymbol;
-			if (method.ReturnType.SpecialType != SpecialType.System_Void)
+			if (method.ReturnType.SpecialType != SpecialType.System_Void || method.MethodKind == MethodKind.LocalFunction)
 				return false;
 			
 			var om = method.OverriddenMethod;
@@ -425,7 +425,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		static bool IsEmptyPartialMethod(ISymbol member, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var method = member as IMethodSymbol;
-			if (method == null || method.IsDefinedInMetadata ())
+			if (method == null || method.MethodKind == MethodKind.LocalFunction || method.IsDefinedInMetadata ())
 				return false;
 			foreach (var r in method.DeclaringSyntaxReferences) {
 				var node = r.GetSyntax (cancellationToken) as MethodDeclarationSyntax;
