@@ -8231,6 +8231,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCLightStyle.json">
+      <LogicalName>HCLightStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCDarkStyle.json">
+      <LogicalName>HCDarkStyle.json</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax">
       <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
@@ -9412,6 +9418,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\MicrosoftTemplateEngineProcessedTemplateResult.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\HasReferenceFileTemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

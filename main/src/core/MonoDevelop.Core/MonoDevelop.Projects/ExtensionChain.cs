@@ -71,13 +71,13 @@ namespace MonoDevelop.Projects
 		{
 			int index;
 			if (insertBefore != null) {
-				index = extensions.IndexOf (insertBefore);
+				index = Array.IndexOf (extensions, insertBefore);
 			} else if (insertAfter != null) {
-				index = extensions.IndexOf (insertAfter);
+				index = Array.IndexOf (extensions, insertAfter);
 				if (index != -1)
 					index++;
 			} else if (defaultInsertBefore != null) {
-				index = extensions.IndexOf (defaultInsertBefore);
+				index = Array.IndexOf (extensions, defaultInsertBefore);
 			} else
 				index = extensions.Length;
 			

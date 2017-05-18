@@ -1,4 +1,4 @@
-﻿//
+//
 // VBNetTextEditorExtension.cs
 //
 // Author:
@@ -110,92 +110,14 @@ namespace MonoDevelop.VBNet
 			);
 			workspace.OpenSolutionInfo (sInfo);
 
-			Editor.SyntaxHighlighting = new ClassificationSyntaxHighlighting (workspace, documentId);
-			workspace.InformDocumentOpen (documentId, Editor); 
+			Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (workspace, documentId, "source.vb");
+			workspace.InformDocumentOpen (documentId, Editor);
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			workspace.CloseDocument (documentId); 
-		}
-
-		class ClassificationSyntaxHighlighting : ISyntaxHighlighting
-		{
-			DocumentId documentId;
-			MonoDevelopWorkspace workspace;
-
-			public ClassificationSyntaxHighlighting (MonoDevelopWorkspace workspace, DocumentId documentId)
-			{
-				this.workspace = workspace;
-				this.documentId = documentId;
-			}
-
-			public event EventHandler<LineEventArgs> HighlightingStateChanged;
-
-			public async Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
-			{
-				List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
-
-				int offset = line.Offset;
-				int length = line.Length;
-				var span = new TextSpan (offset, length);
-
-				var classifications = Classifier.GetClassifiedSpans (await workspace.GetDocument (documentId).GetSemanticModelAsync (), span, workspace, cancellationToken); 
-
-
-				int lastClassifiedOffsetEnd = offset;
-				ScopeStack scopeStack;
-
-				foreach (var curSpan in classifications) {
-					if (curSpan.TextSpan.Start > lastClassifiedOffsetEnd) {
-						scopeStack = vbScope.Push (EditorThemeColors.UserTypes);
-						ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd, curSpan.TextSpan.Start - lastClassifiedOffsetEnd, scopeStack);
-						coloredSegments.Add (whitespaceSegment);
-					}
-
-					string styleName = GetStyleNameFromClassificationType (curSpan.ClassificationType);
-					scopeStack = vbScope.Push (styleName);
-					ColoredSegment curColoredSegment = new ColoredSegment (curSpan.TextSpan.Start, curSpan.TextSpan.Length, scopeStack);
-					coloredSegments.Add (curColoredSegment);
-
-					lastClassifiedOffsetEnd = curSpan.TextSpan.End;
-				}
-
-				if (offset + length > lastClassifiedOffsetEnd) {
-					scopeStack = vbScope.Push (EditorThemeColors.UserTypes);
-					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd, offset + length - lastClassifiedOffsetEnd, scopeStack);
-					coloredSegments.Add (whitespaceSegment);
-				}
-
-				return new HighlightedLine (line, coloredSegments);
-			}
-
-			private string GetStyleNameFromClassificationType (string classificationType)
-			{
-				switch (classificationType) {
-				case ClassificationTypeNames.Comment:
-				case ClassificationTypeNames.ExcludedCode:
-					return "comment.source.vb";
-				case ClassificationTypeNames.PreprocessorKeyword:
-					return "keyword.source.vb";
-				case ClassificationTypeNames.Keyword:
-					return "keyword.source.vb";
-				case ClassificationTypeNames.StringLiteral:
-					return "string.quoted.double.source.cs";
-				case ClassificationTypeNames.VerbatimStringLiteral:
-					return "string.quoted.other.verbatim.source.vb";
-				default:
-					return "";
-				}
-			}
-
-			static readonly ScopeStack vbScope = new ScopeStack ("source.vb");
-
-			public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
-			{
-				return Task.FromResult (vbScope);
-			}
+			workspace.CloseDocument (documentId);
 		}
 	}
 }

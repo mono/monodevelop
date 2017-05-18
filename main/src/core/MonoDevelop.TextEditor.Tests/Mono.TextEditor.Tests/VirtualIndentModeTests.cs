@@ -445,6 +445,18 @@ namespace Mono.TextEditor.Tests
 
 		}
 
+		class TestBug15476IndentationTracker : DefaultIndentationTracker
+		{
+			public override IndentationTrackerFeatures SupportedFeatures {
+				get {
+					return IndentationTrackerFeatures.All;
+				}
+			}
+
+			public TestBug15476IndentationTracker (TextDocument doc) : base (doc)
+			{
+			}
+		}
 		/// <summary>
 		/// Bug 15476 - Cursor is getting stuck when deleting last empty line with indents 
 		/// </summary>
@@ -453,7 +465,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n\t\t\r\n\r\n");
 			data.Options.DefaultEolMarker = "\r\n";
-			data.IndentationTracker = new DefaultIndentationTracker (data.Document);
+			data.IndentationTracker = new TestBug15476IndentationTracker (data.Document);
 			data.Caret.Location = new DocumentLocation (4, 3);
 
 			DeleteActions.Backspace (data);

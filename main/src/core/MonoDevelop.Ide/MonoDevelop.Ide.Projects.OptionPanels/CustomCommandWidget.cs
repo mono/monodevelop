@@ -97,8 +97,31 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			tagSelectorCommand.ButtonAccessible.SetCommonAttributes ("CustomCommand.TagSelector",
 				                                                     GettextCatalog.GetString ("Tag Selector"),
 					                                                 GettextCatalog.GetString ("Insert a custom tag into the command entry"));
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			comboType.SetCommonAccessibilityAttributes ("CustomCommands.OperationType",
+														GettextCatalog.GetString ("Select a project operation"),
+														GettextCatalog.GetString ("Select the type of project operation to add a custom command for"));
+			buttonRemove.SetCommonAccessibilityAttributes ("CustomCommands.Remove", null, GettextCatalog.GetString ("Click to remove this custom command"));
+
+			entryCommand.SetCommonAccessibilityAttributes ("CustomCommand.CommandEntry", GettextCatalog.GetString ("Command"),
+			                                               GettextCatalog.GetString ("Enter the custom command"));
+			entryCommand.SetAccessibilityLabelRelationship (label3);
+			buttonBrowse.SetCommonAccessibilityAttributes ("CustomCommand.CommandBrowse", "", GettextCatalog.GetString ("Use a file selector to select a custom command"));
+
+			entryName.SetCommonAccessibilityAttributes ("CustomCommands.WorkingDirectory",
+			                                            GettextCatalog.GetString ("Working Directory"),
+			                                            GettextCatalog.GetString ("Enter the directory for the command to execute in"));
+			entryName.SetAccessibilityLabelRelationship (label1);
+
+			checkExternalCons.SetCommonAccessibilityAttributes ("CustomCommands.RunOnExtConsole", null, GettextCatalog.GetString ("Check for the command to run on an external console"));
+			checkPauseCons.SetCommonAccessibilityAttributes ("CustomCommands.Pause", null, GettextCatalog.GetString ("Check to pause the console output"));
+		}
+
 		public CustomCommand CustomCommand {
 			get { return cmd; }
 		}

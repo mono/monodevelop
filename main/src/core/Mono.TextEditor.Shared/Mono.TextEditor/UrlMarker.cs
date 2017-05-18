@@ -88,7 +88,8 @@ namespace Mono.TextEditor
 		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			var lineSegment = LineSegment.Segment;
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				if (lineSegment.IsInside (change.Offset) || lineSegment.IsInside (change.Offset + change.RemovalLength) ||
 					change.Offset <= lineSegment.Offset && lineSegment.Offset <= change.Offset + change.RemovalLength) {
 					doc.RemoveMarker (this);
@@ -129,12 +130,12 @@ namespace Mono.TextEditor
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 
-				uint curIndex = 0 ;
-				int x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex)).X;
+				uint curIndex = 0, byteIndex = 0;
+				int x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex)).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 	
-				x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex)).X;
+				x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex)).X;
 	
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

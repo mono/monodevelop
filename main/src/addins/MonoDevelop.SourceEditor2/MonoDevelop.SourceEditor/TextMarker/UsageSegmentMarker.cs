@@ -63,14 +63,14 @@ namespace MonoDevelop.SourceEditor
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 
-				uint curIndex = 0;
-				var byteIndex = TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex);
+				uint curIndex = 0, byteIndex = 0;
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
 
 				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				byteIndex =  TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
 				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
@@ -81,7 +81,7 @@ namespace MonoDevelop.SourceEditor
 			if (@from < to) {
 				HslColor colorStyle;
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
-					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
+					(usage.UsageType & ReferenceUsageType.Declaration) == ReferenceUsageType.Declaration) {
 					
 					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (colorStyle.Alpha == 0.0)

@@ -166,7 +166,8 @@ namespace MonoDevelop.Core.Text
 		public virtual int GetNewOffset(int offset)
 		{
 			int changeDelta = 0;
-			foreach (var change in TextChanges) {
+			for (int i = 0; i < TextChanges.Count; ++i) {
+				var change = TextChanges[i];
 				if (offset <= change.Offset + change.RemovalLength) {
 					if (offset >= change.Offset) {
 						changeDelta = changeDelta - (offset - change.Offset) + change.InsertionLength;
@@ -185,7 +186,7 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public virtual TextChangeEventArgs Invert()
 		{
-			var invertedChanges = new List<TextChange> ();
+			var invertedChanges = new List<TextChange> (TextChanges.Count);
 			for (int i = TextChanges.Count - 1; i >= 0; i--) {
 				var c = TextChanges [i];
 				invertedChanges.Add (new TextChange(c.Offset, c.InsertedText, c.RemovedText));

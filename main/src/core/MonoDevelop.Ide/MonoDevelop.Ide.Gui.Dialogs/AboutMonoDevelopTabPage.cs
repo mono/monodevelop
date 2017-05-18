@@ -30,6 +30,7 @@ using System;
 using System.IO;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 
 using Gtk;
@@ -50,7 +51,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			else
 				imageSep = Xwt.Drawing.Image.FromResource (AboutDialogImage.Name);
 
-			PackStart (new ImageView (imageSep), false, false, 0);
+			var iv = new ImageView (imageSep);
+			iv.SetCommonAccessibilityAttributes ("AboutImage", BrandingService.ApplicationLongName, "");
+			PackStart (iv, false, false, 0);
 
 			Xwt.VBox infoBox = new Xwt.VBox ();
 			Xwt.FrameBox mbox = new Xwt.FrameBox (infoBox);

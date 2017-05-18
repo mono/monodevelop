@@ -85,8 +85,8 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.CSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
-			icon="md-library-project"
-			imageId="md-library-project"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
@@ -96,8 +96,8 @@
 			_overrideDescription="Creates a new .NET Standard class library project."
 			id="Microsoft.Common.Library.FSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
-			icon="md-library-project"
-			imageId="md-library-project"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
@@ -110,8 +110,8 @@
 			id="Microsoft.Common.Library.CSharp"
 			templateId="Microsoft.Common.Library.CSharp.2.0"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
-			icon="md-library-project"
-			imageId="md-library-project"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
@@ -122,8 +122,8 @@
 			id="Microsoft.Common.Library.FSharp"
 			templateId="Microsoft.Common.Library.FSharp.2.0"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.2.0.1.0.0-beta2-20170505-222.nupkg"
-			icon="md-library-project"
-			imageId="md-library-project"
+			icon="md-crossplatform-library-project"
+			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard20=true"
@@ -141,7 +141,7 @@
 			id="Microsoft.Common.Library.CSharp"
 			path="Templates/Microsoft.DotNet.Common.ProjectTemplates.1.x.1.0.0-beta2-20170505-222.nupkg"
 			icon="md-netcore-empty-project"
-			imageId="md-netcore-empty-project"
+			imageId="md-netcore-empty-projectt"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard1x=true"
@@ -525,12 +525,16 @@
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-netcore-empty-project" resource="project-netcore-template.png" />
 		<Image id="md-netcore-console-project" resource="project-netcore-console-template.png" />
+		<Image id="md-netcore-library-project" resource="project-netcore-library-template.png" />
 		<Image id="md-netcore-test-project" resource="project-netcore-test-template.png" />
+		<Image id="md-crossplatform-library-project" resource="project-crossplatform-library-template.png" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="md-netcore-empty-project" resource="project-netcore-32.png" size="Dnd" />
 		<StockIcon stockid="md-netcore-console-project" resource="project-netcore-console-32.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-library-project" resource="project-netcore-library-32.png" size="Dnd" />
 		<StockIcon stockid="md-netcore-test-project" resource="project-netcore-test-32.png" size="Dnd" />
+		<StockIcon stockid="md-crossplatform-library-project" resource="project-crossplatform-library-32.png" size="Dnd" />
 	</Extension>
 </ExtensionModel>

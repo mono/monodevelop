@@ -34,14 +34,41 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Xml.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.Xml.Completion
 {
+	public class BaseXmlCompletionData : CompletionData
+	{
+		const string commitChars = " <>()[]{}=+*%~&^|.,;:?\"'";
+
+		public BaseXmlCompletionData ()
+		{
+		}
+
+		public BaseXmlCompletionData (string text) : base (text)
+		{
+		}
+
+		public BaseXmlCompletionData (string text, string description) : base (text, IconId.Null, description)
+		{
+		}
+
+		public BaseXmlCompletionData (string text, IconId icon, string description) : base (text, icon, description)
+		{
+		}
+
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			return commitChars.IndexOf (keyChar) >= 0;
+		}
+
+	}
 	/// <summary>
 	/// Holds the text for  namespace, child element or attribute 
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionData : CompletionData
+	public class XmlCompletionData : BaseXmlCompletionData
 	{
 		string text;
 		DataType dataType = DataType.XmlElement;
@@ -134,5 +161,6 @@ namespace MonoDevelop.Xml.Completion
 		public override string Description {
 			get { return description; }
 		}
+
 	}
 }

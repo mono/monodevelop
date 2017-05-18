@@ -2,7 +2,7 @@ FRAMEWORK: NET461
 NUGET
   remote: https://www.nuget.org/api/v2
     ExtCore (0.8.46)
-    FAKE (4.57.3)
+    FAKE (4.61.1)
     Fantomas (2.6.1)
       FSharp.Compiler.Service (>= 11.0.4)
     FSharp.Compiler.CodeDom (0.9.2)

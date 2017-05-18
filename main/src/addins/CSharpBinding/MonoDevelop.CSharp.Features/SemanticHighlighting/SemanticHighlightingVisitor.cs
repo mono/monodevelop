@@ -540,6 +540,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 				if (vds != null && vds.Variables.Count == 1) {
 					symbol = semanticModel.GetSymbolInfo (node, cancellationToken).Symbol;
 					// var sym = vds.Variables[0].Initializer != null ? vds.Variables[0].Initializer.Value as LiteralExpressionSyntax : null;
+
+					// This is done to support highlighting when there is a class named var. The problem is that var is
+					// not a reserved keyword. The trade-off is really big, but for correctness, we have to handle this
+					// case.
 					if (symbol == null || symbol.Name != "var") {
 						Colorize(node.Span, varKeywordTypeColor);
 						return;

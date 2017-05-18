@@ -145,12 +145,13 @@ namespace Mono.TextEditor
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
 				uint curIndex = 0;
-				var byteIndex = metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex);
+				uint byteIndex = 0;
+				metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex);
 				
 				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				byteIndex = metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex);
+				metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex);
 				
 				x_pos = layout.IndexToPos (System.Math.Max (0, (int)byteIndex)).X;
 				

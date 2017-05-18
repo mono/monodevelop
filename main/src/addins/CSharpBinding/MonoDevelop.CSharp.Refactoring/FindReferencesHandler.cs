@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							offset = projectedOffset;
 						}
 						var sr = new MemberReference (symbol, fileName, offset, loc.SourceSpan.Length);
-						sr.ReferenceUsageType = ReferenceUsageType.Declariton;
+						sr.ReferenceUsageType = ReferenceUsageType.Declaration;
 						antiDuplicatesSet.Add (sr);
 						monitor.ReportResult (sr);
 					}
