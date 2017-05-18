@@ -2580,6 +2580,8 @@ namespace Mono.TextEditor
 				}
 
 				int cmp = this.version.VersionNumber - otherVersion.version.VersionNumber;
+				if (cmp == 0)
+					yield break;
 				if (cmp > 0)
 				{
 					var v = otherVersion.version;
@@ -2590,7 +2592,7 @@ namespace Mono.TextEditor
 							for (int i = v.Changes.Count - 1; (i >= 0); --i)
 							{
 								var change = v.Changes[i];
-								yield return new TextChangeEventArgs(change.OldPosition, change.OldText, change.NewText);
+								yield return new TextChangeEventArgs(change.OldPosition, change.NewPosition, change.OldText, change.NewText);
 							}
 						}
 
