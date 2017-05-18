@@ -143,7 +143,16 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, int newOffset, string removedText, string insertedText)
+		[Obsolete ("Use TextChangeEventArgs (int offset, int newOffset, string removedText, string insertedText)")]
+		public TextChangeEventArgs (int offset, string removedText, string insertedText) : this(offset, offset, removedText, insertedText) {}
+
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		[Obsolete ("Use TextChangeEventArgs (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)")]
+		public TextChangeEventArgs (int offset, ITextSource removedText, ITextSource insertedText) : this (offset, offset, removedText, insertedText) {}
+
+		internal TextChangeEventArgs (int offset, int newOffset, string removedText, string insertedText)
 		{
 			TextChanges = new List<TextChange> () {
 				new TextChange (offset, newOffset, removedText, insertedText)
@@ -153,7 +162,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
+		internal TextChangeEventArgs (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
 		{
 			TextChanges = new List<TextChange> () {
 				new TextChange (offset, newOffset, removedText, insertedText)
