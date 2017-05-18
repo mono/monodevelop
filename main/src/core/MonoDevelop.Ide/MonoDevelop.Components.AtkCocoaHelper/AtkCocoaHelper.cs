@@ -40,15 +40,27 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 	{
 		public static void SetCommonAttributes (this Atk.Object o, string name, string label, string help)
 		{
-			o.Name = name;
-			o.Description = help;
-			o.SetLabel (label);
+			if (!string.IsNullOrEmpty (name)) {
+				o.Name = name;
+			}
+			if (!string.IsNullOrEmpty (name)) {
+				o.Description = help;
+			}
+			if (!string.IsNullOrEmpty (name)) {
+				o.SetLabel (label);
+			}
 		}
 
 		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
 		{
 			var accessible = w.Accessible;
 			accessible.SetCommonAttributes (name, label, help);
+		}
+
+		public static void SetAccessibilityLabelRelationship (this Gtk.Widget w, Gtk.Widget label)
+		{
+			w.Accessible.SetTitleUIElement (label.Accessible);
+			label.Accessible.SetTitleFor (w.Accessible);
 		}
 	}
 

@@ -1,4 +1,4 @@
-// BaseDirectoryPanel.cs
+﻿// BaseDirectoryPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -27,6 +27,9 @@
 
 using System;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
 	
@@ -38,6 +41,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public BaseDirectoryPanelWidget()
 		{
 			this.Build();
+			var a = folderentry.EntryAccessible;
+			a.SetTitleUIElement (label3.Accessible);
+			label3.Accessible.SetTitleFor (a);
+			folderentry.SetEntryAccessibilityAttributes ("BaseDirectory.FolderEntry",
+			                                             GettextCatalog.GetString ("Root Directory"),
+			                                             GettextCatalog.GetString ("Entry the root directory for the project"));
 		}
 		
 		public string BaseDirectory {

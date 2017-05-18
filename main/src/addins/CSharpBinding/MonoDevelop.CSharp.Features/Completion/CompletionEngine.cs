@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in handlerList) {
-					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || handler.IsTriggerCharacter (text, position - 1)) {
+					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || info.CompletionTriggerReason == CompletionTriggerReason.BackspaceOrDeleteCommand || handler.IsTriggerCharacter (text, position - 1)) {
 						if (await handler.IsExclusiveAsync (completionContext, ctx, info, cancellationToken)) {
 							exclusiveHandlers.Add (handler);
 						} else {
@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 
 				foreach (var handler in exclusiveHandlers) {
-					var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+					var handlerResult = await handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken);
 					//if (handlerResult != null) {
 					//	Console.WriteLine ("-----" + handler);
 					//	foreach (var item in handlerResult) {
@@ -200,7 +200,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					break;
 				}
 			}
-
+			if (ctx.CSharpSyntaxContext.IsPossibleTupleContext)
+				result.AutoSelect = false;
 			return result;
 		}
 

@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
@@ -59,6 +59,7 @@ namespace MonoDevelop.Projects.MSBuild
 		IMSBuildPropertyGroupEvaluated itemMetadata;
 		string directoryName;
 
+		string itemInclude;
 		string itemFile;
 		string recursiveDir;
 
@@ -259,8 +260,9 @@ namespace MonoDevelop.Projects.MSBuild
 			return Platform.IsMac && path.Contains ("Mono.framework/External/xbuild");
 		}
 
-		internal void SetItemContext (string itemFile, string recursiveDir, IMSBuildPropertyGroupEvaluated metadata = null)
+		internal void SetItemContext (string itemInclude, string itemFile, string recursiveDir, IMSBuildPropertyGroupEvaluated metadata = null)
 		{
+			this.itemInclude = itemInclude;
 			this.itemFile = itemFile;
 			this.recursiveDir = recursiveDir;
 			this.itemMetadata = metadata;
@@ -268,6 +270,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void ClearItemContext ()
 		{
+			this.itemInclude = null;
 			this.itemFile = null;
 			this.recursiveDir = null;
 			this.itemMetadata = null;
@@ -291,6 +294,14 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string GetMetadataValue (string name)
 		{
+			// First of all check if the metadata is explicitly set
+			if (itemMetadata != null && itemMetadata.HasProperty (name))
+				return itemMetadata.GetValue (name, "");
+
+			// Now check for file metadata. We avoid a FromMSBuildPath call by checking after item metadata
+			if (itemFile == null && itemInclude != null)
+				itemFile = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, itemInclude);
+			
 			if (itemFile == null)
 				return "";
 
@@ -325,8 +336,6 @@ namespace MonoDevelop.Projects.MSBuild
 						return File.GetLastAccessTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
 					}
 				}
-				if (itemMetadata != null)
-					return itemMetadata.GetValue (name, "");
 			} catch (Exception ex) {
 				LoggingService.LogError ("Failure in MSBuild file", ex);
 				return "";
@@ -957,7 +966,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.IndexOf (c) != -1)
+				if (pc == 0 && Array.IndexOf (closeChar, c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;

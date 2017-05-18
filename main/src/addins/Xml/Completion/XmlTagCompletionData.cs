@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.Completion
 {
 	
 	
-	public class XmlTagCompletionData : CompletionData
+	public class XmlTagCompletionData : BaseXmlCompletionData
 	{
 		string element;
 		int cursorOffset;

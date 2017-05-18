@@ -1655,7 +1655,7 @@ namespace MonoDevelop.Projects
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var mp = (Project)sol.Items [0];
-			Assert.AreEqual (6, mp.Files.Count);
+			Assert.AreEqual (7, mp.Files.Count);
 
 			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_1.png");
 			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_2.png");
@@ -1719,6 +1719,25 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("t2.dat", f2.Link.ToString ());
 
 			sol.Dispose ();
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcardLinks4 ()
+		{
+			// %(RecursiveDir) is empty when used in a non-recursive include with a single file
+
+			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var mp = (Project)sol.Items [0];
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "other.rst");
+
+			Assert.IsNotNull(f);
+			Assert.AreEqual("other.rst", f.Link.ToString());
+
+			sol.Dispose();
 		}
 
 		/// <summary>

@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Templates
 			var list = new List<FileTemplate> ();
 			foreach (var node in extensionContext.GetExtensionNodes<ProjectTemplateCodon> (EXTENSION_PATH)) {
 				var template = LoadTemplate (node); 
-				if (template.IsValidForProject (project, projectPath)) {
+				if (template != null && template.IsValidForProject (project, projectPath)) {
 					list.Add (template);
 				}
 			}

@@ -49,6 +49,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			{
 				return null;
 			}
+			if (info.CompletionTriggerReason == CompletionTriggerReason.BackspaceOrDeleteCommand)
+				return null;
 			var document = completionContext.Document;
 			var position = completionContext.Position;
 

@@ -122,6 +122,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
+		[Platform (Exclude = "Linux")]
 		public async Task CreateMultiPlatformProjectFromTemplateWithAndroidOnly ()
 		{
 			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
