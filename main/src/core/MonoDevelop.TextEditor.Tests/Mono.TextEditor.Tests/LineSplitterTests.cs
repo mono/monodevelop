@@ -43,7 +43,7 @@ namespace Mono.TextEditor.Tests
 			var buffer = ImmutableText.Empty;
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
 			buffer = buffer.InsertText (0, "1\n2\n3\n");
-			splitter.TextReplaced (null, new TextChangeEventArgs (0, "", buffer.ToString ()));
+			splitter.TextReplaced (null, new TextChangeEventArgs (0, 0, "", buffer.ToString ()));
 			Assert.AreEqual (4, splitter.Count);
 			for (int i = 0; i < 3; i++) {
 				Assert.AreEqual (i * 2, splitter.Get (i + 1).Offset);
@@ -63,10 +63,10 @@ namespace Mono.TextEditor.Tests
 			var buffer = ImmutableText.Empty;
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
 			buffer = buffer.InsertText (0, "1\n2\n3\n");
-			splitter.TextReplaced (null, new TextChangeEventArgs (0, "", buffer.ToString ()));
+			splitter.TextReplaced (null, new TextChangeEventArgs (0, 0, "", buffer.ToString ()));
 			
 			DocumentLine lastLine = splitter.Get (2);
-			splitter.TextReplaced (null, new TextChangeEventArgs (lastLine.Offset, buffer.ToString (lastLine.Offset, lastLine.LengthIncludingDelimiter), ""));
+			splitter.TextReplaced (null, new TextChangeEventArgs (lastLine.Offset, lastLine.Offset, buffer.ToString (lastLine.Offset, lastLine.LengthIncludingDelimiter), ""));
 			
 			Assert.AreEqual (3, splitter.Count);
 			
