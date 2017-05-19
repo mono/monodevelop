@@ -606,6 +606,26 @@ namespace MonoDevelop.Ide
 						"may not be properly installed in the GAC.",
 						BrandingService.ApplicationName
 					), ex);
+
+				if (Platform.IsWindows)
+				{
+					string url = "http://monodevelop.com/Download";
+					string caption = "Fatal Error";
+					string message =
+						"{0} failed to start. Some of the assemblies required to run {0} (for example GTK#) " +
+						"may not be properly installed in the GAC.\n\r\n\r" +
+						"Please click OK to open the download page, where " +
+						"you can download the necessary dependencies for {0} to run.";
+
+					if (DisplayWindowsOkCancelMessage(
+						string.Format(message, BrandingService.ApplicationName, url), caption)
+					)
+					{
+						Process.Start(url);
+					}
+				}
+
+
 			} finally {
 				Runtime.Shutdown ();
 			}
