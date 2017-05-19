@@ -256,7 +256,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (Directory.Exists (node.Path)) {
 					foreach (var dir in Directory.GetDirectories (node.Path)) {
 						if (File.Exists (Path.Combine (dir, "Sdk", "Sdk.props")))
-							yield return new SdkInfo { Name = Path.GetFileName (dir), Path = Path.Combine (dir, "Sdk") };
+							yield return new SdkInfo (Path.GetFileName (dir), null, Path.Combine (dir, "Sdk"));
 					}
 				}
 			}

@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public override SdkResult Resolve (SdkReference sdkReference, SdkResolverContext resolverContext, SdkResultFactory factory)
 		{
-			Version.TryParse (sdkReference.MinimumVersion, out Version minVersion);
+			SdkVersion.TryParse (sdkReference.MinimumVersion, out SdkVersion minVersion);
 			SdkInfo bestSdk = null;
 
 			// Pick the SDK with the highest version
@@ -105,11 +105,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 	class SdkInfo
 	{
-		public string Name { get; set; }
-		public Version Version { get; set; }
-		public string Path { get; set; }
+		public string Name { get; private set; }
+		public SdkVersion Version { get; private set; }
+		public string Path { get; private set; }
 
-		public static void SaveConfig (string file, IEnumerable<SdkInfo> sdks)
+		SdkInfo ()
+		{
+		}
+
+		public SdkInfo (string name, SdkVersion version, string path)
+		{
+			Name = name;
+			Version = version;
+			Path = path;
+		}
+
+		internal static void SaveConfig (string file, IEnumerable<SdkInfo> sdks)
 		{
 			using (var sw = new StreamWriter (file)) {
 				foreach (var sdk in sdks)
@@ -117,7 +128,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public static SdkInfo[] LoadConfig (string file)
+		internal static SdkInfo[] LoadConfig (string file)
 		{
 			if (!File.Exists (file))
 				return new SdkInfo [0];
@@ -134,7 +145,7 @@ namespace MonoDevelop.Projects.MSBuild
 					sdkInfo.Name = sdk.Substring (0, i);
 					var ver = sdk.Substring (i + 1);
 					if (ver.Length > 0) {
-						Version.TryParse (ver, out Version v);
+						SdkVersion.TryParse (ver, out SdkVersion v);
 						sdkInfo.Version = v;
 					}
 					sdks.Add (sdkInfo);

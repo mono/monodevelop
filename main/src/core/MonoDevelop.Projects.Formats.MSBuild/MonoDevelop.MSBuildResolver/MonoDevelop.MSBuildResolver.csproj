@@ -51,6 +51,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resolver.cs" />
+    <Compile Include="..\..\MonoDevelop.Core\MonoDevelop.Projects.MSBuild\SdkVersion.cs">
+      <Link>SdkVersion.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
