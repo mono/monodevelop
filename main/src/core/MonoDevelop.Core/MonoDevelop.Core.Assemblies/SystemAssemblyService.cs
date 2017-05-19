@@ -54,6 +54,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public event EventHandler DefaultRuntimeChanged;
 		public event EventHandler RuntimesChanged;
+		public event EventHandler FrameworksChanged;
 		
 		internal void Initialize ()
 		{
@@ -115,6 +116,7 @@ namespace MonoDevelop.Core.Assemblies
 				BuildFrameworkRelations (newFxList);
 				frameworks = newFxList;
 			}
+			FrameworksChanged?.Invoke (this, EventArgs.Empty);
 		}
 		
 		public TargetRuntime DefaultRuntime {
