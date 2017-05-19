@@ -334,6 +334,26 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void SharedFilesShouldBeAddedFirst ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ("F#");
+			shared.AddFile ("Shared1.fs");
+			shared.AddFile ("Shared2.fs");
+			sol.RootFolder.AddItem (shared);
+
+			// Reference to shared is added before adding project to solution
+			var main = Services.ProjectService.CreateDotNetProject ("F#");
+			main.AddFile ("File1.fs");
+			main.References.Add (ProjectReference.CreateProjectReference (shared));
+			sol.RootFolder.AddItem (main);
+
+			var files = main.Files.Select (f => f.FilePath.FileName);
+
+			Assert.AreEqual (new [] { "Shared1.fs", "Shared2.fs", "File1.fs" }, files);
+		}
+
+		[Test]
 		public void SharedProjectAddedAfterIncluder ()
 		{
 			var sol = new Solution ();
