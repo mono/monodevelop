@@ -39,9 +39,6 @@
     <EmbeddedResource Include="MonoDevelop.TextTemplating.addin.xml">
       <LogicalName>MonoDevelop.TextTemplating.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="T4SyntaxMode.xml">
-      <LogicalName>T4SyntaxMode.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
