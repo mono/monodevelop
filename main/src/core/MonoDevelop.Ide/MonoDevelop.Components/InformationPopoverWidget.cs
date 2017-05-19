@@ -44,6 +44,7 @@ namespace MonoDevelop.Components
 			imageView = new Xwt.ImageView ();
 			UpdateIcon ();
 			Content = imageView;
+			CanGetFocus = true;
 		}
 
 		public TaskSeverity Severity {
@@ -92,6 +93,12 @@ namespace MonoDevelop.Components
 			return ImageService.GetIcon ("md-information", Gtk.IconSize.Menu);
 		}
 
+		protected override void OnGotFocus (EventArgs args)
+		{
+			base.OnGotFocus (args);
+			ShowPopover ();
+		}
+
 		protected override void OnMouseEntered (EventArgs args)
 		{
 			base.OnMouseEntered (args);
@@ -113,6 +120,12 @@ namespace MonoDevelop.Components
 		{
 			if (popover != null)
 				ShowPopover ();
+		}
+
+		protected override void OnLostFocus (EventArgs args)
+		{
+			base.OnLostFocus (args);
+			DestroyPopover ();
 		}
 
 		protected override void OnMouseExited (EventArgs args)
