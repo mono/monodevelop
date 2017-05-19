@@ -1171,7 +1171,7 @@ namespace MonoDevelop.Projects
 				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 				string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-				var globalProperties = new Dictionary<string, string> ();
+				var globalProperties = CreateGlobalProperties ();
 				if (context != null) {
 					var md = (ProjectItemMetadata)context.GlobalProperties;
 					md.SetProject (sourceProject);
@@ -1281,6 +1281,15 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		internal Dictionary<string, string> CreateGlobalProperties ()
+		{
+			var properties = new Dictionary<string, string> ();
+			string framework = MSBuildProject.GetActiveTargetFramework ();
+			if (framework != null)
+				properties ["TargetFramework"] = framework;
+			return properties;
+		}
+
 		internal ProjectConfigurationInfo [] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects = true)
 		{
 			var visitedProjects = new HashSet<Project> ();
@@ -1357,7 +1366,6 @@ namespace MonoDevelop.Projects
 						projectBuilder.ReleaseReference ();
 					}
 					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
-					pb.ActiveTargetFramework = MSBuildProject.GetActiveTargetFramework ();
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();

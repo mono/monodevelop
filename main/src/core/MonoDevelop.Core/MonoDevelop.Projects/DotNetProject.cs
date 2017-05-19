@@ -896,10 +896,11 @@ namespace MonoDevelop.Projects
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
 				try {
 					var configs = GetConfigurations (configuration, false);
+					var globalProperties = CreateGlobalProperties ();
 
 					AssemblyReference [] refs;
 					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
+						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, CancellationToken.None);
 					foreach (var r in refs)
 						result.Add (r);
 				} finally {
@@ -990,10 +991,11 @@ namespace MonoDevelop.Projects
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
 				try {
 					var configs = GetConfigurations (configuration, false);
+					var globalProperties = CreateGlobalProperties ();
 
 					PackageDependency [] dependencies;
 					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						dependencies = await builder.ResolvePackageDependencies (configs, cancellationToken);
+						dependencies = await builder.ResolvePackageDependencies (configs, globalProperties, cancellationToken);
 					foreach (var d in dependencies)
 						result.Add (d);
 				} finally {

@@ -309,7 +309,6 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		internal string SdksPath { get; set; }
-		internal string ActiveTargetFramework { get; set; }
 
 		public event EventHandler Disconnected;
 
@@ -355,7 +354,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			try {
 				BeginOperation ();
-				globalProperties = UpdateGlobalProperties (globalProperties);
 				var res = await builder.Run (configurations, loggerId, logger.EnabledEvents, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
 				if (res == null && cancellationToken.IsCancellationRequested) {
 					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
@@ -377,7 +375,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
 		{
 			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -394,7 +392,6 @@ namespace MonoDevelop.Projects.MSBuild
 				MSBuildResult result;
 				try {
 					BeginOperation ();
-					var globalProperties = GetGlobalProperties ();
 					result = await builder.Run (
 								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
 								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, globalProperties, taskId
@@ -420,7 +417,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return refs;
 		}
 
-		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
 		{
 			PackageDependency[] packageDependencies = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -437,7 +434,6 @@ namespace MonoDevelop.Projects.MSBuild
 				MSBuildResult result;
 				try {
 					BeginOperation ();
-					var globalProperties = GetGlobalProperties ();
 					result = await builder.Run (
 						configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
 						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, globalProperties, taskId
@@ -466,29 +462,6 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			return packageDependencies;
-		}
-
-		Dictionary<string, string> UpdateGlobalProperties (Dictionary<string, string> properties)
-		{
-			if (ActiveTargetFramework == null)
-				return properties;
-
-			if (properties != null) {
-				properties ["TargetFramework"] = ActiveTargetFramework;
-				return properties;
-			}
-
-			return GetGlobalProperties ();
-		}
-
-		Dictionary<string, string> GetGlobalProperties ()
-		{
-			if (ActiveTargetFramework == null)
-				return null;
-
-			return new Dictionary<string, string> {
-				{ "TargetFramework", ActiveTargetFramework }
-			};
 		}
 
 		public async Task Refresh ()
