@@ -648,7 +648,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 
 			try {
-				foreach (var file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
+				foreach (var file in await netProject.GetReferencedAssemblies (configurationSelector).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return result;
 					string fileName;
