@@ -97,6 +97,10 @@ namespace MonoDevelop.Projects.MSBuild
 				foreach (var prop in globalProperties)
 					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
 
+				string targetFramework = msproject.GetActiveTargetFramework ();
+				if (targetFramework != null)
+					engine.SetGlobalProperty (projectInstance, "TargetFramework", targetFramework);
+
 				engine.Evaluate (projectInstance);
 
 				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);

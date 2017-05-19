@@ -1357,6 +1357,7 @@ namespace MonoDevelop.Projects
 						projectBuilder.ReleaseReference ();
 					}
 					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
+					pb.ActiveTargetFramework = MSBuildProject.GetActiveTargetFramework ();
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();

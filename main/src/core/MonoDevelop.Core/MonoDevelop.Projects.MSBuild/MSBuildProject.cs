@@ -945,6 +945,53 @@ namespace MonoDevelop.Projects.MSBuild
 				return Array.Empty<string> ();
 		}
 
+		/// <summary>
+		/// If an SDK project targets multiple target frameworks then this returns the first
+		/// target framework. Otherwise it returns null. This also handles the odd case if
+		/// the TargetFrameworks property is being used but only one framework is defined
+		/// there. Since here an active target framework must be returned even though multiple
+		/// target frameworks are not being used.
+		/// </summary>
+		internal string GetActiveTargetFramework ()
+		{
+			if (string.IsNullOrEmpty (Sdk))
+				return null;
+
+			var frameworks = GetTargetFrameworks ();
+			if (frameworks != null && frameworks.Any ())
+				return frameworks.FirstOrDefault ();
+
+			return null;
+		}
+
+		string[] targetFrameworks;
+
+		/// <summary>
+		/// Returns target frameworks defined in the TargetFrameworks property for SDK projects
+		/// if the TargetFramework property is not defined. It returns null otherwise.
+		/// </summary>
+		string[] GetTargetFrameworks ()
+		{
+			if (string.IsNullOrEmpty (Sdk))
+				return null;
+
+			if (targetFrameworks != null)
+				return targetFrameworks;
+
+			var propertyGroup = GetGlobalPropertyGroup ();
+			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
+			if (propertyValue != null)
+				return null;
+
+			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			if (propertyValue != null) {
+				targetFrameworks = propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+				return targetFrameworks;
+			}
+
+			return null;
+		}
+
 		XmlNamespaceManager GetNamespaceManagerForProject ()
 		{
 			if (Namespace == Schema)

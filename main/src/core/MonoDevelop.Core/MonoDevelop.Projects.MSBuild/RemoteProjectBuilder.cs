@@ -309,6 +309,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		internal string SdksPath { get; set; }
+		internal string ActiveTargetFramework { get; set; }
 
 		public event EventHandler Disconnected;
 
@@ -354,6 +355,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			try {
 				BeginOperation ();
+				globalProperties = UpdateGlobalProperties (globalProperties);
 				var res = await builder.Run (configurations, loggerId, logger.EnabledEvents, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
 				if (res == null && cancellationToken.IsCancellationRequested) {
 					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
@@ -392,9 +394,10 @@ namespace MonoDevelop.Projects.MSBuild
 				MSBuildResult result;
 				try {
 					BeginOperation ();
+					var globalProperties = GetGlobalProperties ();
 					result = await builder.Run (
 								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
-								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, globalProperties, taskId
 						).ConfigureAwait (false);
 				} catch (Exception ex) {
 					await CheckDisconnected ().ConfigureAwait (false);
@@ -434,9 +437,10 @@ namespace MonoDevelop.Projects.MSBuild
 				MSBuildResult result;
 				try {
 					BeginOperation ();
+					var globalProperties = GetGlobalProperties ();
 					result = await builder.Run (
 						configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
-						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, null, taskId
+						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, globalProperties, taskId
 					);
 				} catch (Exception ex) {
 					await CheckDisconnected ();
@@ -464,6 +468,28 @@ namespace MonoDevelop.Projects.MSBuild
 			return packageDependencies;
 		}
 
+		Dictionary<string, string> UpdateGlobalProperties (Dictionary<string, string> properties)
+		{
+			if (ActiveTargetFramework == null)
+				return properties;
+
+			if (properties != null) {
+				properties ["TargetFramework"] = ActiveTargetFramework;
+				return properties;
+			}
+
+			return GetGlobalProperties ();
+		}
+
+		Dictionary<string, string> GetGlobalProperties ()
+		{
+			if (ActiveTargetFramework == null)
+				return null;
+
+			return new Dictionary<string, string> {
+				{ "TargetFramework", ActiveTargetFramework }
+			};
+		}
 
 		public async Task Refresh ()
 		{
