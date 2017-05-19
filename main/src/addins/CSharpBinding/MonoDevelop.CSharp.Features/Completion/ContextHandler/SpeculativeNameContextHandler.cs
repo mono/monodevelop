@@ -45,9 +45,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var tree = await completionContext.Document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken) ||
-				tree.IsPreProcessorDirectiveContext(completionContext.Position, cancellationToken) || 
-				info.CompletionTriggerReason != CompletionTriggerReason.CompletionCommand)
+			if (tree.IsInNonUserCode (completionContext.Position, cancellationToken) ||
+				tree.IsPreProcessorDirectiveContext (completionContext.Position, cancellationToken) ||
+				info.CompletionTriggerReason != CompletionTriggerReason.CompletionCommand &&
+			    info.CompletionTriggerReason != CompletionTriggerReason.BackspaceOrDeleteCommand)
 				return Enumerable.Empty<CompletionData>();
 
 			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);

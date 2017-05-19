@@ -392,4 +392,16 @@ type myT$ype = class end"""
 
         summary |> shouldEqual expected
 
- 
+    [<Test>]
+    member this.``Function type tooltip``() =
+        let input =
+            """
+            type Spell =
+               | Frotz
+               | Grotz
+
+            type Sp$ellF = Spell -> Async<unit>
+            """
+        let signature = getTooltipSignature input
+        let expected = "type SpellF = Spell -> Async<unit>"
+        signature |> should equal expected

@@ -113,7 +113,7 @@ namespace MonoDevelop.Components
 
 		void OnTabPressed (object sender, EventArgs args)
 		{
-			ActiveTab = tabs.IndexOf (sender);
+			ActiveTab = tabs.IndexOf ((Tab)sender);
 		}
 
 		void UpdateAccessibilityTabs ()

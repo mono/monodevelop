@@ -58,6 +58,9 @@ namespace MonoDevelop.Ide
 		{
 			items = new RootWorkspaceItemCollection (this);
 
+			currentWorkspaceLoadTask = new TaskCompletionSource<bool> ();
+			currentWorkspaceLoadTask.SetResult (true);
+
 			FileService.FileRenamed += CheckFileRename;
 			
 			// Set the initial active runtime
@@ -439,9 +442,19 @@ namespace MonoDevelop.Ide
 		}
 
 		System.Threading.CancellationTokenSource openingItemCancellationSource;
+		TaskCompletionSource<bool> currentWorkspaceLoadTask;
+		int loadOperationsCount;
+		object loadLock = new object ();
 
 		internal bool WorkspaceItemIsOpening {
-			get { return openingItemCancellationSource != null; }
+			get { return loadOperationsCount > 0; }
+		}
+
+		/// <summary>
+		/// Gets the task that is currently loading a solution
+		/// </summary>
+		internal Task CurrentWorkspaceLoadTask {
+			get { return currentWorkspaceLoadTask.Task; }
 		}
 
 		public Task<bool> OpenWorkspaceItem (FilePath file)
@@ -456,11 +469,35 @@ namespace MonoDevelop.Ide
 
 		public async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
 		{
-			if (openingItemCancellationSource != null && closeCurrent) {
-				openingItemCancellationSource.Cancel ();
-				openingItemCancellationSource = null;
+			lock (loadLock) {
+				if (++loadOperationsCount == 1)
+					currentWorkspaceLoadTask = new TaskCompletionSource<bool> ();
+				else {
+					// If there is a load operation in progress, cancel it
+					if (openingItemCancellationSource != null && closeCurrent) {
+						openingItemCancellationSource.Cancel ();
+						openingItemCancellationSource = null;
+					}
+				}
+				if (openingItemCancellationSource == null)
+					openingItemCancellationSource = new System.Threading.CancellationTokenSource ();
 			}
 
+			try {
+				return await OpenWorkspaceItemInternal (file, closeCurrent, loadPreferences);
+			}
+			finally {
+				lock (loadLock) {
+					if (--loadOperationsCount == 0) {
+						openingItemCancellationSource = null;
+						currentWorkspaceLoadTask.SetResult (true);
+					}
+				}
+			}
+		}
+
+		public async Task<bool> OpenWorkspaceItemInternal (FilePath file, bool closeCurrent, bool loadPreferences)
+		{
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
@@ -476,8 +513,7 @@ namespace MonoDevelop.Ide
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
 			bool reloading = IsReloading;
 
-			var cancellationSource = openingItemCancellationSource = new System.Threading.CancellationTokenSource ();
-			monitor = monitor.WithCancellationSource (cancellationSource);
+			monitor = monitor.WithCancellationSource (openingItemCancellationSource);
 
 			IdeApp.Workbench.LockGui ();
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
@@ -488,8 +524,6 @@ namespace MonoDevelop.Ide
 				timer.End ();
 				monitor.Dispose ();
 				IdeApp.Workbench.UnlockGui ();
-				if (openingItemCancellationSource == cancellationSource)
-					openingItemCancellationSource = null;
 			}
 		}
 		

@@ -1,4 +1,4 @@
-//
+﻿//
 // BaseFileEntry.cs
 //
 // Author:
@@ -32,6 +32,7 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components
 {
@@ -49,6 +50,9 @@ namespace MonoDevelop.Components
 			this.BrowserTitle = name;
 			pathEntry = new Entry ();
 			browseButton = Button.NewWithMnemonic (GettextCatalog.GetString ("_Browse..."));
+			browseButton.SetCommonAccessibilityAttributes ("FileEntry.Browse",
+			                                               GettextCatalog.GetString ("Browse"),
+			                                               GettextCatalog.GetString ("Select a folder for the entry"));
 			
 			pathEntry.Changed += OnTextChanged;
 			browseButton.Clicked += OnButtonClicked;
@@ -142,6 +146,18 @@ namespace MonoDevelop.Components
 		{
 			if (!loading && PathChanged != null)
 				PathChanged (this, EventArgs.Empty);
+		}
+
+		// Accessibility
+		public void SetEntryAccessibilityAttributes (string name, string label, string help)
+		{
+			pathEntry.SetCommonAccessibilityAttributes (name, label, help);
+		}
+
+		public Atk.Object EntryAccessible {
+			get {
+				return pathEntry.Accessible;
+			}
 		}
 	}
 }

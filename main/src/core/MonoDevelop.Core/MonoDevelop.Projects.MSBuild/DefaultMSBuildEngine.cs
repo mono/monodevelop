@@ -1,4 +1,4 @@
-//
+﻿//
 // DefaultMSBuildEngine.cs
 //
 // Author:
@@ -532,7 +532,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			foreach (var eit in transformItems) {
 				// Some item functions cause the erasure of metadata. Take that into account now.
-				context.SetItemContext (eit.Include, null, ignoreMetadata || item == null ? null : eit.Metadata);
+				context.SetItemContext (null, eit.Include, null, ignoreMetadata || item == null ? null : eit.Metadata);
 				try {
 					// If there is a function that transforms the include of the item, it needs to be applied now. Otherwise just use the transform expression
 					// as include, or the transformed item include if there is no expression.
@@ -604,7 +604,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			int count = 0;
 			foreach (var eit in transformItems) {
-				context.SetItemContext (eit.Include, null, eit.Metadata);
+				context.SetItemContext (null, eit.Include, null, eit.Metadata);
 				try {
 					string evaluatedInclude; bool skip;
 					if (itemFunction != null && ExecuteTransformIncludeItemFunction (context, eit, itemFunction, itemFunctionArgs, out evaluatedInclude, out skip)) {
@@ -794,8 +794,7 @@ namespace MonoDevelop.Projects.MSBuild
 		
 			MSBuildProject project = pinfo.Project;
 			WildcardExpansionFunc<MSBuildItemEvaluated> func = delegate (string file, string include, string recursiveDir) {
-				context.SetItemContext (file, recursiveDir);
-				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include);
+				return CreateEvaluatedItem (context, pinfo, project, sourceItem, include, file, recursiveDir);
 			};
 			MSBuildProject rootProject = pinfo.GetRootMSBuildProject ();
 			return ExpandWildcardFilePath (rootProject, rootProject.BaseDirectory, FilePath.Null, false, subpath, 0, func, directoryExcludeRegex);
@@ -932,15 +931,20 @@ namespace MonoDevelop.Projects.MSBuild
 			return include.Length > 3 && include [0] == '@' && include [1] == '(' && include [include.Length - 1] == ')';
 		}
 
-		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
+		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include, string evaluatedFile = null, string recursiveDir = null)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
 			// Only evaluate properties for non-transforms.
 			if (!IsIncludeTransform (include)) {
-				foreach (var c in sourceItem.Metadata.GetProperties ()) {
-					if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
-						md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value)) { Condition = c.Condition };
+				try {
+					context.SetItemContext (include, evaluatedFile, recursiveDir);
+					foreach (var c in sourceItem.Metadata.GetProperties ()) {
+						if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
+							md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value)) { Condition = c.Condition };
+					}
+				} finally {
+					context.ClearItemContext ();
 				}
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);

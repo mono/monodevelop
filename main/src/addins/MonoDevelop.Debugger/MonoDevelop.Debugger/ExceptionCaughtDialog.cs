@@ -971,7 +971,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
 
-			var box = new HBox (false, 6);
+			var box = new HBox (false, 6) { Name = "exceptionCaughtButtonBox" };
 			var vb = new VBox ();
 			vb.PackStart (image, false, false, 0);
 			box.PackStart (vb, false, false, 0);
@@ -979,14 +979,16 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			typeLabel = new Label {
 				Xalign = 0,
 				Selectable = true,
-				CanFocus = false
+				CanFocus = false,
+				Name = "exceptionTypeLabel"
 			};
 			vb.PackStart (typeLabel);
 			messageLabel = new Label {
 				Xalign = 0,
 				NoShowAll = true,
 				Selectable = true,
-				CanFocus = false
+				CanFocus = false,
+				Name = "exceptionMessageLabel"
 			};
 			vb.PackStart (messageLabel);
 
@@ -1002,7 +1004,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			vb = new VBox ();
 			var closeButton = new ImageButton {
 				InactiveImage = closeSelImage,
-				Image = closeSelOverImage
+				Image = closeSelOverImage,
+				Name = "closeExceptionCaughtButton"
 			};
 			closeButton.Clicked += delegate {
 				dlg.ShowMiniButton ();
@@ -1018,6 +1021,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			LoadData ();
 
 			var eb = new PopoverWidget ();
+			eb.Name = "exceptionCaughtPopoverWidget";
 			eb.ShowArrow = true;
 			eb.EnableAnimation = true;
 			eb.PopupPosition = PopupPosition.Left;
@@ -1068,6 +1072,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		public override Control CreateWidget ()
 		{
 			var box = new EventBox ();
+			box.Name = "exceptionCaughtMiniButtonEventBox";
 			box.VisibleWindow = false;
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			box.Add (new Xwt.ImageView (icon).ToGtkWidget ());

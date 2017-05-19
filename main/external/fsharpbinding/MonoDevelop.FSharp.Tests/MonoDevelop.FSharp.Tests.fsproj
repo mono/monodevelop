@@ -216,6 +216,7 @@
     </None>
     <Content Include="Samples\Xamarin.iOS.fsproj" />
     <Compile Include="BraceMatcher.fs" />
+    <Compile Include="TagComments.fs" />
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>

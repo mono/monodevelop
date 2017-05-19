@@ -1,6 +1,6 @@
 {
 	"name": "Monokai",
-	"version": "1.3.3",
+	"version": "1.3.4",
 	"description": "A smooth, dusky scheme",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -115,8 +115,9 @@
 
 		{ "name": "Comment(Line)", "fore": "monokai-comment" },
 		{ "name": "Comment(Block)", "fore": "monokai-comment" },
-		{ "name": "Comment(Doc)", "fore": "monokai-comment" },
-		{ "name": "Comment(DocTag)", "fore": "monokai-comment" },
+		{ "name": "Comment(Doc)", "fore": "#617e52" },
+		{ "name": "Comment(DocTag)", "fore": "#817235" },
+		{ "name": "Comment Tag", "fore": "#ff0dff" },
 
 		{ "name": "Excluded Code", "fore": "monokai-comment" },
 

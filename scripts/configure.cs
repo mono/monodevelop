@@ -58,6 +58,9 @@ namespace MonoDevelop.Configuration
                     case "gen-buildinfo":
                         GenerateBuildInfo(args);
                         break;
+                    case "is-preview":
+                        GetIsPreview(args);
+                        break;
                     default:
                         Console.WriteLine("Unknown command: " + cmd);
                         return 1;
@@ -77,6 +80,11 @@ namespace MonoDevelop.Configuration
 		static void GetVersion (string[] args)
 		{
 			Console.WriteLine (config.ProductVersion);
+		}
+
+		static void GetIsPreview (string[] args)
+		{
+			Console.WriteLine (config.IsPreview);
 		}
 
 		static void GetReleaseId (string[] args)
@@ -109,6 +117,7 @@ namespace MonoDevelop.Configuration
             Console.WriteLine("Commands:");
             Console.WriteLine("\tget-version: Prints the version of this release");
             Console.WriteLine("\tget-releaseid: Prints the release id");
+            Console.WriteLine("\tis-preview: Prints `True` if this is a preview or `False` otherwise");
             Console.WriteLine("\tgen-updateinfo <config-file> <path>: Generates the updateinfo file");
             Console.WriteLine("\t\tin the provided path");
             Console.WriteLine("\tgen-buildinfo <path>: Generates the buildinfo file in the provided path");
@@ -127,6 +136,7 @@ namespace MonoDevelop.Configuration
         public readonly string AssemblyVersion = "4.0.0.0";
         public readonly string ReleaseId;
         public readonly PlatformInfo PlatformInfo;
+        public readonly bool IsPreview;
        
         public IdeConfigurationTool(string monoDevelopPath)
         {
@@ -137,6 +147,7 @@ namespace MonoDevelop.Configuration
             ProductVersionText = SystemUtil.Grep(versionTxt, "Label=(.*)");
             CompatVersion = SystemUtil.Grep(versionTxt, "CompatVersion=(.*)");
 			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)", true);
+            IsPreview = SystemUtil.Grep(versionTxt, "IsPreview=(.*)") == "true";
 
 			var customSource = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATEINFO_SOURCE_URL");
 			if (!string.IsNullOrEmpty (customSource))
