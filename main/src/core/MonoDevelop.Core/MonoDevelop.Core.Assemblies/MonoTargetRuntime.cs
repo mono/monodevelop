@@ -351,7 +351,7 @@ namespace MonoDevelop.Core.Assemblies
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
 				if (File.Exists (monoPath))
 					return monoPath;
-			} else if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0) {
+			} else {
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
 				if (File.Exists (monoPath))
 					return monoPath;
