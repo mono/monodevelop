@@ -416,6 +416,7 @@
     <Compile Include="MonoDevelop.PackageManagement\HttpClientFactory.cs" />
     <Compile Include="NuGet.CommandLine\SettingsCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReferenceNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
