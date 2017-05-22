@@ -30,7 +30,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.Platform
 {
 	[Export]
-	internal class PlatformCatalog : IPartImportsSatisfiedNotification
+	class PlatformCatalog : IPartImportsSatisfiedNotification
 	{
 		[Export]                                        //HACK
 		[Name ("csharp")]                               //HACK

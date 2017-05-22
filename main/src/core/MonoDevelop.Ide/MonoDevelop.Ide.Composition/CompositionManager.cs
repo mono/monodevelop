@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Composition
 	/// </summary>
 	public class CompositionManager
 	{
-		private static Task<CompositionManager> creationTask;
-		private static CompositionManager instance;
+		static Task<CompositionManager> creationTask;
+		static CompositionManager instance;
 
-		private static readonly Resolver StandardResolver = Resolver.DefaultInstance;
-		private static readonly PartDiscovery Discovery = PartDiscovery.Combine (
+		static readonly Resolver StandardResolver = Resolver.DefaultInstance;
+		static readonly PartDiscovery Discovery = PartDiscovery.Combine (
 			new AttributedPartDiscoveryV1 (StandardResolver),
 			new AttributedPartDiscovery (StandardResolver, true));
 
@@ -93,14 +93,14 @@ namespace MonoDevelop.Ide.Composition
 		{
 		}
 
-		private static async Task<CompositionManager> CreateInstanceAsync ()
+		static async Task<CompositionManager> CreateInstanceAsync ()
 		{
 			var compositionManager = new CompositionManager ();
 			await compositionManager.InitializeInstanceAsync ();
 			return compositionManager;
 		}
 
-		private async Task InitializeInstanceAsync ()
+		async Task InitializeInstanceAsync ()
 		{
 			ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
 				.WithCompositionService ()
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Composition
 			ExportProvider = ExportProviderFactory.CreateExportProvider ();
 		}
 
-		private void ReadAssembliesFromAddins (HashSet<Assembly> assemblies, string extensionPath)
+		void ReadAssembliesFromAddins (HashSet<Assembly> assemblies, string extensionPath)
 		{
 			foreach (var node in AddinManager.GetExtensionNodes (extensionPath)) {
 				var assemblyNode = node as AssemblyExtensionNode;
