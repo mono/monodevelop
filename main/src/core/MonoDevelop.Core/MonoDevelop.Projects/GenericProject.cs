@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects
 
 		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
+			base.OnInitializeFromTemplate (projectCreateInfo, template);
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
 
