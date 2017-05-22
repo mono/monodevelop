@@ -413,20 +413,35 @@ namespace MonoDevelop.DotNetCore
 			// project file is being saved.
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceAddedToProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceRemovedFromProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
+		}
+
+		bool IsLoadingOrReevaluating ()
+		{
+			return Project.Loading || Project.IsReevaluating;
 		}
 
 		void RestoreNuGetPackages ()
