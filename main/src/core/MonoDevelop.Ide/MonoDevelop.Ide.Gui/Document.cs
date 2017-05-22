@@ -169,14 +169,11 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			window.ViewContent.ContentNameChanged += delegate {
-				UnsubscribeAnalysisDocument ();
-				UnloadAdhocProject();
-			};
-			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
+			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
 		}
 
-		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
+		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
 		{
 			UnsubscribeAnalysisDocument ();
 			UnloadAdhocProject ();
@@ -595,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
 			window = null;
 
