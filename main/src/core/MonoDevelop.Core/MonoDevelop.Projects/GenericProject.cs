@@ -68,6 +68,11 @@ namespace MonoDevelop.Projects
 			base.OnWriteConfiguration (monitor, config, pset);
 			pset.SetValue ("OutputPath", config.OutputDirectory);
 		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return ProjectFeatures.Build | ProjectFeatures.Configurations | ProjectFeatures.Execute;
+		}
 	}
 	
 	[ProjectModelDataItem]
