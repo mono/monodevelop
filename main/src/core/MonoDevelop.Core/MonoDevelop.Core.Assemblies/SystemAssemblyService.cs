@@ -442,7 +442,8 @@ namespace MonoDevelop.Core.Assemblies
 					return false;
 				}
 				foreach (var r in assembly.GetReferencedAssemblies ()) {
-					if (r.FullName.Equals ("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")) {
+					// Don't compare the version number since it may change depending on the version of .net standard
+					if (r.Name == "System.Runtime") {
 						referenceDict = referenceDict.SetItem (fileName, true);
 						return true;
 					}
