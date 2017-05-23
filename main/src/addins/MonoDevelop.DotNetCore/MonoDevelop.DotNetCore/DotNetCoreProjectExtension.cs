@@ -413,20 +413,35 @@ namespace MonoDevelop.DotNetCore
 			// project file is being saved.
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceAddedToProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceRemovedFromProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
+		}
+
+		bool IsLoadingOrReevaluating ()
+		{
+			return Project.Loading || Project.IsReevaluating;
 		}
 
 		void RestoreNuGetPackages ()
@@ -526,11 +541,25 @@ namespace MonoDevelop.DotNetCore
 					return false;
 			}
 
+			if (IsFromSharedProject (buildItem))
+				return false;
+
 			// HACK: Remove any imported items that are not in the EvaluatedItems
 			// This may happen if a condition excludes the item. All items passed to the
 			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
 			return Project.MSBuildProject.EvaluatedItems
 				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
+		}
+
+		/// <summary>
+		/// Checks that the project has the HasSharedItems property set to true and the SharedGUID
+		/// property in its global property group. Otherwise it is not considered to be a shared project.
+		/// </summary>
+		bool IsFromSharedProject (IMSBuildItemEvaluated buildItem)
+		{
+			var globalGroup = buildItem?.SourceItem?.ParentProject?.GetGlobalPropertyGroup ();
+			return globalGroup?.GetValue<bool> ("HasSharedItems") == true &&
+				globalGroup?.HasProperty ("SharedGUID") == true;
 		}
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
