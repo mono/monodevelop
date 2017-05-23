@@ -144,19 +144,6 @@ type ``Template tests``() =
         let configFileName = templatesDir/"NuGet.Config"
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
 
-    member x.Templates =
-        let x =
-            solutionTemplates 
-            |> Seq.map (fun t -> t.Id)
-            |> Seq.filter (fun id -> ProjectTemplate.ProjectTemplates |> Seq.exists(fun t -> t.Id = id))
-            // The tutorial project fails because of a bug in msbuild in mono 4.8.0
-            // but fixed in mono 4.9.3. However, it builds just fine from the IDE.
-            // Remove this filter when we get a mono bump
-            |> Seq.filter(fun id -> not (id = "MonoDevelop.FSharp.TutorialProject"))
-        x |> Seq.iter (printfn "%A")
-        //printf "%A" x
-        x
-
     [<Test>]
     member x.``FSharp portable project``() =
         let name = "FSharpPortableLibrary"
