@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static HostServices HostServices {
+		public static HostServices HostServices {
 			get {
 				return services;
 			}
