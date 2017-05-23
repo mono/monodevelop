@@ -64,6 +64,8 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (targetFrameworks.Count > 1)
 				return 1;
 
+			ConfigureDefaultParameters ();
+
 			return 0;
 		}
 
@@ -104,6 +106,33 @@ namespace MonoDevelop.DotNetCore.Templating
 		static void RemoveUnsupportedNetCoreApp1xTargetFrameworks (List<TargetFramework> targetFrameworks)
 		{
 			targetFrameworks.RemoveAll (framework => framework.IsNetCoreApp1x ());
+		}
+
+		/// <summary>
+		/// Set default parameter values if no wizard will be displayed.
+		/// </summary>
+		void ConfigureDefaultParameters ()
+		{
+			if (IsSupportedParameter ("NetStandard")) {
+				var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().FirstOrDefault ();
+
+				if (highestFramework != null && highestFramework.IsNetStandard20 ()) {
+					Parameters ["UseNetStandard20"] = "true";
+				} else {
+					Parameters ["UseNetStandard1x"] = "true";
+				}
+			} else {
+				if (IsSupportedParameter ("FSharpNetCoreLibrary") || IsSupportedParameter ("RazorPages")) {
+					Parameters ["UseNetCore20"] = "true";
+				} else {
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					if (highestFramework != null && highestFramework.IsNetCoreApp20 ()) {
+						Parameters ["UseNetCore20"] = "true";
+					} else {
+						Parameters ["UseNetCore1x"] = "true";
+					}
+				}
+			}
 		}
 	}
 }
