@@ -264,11 +264,9 @@ namespace MonoDevelop.Core.Text
 			ArgumentCheck (fileName, text, encoding);
 			var tmpPath = WriteTextInit (fileName);
 			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
-				var bom = encoding.GetPreamble ();
-				if (bom != null && bom.Length > 0)
-					stream.Write (bom, 0, bom.Length);
-				byte[] bytes = encoding.GetBytes (text);
-				stream.Write (bytes, 0, bytes.Length);
+				using (var sw = new StreamWriter (stream, encoding)) {
+					sw.Write (text);
+				}
 			}
 			WriteTextFinal (tmpPath, fileName);
 		}
@@ -344,9 +342,9 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("fileName");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
-
-			byte[] content = File.ReadAllBytes (fileName);
-			return encoding.GetString (content); 
+			using (var reader = new StreamReader (fileName, encoding)) {
+				return reader.ReadToEnd ();
+			}
 		}
 
 		public static async Task<TextContent> ReadAllTextAsync (string fileName, Encoding encoding)
@@ -356,13 +354,12 @@ namespace MonoDevelop.Core.Text
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
 
-			byte[] content = await ReadAllBytesAsync (fileName).ConfigureAwait (false);
-
-			var txt = encoding.GetString (content); 
-			return new TextContent {
-				Text = txt,
-				Encoding = encoding
-			};
+			using (var reader = new StreamReader (fileName, encoding)) {
+				return new TextContent {
+					Text = await reader.ReadToEndAsync (),
+					Encoding = encoding
+				};
+			}
 		}
 
 		public static Task<byte []> ReadAllBytesAsync (string file)
