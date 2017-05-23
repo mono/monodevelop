@@ -941,7 +941,8 @@ namespace MonoDevelop.Projects
 			}
 			var addFacadeAssemblies = false;
 			foreach (var r in GetReferencedAssemblyProjects (configuration)) {
-				if (r.IsPortableLibrary) {
+				// Facade assemblies need to be referenced if this project is referencing a PCL or .NET Standard project.
+				if (r.IsPortableLibrary || r.TargetFramework.Id.Identifier == ".NETStandard") {
 					addFacadeAssemblies = true;
 					break;
 				}
