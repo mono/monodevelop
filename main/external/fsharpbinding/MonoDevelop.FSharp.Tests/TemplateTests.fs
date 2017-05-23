@@ -80,7 +80,7 @@ type ``Template tests``() =
             cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
             cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v7.0"
-            let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
+            use sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
 
             let createTemplate (template:SolutionTemplate) =
                 let config = NewProjectConfiguration(
