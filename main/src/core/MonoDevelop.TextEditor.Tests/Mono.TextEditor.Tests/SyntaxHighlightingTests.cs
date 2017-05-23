@@ -198,5 +198,12 @@ namespace Mono.TextEditor.Tests
 			  			"<span foreground=\"#8ae232\">0b1111_0000</span>");
 		}
 
+		[Test]
+		public void TestBug56747 ()
+		{
+			TestOutput ("$\"{{foo}}\"",
+			  			"<span foreground=\"#e5da73\">$\"{{foo}}\"</span>");
+		}
+
 	}
 }
