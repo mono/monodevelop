@@ -745,7 +745,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
-		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor);
 			if (document as Document != null) {
@@ -755,13 +755,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, ITextDocument editor)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor)
 		{
-			TextDocument document = this.GetDocument (documentId) ?? this.GetAdditionalDocument (documentId);
+			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
+				return null;
+			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
 			if (document == null || openDocuments.Any (d => d.Id == documentId)) {
 				return document;
 			}
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (this, documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
