@@ -166,6 +166,9 @@ namespace MonoDevelop.Projects
 
 				if (creationContext.Project != null) {
 					this.sourceProject = creationContext.Project;
+					// Configure target framework here for projects that target multiple frameworks so the
+					// project capabilities are correct when they are initialized in InitBeforeProjectExtensionLoad.
+					ConfigureActiveTargetFramework ();
 					projectTypeGuids = sourceProject.EvaluatedProperties.GetValue ("ProjectTypeGuids");
 					if (projectTypeGuids != null) {
 						var subtypeGuids = new List<string> ();
@@ -1281,10 +1284,58 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		string activeTargetFramework;
+
+		void ConfigureActiveTargetFramework ()
+		{
+			activeTargetFramework = GetActiveTargetFramework ();
+			if (activeTargetFramework != null) {
+				MSBuildProject.SetGlobalProperty ("TargetFramework", activeTargetFramework);
+				MSBuildProject.Evaluate ();
+			}
+		}
+
+		/// <summary>
+		/// If an SDK project targets multiple target frameworks then this returns the first
+		/// target framework. Otherwise it returns null. This also handles the odd case if
+		/// the TargetFrameworks property is being used but only one framework is defined
+		/// there. Since here an active target framework must be returned even though multiple
+		/// target frameworks are not being used.
+		/// </summary>
+		string GetActiveTargetFramework ()
+		{
+			var frameworks = GetTargetFrameworks (MSBuildProject);
+			if (frameworks != null && frameworks.Any ())
+				return frameworks.FirstOrDefault ();
+
+			return null;
+		}
+
+		/// <summary>
+		/// Returns target frameworks defined in the TargetFrameworks property for SDK projects
+		/// if the TargetFramework property is not defined. It returns null otherwise.
+		/// </summary>
+		static string[] GetTargetFrameworks (MSBuildProject project)
+		{
+			if (string.IsNullOrEmpty (project.Sdk))
+				return null;
+
+			var propertyGroup = project.GetGlobalPropertyGroup ();
+			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
+			if (propertyValue != null)
+				return null;
+
+			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			if (propertyValue != null)
+				return propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+			return null;
+		}
+
 		internal Dictionary<string, string> CreateGlobalProperties ()
 		{
 			var properties = new Dictionary<string, string> ();
-			string framework = MSBuildProject.GetActiveTargetFramework ();
+			string framework = activeTargetFramework;
 			if (framework != null)
 				properties ["TargetFramework"] = framework;
 			return properties;

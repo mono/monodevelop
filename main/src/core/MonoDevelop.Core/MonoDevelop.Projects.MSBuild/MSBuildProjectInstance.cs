@@ -53,8 +53,7 @@ namespace MonoDevelop.Projects.MSBuild
 			msproject = project;
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (msproject);
-			if (!project.SolutionDirectory.IsNullOrEmpty)
-				globalProperties.Add ("SolutionDir", project.SolutionDirectory.ToString () + System.IO.Path.DirectorySeparatorChar);
+			globalProperties = new Dictionary<string, string> (project.GlobalProperties);
 		}
 
 		public void Dispose ()
@@ -96,10 +95,6 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				foreach (var prop in globalProperties)
 					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
-
-				string targetFramework = msproject.GetActiveTargetFramework ();
-				if (targetFramework != null)
-					engine.SetGlobalProperty (projectInstance, "TargetFramework", targetFramework);
 
 				engine.Evaluate (projectInstance);
 

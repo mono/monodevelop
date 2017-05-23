@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.MSBuild
 		bool isShared;
 		ConditionedPropertyCollection conditionedProperties = new ConditionedPropertyCollection ();
 		Dictionary<string, string[]> knownItemAttributes;
+		Dictionary<string,string> globalProperties = new Dictionary<string, string> ();
 
 		MSBuildEngineManager engineManager;
 		bool engineManagerIsLocal;
@@ -86,7 +87,18 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return file.ParentDirectory; }
 		}
 
-		public FilePath SolutionDirectory { get; set; }
+		FilePath solutionDirectory;
+
+		public FilePath SolutionDirectory {
+			get { return solutionDirectory; }
+			set {
+				solutionDirectory = value;
+				if (!solutionDirectory.IsNullOrEmpty)
+					SetGlobalProperty ("SolutionDir", solutionDirectory.ToString () + Path.DirectorySeparatorChar);
+				else
+					RemoveGlobalProperty ("SolutionDir");
+			}
+		}
 
 		public MSBuildFileFormat Format
 		{
@@ -945,53 +957,6 @@ namespace MonoDevelop.Projects.MSBuild
 				return Array.Empty<string> ();
 		}
 
-		/// <summary>
-		/// If an SDK project targets multiple target frameworks then this returns the first
-		/// target framework. Otherwise it returns null. This also handles the odd case if
-		/// the TargetFrameworks property is being used but only one framework is defined
-		/// there. Since here an active target framework must be returned even though multiple
-		/// target frameworks are not being used.
-		/// </summary>
-		internal string GetActiveTargetFramework ()
-		{
-			if (string.IsNullOrEmpty (Sdk))
-				return null;
-
-			var frameworks = GetTargetFrameworks ();
-			if (frameworks != null && frameworks.Any ())
-				return frameworks.FirstOrDefault ();
-
-			return null;
-		}
-
-		string[] targetFrameworks;
-
-		/// <summary>
-		/// Returns target frameworks defined in the TargetFrameworks property for SDK projects
-		/// if the TargetFramework property is not defined. It returns null otherwise.
-		/// </summary>
-		string[] GetTargetFrameworks ()
-		{
-			if (string.IsNullOrEmpty (Sdk))
-				return null;
-
-			if (targetFrameworks != null)
-				return targetFrameworks;
-
-			var propertyGroup = GetGlobalPropertyGroup ();
-			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
-			if (propertyValue != null)
-				return null;
-
-			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
-			if (propertyValue != null) {
-				targetFrameworks = propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-				return targetFrameworks;
-			}
-
-			return null;
-		}
-
 		XmlNamespaceManager GetNamespaceManagerForProject ()
 		{
 			if (Namespace == Schema)
@@ -1122,6 +1087,20 @@ namespace MonoDevelop.Projects.MSBuild
 				return attributes;
 
 			return MSBuildItem.KnownAttributes;
+		}
+
+		internal void SetGlobalProperty (string property, string value)
+		{
+			globalProperties [property] = value;
+		}
+
+		internal void RemoveGlobalProperty (string property)
+		{
+			globalProperties.Remove (property);
+		}
+
+		internal Dictionary<string, string> GlobalProperties {
+			get { return globalProperties; }
 		}
 	}
 
