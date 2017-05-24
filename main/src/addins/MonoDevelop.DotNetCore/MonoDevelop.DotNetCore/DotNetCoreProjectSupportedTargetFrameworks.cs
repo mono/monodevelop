@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
@@ -90,10 +91,17 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
-			foreach (DotNetCoreVersion runtimeVersion in DotNetCoreRuntime.Versions) {
-				string version = runtimeVersion.Version.ToString (2);
+			foreach (Version runtimeVersion in GetMajorRuntimeVersions ()) {
+				string version = runtimeVersion.ToString (2);
 				yield return CreateTargetFramework (".NETCoreApp", version);
 			}
+		}
+
+		static IEnumerable<Version> GetMajorRuntimeVersions ()
+		{
+			return DotNetCoreRuntime.Versions
+				.Select (version => new Version (version.Major, version.Minor))
+				.Distinct ();
 		}
 
 		static TargetFramework CreateTargetFramework (string identifier, string version)
