@@ -356,7 +356,7 @@ namespace MonoDevelop.Core.Text
 
 			using (var reader = new StreamReader (fileName, encoding)) {
 				return new TextContent {
-					Text = await reader.ReadToEndAsync (),
+					Text = await reader.ReadToEndAsync ().ConfigureAwait (false),
 					Encoding = encoding
 				};
 			}
