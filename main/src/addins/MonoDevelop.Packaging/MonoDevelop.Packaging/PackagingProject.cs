@@ -116,7 +116,7 @@ namespace MonoDevelop.Packaging
 			return true;
 		}
 
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			return false;
 		}
