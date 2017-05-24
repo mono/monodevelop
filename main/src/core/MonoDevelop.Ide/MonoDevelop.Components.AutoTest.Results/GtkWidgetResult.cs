@@ -137,7 +137,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 					propText = item.Label;
 				}
 
-				if (button != null && button.UseUnderline) {
+				if (button != null && button.UseUnderline && propText != null) {
 					int indexOfUnderline = propText.IndexOf ("_");
 					if (indexOfUnderline > -1) {
 						propText = propText.Remove (indexOfUnderline, 1);
