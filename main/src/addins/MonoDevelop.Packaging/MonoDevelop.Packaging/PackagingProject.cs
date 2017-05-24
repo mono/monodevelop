@@ -275,12 +275,12 @@ namespace MonoDevelop.Packaging
 			get { return packageReferences; }
 		}
 
-		public PackageReference FindPackageReference (PackageIdentity packageIdentity)
+		public ProjectPackageReference FindPackageReference (PackageIdentity packageIdentity)
 		{
 			return PackageReferences.FirstOrDefault (packageReference => IsMatch (packageReference, packageIdentity));
 		}
 
-		bool IsMatch (PackageReference packageReference, PackageIdentity packageIdentity)
+		bool IsMatch (ProjectPackageReference packageReference, PackageIdentity packageIdentity)
 		{
 			return String.Equals (packageReference.Include, packageIdentity.Id, StringComparison.OrdinalIgnoreCase);
 		}
@@ -297,12 +297,12 @@ namespace MonoDevelop.Packaging
 			referenceAssemblyFrameworks.AddRange (frameworks.Select (fx => new ReferenceAssemblyFramework (fx)));
 		}
 
-		PackageReference GetNuGetBuildPackagingPackageReference ()
+		ProjectPackageReference GetNuGetBuildPackagingPackageReference ()
 		{
 			return PackageReferences.FirstOrDefault (packageReference => IsNuGetBuildPackagingReference (packageReference));
 		}
 
-		bool IsNuGetBuildPackagingReference (PackageReference packageReference)
+		bool IsNuGetBuildPackagingReference (ProjectPackageReference packageReference)
 		{
 			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, "NuGet.Build.Packaging");
 		}
