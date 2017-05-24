@@ -277,7 +277,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			case "nuint":
 				var symbol = base.semanticModel.GetSymbolInfo (node).Symbol as INamedTypeSymbol;
 				if (symbol != null && symbol.ContainingNamespace.ToDisplayString () == "System") {
-					Colorize (node.Span, "Keyword(Type)");
+					Colorize (node.Span, "keyword.source.cs");
 					return;
 				}
 				break;
