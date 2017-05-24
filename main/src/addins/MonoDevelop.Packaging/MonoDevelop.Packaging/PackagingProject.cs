@@ -113,18 +113,7 @@ namespace MonoDevelop.Packaging
 
 		protected override bool OnSupportsFramework (TargetFramework framework)
 		{
-			bool result = base.OnSupportsFramework (framework);
-			if (result)
-				return result;
-
-			if (framework.Id.Identifier == ".NETFramework") {
-				Version frameworkVersion = null;
-				if (System.Version.TryParse (framework.Id.Version, out frameworkVersion)) {
-					return frameworkVersion.Major >= 4 && frameworkVersion.Minor >= 5;
-				}
-			}
-
-			return false;
+			return true;
 		}
 
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
