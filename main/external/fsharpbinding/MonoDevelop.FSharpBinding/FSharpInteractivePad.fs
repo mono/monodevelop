@@ -162,6 +162,7 @@ type FSharpInteractivePad() =
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
+    let mutable lastLineOutput = None
     let commandHistoryPast = new Stack<string> ()
     let commandHistoryFuture = new Stack<string> ()
 
@@ -196,6 +197,7 @@ type FSharpInteractivePad() =
         editor.InsertAtCaret (nonBreakingSpace + t)
         editor.CaretOffset <- editor.Text.Length
         editor.ScrollTo editor.CaretLocation
+        lastLineOutput <- Some editor.CaretLine
 
     let renderImage image =
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
@@ -344,6 +346,10 @@ type FSharpInteractivePad() =
     static member Fsi =
         FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
 
+    member x.LastOutputLine
+        with get() = lastLineOutput
+        and set value = lastLineOutput <- value
+
     member x.SendSelection() =
         if x.IsSelectionNonEmpty then
             let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
@@ -457,35 +463,40 @@ type FSharpInteractivePad() =
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
-    let getCaretLine (editor:TextEditor) =
-        let line =
-            editor.CaretLine
-            |> editor.GetLine
-
-        if line.Length > 0 then
-            (editor.GetLineText line), line
-        else
-            "", line
-    
     override x.IsValidInContext(context) =
         context :? FsiDocumentContext
 
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
-            let lineStr, line = getCaretLine x.Editor
+            let getInputLines (editor:TextEditor) =
+                let lineNumbers =
+                    match fsi.LastOutputLine with
+                    | Some lineNumber ->
+                        [ lineNumber+1 .. editor.CaretLine ]
+                    | None -> [ editor.CaretLine ]
+                lineNumbers 
+                |> List.map editor.GetLine
+                |> List.map (fun line ->
+                                 if line.Length > 0 then
+                                     (editor.GetLineText line), line
+                                 else
+                                     "", line)
 
-            let result = 
+            let result =
                 match descriptor.SpecialKey with
-                | SpecialKey.Return -> 
+                | SpecialKey.Return ->
                     if x.Editor.CaretLine = x.Editor.LineCount then
-                        fsi.SendCommandAndStore lineStr
-                              
+                        let lines = getInputLines x.Editor
+                        lines
+                        |> List.iter(fun (lineStr, _line) ->
+                            fsi.SendCommandAndStore lineStr)
+                        let lineStr, line = lines |> List.rev |> List.head
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
                             fsi.AddMorePrompt()
-                    
+                        fsi.LastOutputLine <- Some line.LineNumber
                     false
                 | SpecialKey.Up -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
