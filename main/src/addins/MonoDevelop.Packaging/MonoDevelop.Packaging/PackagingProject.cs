@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -324,7 +325,24 @@ namespace MonoDevelop.Packaging
 			if (packageIdentity == null)
 				return false;
 
-			return GlobalPackagesExtractor.IsMissing (solutionManager, packageIdentity);
+			if (GlobalPackagesExtractor.IsMissing (solutionManager, packageIdentity))
+				return true;
+
+			// This will trigger a restore if the generated MSBuild files are missing.
+			return !GeneratedNuGetMSBuildFilesExist ();
+		}
+
+		/// <summary>
+		/// Looks for generated .nuget.targets and .nuget.props files for the project.
+		/// </summary>
+		bool GeneratedNuGetMSBuildFilesExist ()
+		{
+			string targetsName = $"{Name}.nuget.targets";
+			string propsName = $"{Name}.nuget.props";
+			string targetsPath = Path.Combine (BaseDirectory, targetsName);
+			string propsPath = Path.Combine (BaseDirectory, propsName);
+
+			return File.Exists (targetsPath) && File.Exists (propsPath);
 		}
 
 		public async Task RestorePackagesAsync (
