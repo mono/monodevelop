@@ -959,9 +959,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();
-				if (string.IsNullOrEmpty (currentParseFile))
+				if (string.IsNullOrEmpty (currentParseFile) || Editor.IsDisposed)
 					return;
-
 				lock (reparseTimeoutLock) {
 					CancelParseTimeout ();
 
@@ -984,7 +983,7 @@ namespace MonoDevelop.Ide.Gui
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
 		{
 			var editor = Editor;
-			if (editor == null)
+			if (editor == null || editor.IsDisposed)
 				return;
 
 			// Don't directly parse the document because doing it at every key press is
