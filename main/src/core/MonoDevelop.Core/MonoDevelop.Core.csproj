@@ -705,6 +705,7 @@
     <Compile Include="MonoDevelop.Projects\MSBuildLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ImportSearchPathExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\AppliesToCondition.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectConfigurationItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
