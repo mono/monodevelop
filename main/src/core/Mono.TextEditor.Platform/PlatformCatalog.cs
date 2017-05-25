@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor.Highlighting;
 
 using Microsoft.VisualStudio.Text;
@@ -28,98 +29,66 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Platform
 {
-    public class PlatformCatalog
-    {
-        public static PlatformCatalog Instance = new PlatformCatalog();
+	[Export]
+	class PlatformCatalog : IPartImportsSatisfiedNotification
+	{
+		[Export]                                        //HACK
+		[Name ("csharp")]                               //HACK
+		[BaseDefinition ("code")]                       //HACK
+		public ContentTypeDefinition CodeContentType;   //HACK
 
-        public CompositionContainer CompositionContainer { get; }
+		private static PlatformCatalog instance;
+		public static PlatformCatalog Instance {
+			get {
+				if (instance == null) {
+					lock (typeof(PlatformCatalog)) {
+						if (instance == null) {
+							instance = CompositionManager.GetExportedValue<PlatformCatalog> ();
+						}
+					}
+				}
 
-        public ITextBufferFactoryService2 TextBufferFactoryService { get; }
+				return instance;
+			}
+		}
 
-        private PlatformCatalog()
-        {
-            var container = PlatformCatalog.CreateContainer();
-            container.SatisfyImportsOnce(this);
+		[Import]
+		internal ITextBufferFactoryService TextBufferFactoryService { get; private set; }
 
-            this.CompositionContainer = container;
-            this.TextBufferFactoryService = (ITextBufferFactoryService2)_textBufferFactoryService;
+		internal ITextBufferFactoryService2 TextBufferFactoryService2 => TextBufferFactoryService as ITextBufferFactoryService2;
 
-            this.MimeToContentTypeRegistryService.LinkTypes("text/plain", this.ContentTypeRegistryService.GetContentType("text"));		  //HACK
-            this.MimeToContentTypeRegistryService.LinkTypes("text/x-csharp", this.ContentTypeRegistryService.GetContentType("csharp"));   //HACK
+		[Import]
+		internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
 
-            if (null != this.ContentTypeRegistryService.GetContentType("css"))
-            {
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-css", this.ContentTypeRegistryService.GetContentType("css"));   //HACK
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-html", this.ContentTypeRegistryService.GetContentType("htmlx"));   //HACK
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-json", this.ContentTypeRegistryService.GetContentType("JSON"));   //HACK
-            }
-        }
+		[Import]
+		internal ITextEditorFactoryService TextEditorFactoryService { get; private set; }
 
-        private static CompositionContainer CreateContainer()
-        {
-            // TODO: Read these from manifest.addin.xml?
-            AggregateCatalog catalog = new AggregateCatalog();
-            catalog.Catalogs.Add(new AssemblyCatalog(typeof(PlatformCatalog).Assembly));
+		[Import]
+		internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
 
-            foreach (var node in AddinManager.GetExtensionNodes("/MonoDevelop/Ide/TypeService/PlatformMefHostServices"))
-            {
-                var assemblyNode = node as AssemblyExtensionNode;
-                if (assemblyNode != null)
-                {
-                    try
-                    {
-						// Make sure the add-in that registered the assembly is loaded, since it can bring other
-						// other assemblies required to load this one
-						AddinManager.LoadAddin(null, assemblyNode.Addin.Id);
+		[Import]
+		internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
 
-                        var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-                        var assembly = MonoDevelop.Core.Platform.AssemblyLoad(assemblyFilePath);
-                        catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-                    }
-                    catch (Exception e)
-                    {
-                        LoggingService.LogError("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
-                    }
-                }
-            }
+		[Import]
+		internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService { get; private set; }
 
-            //Create the CompositionContainer with the parts in the catalog
-            CompositionContainer container = new CompositionContainer(catalog,
-                                                                      CompositionOptions.DisableSilentRejection |
-                                                                      CompositionOptions.IsThreadSafe |
-                                                                      CompositionOptions.ExportCompositionService);
+		[Import]
+		internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
 
-            return container;
-        }
+		void IPartImportsSatisfiedNotification.OnImportsSatisfied ()
+		{
+			this.MimeToContentTypeRegistryService.LinkTypes ("text/plain", this.ContentTypeRegistryService.GetContentType ("text"));          //HACK
+			this.MimeToContentTypeRegistryService.LinkTypes ("text/x-csharp", this.ContentTypeRegistryService.GetContentType ("csharp"));   //HACK
 
-        [Export]                                        //HACK
-        [Name("csharp")]                                //HACK
-        [BaseDefinition("code")]                        //HACK
-        public ContentTypeDefinition codeContentType;   //HACK
+			if (null != this.ContentTypeRegistryService.GetContentType ("css")) {
+				this.MimeToContentTypeRegistryService.LinkTypes ("text/x-css", this.ContentTypeRegistryService.GetContentType ("css"));   //HACK
+				this.MimeToContentTypeRegistryService.LinkTypes ("text/x-html", this.ContentTypeRegistryService.GetContentType ("htmlx"));   //HACK
+				this.MimeToContentTypeRegistryService.LinkTypes ("text/x-json", this.ContentTypeRegistryService.GetContentType ("JSON"));   //HACK
+			}
+		}
+	}
 
-        [Import]
-        internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
-
-        [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
-
-        [Import]
-        internal ITextEditorFactoryService TextEditorFactoryService { get; private set; }
-
-        [Import]
-        internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
-
-        [Import]
-        internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
-
-        [Import]
-        internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService { get; private set; }
-
-        [Import]
-        internal IClassifierAggregatorService ClassifierAggregatorService { get; private set; }
-    }
-
-    [Export(typeof(IThreadHelper))]
+	[Export(typeof(IThreadHelper))]
     public class PlatformThreadHelper : IThreadHelper
     {
         public Task RunOnUIThread(Action action)

@@ -48,6 +48,8 @@ using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -71,20 +73,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static string[] mefHostServices = new [] {
-			"Microsoft.CodeAnalysis.Workspaces",
-			//FIXME: this does not load yet. We should provide alternate implementations of its services.
-			//"Microsoft.CodeAnalysis.Workspaces.Desktop",
-			"Microsoft.CodeAnalysis.Features",
-			"Microsoft.CodeAnalysis.CSharp",
-			"Microsoft.CodeAnalysis.CSharp.Workspaces",
-			"Microsoft.CodeAnalysis.CSharp.Features",
-			"Microsoft.CodeAnalysis.VisualBasic",
-			"Microsoft.CodeAnalysis.VisualBasic.Workspaces",
-			"Microsoft.CodeAnalysis.VisualBasic.Features",
-		};
-
-		internal static HostServices HostServices {
+		public static HostServices HostServices {
 			get {
 				return services;
 			}
@@ -92,33 +81,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopWorkspace ()
 		{
-			List<Assembly> assemblies = new List<Assembly> ();
-			assemblies.Add (typeof (MonoDevelopWorkspace).Assembly);
-			foreach (var asmName in mefHostServices) {
-				try {
-					var asm = Assembly.Load (asmName);
-					if (asm == null)
-						continue;
-					assemblies.Add (asm);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error - can't load host service assembly: " + asmName, ex);
-				}
-			}
-			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
-			foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TypeService/MefHostServices")) {
-				var assemblyNode = node as AssemblyExtensionNode;
-				if (assemblyNode == null)
-					continue;
-				try {
-					var assemblyFilePath = assemblyNode.Addin.GetFilePath(assemblyNode.FileName);
-					var assembly = Assembly.LoadFrom(assemblyFilePath);
-					assemblies.Add (assembly);
-				} catch (Exception e) {
-					LoggingService.LogError ("Workspace can't load assembly " + assemblyNode.FileName + " to host mef services.", e);
-					continue;
-				}
-			}
-			services = MefHostServices.Create (assemblies);
+			services = MefV1HostServices.Create (CompositionManager.Instance.ExportProvider.AsExportProvider());
 		}
 
 		/// <summary>
