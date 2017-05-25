@@ -332,7 +332,11 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
         Some opts
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject) =
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?referencedAssemblies) =
+        let getReferencedAssemblies() =
+            retry { return (project.GetReferencedAssemblies(CompilerArguments.getConfig())).Result }
+
+        let referencedAssemblies = defaultArg referencedAssemblies (getReferencedAssemblies())
         let config =
             match IdeApp.Workspace with
             | null -> ConfigurationSelector.Default
@@ -346,7 +350,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
 
         let rec getOptions referencedProject =
-            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =

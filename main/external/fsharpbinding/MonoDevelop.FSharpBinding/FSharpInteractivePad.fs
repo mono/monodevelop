@@ -385,10 +385,10 @@ type FSharpInteractivePad() =
     member x.LoadReferences() =
         LoggingService.LogDebug ("FSI:  #LoadReferences")
         let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
-        
+        let referencedAssemblies = project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
         let references =
             let args =
-                CompilerArguments.getReferencesFromProject project
+                CompilerArguments.getReferencesFromProject project referencedAssemblies
                 |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
                                           then None
                                           else
