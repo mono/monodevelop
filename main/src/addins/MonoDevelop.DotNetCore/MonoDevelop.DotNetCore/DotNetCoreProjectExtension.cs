@@ -74,9 +74,7 @@ namespace MonoDevelop.DotNetCore
 
 		bool IsDotNetCoreProject (DotNetProject project)
 		{
-			var properties = project.MSBuildProject.EvaluatedProperties;
-			return properties.HasProperty ("TargetFramework") ||
-				properties.HasProperty ("TargetFrameworks");
+			return project.MSBuildProject.Sdk != null;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
