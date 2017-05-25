@@ -74,7 +74,21 @@ namespace MonoDevelop.DotNetCore
 
 		bool IsDotNetCoreProject (DotNetProject project)
 		{
-			return project.MSBuildProject.Sdk != null;
+			return project.MSBuildProject.Sdk != null && HasSupportedFramework (project);
+		}
+
+		/// <summary>
+		/// Cannot check TargetFramework property since it may not be set.
+		/// Currently support .NET Core and .NET Standard.
+		/// </summary>
+		bool HasSupportedFramework (DotNetProject project)
+		{
+			string framework = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetFrameworkIdentifier");
+			if (framework != null) {
+				return framework == ".NETCoreApp" || framework == ".NETStandard";
+			}
+
+			return false;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
