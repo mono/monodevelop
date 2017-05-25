@@ -469,6 +469,12 @@ type FSharpFsiEditorCompletion() =
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
+            let getLineText (editor:TextEditor) (line:IDocumentLine) =
+                if line.Length > 0 then
+                    editor.GetLineText line
+                else
+                    ""
+
             let getInputLines (editor:TextEditor) =
                 let lineNumbers =
                     match fsi.LastOutputLine with
@@ -477,11 +483,7 @@ type FSharpFsiEditorCompletion() =
                     | None -> [ editor.CaretLine ]
                 lineNumbers 
                 |> List.map editor.GetLine
-                |> List.map (fun line ->
-                                 if line.Length > 0 then
-                                     (editor.GetLineText line), line
-                                 else
-                                     "", line)
+                |> List.map (getLineText editor)
 
             let result =
                 match descriptor.SpecialKey with
@@ -489,9 +491,11 @@ type FSharpFsiEditorCompletion() =
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         let lines = getInputLines x.Editor
                         lines
-                        |> List.iter(fun (lineStr, _line) ->
+                        |> List.iter(fun (lineStr) ->
                             fsi.SendCommandAndStore lineStr)
-                        let lineStr, line = lines |> List.rev |> List.head
+
+                        let line = editor.GetLine editor.CaretLine
+                        let lineStr = getLineText editor line
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
