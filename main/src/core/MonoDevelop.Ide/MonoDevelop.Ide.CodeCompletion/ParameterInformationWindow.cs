@@ -95,54 +95,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vb2.ShowAll ();
 			//DesktopService.RemoveWindowShadow (this);
-			Content.BoundsChanged += Content_BoundsChanged;
-		}
-
-		void Content_BoundsChanged (object sender, EventArgs e)
-		{
-			UpdateParameterInfoLocation ();
-		}
-
-		internal async void UpdateParameterInfoLocation ()
-		{
-			var isCompletionWindowVisible = (CompletionWindowManager.Wnd?.Visible ?? false);
-			var ctx = Widget.CurrentCodeCompletionContext;
-			var lineHeight = (int)Ext.Editor.LineHeight;
-			var cmg = ParameterInformationWindowManager.CurrentMethodGroup;
-			var geometry = Visible ? Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
-			int cparam = Ext != null ? await Ext.GetCurrentParameterIndex (cmg.MethodProvider.StartOffset) : 0;
-			var lastW = (int)Width;
-			var lastH = (int)Height;
-
-			int X, Y;
-			X = cmg.CompletionContext.TriggerXCoord;
-			if (isCompletionWindowVisible) {
-				// place above
-				Y = ctx.TriggerYCoord - lineHeight - (int)lastH - 10;
-			} else {
-				// place below
-				Y = ctx.TriggerYCoord;
-			}
-
-			if (X + lastW > geometry.Right)
-				X = (int)geometry.Right - (int)lastW;
-			if (Y < geometry.Top)
-				Y = ctx.TriggerYCoord;
-			if (Y + lastH > geometry.Bottom) {
-				Y = Y - lineHeight - (int)lastH - 4;
-			}
-
-			if (isCompletionWindowVisible) {
-				var completionWindow = new Xwt.Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y - lineHeight, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height + lineHeight * 2);
-				if (completionWindow.IntersectsWith (new Xwt.Rectangle (X, Y, lastW, lastH))) {
-					X = (int)completionWindow.X;
-					Y = (int)completionWindow.Y - (int)lastH - 6;
-					if (Y < 0) {
-						Y = (int)completionWindow.Bottom + 6;
-					}
-				}
-			}
-			Location = new Xwt.Point (X, Y);
 		}
 
 		void UpdateStyle ()
@@ -197,6 +149,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			lastParam = currentParam;
 			var parameterHintingData = (ParameterHintingData)provider [overload];
+
 			ResetTooltipInformation ();
 			if (ext == null) {
 				// ext == null means HideParameterInfo was called aka. we are not in valid context to display tooltip anymore
