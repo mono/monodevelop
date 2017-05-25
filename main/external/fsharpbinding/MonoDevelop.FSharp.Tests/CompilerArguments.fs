@@ -37,7 +37,7 @@ type CompilerArgumentsTests() =
 
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
         async {
-            let! testProject = createFSharpProject()
+            use! testProject = createFSharpProject()
             let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
             let _ = testProject.AddReference assemblyName
             let references =
@@ -57,7 +57,7 @@ type CompilerArgumentsTests() =
 
     member private x.``Run Only FSharp.Core referenced``(assemblyName) =
         async {
-            let! testProject = createFSharpProject()
+            use! testProject = createFSharpProject()
             let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
             let reference = testProject.AddReference assemblyName
             let references = 
@@ -128,7 +128,7 @@ type CompilerArgumentsTests() =
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
         async {
             if Platform.IsMac then
-                let! testProject = createFSharpProject()
+                use! testProject = createFSharpProject()
                 let _ = testProject.AddReference "mscorlib"
                 let reference = testProject.AddReference "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll"
                 let references =
