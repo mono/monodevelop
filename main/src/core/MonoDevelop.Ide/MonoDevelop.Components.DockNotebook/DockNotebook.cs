@@ -378,9 +378,12 @@ namespace MonoDevelop.Components.DockNotebook
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		internal void UpdateActiveTabStrip ()
+		internal void SetPinTabEnabled (bool enabled)
 		{
-			tabStrip.UpdateActiveTabStrip ();
+			tabStrip.SetPinTabEnabled (enabled);
+			if (!enabled) {
+				pages.ToList ().ForEach (d => d.IsPinned = false);
+			}
 		}
 
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab, bool pinCheck = true)

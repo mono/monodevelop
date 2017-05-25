@@ -218,6 +218,7 @@ namespace MonoDevelop.Components.DockNotebook
 			innerBox.PackStart (PreviousButton, false, false, 0);
 			innerBox.PackStart (NextButton, false, false, 0);
 			innerBox.PackEnd (DropDownButton, false, false, 0);
+			isPinEnabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
 
 			tracker.HoveredChanged += (sender, e) => {
 				if (!tracker.Hovered) {
@@ -235,14 +236,12 @@ namespace MonoDevelop.Components.DockNotebook
 			notebook.PageRemoved += PageRemovedHandler;
 			notebook.TabsReordered += PageReorderedHandler;
 
-			UpdateActiveTabStrip ();
-
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
 
-		internal void UpdateActiveTabStrip ()
+		internal void SetPinTabEnabled (bool value)
 		{
-			isPinEnabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
+			isPinEnabled = value;
 		}
 
 		protected override void OnDestroyed ()

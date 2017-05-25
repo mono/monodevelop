@@ -118,12 +118,7 @@ namespace MonoDevelop.Ide.Gui
 				monitor.EndTask ();
 			}
 		}
-		
-		internal void UpdateActiveTabStrip ()
-		{
-			workbench.TabControl.UpdateActiveTabStrip ();
-		}
-
+	
 		internal void Show (string workbenchMemento)
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
@@ -1210,6 +1205,11 @@ namespace MonoDevelop.Ide.Gui
 				if (pad.Content == padContent)
 					return pad;
 			return null;
+		}
+
+		internal void SetPinTabEnabled (bool enabled)
+		{
+			workbench.TabControl.SetPinTabEnabled (enabled);
 		}
 
 		internal void ReorderTab (int oldPlacement, int newPlacement)

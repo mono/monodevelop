@@ -61,13 +61,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnablePinTabs = this.pinTabs.Active;
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = (MonoDevelop.Ide.Editor.LineEndingConversion)this.comboboxLineEndings.Active;
+			DefaultSourceEditorOptions.Instance.EnablePinTabs = pinTabs.Active;
+			Ide.IdeApp.Workbench.SetPinTabEnabled (pinTabs.Active);
 			if (DefaultSourceEditorOptions.Instance.ShowFoldMargin != this.foldingCheckbutton.Active) {
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
-			Ide.IdeApp.Workbench.UpdateActiveTabStrip ();
 //			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
 		}
 
