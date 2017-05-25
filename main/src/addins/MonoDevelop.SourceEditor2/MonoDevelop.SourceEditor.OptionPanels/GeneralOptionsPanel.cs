@@ -67,6 +67,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
+			Ide.IdeApp.Workbench.UpdateActiveTabStrip ();
 //			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
 		}
 

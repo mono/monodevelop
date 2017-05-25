@@ -378,6 +378,11 @@ namespace MonoDevelop.Components.DockNotebook
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
+		internal void UpdateActiveTabStrip ()
+		{
+			tabStrip.UpdateActiveTabStrip ();
+		}
+
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab, bool pinCheck = true)
 		{
 			if (pinCheck && tab.IsPinned != targetTab.IsPinned)

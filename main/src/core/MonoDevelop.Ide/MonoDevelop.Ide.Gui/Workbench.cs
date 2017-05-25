@@ -119,6 +119,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		internal void UpdateActiveTabStrip ()
+		{
+			workbench.TabControl.UpdateActiveTabStrip ();
+		}
+
 		internal void Show (string workbenchMemento)
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");

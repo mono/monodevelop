@@ -37,6 +37,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Runtime.InteropServices;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -62,7 +63,7 @@ namespace MonoDevelop.Components.DockNotebook
 		bool buttonPressedOnTab;
 		int tabStartX, tabEndX;
 		bool isActiveNotebook;
-		readonly bool isPinEnabled;
+		bool isPinEnabled;
 
 		MouseTracker tracker;
 
@@ -155,8 +156,6 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
-			isPinEnabled = Ide.Editor.DefaultSourceEditorOptions.Instance.EnablePinTabs;
-
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
 			TabWidth = 125;
@@ -236,7 +235,14 @@ namespace MonoDevelop.Components.DockNotebook
 			notebook.PageRemoved += PageRemovedHandler;
 			notebook.TabsReordered += PageReorderedHandler;
 
+			UpdateActiveTabStrip ();
+
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
+		}
+
+		internal void UpdateActiveTabStrip ()
+		{
+			isPinEnabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
 		}
 
 		protected override void OnDestroyed ()
