@@ -321,6 +321,17 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		ConfigurationProperty<bool> enablePinTabs = ConfigurationProperty.Create ("EnablePinTabs", false);
+		public bool EnablePinTabs {
+			get {
+				return enablePinTabs;
+			}
+			set {
+				if (enablePinTabs.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
 		ConfigurationProperty<bool> enableSemanticHighlighting = ConfigurationProperty.Create ("EnableSemanticHighlighting", true);
 		public bool EnableSemanticHighlighting {
 			get {

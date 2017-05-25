@@ -85,12 +85,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<JumpToFirst> JumpToFirstErrorOrWarning = ConfigurationProperty.Create ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", JumpToFirst.Error);
 		public readonly ConfigurationProperty<bool> DefaultHideMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultHideMessageBubbles", false);
 		public readonly ConfigurationProperty<ShowMessageBubbles> ShowMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowMessageBubbles", MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings);
-
-		public static Lazy<bool> TabFeatureEnabled = new Lazy<bool> (() => {
-			var path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "enable-pin-tabs");
-			return System.IO.File.Exists (path);
-		});
-
+	
 		public readonly ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
 		class DefaultTargetRuntimeProperty: ConfigurationProperty<TargetRuntime>
 		{

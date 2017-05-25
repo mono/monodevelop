@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -103,7 +104,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = info.Enabled = IdePreferences.TabFeatureEnabled.Value;
+			info.Visible = info.Enabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
 			if (!info.Visible)
 				return;
 
@@ -138,7 +139,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = info.Enabled = IdePreferences.TabFeatureEnabled.Value;
+			info.Visible = info.Enabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
 			if (!info.Visible)
 				return;
 			

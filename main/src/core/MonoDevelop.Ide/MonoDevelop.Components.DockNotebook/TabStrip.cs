@@ -155,7 +155,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
 
-			isPinEnabled = IdePreferences.TabFeatureEnabled.Value;
+			isPinEnabled = Ide.Editor.DefaultSourceEditorOptions.Instance.EnablePinTabs;
 
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
 
