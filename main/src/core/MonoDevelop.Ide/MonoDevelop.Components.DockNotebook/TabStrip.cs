@@ -920,7 +920,7 @@ namespace MonoDevelop.Components.DockNotebook
 				tw -= closeButtonAlloation.Width / 2;
 
 			if (drawPinButton || tab.DirtyStrength > 0.5)
-				tw -= spinButtonAllocation.Width / 2;
+				tw -= spinButtonAllocation.Width / 2 + rightPadding;
 
 			double tx = tabBounds.X + leftPadding;
 			var baseline = la.GetLine (0).Layout.GetPixelBaseline ();
