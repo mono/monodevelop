@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreSdkVersionTests.cs
+// DotNetCoreRuntimeVersions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,36 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.DotNetCore
 {
-	[TestFixture]
-	class DotNetCoreSdkVersionTests
+	class DotNetCoreRuntimeVersions
 	{
-		[TestCase ("1.0.0-preview5-004460", 4460)]
-		[TestCase ("1.0.0-preview2-003156", 3156)]
-		[TestCase ("1.0.0-preview2-1-003177", 3177)]
-		[TestCase ("1.0.0-rc3-004530", 4530)]
-		[TestCase ("1.0.0-rc4-4771", 4771)]
-		public void ValidBuildVersions (string sdkVersion, int expectedBuildVersion)
+		public static IEnumerable<DotNetCoreVersion> GetInstalledVersions (DotNetCorePath dotNetCorePath)
 		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
+			if (dotNetCorePath.IsMissing)
+				return Enumerable.Empty<DotNetCoreVersion> ();
 
-			Assert.AreEqual (expectedBuildVersion, buildVersion);
-			Assert.IsTrue (result);
+			string runtimePath = GetDotNetCoreRuntimePath (dotNetCorePath);
+			if (!Directory.Exists (runtimePath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
+
+			return Directory.EnumerateDirectories (runtimePath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
 		}
 
-		[TestCase ("")]
-		[TestCase (null)]
-		[TestCase ("1")]
-		public void InvalidBuildVersions (string sdkVersion)
+		static string GetDotNetCoreRuntimePath (DotNetCorePath dotNetCorePath)
 		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
-
-			Assert.IsFalse (result);
+			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
+			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
 		}
 	}
 }

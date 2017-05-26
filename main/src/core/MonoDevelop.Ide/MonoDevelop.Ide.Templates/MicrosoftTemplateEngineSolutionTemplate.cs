@@ -37,23 +37,23 @@ namespace MonoDevelop.Ide.Templates
 		//TemplateExtensionNode template;
 
 		internal MicrosoftTemplateEngineSolutionTemplate (TemplateExtensionNode template, ITemplateInfo templateInfo)
-			: base (templateInfo.Identity, template.OverrideName ?? templateInfo.Name, template.Icon)
+			: base (template.Id, template.OverrideName ?? templateInfo.Name, template.Icon)
 		{
 			this.templateInfo = templateInfo;
 			Description = template.OverrideDescription ?? templateInfo.Description;
 			Category = template.Category;
-			string language;
-			if (templateInfo.Tags.TryGetValue ("Language", out language))
-				Language = language;
+			ICacheTag languageTag;
+			if (templateInfo.Tags.TryGetValue ("language", out languageTag))
+				Language = languageTag.DefaultValue;
 			else
 				Language = string.Empty;
-			GroupId = templateInfo.GroupIdentity;
+			GroupId = template.GroupId ?? templateInfo.GroupIdentity;
 			//TODO: Support all this params
-			//Condition = template.Condition;
+			Condition = template.Condition;
 			//ProjectFileExtension = template.FileExtension;
-			//Wizard = template.WizardPath;
-			//SupportedParameters = template.SupportedParameters;
-			//DefaultParameters = template.DefaultParameters;
+			Wizard = template.Wizard;
+			SupportedParameters = template.SupportedParameters;
+			DefaultParameters = template.DefaultParameters;
 			ImageId = template.ImageId;
 			//ImageFile = template.ImageFile;
 			//Visibility = GetVisibility (template.Visibility);

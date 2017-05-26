@@ -120,6 +120,11 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
+		internal void ClearGroupedTemplates ()
+		{
+			groupedTemplates.Clear ();
+		}
+
 		public SolutionTemplate GetTemplate (string language)
 		{
 			return GetTemplate (template => template.Language == language);
