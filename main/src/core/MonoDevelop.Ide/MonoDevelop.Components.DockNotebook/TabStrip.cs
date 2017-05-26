@@ -901,7 +901,7 @@ namespace MonoDevelop.Components.DockNotebook
 			bool pinButtonHovered = tracker.Hovered && tab.PinButtonActiveArea.Contains (tracker.MousePosition);
 			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
 			bool drawCloseButton = active || tabHovered;
-			bool drawPinButton = tabHovered && isPinEnabled;
+			bool drawPinButton = isPinEnabled  && ((active && tab.IsPinned) || tabHovered);
 
 			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
 				ctx.DrawImage (this, tabDirtyImage, closeButtonAlloation.X, closeButtonAlloation.Y);
