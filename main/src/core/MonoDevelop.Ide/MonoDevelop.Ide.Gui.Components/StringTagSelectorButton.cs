@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.Build ();
 
 			Accessible.SetShouldIgnore (true);
+			button.Accessible.SetRole (AtkCocoa.Roles.AXPopUpButton);
 		}
 
 		public StringTagModelDescription TagModel { get; set; }
