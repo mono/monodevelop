@@ -1143,6 +1143,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		[Ignore("This test is broken as it does not do a restore")]
 		public async Task NetStandardProjectReferenceIncludesFacades ()
 		{
 			// Test for https://bugzilla.xamarin.com/show_bug.cgi?id=55734
