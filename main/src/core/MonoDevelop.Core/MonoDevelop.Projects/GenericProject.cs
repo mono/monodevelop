@@ -71,7 +71,8 @@ namespace MonoDevelop.Projects
 
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
-			return ProjectFeatures.Build | ProjectFeatures.Configurations | ProjectFeatures.Execute;
+			//there is no run config editor for generic projects
+			return base.OnGetSupportedFeatures () & ~ProjectFeatures.RunConfigurations;
 		}
 	}
 	
