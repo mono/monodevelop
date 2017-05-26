@@ -191,6 +191,11 @@ namespace MonoDevelop.PackageManagement
 			return Task.FromResult (assetsFilePath);
 		}
 
+		public override Task<string> GetAssetsFilePathOrNullAsync ()
+		{
+			return GetAssetsFilePathAsync ();
+		}
+
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
 			PackageSpec existingPackageSpec = GetExistingProjectPackageSpec (context);
