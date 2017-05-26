@@ -46,8 +46,6 @@ namespace MonoDevelop.Components.DockNotebook
 		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
 		static Xwt.Drawing.Image tabActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-active.9.png");
-		static Xwt.Drawing.Image tabPinnedActiveBackImage = Xwt.Drawing.Image.FromResource ("tabbar-pinned.9.png");
-		static Xwt.Drawing.Image tabPinnedBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive-pinned.9.png");
 		static Xwt.Drawing.Image tabBackImage = Xwt.Drawing.Image.FromResource ("tabbar-inactive.9.png");
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
 		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
@@ -900,8 +898,8 @@ namespace MonoDevelop.Components.DockNotebook
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonActiveArea.Contains (tracker.MousePosition);
 			bool pinButtonHovered = tracker.Hovered && tab.PinButtonActiveArea.Contains (tracker.MousePosition);
 			bool tabHovered = tracker.Hovered && tab.Allocation.Contains (tracker.MousePosition);
-			bool drawCloseButton = active || tabHovered;
-			bool drawPinButton = isPinEnabled  && ((active && tab.IsPinned) || tabHovered);
+			bool drawCloseButton = (isPinEnabled && tab.IsPinned) || (active || tabHovered);
+			bool drawPinButton = isPinEnabled  && (tab.IsPinned || tabHovered);
 
 			if (!closeButtonHovered && tab.DirtyStrength > 0.5) {
 				ctx.DrawImage (this, tabDirtyImage, closeButtonAlloation.X, closeButtonAlloation.Y);
@@ -960,9 +958,7 @@ namespace MonoDevelop.Components.DockNotebook
 			double height = allocation.Height;
 			double width = contentWidth - (TabSpacing * 2) + lean;
 
-			var image = active ? 
-				isPinned ? tabPinnedActiveBackImage : tabActiveBackImage : 
-				isPinned ? tabPinnedBackImage : tabBackImage;
+			var image = active ? tabActiveBackImage : tabBackImage;
 			image = image.WithSize (width, height);
 
 			ctx.DrawImage (widget, image, x, y);

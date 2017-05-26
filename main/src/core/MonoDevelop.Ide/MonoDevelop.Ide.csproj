@@ -8198,18 +8198,6 @@
     <EmbeddedResource Include="options\KeyBindingSchemeRider-mac.xml">
       <LogicalName>KeyBindingSchemeRider-mac.xml</LogicalName>
 	</EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-pinned.9.png">
-      <LogicalName>tabbar-pinned.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-pinned%402x.9.png">
-      <LogicalName>tabbar-pinned@2x.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-pinned~dark.9.png">
-      <LogicalName>tabbar-pinned~dark.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-pinned~dark%402x.9.png">
-      <LogicalName>tabbar-pinned~dark@2x.9.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\tab-pinned-9.png">
       <LogicalName>tab-pinned-9.png</LogicalName>
     </EmbeddedResource>
@@ -8233,18 +8221,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tab-unpinned-9~dark%402x.png">
       <LogicalName>tab-unpinned-9~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-inactive-pinned.9.png">
-      <LogicalName>tabbar-inactive-pinned.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-inactive-pinned%402x.9.png">
-      <LogicalName>tabbar-inactive-pinned@2x.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-inactive-pinned~dark.9.png">
-      <LogicalName>tabbar-inactive-pinned~dark.9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\tabbar-inactive-pinned~dark%402x.9.png">
-      <LogicalName>tabbar-inactive-pinned~dark@2x.9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\FallbackStyle.json">
       <LogicalName>FallbackStyle.json</LogicalName>
