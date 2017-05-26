@@ -105,13 +105,6 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = info.Enabled = DefaultSourceEditorOptions.Instance.EnablePinTabs;
-			if (!info.Visible)
-				return;
-
-			var selectedTab = GetSelectedTab ();
-			if (selectedTab != null) {
-				info.Text = (selectedTab.IsPinned) ? "Un_pin Tab" : "_Pin Tab";
-			}
 		}
 
 		protected override void Run ()
