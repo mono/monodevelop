@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects
 			return extensions;
 		}
 
-		internal void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null)
+		internal void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null, bool rechain = true)
 		{
 			int index;
 			if (insertBefore != null) {
@@ -85,7 +85,8 @@ namespace MonoDevelop.Projects
 			for (int n = extensions.Length - 1; n > index; n--)
 				extensions [n] = extensions [n - 1];
 			extensions [index] = ext;
-			Rechain ();
+			if (rechain)
+				Rechain ();
 		}
 
 		internal void RemoveExtension (ChainedExtension ext)
@@ -97,7 +98,7 @@ namespace MonoDevelop.Projects
 			Rechain ();
 		}
 
-		void Rechain ()
+		internal void Rechain ()
 		{
 			// Re-chain every extension
 			for (int n = extensions.Length - 2; n >= 0; n--)

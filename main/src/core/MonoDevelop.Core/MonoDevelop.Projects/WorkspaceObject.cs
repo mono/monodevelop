@@ -387,15 +387,13 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			foreach (var e in tempExtensions)
-				e.Dispose ();
+			extensionChain.Dispose ();
 
 			// Now create the final extension chain
 
 			extensions.Reverse ();
 			var defaultExts = CreateDefaultExtensions ().ToList ();
 			defaultExts.Reverse ();
-			extensionChain.SetDefaultInsertionPosition (defaultExts.FirstOrDefault ());
 			extensions.AddRange (defaultExts);
 			extensionChain = ExtensionChain.Create (extensions.ToArray ());
 			foreach (var e in extensions)
@@ -473,13 +471,14 @@ namespace MonoDevelop.Projects
 						if (lastAddedNode != null) {
 							// There is an extension before this one. Find it and add the new extension after it.
 							var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode == lastAddedNode);
-							extensionChain.AddExtension (ext, prevExtension);
+							extensionChain.AddExtension (ext, prevExtension, rechain: false);
 						} else
-							extensionChain.AddExtension (ext);
+							extensionChain.AddExtension (ext, rechain: false);
 						ext.Init (this);
 					}
 				}
 			}
+			extensionChain.Rechain ();
 
 			// Now dispose extensions that are not supported anymore
 
