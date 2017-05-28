@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Templates
 		public override bool ShouldEnableFor (Project proj, string projectPath)
 		{
 			if (proj is DotNetProject dnp) {
-				return dnp.References.Where (x => x.ReferenceType != ReferenceType.Project).Any (x => {
+				return dnp.References.Any (x => {
 					if (x.StoredReference.Length < reference.Length)
 						return false;
 
