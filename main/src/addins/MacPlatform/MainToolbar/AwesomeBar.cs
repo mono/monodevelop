@@ -130,13 +130,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				aTouchbar.PrincipalItemIdentifier = "com.microsoft.vsfm.buttonbar.debug";
 			}
 
-			/* There is a nasty bug that occurs here where after the user dismisses the system's touchbar customization
-			 * UI, there is a significant chance for all windows on the user's computer to become unresponsive until
-			 * MonoDevelop is killed. Until this bug is fixed, I've sealed off the customization functionality.
-			 * (if you can customize the touch bar, changing at least one item,
-			 * five times in a row without running into this bug then it is probably fixed) */
-
-#if CUSTOMIZATION_WINDOW_FREEZE_BUG_FIXED
 			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (true);
 			if (BarType == TouchBarType.TextEditor) {
 				aTouchbar.CustomizationIdentifier = TouchBarType.TextEditor.ToString ();
@@ -145,10 +138,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			} else {
 				NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled (false);
 			}
-#else
-			NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled(false);
-			aTouchbar.DefaultItemIdentifiers = GetItemIdentifiers (false); //without customization all items must be present, not just defaults
-#endif
 
 			return aTouchbar;
 		}
