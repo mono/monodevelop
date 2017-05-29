@@ -46,6 +46,16 @@ namespace MonoDevelop.CSharp
 	class UnitTestTextEditorExtension : AbstractUnitTestTextEditorExtension
 	{
 		static readonly IList<UnitTestLocation> emptyList = new UnitTestLocation[0];
+
+		static bool HasMethodMarkerAttribute (SemanticModel model, IUnitTestMarkers[] markers)
+		{
+			var compilation = model.Compilation;
+			foreach (var marker in markers)
+				if (compilation.GetTypeByMetadataName (marker.TestMethodAttributeMarker) != null)
+					return true;
+			return false;
+		}
+
 		public override Task<IList<UnitTestLocation>> GatherUnitTests (IUnitTestMarkers[] unitTestMarkers, CancellationToken token)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
@@ -54,6 +64,9 @@ namespace MonoDevelop.CSharp
 			
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
+				return Task.FromResult (emptyList);
+
+			if (!HasMethodMarkerAttribute (semanticModel, unitTestMarkers))
 				return Task.FromResult (emptyList);
 
 			var visitor = new NUnitVisitor (semanticModel, unitTestMarkers, token);
