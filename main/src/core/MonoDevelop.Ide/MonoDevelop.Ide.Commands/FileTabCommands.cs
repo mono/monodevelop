@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Commands
 			
 			var selectedTab = GetSelectedTab ();
 			if (selectedTab != null) {
-				info.Text = (selectedTab.IsPinned) ? "Un_pin Tab" : "_Pin Tab";
+				info.Text = (selectedTab.IsPinned) ? GettextCatalog.GetString ("Un_pin Tab") : GettextCatalog.GetString ("_Pin Tab");
 			}
 		}
 
