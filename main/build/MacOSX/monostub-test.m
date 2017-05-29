@@ -52,6 +52,8 @@ void test_check_mono_version(void)
 		// Release higher than requirement.
 		{ "3.1.1", "3.1", TRUE },
 
+		{ "3.1", "3.1", TRUE },
+
 		{ "5.2.0.138", "5.2.0.130", TRUE },
 
 		{ "5.2.0.138 (2017-04/f1196da)", "5.2.0.138", TRUE },
