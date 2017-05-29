@@ -36,6 +36,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using RefactoringEssentials;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -112,9 +113,15 @@ namespace MonoDevelop.Refactoring.Rename
 				title = GettextCatalog.GetString ("Rename Item");
 			}
 
-
 			Init (title, symbol.Name, async prop => { return await rename.PerformChangesAsync (symbol, prop); });
-
+			var loc = symbol.Locations.FirstOrDefault ();
+			if (loc.IsInSource) {
+				if (loc.SourceTree == null || 
+				    !System.IO.File.Exists (loc.SourceTree.FilePath) ||
+				    GeneratedCodeRecognition.IsFileNameForGeneratedCode (loc.SourceTree.FilePath)) {
+					renameFileFlag.Visible = false;
+				}
+			}
 		}
 
 		void Init (string title, string currenName, Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename)
