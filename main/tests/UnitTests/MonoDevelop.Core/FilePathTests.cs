@@ -186,7 +186,7 @@ namespace MonoDevelop.Core
 
 			var root = Platform.IsWindows ? "c:\\" : "/";
 
-			Assert.IsTrue (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b")));
+			Assert.IsTrue (new FilePath (Path.Combine (root, "a", "b")) == new FilePath (Path.Combine (root, "a", "b")));
 			Assert.IsFalse (new FilePath (Path.Combine (root, "a","c")) == new FilePath (Path.Combine (root, "a","b")));
 			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","b") + Path.DirectorySeparatorChar));
 			Assert.IsFalse (new FilePath (Path.Combine (root, "a","b")) == new FilePath (Path.Combine (root, "a","c", "..", "b")));
@@ -211,6 +211,18 @@ namespace MonoDevelop.Core
 
 			// Canonical path of null is null
 			Assert.AreEqual (FilePath.Null, FilePath.Null.CanonicalPath);
+		}
+
+		[Test]
+		public void TestAllFilePathCombineBuildOverloads ()
+		{
+			var root = FilePath.Empty;
+
+			Assert.AreEqual (root.Combine ("a"), root.Combine (FilePath.Build ("a")));
+			Assert.AreEqual (root.Combine ("a", "b"), root.Combine (FilePath.Build ("a"), FilePath.Build ("b")));
+			Assert.AreEqual (root.Combine ("a", "b"), root.Combine (FilePath.Build ("a", "b")));
+			Assert.AreEqual (root.Combine ("a", "b", "c"), root.Combine (FilePath.Build ("a"), FilePath.Build ("b"), FilePath.Build ("c")));
+			Assert.AreEqual (root.Combine ("a", "b", "c"), root.Combine (FilePath.Build ("a", "b", "c")));
 		}
 	}
 }
