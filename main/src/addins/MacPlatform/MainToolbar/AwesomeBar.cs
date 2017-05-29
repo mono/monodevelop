@@ -84,6 +84,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public bool RebuildTouchBar = false;
 
 		internal RunButton RunButton { get; set; }
+		internal NSButton SaveButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
 		internal StatusBar StatusBar { get; set; }
 		internal SearchBar SearchBar { get; set; }
@@ -202,7 +203,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (touchBarRunButton != null) {
 					touchBarRunButton.Image = runImg;
 				}
-			}            
+			}     
+			
+			if (SaveButton != null && IdeApp.Workbench != null) {
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					SaveButton.Enabled = IdeApp.Workbench.ActiveDocument.IsDirty;
+				}
+			}
 
 			return;
 		}
@@ -377,15 +384,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			case Id.Save:
 				var customSaveItem = new NSCustomTouchBarItem (identifier);
 
-				var saveButton = NSButton.CreateButton ("", () => { });
-				saveButton.Activated += (sender, e) => {
+				SaveButton = NSButton.CreateButton ("", () => { });
+				SaveButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
 				};
 
 				var icoS = PDFLoader.LoadPDFImage ("Save_File.pdf");
 				icoS.Template = true;
-				saveButton.Image = icoS;
-				customSaveItem.View = saveButton;
+				SaveButton.Image = icoS;
+				customSaveItem.View = SaveButton;
 				item = customSaveItem;
 				return item;
 
