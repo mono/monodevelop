@@ -81,6 +81,8 @@ namespace MonoDevelop.DotNetCore
 			hasRootNamespace = project.HasGlobalProperty ("RootNamespace");
 			hasAssemblyName = project.HasGlobalProperty ("AssemblyName");
 			hasDescription = project.HasGlobalProperty ("Description");
+
+			ReadDefaultCompileTarget (project);
 		}
 
 		public void WriteProject (MSBuildProject project, TargetFrameworkMoniker framework)

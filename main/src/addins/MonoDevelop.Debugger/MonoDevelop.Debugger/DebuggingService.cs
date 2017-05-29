@@ -156,13 +156,10 @@ namespace MonoDevelop.Debugger
 
 			watch.LiveUpdate = liveUpdate;
 			if (liveUpdate) {
-				var bp = new Breakpoint (watch.File, watch.Line);
-				bp.TraceExpression = "{" + watch.Expression + "}";
-				bp.HitAction = HitAction.PrintExpression;
-				bp.NonUserBreakpoint = true;
-				lock (breakpoints)
-					breakpoints.Add (bp);
+				var bp = pinnedWatches.CreateLiveUpdateBreakpoint (watch);
 				pinnedWatches.Bind (watch, bp);
+				lock (breakpoints)
+					breakpoints.Add(bp);
 			} else {
 				pinnedWatches.Bind (watch, null);
 				lock (breakpoints)
@@ -1194,6 +1191,9 @@ namespace MonoDevelop.Debugger
 
 			lock (breakpoints)
 				pinnedWatches.BindAll (breakpoints);
+
+			lock (breakpoints)
+				pinnedWatches.SetAllLiveUpdateBreakpoints (breakpoints);
 
 			return Task.FromResult (true);
 		}

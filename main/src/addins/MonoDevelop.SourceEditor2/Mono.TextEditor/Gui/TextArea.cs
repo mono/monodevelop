@@ -3009,7 +3009,8 @@ namespace Mono.TextEditor
 		void OnDocumentStateChanged (object s, TextChangeEventArgs args)
 		{
 			HideTooltip ();
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);

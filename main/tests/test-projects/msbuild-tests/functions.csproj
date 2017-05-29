@@ -42,6 +42,8 @@
 	<Prefix>Post</Prefix>
 	<PostFiles>@(File)</PostFiles>
 	<P1>BBB</P1>
+	<DoubleNumber>00065535.0</DoubleNumber>
+	<DoubleNumberComplex>$([MSBuild]::Subtract($(DoubleNumber.Split('.')[0].Substring(3).Trim()), 8800))</DoubleNumberComplex>
   </PropertyGroup>
   <PropertyGroup>
   </PropertyGroup>

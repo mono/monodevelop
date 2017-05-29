@@ -31,6 +31,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -123,6 +124,39 @@ namespace MonoDevelop.CSharp.Project
 					}
 				} while (langVerStore.IterNext (ref iter));
 			}
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			compileTargetCombo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget",
+			                                                     GettextCatalog.GetString ("Compile Target"),
+			                                                     GettextCatalog.GetString ("Select the compile target for the code generation"));
+			compileTargetCombo.SetAccessibilityLabelRelationship (label86);
+
+			mainClassEntry.SetCommonAccessibilityAttributes ("CodeGeneration.MainClass",
+			                                                 GettextCatalog.GetString ("Main Class"),
+			                                                 GettextCatalog.GetString ("Enter the main class for the code generation"));
+			mainClassEntry.SetAccessibilityLabelRelationship (label88);
+
+			iconEntry.SetEntryAccessibilityAttributes ("CodeGeneration.WinIcon", GettextCatalog.GetString ("Win32 Icon"),
+			                                           GettextCatalog.GetString ("Enter the file to use as the icon on Windows"));
+			iconEntry.SetAccessibilityLabelRelationship (label3);
+
+			codepageEntry.SetCommonAccessibilityAttributes ("CodeGeneration.CodePage", GettextCatalog.GetString ("Compiler Code Page"),
+			                                                GettextCatalog.GetString ("Select the compiler code page"));
+			codepageEntry.SetAccessibilityLabelRelationship (label1);
+
+			noStdLibCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.NoStdLib", null, GettextCatalog.GetString ("Whether or not to include a reference to mscorlib.dll"));
+
+			langVerCombo.SetCommonAccessibilityAttributes ("CodeGeneration.LanguageVersion",
+			                                               GettextCatalog.GetString ("C# Language Version"),
+			                                               GettextCatalog.GetString ("Select the version of C# to use"));
+			langVerCombo.SetAccessibilityLabelRelationship (label2);
+
+			allowUnsafeCodeCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.AllowUnsafe", null,
+			                                                             GettextCatalog.GetString ("Check to allow 'unsafe' code"));
 		}
 
 		public bool ValidateChanges ()

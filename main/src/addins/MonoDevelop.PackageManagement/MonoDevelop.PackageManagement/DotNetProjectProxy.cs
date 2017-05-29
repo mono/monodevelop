@@ -162,7 +162,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
 		{
-			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences ()) {
+			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences (DotNetProject)) {
 				yield return item;
 			}
 			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {

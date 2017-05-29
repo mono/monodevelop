@@ -159,6 +159,7 @@ module CompilerArguments =
           |> Set.toList
 
   module ReferenceResolution =
+    
     let tryGetDefaultReference langVersion targetFramework filename (extrapath: string option) =
         let dirs =
             match extrapath with
@@ -176,7 +177,7 @@ module CompilerArguments =
   let resolutionFailedMessage (n:string) = String.Format ("Resolution: Assembly resolution failed when trying to find default reference for: {0}", n)
   /// Generates references for the current project & configuration as a
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
+  let generateReferences (project: DotNetProject, projectAssemblyReferences: AssemblyReference seq, langVersion, targetFramework, configSelector, shouldWrap) =
    if Project.isPortable project then
        [for ref in Project.getPortableReferences project do
             yield "-r:" + ref]
@@ -208,9 +209,9 @@ module CompilerArguments =
            | _e -> false
 
        let needsFacades () =
-           let referencedAssemblies = project.GetReferencedAssemblyProjects configSelector
+           let referencedAssemblyProjects = project.GetReferencedAssemblyProjects configSelector
 
-           match referencedAssemblies |> Seq.tryFind Project.isPortable with
+           match referencedAssemblyProjects |> Seq.tryFind Project.isPortable with
            | Some _ -> true
            | None -> project.References
                      |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly)
@@ -220,20 +221,16 @@ module CompilerArguments =
 
        let wrapf = if shouldWrap then wrapFile else id
 
-       let getReferencedAssemblies (project: DotNetProject) =
+       let getReferencedAssemblies (project:DotNetProject) =
             let hasExplicitFSharpCore =
                 project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
 
             LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
-            async {
-                let! refs =  project.GetReferencedAssemblies configSelector |> Async.AwaitTask
 
-                return 
-                    if hasExplicitFSharpCore then
-                        refs |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
-                    else
-                        refs
-            } |> Async.RunSynchronously
+            if hasExplicitFSharpCore then
+                projectAssemblyReferences |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
+            else
+                projectAssemblyReferences
 
        [
         let portableRefs =
@@ -256,6 +253,7 @@ module CompilerArguments =
             project.References
             |> Seq.collect Project.getAssemblyLocations
             |> Seq.append portableRefs
+
             |> Seq.append (getReferencedAssemblies project |> Seq.map getAbsolutePath)
             |> Seq.distinct
 
@@ -322,8 +320,8 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
-    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+  let generateCompilerOptions (project:DotNetProject, projectAssemblyReferences: AssemblyReference seq, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let dashr = generateReferences (project, projectAssemblyReferences, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
 
     let defines = fsconfig.GetDefineSymbols()
     [
@@ -349,8 +347,8 @@ module CompilerArguments =
        yield! dashr
        yield! (getCompiledFiles project)]
 
-  let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
-    let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+  let generateProjectOptions (project:DotNetProject, projectAssemblyReferences: AssemblyReference seq, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let compilerOptions = generateCompilerOptions (project, projectAssemblyReferences, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let loadedTimeStamp =  DateTime.MaxValue // Not 'now', we don't want to force reloading
     { ProjectFileName = project.FileName.FullPath.ToString()
       ProjectFileNames = [| |] // the project file names will be inferred from the ProjectOptions
@@ -489,16 +487,16 @@ module CompilerArguments =
             | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
-  let getArgumentsFromProject (proj:DotNetProject) =
+  let getArgumentsFromProject (proj:DotNetProject) (referencedAssemblies) =
         maybe {
             let config = getConfig()
             let! projConfig = proj.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
             let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
-            return generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+            return generateProjectOptions (proj, referencedAssemblies, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
         }
 
-  let getReferencesFromProject (proj:DotNetProject) =
+  let getReferencesFromProject (proj:DotNetProject) referencedAssemblies =
         let config = getConfig()
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        generateReferences(proj, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        generateReferences(proj, referencedAssemblies, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
 

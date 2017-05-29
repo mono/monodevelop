@@ -394,7 +394,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 			if (member == null || member.Kind != SymbolKind.Method)
 				return false;
 			var method = member as IMethodSymbol;
-			if (method.ReturnType.SpecialType != SpecialType.System_Void)
+			if (method.ReturnType.SpecialType != SpecialType.System_Void || method.MethodKind == MethodKind.LocalFunction)
 				return false;
 			
 			var om = method.OverriddenMethod;
@@ -425,7 +425,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		static bool IsEmptyPartialMethod(ISymbol member, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var method = member as IMethodSymbol;
-			if (method == null || method.IsDefinedInMetadata ())
+			if (method == null || method.MethodKind == MethodKind.LocalFunction || method.IsDefinedInMetadata ())
 				return false;
 			foreach (var r in method.DeclaringSyntaxReferences) {
 				var node = r.GetSyntax (cancellationToken) as MethodDeclarationSyntax;
@@ -536,12 +536,18 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 						return;
 					}
 				}
-
-				// We don't need to lookup symbol information here, based on semantics.
 				var vds = node.Parent as VariableDeclarationSyntax;
 				if (vds != null && vds.Variables.Count == 1) {
-					Colorize(node.Span, varKeywordTypeColor);
-					return;
+					symbol = semanticModel.GetSymbolInfo (node, cancellationToken).Symbol;
+					// var sym = vds.Variables[0].Initializer != null ? vds.Variables[0].Initializer.Value as LiteralExpressionSyntax : null;
+
+					// This is done to support highlighting when there is a class named var. The problem is that var is
+					// not a reserved keyword. The trade-off is really big, but for correctness, we have to handle this
+					// case.
+					if (symbol == null || symbol.Name != "var") {
+						Colorize(node.Span, varKeywordTypeColor);
+						return;
+					}
 				}
 			}
 			

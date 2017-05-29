@@ -375,7 +375,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
 		{
 			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -394,7 +394,7 @@ namespace MonoDevelop.Projects.MSBuild
 					BeginOperation ();
 					result = await builder.Run (
 								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
-								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, globalProperties, taskId
 						).ConfigureAwait (false);
 				} catch (Exception ex) {
 					await CheckDisconnected ().ConfigureAwait (false);
@@ -417,7 +417,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return refs;
 		}
 
-		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<PackageDependency[]> ResolvePackageDependencies (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
 		{
 			PackageDependency[] packageDependencies = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -436,7 +436,7 @@ namespace MonoDevelop.Projects.MSBuild
 					BeginOperation ();
 					result = await builder.Run (
 						configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
-						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, null, taskId
+						new [] { "ResolvePackageDependenciesDesignTime" }, new [] { "_DependenciesDesignTime" }, null, globalProperties, taskId
 					);
 				} catch (Exception ex) {
 					await CheckDisconnected ();
@@ -463,7 +463,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			return packageDependencies;
 		}
-
 
 		public async Task Refresh ()
 		{

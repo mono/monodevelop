@@ -208,6 +208,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackageReferenceTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UninstallNuGetPackagesActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUninstallNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReferenceNuGetProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageReferenceNuGetProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

@@ -97,17 +97,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int Task = 2;
 			internal const int Description = 3;
 		}
-		
+
 		static class VisibleColumns
 		{
-			internal const int Type        = 0;
-			internal const int Marked      = 1;
-			internal const int Line        = 2;
+			internal const int Type = 0;
+			internal const int Marked = 1;
+			internal const int Line = 2;
 			internal const int Description = 3;
-			internal const int File        = 4;
-			internal const int Project     = 5;
-			internal const int Path        = 6;
-			internal const int Category    = 7;
+			internal const int File = 4;
+			internal const int Project = 5;
+			internal const int Path = 6;
+			internal const int Category = 7;
 		}
 
 		public override Control Control {
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
-			UpdateErrorsNum();
+			UpdateErrorsNum ();
 			toolbar.Add (errorBtn);
 
 			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
-			UpdateWarningsNum();
+			UpdateWarningsNum ();
 			toolbar.Add (warnBtn);
 
 			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
-			UpdateMessagesNum();
+			UpdateMessagesNum ();
 			toolbar.Add (msgBtn);
 
 			var sep = new SeparatorToolItem ();
@@ -236,45 +236,45 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sort.SetSortFunc (VisibleColumns.Project, ProjectIterSort);
 			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
 			sort.SetSortFunc (VisibleColumns.Category, CategoryIterSort);
-			
+
 			view = new PadTreeView (sort);
 			view.ShowExpanders = true;
 			view.RulesHint = true;
 			view.DoPopupMenu = (evnt) => IdeApp.CommandService.ShowContextMenu (view, evnt, CreateMenu ());
 			AddColumns ();
 			LoadColumnsVisibility ();
-			view.Columns[VisibleColumns.Type].SortColumnId = VisibleColumns.Type;
-			view.Columns[VisibleColumns.Project].SortColumnId = VisibleColumns.Project;
-			view.Columns[VisibleColumns.File].SortColumnId = VisibleColumns.File;
-			view.Columns[VisibleColumns.Category].SortColumnId = VisibleColumns.Category;
-			
+			view.Columns [VisibleColumns.Type].SortColumnId = VisibleColumns.Type;
+			view.Columns [VisibleColumns.Project].SortColumnId = VisibleColumns.Project;
+			view.Columns [VisibleColumns.File].SortColumnId = VisibleColumns.File;
+			view.Columns [VisibleColumns.Category].SortColumnId = VisibleColumns.Category;
+
 			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
-			TaskService.Errors.TasksRemoved      += ShowResults;
-			TaskService.Errors.TasksAdded        += TaskAdded;
-			TaskService.Errors.TasksChanged      += TaskChanged;
+			TaskService.Errors.TasksRemoved += ShowResults;
+			TaskService.Errors.TasksAdded += TaskAdded;
+			TaskService.Errors.TasksChanged += TaskChanged;
 			TaskService.Errors.CurrentLocationTaskChanged += HandleTaskServiceErrorsCurrentLocationTaskChanged;
-			
+
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
-			
+
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
-			
+
 			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 			iconInfo = ImageService.GetIcon (Ide.Gui.Stock.Information, Gtk.IconSize.Menu);
 			iconEmpty = ImageService.GetIcon (Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
-			
+
 			control.Add1 (sw);
-			
+
 			outputView = new LogView { Name = "buildOutput" };
 			control.Add2 (outputView);
-			
+
 			control.ShowAll ();
-			
+
 			control.SizeAllocated += HandleControlSizeAllocated;
-			
+
 			bool outputVisible = OutputViewVisible;
 			if (outputVisible) {
 				outputView.Visible = true;
@@ -282,9 +282,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				outputView.Hide ();
 			}
-			
+
 			sw.SizeAllocated += HandleSwSizeAllocated;
-			
+
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
@@ -303,15 +303,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			base.Dispose ();
 		}
-		
+
 		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			if (!initialLogShow && outputView.Visible) {
-				var val = (double) ((double) control.Position / (double) control.Allocation.Width);
+				var val = (double)((double)control.Position / (double)control.Allocation.Width);
 				LogSeparatorPosition.Value = val;
 			}
 		}
-		
+
 		[GLib.ConnectBefore]
 		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
 		{
@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				initialLogShow = false;
 			}
 		}
-		
+
 		public ProgressMonitor GetBuildProgressMonitor ()
 		{
 			if (control == null)
@@ -338,10 +338,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (!view.Model.GetIterFirst (out it))
 				return;
 			do {
-				TaskListEntry t = (TaskListEntry) view.Model.GetValue (it, DataColumns.Task);
+				TaskListEntry t = (TaskListEntry)view.Model.GetValue (it, DataColumns.Task);
 				if (t == TaskService.Errors.CurrentLocationTask) {
 					view.Selection.SelectIter (it);
-					view.ScrollToCell (view.Model.GetPath (it), view.Columns[0], false, 0, 0);
+					view.ScrollToCell (view.Model.GetPath (it), view.Columns [0], false, 0, 0);
 					it = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (it));
 					store.SetValue (it, DataColumns.Read, true);
 					return;
@@ -355,15 +355,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (!view.Model.GetIterFirst (out iter))
 				return;
 			do {
-				var t = (TaskListEntry) view.Model.GetValue (iter, DataColumns.Task);
+				var t = (TaskListEntry)view.Model.GetValue (iter, DataColumns.Task);
 				if (t == taskListEntry) {
 					view.Selection.SelectIter (iter);
-					view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
+					view.ScrollToCell (view.Model.GetPath (iter), view.Columns [0], false, 0, 0);
 					return;
 				}
 			} while (view.Model.IterNext (ref iter));
 		}
-		
+
 		void LoadColumnsVisibility ()
 		{
 			var columns = PropertyService.Get ("Monodevelop.ErrorListColumns", string.Join (";", Enumerable.Repeat ("TRUE", view.Columns.Length)));
@@ -386,7 +386,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (menu != null)
 				return menu;
-			
+
 			var group = new ActionGroup ("Popup");
 
 			var help = new Gtk.Action ("help", GettextCatalog.GetString ("Show Error Reference"),
@@ -410,56 +410,56 @@ namespace MonoDevelop.Ide.Gui.Pads
 			var columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),
 				GettextCatalog.GetString ("Toggle visibility of Type column"), null);
 			columnType.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnType] = VisibleColumns.Type;
+			columnsActions [columnType] = VisibleColumns.Type;
 			group.Add (columnType);
 
 			var columnValidity = new ToggleAction ("columnValidity", GettextCatalog.GetString ("Validity"),
 				GettextCatalog.GetString ("Toggle visibility of Validity column"), null);
 			columnValidity.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnValidity] = VisibleColumns.Marked;
+			columnsActions [columnValidity] = VisibleColumns.Marked;
 			group.Add (columnValidity);
 
 			var columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
 				GettextCatalog.GetString ("Toggle visibility of Line column"), null);
 			columnLine.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnLine] = VisibleColumns.Line;
+			columnsActions [columnLine] = VisibleColumns.Line;
 			group.Add (columnLine);
 
 			var columnDescription = new ToggleAction ("columnDescription", GettextCatalog.GetString ("Description"),
 				GettextCatalog.GetString ("Toggle visibility of Description column"), null);
 			columnDescription.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnDescription] = VisibleColumns.Description;
+			columnsActions [columnDescription] = VisibleColumns.Description;
 			group.Add (columnDescription);
 
 			var columnFile = new ToggleAction ("columnFile", GettextCatalog.GetString ("File"),
 				GettextCatalog.GetString ("Toggle visibility of File column"), null);
 			columnFile.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnFile] = VisibleColumns.File;
+			columnsActions [columnFile] = VisibleColumns.File;
 			group.Add (columnFile);
 
 			var columnProject = new ToggleAction ("columnProject", GettextCatalog.GetString ("Project"),
 				GettextCatalog.GetString ("Toggle visibility of Project column"), null);
 			columnProject.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnProject] = VisibleColumns.Project;
+			columnsActions [columnProject] = VisibleColumns.Project;
 			group.Add (columnProject);
 
 			var columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
 				GettextCatalog.GetString ("Toggle visibility of Path column"), null);
 			columnPath.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnPath] = VisibleColumns.Path;
+			columnsActions [columnPath] = VisibleColumns.Path;
 			group.Add (columnPath);
 
 			var columnCategory = new ToggleAction ("columnCategory", GettextCatalog.GetString ("Category"),
-			                                       GettextCatalog.GetString ("Toggle visibility of Category column"), null);
+												   GettextCatalog.GetString ("Toggle visibility of Category column"), null);
 			columnCategory.Toggled += OnColumnVisibilityChanged;
-			columnsActions[columnCategory] = VisibleColumns.Category;
+			columnsActions [columnCategory] = VisibleColumns.Category;
 			group.Add (columnCategory);
 
 
 
 			var uiManager = new UIManager ();
 			uiManager.InsertActionGroup (group, 0);
-			
+
 			string uiStr = "<ui><popup name='popup'>"
 				+ "<menuitem action='help'/>"
 				+ "<menuitem action='copy'/>"
@@ -482,14 +482,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			menu.ShowAll ();
 
 			menu.Shown += delegate {
-				columnType.Active = view.Columns[VisibleColumns.Type].Visible;
-				columnValidity.Active = view.Columns[VisibleColumns.Marked].Visible;
-				columnLine.Active = view.Columns[VisibleColumns.Line].Visible;
-				columnDescription.Active = view.Columns[VisibleColumns.Description].Visible;
-				columnFile.Active = view.Columns[VisibleColumns.File].Visible;
-				columnProject.Active = view.Columns[VisibleColumns.Project].Visible;
-				columnPath.Active = view.Columns[VisibleColumns.Path].Visible;
-				columnCategory.Active = view.Columns[VisibleColumns.Category].Visible;
+				columnType.Active = view.Columns [VisibleColumns.Type].Visible;
+				columnValidity.Active = view.Columns [VisibleColumns.Marked].Visible;
+				columnLine.Active = view.Columns [VisibleColumns.Line].Visible;
+				columnDescription.Active = view.Columns [VisibleColumns.Description].Visible;
+				columnFile.Active = view.Columns [VisibleColumns.File].Visible;
+				columnProject.Active = view.Columns [VisibleColumns.Project].Visible;
+				columnPath.Active = view.Columns [VisibleColumns.Path].Visible;
+				columnCategory.Active = view.Columns [VisibleColumns.Category].Visible;
 				help.Sensitive = copy.Sensitive = jump.Sensitive =
 					view.Selection != null &&
 					view.Selection.CountSelectedRows () > 0 &&
@@ -502,16 +502,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 				string dummyString;
 				help.Sensitive &= GetSelectedErrorReference (out dummyString);
 			};
-			
+
 			return menu;
 		}
 
-		TaskListEntry SelectedTask
-		{
+		TaskListEntry SelectedTask {
 			get {
 				TreeModel model;
 				TreeIter iter;
-				if (view.Selection.GetSelected (out model, out iter)) 
+				if (view.Selection.GetSelected (out model, out iter))
 					return model.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				return null; // no one selected
 			}
@@ -605,9 +604,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnColumnVisibilityChanged (object o, EventArgs args)
 		{
 			ToggleAction action = o as ToggleAction;
-			if (action != null)
-			{
-				view.Columns[columnsActions[action]].Visible = action.Active;
+			if (action != null) {
+				view.Columns [columnsActions [action]].Visible = action.Active;
 				StoreColumnsVisibility ();
 			}
 		}
@@ -615,16 +613,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void AddColumns ()
 		{
 			CellRendererImage iconRender = new CellRendererImage ();
-			
+
 			Gtk.CellRendererToggle toggleRender = new Gtk.CellRendererToggle ();
 			toggleRender.Toggled += new ToggledHandler (ItemToggled);
-			
+
 			TreeViewColumn col;
 			col = view.AppendColumn ("!", iconRender, "image", DataColumns.Type);
-			
+
 			col = view.AppendColumn ("", toggleRender);
 			col.SetCellDataFunc (toggleRender, new Gtk.TreeCellDataFunc (ToggleDataFunc));
-			
+
 			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (LineDataFunc));
 
@@ -888,11 +886,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			AddTaskInternal (t);
 			filter.Refilter ();
 		}
-		
+
 		void AddTaskInternal (TaskListEntry t)
 		{
 			if (tasks.Contains (t)) return;
-			
+
 			Xwt.Drawing.Image stock;
 			
 			switch (t.Severity) {

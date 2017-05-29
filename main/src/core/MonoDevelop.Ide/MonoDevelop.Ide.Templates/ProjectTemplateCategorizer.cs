@@ -95,9 +95,16 @@ namespace MonoDevelop.Ide.Templates
 			return categories;
 		}
 
+		/// <summary>
+		/// The template's existing groups are cleared before being categorized.
+		/// This allows the templating provider to cache the templates and prevents
+		/// the list of groups associated with the template from increasing every
+		/// time the New Project dialog is opened.
+		/// </summary>
 		public void CategorizeTemplates (IEnumerable<SolutionTemplate> templates)
 		{
 			foreach (SolutionTemplate template in GetFilteredTemplates (templates)) {
+				template.ClearGroupedTemplates ();
 				TemplateCategory category = GetCategory (template);
 				if (category != null) {
 					category.AddTemplate (template);

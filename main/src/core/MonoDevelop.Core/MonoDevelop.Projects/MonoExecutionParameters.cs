@@ -131,6 +131,19 @@ namespace MonoDevelop.Projects
 			SGen
 		}
 
+		public enum RuntimeArchitecture
+		{
+			[MonoArg (null)]
+			[LocalizedDescription ("Default")]
+			Default,
+			[LocalizedDescription ("32-bit")]
+			[MonoArg ("32")]
+			b32,
+			[LocalizedDescription ("64-bit")]
+			[MonoArg ("64")]
+			b64
+		}
+
 		static Dictionary<PropertyInfo, ItemPropertyAttribute> itemPropertyAttributes = new Dictionary<PropertyInfo, ItemPropertyAttribute> ();
 		static Dictionary<PropertyInfo, MonoArgAttribute> monoArgAttributes = new Dictionary<PropertyInfo, MonoArgAttribute> ();
 		static Dictionary<PropertyInfo, EnvVarAttribute> envVarAttributes = new Dictionary<PropertyInfo, EnvVarAttribute> ();
@@ -589,5 +602,12 @@ namespace MonoDevelop.Projects
 		[MonoArg ("{0}")]
 		[ItemProperty (DefaultValue="")]
 		public string MonoAdditionalOptions { get; set; }
+
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Architecture")]
+		[LocalizedDescription ("Selects the bitness of the Mono binary used, if available. If the binary used is already for the selected bitness, nothing changes. If not, the execution switches to a binary with the selected bitness suffix installed side by side (architecture=64 will switch to '/bin/mono64' if '/bin/mono' is a 32-bit build).")]
+		[MonoArg ("--arch={0}")]
+		[ItemProperty (DefaultValue = RuntimeArchitecture.Default)]
+		public RuntimeArchitecture Architecture { get; set; }
 	}
 }

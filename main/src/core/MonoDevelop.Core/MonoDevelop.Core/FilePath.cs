@@ -215,9 +215,33 @@ namespace MonoDevelop.Core
 		}
 
 		[Pure]
+		public FilePath Combine (FilePath path)
+		{
+			return new FilePath (Path.Combine (fileName, path.fileName));
+		}
+
+		[Pure]
+		public FilePath Combine (FilePath path1, FilePath path2)
+		{
+			return new FilePath (Path.Combine (fileName, path1.fileName, path2.fileName));
+		}
+
+		[Pure]
 		public FilePath Combine (params string[] paths)
 		{
 			return new FilePath (Path.Combine (fileName, Path.Combine (paths)));
+		}
+
+		[Pure]
+		public FilePath Combine (string path)
+		{
+			return new FilePath (Path.Combine (fileName, path));
+		}
+
+		[Pure]
+		public FilePath Combine (string path1, string path2)
+		{
+			return new FilePath (Path.Combine (fileName, path1, path2));
 		}
 		
 		public Task DeleteAsync ()
@@ -281,6 +305,18 @@ namespace MonoDevelop.Core
 		public static FilePath Build (params string[] paths)
 		{
 			return Empty.Combine (paths);
+		}
+
+		[Pure]
+		public static FilePath Build (string path)
+		{
+			return Empty.Combine (path);
+		}
+
+		[Pure]
+		public static FilePath Build (string path1, string path2)
+		{
+			return Empty.Combine (path1, path2);
 		}
 
 		[Pure]

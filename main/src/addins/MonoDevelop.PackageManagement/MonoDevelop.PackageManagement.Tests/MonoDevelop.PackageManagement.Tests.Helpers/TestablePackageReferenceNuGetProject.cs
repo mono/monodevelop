@@ -1,10 +1,10 @@
 ﻿//
-// DotNetCoreSdkVersionTests.cs
+// TestableDotNetCoreNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
+using System.Threading.Tasks;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	[TestFixture]
-	class DotNetCoreSdkVersionTests
+	class TestablePackageReferenceNuGetProject : PackageReferenceNuGetProject
 	{
-		[TestCase ("1.0.0-preview5-004460", 4460)]
-		[TestCase ("1.0.0-preview2-003156", 3156)]
-		[TestCase ("1.0.0-preview2-1-003177", 3177)]
-		[TestCase ("1.0.0-rc3-004530", 4530)]
-		[TestCase ("1.0.0-rc4-4771", 4771)]
-		public void ValidBuildVersions (string sdkVersion, int expectedBuildVersion)
+		public TestablePackageReferenceNuGetProject (DotNetProject project)
+			: this (project, new PackageManagementEvents ())
 		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
-
-			Assert.AreEqual (expectedBuildVersion, buildVersion);
-			Assert.IsTrue (result);
 		}
 
-		[TestCase ("")]
-		[TestCase (null)]
-		[TestCase ("1")]
-		public void InvalidBuildVersions (string sdkVersion)
+		public TestablePackageReferenceNuGetProject (
+			DotNetProject project,
+			PackageManagementEvents packageManagementEvents)
+			: base (project, packageManagementEvents)
 		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
+			PackageManagementEvents = packageManagementEvents;
+		}
 
-			Assert.IsFalse (result);
+		public PackageManagementEvents PackageManagementEvents { get; set; }
+
+		public bool IsSaved { get; set; }
+
+		public override Task SaveProject ()
+		{
+			IsSaved = true;
+			return Task.FromResult (0);
 		}
 	}
 }

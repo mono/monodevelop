@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public IEnumerable<SearchResult> FindAll (Scope scope, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
 		{
 			if (filter.RegexSearch) {
-				RegexOptions regexOptions = RegexOptions.Compiled;
+				RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Multiline;
 				if (!filter.CaseSensitive)
 					regexOptions |= RegexOptions.IgnoreCase;
 				regex = new Regex (pattern, regexOptions);

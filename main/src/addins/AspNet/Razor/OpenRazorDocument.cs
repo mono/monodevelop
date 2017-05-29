@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.Razor
 		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			lock (document) {
-				var change = e.TextChanges.First ();
+				var change = e.TextChanges[0];
 				if (lastChange == null)
 					lastChange = new ChangeInfo (change.Offset, new System.Web.Razor.Text.SeekableTextReader ((sender as MonoDevelop.Ide.Editor.ITextDocument).Text));
 				if (change.ChangeDelta > 0) {
