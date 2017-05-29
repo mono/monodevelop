@@ -38,9 +38,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\*.cs">
-      <Link>Shared\Placeholder</Link>
-    </Compile>
+    <Compile Include="..\..\..\..\external\debugger-libs\UnitTests\Mono.Debugging.Tests\Shared\*.cs" />
     <Compile Include="DebugTests.MonoDevelop.cs" />
     <Compile Include="TextFile.cs" />
   </ItemGroup>
