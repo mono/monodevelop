@@ -47,11 +47,14 @@ void test_check_mono_version(void)
 		{ "3.1", "3.0", TRUE },
 
 		// Release lower than requirement.
-		// FIXME
-		//{ "3.1", "3.1.1", FALSE },
+		{ "3.1", "3.1.1", FALSE },
 
 		// Release higher than requirement.
 		{ "3.1.1", "3.1", TRUE },
+
+		{ "5.2.0.138", "5.2.0.130", TRUE },
+
+		{ "5.2.0.138 (2017-04/f1196da)", "5.2.0.138", TRUE },
 
 		// Bogus requirement value.
 		{ "3.1", "BOGUS STRING", FALSE },
