@@ -845,6 +845,16 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				p.GetRangeForPosition = value;
 			}
 		}
+		public Func<AtkCocoa.Range> GetVisibleCharacterRange {
+			set {
+				var p = realProxyElement as RealAccessibilityElementNavigableStaticTextProxy;
+				if (p == null) {
+					throw new Exception ("Not a Text element");
+				}
+
+				p.GetVisibleCharacterRange = value;
+			}
+		}
 	}
 
 	class RealAccessibilityElementProxy : NSAccessibilityElement, INSAccessibility
@@ -1406,6 +1416,13 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public override NSRange AccessibilityVisibleCharacterRange {
+			get {
+				var realRange = GetVisibleCharacterRange ();
+				return new NSRange (realRange.Location, realRange.Length);
+			}
+		}
+
 		public Func<string> Contents { get; set; }
 		public Func<int> NumberOfCharacters { get; set; }
 		public Func<int> InsertionPointLineNumber { get; set; }
@@ -1416,6 +1433,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public Func<int, AtkCocoa.Range> GetRangeForIndex { get; set; }
 		public Func<int, AtkCocoa.Range> GetStyleRangeForIndex { get; set; }
 		public Func<Point, AtkCocoa.Range> GetRangeForPosition { get; set; }
+		public Func<AtkCocoa.Range> GetVisibleCharacterRange { get; set;  }
 
 		// Returned frame is in screen coordinate space
 		[Export ("accessibilityFrameForRange:")]
@@ -1450,7 +1468,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		NSRange AccessibilityRangeForLine (nint line)
 		{
 			var range = GetRangeForLine ((int)line);
-
 			return new NSRange (range.Location, range.Length);
 		}
 
