@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 
@@ -49,10 +50,13 @@ namespace MonoDevelop.DotNetCore.Gui
 			}
 
 			dotNetCoreProject = project.GetFlavor<DotNetCoreProjectExtension> ();
-			frameworks = dotNetCoreProject.GetSupportedTargetFrameworks ().ToList ();
+			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (project);
+			frameworks = supportedTargetFrameworks.GetFrameworks ().ToList ();
 
+			bool notInstalled = false;
 			if (!frameworks.Any (fx => fx.Id == project.TargetFramework.Id)) {
 				frameworks.Add (project.TargetFramework);
+				notInstalled = true;
 			}
 
 			//sort by id ascending, version descending
@@ -66,10 +70,13 @@ namespace MonoDevelop.DotNetCore.Gui
 			for (int i = 0; i < frameworks.Count; i++) {
 				var fx = frameworks[i];
 				if (project.TargetFramework.Id == fx.Id) {
-					runtimeVersionCombo.AppendText (fx.Name);
+					if (notInstalled)
+						runtimeVersionCombo.AppendText (GettextCatalog.GetString ("{0} (Not installed)", fx.GetDisplayName ()));
+					else
+						runtimeVersionCombo.AppendText (fx.GetDisplayName ());
 					runtimeVersionCombo.Active = i;
 				} else {
-					runtimeVersionCombo.AppendText (fx.Name);
+					runtimeVersionCombo.AppendText (fx.GetDisplayName ());
 				}
 			}
 

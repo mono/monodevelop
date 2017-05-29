@@ -1,10 +1,10 @@
 ﻿//
-// EmptyDirectoryRemover.cs
+// DotNetCoreRuntimeVersions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.DotNetCore.Templating
+namespace MonoDevelop.DotNetCore
 {
-	static class EmptyDirectoryRemover
+	class DotNetCoreRuntimeVersions
 	{
-		public static void Remove (FilePath directory)
+		public static IEnumerable<DotNetCoreVersion> GetInstalledVersions (DotNetCorePath dotNetCorePath)
 		{
-			if (!Directory.Exists (directory))
-				return;
+			if (dotNetCorePath.IsMissing)
+				return Enumerable.Empty<DotNetCoreVersion> ();
 
-			if (Directory.EnumerateFiles (directory).Any ())
-				return;
+			string runtimePath = GetDotNetCoreRuntimePath (dotNetCorePath);
+			if (!Directory.Exists (runtimePath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
 
-			try {
-				Directory.Delete (directory);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to delete directory.", ex);
-			}
+			return Directory.EnumerateDirectories (runtimePath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
+		}
+
+		static string GetDotNetCoreRuntimePath (DotNetCorePath dotNetCorePath)
+		{
+			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
+			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
 		}
 	}
 }

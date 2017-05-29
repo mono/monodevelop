@@ -354,7 +354,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (e.ProjectReference.ReferenceType == ReferenceType.Project && e.ProjectReference.Reference == Name) {
 				foreach (var f in Files) {
 					var pf = e.Project.GetProjectFile (f.FilePath);
-					if ((pf.Flags & ProjectItemFlags.DontPersist) != 0)
+					if (pf != null && (pf.Flags & ProjectItemFlags.DontPersist) != 0)
 						e.Project.Files.Remove (pf.FilePath);
 				}
 			}

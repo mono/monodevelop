@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
+using System.IO;
+using System.Xml;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -38,6 +41,10 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
+			Versions = sdkPaths.SdkVersions;
+
+			if (IsInstalled)
+				GetPreviewNetStandard20LibraryVersion ();
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
@@ -45,6 +52,8 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsInstalled { get; private set; }
 		public static string MSBuildSDKsPath { get; private set; }
+
+		internal static DotNetCoreVersion[] Versions { get; private set; }
 
 		internal static void EnsureInitialized ()
 		{
@@ -57,6 +66,46 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths.FindSdkPaths (sdk);
 
 			return sdkPaths;
+		}
+
+		internal static string PreviewNetStandard20LibraryVersion { get; private set; }
+
+		static void GetPreviewNetStandard20LibraryVersion ()
+		{
+			var latestInstalledVersion = Versions.FirstOrDefault ();
+			if (latestInstalledVersion == null)
+				return;
+
+			if (latestInstalledVersion.Major == 2 &&
+			    latestInstalledVersion.Minor == 0 &&
+			    latestInstalledVersion.IsPrerelease) {
+				PreviewNetStandard20LibraryVersion = ReadBundledNETStandardPackageVersion ();
+			}
+		}
+
+		static string ReadBundledNETStandardPackageVersion ()
+		{
+			string sdkRoot = Path.GetDirectoryName (MSBuildSDKsPath);
+			string fileName = Path.Combine (sdkRoot, "Microsoft.NETCoreSdk.BundledVersions.props");
+
+			try {
+				if (!File.Exists (fileName))
+					return null;
+
+				using (var reader = XmlReader.Create (fileName)) {
+					while (reader.Read ()) {
+						switch (reader.NodeType) {
+						case XmlNodeType.Element:
+							if (reader.LocalName == "BundledNETStandardPackageVersion")
+								return reader.ReadElementContentAsString ();
+							break;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError (string.Format ("Unable to read '{0}'", fileName), ex);
+			}
+			return null;
 		}
 	}
 }

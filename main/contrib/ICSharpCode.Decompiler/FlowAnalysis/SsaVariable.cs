@@ -42,9 +42,11 @@ namespace ICSharpCode.Decompiler.FlowAnalysis
 			this.Parameter = p;
 		}
 		
-		public SsaVariable(VariableDefinition v)
+		public SsaVariable(MethodDefinition m, VariableDefinition v)
 		{
-			this.Name = string.IsNullOrEmpty(v.Name) ? "V_" + v.Index : v.Name;
+			if (!m.DebugInformation.TryGetName (v, out Name)) {
+				this.Name = "V_" + v.Index;
+			}
 			this.Variable = v;
 		}
 		

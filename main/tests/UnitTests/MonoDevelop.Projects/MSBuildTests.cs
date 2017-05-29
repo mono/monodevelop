@@ -2619,6 +2619,31 @@ namespace MonoDevelop.Projects
 			sol.Dispose ();
 		}
 
+		/// <summary>
+		/// Tests that the first target framework is used to evaluate the project.
+		/// </summary>
+		[Test]
+		public async Task LoadDotNetCoreProjectWithMultipleTargetFrameworks ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreMultiTargetFramework", "DotNetCoreMultiTargetFramework.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			var capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			sol.Dispose ();
+		}
+
 		[Test]
 		public async Task CopyConfiguration ()
 		{

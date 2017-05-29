@@ -472,6 +472,64 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		/// <summary>
+		/// Tests that re-evaluating a project that referenced a shared project does not throw a null reference
+		/// exception and the files are still available from both projects afterwards.
+		/// </summary>
+		[Test]
+		public async Task ReevaluateProjectReferencingSharedProject ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var pc1 = sol.FindProjectByName ("Console1");
+			Assert.IsNotNull (pc1);
+
+			var pcs = (SharedAssetsProject)sol.FindProjectByName ("Shared");
+			Assert.IsNotNull (pcs);
+
+			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
+			var programFile = pc1.ItemDirectory.Combine ("Program.cs");
+
+			Assert.IsTrue (pc1.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pc1.Files.GetFile (programFile) != null);
+
+			await pc1.ReevaluateProject (Util.GetMonitor ());
+
+			Assert.IsTrue (pc1.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pc1.Files.GetFile (programFile) != null);
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that files imported by Shared Assets projects are added as Hidden, DontPersist
+		/// files to the .NET Core project's Files collection.
+		/// </summary>
+		[Test]
+		public async Task DotNetCoreProjectReferencingSharedProject ()
+		{
+			string solFile = Util.GetSampleProject ("DotNetCoreSharedProjectTest", "DotNetCoreSharedProjectTest.sln");
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var dotNetCoreProject = sol.FindProjectByName ("DotNetCoreProject");
+			Assert.IsNotNull (dotNetCoreProject);
+
+			var sharedProject = (SharedAssetsProject)sol.FindProjectByName ("Shared");
+			Assert.IsNotNull (sharedProject);
+
+			var sharedFile = sharedProject.ItemDirectory.Combine ("MyClass.cs");
+
+			var file = dotNetCoreProject.Files.GetFile (sharedFile);
+
+			Assert.AreEqual (ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist, file.Flags);
+			Assert.IsTrue (sharedProject.Files.GetFile (sharedFile) != null);
+
+			sol.Dispose ();
+		}
 	}
 }
 
