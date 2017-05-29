@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnitTests;
 using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -116,6 +117,7 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("SdkProp"));
 
 				var res = await p.RunTarget (Util.GetMonitor (false), "SdkTarget", p.Configurations [0].Selector);
+				Assert.AreEqual (0, res.BuildResult.ErrorCount, res.BuildResult.Errors.FirstOrDefault ()?.ToString ());
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
 				p.Dispose ();
@@ -140,6 +142,7 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual ("Works!", p1.MSBuildProject.EvaluatedProperties.GetValue ("SdkProp"));
 
 				var res = await p1.RunTarget (Util.GetMonitor (false), "SdkTarget", p1.Configurations [0].Selector);
+				Assert.AreEqual (0, res.BuildResult.ErrorCount, res.BuildResult.Errors.FirstOrDefault ()?.ToString ());
 				Assert.AreEqual (1, res.BuildResult.WarningCount);
 				Assert.AreEqual ("Works!", res.BuildResult.Errors [0].ErrorText);
 
