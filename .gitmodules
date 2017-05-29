@@ -1,7 +1,3 @@
-[submodule "main/external/cecil"]
-	path = main/external/cecil
-	url = git://github.com/mono/cecil.git
-	branch = master
 [submodule "main/external/mono-tools"]
 	path = main/external/mono-tools
 	url = git://github.com/mono/mono-tools.git
@@ -15,10 +11,6 @@
 	path = main/external/mono-addins
 	url = git://github.com/mono/mono-addins.git
 	branch = master
-[submodule "main/external/ikvm"]
-	path = main/external/ikvm
-	url = git://github.com/mono/ikvm-fork.git
-	branch = master-signed
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
 	url = git://github.com/mono/debugger-libs.git

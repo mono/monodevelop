@@ -317,10 +317,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 			
 			VariableReference variableRef = operand as VariableReference;
 			if (variableRef != null) {
-				if (string.IsNullOrEmpty(variableRef.Name))
+				//if (string.IsNullOrEmpty(variableRef.Name))
 					writer.WriteReference(variableRef.Index.ToString(), variableRef);
-				else
-					writer.WriteReference(Escape(variableRef.Name), variableRef);
+				//else
+				//	writer.WriteReference(Escape(variableRef.Name), variableRef);
 				return;
 			}
 			

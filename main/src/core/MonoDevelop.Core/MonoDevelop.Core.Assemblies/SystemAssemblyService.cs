@@ -15,10 +15,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Immutable;
 using System.Threading;
+using Mono.Cecil;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -49,13 +50,13 @@ namespace MonoDevelop.Core.Assemblies
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
 		DirectoryAssemblyContext userAssemblyContext = new DirectoryAssemblyContext ();
-		
+
 		public TargetRuntime CurrentRuntime { get; private set; }
-		
+
 		public event EventHandler DefaultRuntimeChanged;
 		public event EventHandler RuntimesChanged;
 		public event EventHandler FrameworksChanged;
-		
+
 		internal void Initialize ()
 		{
 			CreateFrameworks ();
@@ -67,7 +68,7 @@ namespace MonoDevelop.Core.Assemblies
 						DefaultRuntime = CurrentRuntime = runtime;
 				}
 			}
-			
+
 			// Don't initialize until Current and Default Runtimes are set
 			foreach (TargetRuntime runtime in runtimes) {
 				runtime.Initialized += HandleRuntimeInitialized;
@@ -77,7 +78,7 @@ namespace MonoDevelop.Core.Assemblies
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
 
 			CurrentRuntime.StartInitialization ();
-			
+
 			LoadUserAssemblyContext ();
 			userAssemblyContext.Changed += delegate {
 				SaveUserAssemblyContext ();
@@ -118,7 +119,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			FrameworksChanged?.Invoke (this, EventArgs.Empty);
 		}
-		
+
 		public TargetRuntime DefaultRuntime {
 			get {
 				return defaultRuntime;
@@ -129,15 +130,15 @@ namespace MonoDevelop.Core.Assemblies
 					DefaultRuntimeChanged (this, EventArgs.Empty);
 			}
 		}
-		
+
 		public DirectoryAssemblyContext UserAssemblyContext {
 			get { return userAssemblyContext; }
 		}
-		
+
 		public IAssemblyContext DefaultAssemblyContext {
 			get { return DefaultRuntime.AssemblyContext; }
 		}
-		
+
 		public void RegisterRuntime (TargetRuntime runtime)
 		{
 			runtime.Initialized += HandleRuntimeInitialized;
@@ -145,7 +146,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (RuntimesChanged != null)
 				RuntimesChanged (this, EventArgs.Empty);
 		}
-		
+
 		public void UnregisterRuntime (TargetRuntime runtime)
 		{
 			if (runtime == CurrentRuntime)
@@ -156,7 +157,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (RuntimesChanged != null)
 				RuntimesChanged (this, EventArgs.Empty);
 		}
-		
+
 		internal IEnumerable<TargetFramework> GetKnownFrameworks ()
 		{
 			return frameworks.Values;
@@ -166,17 +167,17 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return frameworks.ContainsKey (moniker);
 		}
-		
+
 		public IEnumerable<TargetFramework> GetTargetFrameworks ()
 		{
 			return frameworks.Values;
 		}
-		
+
 		public IEnumerable<TargetRuntime> GetTargetRuntimes ()
 		{
 			return runtimes;
 		}
-		
+
 		public TargetRuntime GetTargetRuntime (string id)
 		{
 			foreach (TargetRuntime r in runtimes) {
@@ -193,7 +194,7 @@ namespace MonoDevelop.Core.Assemblies
 					yield return r;
 			}
 		}
-		
+
 		public TargetFramework GetTargetFramework (TargetFrameworkMoniker id)
 		{
 			TargetFramework fx;
@@ -205,12 +206,12 @@ namespace MonoDevelop.Core.Assemblies
 				r.EnsureInitialized ();
 			if (frameworks.TryGetValue (id, out fx))
 				return fx;
-			
+
 			LoggingService.LogWarning ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService, returning empty TargetFramework", id);
 			UpdateFrameworks (new [] { new TargetFramework (id) });
 			return frameworks [id];
 		}
-		
+
 		public SystemPackage GetPackageFromPath (string assemblyPath)
 		{
 			foreach (TargetRuntime r in runtimes) {
@@ -229,13 +230,13 @@ namespace MonoDevelop.Core.Assemblies
 				aname.Name = fullname.Trim ();
 				return aname;
 			}
-			
+
 			aname.Name = fullname.Substring (0, i).Trim ();
 			i = fullname.IndexOf ("Version", i + 1, StringComparison.Ordinal);
 			if (i == -1)
 				return aname;
 			i = fullname.IndexOf ('=', i);
-			if (i == -1) 
+			if (i == -1)
 				return aname;
 			int j = fullname.IndexOf (',', i);
 			if (j == -1)
@@ -244,7 +245,7 @@ namespace MonoDevelop.Core.Assemblies
 				aname.Version = new Version (fullname.Substring (i+1, j - i - 1).Trim ());
 			return aname;
 		}
-		
+
 		static readonly Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
@@ -272,7 +273,7 @@ namespace MonoDevelop.Core.Assemblies
 				throw;
 			}
 		}
-		
+
 		public static string GetAssemblyName (string file)
 		{
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
@@ -295,7 +296,7 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogError ("Could not load framework '" + node.Id + "'", ex);
 				}
 			}
-			
+
 			BuildFrameworkRelations (frameworks);
 		}
 
@@ -305,12 +306,12 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (TargetFramework fx in frameworks.Values)
 				BuildFrameworkRelations (fx, frameworks);
 		}
-		
+
 		static void BuildFrameworkRelations (TargetFramework fx, Dictionary<TargetFrameworkMoniker, TargetFramework> frameworks)
 		{
 			if (fx.RelationsBuilt)
 				return;
-			
+
 			var includesFramework = fx.GetIncludesFramework ();
 			if (includesFramework != null) {
 				fx.IncludedFrameworks.Add (includesFramework);
@@ -323,32 +324,18 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogWarning ("TargetFramework '{0}' imports unknown framework '{0}'", fx.Id, includesFramework);
 				}
 			}
-			
+
 			fx.RelationsBuilt = true;
 		}
 
-		public static IKVM.Reflection.Universe CreateClosedUniverse ()
-		{
-			const IKVM.Reflection.UniverseOptions ikvmOptions =
-				IKVM.Reflection.UniverseOptions.DisablePseudoCustomAttributeRetrieval |
-				IKVM.Reflection.UniverseOptions.SupressReferenceTypeIdentityConversion |
-				IKVM.Reflection.UniverseOptions.ResolveMissingMembers;
-
-			var universe = new IKVM.Reflection.Universe (ikvmOptions);
-			universe.AssemblyResolve += delegate (object sender, IKVM.Reflection.ResolveEventArgs args) {
-				return ((IKVM.Reflection.Universe)sender).CreateMissingAssembly (args.Name);
-			};
-			return universe;
-		}
-		
 		//FIXME: the fallback is broken since multiple frameworks can have the same corlib
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			if (!File.Exists (file))
 				return TargetFrameworkMoniker.UNKNOWN;
-			var universe = CreateClosedUniverse ();
+			AssemblyDefinition assembly = null;
 			try {
-				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
+				assembly = AssemblyDefinition.ReadAssembly (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
 					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
 				);
@@ -363,7 +350,7 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
 				}
 				if (tr != null) {
-					foreach (var r in assembly.GetReferencedAssemblies ()) {
+					foreach (var r in assembly.MainModule.AssemblyReferences) {
 						if (r.Name == "mscorlib") {
 							TargetFramework compatibleFramework = null;
 							// If there are several frameworks that can run the file, pick one that is installed
@@ -384,19 +371,19 @@ namespace MonoDevelop.Core.Assemblies
 				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
 				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
-				universe.Dispose ();
+				assembly?.Dispose ();
 			}
 			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
-		
+
 		void SaveUserAssemblyContext ()
 		{
 			List<string> list = new List<string> (userAssemblyContext.Directories);
 			PropertyService.Set ("MonoDevelop.Core.Assemblies.UserAssemblyContext", list);
 			PropertyService.SaveProperties ();
 		}
-		
+
 		void LoadUserAssemblyContext ()
 		{
 			List<string> dirs = PropertyService.Get<List<string>> ("MonoDevelop.Core.Assemblies.UserAssemblyContext");
@@ -409,20 +396,20 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<string> GetAssemblyReferences (string fileName)
 		{
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
-					yield break;
+					return Enumerable.Empty<string> ();
 				}
-				foreach (var r in assembly.GetReferencedAssemblies ()) {
-					yield return r.Name;
-				}
+				return assembly.MainModule.AssemblyReferences.Select (x => x.Name);
+			} finally {
+				assembly?.Dispose ();
 			}
 		}
 
-		static ImmutableDictionary<string, bool> referenceDict = ImmutableDictionary<string, bool>.Empty;
+		static Dictionary<string, bool> referenceDict = new Dictionary<string, bool> ();
 
 		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
 		{
@@ -434,22 +421,24 @@ namespace MonoDevelop.Core.Assemblies
 			//if (referenceDict.Count > cacheLimit)
 			//	referenceDict = ImmutableDictionary<string, bool>.Empty
 
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
 					return false;
 				}
-				foreach (var r in assembly.GetReferencedAssemblies ()) {
+				foreach (var r in assembly.MainModule.AssemblyReferences) {
 					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name == "System.Runtime") {
-						referenceDict = referenceDict.SetItem (fileName, true);
+					if (r.FullName.Equals ("System.Runtime")) {
+						referenceDict [fileName] = true; ;
 						return true;
 					}
 				}
+			} finally {
+				assembly?.Dispose ();
 			}
-			referenceDict = referenceDict.SetItem (fileName, false);
+			referenceDict [fileName] = false;
 			return false;
 		}
 
@@ -496,17 +485,24 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			AssemblyDefinition assembly = null;
+			try {
 				try {
-					assembly = universe.LoadFile (fileName);
+					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 				} catch {
 					yield break;
 				}
-				foreach (var _r in assembly.GetManifestResourceNames ()) {
-					var r = _r;
-					yield return new ManifestResource (r, () => assembly.GetManifestResourceStream (r));
+				foreach (var r in assembly.MainModule.Resources) {
+					if (r.ResourceType == ResourceType.Embedded) {
+						var er = (EmbeddedResource)r;
+
+						// Explicitly create a capture and query it here so the stream isn't queried after the module is disposed.
+						var rs = er.GetResourceStream ();
+						yield return new ManifestResource (er.Name, () => rs);
+					}
 				}
+			} finally {
+				assembly?.Dispose ();
 			}
 		}
 	}
