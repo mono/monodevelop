@@ -1284,64 +1284,18 @@ namespace MonoDevelop.Projects.MSBuild
 				if (File.Exists (exePdb))
 					File.Copy (exePdb, exesDir.Combine (Path.GetFileName (exePdb)));
 
-				// On Windows we need to copy the MSBuild .dlls locally to the builder directory.
-				// The assembly resolve logic in the builder that loads them from the original
-				// directory at runtime doesn't work for multiple AppDomains, and so for example
-				// WPF MarkupCompilePass1 will fail since it can't load MSBuild binaries into an
-				// AppDomain it creates.
-				if (Platform.IsWindows) {
-					var dlls = Directory.GetFiles (binDir, "*.dll");
-					foreach (var dll in dlls) {
-						var destination = Path.Combine (exesDir, Path.GetFileName (dll));
-						if (!File.Exists (destination))
-							File.Copy (dll, destination);
-					}
-				}
+				// Copy the whole MSBuild bin folder and subfolders. We need all support assemblies
+				// and files.
 
-				// Mono has Microsoft.Build.{Tasks,Utilities}.{v4.0,v12.0} assemlies, which are xbuild's
-				// implementation, installed in the GAC.
-				//
-				// With msbuild, we want to use the facade assemblies of the same name, installed with
-				// msbuild, which redirect to the corresponding .Core assemblies.
-				//
-				// We have an AssemblyResolve event handler which resolves some msbuild assemblies from
-				// the correct path. But that is fired only if the runtime fails to resolve the assembly, which
-				// happens when, for example, MSBuild.dll is requesting Microsoft.Build, 15.1.0.0 .
-				//
-				// But for the v4.0/v12.0 assemblies, the runtime is able to resolve them from the GAC and
-				// so the event handler never gets fired.
-				//
-				// To ensure that msbuild is able to load the facade assemblies, we copy them over next to
-				// the builder. This is temporary though. It can be removed when xbuild is removed from mono,
-				// and we can put these in the proper locations in mono (GAC/facades?).
-				//
-				if (Platform.IsMac || Platform.IsLinux) {
-					var assemblies = new string[] {
-								"Microsoft.Build.Tasks.v4.0.dll",
-								"Microsoft.Build.Utilities.v4.0.dll",
-								"Microsoft.Build.Tasks.v12.0.dll",
-								"Microsoft.Build.Utilities.v12.0.dll" };
-
-					foreach (var asm in assemblies) {
-						var src = Path.Combine(binDir, asm);
-						var dest = Path.Combine (exesDir, asm);
-						if (File.Exists (src))
-							File.Copy (src, dest);
-					}
-				}
-
-				// Copy the resolvers directory since MSBuild looks for then in a directory relative
-				// to MSBuild.dll
-				var resolversDir = Path.Combine (binDir, "SdkResolvers");
-				if (Directory.Exists (resolversDir))
-					FileService.CopyDirectory (resolversDir, localResolversDir);
-				else
-					Directory.CreateDirectory (localResolversDir);
+				FileService.CopyDirectory (binDir, exesDir);
 
 				// Copy the MonoDevelop resolver, used for sdks registered by add-ins.
 				// This resolver will load registered sdks from the file sdks.config
+
+				if (!Directory.Exists (mdResolverDir))
+					Directory.CreateDirectory (mdResolverDir);
+
 				var builderDir = new FilePath (typeof (MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
-				Directory.CreateDirectory (mdResolverDir);
 				File.Copy (Path.Combine (builderDir, "MonoDevelop.MSBuildResolver.dll"), Path.Combine (mdResolverDir, "MonoDevelop.MSBuildResolver.dll"));
 
 				searchPathConfigNeedsUpdate = true;
