@@ -473,6 +473,61 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			}
 		}
 
+		/// <summary>
+		/// Splits a string of command line arguments into a string array. This function
+		/// handles double-quoted arguments, but it is tailored toward the needs of the
+		/// text returned by VSTest, and is not generally useful as a command line parser.
+		/// @param commandLineString Text of command line arguments
+		/// Converted from https://github.com/OmniSharp/omnisharp-vscode/blob/d4403d77031fbfb7d4e1e4f9c74dde5a1ff44ad2/src/common.ts#L121-L173
+		/// </summary>
+		List<string> SplitCommandLineArgs (string commandLineString)
+		{
+			var result = new List<string> ();
+			var start = -1;
+			var index = 0;
+			var inQuotes = false;
+
+			while (index < commandLineString.Length) {
+				var ch = commandLineString [index];
+
+				// Are we starting a new word?
+				if (start == -1 && ch != ' ' && ch != '"') {
+					start = index;
+				}
+
+				// is next character quote?
+				if (ch == '"') {
+					// Are we already in a quoted argument? If so, push the argument to the result list.
+					// If not, start a new quoted argument.
+					if (inQuotes) {
+						var arg = start >= 0
+						   ? commandLineString.Substring (start, index - start)
+						   : "";
+						result.Add (arg);
+						start = -1;
+						inQuotes = false;
+					} else {
+						inQuotes = true;
+					}
+				}
+
+				if (!inQuotes && start >= 0 && ch == ' ') {
+					var arg = commandLineString.Substring (start, index - start);
+					result.Add (arg);
+					start = -1;
+				}
+
+				index++;
+			}
+
+			if (start >= 0) {
+				var arg = commandLineString.Substring (start, commandLineString.Length - start);
+				result.Add (arg);
+			}
+
+			return result;
+		}
+
 		int StartCustomTestHost (TestProcessStartInfo startInfo, TestContext currentTestContext)
 		{
 			OperationConsole console = currentTestContext.ExecutionContext.ConsoleFactory.CreateConsole (
@@ -481,7 +536,7 @@ namespace MonoDevelop.DotNetCore.UnitTesting
 			var command = new DotNetCoreExecutionCommand (
 				startInfo.WorkingDirectory,
 				startInfo.FileName,
-				startInfo.Arguments
+				string.Join (" ", SplitCommandLineArgs (startInfo.Arguments).ToArray ())
 			);
 			command.Command = startInfo.FileName;
 			command.Arguments = startInfo.Arguments;
