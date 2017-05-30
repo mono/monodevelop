@@ -259,7 +259,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "tests\WindowsPlatform.Tests\WindowsPlatform.Tests.csproj", "{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringEssentials", "external\RefactoringEssentials\RefactoringEssentials.2017\RefactoringEssentials.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSharpBinding.Tests", "tests\MonoDevelop.CSharpBinding.Tests\MonoDevelop.CSharpBinding.Tests.csproj", "{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5}"
 EndProject
@@ -272,15 +272,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpBinding", "FSharpBind
 		external\fsharpbinding\build.fsx = external\fsharpbinding\build.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "external\fsharpbinding\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharpInteractive.Service", "external\fsharpbinding\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "external\fsharpbinding\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp.Tests", "external\fsharpbinding\MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "external\fsharpbinding\MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono.TextEditor.Shared", "src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.shproj", "{FBAAD910-F29B-4AC5-9FC0-27F6EB36C495}"
 EndProject
@@ -321,6 +321,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono.TextEditor.Platform.Def", "src\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.shproj", "{8555568F-5D3F-43D8-BF5F-456812283A44}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Mono.TextEditor.Platform.Impl", "src\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Impl.shproj", "{38238B03-3481-4FB7-BA6D-D0E59E824CC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.MSBuildResolver", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.MSBuildResolver\MonoDevelop.MSBuildResolver.csproj", "{BD432AE0-B262-4F63-A695-7B86D11B644F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.AppDomainClient", "external\debugger-libs\UnitTests\MonoDevelop.Debugger.Tests.AppDomainClient\MonoDevelop.Debugger.Tests.AppDomainClient.csproj", "{7A55BE57-81C9-45EC-9C7C-7F97D0508171}"
 EndProject
@@ -2025,6 +2027,26 @@ Global
 		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
 		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
 		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD432AE0-B262-4F63-A695-7B86D11B644F}.Release|x86.Build.0 = Release|Any CPU
 		{7A55BE57-81C9-45EC-9C7C-7F97D0508171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A55BE57-81C9-45EC-9C7C-7F97D0508171}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A55BE57-81C9-45EC-9C7C-7F97D0508171}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2187,13 +2209,13 @@ Global
 		{C988EF48-94E4-41CA-81D8-44B762F160F5} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{8555568F-5D3F-43D8-BF5F-456812283A44} = {C988EF48-94E4-41CA-81D8-44B762F160F5}
 		{38238B03-3481-4FB7-BA6D-D0E59E824CC8} = {C988EF48-94E4-41CA-81D8-44B762F160F5}
+		{BD432AE0-B262-4F63-A695-7B86D11B644F} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
 		{7A55BE57-81C9-45EC-9C7C-7F97D0508171} = {776872D9-76FA-407B-BA69-08E25A24E5CE}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
 		$0.StandardHeader = $1
 		$1.Text = @\n${FileName}\n \nAuthor:\n      ${AuthorName} <${AuthorEmail}>\n\nCopyright (c) ${Year} ${CopyrightHolder}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.
-		$1.IncludeInNewFiles = True
 		$0.TextStylePolicy = $2
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
@@ -2203,21 +2225,31 @@ Global
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
 		$0.VersionControlPolicy = $4
-		$4.inheritsSet = Mono
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = None
 		$5.VcsIntegration = None
 		$5.inheritsSet = Mono
 		$0.TextStylePolicy = $6
-		$6.FileWidth = 120
-		$6.TabsToSpaces = False
-		$6.inheritsSet = VisualStudio
-		$6.inheritsScope = text/plain
 		$6.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $7
-		$7.inheritsSet = Mono
-		$7.inheritsScope = text/x-csharp
 		$7.scope = text/x-csharp
+		$7.IndentSwitchSection = False
+		$7.NewLinesForBracesInProperties = False
+		$7.NewLinesForBracesInAccessors = False
+		$7.NewLinesForBracesInAnonymousMethods = False
+		$7.NewLinesForBracesInControlBlocks = False
+		$7.NewLinesForBracesInAnonymousTypes = False
+		$7.NewLinesForBracesInObjectCollectionArrayInitializers = False
+		$7.NewLinesForBracesInLambdaExpressionBody = False
+		$7.NewLineForElse = False
+		$7.NewLineForCatch = False
+		$7.NewLineForFinally = False
+		$7.NewLineForMembersInObjectInit = False
+		$7.NewLineForMembersInAnonymousTypes = False
+		$7.NewLineForClausesInQuery = False
+		$7.SpacingAfterMethodDeclarationName = True
+		$7.SpaceAfterMethodCallName = True
+		$7.SpaceBeforeOpenSquareBracket = True
 		$0.TextStylePolicy = $8
 		$8.inheritsSet = null
 		$8.scope = text/x-makefile
@@ -2238,16 +2270,12 @@ Global
 		$13.scope = application/config+xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
-		$14.TabsToSpaces = False
-		$14.inheritsSet = VisualStudio
-		$14.inheritsScope = text/plain
 		$14.scope = text/plain
+		$14.FileWidth = 80
 		$0.TextStylePolicy = $15
 		$15.inheritsSet = null
 		$15.scope = application/xml
 		$0.XmlFormattingPolicy = $16
-		$16.inheritsSet = Mono
-		$16.inheritsScope = application/xml
 		$16.scope = application/xml
 		$0.TextStylePolicy = $17
 		$17.inheritsSet = null

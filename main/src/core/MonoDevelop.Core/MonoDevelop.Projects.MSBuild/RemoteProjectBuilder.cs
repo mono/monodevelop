@@ -68,11 +68,10 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile, string sdksPath)
+		public async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
 		{
-			var builder = await LoadProject (projectFile, sdksPath).ConfigureAwait (false);
+			var builder = await LoadProject (projectFile).ConfigureAwait (false);
 			var pb = new RemoteProjectBuilder (projectFile, builder, this);
-			pb.SdksPath = sdksPath;
 			lock (remoteProjectBuilders) {
 				remoteProjectBuilders.Add (pb);
 
@@ -83,10 +82,10 @@ namespace MonoDevelop.Projects.MSBuild
 			return pb;
 		}
 
-		async Task<ProjectBuilder> LoadProject (string projectFile, string sdksPath)
+		async Task<ProjectBuilder> LoadProject (string projectFile)
 		{
 			try {
-				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile, SDKsPath = sdksPath })).ProjectId;
+				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile })).ProjectId;
 				return new ProjectBuilder (connection, pid);
 			} catch {
 				await CheckDisconnected ();
@@ -307,8 +306,6 @@ namespace MonoDevelop.Projects.MSBuild
 			referenceCache = new Dictionary<string, AssemblyReference[]> ();
 			packageDependenciesCache = new Dictionary<string, PackageDependency[]> ();
 		}
-
-		internal string SdksPath { get; set; }
 
 		public event EventHandler Disconnected;
 

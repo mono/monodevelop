@@ -25,9 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Xml;
-using Microsoft.Build.BuildEngine;
-using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Globalization;
 

@@ -2517,8 +2517,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Ignore]
 		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
 		{
+			// This test is being ignored for now because relying on MSBuildSDKsPath is not entirely correct,
+			// the correct approach is to use the Sdk attribute in the import.
+			// In any case this currently works for web projects because MSBuildSDKsPath ends being resolved
+			// to the Mono's msbuild dir, which has the web targets.
+
 			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
 
 			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
@@ -2566,7 +2572,7 @@ namespace MonoDevelop.Projects
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
 			};
-			var res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			var res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
@@ -2597,7 +2603,7 @@ namespace MonoDevelop.Projects
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
 			};
-			var res = await p.RunTarget (Util.GetMonitor (), "Clean", ConfigurationSelector.Default);
+			var res = await p.RunTarget (Util.GetMonitor (false), "Clean", ConfigurationSelector.Default);
 
 			var pr = ProjectReference.CreateProjectReference ((DotNetProject)dotNetCoreProject);
 			pr.ReferenceOutputAssembly = false;
@@ -2605,7 +2611,7 @@ namespace MonoDevelop.Projects
 			p.References.Add (pr);
 			await p.SaveAsync (Util.GetMonitor ());
 
-			res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
