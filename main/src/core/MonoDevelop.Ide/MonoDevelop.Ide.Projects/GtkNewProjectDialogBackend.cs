@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
-			templateTextRenderer.SelectedLanguage = controller.SelectedLanguage;
+			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
 
 			LoadTemplates ();
@@ -114,6 +114,13 @@ namespace MonoDevelop.Ide.Projects
 			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
 		}
 
+		static void SetLanguageCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		{
+			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
+			var languageRenderer = (LanguageCellRenderer)renderer;
+			languageRenderer.Template = template;
+		}
+
 		void HandlePopup (SolutionTemplate template, uint eventTime)
 		{
 			if (popupMenu == null) {
@@ -126,7 +133,7 @@ namespace MonoDevelop.Ide.Projects
 			popupMenu.ShowAll ();
 
 			MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
-				Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
+				Gdk.Rectangle rect = languageCellRenderer.GetLanguageRect ();
 				Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
 				x = screenRect.X;
 				y = screenRect.Bottom;
@@ -143,7 +150,7 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 
-			if (templateTextRenderer.IsLanguageButtonPressed (args.Event)) {
+			if (languageCellRenderer.IsLanguageButtonPressed (args.Event)) {
 				HandlePopup (template, args.Event.Time);
 			}
 		}
@@ -170,7 +177,7 @@ namespace MonoDevelop.Ide.Projects
 			foreach (string language in template.AvailableLanguages.OrderBy (item => item)) {
 				var menuItem = new MenuItem (language);
 				menuItem.Activated += (o, e) => {
-					templateTextRenderer.SelectedLanguage = language;
+					languageCellRenderer.SelectedLanguage = language;
 					controller.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
 					ShowSelectedTemplate ();
@@ -326,6 +333,7 @@ namespace MonoDevelop.Ide.Projects
 		void ShowTemplatesForCategory (TemplateCategory category)
 		{
 			templateTextRenderer.RenderRecentTemplate = false;
+			languageCellRenderer.RenderRecentTemplate = false;
 			foreach (TemplateCategory subCategory in category.Categories) {
 				templatesListStore.AppendValues (
 					MarkupTopLevelCategoryName (subCategory.Name),
@@ -346,6 +354,7 @@ namespace MonoDevelop.Ide.Projects
 		void ShowRecentTemplates ()
 		{
 			templateTextRenderer.RenderRecentTemplate = true;
+			languageCellRenderer.RenderRecentTemplate = true;
 			templatesListStore.AppendValues (
 				MarkupTopLevelCategoryName (Core.GettextCatalog.GetString ("Recently used templates")),
 				null,

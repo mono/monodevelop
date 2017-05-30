@@ -9411,6 +9411,7 @@
     <Compile Include="MonoDevelop.Ide.Codons\TemplateExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\HasReferenceFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RoslynClassificationHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\LanguageCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -9451,7 +9452,7 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
   </ItemGroup>
-  <Import Project="..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\..\core\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
+  <Import Project="..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems" Label="Shared" Condition="Exists('..\Mono.TextEditor.Platform\Mono.TextEditor.Platform.Def.projitems')" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Components\Xwt\" />

@@ -93,6 +93,7 @@ contexts:
     - match: $\n?
       pop: true
   keywords:
+    - match: '@\w+\b'
     - match: '\b(this|base|as|is|new|sizeof|typeof|stackalloc|else|if|switch|case|default|do|for|foreach|in|while|break|continue|goto|return|yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals|try|throw|catch|finally|abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic|void|namespace|using|get|set|add|remove|value|class|interface|delegate|enum|struct|params|ref|out|explicit|implicit|operator|checked|unchecked|fixed|unsafe|lock)\b'
       scope: keyword.source.cs
     - match: '\b(true|false|null)\b'
