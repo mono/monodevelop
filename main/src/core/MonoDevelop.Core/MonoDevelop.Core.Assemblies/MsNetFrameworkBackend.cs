@@ -33,14 +33,19 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class MsNetFrameworkBackend: TargetFrameworkBackend<MsNetTargetRuntime>
 	{
+		string ref_assemblies_folder;
+
 		string GetReferenceAssembliesFolder ()
 		{
+			if (ref_assemblies_folder != null)
+				return ref_assemblies_folder;
+			
 			var fxDir = framework.Id.GetAssemblyDirectoryName ();
 			foreach (var rootDir in runtime.GetReferenceFrameworkDirectories ()) {
 				var dir = rootDir.Combine (fxDir);
 				var frameworkList = dir.Combine ("RedistList", "FrameworkList.xml");
 				if (File.Exists (frameworkList))
-					return dir;
+					return ref_assemblies_folder = dir;
 			}
 			return null;
 		}
