@@ -430,7 +430,7 @@ namespace MonoDevelop.Core.Assemblies
 				}
 				foreach (var r in assembly.MainModule.AssemblyReferences) {
 					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.FullName.Equals ("System.Runtime")) {
+					if (r.Name.Equals ("System.Runtime")) {
 						referenceDict [fileName] = true; ;
 						return true;
 					}
