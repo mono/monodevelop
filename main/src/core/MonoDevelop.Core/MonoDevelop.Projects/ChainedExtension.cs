@@ -49,33 +49,8 @@ namespace MonoDevelop.Projects
 
 		internal static ChainedExtension FindNextImplementation (Type type, ChainedExtension next)
 		{
-			if (next == null)
-				return null;
-
-			if (!type.IsInstanceOfType (next))
-				return FindNextImplementation (type, next.nextInChain);
-
-			foreach (var method in type.GetMethods (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				if (method != null && method.IsVirtual && method.Name != "InitializeChain") {
-					var paramArray = method.GetParameters ();
-					var paramTypeArray = new Type [paramArray.Length];
-					for (int i = 0; i < paramArray.Length; ++i)
-						paramTypeArray [i] = paramArray [i].ParameterType;
-
-					var tm = next.GetType ().GetMethod (method.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, paramTypeArray, null);
-					if (tm == null)
-						continue;
-					if (tm.DeclaringType != type)
-						return next;
-				}
-			}
-
-			// Serializable fields and properties
-			foreach (var m in next.GetType ().GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				if (m.IsDefined (typeof (MonoDevelop.Core.Serialization.ItemPropertyAttribute)))
-					return next;
-			}
-
+			if (next == null || (type.IsInstanceOfType (next) && next.GetType () != type))
+				return next;
 			return FindNextImplementation (type, next.nextInChain);
 		}
 
