@@ -433,6 +433,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				goto case SpecialKey.Return;
 
 			case SpecialKey.Return:
+				if (descriptor.ModifierKeys != ModifierKeys.None && descriptor.ModifierKeys != ModifierKeys.Shift)
+					return KeyActions.CloseWindow;
 				if (completionDataList == null || completionDataList.Count == 0)
 					return KeyActions.CloseWindow;
 				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
