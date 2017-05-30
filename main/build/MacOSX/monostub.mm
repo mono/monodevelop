@@ -20,8 +20,9 @@ typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef void (* gobject_tracker_init) (void *libmono);
+extern int xamarin_create_classes_Xamarin_Mac ();
 
-void *libmono;
+void *libmono, *libxammac;
 
 static void
 exit_with_message (char *reason, char *argv0)
@@ -348,6 +349,18 @@ int main (int argc, char **argv)
 		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]];
 		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
+
+#if XM_REGISTRAR
+	libxammac = dlopen ("@loader_path/libxammac.dylib", RTLD_LAZY);
+
+	if (!libxammac) {
+		fprintf (stderr, "Failed to load libxammac.dylib: %s\n", dlerror ());
+		NSString *msg = @"This application requires Xamarin.Mac native library side-by-side.";
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
+	}
+
+	xamarin_create_classes_Xamarin_Mac ();
+#endif
 
 	try_load_gobject_tracker (libmono, argv [0]);
 

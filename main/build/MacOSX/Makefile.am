@@ -7,6 +7,9 @@ ADDINS=$(MAC_APP_LIB_DIR)/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
+EXTERNAL=../../external
+MONOSTUB_DEFINES=-DXM_REGISTRAR
+MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
 #SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
@@ -26,8 +29,8 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit
+monostub: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
+	clang++ $(MONOSTUB_DEFINES) -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm -framework AppKit -framework Quartz $(MONOSTUB_STATIC_LINK) -undefined dynamic_lookup
 #	gcc -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.m -framework AppKit -isysroot $(SDK_PATH)
 	cp monostub ../bin/MonoDevelop
 	cp monostub ../bin/mdtool
