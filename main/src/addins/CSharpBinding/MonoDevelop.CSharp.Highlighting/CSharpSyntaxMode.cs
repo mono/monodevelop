@@ -208,7 +208,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void Setup ()
 		{
-			defaultTextColor = CheckScopeExists ("");
+			defaultTextColor = "source.cs";
 			referenceTypeColor = CheckScopeExists (EditorThemeColors.UserTypes);
 			valueTypeColor = CheckScopeExists (EditorThemeColors.UserTypesValueTypes);
 			interfaceTypeColor = CheckScopeExists (EditorThemeColors.UserTypesInterfaces);
