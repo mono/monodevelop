@@ -235,11 +235,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window = new ParameterInformationWindow ();
 					window.Ext = textEditorExtension;
 					window.Widget = completionWidget;
-					window.BoundsChanged += (o, args) => {
-						if (window.Size.Width == lastW && window.Size.Height == lastH && wasCompletionWindowVisible == (CompletionWindowManager.Wnd?.Visible ?? false))
-							return;
-						PositionParameterInfoWindow ();
-					};
+					window.BoundsChanged += WindowBoundsChanged;
 					window.Hidden += delegate {
 						lastW = -1;
 						lastH = -1;
@@ -266,7 +262,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-	
+		static void WindowBoundsChanged (object sender, EventArgs e)
+		{
+			if (window.Size.Width == lastW && window.Size.Height == lastH && wasCompletionWindowVisible == (CompletionWindowManager.Wnd?.Visible ?? false))
+				return;
+			window.BoundsChanged -= WindowBoundsChanged;
+			PositionParameterInfoWindow ();
+			window.BoundsChanged += WindowBoundsChanged;
+		}
+
 		static async void PositionParameterInfoWindow ()
 		{
 			var geometry = window.Visible ? window.Screen.VisibleBounds : Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
