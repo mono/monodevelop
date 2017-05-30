@@ -1,10 +1,10 @@
 ﻿//
-// PackageReference.cs
+// ProjectPackageReferenceExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Frameworks;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
 
 namespace MonoDevelop.Packaging
 {
-	[ExportProjectItemType ("PackageReference")]
-	class PackageReference : ProjectItem
+	static class ProjectPackageReferenceExtensions
 	{
-		internal PackageReference (PackageIdentity packageIdentity)
+		internal static PackageReference ToNuGetPackageReference (this ProjectPackageReference packageReference)
 		{
-			Include = packageIdentity.Id;
-			Version = packageIdentity.Version.ToString ();
-		}
-
-		public PackageReference ()
-		{
-		}
-
-		[ItemProperty ("Version")]
-		public string Version { get; set; }
-
-		[ItemProperty ("PrivateAssets")]
-		public string PrivateAssets { get; set; }
-
-		internal NuGet.Packaging.PackageReference ToNuGetPackageReference ()
-		{
-			var identity = new PackageIdentity (Include, new NuGetVersion (Version));
-			return new NuGet.Packaging.PackageReference (identity, NuGetFramework.Parse ("any"));
+			var nugetPackageReference = packageReference.CreatePackageReference ();
+			return new PackageReference (nugetPackageReference.PackageIdentity, NuGetFramework.Parse ("any"));
 		}
 	}
 }
-

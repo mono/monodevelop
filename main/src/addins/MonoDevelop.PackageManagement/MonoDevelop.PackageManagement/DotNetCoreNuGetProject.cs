@@ -49,6 +49,11 @@ namespace MonoDevelop.PackageManagement
 		string projectName;
 		bool restoreRequired;
 
+		public DotNetCoreNuGetProject (DotNetProject project)
+			: this (project, project.GetDotNetCoreTargetFrameworks ())
+		{
+		}
+
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks)
@@ -92,9 +97,8 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			var targetFrameworks = project.GetDotNetCoreTargetFrameworks ();
-			if (targetFrameworks.Any ())
-				return new DotNetCoreNuGetProject (project, targetFrameworks);
+			if (project.MSBuildProject.Sdk != null)
+				return new DotNetCoreNuGetProject (project);
 
 			return null;
 		}

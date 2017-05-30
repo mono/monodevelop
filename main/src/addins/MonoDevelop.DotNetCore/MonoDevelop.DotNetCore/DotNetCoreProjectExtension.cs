@@ -91,7 +91,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && IsDotNetCoreProject ((DotNetProject)item);
+			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
 		protected override void Initialize ()
@@ -108,11 +108,15 @@ namespace MonoDevelop.DotNetCore
 			return base.OnGetSupportsFramework (framework);
 		}
 
-		bool IsDotNetCoreProject (DotNetProject project)
+		/// <summary>
+		/// Currently this project extension is enabled for all SDK style projects and
+		/// not just for .NET Core and .NET Standard projects. SDK project support
+		/// should be separated out from this extension so it can be enabled only for
+		/// .NET Core and .NET Standard projects.
+		/// </summary>
+		bool IsSdkProject (DotNetProject project)
 		{
-			var properties = project.MSBuildProject.EvaluatedProperties;
-			return properties.HasProperty ("TargetFramework") ||
-				properties.HasProperty ("TargetFrameworks");
+			return project.MSBuildProject.Sdk != null;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)

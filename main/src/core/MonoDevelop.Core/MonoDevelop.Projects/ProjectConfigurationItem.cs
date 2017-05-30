@@ -1,10 +1,10 @@
 ﻿//
-// PackageReferenceCollection.cs
+// ProjectConfigurationItem.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
-
-namespace MonoDevelop.Packaging
+namespace MonoDevelop.Projects
 {
-	[Serializable]
-	class PackageReferenceCollection : ProjectItemCollection<ProjectPackageReference>
+	// <ItemGroup Label="ProjectConfigurations">
+	//   <ProjectConfiguration Include="Debug|AnyCPU">
+	//     <Configuration>Debug</Configuration>
+	//     <Platform>AnyCPU</Platform>
+	//   </ProjectConfiguration>
+	//   <ProjectConfiguration Include="Release|AnyCPU">
+	//     <Configuration>Release</Configuration>
+	//     <Platform>AnyCPU</Platform>
+	//   </ProjectConfiguration>
+	// </ItemGroup>
+
+	[ExportProjectItemType ("ProjectConfiguration")]
+	class ProjectConfigurationItem : ProjectItem
 	{
 	}
 }
-
