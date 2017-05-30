@@ -545,11 +545,11 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			Dictionary<string,List<SystemAssembly>> assemblies = new Dictionary<string, List<SystemAssembly>> ();
 			Dictionary<string,SystemPackage> packs = new Dictionary<string, SystemPackage> ();
-			
-			IEnumerable<string> dirs = GetFrameworkFolders (fx);
 
-			foreach (AssemblyInfo assembly in fx.Assemblies) {
-				foreach (string dir in dirs) {
+			// Perf: Query GetFrameworkFolders in the outer loop, as it does IO every time it's queried
+			// and it's evaluated every time because it's done via an iterator.
+			foreach (string dir in GetFrameworkFolders (fx)) {
+				foreach (AssemblyInfo assembly in fx.Assemblies) {
 					string file = Path.Combine (dir, assembly.Name) + ".dll";
 					if (File.Exists (file)) {
 						if (assembly.Version == null && IsRunning) {

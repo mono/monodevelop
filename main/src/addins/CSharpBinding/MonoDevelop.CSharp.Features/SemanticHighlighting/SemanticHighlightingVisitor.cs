@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 	/// <summary>
 	/// C# Semantic highlighter.
 	/// </summary>
-	abstract class SemanticHighlightingVisitor<TColor> : CSharpSyntaxWalker
+	abstract class SemanticHighlightingVisitor<TColor> : CSharpSyntaxWalker where TColor : class
 	{
 		protected CancellationToken cancellationToken = default(CancellationToken);
 
@@ -521,8 +521,25 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 		public override void VisitParameter(Microsoft.CodeAnalysis.CSharp.Syntax.ParameterSyntax node)
 		{
 			base.VisitParameter(node);
-			Colorize(node.Identifier, parameterDeclarationColor);
+			if (parameterDeclarationColor == null) {
+				if (contextualKeywords.Contains (node.Identifier.Text))
+					Colorize (node.Identifier.Span, defaultTextColor);
+			} else {
+				Colorize (node.Identifier, parameterDeclarationColor);
+			}
 		}
+
+		static readonly HashSet<string> contextualKeywords = new HashSet<string> {
+			"add", "async", "await", "get", "partial", "remove", "set", "where", "yield", "from", "select", "group", "into", "orderby", "join", "let", "on", "equals", "by", "ascending", "descending", "global"
+		};
+
+		public override void VisitVariableDeclarator (VariableDeclaratorSyntax node)
+		{
+			base.VisitVariableDeclarator (node);
+			if (contextualKeywords.Contains (node.Identifier.Text))
+				Colorize (node.Identifier.Span, defaultTextColor);
+		}
+
 
 		public override void VisitIdentifierName(Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax node)
 		{
@@ -550,41 +567,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 					}
 				}
 			}
-			
-			switch (node.Identifier.Text) {
-				case "add":
-				case "async":
-				case "await":
-				case "get":
-				case "partial":
-				case "remove":
-				case "set":
-				case "where":
-				case "yield":
-				case "from":
-				case "select":
-				case "group":
-				case "into":
-				case "orderby":
-				case "join":
-				case "let":
-				case "on":
-				case "equals":
-				case "by":
-				case "ascending":
-				case "descending":
-					// Reset color of contextual keyword to default if it's used as an identifier.
-					// Note that this method does not get called when 'var' or 'dynamic' is used as a type,
-					// because types get highlighted with valueTypeColor/referenceTypeColor instead.
-					Colorize(node.Span, defaultTextColor);
-					break;
-				case "global":
-//					// Reset color of 'global' keyword to default unless its used as part of 'global::'.
-//					MemberType parentMemberType = identifier.Parent as MemberType;
-//					if (parentMemberType == null || !parentMemberType.IsDoubleColon)
-						Colorize(node.Span, defaultTextColor);
-					break;
+
+			if (contextualKeywords.Contains (node.Identifier.Text)) {
+				// Reset color of contextual keyword to default if it's used as an identifier.
+				// Note that this method does not get called when 'var' or 'dynamic' is used as a type,
+				// because types get highlighted with valueTypeColor/referenceTypeColor instead.
+				Colorize (node.Span, defaultTextColor);
+				return;
 			}
+
 			// "value" is handled in VisitIdentifierExpression()
 			// "alias" is handled in VisitExternAliasDeclaration()
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
@@ -741,6 +741,7 @@
       <Link>MonoDevelop.Projects.MSBuild\Resolver.cs</Link>
     </Compile>
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkVersion.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectConfigurationItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

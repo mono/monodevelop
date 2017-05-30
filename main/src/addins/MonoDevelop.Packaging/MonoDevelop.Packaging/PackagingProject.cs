@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -113,21 +114,10 @@ namespace MonoDevelop.Packaging
 
 		protected override bool OnSupportsFramework (TargetFramework framework)
 		{
-			bool result = base.OnSupportsFramework (framework);
-			if (result)
-				return result;
-
-			if (framework.Id.Identifier == ".NETFramework") {
-				Version frameworkVersion = null;
-				if (System.Version.TryParse (framework.Id.Version, out frameworkVersion)) {
-					return frameworkVersion.Major >= 4 && frameworkVersion.Minor >= 5;
-				}
-			}
-
-			return false;
+			return true;
 		}
 
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			return false;
 		}
@@ -286,12 +276,12 @@ namespace MonoDevelop.Packaging
 			get { return packageReferences; }
 		}
 
-		public PackageReference FindPackageReference (PackageIdentity packageIdentity)
+		public ProjectPackageReference FindPackageReference (PackageIdentity packageIdentity)
 		{
 			return PackageReferences.FirstOrDefault (packageReference => IsMatch (packageReference, packageIdentity));
 		}
 
-		bool IsMatch (PackageReference packageReference, PackageIdentity packageIdentity)
+		bool IsMatch (ProjectPackageReference packageReference, PackageIdentity packageIdentity)
 		{
 			return String.Equals (packageReference.Include, packageIdentity.Id, StringComparison.OrdinalIgnoreCase);
 		}
@@ -308,12 +298,12 @@ namespace MonoDevelop.Packaging
 			referenceAssemblyFrameworks.AddRange (frameworks.Select (fx => new ReferenceAssemblyFramework (fx)));
 		}
 
-		PackageReference GetNuGetBuildPackagingPackageReference ()
+		ProjectPackageReference GetNuGetBuildPackagingPackageReference ()
 		{
 			return PackageReferences.FirstOrDefault (packageReference => IsNuGetBuildPackagingReference (packageReference));
 		}
 
-		bool IsNuGetBuildPackagingReference (PackageReference packageReference)
+		bool IsNuGetBuildPackagingReference (ProjectPackageReference packageReference)
 		{
 			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, "NuGet.Build.Packaging");
 		}
@@ -335,7 +325,24 @@ namespace MonoDevelop.Packaging
 			if (packageIdentity == null)
 				return false;
 
-			return GlobalPackagesExtractor.IsMissing (solutionManager, packageIdentity);
+			if (GlobalPackagesExtractor.IsMissing (solutionManager, packageIdentity))
+				return true;
+
+			// This will trigger a restore if the generated MSBuild files are missing.
+			return !GeneratedNuGetMSBuildFilesExist ();
+		}
+
+		/// <summary>
+		/// Looks for generated .nuget.targets and .nuget.props files for the project.
+		/// </summary>
+		bool GeneratedNuGetMSBuildFilesExist ()
+		{
+			string targetsName = $"{Name}.nuget.targets";
+			string propsName = $"{Name}.nuget.props";
+			string targetsPath = Path.Combine (BaseDirectory, targetsName);
+			string propsPath = Path.Combine (BaseDirectory, propsName);
+
+			return File.Exists (targetsPath) && File.Exists (propsPath);
 		}
 
 		public async Task RestorePackagesAsync (

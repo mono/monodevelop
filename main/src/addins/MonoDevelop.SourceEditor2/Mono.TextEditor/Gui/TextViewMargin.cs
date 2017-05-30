@@ -148,6 +148,7 @@ namespace Mono.TextEditor
 				Accessible.RangeForIndex = GetRangeForIndex;
 				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
 				Accessible.RangeForPosition = GetRangeForPosition;
+				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
 			}
 
 			int GetInsertionPointLineNumber ()
@@ -194,7 +195,15 @@ namespace Mono.TextEditor
 
 			int GetLineForIndex (int index)
 			{
-				return Margin.Document.GetLineByOffset (index).LineNumber;
+				if (Margin?.Document == null) {
+					return 0;
+				}
+
+				var line = Margin.Document.GetLineByOffset (index);
+				if (line == null) {
+					return 0;
+				}
+				return line.LineNumber;
 			}
 
 			AtkCocoa.Range GetRangeForIndex (int index)
@@ -239,6 +248,11 @@ namespace Mono.TextEditor
 			{
 				// FIXME: this should be the range of text with the same style as index
 				return GetRangeForIndex (index);
+			}
+
+			AtkCocoa.Range GetVisibleCharacterRange ()
+			{
+				return new AtkCocoa.Range { Location = 0, Length = Margin.Document.Length };
 			}
 		}
 
