@@ -598,7 +598,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		internal ITreeBuilderContext BuilderContext {
+		public ITreeBuilderContext BuilderContext {
 			get {
 				return builderContext;
 			}

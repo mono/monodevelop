@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
-		internal override CodeCompletion.ICompletionWidget CompletionWidget {
+		public override CodeCompletion.ICompletionWidget CompletionWidget {
 			get {
 				return completionTextEditorExtension.CompletionWidget;
 			}

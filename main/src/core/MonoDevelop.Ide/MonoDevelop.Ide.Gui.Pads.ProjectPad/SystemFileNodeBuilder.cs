@@ -43,7 +43,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	class SystemFileNodeBuilder: TypeNodeBuilder
+	public class SystemFileNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(SystemFile); }
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	class SystemFileNodeCommandHandler: NodeCommandHandler
+	public class SystemFileNodeCommandHandler: NodeCommandHandler
 	{
 		public override void RenameItem (string newName)
 		{

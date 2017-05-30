@@ -139,10 +139,42 @@ namespace MonoDevelop.Core.Text
 	public class TextChangeEventArgs : EventArgs
 	{
 		public IReadOnlyList<TextChange> TextChanges { get; }
+		readonly ITextSource removedText;
+		readonly ITextSource insertedText;
+		readonly int offset;
+
+		/// <summary>
+		/// The text that was removed.
+		/// </summary>
+		public ITextSource RemovedText {
+			get { return removedText; }
+		}
+
+		/// <summary>
+		/// The text that was inserted.
+		/// </summary>
+		public ITextSource InsertedText {
+			get { return insertedText; }
+		}
+
+		/// <summary>
+		/// The offset at which the change occurs.
+		/// </summary>
+		public int Offset {
+			get { return offset; }
+		}
+
+		/// <summary>
+		/// The number of characters removed.
+		/// </summary>
+		public int RemovalLength {
+			get { return removedText.Length; }
+		}
 
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
+
 		[Obsolete ("Use TextChangeEventArgs (int offset, int newOffset, string removedText, string insertedText)")]
 		public TextChangeEventArgs (int offset, string removedText, string insertedText) : this(offset, offset, removedText, insertedText) {}
 
