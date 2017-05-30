@@ -102,10 +102,5 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			}
 		}
-
-		internal static void ApplyNewTree (TextEditor editor, int startOffset, bool exact, TextSpan span, Microsoft.CodeAnalysis.SyntaxTree syntaxTree, Microsoft.CodeAnalysis.SyntaxTree newTree)
-		{
-			editor.ApplyTextChanges (newTree.GetChanges (syntaxTree));
-		}
 	}
 }
