@@ -83,9 +83,9 @@ namespace MonoDevelop.Core
 
 			using (new TemporaryRegistration (new UnencodedValueStringTagProvider ())) {
 				// Custom tag models
-				Assert.AreEqual ("Mono &amp; .NET", StringParserService.Parse ("${UNENCODEDVALUE:encode}", model));
+				Assert.AreEqual ("Mono &amp; .NET", StringParserService.Parse ("${UNENCODEDVALUE:HtmlEncode}", model));
 				Assert.AreEqual ("mono & .net", StringParserService.Parse ("${UNENCODEDVALUE:lower}", model));
-				Assert.AreEqual ("MONO & .NET", StringParserService.Parse ("${UNENCODEDVALUE:upper}", model));
+				Assert.AreEqual ("MONO & .NET", StringParserService.Parse ("${UNENCODEDVALUE:UPPER}", model));
 
 				// Built-in string generators
 				Assert.That (StringParserService.Parse ("${YEAR:F4}", model), Is.StringEnding ("0000"));

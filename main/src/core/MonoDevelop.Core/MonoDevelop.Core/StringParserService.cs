@@ -169,6 +169,8 @@ namespace MonoDevelop.Core
 					return val.ToString ().ToUpper ();
 				if (format.Equals ("LOWER", StringComparison.OrdinalIgnoreCase))
 					return val.ToString ().ToLower ();
+				if (format.Equals ("HTMLENCODE", StringComparison.OrdinalIgnoreCase))
+					return System.Net.WebUtility.HtmlEncode (val.ToString ());
 			}
 			return val.ToString ();
 		}
