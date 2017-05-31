@@ -53,6 +53,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public const string Navigation = "com.MonoDevelop.TouchBarIdentifiers.Navigation";
 		public const string TabNavigation = "com.MonoDevelop.TouchBarIdentifiers.TabNavigation";
 		public const string GoToDeclaration = "com.MonoDevelop.TouchBarIdentifiers.GoToDeclaration";
+		public const string ToggleCodeComment = "com.Monodevelop.TouchBarIdentifiers.ToggleCodeComment";
 		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
 		public const string NewProject = "com.MonoDevelop.TouchBarIdentifiers.NewProject";
 	}
@@ -208,9 +209,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					touchBarRunButton.Image = runImg;
 				}
 			}
-			if (GoToDecButton != null && IdeApp.ProjectOperations != null) {
-				GoToDecButton.Enabled = IdeApp.ProjectOperations.CanJumpToDeclaration ();
-			}
+
 			if (SaveButton != null && IdeApp.Workbench != null) {
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					SaveButton.Enabled = IdeApp.Workbench.ActiveDocument.IsDirty;
@@ -233,6 +232,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				ids.Add (Id.BuildOnly);
 				ids.Add (Id.Navigation);
 				if (defaultsOnly) { return ids.ToArray (); }
+				ids.Add (Id.ToggleCodeComment);
 				ids.Add (Id.GoToDeclaration);
 				ids.Add (Id.TabNavigation);
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
@@ -394,10 +394,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				GoToDecButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration);
 				};
-				GoToDecButton.Enabled = false;
 				customDecItem.View = GoToDecButton;
 
 				item = customDecItem;
+				return item;
+			case Id.ToggleCodeComment:
+				var customCodeCommentItem = new NSCustomTouchBarItem (identifier);
+				var CodeCommentButton = NSButton.CreateButton ("//", () => { });
+				CodeCommentButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment);
+				};
+				customCodeCommentItem.View = CodeCommentButton;
+				item = customCodeCommentItem;
 				return item;
 			case Id.Save:
 				var customSaveItem = new NSCustomTouchBarItem (identifier);
