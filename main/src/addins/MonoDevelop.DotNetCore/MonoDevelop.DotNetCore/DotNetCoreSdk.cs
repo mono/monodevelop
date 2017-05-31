@@ -41,7 +41,7 @@ namespace MonoDevelop.DotNetCore
 
 			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
-			Versions = sdkPaths.SdkVersions;
+			Versions = sdkPaths.SdkVersions ?? new DotNetCoreVersion [0];
 
 			if (IsInstalled)
 				GetPreviewNetStandard20LibraryVersion ();
