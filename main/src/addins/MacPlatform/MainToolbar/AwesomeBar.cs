@@ -52,6 +52,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public const string BuildOnly = "com.MonoDevelop.TouchBarIdentifiers.BuildOnly";
 		public const string Navigation = "com.MonoDevelop.TouchBarIdentifiers.Navigation";
 		public const string TabNavigation = "com.MonoDevelop.TouchBarIdentifiers.TabNavigation";
+		public const string GoToDeclaration = "com.MonoDevelop.TouchBarIdentifiers.GoToDeclaration";
 		public const string RecentItems = "com.MonoDevelop.TouchBarIdentifiers.RecentItems";
 		public const string NewProject = "com.MonoDevelop.TouchBarIdentifiers.NewProject";
 	}
@@ -85,6 +86,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal RunButton RunButton { get; set; }
 		internal NSButton SaveButton { get; set; }
+		internal NSButton GoToDecButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
 		internal StatusBar StatusBar { get; set; }
 		internal SearchBar SearchBar { get; set; }
@@ -145,6 +147,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void UpdateTouchBar ()
 		{
+			if (Touchbar == null) { goto Rebuild; } //initialize on launch
+			if (RebuildTouchBar) { goto Rebuild; }
 
 			if (Touchbar == null) {goto Rebuild;} //initialize on launch
 			if (RebuildTouchBar)  {goto Rebuild;}
@@ -203,8 +207,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (touchBarRunButton != null) {
 					touchBarRunButton.Image = runImg;
 				}
-			}     
-			
+			}
+			if (GoToDecButton != null && IdeApp.ProjectOperations != null) {
+				GoToDecButton.Enabled = IdeApp.ProjectOperations.CanJumpToDeclaration ();
+			}
 			if (SaveButton != null && IdeApp.Workbench != null) {
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					SaveButton.Enabled = IdeApp.Workbench.ActiveDocument.IsDirty;
@@ -227,6 +233,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				ids.Add (Id.BuildOnly);
 				ids.Add (Id.Navigation);
 				if (defaultsOnly) { return ids.ToArray (); }
+				ids.Add (Id.GoToDeclaration);
 				ids.Add (Id.TabNavigation);
 				ids.Add ("NSTouchBarItemIdentifierFlexibleSpace");
 				ids.Add (Id.Save);
@@ -381,6 +388,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				return item;
 
+			case Id.GoToDeclaration:
+				var customDecItem = new NSCustomTouchBarItem (identifier);
+				GoToDecButton = NSButton.CreateButton ("Dec", () => { });
+				GoToDecButton.Activated += (sender, e) => {
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration);
+				};
+				GoToDecButton.Enabled = false;
+				customDecItem.View = GoToDecButton;
+
+				item = customDecItem;
+				return item;
 			case Id.Save:
 				var customSaveItem = new NSCustomTouchBarItem (identifier);
 
