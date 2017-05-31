@@ -76,7 +76,11 @@ namespace MonoDevelop.Projects.MSBuild
 							"Microsoft.Build.Framework",
 							"Microsoft.Build.Tasks.Core",
 							"Microsoft.Build.Utilities.Core",
-							"System.Reflection.Metadata"};
+							"System.Reflection.Metadata",
+							"Microsoft.Build.Tasks.v4.0",
+							"Microsoft.Build.Utilities.v4.0",
+							"Microsoft.Build.Tasks.v12.0",
+							"Microsoft.Build.Utilities.v12.0" };
 
 				var asmName = new AssemblyName (args.Name);
 				if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
