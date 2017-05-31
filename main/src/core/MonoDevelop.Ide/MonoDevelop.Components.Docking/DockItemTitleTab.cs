@@ -515,7 +515,8 @@ namespace MonoDevelop.Components.Docking
 			return false;
 		}
 
-		FocusWidget GetNextWidgetToFocus (FocusWidget widget, DirectionType direction) {
+		FocusWidget GetNextWidgetToFocus (FocusWidget widget, DirectionType direction)
+		{
 			FocusWidget nextSite;
 
 			switch (widget) {

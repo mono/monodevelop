@@ -1523,7 +1523,6 @@ namespace MonoDevelop.Ide.Gui
 				window.ToggleFullViewMode ();
 			};
 			TabsReordered += window.OnTabsReordered;
-			CanFocus = true;
 			
 			DoPopupMenu = window.ShowPopup;
 			Events |= Gdk.EventMask.FocusChangeMask | Gdk.EventMask.KeyPressMask;
