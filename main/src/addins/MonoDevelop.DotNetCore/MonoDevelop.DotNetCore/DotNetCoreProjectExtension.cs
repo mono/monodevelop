@@ -590,7 +590,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
-			return new DotNetCoreRunConfiguration (name);
+			return new DotNetCoreRunConfiguration (name, IsWeb);
 		}
 
 		/// <summary>

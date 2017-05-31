@@ -28,13 +28,13 @@ using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Edge.Settings;
 using System.Linq;
 using MonoDevelop.Ide.Codons;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
 	class MicrosoftTemplateEngineSolutionTemplate : SolutionTemplate
 	{
 		internal readonly ITemplateInfo templateInfo;
-		//TemplateExtensionNode template;
 
 		internal MicrosoftTemplateEngineSolutionTemplate (TemplateExtensionNode template, ITemplateInfo templateInfo)
 			: base (template.Id, template.OverrideName ?? templateInfo.Name, template.Icon)

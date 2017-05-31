@@ -40,10 +40,15 @@ namespace MonoDevelop.Ide.Templates
 			this.SolutionFileName = solutionFileName;
 			this.ProjectBasePath = projectBasePath;
 		}
+		IEnumerable<string> filesToOpen = new string [0];
+		public void SetFilesToOpen(IEnumerable<string> filesToOpen)
+		{
+			this.filesToOpen = filesToOpen;
+		}
 
 		public override IEnumerable<string> Actions {
 			get {
-				yield break;
+				return filesToOpen;
 			}
 		}
 
