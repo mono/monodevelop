@@ -3345,6 +3345,9 @@ namespace MonoDevelop.Projects
 								einfo.Action = ExpandedItemAction.AddUpdateItem;
 								items.Modified = true;
 								return;
+							} else if (buildItem == null) {
+								buildItem = new MSBuildItem (item.ItemName) { Update = item.Include };
+								msproject.AddItem (buildItem);
 							}
 						}
 					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {
