@@ -170,7 +170,10 @@ namespace MonoDevelop.DotNetCore
 
 		protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			if (Project.TargetFramework.IsNetCoreApp ()) {
+				return CreateDotNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			}
+			return base.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
@@ -228,7 +231,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
-			if (DotNetCoreRuntime.IsMissing) {
+			if (Project.TargetFramework.IsNetCoreApp () && DotNetCoreRuntime.IsMissing) {
 				return ShowCannotExecuteDotNetCoreApplicationDialog ();
 			}
 
@@ -266,7 +269,15 @@ namespace MonoDevelop.DotNetCore
 			return Project.ParentSolution.ExtendedProperties.Contains (ShownDotNetCoreSdkInstalledExtendedPropertyName);
 		}
 
-		protected override async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
+		{
+			if (Project.TargetFramework.IsNetCoreApp ()) {
+				return OnExecuteDotNetCoreCommand (monitor, context, configuration, executionCommand);
+			}
+			return base.OnExecuteCommand (monitor, context, configuration, executionCommand);
+		}
+
+		async Task OnExecuteDotNetCoreCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
 			bool externalConsole = false;
 			bool pauseConsole = false;
