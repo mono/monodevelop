@@ -5,6 +5,7 @@ open System.IO
 open System.Text
 open System.Collections.Generic
 open System.Linq
+open System.Threading
 open System.Xml
 open System.Xml.Linq
 open MonoDevelop.Core
@@ -119,6 +120,23 @@ module TooltipsXml =
                   |> singleOrDefault
         if par = null then None else Some((elementValue addStyle par).ToString())
 
+type FSharpXmlDocumentationProvider(xmlPath) =
+    inherit Microsoft.CodeAnalysis.XmlDocumentationProvider()
+    member x.XmlPath = xmlPath
+    member x.GetDocumentation documentationCommentId =
+        base.GetDocumentationForSymbol(documentationCommentId, Globalization.CultureInfo.CurrentCulture, CancellationToken.None)
+
+    override x.GetSourceStream(_cancellationToken) =
+        new FileStream(xmlPath, FileMode.Open, FileAccess.Read) :> Stream
+
+    override x.Equals(obj) =
+        obj 
+        |> Option.tryCast<FSharpXmlDocumentationProvider>
+        |> Option.bind(fun d -> Some (d.XmlPath = xmlPath))
+        |> Option.fill false
+            
+    override x.GetHashCode() = xmlPath.GetHashCode()
+
 module TooltipXmlDoc =
     ///lru based memoize
     let private memoize f n =
@@ -136,7 +154,7 @@ module TooltipXmlDoc =
     // @todo consider if this needs to be a weak table in some way
     let private xmlDocProvider =
         memoize (fun x ->
-            try Some (ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
+            try Some (FSharpXmlDocumentationProvider(x))
             with exn -> None) 20u
     
     let private tryExt file ext = Option.condition File.Exists (Path.ChangeExtension(file,ext))
@@ -318,7 +336,7 @@ module TooltipFormatting =
     // For 'FSharpXmlDoc.XmlDocFileSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
     | FSharpXmlDoc.XmlDocFileSignature(file,key) ->
         maybe {let! docReader = TooltipXmlDoc.findXmlDocProviderForAssembly file
-               let doc = docReader.GetDocumentation(key)
+               let doc = docReader.GetDocumentation key
                if String.IsNullOrEmpty doc then return! None else
                let parameterTip = TooltipsXml.getParameterTip Styles.simpleMarkup doc paramName
                return! parameterTip}

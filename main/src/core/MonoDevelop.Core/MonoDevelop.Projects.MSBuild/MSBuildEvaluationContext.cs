@@ -30,16 +30,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
-
-using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using System.Reflection;
 using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
-using System.Web.UI.WebControls;
 using MonoDevelop.Projects.Extensions;
+using System.Collections;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -47,7 +45,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		static Dictionary<string, string> envVars = new Dictionary<string, string> ();
-		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> ();
+		readonly HashSet<string> propertiesWithTransforms = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 		readonly List<string> propertiesWithTransformsSorted = new List<string> ();
 		List<ImportSearchPathExtensionNode> searchPaths;
 
@@ -59,8 +57,11 @@ namespace MonoDevelop.Projects.MSBuild
 		IMSBuildPropertyGroupEvaluated itemMetadata;
 		string directoryName;
 
+		string itemInclude;
 		string itemFile;
 		string recursiveDir;
+
+		public MSBuildEngineLogger Log { get; set; }
 
 		public MSBuildEvaluationContext ()
 		{
@@ -73,6 +74,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.propertiesWithTransforms = parentContext.propertiesWithTransforms;
 			this.propertiesWithTransformsSorted = parentContext.propertiesWithTransformsSorted;
 			this.ExistsEvaluationCache = parentContext.ExistsEvaluationCache;
+			this.Log = parentContext.Log;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
@@ -105,14 +107,6 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildProjectDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
 				InitEngineProperties (project.TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime, properties, out searchPaths);
-
-				if (project.Sdk != null) {
-					string sdksPath = MSBuildProjectService.FindSdkPath (project.TargetRuntime, project.GetReferencedSDKs ());
-
-					if (sdksPath != null) {
-						properties.Add ("MSBuildSDKsPath", MSBuildProjectService.ToMSBuildPath (null, sdksPath));
-					}
-				}
 			}
 		}
 
@@ -259,8 +253,9 @@ namespace MonoDevelop.Projects.MSBuild
 			return Platform.IsMac && path.Contains ("Mono.framework/External/xbuild");
 		}
 
-		internal void SetItemContext (string itemFile, string recursiveDir, IMSBuildPropertyGroupEvaluated metadata = null)
+		internal void SetItemContext (string itemInclude, string itemFile, string recursiveDir, IMSBuildPropertyGroupEvaluated metadata = null)
 		{
+			this.itemInclude = itemInclude;
 			this.itemFile = itemFile;
 			this.recursiveDir = recursiveDir;
 			this.itemMetadata = metadata;
@@ -268,6 +263,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void ClearItemContext ()
 		{
+			this.itemInclude = null;
 			this.itemFile = null;
 			this.recursiveDir = null;
 			this.itemMetadata = null;
@@ -291,6 +287,14 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string GetMetadataValue (string name)
 		{
+			// First of all check if the metadata is explicitly set
+			if (itemMetadata != null && itemMetadata.HasProperty (name))
+				return itemMetadata.GetValue (name, "");
+
+			// Now check for file metadata. We avoid a FromMSBuildPath call by checking after item metadata
+			if (itemFile == null && itemInclude != null)
+				itemFile = MSBuildProjectService.FromMSBuildPath (project.BaseDirectory, itemInclude);
+			
 			if (itemFile == null)
 				return "";
 
@@ -325,8 +329,6 @@ namespace MonoDevelop.Projects.MSBuild
 						return File.GetLastAccessTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
 					}
 				}
-				if (itemMetadata != null)
-					return itemMetadata.GetValue (name, "");
 			} catch (Exception ex) {
 				LoggingService.LogError ("Failure in MSBuild file", ex);
 				return "";
@@ -354,6 +356,8 @@ namespace MonoDevelop.Projects.MSBuild
 				parentContext.SetPropertyValue (name, value);
 			else
 				properties [name] = value;
+			if (Log != null)
+				LogPropertySet (name, value);
 		}
 
 		public void SetContextualPropertyValue (string name, string value)
@@ -532,6 +536,8 @@ namespace MonoDevelop.Projects.MSBuild
 			return ob != null ? Convert.ToString (ob, CultureInfo.InvariantCulture) : string.Empty;
 		}
 
+		static char [] dotOrBracket = { '.', '[' };
+
 		bool EvaluateProperty (string prop, bool ignorePropsWithTransforms, out object val, out bool needsItemEvaluation)
 		{
 			needsItemEvaluation = false;
@@ -550,12 +556,8 @@ namespace MonoDevelop.Projects.MSBuild
 				return EvaluateMember (type, null, prop, i, out val);
 			}
 
-			int n = prop.IndexOf ('[');
-			if (n > 0) {
-				return EvaluateStringAtIndex (prop, n, out val);
-			}
+			int n = prop.IndexOfAny (dotOrBracket);
 
-			n = prop.IndexOf ('.');
 			if (n == -1) {
 				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop));
 				val = GetPropertyValue (prop) ?? string.Empty;
@@ -563,8 +565,23 @@ namespace MonoDevelop.Projects.MSBuild
 			} else {
 				var pn = prop.Substring (0, n);
 				val = GetPropertyValue (pn) ?? string.Empty;
-				return EvaluateMember (typeof(string), val, prop, n + 1, out val);
+				return EvaluateMemberOrIndexer (typeof (string), val, prop, n, out val);
 			}
+		}
+
+		bool EvaluateMemberOrIndexer (Type type, object instance, string str, int i, out object val)
+		{
+			// Position in string is either a '.' or a '['.
+
+			val = null;
+			if (i >= str.Length)
+				return false;
+			if (str [i] == '.') {
+				return EvaluateMember (type, instance, str, i + 1, out val);
+			} else if (str [i] == '[') {
+				return EvaluateIndexer (type, instance, str, i, out val);
+			}
+			return false;
 		}
 
 		internal bool EvaluateMember (Type type, object instance, string str, int i, out object val)
@@ -611,11 +628,37 @@ namespace MonoDevelop.Projects.MSBuild
 					return false;
 				}
 			}
-			if (j < str.Length && str[j] == '.') {
+			if (j < str.Length) {
 				// Chained member invocation
 				if (val == null)
 					return false;
-				return EvaluateMember (val.GetType (), val, str, j + 1, out val);
+				return EvaluateMemberOrIndexer (val.GetType (), val, str, j, out val);
+			}
+			return true;
+		}
+
+		bool EvaluateIndexer (Type type, object instance, string str, int i, out object val)
+		{
+			val = null;
+			object [] parameters;
+			i++;
+			if (!EvaluateParameters (str, ref i, out parameters))
+				return false;
+			if (parameters.Length != 1)
+				return false;
+			
+			var index = Convert.ToInt32 (parameters [0]);
+			if (instance is string) {
+				val = ((string)instance) [index];
+			}
+			else if (instance is IList array) {
+				val = array[index];
+			} else
+				return false;
+
+			if (++i < str.Length) {
+				// Chained member invocation
+				return EvaluateMemberOrIndexer (val.GetType (), val, str, i, out val);
 			}
 			return true;
 		}
@@ -687,7 +730,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static char[] parameterCloseChars = new[] { ',', ')' };
+		static char[] parameterCloseChars = new[] { ',', ')', ']' };
 		internal bool EvaluateParameters (string str, ref int i, out object[] parameters)
 		{
 			parameters = null;
@@ -697,10 +740,11 @@ namespace MonoDevelop.Projects.MSBuild
 				var j = FindClosingChar (str, i, parameterCloseChars);
 				if (j == -1)
 					return false;
-				
+
+				var foundListEnd = str [j] == ')' || str [j] == ']';
 				var arg = str.Substring (i, j - i).Trim ();
 
-				if (arg.Length == 0 && str [j] == ')' && list.Count == 0) {
+				if (arg.Length == 0 && foundListEnd && list.Count == 0) {
 					// Empty parameters list
 					parameters = new object [0];
 					i = j;
@@ -713,7 +757,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 				list.Add (Evaluate (arg));
 
-				if (str [j] == ')') {
+				if (foundListEnd) {
 					// End of parameters list
 					parameters = list.ToArray ();
 					i = j;
@@ -851,31 +895,6 @@ namespace MonoDevelop.Projects.MSBuild
 			return type.GetMember (memberName, flags | BindingFlags.Public | BindingFlags.IgnoreCase);
 		}
 
-		bool EvaluateStringAtIndex (string prop, int i, out object val)
-		{
-			val = null;
-
-			int j = prop.IndexOf (']');
-			if (j == -1)
-				return false;
-
-			if (j < prop.Length - 1 || j - i < 2)
-				return false;
-
-			string indexText = prop.Substring (i + 1, j - (i + 1));
-			int index = -1;
-			if (!int.TryParse (indexText, out index))
-				return false;
-
-			prop = prop.Substring (0, i);
-			string propertyValue = GetPropertyValue (prop) ?? string.Empty;
-			if (propertyValue.Length <= index)
-				return false;
-
-			val = propertyValue.Substring (index, 1);
-			return true;
-		}
-
 		static Tuple<Type, string []> [] supportedTypeMembers = {
 			Tuple.Create (typeof(System.Array), (string[]) null),
 			Tuple.Create (typeof(System.Byte), (string[]) null),
@@ -957,7 +976,7 @@ namespace MonoDevelop.Projects.MSBuild
 			int pc = 0;
 			while (i < str.Length) {
 				var c = str [i];
-				if (pc == 0 && closeChar.IndexOf (c) != -1)
+				if (pc == 0 && Array.IndexOf (closeChar, c) != -1)
 					return i;
 				if (c == '(' || c == '[')
 					pc++;
@@ -972,6 +991,8 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			return -1;
 		}
+
+		public string CustomFullDirectoryName { get; set; }
 
 		#region IExpressionContext implementation
 
@@ -988,6 +1009,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string FullDirectoryName {
 			get {
+				if (CustomFullDirectoryName != null)
+					return CustomFullDirectoryName;
 				if (FullFileName == String.Empty)
 					return null;
 				if (directoryName == null)
@@ -998,5 +1021,24 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		#endregion
+
+		void LogPropertySet (string key, string value)
+		{
+			if (Log.Flags.HasFlag (MSBuildLogFlags.Properties))
+				Log.LogMessage ($"Set Property: {key} = {value}");
+		}
+
+		public void Dump ()
+		{
+			var allProps = new HashSet<string> ();
+
+			MSBuildEvaluationContext ctx = this;
+			while (ctx != null) {
+				allProps.UnionWith (ctx.properties.Select (p => p.Key));
+				ctx = ctx.parentContext;
+			}
+			foreach (var v in allProps.OrderBy (s => s))
+				Log.LogMessage (string.Format ($"{v,-30} = {GetPropertyValue (v)}"));
+		}
 	}
 }

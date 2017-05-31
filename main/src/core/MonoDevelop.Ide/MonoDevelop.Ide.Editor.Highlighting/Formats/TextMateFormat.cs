@@ -477,10 +477,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			case "string":
 				return new PString (f.Value);
 			case "array":
-				return new PArray (new List<PObject> (f.Nodes ().OfType<XElement> ().Select (Convert)));
+				return new PArray (new List<PObject> (f.Elements ().Select (Convert)));
 			case "object":
 				var val = new PDictionary ();
-				foreach (var subElement in f.Nodes ().OfType<XElement> ()) {
+				foreach (var subElement in f.Elements ()) {
 					var name = subElement.Name.LocalName;
 					if (name == "item")
 						name = subElement.Attribute ("item").Value;

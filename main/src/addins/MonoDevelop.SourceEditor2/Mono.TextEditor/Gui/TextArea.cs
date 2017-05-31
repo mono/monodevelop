@@ -344,12 +344,15 @@ namespace Mono.TextEditor
 			textEditorData.Parent = editor;
 
 			iconMargin = new IconMargin (editor);
-			iconMargin.Accessible.Label = "Icon margin";
+			iconMargin.Accessible.Label = GettextCatalog.GetString ("Icon Margin");
+			iconMargin.Accessible.Help = GettextCatalog.GetString ("Icon margin contains breakpoints and bookmarks");
 			iconMargin.Accessible.Identifier = "TextArea.IconMargin";
 			iconMargin.Accessible.GtkParent = this;
 			Accessible.AddAccessibleElement (iconMargin.Accessible);
 
 			gutterMargin = new GutterMargin (editor);
+			gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
+			gutterMargin.Accessible.Help = GettextCatalog.GetString ("Shows the line numbers for the current file");
 			gutterMargin.Accessible.Identifier = "TextArea.GutterMargin";
 			gutterMargin.Accessible.GtkParent = this;
 			Accessible.AddAccessibleElement (gutterMargin.Accessible);
@@ -360,11 +363,15 @@ namespace Mono.TextEditor
 			Accessible.AddAccessibleElement (actionMargin.Accessible);
 
 			foldMarkerMargin = new FoldMarkerMargin (editor);
+			foldMarkerMargin.Accessible.Label = GettextCatalog.GetString ("Fold Margin");
+			foldMarkerMargin.Accessible.Help = GettextCatalog.GetString ("Shows method and class folds");
 			foldMarkerMargin.Accessible.Identifier = "TextArea.FoldMarkerMargin";
 			foldMarkerMargin.Accessible.GtkParent = this;
 			Accessible.AddAccessibleElement (foldMarkerMargin.Accessible);
 
 			textViewMargin = new TextViewMargin (editor);
+			textViewMargin.Accessible.Label = GettextCatalog.GetString ("Text Editor");
+			textViewMargin.Accessible.Help = GettextCatalog.GetString ("Edit the current file");
 			textViewMargin.Accessible.Identifier = "TextArea.TextViewMargin";
 			textViewMargin.Accessible.GtkParent = this;
 			Accessible.AddAccessibleElement (textViewMargin.Accessible);
@@ -3002,7 +3009,8 @@ namespace Mono.TextEditor
 		void OnDocumentStateChanged (object s, TextChangeEventArgs args)
 		{
 			HideTooltip ();
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
 				var end = editor.Document.OffsetToLineNumber (change.NewOffset + change.InsertionLength);
 				editor.Document.CommitMultipleLineUpdate (start, end);

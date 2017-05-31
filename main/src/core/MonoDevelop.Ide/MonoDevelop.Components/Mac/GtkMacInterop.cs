@@ -133,7 +133,7 @@ namespace MonoDevelop.Components.Mac
 				state |= Gdk.ModifierType.Mod1Mask;
 
 			var w = GetGtkWindow (ev.Window);
-			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, w != null ? w.GdkWindow : null);
+			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, w != null ? w.GdkWindow : null, (uint)(ev.Timestamp * 1000));
 		}
 
 

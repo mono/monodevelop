@@ -73,8 +73,9 @@ namespace XmlDocIdLib
             if (declaringTypeDef == null || declaringTypeDef.IsInterface)
                 return string.Empty;
 
-            foreach (TypeReference tempIfaceRef in declaringTypeDef.Interfaces)
+            foreach (InterfaceImplementation tempIface in declaringTypeDef.Interfaces)
             {
+                var tempIfaceRef = tempIface.InterfaceType;
                 // check whether this member name begins with interface name (plus generic arguments)
                 if (Member.Name.StartsWith(this.StripInterfaceName(tempIfaceRef.FullName)))
                 {

@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
@@ -31,6 +32,12 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Formatting;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting.Rules;
+using Roslyn.Utilities;
+using System.Threading;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -70,9 +77,13 @@ namespace MonoDevelop.CSharp.Formatting
 				var textPolicy = indent.DocumentContext.Project.Policies.Get<Ide.Gui.Content.TextStylePolicy> (indent.Editor.MimeType);
 				var optionSet = policy.CreateOptions (textPolicy);
 				var span = new TextSpan (lineStartOffset, formatCharsCount);
-				var doc = await Formatter.FormatAsync (indent.DocumentContext.AnalysisDocument, span, optionSet);
 
-				OnTheFlyFormatter.ApplyNewTree (indent.Editor, lineStartOffset, true, span, tree, await doc.GetSyntaxTreeAsync ());
+				var rules = new List<IFormattingRule> () { new PasteFormattingRule () };
+				rules.AddRange (Formatter.GetDefaultFormattingRules (indent.DocumentContext.AnalysisDocument));
+
+				var root = tree.GetRoot ();
+				var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), indent.DocumentContext.RoslynWorkspace, optionSet, rules, default(CancellationToken));
+				indent.Editor.ApplyTextChanges (changes);
 				return;
 			}
 			// Just correct the start line of the paste operation - the text is already indented.
@@ -101,6 +112,23 @@ namespace MonoDevelop.CSharp.Formatting
 
 		}
 
+		class PasteFormattingRule : AbstractFormattingRule
+		{
+			public override AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, NextOperation<AdjustNewLinesOperation> nextOperation)
+			{
+				if (currentToken.Parent != null) {
+					var currentTokenParentParent = currentToken.Parent.Parent;
+					if (currentToken.Kind () == SyntaxKind.OpenBraceToken && currentTokenParentParent != null &&
+						(currentTokenParentParent.Kind () == SyntaxKind.SimpleLambdaExpression ||
+						 currentTokenParentParent.Kind () == SyntaxKind.ParenthesizedLambdaExpression ||
+						 currentTokenParentParent.Kind () == SyntaxKind.AnonymousMethodExpression)) {
+						return FormattingOperations.CreateAdjustNewLinesOperation (0, AdjustNewLinesOption.PreserveLines);
+					}
+				}
+
+				return nextOperation.Invoke ();
+			}
+		}
 	}
 }
 

@@ -12,6 +12,9 @@
 	<ConditionType id="ProjectTypeId" type="MonoDevelop.Projects.Extensions.ProjectTypeIdCondition">
 		<Description>The id can be a project type guid or a flavor guid, or the corresponding type alias</Description>
 	</ConditionType>
+	<ConditionType id="AppliesTo" type="MonoDevelop.Projects.Extensions.AppliesToCondition">
+		<Description>Project capability expression.</Description>
+	</ConditionType>
 	<ConditionType id="SupportsTarget" type="MonoDevelop.Projects.Extensions.SupportsTargetCondition">
 		<Description>MSBuild Target that a project must have.</Description>
 	</ConditionType>

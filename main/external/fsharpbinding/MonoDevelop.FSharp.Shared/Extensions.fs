@@ -155,7 +155,7 @@ module FSharpSymbolExt =
 
         member x.UnAnnotate() =
             let rec realEntity (s:FSharpEntity) =
-                if s.IsFSharpAbbreviation
+                if s.IsFSharpAbbreviation && s.AbbreviatedType.HasTypeDefinition
                 then realEntity s.AbbreviatedType.TypeDefinition
                 else s
             realEntity x

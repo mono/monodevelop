@@ -315,19 +315,19 @@ namespace MonoDevelop.Xml.Editor
 				var list = new CompletionDataList ();
 				
 				//TODO: need to tweak semicolon insertion
-				list.Add ("apos").Description = "'";
-				list.Add ("quot").Description = "\"";
-				list.Add ("lt").Description = "<";
-				list.Add ("gt").Description = ">";
-				list.Add ("amp").Description = "&";
-				
+				list.Add (new BaseXmlCompletionData ("apos", "'"));
+				list.Add (new BaseXmlCompletionData ("quot", "\""));
+				list.Add (new BaseXmlCompletionData ("lt", "<"));
+				list.Add (new BaseXmlCompletionData ("gt", ">"));
+				list.Add (new BaseXmlCompletionData ("amp", "&"));
+
 				//not sure about these "completions". they're more like
 				//shortcuts than completions but they're pretty useful
-				list.Add ("'").CompletionText = "apos;";
-				list.Add ("\"").CompletionText = "quot;";
-				list.Add ("<").CompletionText = "lt;";
-				list.Add (">").CompletionText = "gt;";
-				list.Add ("&").CompletionText = "amp;";
+				list.Add (new BaseXmlCompletionData ("'") { CompletionText = "apos;" });
+				list.Add (new BaseXmlCompletionData ("\"") { CompletionText = "quot;" });
+				list.Add (new BaseXmlCompletionData ("<") { CompletionText = "lt;" });
+				list.Add (new BaseXmlCompletionData (">") { CompletionText = "gt;" });
+				list.Add (new BaseXmlCompletionData ("&") { CompletionText = "amp;" });
 				
 				var ecList = await GetEntityCompletions (token);
 				list.AddRange (ecList);
@@ -412,7 +412,7 @@ namespace MonoDevelop.Xml.Editor
 				var list = await GetElementCompletions (token);
 				if (completionContext.TriggerLine == 1 && completionContext.TriggerOffset == 1) {
 					var encoding = Editor.Encoding.WebName;
-					list.Add ($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>");
+					list.Add (new BaseXmlCompletionData($"?xml version=\"1.0\" encoding=\"{encoding}\" ?>"));
 				}
 				AddCloseTag (list, Tracker.Engine.Nodes);
 				return list.Count > 0 ? list : null;
@@ -622,8 +622,8 @@ namespace MonoDevelop.Xml.Editor
 				
 				if (elements.Count == 0) {
 					string name = el.Name.FullName;
-					completionList.Add ("/" + name + ">", Gtk.Stock.GoBack,
-					                    GettextCatalog.GetString ("Closing tag for '{0}'", name));
+					completionList.Add (new BaseXmlCompletionData("/" + name + ">", Gtk.Stock.GoBack,
+					                                              GettextCatalog.GetString ("Closing tag for '{0}'", name)));
 				} else {
 					foreach (XElement listEl in elements) {
 						if (listEl.Name == el.Name)
@@ -662,9 +662,9 @@ namespace MonoDevelop.Xml.Editor
 		/// </summary>
 		protected static void AddMiscBeginTags (CompletionDataList list)
 		{
-			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
+			list.Add (new BaseXmlCompletionData ("!--",  "md-literal", GettextCatalog.GetString ("Comment")));
 			list.AddKeyHandler (new IgnoreDashKeyHandler ());
-			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
+			list.Add (new BaseXmlCompletionData ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data")));
 		}
 
 		public override bool GetCompletionCommandOffset (out int cpos, out int wlen)

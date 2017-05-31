@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public override void Dispose ()
 		{
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
+			base.Dispose ();
 		}
 
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)

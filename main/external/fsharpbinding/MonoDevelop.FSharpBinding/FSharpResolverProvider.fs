@@ -33,6 +33,7 @@ type FSharpResolverProvider() =
                     (fun () ->
                     let doc = IdeApp.Workbench.GetDocument(filename)
                     let newVersion = doc.Editor.Version
+
                     if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
                     then
                         false
@@ -74,7 +75,7 @@ type FSharpResolverProvider() =
                         Symbols.getTrimmedTextSpanForDeclarations lastIdent symbolUse
                         |> Seq.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
                         |> System.Collections.Immutable.ImmutableArray.ToImmutableArray
-                    let roslynSymbol = Roslyn.FsharpSymbol (symbolUse, roslynLocs)
+                    let roslynSymbol = RoslynHelpers.FsharpSymbol (symbolUse, roslynLocs)
                     roslynSymbol :> _
                 | _ -> null
 

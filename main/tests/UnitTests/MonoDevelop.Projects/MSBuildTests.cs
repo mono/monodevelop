@@ -32,6 +32,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
 using MonoDevelop.Projects.MSBuild;
@@ -77,6 +78,31 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (solXml, File.ReadAllText (solFile));
 			Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+
+			sol.Dispose ();
+		}
+
+		[Test]
+		[TestCase (true)]
+		[TestCase (false)]
+		public async Task EvaluateUnknownPropertyDuringBuild (bool requiresMSBuild)
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var project = ((Project)sol.Items [0]);
+			project.RequiresMicrosoftBuild = requiresMSBuild;
+
+			var context = new TargetEvaluationContext ();
+			context.PropertiesToEvaluate.Add ("TestUnknownPropertyToEvaluate");
+
+			var res = await project.RunTarget (Util.GetMonitor (), "Build", project.Configurations [0].Selector, context);
+			Assert.IsNotNull (res);
+			Assert.IsNotNull (res.BuildResult);
+			Assert.AreEqual (0, res.BuildResult.ErrorCount);
+			Assert.AreEqual (0, res.BuildResult.WarningCount);
+			Assert.IsNull (res.Properties.GetValue ("TestUnknownPropertyToEvaluate"));
 
 			sol.Dispose ();
 		}
@@ -1194,6 +1220,48 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task GeneratedNuGetMSBuildFilesAreImportedWithDotNetCoreProject ()
+		{
+			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-disable-default-items.sln");
+			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
+			MSBuildProjectService.RegisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			FilePath baseIntermediateOutputPath = solFile.ParentDirectory.Combine ("dotnetcore-console", "obj");
+			string projectFileName = "dotnetcore-disable-default-items.csproj";
+
+			try {
+				string nugetProps =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetPropsImported>True</NuGetPropsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				string nugetTargets =
+					"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+					"  <PropertyGroup>\r\n" +
+					"    <NuGetTargetsImported>True</NuGetTargetsImported>\r\n" +
+					"  </PropertyGroup>\r\n" +
+					"</Project>";
+
+				Directory.CreateDirectory (baseIntermediateOutputPath);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.props"), nugetProps);
+				File.WriteAllText (baseIntermediateOutputPath.Combine (projectFileName + ".nuget.g.targets"), nugetTargets);
+
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project)sol.Items [0];
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetPropsImported"));
+				Assert.AreEqual ("True", p.MSBuildProject.EvaluatedProperties.GetValue ("NuGetTargetsImported"));
+
+				sol.Dispose ();
+			} finally {
+				MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdksPath);
+			}
+		}
+
+		[Test]
 		public async Task SaveProjectWithWildcards ()
 		{
 			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
@@ -1540,6 +1608,45 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that the C# file build action can be changed to None with globs:
+		///
+		/// None Include="**/*"
+		/// None Remove="**/*.cs"
+		/// Compile Include="**/*.cs"
+		/// </summary>
+		[Test]
+		public async Task CSharpFileBuildActionChangedToNone ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-none-wildcard.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				// Changing the Program.cs file to None should result in the following
+				// being added:
+				//
+				// <Compile Remove="Program.cs" />
+				// <None Include="Program.cs" />
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()
@@ -1549,7 +1656,7 @@ namespace MonoDevelop.Projects
 			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var mp = (Project)sol.Items [0];
-			Assert.AreEqual (6, mp.Files.Count);
+			Assert.AreEqual (7, mp.Files.Count);
 
 			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_1.png");
 			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_2.png");
@@ -1613,6 +1720,25 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("t2.dat", f2.Link.ToString ());
 
 			sol.Dispose ();
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcardLinks4 ()
+		{
+			// %(RecursiveDir) is empty when used in a non-recursive include with a single file
+
+			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var mp = (Project)sol.Items [0];
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "other.rst");
+
+			Assert.IsNotNull(f);
+			Assert.AreEqual("other.rst", f.Link.ToString());
+
+			sol.Dispose();
 		}
 
 		/// <summary>
@@ -2392,8 +2518,14 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Ignore]
 		public async Task BuildDotNetCoreProjectWithImportUsingMSBuildSDKsPathProperty ()
 		{
+			// This test is being ignored for now because relying on MSBuildSDKsPath is not entirely correct,
+			// the correct approach is to use the Sdk attribute in the import.
+			// In any case this currently works for web projects because MSBuildSDKsPath ends being resolved
+			// to the Mono's msbuild dir, which has the web targets.
+
 			FilePath solFile = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-msbuildsdkspath-import.sln");
 
 			FilePath sdksPath = solFile.ParentDirectory.Combine ("Sdks");
@@ -2441,7 +2573,7 @@ namespace MonoDevelop.Projects
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
 			};
-			var res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			var res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
@@ -2472,7 +2604,7 @@ namespace MonoDevelop.Projects
 			p.DefaultConfiguration = new DotNetProjectConfiguration ("Debug") {
 				OutputAssembly = p.BaseDirectory.Combine ("bin", "test.dll")
 			};
-			var res = await p.RunTarget (Util.GetMonitor (), "Clean", ConfigurationSelector.Default);
+			var res = await p.RunTarget (Util.GetMonitor (false), "Clean", ConfigurationSelector.Default);
 
 			var pr = ProjectReference.CreateProjectReference ((DotNetProject)dotNetCoreProject);
 			pr.ReferenceOutputAssembly = false;
@@ -2480,10 +2612,83 @@ namespace MonoDevelop.Projects
 			p.References.Add (pr);
 			await p.SaveAsync (Util.GetMonitor ());
 
-			res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			res = await p.RunTarget (Util.GetMonitor (false), "Build", ConfigurationSelector.Default);
 			var buildResult = res.BuildResult;
 
 			Assert.AreEqual (0, buildResult.Errors.Count);
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that the first target framework is used to evaluate the project.
+		/// </summary>
+		[Test]
+		public async Task LoadDotNetCoreProjectWithMultipleTargetFrameworks ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreMultiTargetFramework", "DotNetCoreMultiTargetFramework.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project)sol.Items [0];
+			var capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			await p.ReevaluateProject (Util.GetMonitor ());
+
+			capabilities = p.GetProjectCapabilities ().ToList ();
+
+			Assert.That (capabilities, Contains.Item ("TestCapabilityNetStandard"));
+			Assert.That (capabilities, Has.None.EqualTo ("TestCapabilityNetCoreApp"));
+
+			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Tests that files generated from .resx files for .NET Core and .NET Standard
+		/// projects use "typeof(Resources).GetTypeInfo().Assembly" instead of
+		/// "typeof(Resources).Assembly". Without the GetTypeInfo the project will not
+		/// compile with NET Core below version 2.0
+		/// </summary>
+		[Test]
+		[TestCase ("DotNetCoreProject")]
+		[TestCase ("NetStandardProject")]
+		[Platform (Exclude = "Win")]
+		public async Task BuildDotNetCoreProjectAfterGeneratingResources (string projectName)
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreResources", "DotNetCoreResources.sln");
+
+			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items.FirstOrDefault (item => item.Name == projectName);
+			p.RequiresMicrosoftBuild = true;
+
+			var resourceFile = p.Files.FirstOrDefault (f => f.FilePath.FileName == "Resources.resx");
+
+			var customToolResult = new SingleFileCustomToolResult ();
+			await ResXFileCodeGenerator.GenerateFile (resourceFile, customToolResult, true);
+			Assert.IsTrue (customToolResult.Success);
+
+			// Running a restore for a .NET Core project can take a long time if
+			// no packages are cached. So instead we just check the generated resource file.
+			//var res = await p.RunTarget (Util.GetMonitor (), "Restore", ConfigurationSelector.Default);
+			//Assert.AreEqual (0, res.BuildResult.Errors.Count);
+
+			//res = await p.RunTarget (Util.GetMonitor (), "Build", ConfigurationSelector.Default);
+			//Assert.AreEqual (0, res.BuildResult.Errors.Count);
+
+			var generatedResourceFile = resourceFile.FilePath.ChangeExtension (".Designer.cs");
+
+			bool foundLine = false;
+			foreach (string line in File.ReadAllLines (generatedResourceFile)) {
+				if (line.Contains ("typeof")) {
+					string lineWithoutSpaces = line.Replace (" ", "");
+					foundLine = lineWithoutSpaces.EndsWith ("typeof(Resources).GetTypeInfo().Assembly);", StringComparison.Ordinal);
+					break;
+				}
+			}
+
+			Assert.IsTrue (foundLine);
 
 			sol.Dispose ();
 		}

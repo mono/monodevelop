@@ -302,7 +302,10 @@
     <Compile Include="MonoDevelop.Projects\MSBuildLoggerTests.cs" />
     <Compile Include="MonoDevelop.Core\MonoExecutionParametersTests.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSearchPathTests.cs" />
+    <Compile Include="MonoDevelop.Projects\SdkVersionTests.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -328,6 +331,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
     <Folder Include="MonoDevelop.Components.PropertyGrid\" />
+    <Folder Include="MonoDevelop.Core.Assemblies\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -41,6 +41,7 @@ using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.CSharpBinding
 	{
 		const string eolMarker = "\n";
 
-		internal static TestViewContent Create (string input, Ide.Editor.ITextEditorOptions options = null)
+		internal static TestViewContent Create (string input, Ide.Editor.ITextEditorOptions options = null, bool createWithProject = false)
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -140,6 +141,14 @@ namespace MonoDevelop.CSharpBinding
 			if (foldSegments.Count > 0)
 				content.Data.SetFoldings (foldSegments);
 
+			if (createWithProject) {
+				var project = Services.ProjectService.CreateProject ("C#");
+				project.Name = "test";
+				project.FileName = "test.csproj";
+				project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile));
+				project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
+				doc.SetProject (project);
+			}
 			return content;
 		}
 
@@ -444,6 +453,43 @@ $void Bar ()
 	}
 }
 ", content.GetContent<CSharpTextEditorIndentation> ());
+		}
+
+		/// <summary>
+		/// Bug 55907 - switch case does not auto-indent correctly
+		/// </summary>
+		[Test]
+		public void TestBug55907 ()
+		{
+			var content = Create (@"
+class Foo 
+{
+	void Bar ()
+	{
+		switch (foo) {
+			case 5:
+				break;
+				case 12:$
+		}
+	}
+}
+", createWithProject: true);
+			var indent = content.GetTextEditorData ().GetContent<CSharpTextEditorIndentation> ();
+			indent.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)':', ':', Gdk.ModifierType.None));
+
+			CheckOutput (content.Data, @"
+class Foo 
+{
+	void Bar ()
+	{
+		switch (foo) {
+			case 5:
+				break;
+			case 12:$
+		}
+	}
+}
+", indent);
 		}
 
 	}

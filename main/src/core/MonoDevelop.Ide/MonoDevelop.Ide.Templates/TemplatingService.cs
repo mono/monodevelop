@@ -109,18 +109,23 @@ namespace MonoDevelop.Ide.Templates
 			return templateCategorizer.GetCategorizedTemplates ();
 		}
 
-		internal SolutionTemplate GetTemplate (string templateId)
+		internal SolutionTemplate GetTemplate (IEnumerable<TemplateCategory> categories, string templateId)
 		{
-			return GetTemplate (template => template.Id == templateId, category => true, category => true);
+			return GetTemplate (
+				categories,
+				template => template.Id == templateId,
+				category => true,
+				category => true);
 		}
 
 		internal SolutionTemplate GetTemplate (
+			IEnumerable<TemplateCategory> categories,
 			Func<SolutionTemplate, bool> isTemplateMatch,
 			Func<TemplateCategory, bool> isTopLevelCategoryMatch,
 			Func<TemplateCategory, bool> isSecondLevelCategoryMatch)
 		{
 			Predicate<SolutionTemplate> predicate = (t) => isTemplateMatch (t);
-			foreach (TemplateCategory topLevelCategory in GetProjectTemplateCategories ().Where (isTopLevelCategoryMatch)) {
+			foreach (TemplateCategory topLevelCategory in categories.Where (isTopLevelCategoryMatch)) {
 				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories.Where (isSecondLevelCategoryMatch)) {
 					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
 						foreach (SolutionTemplate template in thirdLevelCategory.Templates) {
@@ -198,9 +203,15 @@ namespace MonoDevelop.Ide.Templates
 
 		public IList<SolutionTemplate> GetTemplates ()
 		{
+			var categories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ();
+			return GetTemplates (categories);
+		}
+
+		internal IList<SolutionTemplate> GetTemplates (IEnumerable<TemplateCategory> categories)
+		{
 			try {
 				var gp = recentTemplates.GetItemsInGroup (templateGroup);
-				return gp.Select (FromRecentItem).Where (t => t != null).ToList ();
+				return gp.Select (item => FromRecentItem (categories, item)).Where (t => t != null).ToList ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't get recent templates list.", e);
 				return new List<SolutionTemplate> ();
@@ -237,7 +248,7 @@ namespace MonoDevelop.Ide.Templates
 			return new RecentItem (uri, mime, templateGroup) { Private = template.Name };
 		}
 
-		SolutionTemplate FromRecentItem (RecentItem item)
+		SolutionTemplate FromRecentItem (IEnumerable<TemplateCategory> categories, RecentItem item)
 		{
 			var templatePath = item.Uri.StartsWith (templateUriScheme, StringComparison.Ordinal) ? item.Uri.Substring (templateUriScheme.Length) : item.Uri;
 			var parts = templatePath.Split ('/');
@@ -246,6 +257,7 @@ namespace MonoDevelop.Ide.Templates
 
 			if (parts.Length > 1)
 				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+					categories,
 					(template) => template.Id == templateId,
 					(category) => parts.Length > 1 ? category.Id == parts[0] : true,
 					(category) => parts.Length > 2 ? category.Id == parts[1] : true
@@ -254,7 +266,7 @@ namespace MonoDevelop.Ide.Templates
 			// fallback to global template lookup if no category matched
 			// in this case the category is not guaranteed if a template is listed in more than one category
 			if (recentTemplate == null)
-				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (templateId);
+				recentTemplate = IdeApp.Services.TemplatingService.GetTemplate (categories, templateId);
 			return recentTemplate;
 		}
 

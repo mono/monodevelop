@@ -341,7 +341,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var data = TextEditorFactory.CreateNewDocument ();
 			data.Text = sb.ToString ();
 			data.TextChanged += delegate(object sender, MonoDevelop.Core.Text.TextChangeEventArgs e) {
-				foreach (var change in e.TextChanges) {
+				for (int i = 0; i < e.TextChanges.Count; ++i) {
+					var change = e.TextChanges[i];
 					int delta = change.InsertionLength - change.RemovalLength;
 
 					foreach (var link in result.TextLinks) {

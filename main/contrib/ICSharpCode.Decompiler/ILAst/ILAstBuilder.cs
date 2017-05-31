@@ -461,7 +461,7 @@ namespace ICSharpCode.Decompiler.ILAst
 			}
 			
 			// Split and convert the normal local variables
-			ConvertLocalVariables(body);
+			ConvertLocalVariables(body, methodDef);
 			
 			// Convert branch targets to labels
 			foreach(ByteCode byteCode in body) {
@@ -523,7 +523,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		/// If possible, separates local variables into several independent variables.
 		/// It should undo any compilers merging.
 		/// </summary>
-		void ConvertLocalVariables(List<ByteCode> body)
+		void ConvertLocalVariables(List<ByteCode> body, MethodDefinition mdef)
 		{
 			foreach(VariableDefinition varDef in methodDef.Body.Variables) {
 				
@@ -536,10 +536,13 @@ namespace ICSharpCode.Decompiler.ILAst
 				// If the variable is pinned, use single variable.
 				// If any of the uses is from unknown definition, use single variable
 				// If any of the uses is ldloca with a nondeterministic usage pattern, use  single variable
-				if (!optimize || varDef.IsPinned || uses.Any(b => b.VariablesBefore[varDef.Index].UnknownDefinition || (b.Code == ILCode.Ldloca && !IsDeterministicLdloca(b)))) {				
+				if (!optimize || varDef.IsPinned || uses.Any(b => b.VariablesBefore[varDef.Index].UnknownDefinition || (b.Code == ILCode.Ldloca && !IsDeterministicLdloca(b)))) {
+					string varName;
+					if (!mdef.DebugInformation.TryGetName (varDef, out varName))
+						varName = "var_" + varDef.Index;
 					newVars = new List<VariableInfo>(1) { new VariableInfo() {
 						Variable = new ILVariable() {
-							Name = string.IsNullOrEmpty(varDef.Name) ? "var_" + varDef.Index : varDef.Name,
+							Name = varName,
 							Type = varDef.IsPinned ? ((PinnedType)varDef.VariableType).ElementType : varDef.VariableType,
 							OriginalVariable = varDef
 						},
@@ -547,10 +550,13 @@ namespace ICSharpCode.Decompiler.ILAst
 						Uses = uses
 					}};
 				} else {
+					string varName;
+					if (!mdef.DebugInformation.TryGetName (varDef, out varName))
+						varName = "var_" + varDef.Index;
 					// Create a new variable for each definition
 					newVars = defs.Select(def => new VariableInfo() {
 						Variable = new ILVariable() {
-							Name = (string.IsNullOrEmpty(varDef.Name) ? "var_" + varDef.Index : varDef.Name) + "_" + def.Offset.ToString("X2"),
+							Name = varName + "_" + def.Offset.ToString("X2"),
 							Type = varDef.VariableType,
 							OriginalVariable = varDef
 					    },

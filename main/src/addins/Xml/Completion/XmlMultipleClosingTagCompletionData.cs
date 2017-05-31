@@ -34,7 +34,7 @@ using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.Xml.Completion
 {
-	public class XmlMultipleClosingTagCompletionData : CompletionData
+	public class XmlMultipleClosingTagCompletionData : BaseXmlCompletionData
 	{
 		string name, description;
 		readonly XElement finalEl;

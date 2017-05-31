@@ -958,10 +958,19 @@ namespace MonoDevelop.Ide.Editor
 
 		bool isDisposed;
 
+		internal bool IsDisposed {
+			get {
+				return isDisposed;
+			}
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			if (isDisposed)
 				return;
+
+			// Break fileTypeCondition circular event handling reference.
+			fileTypeCondition = null;
 			isDisposed = true;
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;

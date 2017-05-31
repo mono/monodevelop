@@ -281,7 +281,8 @@ namespace Mono.TextEditor
 			if (Options.TabsToSpaces && document.IsTextSet && !document.IsInUndo) {
 				string tabReplacement = new string (' ', Options.TabSize);
 				var newChanges = new List<Microsoft.CodeAnalysis.Text.TextChange> ();
-				foreach (var change in e.TextChanges) {
+				for (int i = 0; i < e.TextChanges.Count; ++i) {
+					var change = e.TextChanges[i];
 					string replaceText = change.InsertedText.Text.Replace ("\t", tabReplacement);
 					if (replaceText.Length != change.InsertedText.Length) {
 						newChanges.Add (new Microsoft.CodeAnalysis.Text.TextChange (new Microsoft.CodeAnalysis.Text.TextSpan (change.NewOffset, change.InsertionLength), replaceText)); 
@@ -634,6 +635,7 @@ namespace Mono.TextEditor
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 			document.HeightChanged -= Document_HeightChanged;
+			document.Dispose ();
 			document = null;
 		}
 

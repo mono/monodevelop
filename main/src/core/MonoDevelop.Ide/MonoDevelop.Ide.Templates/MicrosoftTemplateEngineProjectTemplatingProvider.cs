@@ -41,6 +41,9 @@ using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using Microsoft.TemplateEngine.Abstractions;
+using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -70,24 +73,31 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (dontUpdateCache)//Avoid updating cache while scan paths are added during registration 
 				return;
+
+			// Prevent a TypeInitializationException in when calling SettingsLoader.Save when no templates
+			// are available, which throws an exception, by returning here. This prevents the MonoDevelop.Ide addin
+			// from loading. In practice this should not happen unless the .NET Core addin is disabled.
+			if (!TemplatesNodes.Any ())
+				return;
+
 			var paths = new Paths (environmentSettings);
 
 			//TODO: Uncomment this IF, but also add logic to invalidate/check if new templates were added from newly installed AddOns...
 			//if (!paths.Exists (paths.User.BaseDir) || !paths.Exists (paths.User.FirstRunCookie)) {
 			paths.DeleteDirectory (paths.User.BaseDir);//Delete cache
-			var _templateCache = new TemplateCache (environmentSettings);
+			var settingsLoader = (SettingsLoader)environmentSettings.SettingsLoader;
 			foreach (var scanPath in TemplatesNodes.Select (t => t.ScanPath).Distinct ()) {
-				_templateCache.Scan (scanPath);
+				settingsLoader.UserTemplateCache.Scan (scanPath);
 			}
-			_templateCache.WriteTemplateCaches ();
+			settingsLoader.Save ();
 			paths.WriteAllText (paths.User.FirstRunCookie, "");
 			//}
-			var templateInfos = templateCreator.List (false, (t, s) => new MatchInfo ()).ToDictionary (m => m.Info.Identity, m => m.Info);
+			var templateInfos = settingsLoader.UserTemplateCache.List (false, t => new MatchInfo ()).ToDictionary (m => m.Info.Identity, m => m.Info);
 			var newTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
 			foreach (var template in TemplatesNodes) {
 				ITemplateInfo templateInfo;
-				if (!templateInfos.TryGetValue (template.Id, out templateInfo)) {
-					LoggingService.LogWarning ("Template {0} not found.", template.Id);
+				if (!templateInfos.TryGetValue (template.TemplateId, out templateInfo)) {
+					LoggingService.LogWarning ("Template {0} not found.", template.TemplateId);
 					continue;
 				}
 				newTemplates.Add (new MicrosoftTemplateEngineSolutionTemplate (template, templateInfo));
@@ -133,16 +143,19 @@ namespace MonoDevelop.Ide.Templates
 
 		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
-			var templateInfo = ((MicrosoftTemplateEngineSolutionTemplate)template).templateInfo;
+			var solutionTemplate = (MicrosoftTemplateEngineSolutionTemplate)template;
+			var parameters = GetParameters (solutionTemplate, config);
+			var templateInfo = solutionTemplate.templateInfo;
 			var workspaceItems = new List<IWorkspaceFileObject> ();
 			var result = await templateCreator.InstantiateAsync (
 				templateInfo,
 				config.ProjectName,
 				config.GetValidProjectName (),
 				config.ProjectLocation,
-				new Dictionary<string, string> (),
+				parameters,
 				true,
-				false);
+				false,
+				null);
 			if (result.ResultInfo.PrimaryOutputs.Any ()) {
 				foreach (var res in result.ResultInfo.PrimaryOutputs) {
 					var fullPath = Path.Combine (config.ProjectLocation, res.Path);
@@ -166,6 +179,8 @@ namespace MonoDevelop.Ide.Templates
 			metadata ["Platform"] = string.Join(";", templateInfo.Classifications);
 			TemplateCounter.Inc (1, null, metadata);
 
+			MicrosoftTemplateEngineProcessedTemplateResult processResult;
+
 			if (parentFolder == null) {
 				var solution = new Solution ();
 				solution.SetLocation (config.SolutionLocation, config.SolutionName);
@@ -184,9 +199,64 @@ namespace MonoDevelop.Ide.Templates
 					}
 					solution.RootFolder.AddItem (item);
 				}
-				return new MicrosoftTemplateEngineProcessedTemplateResult (new [] { solution }, solution.FileName, config.ProjectLocation);
+				processResult = new MicrosoftTemplateEngineProcessedTemplateResult (new [] { solution }, solution.FileName, config.ProjectLocation);
 			} else {
-				return new MicrosoftTemplateEngineProcessedTemplateResult (workspaceItems.ToArray (), parentFolder.ParentSolution.FileName, config.ProjectLocation);
+				processResult = new MicrosoftTemplateEngineProcessedTemplateResult (workspaceItems.ToArray (), parentFolder.ParentSolution.FileName, config.ProjectLocation);
+			}
+
+			// Format all source files generated during the project creation
+			foreach (var p in workspaceItems.OfType<Project> ()) {
+				foreach (var file in p.Files)
+					await FormatFile (p, file.FilePath);
+			}
+
+			return processResult;
+		}
+
+		Dictionary<string, string> GetParameters (MicrosoftTemplateEngineSolutionTemplate template, NewProjectConfiguration config)
+		{
+			var parameters = new Dictionary<string, string> ();
+			if (!string.IsNullOrEmpty (template.DefaultParameters)) {
+				foreach (TemplateParameter parameter in GetValidParameters (template.DefaultParameters)) {
+					parameters [parameter.Name] = parameter.Value;
+				}
+			}
+
+			// If the template has no wizard then no extra parameters will be set.
+			if (template.HasWizard) {
+				var model = (IStringTagModel)config.Parameters;
+				foreach (ITemplateParameter parameter in template.templateInfo.Parameters) {
+					string parameterValue = (string)model.GetValue (parameter.Name);
+					if (parameterValue != null)
+						parameters [parameter.Name] = parameterValue;
+				}
+			}
+
+			return parameters;
+		}
+
+		static IEnumerable<TemplateParameter> GetValidParameters (string parameters)
+		{
+			return TemplateParameter.CreateParameters (parameters)
+				.Where (parameter => parameter.IsValid);
+		}
+
+		async Task FormatFile (Project p, FilePath file)
+		{
+			string mime = DesktopService.GetMimeTypeForUri (file);
+			if (mime == null)
+				return;
+
+			var formatter = CodeFormatterService.GetFormatter (mime);
+			if (formatter != null) {
+				try {
+					var content = await TextFileUtility.ReadAllTextAsync (file);
+					var formatted = formatter.FormatText (p.Policies, content.Text);
+					if (formatted != null)
+						TextFileUtility.WriteText (file, formatted, content.Encoding);
+				} catch (Exception ex) {
+					LoggingService.LogError ("File formatting failed", ex);
+				}
 			}
 		}
 

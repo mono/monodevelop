@@ -63,14 +63,14 @@ contexts:
         2: entity.name.tag.source.yaml
         3: source.yaml
       push:
-        - meta_content_scope: string.quoted.single.source.yaml
-        - match: '(?=^\s*(?:(-\s+\S*:?)|(?:\S+:)))'
+        - meta_scope: string.quoted.single.source.yaml
+        - match: '$'
           pop: true
     - match: '^\s*(\S*[\w\d_])(:)'
       captures:
         1: entity.name.tag.source.yaml
         2: source.yaml
       push:
-        - meta_content_scope: string.quoted.single.source.yaml
-        - match: '(?=^\s*(?:(-\s+\S*:?)|(?:\S+:)))'
+        - meta_scope: string.quoted.single.source.yaml
+        - match: '$'
           pop: true

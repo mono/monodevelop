@@ -156,7 +156,7 @@ module FSharpSymbolExt =
 
         member x.UnAnnotate() =
             let rec realEntity (s:FSharpEntity) =
-                if s.IsFSharpAbbreviation
+                if s.IsFSharpAbbreviation && s.AbbreviatedType.HasTypeDefinition
                 then realEntity s.AbbreviatedType.TypeDefinition
                 else s
             realEntity x
@@ -249,3 +249,18 @@ module LoggingService =
     let logError format = log LoggingService.LogError format
     let logInfo format = log LoggingService.LogInfo format
     let logWarning format = log LoggingService.LogWarning format
+
+type RetryBuilder(max) = 
+  member x.Return(a) = a               // Enable 'return'
+  member x.Delay(f) = f                // Gets wrapped body and returns it (as it is)
+                                       // so that the body is passed to 'Run'
+  member x.Zero() = failwith "Zero"    // Support if .. then 
+  member x.Run(f) =                    // Gets function created by 'Delay'
+    let rec loop(n) = 
+      if n = 0 then failwith "Failed"  // Number of retries exceeded
+      else try f() with _ -> loop(n-1)
+    loop max
+
+[<AutoOpen>]
+module Retry =
+    let retry = RetryBuilder(3)

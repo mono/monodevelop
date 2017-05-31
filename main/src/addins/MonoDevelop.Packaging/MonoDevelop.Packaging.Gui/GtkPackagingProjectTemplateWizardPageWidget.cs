@@ -101,6 +101,10 @@ namespace MonoDevelop.Packaging.Gui
 
 		void PackageIdTextBoxChanged (object sender, EventArgs e)
 		{
+			// Use id as description by default.
+			if (wizardPage.Id == wizardPage.Description)
+				packageDescriptionTextBox.Text = packageIdTextBox.Text;
+
 			wizardPage.Id = packageIdTextBox.Text;
 
 			if (wizardPage.HasIdError ()) {

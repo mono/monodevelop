@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionData : IComparable
 	{
 		protected CompletionData () {}
-		
+
 		public virtual IconId Icon { get; set; }
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
 		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
-		
+
 		public CompletionData (string displayText, IconId icon, string description, string completionText)
 		{
 			this.DisplayText = displayText;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var currentWord = GetCurrentWord (window, descriptor);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
 		}
-		
+
 		public override string ToString ()
 		{
 			return string.Format ("[CompletionData: Icon={0}, DisplayText={1}, Description={2}, CompletionText={3}, DisplayFlags={4}]", Icon, DisplayText, Description, CompletionText, DisplayFlags);
@@ -150,30 +150,60 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual int CompareTo (object obj)
 		{
-			if (!(obj is CompletionData))
-				return 0;
-			return Compare (this, (CompletionData)obj);
+			return Compare (this, obj as CompletionData);
+		}
+
+		public static IComparer<CompletionData> Comparer { get; } = new CompletionDataComparer ();
+
+		private class CompletionDataComparer : IComparer<CompletionData>
+		{
+			int IComparer<CompletionData>.Compare (CompletionData a, CompletionData b)
+			{
+				if (a == b)
+					return 0;
+				if (a != null && b == null)
+					return -1;
+				if (a == null && b != null)
+					return 1;
+				return a.CompareTo (b);
+			}
 		}
 
 		public static int Compare (CompletionData a, CompletionData b)
 		{
-			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete)) ? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText) : (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
-			if (result == 0) {
-				var aIsImport = (a.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
-				var bIsImport = (b.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
-				if (!aIsImport && bIsImport)
-					return -1;
-				if (aIsImport && !bIsImport)
-					return 1;
-				if (aIsImport && bIsImport)
-					return StringComparer.Ordinal.Compare (((CompletionData)a).Description, ((CompletionData)b).Description);
-				var ca = a as CompletionData;
-				var cb = b as CompletionData;
-				if (ca != null && cb != null && !ca.Icon.IsNull && !cb.Icon.IsNull) {
-					return string.Compare(cb.Icon.Name, ca.Icon.Name, StringComparison.Ordinal);
-				}
-			}
-			return result;
+			if (a == b)
+				return 0;
+			if (a != null && b == null)
+				return -1;
+			if (a == null && b != null)
+				return 1;
+
+			bool aIsObsolete = (a.DisplayFlags & DisplayFlags.Obsolete) != 0;
+			bool bIsObsolete = (b.DisplayFlags & DisplayFlags.Obsolete) != 0;
+			if (!aIsObsolete && bIsObsolete)
+				return -1;
+			if (aIsObsolete && !bIsObsolete)
+				return 1;
+
+			var result = StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText);
+			if (result != 0)
+				return result;
+
+			var aIsImport = (a.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
+			var bIsImport = (b.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
+			if (!aIsImport && bIsImport)
+				return -1;
+			if (aIsImport && !bIsImport)
+				return 1;
+
+			result = StringComparer.Ordinal.Compare (a.Description, b.Description);
+			if (result != 0)
+				return result;
+
+			if (!a.Icon.IsNull && !b.Icon.IsNull)
+				return string.Compare (a.Icon.Name, b.Icon.Name, StringComparison.Ordinal);
+
+			return 0;
 		}
 
 		#endregion
@@ -192,13 +222,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
 
+		[Obsolete("Use OverloadGroupEquals and GetOverloadGroupHashCode")]
 		public virtual bool IsOverload (CompletionData other)
 		{
+			return true;
+		}
+
+		public virtual bool OverloadGroupEquals (CompletionData other)
+		{
+			if (!IsOverload (other))
+				return false;
 			return DisplayText == other.DisplayText;
 		}
 
+		public virtual int GetOverloadGroupHashCode ()
+		{
+			return DisplayText.GetHashCode ();
+		}
+
 		const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?\"'";
-		
+
 		public virtual bool IsCommitCharacter (char keyChar, string partialWord)
 		{
 			return commitChars.Contains (keyChar);

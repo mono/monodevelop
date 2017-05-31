@@ -116,7 +116,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void Editor_TextChanged (object sender, TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var startLine = Editor.GetLineByOffset (change.NewOffset);
 				int startLineOffset = startLine.Offset;
 

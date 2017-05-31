@@ -95,7 +95,8 @@ namespace Mono.TextEditor
 
 		public void TextReplaced (object sender, TextChangeEventArgs args)
 		{
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				if (change.RemovalLength > 0)
 					TextRemove (change.Offset, change.RemovalLength);
 				if (change.InsertionLength > 0)

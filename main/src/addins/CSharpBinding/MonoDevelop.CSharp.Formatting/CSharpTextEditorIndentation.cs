@@ -199,7 +199,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				stateTracker.ResetEngineToPosition (Editor, change.NewOffset);
 				if (wasInVerbatimString == null)
 					return;
@@ -219,7 +220,8 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			wasInVerbatimString = null;
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				var o = change.Offset + change.RemovalLength;
 				if (o < 0 || o + 1 > Editor.Length || change.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
 					continue;
@@ -769,6 +771,7 @@ namespace MonoDevelop.CSharp.Formatting
 			reIndent = false;
 			switch (charInserted) {
 			case '}':
+			case ':':
 			case ';':
 				reIndent = true;
 				break;

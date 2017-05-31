@@ -71,8 +71,12 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 				return true;
 			}
 
+			var analysisDoc = ctx.AnalysisDocument;
+			if (analysisDoc == null)
+				return false;
+			
 			// check that the user is not typing in a string literal or comment
-			var tree = ctx.AnalysisDocument.GetSyntaxTreeAsync (cancellationToken).Result;
+			var tree = analysisDoc.GetSyntaxTreeAsync (cancellationToken).Result;
 
 			return !tree.IsInNonUserCode (position, cancellationToken);
 		}

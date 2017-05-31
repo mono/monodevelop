@@ -82,7 +82,6 @@ namespace MonoDevelop.CodeActions
 			CancelQuickFixTimer ();
 			RefactoringPreviewTooltipWindow.HidePreviewTooltip ();
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
-			Editor.SelectionChanged -= HandleSelectionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
 			Editor.MouseMoved -= HandleBeginHover;
 			Editor.TextChanged -= Editor_TextChanged;
@@ -163,6 +162,10 @@ namespace MonoDevelop.CodeActions
 							var provider = cfp.GetCodeFixProvider ();
 							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
 								continue;
+
+							// These two delegates were factored out, as using them as lambdas in the inner loop creates more captures than declaring them here.
+							Func<Diagnostic, bool> providerIdsContain = d => provider.FixableDiagnosticIds.Contains (d.Id);
+							Action<Microsoft.CodeAnalysis.CodeActions.CodeAction, ImmutableArray<Diagnostic>> codeFixRegistration = (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, d, d[0].Location.SourceSpan));
 							try {
 								var groupedDiagnostics = diagnosticsAtCaret
 									.Concat (errorList.Select (em => em.Error.Tag)
@@ -173,12 +176,12 @@ namespace MonoDevelop.CodeActions
 										return CodeActionContainer.Empty;
 									var diagnosticSpan = g.Key;
 
-									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
+									var validDiagnostics = g.Where (providerIdsContain).ToImmutableArray ();
 									if (validDiagnostics.Length == 0)
 										continue;
 									if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.End)
 										continue;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, validDiagnostics, diagnosticSpan)), token));
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, codeFixRegistration, token));
 
 									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
 									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
@@ -199,6 +202,9 @@ namespace MonoDevelop.CodeActions
 						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).ConfigureAwait (false)) {
 							codeActions.Add (action);
 						}
+						if (token.IsCancellationRequested)
+							return CodeActionContainer.Empty;
+
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
@@ -371,7 +377,6 @@ namespace MonoDevelop.CodeActions
 		{
 			base.Initialize ();
 			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
-			Editor.SelectionChanged += HandleSelectionChanged;
 			Editor.MouseMoved += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;
@@ -381,7 +386,6 @@ namespace MonoDevelop.CodeActions
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
 		{
 			RemoveWidget ();
-			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
@@ -395,11 +399,6 @@ namespace MonoDevelop.CodeActions
 		void HandleBeginHover (object sender, EventArgs e)
 		{
 			CancelSmartTagPopupTimeout ();
-		}
-
-		void HandleSelectionChanged (object sender, EventArgs e)
-		{
-			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)

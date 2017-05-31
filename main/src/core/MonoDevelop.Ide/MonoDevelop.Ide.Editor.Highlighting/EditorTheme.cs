@@ -179,7 +179,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					return new FontColorStyle (foreground, background, fontStyle);
 			}
 
-			foreach (var setting in settings.Skip (1)) {
+			for (int i = 1; i < settings.Count; ++i) {
+				var setting = settings[i];
 				string compatibleScope = null;
 				int depth = 0;
 				if (IsValidScope (setting, scopeStack, ref compatibleScope, ref depth)) {
@@ -290,14 +291,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				ScopeStack = scope,
 				Foreground = color.Foreground,
 				Background = color.Background,
-				FontStyle = ConvertFontStyle (color.FontStyle)
+				FontStyle = ConvertFontStyle (color.FontStyle),
+				FontWeight = ConvertFontWeight (color.FontStyle)
 			};
+		}
+
+		private Xwt.Drawing.FontWeight ConvertFontWeight (string fontStyle)
+		{
+			if (fontStyle != null) {
+				if (fontStyle.Contains ("bold"))
+					return Xwt.Drawing.FontWeight.Bold;
+			}
+			return Xwt.Drawing.FontWeight.Normal;
 		}
 
 		FontStyle ConvertFontStyle (string fontStyle)
 		{
-			if (fontStyle == "italic")
-				return FontStyle.Italic;
+			if (fontStyle != null) {
+				if (fontStyle.Contains ("italic"))
+					return FontStyle.Italic;
+				if (fontStyle.Contains ("oblique"))
+					return FontStyle.Oblique;
+			}
 			return FontStyle.Normal;
 		}
 

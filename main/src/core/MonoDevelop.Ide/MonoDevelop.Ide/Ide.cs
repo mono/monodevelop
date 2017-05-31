@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
+		public static async void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
 			if (!files.Any ())
 				return;
@@ -331,37 +331,39 @@ namespace MonoDevelop.Ide
 			}
 			
 			var filteredFiles = new List<FileOpenInformation> ();
-			
-			//open the firsts sln/workspace file, and remove the others from the list
-		 	//FIXME: can we handle multiple slns?
-			bool foundSln = false;
+			bool closeCurrent = true;
+
 			foreach (var file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName) ||
 				    Services.ProjectService.IsSolutionItemFile (file.FileName)) {
-					if (!foundSln) {
-						try {
-							Workspace.OpenWorkspaceItem (file.FileName);
-							foundSln = true;
-						} catch (Exception ex) {
-							MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
-						}
+					try {
+						// Close the current solution, but only for the first solution we open.
+						// If more than one solution is specified in the list we want to open all them together.
+						await Workspace.OpenWorkspaceItem (file.FileName, closeCurrent);
+						closeCurrent = false;
+					} catch (Exception ex) {
+						MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
 					}
 				} else {
 					filteredFiles.Add (file);
 				}
 			}
-			
+
+			// Wait for active load operations to be finished (there might be a solution already being loaded
+			// when OpenFiles was called). This will ensure that files opened as part of the solution status
+			// restoration won't steal the focus from the files we are explicitly loading here.
+			await Workspace.CurrentWorkspaceLoadTask;
+
 			foreach (var file in filteredFiles) {
-				try {
-					Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options);
-				} catch (Exception ex) {
-					MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), ex);
-				}
+				Workbench.OpenDocument (file.FileName, null, file.Line, file.Column, file.Options).ContinueWith (t => {
+					if (t.IsFaulted)
+						MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), t.Exception);
+				}, TaskScheduler.FromCurrentSynchronizationContext ()).Ignore ();
 			}
-			
+
 			Workbench.Present ();
 		}
-		
+
 		static bool FileServiceErrorHandler (string message, Exception ex)
 		{
 			MessageService.ShowError (message, ex);

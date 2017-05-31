@@ -288,6 +288,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			set {
 			}
 		}
+		
+		public Func<AtkCocoa.Range> GetVisibleCharacterRange {
+			set {
+			}
+		}
 	}
 }
 

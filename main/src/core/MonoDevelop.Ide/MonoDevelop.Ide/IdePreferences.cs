@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide
 			protected override string OnGetValue ()
 			{
 				var style = base.OnGetValue ();
-				if (SyntaxHighlightingService.Styles.Contains (style))
+				if (SyntaxHighlightingService.ContainsStyle (style))
 					return style;
 
 				var defaultStyle = SyntaxHighlightingService.GetDefaultColorStyleName ();

@@ -11,7 +11,7 @@
     <RootNamespace>MonoDevelop.DotNetCore</RootNamespace>
     <AssemblyName>MonoDevelop.DotNetCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TemplatesVersion>1.0.0-beta1-20170223-126</TemplatesVersion>
+    <TemplatesVersion>1.0.0-beta2-20170505-222</TemplatesVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +66,8 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
       <HintPath>..\..\..\packages\Microsoft.TestPlatform.TranslationLayer.15.0.0\lib\net46\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,9 +77,6 @@
     <Compile Include="MonoDevelop.DotNetCore\DotNetCorePath.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreExecutionHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizard.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\SolutionExtensions.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\EmptyDirectoryRemover.cs" />
-    <Compile Include="MonoDevelop.DotNetCore.Templating\FileTemplateProcessor.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreNotInstalledDialog.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectFileRenamedHandler.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreProjectReloadMonitor.cs" />
@@ -97,7 +96,6 @@
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestProvider.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\IDotNetCoreTestRunner.cs" />
     <Compile Include="MonoDevelop.DotNetCore.UnitTesting\TestResultBuilder.cs" />
-    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSdkVersion.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCliToolReference.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreRuntimeOptionsPanelWidget.cs" />
@@ -142,6 +140,12 @@
     <Compile Include="MonoDevelop.DotNetCore\MSBuildSdks.cs" />
     <Compile Include="MonoDevelop.DotNetCore\DotNetCoreSystemInformation.cs" />
     <Compile Include="MonoDevelop.DotNetCore.NodeBuilders\DotNetCoreProjectNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreVersion.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\DotNetCoreRuntimeVersions.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Templating\DotNetCoreProjectTemplateWizardPage.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
@@ -259,6 +263,78 @@
     <EmbeddedResource Include="images\project-netcore-console-template~dark%402x.png">
       <LogicalName>project-netcore-console-template~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32.png">
+      <LogicalName>project-netcore-library-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32%402x.png">
+      <LogicalName>project-netcore-library-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark.png">
+      <LogicalName>project-netcore-library-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark%402x.png">
+      <LogicalName>project-netcore-library-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel.png">
+      <LogicalName>project-netcore-library-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel%402x.png">
+      <LogicalName>project-netcore-library-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~sel.png">
+      <LogicalName>project-netcore-library-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-32~sel%402x.png">
+      <LogicalName>project-netcore-library-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template.png">
+      <LogicalName>project-netcore-library-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template%402x.png">
+      <LogicalName>project-netcore-library-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template~dark.png">
+      <LogicalName>project-netcore-library-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-netcore-library-template~dark%402x.png">
+      <LogicalName>project-netcore-library-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32.png">
+      <LogicalName>project-crossplatform-library-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32%402x.png">
+      <LogicalName>project-crossplatform-library-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark.png">
+      <LogicalName>project-crossplatform-library-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark%402x.png">
+      <LogicalName>project-crossplatform-library-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark~sel.png">
+      <LogicalName>project-crossplatform-library-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~dark~sel%402x.png">
+      <LogicalName>project-crossplatform-library-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~sel.png">
+      <LogicalName>project-crossplatform-library-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-32~sel%402x.png">
+      <LogicalName>project-crossplatform-library-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template.png">
+      <LogicalName>project-crossplatform-library-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template%402x.png">
+      <LogicalName>project-crossplatform-library-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template~dark.png">
+      <LogicalName>project-crossplatform-library-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-crossplatform-library-template~dark%402x.png">
+      <LogicalName>project-crossplatform-library-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="images\project-netcore-template.png">
       <LogicalName>project-netcore-template.png</LogicalName>
     </EmbeddedResource>
@@ -307,6 +383,21 @@
     <EmbeddedResource Include="images\project-netcore-test-template~dark%402x.png">
       <LogicalName>project-netcore-test-template~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore.png">
+      <LogicalName>preview-netcore.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore%402x.png">
+      <LogicalName>preview-netcore@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore~dark.png">
+      <LogicalName>preview-netcore~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\preview-netcore~dark%402x.png">
+      <LogicalName>preview-netcore~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
@@ -321,10 +412,19 @@
        <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.1.x">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
+       <NuGetPackage Include="Microsoft.DotNet.Common.ProjectTemplates.2.0">
+         <Version>$(TemplatesVersion)</Version>
+       </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.1.x">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
+       <NuGetPackage Include="Microsoft.DotNet.Test.ProjectTemplates.2.0">
+         <Version>$(TemplatesVersion)</Version>
+       </NuGetPackage>
        <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
+         <Version>$(TemplatesVersion)</Version>
+       </NuGetPackage>
+       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
          <Version>$(TemplatesVersion)</Version>
        </NuGetPackage>
      </ItemGroup>

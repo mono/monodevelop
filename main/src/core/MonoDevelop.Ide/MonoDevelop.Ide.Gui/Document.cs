@@ -169,14 +169,11 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			window.ViewContent.ContentNameChanged += delegate {
-				UnsubscribeAnalysisDocument ();
-				UnloadAdhocProject();
-			};
-			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
+			window.ViewContent.ContentNameChanged += ReloadAnalysisDocumentHandler;
+			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
 		}
 
-		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
+		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
 		{
 			UnsubscribeAnalysisDocument ();
 			UnloadAdhocProject ();
@@ -595,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
 			window = null;
 
@@ -904,7 +901,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.WorkspaceChanged -= HandleRoslynProjectReload;
+				ws.WorkspaceChanged -= HandleRoslynProjectChange;
 			}
 		}
 
@@ -912,13 +909,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
-				ws.WorkspaceChanged += HandleRoslynProjectReload;
+				ws.WorkspaceChanged += HandleRoslynProjectChange;
 			}
 		}
 
-		void HandleRoslynProjectReload (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
+		void HandleRoslynProjectChange (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
-			StartReparseThread ();
+			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectChanged ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectAdded ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectRemoved ||
+				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectReloaded) {
+				StartReparseThread ();
+			}
 		}
 
 		bool IsUnreferencedSharedProject (Project project)
@@ -957,9 +959,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();
-				if (string.IsNullOrEmpty (currentParseFile))
+				if (string.IsNullOrEmpty (currentParseFile) || Editor.IsDisposed)
 					return;
-
 				lock (reparseTimeoutLock) {
 					CancelParseTimeout ();
 
@@ -982,7 +983,7 @@ namespace MonoDevelop.Ide.Gui
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
 		{
 			var editor = Editor;
-			if (editor == null)
+			if (editor == null || editor.IsDisposed)
 				return;
 
 			// Don't directly parse the document because doing it at every key press is

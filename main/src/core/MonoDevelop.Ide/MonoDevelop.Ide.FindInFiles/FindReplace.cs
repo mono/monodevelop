@@ -85,6 +85,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			public TextReader Reader;
 			public List<SearchResult> Results;
 			public string Text { get; internal set; }
+			public System.Text.Encoding Encoding { get; internal set; }
 
 			public FileSearchResult (FileProvider provider, TextReader reader, List<SearchResult> results)
 			{
@@ -98,7 +99,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public IEnumerable<SearchResult> FindAll (Scope scope, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
 		{
 			if (filter.RegexSearch) {
-				RegexOptions regexOptions = RegexOptions.Compiled;
+				RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Multiline;
 				if (!filter.CaseSensitive)
 					regexOptions |= RegexOptions.IgnoreCase;
 				regex = new Regex (pattern, regexOptions);
@@ -172,6 +173,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							Interlocked.Increment (ref searchedFilesCount);
 							if (replacePattern != null) {
 								content.Text = content.Reader.ReadToEnd ();
+								content.Encoding = content.Provider.CurrentEncoding;
 								content.Reader = new StringReader (content.Text);
 							}
 							content.Results.AddRange(FindAll (monitor, content.Provider, content.Reader, pattern, replacePattern, filter));
@@ -193,7 +195,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							if (content.Results.Count == 0)
 								continue;
 							try {
-								content.Provider.BeginReplace (content.Text);
+								content.Provider.BeginReplace (content.Text, content.Encoding);
 								Replace (content.Provider, content.Results, replacePattern);
 								content.Provider.EndReplace ();
 							} catch (Exception e) {
@@ -248,7 +250,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					matches.Add(match);
 				}
-				provider.BeginReplace (content);
+				provider.BeginReplace (content, provider.CurrentEncoding);
 				int delta = 0;
 				for (int i = 0; !monitor.CancellationToken.IsCancellationRequested && i < matches.Count; i++) {
 					Match match = matches[i];

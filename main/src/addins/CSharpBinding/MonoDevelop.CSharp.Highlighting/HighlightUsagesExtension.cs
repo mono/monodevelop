@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -151,37 +152,39 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
-			var symbol = resolveResult.Symbol;
-			foreach (var loc in symbol.Locations) {
-				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
+
+			foreach (var symbol in await CSharpFindReferencesProvider.GatherSymbols (resolveResult.Symbol, resolveResult.Document.Project.Solution, token)) {
+				foreach (var loc in symbol.Locations) {
+					if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
+						result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+							ReferenceUsageType = ReferenceUsageType.Declaration
+						});
+				}
+
+				foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, DocumentContext.AnalysisDocument.Project.Solution, documents, token)) {
+					foreach (var loc in mref.Locations) {
+						Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
+						var root = loc.Location.SourceTree.GetRoot ();
+						var node = root.FindNode (loc.Location.SourceSpan);
+						var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+						if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+							span = node.Span;
+						}
+
+						if (span.Start != loc.Location.SourceSpan.Start) {
+							span = loc.Location.SourceSpan;
+						}
+						result.Add (new MemberReference (symbol, doc.FilePath, span.Start, span.Length) {
+							ReferenceUsageType = GetUsage (node)
+						});
+					}
+				}
+
+				foreach (var loc in await GetAdditionalReferencesAsync (doc, symbol, token)) {
 					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
-						ReferenceUsageType = ReferenceUsageType.Declariton	
-					});
-			}
-
-			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, DocumentContext.AnalysisDocument.Project.Solution, documents, token)) {
-				foreach (var loc in mref.Locations) {
-					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
-					var root = loc.Location.SourceTree.GetRoot ();
-					var node = root.FindNode (loc.Location.SourceSpan);
-					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
-					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
-						span = node.Span;
-					}
-
-					if (span.Start != loc.Location.SourceSpan.Start) {
-						span = loc.Location.SourceSpan;
-					}
-					result.Add (new MemberReference (symbol, doc.FilePath, span.Start, span.Length) {
-						ReferenceUsageType = GetUsage (node)
+						ReferenceUsageType = ReferenceUsageType.Write
 					});
 				}
-			}
-
-			foreach (var loc in await GetAdditionalReferencesAsync (doc, symbol, token)) {
-				result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
-					ReferenceUsageType = ReferenceUsageType.Write
-				});
 			}
 
 			return result;

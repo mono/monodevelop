@@ -100,10 +100,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void CreateComponents ()
 		{
+			var options = GetTextEditorOptions ();
 			this.editors = new [] {
-				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
-				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
-				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new MonoTextEditor (new TextDocument (), options),
+				new MonoTextEditor (new TextDocument (), options),
+				new MonoTextEditor (new TextDocument (), options),
 			};
 			
 			this.editors[0].Document.IsReadOnly = true;

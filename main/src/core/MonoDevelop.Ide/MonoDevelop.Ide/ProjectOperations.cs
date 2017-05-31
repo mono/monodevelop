@@ -411,10 +411,10 @@ namespace MonoDevelop.Ide
 		
 		public Task SaveAsync (SolutionItem entry)
 		{
-			return SaveAsyncInernal (entry);
+			return SaveAsyncInternal (entry);
 		}
 
-		async Task SaveAsyncInernal (SolutionItem entry)
+		async Task SaveAsyncInternal (SolutionItem entry)
 		{
 			if (!entry.FileFormat.CanWriteFile (entry)) {
 				var itemContainer = (IMSBuildFileObject) GetContainer (entry);

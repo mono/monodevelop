@@ -65,13 +65,26 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			get {
 				var result = new List<string> ();
 				foreach (var bundle in languageBundles) {
-					foreach (var style in bundle.EditorThemes) {
+					for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+						var style = bundle.EditorThemes[i];
 						if (!result.Contains (style.Name))
 							result.Add (style.Name);
 					}
 				}
 				return result.ToArray ();
 			}
+		}
+
+		public static bool ContainsStyle (string styleName)
+		{
+			foreach (var bundle in languageBundles) {
+				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+					var style = bundle.EditorThemes[i];
+					if (style.Name == styleName)
+						return true;
+				}
+			}
+			return false;
 		}
 
 		public static FilePath LanguageBundlePath {
@@ -146,9 +159,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static EditorTheme GetEditorTheme (string name)
 		{
 			foreach (var bundle in languageBundles) {
-				var theme = bundle.EditorThemes.FirstOrDefault (t => t.Name == name);
-				if (theme != null)
-					return theme;
+				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
+					var style = bundle.EditorThemes[i];
+					if (style.Name == name)
+						return style;
+				}
 			}
 			LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
 			return GetEditorTheme (GetDefaultColorStyleName ());

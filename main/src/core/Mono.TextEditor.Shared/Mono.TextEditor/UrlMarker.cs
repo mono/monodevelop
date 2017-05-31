@@ -88,7 +88,8 @@ namespace Mono.TextEditor
 		void Doc_TextChanging (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			var lineSegment = LineSegment.Segment;
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				if (lineSegment.IsInside (change.Offset) || lineSegment.IsInside (change.Offset + change.RemovalLength) ||
 					change.Offset <= lineSegment.Offset && lineSegment.Offset <= change.Offset + change.RemovalLength) {
 					doc.RemoveMarker (this);

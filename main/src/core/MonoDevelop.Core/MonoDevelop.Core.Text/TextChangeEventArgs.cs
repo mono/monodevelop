@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.Text
 		public TextChange (int offset, ITextSource removedText, ITextSource insertedText)
 		{
 			if (offset < 0)
-				throw new ArgumentOutOfRangeException(nameof (offset), offset, "offset must not be negative");
+				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
 			this.offset = offset;
 			this.newOffset = offset;
 			this.removedText = removedText ?? StringTextSource.Empty;
@@ -66,6 +66,16 @@ namespace MonoDevelop.Core.Text
 			this.newOffset = newOffset;
 			this.removedText = removedText != null ? new StringTextSource(removedText) : StringTextSource.Empty;
 			this.insertedText = insertedText != null ? new StringTextSource(insertedText) : StringTextSource.Empty;
+		}
+
+		public TextChange (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
+		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException (nameof (offset), offset, "offset must not be negative");
+			this.offset = offset;
+			this.newOffset = newOffset;
+			this.removedText = removedText ?? StringTextSource.Empty;
+			this.insertedText = insertedText ?? StringTextSource.Empty;
 		}
 
 		/// <summary>
@@ -133,20 +143,29 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, string removedText, string insertedText)
+		[Obsolete ("Use TextChangeEventArgs (int offset, int newOffset, string removedText, string insertedText)")]
+		public TextChangeEventArgs (int offset, string removedText, string insertedText) : this(offset, offset, removedText, insertedText) {}
+
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		[Obsolete ("Use TextChangeEventArgs (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)")]
+		public TextChangeEventArgs (int offset, ITextSource removedText, ITextSource insertedText) : this (offset, offset, removedText, insertedText) {}
+
+		public TextChangeEventArgs (int offset, int newOffset, string removedText, string insertedText)
 		{
 			TextChanges = new List<TextChange> () {
-				new TextChange (offset, removedText, insertedText)
+				new TextChange (offset, newOffset, removedText, insertedText)
 			};
 		}
 
 		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
-		public TextChangeEventArgs(int offset, ITextSource removedText, ITextSource insertedText)
+		public TextChangeEventArgs (int offset, int newOffset, ITextSource removedText, ITextSource insertedText)
 		{
 			TextChanges = new List<TextChange> () {
-				new TextChange (offset, removedText, insertedText)
+				new TextChange (offset, newOffset, removedText, insertedText)
 			};
 		}
 
@@ -166,7 +185,8 @@ namespace MonoDevelop.Core.Text
 		public virtual int GetNewOffset(int offset)
 		{
 			int changeDelta = 0;
-			foreach (var change in TextChanges) {
+			for (int i = 0; i < TextChanges.Count; ++i) {
+				var change = TextChanges[i];
 				if (offset <= change.Offset + change.RemovalLength) {
 					if (offset >= change.Offset) {
 						changeDelta = changeDelta - (offset - change.Offset) + change.InsertionLength;
@@ -185,7 +205,7 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public virtual TextChangeEventArgs Invert()
 		{
-			var invertedChanges = new List<TextChange> ();
+			var invertedChanges = new List<TextChange> (TextChanges.Count);
 			for (int i = TextChanges.Count - 1; i >= 0; i--) {
 				var c = TextChanges [i];
 				invertedChanges.Add (new TextChange(c.Offset, c.InsertedText, c.RemovedText));

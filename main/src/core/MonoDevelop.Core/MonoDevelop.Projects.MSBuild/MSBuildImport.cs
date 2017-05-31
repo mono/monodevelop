@@ -32,8 +32,9 @@ namespace MonoDevelop.Projects.MSBuild
 	public class MSBuildImport: MSBuildElement
 	{
 		string target;
+		string sdk;
 
-		static readonly string [] knownAttributes = { "Project", "Label", "Condition" };
+		static readonly string [] knownAttributes = { "Sdk", "Project", "Label", "Condition" };
 
 		internal override string [] GetKnownAttributes ()
 		{
@@ -44,6 +45,8 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			if (name == "Project")
 				target = value;
+			else if (name == "Sdk")
+				sdk = value;
 			else
 				base.ReadAttribute (name, value);
 		}
@@ -52,6 +55,8 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			if (name == "Project")
 				return target;
+			else if (name == "Sdk")
+				return sdk;
 			else
 				return base.WriteAttribute (name);
 		}
@@ -64,6 +69,11 @@ namespace MonoDevelop.Projects.MSBuild
 		public string Project {
 			get { return target; }
 			set { AssertCanModify (); target = value; NotifyChanged (); }
+		}
+
+		public string Sdk {
+			get { return sdk; }
+			set { AssertCanModify (); sdk = value; NotifyChanged (); }
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)

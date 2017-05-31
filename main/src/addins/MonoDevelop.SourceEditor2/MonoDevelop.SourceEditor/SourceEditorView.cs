@@ -322,7 +322,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
-			foreach (var change in args.TextChanges) {
+			for (int i = 0; i < args.TextChanges.Count; ++i) {
+				var change = args.TextChanges[i];
 				int startIndex = change.Offset;
 				foreach (var marker in currentErrorMarkers) {
 					var line = marker.LineSegment;
@@ -1093,7 +1094,8 @@ namespace MonoDevelop.SourceEditor
 		void OnTextReplaced (object s, TextChangeEventArgs a)
 		{
 			IsDirty = Document.IsDirty;
-			foreach (var change in a.TextChanges) {
+			for (int j = 0; j < a.TextChanges.Count; ++j) {
+				var change = a.TextChanges[j];
 				var location = Document.OffsetToLocation (change.NewOffset);
 
 				int i = 0, lines = 0;
@@ -2112,7 +2114,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void RunPrintOperation (PrintOperationAction action, PrintingSettings settings)
 		{
-			var op = new SourceEditorPrintOperation (TextEditor.Document, Name);
+			var op = new SourceEditorPrintOperation (IdeApp.Workbench.ActiveDocument.Editor, Name);
 			
 			if (settings.PrintSettings != null)
 				op.PrintSettings = settings.PrintSettings;
@@ -2803,11 +2805,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.isDisposed || !TextEditor.Options.ShowFoldMargin)
 				return;
-			var convertedList = foldings.Select (f => {
-				return new FoldSegment (f.CollapsedText, f.Offset, f.Length, f.FoldingType);
-			}).ToList ();
 
-			TextEditor.Document.UpdateFoldSegments (convertedList, true);
+			TextEditor.Document.UpdateFoldSegments (foldings, true);
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)

@@ -342,7 +342,7 @@ module Patterns =
         let getColouredSegment tokenssymbolscolours lineNumber lineOffset txt =
             match tokenssymbolscolours with
             | Some (tokens:_ list, symbols, colours, _formatters) when tokens.Length >= lineNumber ->
-                let tokens, _state = tokens.[lineNumber-1]
+                let tokens, _lineText = tokens.[lineNumber-1]
                 tokens
                 |> Lexer.fixTokens txt
                 |> List.choose (fun draft -> makeChunk symbols lineNumber lineOffset colours {draft.Token with RightColumn = draft.RightColumn} )

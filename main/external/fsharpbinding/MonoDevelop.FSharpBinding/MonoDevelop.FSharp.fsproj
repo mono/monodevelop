@@ -54,13 +54,6 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
-      <PropertyGroup>
-        <__paket__StrongNamer_targets>StrongNamer</__paket__StrongNamer_targets>
-      </PropertyGroup>
-    </When>
-  </Choose>
   <Target Name="BeforeBuild">
     <ItemGroup>
       <NuGetPackage Include="FSharp.Core">
@@ -96,7 +89,7 @@
     <Compile Include="Services\CompilerService.fs" />
     <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
-    <Compile Include="Services\NRefactory.fs" />
+    <Compile Include="Services\RoslynHelpers.fs" />
     <Compile Include="FSharpParsedDocument.fs" />
     <Compile Include="FSharpTokens.fs" />
     <Compile Include="FSharpSymbolHelper.fs" />
@@ -169,10 +162,6 @@
       <Private>False</Private>
     </ProjectReference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="ICSharpCode.NRefactory">
-      <Private>False</Private>
-      <HintPath>..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
@@ -236,9 +225,14 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="80" TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabsToSpaces="True" scope="text/x-fsharp">
+            <inheritsSet />
+            <inheritsScope />
+          </TextStylePolicy>
           <FSharpFormattingPolicy scope="text/x-fsharp">
-            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
+            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" __added="0" />
+            <inheritsSet />
+            <inheritsScope />
           </FSharpFormattingPolicy>
         </Policies>
       </Properties>
@@ -374,5 +368,5 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets" Condition="Exists('..\packages\StrongNamer\build\$(__paket__StrongNamer_targets).targets')" Label="Paket" />
+  <Import Project="..\packages\StrongNamer\build\StrongNamer.targets" Condition="Exists('..\packages\StrongNamer\build\StrongNamer.targets')" Label="Paket" />
 </Project>

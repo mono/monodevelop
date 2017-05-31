@@ -53,9 +53,9 @@ namespace MonoDevelop.Projects.MSBuild
 				engine.SetGlobalProperty (p.Key, p.Value);
 		}
 
-		public ProjectBuilder LoadProject (string file, string sdksPath)
+		public ProjectBuilder LoadProject (string file)
 		{
-			return new ProjectBuilder (this, engine, file, sdksPath);
+			return new ProjectBuilder (this, engine, file);
 		}
 		
 		public void UnloadProject (ProjectBuilder pb)

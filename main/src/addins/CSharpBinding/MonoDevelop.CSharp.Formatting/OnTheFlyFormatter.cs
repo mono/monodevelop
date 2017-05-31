@@ -24,22 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Policies;
-using System.Linq;
-using MonoDevelop.CSharp.Completion;
-using MonoDevelop.CSharp.Refactoring;
-using MonoDevelop.CSharp.Parser;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Editor;
+using System.Threading;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Shared.Extensions;
-using MonoDevelop.Ide.Gui.Content;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Policies;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -65,7 +61,7 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (policyParent, mimeTypeChain, editor, context, offset, offset, false, true, optionSet: optionSet);
 		}
 
-		static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
+		static async void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
 		{
 			TextSpan span;
 			if (exact) {
@@ -79,10 +75,9 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
-					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
-
+					var syntaxTree = await analysisDocument.GetSyntaxTreeAsync ();
+					var root = syntaxTree.GetRoot ();
 					if (formatLastStatementOnly) {
-						var root = syntaxTree.GetRoot ();
 						var token = root.FindToken (endOffset);
 						var tokens = Microsoft.CodeAnalysis.CSharp.Utilities.FormattingRangeHelper.FindAppropriateRange (token);
 						if (tokens.HasValue) {
@@ -90,7 +85,7 @@ namespace MonoDevelop.CSharp.Formatting
 						} else {
 							var parent = token.Parent;
 							if (parent != null)
-								span = parent.FullSpan;
+								span = new TextSpan (parent.FullSpan.Start, editor.CaretOffset - parent.FullSpan.Start);
 						}
 					}
 
@@ -99,18 +94,13 @@ namespace MonoDevelop.CSharp.Formatting
 						var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 						optionSet = policy.CreateOptions (textPolicy);
 					}
-					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
-					var newTree = doc.GetSyntaxTreeAsync ().Result;
-					ApplyNewTree (editor, startOffset, exact, span, syntaxTree, newTree);
+					var rules = Formatter.GetDefaultFormattingRules (analysisDocument);
+					var changes = Formatter.GetFormattedTextChanges (root, SpecializedCollections.SingletonEnumerable (span), context.RoslynWorkspace, optionSet, rules, default(CancellationToken));
+					editor.ApplyTextChanges (changes);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}
 			}
-		}
-
-		internal static void ApplyNewTree (TextEditor editor, int startOffset, bool exact, TextSpan span, Microsoft.CodeAnalysis.SyntaxTree syntaxTree, Microsoft.CodeAnalysis.SyntaxTree newTree)
-		{
-			editor.ApplyTextChanges (newTree.GetChanges (syntaxTree));
 		}
 	}
 }

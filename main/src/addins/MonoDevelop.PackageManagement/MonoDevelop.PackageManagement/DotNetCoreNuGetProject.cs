@@ -49,6 +49,11 @@ namespace MonoDevelop.PackageManagement
 		string projectName;
 		bool restoreRequired;
 
+		public DotNetCoreNuGetProject (DotNetProject project)
+			: this (project, project.GetDotNetCoreTargetFrameworks ())
+		{
+		}
+
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks)
@@ -92,9 +97,8 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
-			var targetFrameworks = project.GetDotNetCoreTargetFrameworks ();
-			if (targetFrameworks.Any ())
-				return new DotNetCoreNuGetProject (project, targetFrameworks);
+			if (project.MSBuildProject.Sdk != null)
+				return new DotNetCoreNuGetProject (project);
 
 			return null;
 		}
@@ -194,6 +198,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			string assetsFilePath = project.GetNuGetAssetsFilePath ();
 			return Task.FromResult (assetsFilePath);
+		}
+
+		public override Task<string> GetAssetsFilePathOrNullAsync ()
+		{
+			return GetAssetsFilePathAsync ();
 		}
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
@@ -320,11 +329,17 @@ namespace MonoDevelop.PackageManagement
 			DotNetProject.NotifyModified ("References");
 		}
 
+		/// <summary>
+		/// Always returns true so the project is re-evaluated after a restore.
+		/// This ensures any imports in the generated .nuget.g.targets are
+		/// re-evaluated. Without this custom MSBuild targets used by a NuGet package
+		/// that was restored into the local NuGet package cache would not be available
+		/// until the solution is closed and re-opened. Also handles the project file
+		/// being edited by hand and a new package reference being added that has a
+		/// custom MSBuild target.
+		/// </summary>
 		public bool ProjectRequiresReloadAfterRestore ()
 		{
-			if (project.DotNetCoreNuGetMSBuildFilesExist ())
-				return false;
-
 			return true;
 		}
 	}

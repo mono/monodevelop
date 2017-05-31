@@ -43,7 +43,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public async Task ConsoleProject_SaveProject_DoesNotAddExtraProperties ()
 		{
-			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-console.sln");
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
 			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllProjects ().Single ();
 

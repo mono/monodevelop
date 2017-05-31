@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					LoggingService.LogError ("Error while requestling navigation links", ex);
 					return;
 				}
-				if (segments == null)
+				if (segments == null || token.IsCancellationRequested)
 					return;
 				await Runtime.RunInMainThread (delegate {
 					try {

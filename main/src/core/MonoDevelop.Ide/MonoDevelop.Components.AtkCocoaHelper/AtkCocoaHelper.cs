@@ -40,15 +40,27 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 	{
 		public static void SetCommonAttributes (this Atk.Object o, string name, string label, string help)
 		{
-			o.Name = name;
-			o.Description = help;
-			o.SetLabel (label);
+			if (!string.IsNullOrEmpty (name)) {
+				o.Name = name;
+			}
+			if (!string.IsNullOrEmpty (name)) {
+				o.Description = help;
+			}
+			if (!string.IsNullOrEmpty (name)) {
+				o.SetLabel (label);
+			}
 		}
 
 		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
 		{
 			var accessible = w.Accessible;
 			accessible.SetCommonAttributes (name, label, help);
+		}
+
+		public static void SetAccessibilityLabelRelationship (this Gtk.Widget w, Gtk.Widget label)
+		{
+			w.Accessible.SetTitleUIElement (label.Accessible);
+			label.Accessible.SetTitleFor (w.Accessible);
 		}
 	}
 
@@ -78,6 +90,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			AXGroup,
 			AXImage,
 			AXMenuButton,
+			AXPopUpButton,
 			AXRadioButton,
 			AXRow,
 			AXRuler,
@@ -113,32 +126,37 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 					return;
 				}
 
-				var signal = GLib.Signal.Lookup (owner, "request-actions", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (RequestActionsHandler));
-
-				signal = GLib.Signal.Lookup (owner, "perform-cancel", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformCancelHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-confirm", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformConfirmHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-decrement", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformDecrementHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-delete", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformDeleteHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-increment", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformIncrementHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-pick", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformPickHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-press", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformPressHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-raise", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformRaiseHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-show-alternate-ui", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformShowAlternateUIHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-show-default-ui", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformShowDefaultUIHandler));
-				signal = GLib.Signal.Lookup (owner, "perform-show-menu", typeof (GLib.SignalArgs));
-				signal.AddDelegate (new EventHandler<GLib.SignalArgs> (PerformShowMenuHandler));
+				HandleSignalAttachment (owner, (signal, handler) => signal.AddDelegate (handler));
 			}
+		}
+
+		void HandleSignalAttachment (Atk.Object owner, Action<GLib.Signal, EventHandler<GLib.SignalArgs>> action)
+		{
+			var signal = GLib.Signal.Lookup (owner, "request-actions", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (RequestActionsHandler));
+
+			signal = GLib.Signal.Lookup (owner, "perform-cancel", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformCancelHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-confirm", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformConfirmHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-decrement", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformDecrementHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-delete", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformDeleteHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-increment", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformIncrementHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-pick", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformPickHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-press", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformPressHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-raise", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformRaiseHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-show-alternate-ui", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformShowAlternateUIHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-show-default-ui", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformShowDefaultUIHandler));
+			signal = GLib.Signal.Lookup (owner, "perform-show-menu", typeof (GLib.SignalArgs));
+			action (signal, new EventHandler<GLib.SignalArgs> (PerformShowMenuHandler));
 		}
 
 		public ActionDelegate (Gtk.Widget widget)
@@ -150,6 +168,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void WidgetDestroyed (object sender, EventArgs e)
 		{
 			FreeActions ();
+
+			HandleSignalAttachment (owner, (signal, handler) => signal.RemoveDelegate (handler));
+			owner = null;
 		}
 
 		// Because the allocated memory is passed to unmanaged code where it cannot be freed

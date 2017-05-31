@@ -357,7 +357,7 @@ module Highlight =
         use reader = new StreamReader(stream)
         let highlighting = Sublime3Format.ReadHighlighting(reader)
         highlighting.PrepareMatches()
-        editor.SyntaxHighlighting <- SyntaxHighlighting(highlighting, editor)
+        editor.SyntaxHighlighting <- new SyntaxHighlighting(highlighting, editor)
         editor
 
     let editor =
@@ -725,12 +725,9 @@ module SymbolTooltips =
             let basicName = modifier + typeName ++ name
 
             if fse.IsFSharpAbbreviation then
-                let unannotatedType = fse.UnAnnotate()
-                basicName ++ "=" ++ (unannotatedType.DisplayName)
+                basicName ++ "=" ++ (fse.AbbreviatedType.Format displayContext)
             else
                 basicName
-
-        
 
         if fse.IsFSharpUnion then typeDisplay + uniontip ()
         elif fse.IsEnum then typeDisplay + enumtip ()

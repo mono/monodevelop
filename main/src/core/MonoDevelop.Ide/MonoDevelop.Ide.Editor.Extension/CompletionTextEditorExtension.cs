@@ -154,8 +154,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 			// Handle code completion
 			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
-				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
+				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc = new CancellationTokenSource ();
 				var caretOffset = Editor.CaretOffset;
 				var token = completionTokenSrc.Token;
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
 									if (result.TriggerWordStart >= 0)
 										CurrentCompletionContext.TriggerOffset = result.TriggerWordStart;
@@ -195,13 +195,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 						CurrentCompletionContext = null;
 					}
 				} catch (TaskCanceledException) {
-					CurrentCompletionContext = null;
 				} catch (AggregateException) {
-					CurrentCompletionContext = null;
 				}
 			}
 
 			if ((descriptor.SpecialKey == SpecialKey.Delete || descriptor.SpecialKey == SpecialKey.BackSpace) && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
+				if (!char.IsLetterOrDigit (deleteOrBackspaceTriggerChar) && deleteOrBackspaceTriggerChar != '_')
+					return res;
 				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 
 				int cpos, wlen;
@@ -209,6 +209,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					cpos = Editor.CaretOffset;
 					wlen = 0;
 				}
+
 				CurrentCompletionContext.TriggerOffset = cpos;
 				CurrentCompletionContext.TriggerWordLength = wlen;
 				
