@@ -703,13 +703,13 @@ namespace MonoDevelop.SourceEditor
 
 			foreach (var task in errors.Select (t => t.Task)) {
 				try {
-					var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
+					var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.Text.Length));
 					var line = editor.GetLine (task.Line);
 					// skip possible white space locations 
 					while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
 						column++;
 					}
-					if (column >= metrics.Layout.LineChars.Length)
+					if (column >= metrics.Layout.Text.Length)
 						continue;
 					int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 					var pos = metrics.Layout.IndexToPos (index);

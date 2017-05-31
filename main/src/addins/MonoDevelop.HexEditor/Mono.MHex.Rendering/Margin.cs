@@ -233,15 +233,22 @@ namespace Mono.MHex.Rendering
 			}
 		}
 		
-		protected static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
+		protected static uint TranslateToUTF8Index (string text, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
 			if (textIndex < curIndex) {
-				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
+				unsafe {
+					fixed (char *p = text)
+						byteIndex = (uint)Encoding.UTF8.GetByteCount (p, (int)textIndex);
+				}
 			} else {
-				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
+				int count = System.Math.Min ((int)(textIndex - curIndex), text.Length - (int)curIndex);
 				
-				if (count > 0)
-					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
+				if (count > 0) {
+					unsafe {
+						fixed (char *p = text)
+							byteIndex += (uint)Encoding.UTF8.GetByteCount (p + curIndex, count);
+					}
+				}
 			}
 			curIndex = textIndex;
 			return byteIndex;
