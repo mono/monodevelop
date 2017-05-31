@@ -165,9 +165,9 @@ namespace MonoDevelop.Core
 			else if (val is double)
 				return ((double)val).ToString (format);
 			else if (val is string) {
-				if (format == "upper")
+				if (format.Equals ("UPPER", StringComparison.OrdinalIgnoreCase))
 					return val.ToString ().ToUpper ();
-				if (format == "lower")
+				if (format.Equals ("LOWER", StringComparison.OrdinalIgnoreCase))
 					return val.ToString ().ToLower ();
 			}
 			return val.ToString ();
