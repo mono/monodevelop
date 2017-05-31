@@ -1369,16 +1369,29 @@ namespace Mono.TextEditor
 
 		public static uint TranslateToUTF8Index (string text, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
-			if (textIndex > text.Length)
-				throw new ArgumentOutOfRangeException (nameof (textIndex), " must be <= charArrayLength (" + text.Length + ") was :" + textIndex);
+			if (text == null)
+				throw new ArgumentNullException (nameof (text));
+
+			if (textIndex < 0)
+				throw new ArgumentOutOfRangeException (nameof (textIndex));
+
 			if (textIndex < curIndex) {
+				if (textIndex > text.Length)
+					throw new ArgumentOutOfRangeException (nameof (textIndex));
+
 				unsafe {
 					fixed (char *p = text)
 						byteIndex = (uint)Encoding.UTF8.GetByteCount (p, (int)textIndex);
 				}
 			} else {
 				int count = System.Math.Min ((int)(textIndex - curIndex), text.Length - (int)curIndex);
-				
+
+				if (curIndex < 0)
+					throw new ArgumentOutOfRangeException (nameof (curIndex));
+
+				if (count - curIndex > text.Length)
+					throw new ArgumentOutOfRangeException (nameof (curIndex));
+
 				if (count > 0) {
 					unsafe {
 						fixed (char* p = text)
