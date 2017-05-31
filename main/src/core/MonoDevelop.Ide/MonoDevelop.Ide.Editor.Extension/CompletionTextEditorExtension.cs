@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		bool autoHideCompletionWindow, autoHideParameterWindow;
 
 		ICompletionWidget completionWidget;
-		public virtual ICompletionWidget CompletionWidget
+		protected internal virtual ICompletionWidget CompletionWidget
 		{
 			get { return completionWidget; }
 			set {
