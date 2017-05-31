@@ -108,13 +108,13 @@ namespace MonoDevelop.Core
 				tformat = string.Empty;
 			}
 			
-			tag = tag.ToUpperInvariant ();
-			object val = customTags.GetValue (tag);
+			tname = tname.ToUpperInvariant ();
+			object val = customTags.GetValue (tname);
 			if (val != null)
 				return FormatValue (val, tformat);
 			
-			if (properties.ContainsKey (tag))
-				return FormatValue (properties [tag], tformat);
+			if (properties.ContainsKey (tname))
+				return FormatValue (properties [tname], tformat);
 		
 			GenerateString genString;
 
