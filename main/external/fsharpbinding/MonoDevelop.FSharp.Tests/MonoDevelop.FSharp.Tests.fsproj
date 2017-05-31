@@ -221,9 +221,6 @@
     <Content Include="Samples\bug43307\bug43307.sln">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Samples\bug43307\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="BraceMatcher.fs" />
     <Compile Include="TagComments.fs" />
   </ItemGroup>
