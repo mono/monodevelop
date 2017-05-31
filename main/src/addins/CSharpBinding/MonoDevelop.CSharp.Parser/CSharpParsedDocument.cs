@@ -191,7 +191,7 @@ namespace MonoDevelop.CSharp.Parser
 						cmt.IsDocumentation = true;
 						cmt.CommentType = CommentType.Documentation;
 						cmt.OpenTag = "///";
-						cmt.ClosingTag = "*/";
+						cmt.ClosingTag = "///";
 						cmt.Region = GetRegion (trivia);
 						Comments.Add (cmt);
 						break;
