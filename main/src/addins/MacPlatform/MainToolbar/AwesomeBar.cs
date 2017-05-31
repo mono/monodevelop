@@ -388,6 +388,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				SaveButton.Activated += (sender, e) => {
 					IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.FileCommands.Save);
 				};
+				SaveButton.Enabled = false;
 
 				var icoS = PDFLoader.LoadPDFImage ("Save_File.pdf");
 				icoS.Template = true;
