@@ -71,6 +71,12 @@ namespace MonoDevelop.Ide.Projects
 
 			defaultTableRows = projectConfigurationTable.NRows;
 
+			// Disable width request for the event box otherwise the New Project dialog
+			// does not resize to fit. Set a width request for the project name text box
+			// instead so the project folder preview widget does not take up more width.
+			projectConfigurationTableEventBox.WidthRequest = -1;
+			projectNameTextBox.WidthRequest = 335;
+
 			RegisterEvents ();
 
 			// Accessibility

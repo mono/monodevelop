@@ -101,8 +101,8 @@ namespace MonoDevelop.Ide.Projects
 		void Build ()
 		{
 			BorderWidth = 0;
-			WidthRequest = 901;
-			HeightRequest = 632;
+			DefaultWidth = 901;
+			DefaultHeight = 632;
 
 			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
@@ -325,7 +325,6 @@ namespace MonoDevelop.Ide.Projects
 			Show ();
 
 			templatesTreeView.HasFocus = true;
-			Resizable = false;
 		}
 
 		TreeViewColumn CreateTemplateCategoriesTreeViewColumn ()
