@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+﻿﻿// --------------------------------------------------------------------------------------
 // Common utilities for environment, debugging and working with project files
 // --------------------------------------------------------------------------------------
 
@@ -85,7 +85,6 @@ module CompilerArguments =
                       | Some asm -> [asm.Location]
                       | None -> []
                   else
-                      //let a = reference.Package.Assemblies |> Seq.head
                       let package = reference.Package
                       package.Assemblies
                       |> Seq.choose (fun a -> match a.Name with

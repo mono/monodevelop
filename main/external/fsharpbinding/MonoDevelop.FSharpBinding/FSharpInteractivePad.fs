@@ -266,9 +266,7 @@ type FSharpInteractivePad() =
     member x.AddMorePrompt() =
         addMarker newLineIcon
 
-    member x.Session
-        with get() = session
-        and set(value) = session <- value
+    member x.Session = session
 
     member x.Shutdown()  =
         do LoggingService.LogDebug ("Interactive: Shutdown()!")
