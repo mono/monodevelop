@@ -122,7 +122,7 @@ namespace MonoDevelop.Core
 				return genString (tname, tformat);
 			
 			if (tformat.Length > 0) {
-				switch (tname.ToUpper()) {
+				switch (tname) {
 				case "ENV":
 					foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables ()) {
 						if (string.Equals (variable.Key.ToString (), tformat, StringComparison.OrdinalIgnoreCase))
