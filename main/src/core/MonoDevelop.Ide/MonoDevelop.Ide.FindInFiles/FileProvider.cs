@@ -33,9 +33,54 @@ using MonoDevelop.Core;
 using System;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
+	class OpenFileProvider : FileProvider
+	{
+		readonly TextEditor editor;
+
+		public OpenFileProvider (TextEditor editor, Project project) : this(editor, project, -1, -1)
+		{
+		}
+
+		public OpenFileProvider (TextEditor editor, Project project, int selectionStartPostion, int selectionEndPosition) : base (editor.FileName, project, selectionStartPostion, selectionEndPosition)
+		{
+			this.editor = editor;
+		}
+
+		public override TextReader ReadString (bool readBinaryFiles)
+		{
+			return editor.CreateReader ();
+		}
+		IDisposable undoGroup;
+
+		public override void BeginReplace (string content, Encoding encoding)
+		{
+			Gtk.Application.Invoke (delegate {
+				undoGroup = editor.OpenUndoGroup ();
+			});
+		}
+
+		public override void Replace (int offset, int length, string replacement)
+		{
+			Gtk.Application.Invoke (delegate {
+				editor.ReplaceText (offset, length, replacement);
+			});
+		}
+
+		public override void EndReplace ()
+		{
+			Gtk.Application.Invoke (delegate {
+				if (undoGroup != null) {
+					undoGroup.Dispose ();
+					undoGroup = null;
+				}
+			});
+		}
+	}
+
 	public class FileProvider
 	{
 		public string FileName {
@@ -83,7 +128,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return ReadString (false);
 		}
 
-		public TextReader ReadString (bool readBinaryFiles)
+		public virtual TextReader ReadString (bool readBinaryFiles)
 		{
 			if (buffer != null) {
 				return new StringReader (buffer.ToString ());
@@ -130,7 +175,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		IDisposable undoGroup;
 		Encoding encoding;
 
-		public async void BeginReplace (string content, Encoding encoding)
+		public virtual async void BeginReplace (string content, Encoding encoding)
 		{
 			somethingReplaced = false;
 			buffer = new StringBuilder (content);
@@ -144,7 +189,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public void Replace (int offset, int length, string replacement)
+		public virtual void Replace (int offset, int length, string replacement)
 		{
 			somethingReplaced = true;
 			buffer.Remove (offset, length);
@@ -157,10 +202,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public void EndReplace ()
+		public virtual void EndReplace ()
 		{
 			if (document != null) {
-				Gtk.Application.Invoke (delegate { 
+				Gtk.Application.Invoke (delegate {
 					if (undoGroup != null) {
 						undoGroup.Dispose ();
 						undoGroup = null;

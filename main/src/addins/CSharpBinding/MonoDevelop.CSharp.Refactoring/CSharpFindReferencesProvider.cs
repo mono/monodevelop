@@ -212,53 +212,63 @@ namespace MonoDevelop.CSharp.Refactoring
 				var workspace = TypeSystemService.AllWorkspaces.FirstOrDefault (w => w.CurrentSolution == lookup.Solution) as MonoDevelopWorkspace;
 				if (workspace == null)
 					return Enumerable.Empty<SearchResult> ();
-
-				foreach (var loc in lookup.Symbol.Locations) {
-					if (token.IsCancellationRequested)
-						break;
-					
-					if (!loc.IsInSource)
-						continue;
-					var fileName = loc.SourceTree.FilePath;
-					var offset = loc.SourceSpan.Start;
-					string projectedName;
-					int projectedOffset;
-					if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
-						fileName = projectedName;
-						offset = projectedOffset;
-					}
-					var sr = new MemberReference (lookup.Symbol, fileName, offset, loc.SourceSpan.Length);
-					sr.ReferenceUsageType = ReferenceUsageType.Declaration;
-					antiDuplicatesSet.Add (sr);
-					result.Add (sr);
-				}
-
-				foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution, token).ConfigureAwait (false)) {
-					foreach (var loc in mref.Locations) {
+				foreach (var sym in await GatherSymbols (lookup.Symbol, lookup.Solution, token)) {
+					foreach (var loc in sym.Locations) {
 						if (token.IsCancellationRequested)
 							break;
-						var fileName = loc.Document.FilePath;
-						var offset = loc.Location.SourceSpan.Start;
+
+						if (!loc.IsInSource)
+							continue;
+						var fileName = loc.SourceTree.FilePath;
+						var offset = loc.SourceSpan.Start;
 						string projectedName;
 						int projectedOffset;
 						if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
 							fileName = projectedName;
 							offset = projectedOffset;
 						}
-						var sr = new MemberReference (lookup.Symbol, fileName, offset, loc.Location.SourceSpan.Length);
+						var sr = new MemberReference (sym, fileName, offset, loc.SourceSpan.Length);
+						sr.ReferenceUsageType = ReferenceUsageType.Declaration;
+						antiDuplicatesSet.Add (sr);
+						result.Add (sr);
+					}
+
+					foreach (var mref in await SymbolFinder.FindReferencesAsync (sym, lookup.Solution, token).ConfigureAwait (false)) {
+						foreach (var loc in mref.Locations) {
+							if (token.IsCancellationRequested)
+								break;
+							var fileName = loc.Document.FilePath;
+							var offset = loc.Location.SourceSpan.Start;
+							string projectedName;
+							int projectedOffset;
+							if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+								fileName = projectedName;
+								offset = projectedOffset;
+							}
+							var sr = new MemberReference (sym, fileName, offset, loc.Location.SourceSpan.Length);
 
 
-						if (antiDuplicatesSet.Add (sr)) {
-							var root = loc.Location.SourceTree.GetRoot ();
-							var node = root.FindNode (loc.Location.SourceSpan);
-							var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
-							sr.ReferenceUsageType = HighlightUsagesExtension.GetUsage (node);
-							result.Add (sr);
+							if (antiDuplicatesSet.Add (sr)) {
+								var root = loc.Location.SourceTree.GetRoot ();
+								var node = root.FindNode (loc.Location.SourceSpan);
+								var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+								sr.ReferenceUsageType = HighlightUsagesExtension.GetUsage (node);
+								result.Add (sr);
+							}
 						}
 					}
 				}
 				return (IEnumerable<SearchResult>)result;
 			});
+		}
+
+		public static async Task<IEnumerable<ISymbol>> GatherSymbols (ISymbol symbol, Solution solution, CancellationToken token)
+		{
+			var result = new List<ISymbol> ();
+			result.Add (symbol);
+			foreach (var s in await SymbolFinder.FindImplementationsAsync (symbol, solution, null, token))
+				result.Add (s);
+			return result;
 		}
 
 		public override Task<IEnumerable<SearchResult>> FindAllReferences (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
@@ -273,30 +283,32 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (workspace == null)
 					return Enumerable.Empty<SearchResult> ();
 				foreach (var curSymbol in lookup.Symbol.ContainingType.GetMembers ().Where (m => m.Kind == lookup.Symbol.Kind && m.Name == lookup.Symbol.Name)) {
-					foreach (var simSym in SymbolFinder.FindSimilarSymbols (curSymbol, lookup.Compilation)) {
-						foreach (var loc in simSym.Locations) {
-							if (!loc.IsInSource)
-								continue;
-							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
-							if (antiDuplicatesSet.Add (sr)) {
-								result.Add (sr);
-							}
-						}
-
-						foreach (var mref in await SymbolFinder.FindReferencesAsync (simSym, lookup.Solution).ConfigureAwait (false)) {
-							foreach (var loc in mref.Locations) {
-								var fileName = loc.Document.FilePath;
-								var offset = loc.Location.SourceSpan.Start;
-								string projectedName;
-								int projectedOffset;
-								if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
-									fileName = projectedName;
-									offset = projectedOffset;
-								}
-
-								var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
+					foreach (var sym in SymbolFinder.FindSimilarSymbols (curSymbol, lookup.Compilation)) {
+						foreach (var simSym in await GatherSymbols (sym, lookup.Solution, token)) {
+							foreach (var loc in simSym.Locations) {
+								if (!loc.IsInSource)
+									continue;
+								var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 								if (antiDuplicatesSet.Add (sr)) {
 									result.Add (sr);
+								}
+							}
+
+							foreach (var mref in await SymbolFinder.FindReferencesAsync (simSym, lookup.Solution).ConfigureAwait (false)) {
+								foreach (var loc in mref.Locations) {
+									var fileName = loc.Document.FilePath;
+									var offset = loc.Location.SourceSpan.Start;
+									string projectedName;
+									int projectedOffset;
+									if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+										fileName = projectedName;
+										offset = projectedOffset;
+									}
+
+									var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
+									if (antiDuplicatesSet.Add (sr)) {
+										result.Add (sr);
+									}
 								}
 							}
 						}

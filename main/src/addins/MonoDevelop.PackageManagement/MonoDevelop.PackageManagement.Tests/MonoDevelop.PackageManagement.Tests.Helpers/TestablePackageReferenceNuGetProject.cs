@@ -1,5 +1,5 @@
 ﻿//
-// EmptyDirectoryRemover.cs
+// TestableDotNetCoreNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,30 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
-using System;
-using System.IO;
-using System.Linq;
-using MonoDevelop.Core;
+using System.Threading.Tasks;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.DotNetCore.Templating
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	static class EmptyDirectoryRemover
+	class TestablePackageReferenceNuGetProject : PackageReferenceNuGetProject
 	{
-		public static void Remove (FilePath directory)
+		public TestablePackageReferenceNuGetProject (DotNetProject project)
+			: this (project, new PackageManagementEvents ())
 		{
-			if (!Directory.Exists (directory))
-				return;
+		}
 
-			if (Directory.EnumerateFiles (directory).Any ())
-				return;
+		public TestablePackageReferenceNuGetProject (
+			DotNetProject project,
+			PackageManagementEvents packageManagementEvents)
+			: base (project, packageManagementEvents)
+		{
+			PackageManagementEvents = packageManagementEvents;
+		}
 
-			try {
-				Directory.Delete (directory);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to delete directory.", ex);
-			}
+		public PackageManagementEvents PackageManagementEvents { get; set; }
+
+		public bool IsSaved { get; set; }
+
+		public override Task SaveProject ()
+		{
+			IsSaved = true;
+			return Task.FromResult (0);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreSdkVersion.cs
+// ProjectConfigurationItem.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,25 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.Projects
 {
-	class DotNetCoreSdkVersion
+	// <ItemGroup Label="ProjectConfigurations">
+	//   <ProjectConfiguration Include="Debug|AnyCPU">
+	//     <Configuration>Debug</Configuration>
+	//     <Platform>AnyCPU</Platform>
+	//   </ProjectConfiguration>
+	//   <ProjectConfiguration Include="Release|AnyCPU">
+	//     <Configuration>Release</Configuration>
+	//     <Platform>AnyCPU</Platform>
+	//   </ProjectConfiguration>
+	// </ItemGroup>
+
+	[ExportProjectItemType ("ProjectConfiguration")]
+	class ProjectConfigurationItem : ProjectItem
 	{
-		public const int MinimumSupportedBuildVersion = 4460;
-
-		public static bool TryGetBuildVersion (string sdkVersion, out int build)
-		{
-			build = -1;
-
-			if (string.IsNullOrEmpty (sdkVersion))
-				return false;
-
-			int index = sdkVersion.LastIndexOf ('-');
-			if (index < 0)
-				return false;
-
-			string buildVersionText = sdkVersion.Substring (index + 1);
-			return int.TryParse (buildVersionText, out build);
-		}
 	}
 }

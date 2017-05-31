@@ -45,6 +45,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public CustomCommandPanelWidget ()
 		{
 			this.Build();
+
+			// Disable this so that the children can be focused
+			vboxCommands.CanFocus = false;
 			label3.LabelProp = MonoDevelop.Core.BrandingService.BrandApplicationName (label3.LabelProp);
 		}
 		

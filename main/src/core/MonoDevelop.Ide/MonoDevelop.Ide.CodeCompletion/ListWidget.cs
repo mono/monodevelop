@@ -797,19 +797,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return new CompletionListFilterResult (filteredItems, newCategories);
 		}
 
-
-		class DataItemComparer : IComparer<CompletionData>
-		{
-			public int Compare (CompletionData a, CompletionData b)
-			{
-				if (a == b)
-					return 0;
-				if (a is IComparable && b is IComparable)
-						return ((IComparable)a).CompareTo (b);
-				return CompletionData.Compare (a, b);
-			}
-		}
-		internal static readonly IComparer<CompletionData> overloadComparer = new DataItemComparer ();
+		internal static readonly IComparer<CompletionData> overloadComparer = CompletionData.Comparer;
 		internal static IComparer<CompletionData> defaultComparer;
 
 		internal static int CompareTo (ICompletionDataList completionDataList, int n, int m)
@@ -830,7 +818,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal static IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
 		{
 			var concrete = dataList as CompletionDataList;
-			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
+			return concrete != null && concrete.Comparer != null ? concrete.Comparer : CompletionData.Comparer;
 		}
 
 		public void FilterWords ()

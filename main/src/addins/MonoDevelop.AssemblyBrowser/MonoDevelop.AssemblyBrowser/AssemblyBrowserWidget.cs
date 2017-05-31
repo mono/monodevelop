@@ -270,7 +270,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			documentationScrolledWindow.PackStart (inspectEditor, true, true, 0);
 
-			this.hpaned1.ExposeEvent += HPaneExpose;
+			this.ExposeEvent += HPaneExpose;
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
 			hpaned1.Position = 271;
 
@@ -1394,20 +1394,34 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 		
-		void Dispose (ITreeNavigator nav)
+		void Dispose<T> (ITreeNavigator nav) where T:class, IDisposable
 		{
 			if (nav == null)
 				return;
-			IDisposable d = nav.DataItem as IDisposable;
+			T d = nav.DataItem as T;
 			if (d != null) 
 				d.Dispose ();
 			if (nav.HasChildren ()) {
 				nav.MoveToFirstChild ();
 				do {
-					Dispose (nav);
+					Dispose<T> (nav);
 				} while (nav.MoveNext ());
 				nav.MoveToParent ();
 			}
+		}
+
+		void DisposeAssemblyDefinitions (ITreeNavigator nav)
+		{
+			// Dispose top level nodes
+			if (nav == null || !nav.HasChildren ())
+				return;
+			
+			nav.MoveToFirstChild ();
+			do {
+				if (nav.DataItem is AssemblyDefinition d)
+					d.Dispose ();
+			} while (nav.MoveNext ());
+			nav.MoveToParent ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -1416,7 +1430,8 @@ namespace MonoDevelop.AssemblyBrowser
 			searchTokenSource.Cancel ();
 
 			if (this.TreeView != null) {
-				//	Dispose (TreeView.GetRootNode ());
+				//	Dispose<IDisposable> (TreeView.GetRootNode ());
+				DisposeAssemblyDefinitions (TreeView.GetRootNode ());
 				TreeView.SelectionChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
@@ -1453,15 +1468,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
 			base.OnDestroyed ();
-		}
-		
-		static AssemblyDefinition ReadAssembly (string fileName)
-		{
-			ReaderParameters parameters = new ReaderParameters ();
-//			parameters.AssemblyResolver = new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
-			using (var stream = new System.IO.MemoryStream (System.IO.File.ReadAllBytes (fileName))) {
-				return AssemblyDefinition.ReadAssembly (stream, parameters);
-			}
 		}
 		
 

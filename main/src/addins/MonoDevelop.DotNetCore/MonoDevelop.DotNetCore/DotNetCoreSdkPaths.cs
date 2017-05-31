@@ -35,8 +35,6 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkPaths
 	{
-		List<string> projectImportProps = new List<string> ();
-		List<string> projectImportTargets = new List<string> ();
 		string msbuildSDKsPath;
 
 		public void FindMSBuildSDKsPath ()
@@ -50,8 +48,14 @@ namespace MonoDevelop.DotNetCore
 			if (!Directory.Exists (sdkRootPath))
 				return;
 
-			string[] directories = Directory.GetDirectories (sdkRootPath);
-			SdksParentDirectory = directories.OrderBy (directory => directory).LastOrDefault ();
+			SdkVersions = GetInstalledSdkVersions (sdkRootPath)
+				.OrderByDescending (version => version)
+				.ToArray ();
+			if (!SdkVersions.Any ())
+				return;
+
+			DotNetCoreVersion latestVersion = SdkVersions.FirstOrDefault ();
+			SdksParentDirectory = Path.Combine (sdkRootPath, latestVersion.OriginalString);
 			if (SdksParentDirectory == null)
 				return;
 
@@ -65,15 +69,7 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (MSBuildSDKsPath))
 				return;
 
-			if (sdk.Contains (';')) {
-				foreach (string sdkItem in SplitSdks (sdk)) {
-					AddSdkImports (sdkItem);
-				}
-			} else {
-				AddSdkImports (sdk);
-			}
-
-			Exist = CheckImportsExist ();
+			Exist = CheckSdksExist (sdk);
 
 			if (Exist) {
 				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (SdksParentDirectory);
@@ -96,58 +92,44 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
+		public DotNetCoreVersion[] SdkVersions { get; private set; }
+
 		string SdksParentDirectory { get; set; }
-
-		public IEnumerable<string> ProjectImportProps {
-			get { return projectImportProps; }
-		}
-
-		public IEnumerable<string> ProjectImportTargets {
-			get { return projectImportTargets; }
-		}
 
 		static IEnumerable<string> SplitSdks (string sdk)
 		{
 			return sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 		}
 
-		void AddSdkImports (string sdk)
+		bool CheckSdksExist (string sdk)
 		{
-			string sdkMSBuildTargetsDirectory = Path.Combine (MSBuildSDKsPath, sdk, "Sdk");
-			projectImportProps.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.props"));
-			projectImportTargets.Add (Path.Combine (sdkMSBuildTargetsDirectory, "Sdk.targets"));
+			if (sdk.Contains (';')) {
+				foreach (string sdkItem in SplitSdks (sdk)) {
+					if (!SdkPathExists (sdkItem))
+						return false;
+				}
+				return true;
+			}
+			return SdkPathExists (sdk);
 		}
 
-		bool CheckImportsExist ()
+		bool SdkPathExists (string sdk)
 		{
-			foreach (string prop in ProjectImportProps) {
-				if (!File.Exists (prop)) {
-					LoggingService.LogError ("Sdk.props not found. '{0}'", prop);
-					return false;
-				}
-			}
-
-			foreach (string target in ProjectImportTargets) {
-				if (!File.Exists (target)) {
-					LoggingService.LogError ("Sdk.targets not found. '{0}'", target);
-					return false;
-				}
-			}
-
-			return true;
+			string sdkDirectory = Path.Combine (MSBuildSDKsPath, sdk);
+			return Directory.Exists (sdkDirectory);
 		}
 
 		/// <summary>
-		/// .NET Core SDK version needs to be at least 1.0.0-preview5-004460
+		/// .NET Core SDK version needs to be at least 1.0.0
 		/// </summary>
 		bool CheckIsSupportedSdkVersion (string sdkDirectory)
 		{
 			try {
 				string sdkVersion = Path.GetFileName (sdkDirectory);
-				int buildVersion = -1;
-				if (DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion)) {
-					if (buildVersion < DotNetCoreSdkVersion.MinimumSupportedBuildVersion) {
-						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0-preview5-004460. '{1}'", sdkVersion, sdkDirectory);
+				DotNetCoreVersion version = null;
+				if (DotNetCoreVersion.TryParse (sdkVersion, out version)) {
+					if (version < DotNetCoreVersion.MinimumSupportedVersion) {
+						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0. '{1}'", sdkVersion, sdkDirectory);
 						return false;
 					}
 				} else {
@@ -157,6 +139,13 @@ namespace MonoDevelop.DotNetCore
 				LoggingService.LogError ("Error checking sdk version.", ex);
 			}
 			return true;
+		}
+
+		IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions (string sdkRootPath)
+		{
+			return Directory.EnumerateDirectories (sdkRootPath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
 		}
 	}
 }

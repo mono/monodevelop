@@ -357,7 +357,7 @@ module Highlight =
         use reader = new StreamReader(stream)
         let highlighting = Sublime3Format.ReadHighlighting(reader)
         highlighting.PrepareMatches()
-        editor.SyntaxHighlighting <- SyntaxHighlighting(highlighting, editor)
+        editor.SyntaxHighlighting <- new SyntaxHighlighting(highlighting, editor)
         editor
 
     let editor =

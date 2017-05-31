@@ -34,7 +34,6 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
-using Microsoft.Build.BuildEngine;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild.Conditions;
 	

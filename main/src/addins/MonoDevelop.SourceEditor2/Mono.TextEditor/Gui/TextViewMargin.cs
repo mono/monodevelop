@@ -148,6 +148,7 @@ namespace Mono.TextEditor
 				Accessible.RangeForIndex = GetRangeForIndex;
 				Accessible.StyleRangeForIndex = GetStyleRangeForIndex;
 				Accessible.RangeForPosition = GetRangeForPosition;
+				Accessible.GetVisibleCharacterRange = GetVisibleCharacterRange;
 			}
 
 			int GetInsertionPointLineNumber ()
@@ -194,7 +195,15 @@ namespace Mono.TextEditor
 
 			int GetLineForIndex (int index)
 			{
-				return Margin.Document.GetLineByOffset (index).LineNumber;
+				if (Margin?.Document == null) {
+					return 0;
+				}
+
+				var line = Margin.Document.GetLineByOffset (index);
+				if (line == null) {
+					return 0;
+				}
+				return line.LineNumber;
 			}
 
 			AtkCocoa.Range GetRangeForIndex (int index)
@@ -239,6 +248,11 @@ namespace Mono.TextEditor
 			{
 				// FIXME: this should be the range of text with the same style as index
 				return GetRangeForIndex (index);
+			}
+
+			AtkCocoa.Range GetVisibleCharacterRange ()
+			{
+				return new AtkCocoa.Range { Location = 0, Length = Margin.Document.Length };
 			}
 		}
 
@@ -295,7 +309,8 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
-			foreach (var change in e.TextChanges) {
+			for (int i = 0; i < e.TextChanges.Count; ++i) {
+				var change = e.TextChanges[i];
 				RemoveCachedLine (Document.OffsetToLineNumber (change.NewOffset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && change.Offset < mouseWordStart) {
 					int delta = change.ChangeDelta;
@@ -852,10 +867,9 @@ namespace Mono.TextEditor
                 this.MarkerLength = doc.GetMarkers (line).Count ();
 			}
 
-			public bool Equals (DocumentLine line, int offset, int length, out bool isInvalid)
+			public bool Equals (DocumentLine line, int offset, int length)
 			{
-				isInvalid = MarkerLength != doc.GetMarkers (line).Count ();
-				return offset == Offset && Length == length && !isInvalid;
+				return offset == Offset && Length == length && MarkerLength == doc.GetMarkers (line).Count ();
 			}
 		}
 
@@ -893,14 +907,14 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public bool Equals (DocumentLine line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
+			public bool Equals (DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
 			{
 				int selStart = 0, selEnd = 0;
 				if (selectionEnd >= 0) {
 					selStart = selectionStart;
 					selEnd = selectionEnd;
 				}
-				return base.Equals (line, offset, length, out isInvalid) && selStart == this.SelectionStart && selEnd == this.SelectionEnd;
+				return base.Equals (line, offset, length) && selStart == this.SelectionStart && selEnd == this.SelectionEnd;
 			}
 
 			public override bool Equals (object obj)
@@ -932,8 +946,7 @@ namespace Mono.TextEditor
 			LayoutDescriptor descriptor;
 			int lineNumber = line.LineNumber;
 			if (!containsPreedit && layoutDict.TryGetValue (lineNumber, out descriptor)) {
-				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor?.Layout?.Layout != null) {
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd) && descriptor?.Layout?.Layout != null) {
 					return descriptor.Layout;
 				}
 				descriptor.Dispose ();
@@ -1375,7 +1388,7 @@ namespace Mono.TextEditor
 		public static int TranslateIndexToUTF8 (string text, int index)
 		{
 			byte[] bytes = Encoding.UTF8.GetBytes (text);
-			return Encoding.UTF8.GetString (bytes, 0, index).Length;
+			return Encoding.UTF8.GetCharCount (bytes, 0, index);
 		}
 
 		internal class LayoutWrapper : IDisposable

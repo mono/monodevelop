@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Linq;
 
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -276,9 +277,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					panelWidget.Sensitive = true;
 				}
 			};
-			
+
+			defaultSettingsButton.SetCommonAccessibilityAttributes ("MimePanel.DefaultCheckbox", null,
+			                                                        GettextCatalog.GetString ("Check to use the default settings from '{0}'", baseType));
+			defaultSettingsButton.Accessible.AddLinkedUIElement (panelWidget.Accessible);
+
 			box.PackStart (defaultSettingsButton, false, false, 0);
-			box.PackStart (new HSeparator (), false, false, 0);
+			var hsep = new HSeparator ();
+			hsep.Accessible.SetShouldIgnore (true);
+
+			box.PackStart (hsep, false, false, 0);
 			box.ShowAll ();
 			box.PackStart (panelWidget, true, true, 0);
 			panelWidget.Show ();

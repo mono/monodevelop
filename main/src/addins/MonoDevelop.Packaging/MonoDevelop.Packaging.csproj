@@ -91,7 +91,6 @@
     <Compile Include="MonoDevelop.Packaging\NuGetFilePropertyProvider.cs" />
     <Compile Include="MonoDevelop.Packaging\NuGetFileDescriptor.cs" />
     <Compile Include="MonoDevelop.Packaging\PackagingNuGetProject.cs" />
-    <Compile Include="MonoDevelop.Packaging\PackageReference.cs" />
     <Compile Include="MonoDevelop.Packaging\PackageReferenceCollection.cs" />
     <Compile Include="MonoDevelop.Packaging\AddPlatformImplementationHandler.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\AddPlatformImplementationDialog.cs" />
@@ -121,6 +120,7 @@
     </Compile>
     <Compile Include="MonoDevelop.Packaging.OptionPanels\ProjectNuGetBuildOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectIsDotNetProjectOnlyCondition.cs" />
+    <Compile Include="MonoDevelop.Packaging\ProjectPackageReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Packaging.Tests" />

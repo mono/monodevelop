@@ -166,6 +166,9 @@ namespace MonoDevelop.Projects
 
 				if (creationContext.Project != null) {
 					this.sourceProject = creationContext.Project;
+					// Configure target framework here for projects that target multiple frameworks so the
+					// project capabilities are correct when they are initialized in InitBeforeProjectExtensionLoad.
+					ConfigureActiveTargetFramework ();
 					projectTypeGuids = sourceProject.EvaluatedProperties.GetValue ("ProjectTypeGuids");
 					if (projectTypeGuids != null) {
 						var subtypeGuids = new List<string> ();
@@ -1171,7 +1174,7 @@ namespace MonoDevelop.Projects
 				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 				string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-				var globalProperties = new Dictionary<string, string> ();
+				var globalProperties = CreateGlobalProperties ();
 				if (context != null) {
 					var md = (ProjectItemMetadata)context.GlobalProperties;
 					md.SetProject (sourceProject);
@@ -1281,6 +1284,63 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
+		string activeTargetFramework;
+
+		void ConfigureActiveTargetFramework ()
+		{
+			activeTargetFramework = GetActiveTargetFramework ();
+			if (activeTargetFramework != null) {
+				MSBuildProject.SetGlobalProperty ("TargetFramework", activeTargetFramework);
+				MSBuildProject.Evaluate ();
+			}
+		}
+
+		/// <summary>
+		/// If an SDK project targets multiple target frameworks then this returns the first
+		/// target framework. Otherwise it returns null. This also handles the odd case if
+		/// the TargetFrameworks property is being used but only one framework is defined
+		/// there. Since here an active target framework must be returned even though multiple
+		/// target frameworks are not being used.
+		/// </summary>
+		string GetActiveTargetFramework ()
+		{
+			var frameworks = GetTargetFrameworks (MSBuildProject);
+			if (frameworks != null && frameworks.Any ())
+				return frameworks.FirstOrDefault ();
+
+			return null;
+		}
+
+		/// <summary>
+		/// Returns target frameworks defined in the TargetFrameworks property for SDK projects
+		/// if the TargetFramework property is not defined. It returns null otherwise.
+		/// </summary>
+		static string[] GetTargetFrameworks (MSBuildProject project)
+		{
+			if (string.IsNullOrEmpty (project.Sdk))
+				return null;
+
+			var propertyGroup = project.GetGlobalPropertyGroup ();
+			string propertyValue = propertyGroup.GetValue ("TargetFramework", null);
+			if (propertyValue != null)
+				return null;
+
+			propertyValue = propertyGroup.GetValue ("TargetFrameworks", null);
+			if (propertyValue != null)
+				return propertyValue.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+			return null;
+		}
+
+		internal Dictionary<string, string> CreateGlobalProperties ()
+		{
+			var properties = new Dictionary<string, string> ();
+			string framework = activeTargetFramework;
+			if (framework != null)
+				properties ["TargetFramework"] = framework;
+			return properties;
+		}
+
 		internal ProjectConfigurationInfo [] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects = true)
 		{
 			var visitedProjects = new HashSet<Project> ();
@@ -1350,13 +1410,12 @@ namespace MonoDevelop.Projects
 
 			using (await builderLock.EnterAsync ()) {
 				bool refAdded = false;
-				var sdkPath = GetMSBuildSdkPath (runtime);
-				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile || sdkPath != projectBuilder.SdksPath) {
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
 					if (projectBuilder != null && refAdded) {
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1380,15 +1439,6 @@ namespace MonoDevelop.Projects
 				result = projectBuilder;
 			}
 			return result;
-		}
-
-		string GetMSBuildSdkPath (TargetRuntime runtime)
-		{
-			HashSet<string> sdks = null;
-			GetReferencedSDKs (this, ref sdks, new HashSet<string> (StringComparer.OrdinalIgnoreCase));
-			if (sdks != null)
-				return MSBuildProjectService.FindSdkPath (runtime, sdks);
-			return null;
 		}
 
 		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<string> traversedProjects)
@@ -1434,8 +1484,7 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var sdkPath = GetMSBuildSdkPath (runtime);
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild, true);
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
@@ -3136,6 +3185,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// When set to true, the project will make use of improved globbing logic to avoid expanding glob in multiple items when
 		/// there are changes. Requires the latest version of msbuild to work.
+		/// </summary>
 		public bool UseAdvancedGlobSupport { get; set; }
 
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
@@ -3285,6 +3335,9 @@ namespace MonoDevelop.Projects
 								einfo.Action = ExpandedItemAction.AddUpdateItem;
 								items.Modified = true;
 								return;
+							} else if (buildItem == null) {
+								buildItem = new MSBuildItem (item.ItemName) { Update = item.Include };
+								msproject.AddItem (buildItem);
 							}
 						}
 					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {

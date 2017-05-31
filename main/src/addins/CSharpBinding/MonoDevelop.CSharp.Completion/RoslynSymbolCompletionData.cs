@@ -451,7 +451,7 @@ namespace MonoDevelop.CSharp.Completion
 				var sym = Symbol;
 				var other = obj as RoslynSymbolCompletionData;
 				if (other == null)
-					return 0;
+					return -1;
 				if (sym.Kind == other.Symbol.Kind) {
 					var m1 = sym as IMethodSymbol;
 					var m2 = other.Symbol as IMethodSymbol;

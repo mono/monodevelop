@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.ProjectManagement;
 
@@ -114,11 +115,20 @@ namespace MonoDevelop.PackageManagement
 		/// Returns package references (e.g. NETStandard.Library) that are not directly defined
 		/// in the project file but included due to the sdk and target framework being used.
 		/// </summary>
-		public static IEnumerable<ProjectPackageReference> GetImportedPackageReferences (this MSBuildProject project)
+		public static IEnumerable<ProjectPackageReference> GetImportedPackageReferences (this MSBuildProject project, DotNetProject dotNetProject)
 		{
 			return project.GetEvaluatedPackageReferenceItems ()
 				.Where (item => item.IsImported)
-				.Select (ProjectPackageReference.Create);
+				.Select (item => CreateImportedPackageReference (item, dotNetProject));
+		}
+
+		public static Action<ProjectPackageReference, DotNetProject> ModifyImportedPackageReference;
+
+		static ProjectPackageReference CreateImportedPackageReference (IMSBuildItemEvaluated item, DotNetProject project)
+		{
+			var packageReference = ProjectPackageReference.Create (item);
+			ModifyImportedPackageReference?.Invoke (packageReference, project);
+			return packageReference;
 		}
 	}
 }

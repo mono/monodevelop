@@ -51,11 +51,47 @@ namespace MonoDevelop.DotNetCore
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
+			PackageManagement.MSBuildProjectExtensions.ModifyImportedPackageReference = ModifyImportedPackageReference;
+		}
+
+		/// <summary>
+		/// HACK: Ensure NuGet packages can be restored for .NET Core 2.0 projects if
+		/// a preview version of .NET Core 2.0 is installed by mapping the Microsoft.NETCore.App
+		/// 2.0 package reference to the installed preview version. When MSBuild supports this
+		/// with the sdk resolver this code can be removed.
+		///
+		/// Also ensure NuGet packages are restored for .NET Standard 2.0 projects correctly.
+		/// By default the NETStandard.Library version 1.6.1 is used which is taken from the
+		/// SDK files included with Mono's MSBuild. Now the preview version of the
+		/// NETStandard.Library is used instead. The version used is taken from the
+		/// BundledNETStandardPackageVersion property from the Microsoft.NETCoreSdk.BundledVersions.props
+		/// file. This version is different to the preview version of the Microsoft.NETCore.App
+		/// package reference.
+		/// </summary>
+		static void ModifyImportedPackageReference (ProjectPackageReference packageReference, DotNetProject project)
+		{
+			if (packageReference.Include == "Microsoft.NETCore.App") {
+				string version = packageReference.Metadata.GetValue ("Version");
+				if (version == "2.0") {
+					string previewVersion = DotNetCoreRuntime.PreviewNetCore20AppVersion;
+					if (previewVersion != null)
+						packageReference.Metadata.SetValue ("Version", previewVersion);
+				}
+			} else if (project.TargetFramework.IsNetStandard20 ()) {
+				if (packageReference.Include == "NETStandard.Library") {
+					string version = packageReference.Metadata.GetValue ("Version");
+					if (version != null && version.StartsWith ("1.", StringComparison.Ordinal)) {
+						string previewVersion = DotNetCoreSdk.PreviewNetStandard20LibraryVersion;
+						if (previewVersion != null)
+							packageReference.Metadata.SetValue ("Version", previewVersion);
+					}
+				}
+			}
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && IsDotNetCoreProject ((DotNetProject)item);
+			return base.SupportsObject (item) && IsSdkProject ((DotNetProject)item);
 		}
 
 		protected override void Initialize ()
@@ -72,11 +108,15 @@ namespace MonoDevelop.DotNetCore
 			return base.OnGetSupportsFramework (framework);
 		}
 
-		bool IsDotNetCoreProject (DotNetProject project)
+		/// <summary>
+		/// Currently this project extension is enabled for all SDK style projects and
+		/// not just for .NET Core and .NET Standard projects. SDK project support
+		/// should be separated out from this extension so it can be enabled only for
+		/// .NET Core and .NET Standard projects.
+		/// </summary>
+		bool IsSdkProject (DotNetProject project)
 		{
-			var properties = project.MSBuildProject.EvaluatedProperties;
-			return properties.HasProperty ("TargetFramework") ||
-				properties.HasProperty ("TargetFrameworks");
+			return project.MSBuildProject.Sdk != null;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -383,10 +423,6 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
-			if (!sdkPaths.Exist)
-				return;
-
-			dotNetCoreMSBuildProject.ReadDefaultCompileTarget (project);
 		}
 
 		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -424,20 +460,35 @@ namespace MonoDevelop.DotNetCore
 			// project file is being saved.
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceAddedToProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
 		}
 
+		/// <summary>
+		/// Shared projects can trigger a reference change during re-evaluation so do not
+		/// restore if the project is being re-evaluated. Otherwise this could cause the
+		/// restore to be run repeatedly.
+		/// </summary>
 		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			base.OnReferenceRemovedFromProject (e);
 
-			if (!Project.Loading)
+			if (!IsLoadingOrReevaluating ())
 				RestoreNuGetPackages ();
+		}
+
+		bool IsLoadingOrReevaluating ()
+		{
+			return Project.Loading || Project.IsReevaluating;
 		}
 
 		void RestoreNuGetPackages ()
@@ -461,12 +512,6 @@ namespace MonoDevelop.DotNetCore
 		bool IsFSharpSdkProject ()
 		{
 			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
-		}
-
-		internal IEnumerable<TargetFramework> GetSupportedTargetFrameworks ()
-		{
-			var supportedTargetFrameworks = new DotNetCoreProjectSupportedTargetFrameworks (Project);
-			return supportedTargetFrameworks.GetFrameworks ();
 		}
 
 		/// <summary>
@@ -537,11 +582,25 @@ namespace MonoDevelop.DotNetCore
 					return false;
 			}
 
+			if (IsFromSharedProject (buildItem))
+				return false;
+
 			// HACK: Remove any imported items that are not in the EvaluatedItems
 			// This may happen if a condition excludes the item. All items passed to the
 			// OnGetSupportsImportedItem are from the EvaluatedItemsIgnoringCondition
 			return Project.MSBuildProject.EvaluatedItems
 				.Any (item => item.IsImported && item.Name == buildItem.Name && item.Include == buildItem.Include);
+		}
+
+		/// <summary>
+		/// Checks that the project has the HasSharedItems property set to true and the SharedGUID
+		/// property in its global property group. Otherwise it is not considered to be a shared project.
+		/// </summary>
+		bool IsFromSharedProject (IMSBuildItemEvaluated buildItem)
+		{
+			var globalGroup = buildItem?.SourceItem?.ParentProject?.GetGlobalPropertyGroup ();
+			return globalGroup?.GetValue<bool> ("HasSharedItems") == true &&
+				globalGroup?.HasProperty ("SharedGUID") == true;
 		}
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)

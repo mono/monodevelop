@@ -281,7 +281,7 @@ int main (int argc, char **argv)
 	}
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.0";
+	NSString *req_mono_version = @"5.2.0.138";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 	bool need64Bit = false;

@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreSdkVersionTests.cs
+// ProjectPackageReferenceExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,36 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
+using MonoDevelop.PackageManagement;
+using NuGet.Packaging;
+using NuGet.Frameworks;
 
-namespace MonoDevelop.DotNetCore.Tests
+namespace MonoDevelop.Packaging
 {
-	[TestFixture]
-	class DotNetCoreSdkVersionTests
+	static class ProjectPackageReferenceExtensions
 	{
-		[TestCase ("1.0.0-preview5-004460", 4460)]
-		[TestCase ("1.0.0-preview2-003156", 3156)]
-		[TestCase ("1.0.0-preview2-1-003177", 3177)]
-		[TestCase ("1.0.0-rc3-004530", 4530)]
-		[TestCase ("1.0.0-rc4-4771", 4771)]
-		public void ValidBuildVersions (string sdkVersion, int expectedBuildVersion)
+		internal static PackageReference ToNuGetPackageReference (this ProjectPackageReference packageReference)
 		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
-
-			Assert.AreEqual (expectedBuildVersion, buildVersion);
-			Assert.IsTrue (result);
-		}
-
-		[TestCase ("")]
-		[TestCase (null)]
-		[TestCase ("1")]
-		public void InvalidBuildVersions (string sdkVersion)
-		{
-			int buildVersion = -1;
-			bool result = DotNetCoreSdkVersion.TryGetBuildVersion (sdkVersion, out buildVersion);
-
-			Assert.IsFalse (result);
+			var nugetPackageReference = packageReference.CreatePackageReference ();
+			return new PackageReference (nugetPackageReference.PackageIdentity, NuGetFramework.Parse ("any"));
 		}
 	}
 }

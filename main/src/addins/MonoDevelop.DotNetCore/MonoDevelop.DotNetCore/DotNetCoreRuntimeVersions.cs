@@ -1,10 +1,10 @@
 ﻿//
-// PackageReference.cs
+// DotNetCoreRuntimeVersions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects;
-using NuGet.Frameworks;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
-namespace MonoDevelop.Packaging
+namespace MonoDevelop.DotNetCore
 {
-	[ExportProjectItemType ("PackageReference")]
-	class PackageReference : ProjectItem
+	class DotNetCoreRuntimeVersions
 	{
-		internal PackageReference (PackageIdentity packageIdentity)
+		public static IEnumerable<DotNetCoreVersion> GetInstalledVersions (DotNetCorePath dotNetCorePath)
 		{
-			Include = packageIdentity.Id;
-			Version = packageIdentity.Version.ToString ();
+			if (dotNetCorePath.IsMissing)
+				return Enumerable.Empty<DotNetCoreVersion> ();
+
+			string runtimePath = GetDotNetCoreRuntimePath (dotNetCorePath);
+			if (!Directory.Exists (runtimePath))
+				return Enumerable.Empty<DotNetCoreVersion> ();
+
+			return Directory.EnumerateDirectories (runtimePath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
 		}
 
-		public PackageReference ()
+		static string GetDotNetCoreRuntimePath (DotNetCorePath dotNetCorePath)
 		{
-		}
-
-		[ItemProperty ("Version")]
-		public string Version { get; set; }
-
-		[ItemProperty ("PrivateAssets")]
-		public string PrivateAssets { get; set; }
-
-		internal NuGet.Packaging.PackageReference ToNuGetPackageReference ()
-		{
-			var identity = new PackageIdentity (Include, new NuGetVersion (Version));
-			return new NuGet.Packaging.PackageReference (identity, NuGetFramework.Parse ("any"));
+			string rootDirectory = Path.GetDirectoryName (dotNetCorePath.FileName);
+			return Path.Combine (rootDirectory, "shared", "Microsoft.NETCore.App");
 		}
 	}
 }
-

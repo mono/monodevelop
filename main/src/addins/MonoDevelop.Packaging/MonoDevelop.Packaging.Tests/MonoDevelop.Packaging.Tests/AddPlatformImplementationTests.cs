@@ -51,6 +51,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
+		[Platform (Exclude = "Linux")]
 		public async Task AddAndroidProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -135,6 +136,7 @@ namespace MonoDevelop.Packaging.Tests
 
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Platform (Exclude = "Linux")]
 		public async Task AddIOSProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -216,6 +218,7 @@ namespace MonoDevelop.Packaging.Tests
 
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Platform (Exclude = "Linux")]
 		public async Task AddSharedProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -346,6 +349,7 @@ namespace MonoDevelop.Packaging.Tests
 
 		[Test]
 		[Platform (Exclude = "Win")]
+		[Platform (Exclude = "Linux")]
 		public async Task PCLProjectInSameDirectoryAsSolution ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";

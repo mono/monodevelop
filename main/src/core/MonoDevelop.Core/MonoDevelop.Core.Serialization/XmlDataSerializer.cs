@@ -205,6 +205,9 @@ namespace MonoDevelop.Core.Serialization
 		{
 			var defaultIsAtt = item.UniqueNames && !StoreAllInElements;
 			foreach (DataNode data in item.ItemData) {
+				// DataDeletedNode is used for differential serialization. It should be ignored in this context.
+				if (data is DataDeletedNode)
+					continue;
 				DataValue dval = data as DataValue;
 				if (dval == null || !(StoreAsAttribute (dval) || (defaultIsAtt && !dval.StoreAsElementRequired)))
 					WriteChild (elem, data);

@@ -526,7 +526,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		static int TranslateIndexToUTF8 (string text, int index)
 		{
 			byte[] bytes = Encoding.UTF8.GetBytes (text);
-			return Encoding.UTF8.GetString (bytes, 0, index).Length;
+			return Encoding.UTF8.GetCharCount (bytes, 0, index);
 		}
 		List<Tuple<SearchResult, string>> markupCache = new List<Tuple<SearchResult, string>> ();
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)

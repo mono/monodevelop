@@ -115,6 +115,10 @@ namespace MonoDevelop.Packaging.Gui
 
 		void NameTextChanged (object sender, EventArgs e)
 		{
+			// Use name as description by default.
+			if (wizardPage.LibraryName == wizardPage.Description)
+				descriptionTextBox.Text = nameTextBox.Text;
+
 			wizardPage.LibraryName = nameTextBox.Text;
 
 			if (wizardPage.HasLibraryNameError ()) {
