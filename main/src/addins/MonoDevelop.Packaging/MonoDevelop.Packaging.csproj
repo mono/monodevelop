@@ -119,7 +119,6 @@
       <DependentUpon>GtkProjectNuGetBuildOptionsPanelWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="MonoDevelop.Packaging.OptionPanels\ProjectNuGetBuildOptionsPanel.cs" />
-    <Compile Include="MonoDevelop.Packaging\ProjectIsDotNetProjectOnlyCondition.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectPackageReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
