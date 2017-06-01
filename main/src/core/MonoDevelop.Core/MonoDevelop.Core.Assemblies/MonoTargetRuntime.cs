@@ -176,52 +176,21 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			bool monoUseMSBuild = Runtime.Preferences.BuildWithMSBuild || System.Version.Parse (toolsVersion) >= new System.Version(15, 0);
-
-			if (monoUseMSBuild) {
-				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
-				if (File.Exists (Path.Combine (path, "MSBuild.exe")) ||
-				    File.Exists (Path.Combine (path, "MSBuild.dll"))) {
-					return path;
-				}
-
-				// ToolsVersion >= 15.0 is supported only by msbuild, so, just
-				// return null here
-				return null;
+			var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
+			if (File.Exists (Path.Combine (path, "MSBuild.exe")) ||
+			    File.Exists (Path.Combine (path, "MSBuild.dll"))) {
+				return path;
 			}
-
-			var xbpath = Path.Combine (monoDir, "xbuild", toolsVersion, "bin");
-			if (File.Exists (Path.Combine (xbpath, "xbuild.exe")))
-				return xbpath;
-
-			if (toolsVersion == "4.0")
-				//HACK: Mono puts xbuild 4.0 in 4.5 directory, even though there is no such thing as ToolsVersion 4.5
-				return GetMSBuildBinPath ("4.5");
 
 			return null;
 		}
-		
+
 		public override string GetMSBuildToolsPath (string toolsVersion)
 		{
-			bool monoUseMSBuild = Runtime.Preferences.BuildWithMSBuild || System.Version.Parse (toolsVersion) >= new System.Version (15, 0);
-
-			if (monoUseMSBuild) {
-				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
-				if (Directory.Exists (path))
-					return path;
-
-				// ToolsVersion >= 15.0 is supported only by msbuild, so, just
-				// return null here
-				return null;
+			var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
+			if (Directory.Exists (path)) {
+				return path;
 			}
-
-			var xbpath = Path.Combine (monoDir, "xbuild", toolsVersion, "bin");
-			if (Directory.Exists (xbpath))
-				return xbpath;
-
-			if (toolsVersion == "4.0")
-				//HACK: Mono puts xbuild 4.0 in 4.5 directory, even though there is no such thing as ToolsVersion 4.5
-				return GetMSBuildToolsPath ("4.5");
 
 			return null;
 		}

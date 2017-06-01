@@ -1541,16 +1541,8 @@ namespace MonoDevelop.Projects
 			);
 		}
 
-		bool requiresMicrosoftBuild;
-
-		internal protected bool RequiresMicrosoftBuild {
-			get {
-				return requiresMicrosoftBuild || ProjectExtension.IsMicrosoftBuildRequired;
-			}
-			set {
-				requiresMicrosoftBuild = value;
-			}
-		}
+		[Obsolete]
+		internal protected bool RequiresMicrosoftBuild { get { return true; } set { } }
 
 		/// <summary>
 		/// Adds a file to the project

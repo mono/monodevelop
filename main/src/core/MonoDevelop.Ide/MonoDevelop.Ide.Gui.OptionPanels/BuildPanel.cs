@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity.Value;
 			buildBeforeTestCheckBox.Active = IdeApp.Preferences.BuildBeforeRunningTests;
-			buildWithMSBuildCheckBox.Active = Runtime.Preferences.BuildWithMSBuild;
 			parallelBuildCheckbox.Active = MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value;
 		}
 		
@@ -72,7 +71,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.BuildBeforeExecuting.Value = buildBeforeRunCheckBox.Active;
 			IdeApp.Preferences.MSBuildVerbosity.Value = (MSBuildVerbosity) verbosityCombo.Active;
 			IdeApp.Preferences.BuildBeforeRunningTests.Value = buildBeforeTestCheckBox.Active;
-			Runtime.Preferences.BuildWithMSBuild.Value = buildWithMSBuildCheckBox.Active;
 			MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value = parallelBuildCheckbox.Active;
 			if (saveChangesRadioButton.Active)
 				IdeApp.Preferences.BeforeBuildSaveAction.Value = BeforeCompileAction.SaveAllFiles;
