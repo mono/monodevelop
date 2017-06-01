@@ -166,4 +166,10 @@
 	<Extension path="/MonoDevelop/Core/SystemInformation"> 
 		<Class class="MonoDevelop.PackageManagement.NuGetSystemInformation" /> 
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType
+			name="HasPackageOrReference"
+			class="MonoDevelop.PackageManagement.HasNuGetPackageOrReferenceFileTemplateCondition" />
+	</Extension>
 </ExtensionModel>
