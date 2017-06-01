@@ -46,13 +46,13 @@ str_append (const char *base, const char *append)
 	size_t baselen = strlen (base);
 	size_t len = strlen (append);
 	char *buf;
-	
-	if (!(buf = malloc (baselen + len + 1)))
+
+	if (!(buf = (char *)malloc (baselen + len + 1)))
 		return NULL;
-	
+
 	memcpy (buf, base, baselen);
 	strcpy (buf + baselen, append);
-	
+
 	return buf;
 }
 
@@ -163,7 +163,7 @@ push_env (const char *variable, const char *value, BOOL push_to_end)
 			}
 		}
 
-		if (!(buf = malloc (len + current_length + 2)))
+		if (!(buf = (char *)malloc (len + current_length + 2)))
 			return NO;
 
 		if (push_to_end) {

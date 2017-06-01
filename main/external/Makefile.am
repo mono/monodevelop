@@ -11,6 +11,7 @@ all: Xamarin.Mac.dll
 Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp -p $< $@
 	cp -p $<.mdb $@.mdb
+	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mmp/Xamarin.Mac.registrar.full.a .
 	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib .
 
 clean:
