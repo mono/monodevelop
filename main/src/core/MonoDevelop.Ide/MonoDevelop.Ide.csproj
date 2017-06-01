@@ -9052,7 +9052,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ImplicitFrameworkAssemblyReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\PortableFrameworkSubsetNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchInSolutionSearchCategory.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CombineMSBuildOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadCollection.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedTitleBarWindow.cs" />

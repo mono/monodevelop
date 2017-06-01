@@ -1525,20 +1525,7 @@ namespace MonoDevelop.Projects
 		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
 		internal bool CheckUseMSBuildEngine (ConfigurationSelector sel, bool checkReferences = true)
 		{
-			// if the item mandates MSBuild, always use it
-			if (MSBuildEngineSupport.HasFlag (MSBuildSupport.Required))
-				return true;
-			// if the user has set the option, use the setting
-			if (UseMSBuildEngine.HasValue)
-				return UseMSBuildEngine.Value;
-
-			// If the item type defaults to using MSBuild, only use MSBuild if its direct references also use MSBuild.
-			// This prevents a not-uncommon common error referencing non-MSBuild projects from MSBuild projects
-			// NOTE: This adds about 11ms to the load/build/etc times of the MonoDevelop solution. Doing it recursively
-			// adds well over a second.
-			return MSBuildEngineSupport.HasFlag (MSBuildSupport.Supported) && (
-				!checkReferences || GetReferencedItems (sel).OfType<Project>().All (i => i.CheckUseMSBuildEngine (sel, false))
-			);
+			return !MSBuildEngineSupport.HasFlag (MSBuildSupport.NotSupported);
 		}
 
 		[Obsolete]
