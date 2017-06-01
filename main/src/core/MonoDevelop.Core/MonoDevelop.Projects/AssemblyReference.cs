@@ -26,20 +26,65 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using System.Linq;
 
 namespace MonoDevelop.Projects
 {
 	public sealed class AssemblyReference
 	{
+		Dictionary<string, string> metadata;
+
+		[Obsolete]
 		public AssemblyReference (FilePath path, string aliases = null)
 		{
 			FilePath = path;
-			Aliases = aliases ?? "";
+			metadata = new Dictionary<string, string> { { "Aliases", aliases } };
+		}
+
+		public AssemblyReference (FilePath path, Dictionary<string, string> metadata)
+		{
+			FilePath = path;
+			this.metadata = metadata;
 		}
 
 		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
+
+		public string Aliases => GetMetadata ("Aliases") ?? "";
+
+		/// <summary>
+		/// Whether the reference is a project.
+		/// </summary>
+		public bool IsProjectReference => GetMetadata ("ReferenceSourceTarget") == "ProjectReference";
+
+		/// <summary>
+		/// For project references, true if the output assembly should be referenced.
+		/// </summary>
+		public bool ReferenceOutputAssembly => MetadataIsTrue ("ReferenceOutputAssembly");
+
+		/// <summary>
+		/// True if the assembly reference was added implicitly].
+		/// </summary>
+		public bool IsImplicit => MetadataIsTrue ("Implicit");
+
+		/// <summary>
+		/// True if the assembly will be copied to the output directory.
+		/// </summary>
+		public bool IsCopyLocal => MetadataIsTrue ("CopyLocal");
+
+		/// <summary>
+		/// True if the assembly is from the target framework.
+		/// </summary>
+		public bool IsFrameworkFile => MetadataIsTrue ("FrameworkFile");
+
+		public string GetMetadata (string name)
+		{
+			metadata.TryGetValue (name, out string value);
+			return value;
+		}
+
+		public bool MetadataIsTrue (string name)
+		{
+			return string.Equals (GetMetadata (name), "true", StringComparison.OrdinalIgnoreCase);
+		}
 
 		public override bool Equals (object obj)
 		{
@@ -60,6 +105,26 @@ namespace MonoDevelop.Projects
 		public IEnumerable<string> EnumerateAliases ()
 		{
 			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+		}
+
+		public SolutionItem GetReferencedItem (Solution parentSolution)
+		{
+			var projectPath = GetMetadata ("MSBuildSourceProjectFile");
+			if (!string.IsNullOrEmpty (projectPath)) {
+				var project = parentSolution.FindSolutionItem (projectPath);
+				if (project != null) {
+					return project;
+				}
+			}
+
+			var projectGuid = GetMetadata ("Project");
+			if (!string.IsNullOrEmpty (projectGuid)) {
+				if (parentSolution.GetSolutionItem (projectGuid) is SolutionItem item) {
+					return item;
+				}
+			}
+
+			return null;
 		}
 	}
 }

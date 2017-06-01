@@ -542,7 +542,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Program7_test1.cs", p.Files [6].FilePath.FileName, "Item conditions are ignored");
 
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
-			var asms = (await p.GetReferencedAssemblies (sol.Configurations [0].Selector)).Select (ar => ar.FilePath).ToArray ();
+			var asms = (await p.GetReferences (sol.Configurations [0].Selector)).Select (ar => ar.FilePath).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
 
 			sol.Dispose ();
@@ -2937,7 +2937,7 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("msbuild-tests", "aliased-references.csproj");
 			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			var asms = (await p.GetReferencedAssemblies (p.Configurations [0].Selector)).ToArray ();
+			var asms = (await p.GetReferences (p.Configurations [0].Selector)).ToArray ();
 
 			var ar = asms.FirstOrDefault (a => a.FilePath.FileName == "System.Xml.dll");
 			Assert.IsNotNull (ar);

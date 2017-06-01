@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide
 				var metadataDllName = location.MetadataModule.Name;
 				if (metadataDllName == "CommonLanguageRuntimeLibrary")
 					metadataDllName = "corlib.dll";
-				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+				foreach (var assembly in await dn.GetReferences (IdeApp.Workspace.ActiveConfiguration)) {
 					if (assembly.FilePath.ToString ().IndexOf (metadataDllName, StringComparison.Ordinal) > 0) {
 						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide
 				metadataDllName = "corlib.dll";
 			var dn = project as DotNetProject;
 			if (dn != null) {
-				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+				foreach (var assembly in await dn.GetReferences (IdeApp.Workspace.ActiveConfiguration)) {
 					if (assembly.FilePath.ToString ().IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
 						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
@@ -1079,7 +1079,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (buildBeforeExecuting) {
-				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration))
+				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration, cs.Token))
 					return;
 			}
 
@@ -1329,7 +1329,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration, CancellationToken token)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				var bres = await currentBuildOperation.Task;
@@ -1356,7 +1356,7 @@ namespace MonoDevelop.Ide
 			if (buildDeps.Count != 0)
 				buildTarget = buildDeps [0];
 
-			bool needsBuild = FastCheckNeedsBuild (buildTarget, configuration);
+			bool needsBuild = await FastCheckNeedsBuild (buildTarget, configuration, token);
 			if (!needsBuild) {
 				return true;
 			}
@@ -1427,7 +1427,7 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 			
-		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		async Task<bool> FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration, CancellationToken token)
 		{
 			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
 			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
@@ -1435,13 +1435,13 @@ namespace MonoDevelop.Ide
 
 			var sei = target as Project;
 			if (sei != null) {
-				if (sei.FastCheckNeedsBuild (configuration))
+				if (await sei.FastCheckNeedsBuild (configuration, token))
 					return true;
 				//TODO: respect solution level dependencies
 				var deps = new HashSet<SolutionItem> ();
-				CollectReferencedItems (sei, deps, configuration);
+				await CollectReferencedItems (sei, deps, configuration);
 				foreach (var dep in deps.OfType<Project> ()) {
-					if (dep.FastCheckNeedsBuild (configuration))
+					if (await dep.FastCheckNeedsBuild (configuration, token))
 						return true;
 				}
 				return false;
@@ -1450,7 +1450,7 @@ namespace MonoDevelop.Ide
 			var sln = target as Solution;
 			if (sln != null) {
 				foreach (var item in sln.GetAllProjects ()) {
-					if (item.FastCheckNeedsBuild (configuration))
+					if (await item.FastCheckNeedsBuild (configuration, token))
 						return true;
 				}
 				return false;
@@ -1460,11 +1460,11 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
+		async Task CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
-			foreach (var refItem in item.GetReferencedItems (configuration)) {
+			foreach (var refItem in await item.GetReferencedItems (configuration, CancellationToken.None)) {
 				if (collected.Add (refItem)) {
-					CollectReferencedItems (refItem, collected, configuration);
+					await CollectReferencedItems (refItem, collected, configuration);
 				}
 			}
 		}

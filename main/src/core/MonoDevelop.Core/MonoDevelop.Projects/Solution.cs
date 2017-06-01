@@ -438,11 +438,13 @@ namespace MonoDevelop.Projects
 			return GetAllItems<Project> ().Select (p => p.GetFlavor<T> ()).Where (p => p != null);
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);
 		}
-		
+
+		[Obsolete ("This method will be removed in future releases")]
 		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
@@ -670,6 +672,7 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.Build (monitor, configuration, operationContext);
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return SolutionExtension.NeedsBuilding (configuration);
@@ -807,7 +810,9 @@ namespace MonoDevelop.Projects
 			return RootFolder.Build (monitor, configuration, operationContext:operationContext);
 		}
 
-		/*protected virtual*/ bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		[Obsolete ("This method will be removed in future releases")]
+		/*protected virtual*/
+		bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return RootFolder.NeedsBuilding (configuration);
 		}
@@ -1230,6 +1235,7 @@ namespace MonoDevelop.Projects
 				return Solution.OnBuild (monitor, configuration, operationContext);
 			}
 
+			[Obsolete ("This method will be removed in future releases")]
 			internal protected override bool NeedsBuilding (ConfigurationSelector configuration)
 			{
 				return Solution.OnGetNeedsBuilding (configuration);

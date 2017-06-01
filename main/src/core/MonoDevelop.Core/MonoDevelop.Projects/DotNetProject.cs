@@ -26,24 +26,20 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using System.Threading;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.MD1;
-using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.MSBuild;
-using MonoDevelop.Core.Assemblies;
-using System.Globalization;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
-using MonoDevelop.Projects.MSBuild.Conditions;
+using System.Xml;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -340,7 +336,7 @@ namespace MonoDevelop.Projects
 		public LanguageBinding LanguageBinding {
 			get {
 				if (languageBinding == null) {
-					languageBinding = FindLanguage (languageName);
+					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 
 					//older projects may not have this property but may not support partial types
 					//so need to verify that the default attribute is OK
@@ -641,6 +637,7 @@ namespace MonoDevelop.Projects
 		[ThreadStatic]
 		static HashSet<DotNetProject> processedProjects;
 
+		[Obsolete]
 		internal protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			try {
@@ -656,6 +653,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete]
 		void PopulateSupportFileListInternal (FileCopySet list, ConfigurationSelector configuration)
 		{
 			if (supportReferDistance <= 2)
@@ -733,6 +731,7 @@ namespace MonoDevelop.Projects
 		//a valid culture
 		//Note: hand-written as this can get called lotsa times
 		//Note: code duplicated in prj2make/Utils.cs as TrySplitResourceName
+		[Obsolete]
 		internal static string GetResourceCulture (string fname)
 		{
 			int last_dot = -1;
@@ -779,6 +778,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete]
 		IEnumerable<string> GetAssemblyRefsRec (string fileName, HashSet<string> visited)
 		{
 			// Recursivelly finds assemblies referenced by the given assembly
@@ -823,22 +823,22 @@ namespace MonoDevelop.Projects
 			return newReferenceInformation;
 		}
 
-		protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
+		protected override async Task<List<SolutionItem>> OnGetReferencedItems (ConfigurationSelector configuration, CancellationToken token)
 		{
-			var items = new List<SolutionItem> (base.OnGetReferencedItems (configuration));
-			if (ParentSolution == null)
-				return items;
+			var result = new List<SolutionItem> ();
+			if (ParentSolution == null) {
+				return result;
+			}
 
-			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
-			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project &&
-				    (string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
-					Project rp = pref.ResolveProject (ParentSolution);
-					if (rp != null)
-						items.Add (rp);
+			foreach (var reference in await GetReferences (configuration, token)) {
+				if (reference.IsProjectReference) {
+					var item = reference.GetReferencedItem (ParentSolution);
+					if (item != null) {
+						result.Add (item);
+					}
 				}
 			}
-			return items;
+			return result;
 		}
 
 		/// <summary>
@@ -866,16 +866,28 @@ namespace MonoDevelop.Projects
 		public Task<IEnumerable<AssemblyReference>> GetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
 		{
 			return BindTask<IEnumerable<AssemblyReference>> (async ct => {
-				var res = await ProjectExtension.OnGetReferencedAssemblies (configuration);
-				
-				if (includeProjectReferences) {
-					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
-						foreach (var asm in pref.GetReferencedFileNames (configuration))
-							res.Add (new AssemblyReference (asm, pref.Aliases));
+				var result = new List<AssemblyReference> ();
+				var res = await GetReferences (configuration);
+
+				foreach (var r in await OnGetReferences (configuration, ct).ConfigureAwait (false)) {
+					if (includeProjectReferences || ! r.IsProjectReference) {
+						result.Add (r);
 					}
 				}
-				return res;
+				return result;
 			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration)
+		{
+			return BindTask (async ct => {
+				return await ProjectExtension.OnGetReferences (configuration, ct);
+			});
+		}
+
+		public Task<List<AssemblyReference>> GetReferences (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return ProjectExtension.OnGetReferences (configuration, token);
 		}
 
 		/// <summary>
@@ -883,47 +895,70 @@ namespace MonoDevelop.Projects
 		/// for example references with ReferenceOutputAssembly=false are excluded
 		/// </summary>
 		/// <param name="configuration">Configuration.</param>
+		public async Task<List<DotNetProject>> GetReferencedAssemblyProjects (ConfigurationSelector configuration, CancellationToken token)
+		{
+			var result = new List<DotNetProject> ();
+			if (ParentSolution == null){
+				return result;
+			}
+
+			foreach (var r in await OnGetReferences (configuration, token).ConfigureAwait (false)) {
+				if (r.IsProjectReference && r.ReferenceOutputAssembly && r.GetReferencedItem (ParentSolution) is DotNetProject p) {
+					result.Add (p);
+				}
+			}
+			return result;
+		}
+
+		[Obsolete("Use overload that returns a Task")]
 		public IEnumerable<DotNetProject> GetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
-			return ProjectExtension.OnGetReferencedAssemblyProjects (configuration);
+			return GetReferencedAssemblyProjects (configuration, CancellationToken.None).Result;
 		}
 
 		internal protected virtual async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
-			List<AssemblyReference> result = new List<AssemblyReference> ();
-			if (CheckUseMSBuildEngine (configuration)) {
-				// Get the references list from the msbuild project
-				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				try {
-					var configs = GetConfigurations (configuration, false);
-					var globalProperties = CreateGlobalProperties ();
-
-					AssemblyReference [] refs;
-					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						refs = await builder.ResolveAssemblyReferences (configs, globalProperties, CancellationToken.None);
-					foreach (var r in refs)
-						result.Add (r);
-				} finally {
-					builder.ReleaseReference ();
+			var result = new List<AssemblyReference> ();
+			foreach (var r in await OnGetReferences (configuration, CancellationToken.None).ConfigureAwait (false)) {
+				if (!r.IsProjectReference) {
+					result.Add (r);
 				}
-			} else {
-				foreach (ProjectReference pref in References) {
-					if (pref.ReferenceType != ReferenceType.Project) {
-						foreach (string asm in pref.GetReferencedFileNames (configuration))
-							result.Add (new AssemblyReference (asm, pref.Aliases));
+			}
+			return result;
+		}
+
+		[Obsolete]
+		async Task<List<AssemblyReference>> GetReferencedAssembliesDeprecated (ConfigurationSelector configuration)
+		{
+			var result = new List<AssemblyReference> ();
+
+			var ctx = new MD1.ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
+			foreach (ProjectReference pref in References) {
+				if (!string.IsNullOrEmpty (pref.Condition) && !MSBuild.Conditions.ConditionParser.ParseAndEvaluate (pref.Condition, ctx))
+					continue;
+
+				foreach (string asm in pref.GetReferencedFileNames (configuration)) {
+					var metadata = new Dictionary<string, string> { { "Aliases", pref.Aliases } };
+					if (pref.ReferenceType == ReferenceType.Project) {
+						var refProj = ParentSolution != null ? pref.ResolveProject (ParentSolution) : null;
+						if (refProj != null) {
+							metadata ["MSBuildSourceProjectFile"] = refProj.FileName;
+						}
 					}
+					result.Add (new AssemblyReference (asm, pref.Aliases));
 				}
-				var mscorlib = AssemblyContext.GetAssemblyFullName ("mscorlib", TargetFramework);
-				var mscorlibPath = AssemblyContext.GetAssemblyLocation (mscorlib, TargetFramework);
-				if (!result.Any (ar => ar.FilePath == mscorlibPath))
-					result.Add (new AssemblyReference (mscorlibPath));
+			}
 
-				var core = AssemblyContext.GetAssemblyFullName ("System.Core", TargetFramework);
-				var corePath = AssemblyContext.GetAssemblyLocation (core, TargetFramework);
-				if (!string.IsNullOrEmpty (corePath)) {
-					if (!result.Any (ar => ar.FilePath == corePath))
-						result.Add (new AssemblyReference (corePath));
-				}
+			var mscorlib = AssemblyContext.GetAssemblyFullName ("mscorlib", TargetFramework);
+			var mscorlibPath = AssemblyContext.GetAssemblyLocation (mscorlib, TargetFramework);
+			if (!result.Any (ar => ar.FilePath == mscorlibPath))
+				result.Add (new AssemblyReference (mscorlibPath));
+
+			var core = AssemblyContext.GetAssemblyFullName ("System.Core", TargetFramework);
+			var corePath = AssemblyContext.GetAssemblyLocation (core, TargetFramework);
+			if (!string.IsNullOrEmpty (corePath)) {
+				if (!result.Any (ar => ar.FilePath == corePath))
+					result.Add (new AssemblyReference (corePath));
 			}
 
 			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
@@ -974,8 +1009,10 @@ namespace MonoDevelop.Projects
 						result.Add (ar);
 				}
 			}
+
 			return result;
 		}
+
 
 		public Task<IEnumerable<PackageDependency>> GetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
@@ -987,51 +1024,81 @@ namespace MonoDevelop.Projects
 		internal protected virtual async Task<List<PackageDependency>> OnGetPackageDependencies (ConfigurationSelector configuration, CancellationToken cancellationToken)
 		{
 			var result = new List<PackageDependency> ();
-			if (CheckUseMSBuildEngine (configuration)) {
-				// Get the references list from the msbuild project
-				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				try {
-					var configs = GetConfigurations (configuration, false);
-					var globalProperties = CreateGlobalProperties ();
-
-					PackageDependency [] dependencies;
-					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-						dependencies = await builder.ResolvePackageDependencies (configs, globalProperties, cancellationToken);
-					foreach (var d in dependencies)
-						result.Add (d);
-				} finally {
-					builder.ReleaseReference ();
-				}
+			if (!CheckUseMSBuildEngine (configuration)) {
+				return result;
 			}
+
+			// Get the references list from the msbuild project
+			RemoteProjectBuilder builder = await GetProjectBuilder ();
+			try {
+				var configs = await GetConfigurations (configuration, false);
+				var globalProperties = CreateGlobalProperties ();
+
+				PackageDependency [] dependencies;
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+					dependencies = await builder.ResolvePackageDependencies (configs, globalProperties, cancellationToken);
+				foreach (var d in dependencies)
+					result.Add (d);
+			} finally {
+				builder.ReleaseReference ();
+			}
+
 			return result;
 		}
 
+		[Obsolete("Use MSBuild")]
 		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null) {
 				yield break;
 			}
-			var ctx = new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration));
-			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project && pref.ReferenceOutputAssembly &&
-					(string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, ctx))) {
-					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
-					if (rp != null)
-						yield return rp;
+
+			foreach (var reference in GetReferences (configuration).Result) {
+				if (reference.IsProjectReference) {
+					var item = reference.GetReferencedItem (ParentSolution);
+					if (item is DotNetProject p) {
+						yield return p;
+					}
 				}
 			}
 		}
 
-		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual async Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
 		{
-			var handler = new MD1DotNetProjectHandler (this);
-			return handler.RunTarget (monitor, "Build", configuration);
+			if (!CheckUseMSBuildEngine (configuration)) {
+#pragma warning disable 618
+				return await OnGetReferencesDeprecated (configuration);
+#pragma warning restore 618
+			}
+
+			RemoteProjectBuilder builder = await GetProjectBuilder ();
+			try {
+				var configs = await GetConfigurations (configuration, false);
+				var globalProperties = CreateGlobalProperties ();
+
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration))) {
+					var refs = await builder.ResolveReferences (configs, globalProperties, CancellationToken.None);
+					return new List<AssemblyReference> (refs);
+				}
+			} finally {
+				builder.ReleaseReference ();
+			}
 		}
 
-		protected override Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		[Obsolete]
+		async Task<List<AssemblyReference>> OnGetReferencesDeprecated (ConfigurationSelector configuration)
 		{
-			var handler = new MD1DotNetProjectHandler (this);
-			return handler.RunTarget (monitor, "Clean", configuration);
+			var list = await GetReferencedAssembliesDeprecated (configuration);
+
+			var items = new List<SolutionItem> (base.OnGetReferencedItems (configuration));
+			foreach (var item in items.OfType<Project> ()) {
+				list.Add (new AssemblyReference (
+					item.GetOutputFileName (configuration),
+					new Dictionary<string, string> { { "MSBuildSourceProjectFile", item.FileName } }
+				));
+			}
+
+			return list;
 		}
 
 		protected internal override Task OnSave (ProgressMonitor monitor)
@@ -1041,11 +1108,6 @@ namespace MonoDevelop.Projects
 			if (targetFramework == null)
 				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (ToolsVersion));
 			return base.OnSave (monitor);
-		}
-
-		LanguageBinding FindLanguage (string name)
-		{
-			return LanguageBindingService.GetBindingPerLanguageName (languageName);
 		}
 
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
@@ -1087,6 +1149,7 @@ namespace MonoDevelop.Projects
 				return null;
 		}
 
+		[Obsolete]
 		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			if (base.CheckNeedsBuild (configuration))
@@ -1125,9 +1188,10 @@ namespace MonoDevelop.Projects
 			var config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			return Files.Any (file => file.BuildAction == BuildAction.EmbeddedResource
 					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
-					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
+					&& MD1.MD1DotNetProjectHandler.IsResgenRequired (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
 		}
 
+		[Obsolete]
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			var outputBuildTime = base.OnGetLastBuildTime (configuration);
@@ -1168,13 +1232,20 @@ namespace MonoDevelop.Projects
 				return exeFile + ".mdb";
 		}
 
+		[Obsolete ("Use the overload that returns a Task")]
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
+		{
+			return GetUserAssemblyPaths (configuration, CancellationToken.None).Result;;
+		}
+
+		public async Task<IList<string>> GetUserAssemblyPaths (ConfigurationSelector configuration, CancellationToken token)
 		{
 			if (ParentSolution == null)
 				return null;
 			//return all projects in the sln in case some are loaded dynamically
 			//FIXME: should we do this for the whole workspace?
-			return ParentSolution.RootFolder.GetAllBuildableEntries (configuration).OfType<DotNetProject> ()
+			var entries = await ParentSolution.RootFolder.GetAllBuildableEntries (configuration, token).ConfigureAwait (false);
+			return entries.OfType<DotNetProject> ()
 				.Select (d => (string) d.GetOutputFileName (configuration))
 				.Where (d => !string.IsNullOrEmpty (d)).ToList ();
 		}
@@ -1336,14 +1407,16 @@ namespace MonoDevelop.Projects
 			return baseFiles;
 		}
 
+		[Obsolete]
 		internal Task<BuildResult> Compile (ProgressMonitor monitor, BuildData buildData)
 		{
 			return ProjectExtension.OnCompile (monitor, buildData);
 		}
 
+		[Obsolete]
 		protected virtual Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
 		{
-			return MD1DotNetProjectHandler.Compile (monitor, this, buildData);
+			return MD1.MD1DotNetProjectHandler.Compile (monitor, this, buildData);
 		}
 
 		protected override bool OnGetIsCompileable (string fileName)
@@ -1708,7 +1781,7 @@ namespace MonoDevelop.Projects
 
 			var dotNetExecutionCommand = executionCommand as DotNetExecutionCommand;
 			if (dotNetExecutionCommand != null) {
-				dotNetExecutionCommand.UserAssemblyPaths = GetUserAssemblyPaths (configuration);
+				dotNetExecutionCommand.UserAssemblyPaths = await GetUserAssemblyPaths (configuration, monitor.CancellationToken);
 				externalConsole = dotNetExecutionCommand.ExternalConsole;
 				pauseConsole = dotNetExecutionCommand.PauseConsoleOutput;
 			}
@@ -1870,22 +1943,28 @@ namespace MonoDevelop.Projects
 				return Project.OnGetDefaultTargetPlatform (projectCreateInfo);
 			}
 
+			internal protected override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
+			{
+				return Project.OnGetReferences (configuration, token);
+			}
+
+			[Obsolete]
 			internal protected override Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblies (configuration);
 			}
 
+			[Obsolete]
 			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblyProjects (configuration);
 			}
 
-#pragma warning disable 672 // Member overrides obsolete member
+			[Obsolete]
 			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 			{
 				return Project.OnCreateExecutionCommand (configSel, configuration);
 			}
-#pragma warning restore 672 // Member overrides obsolete member
 
 			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 			{
@@ -1907,6 +1986,7 @@ namespace MonoDevelop.Projects
 				Project.OnReferencedAssembliesChanged ();
 			}
 
+			[Obsolete]
 			internal protected override Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
 			{
 				return Project.OnCompile (monitor, buildData);

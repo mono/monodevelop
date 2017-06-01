@@ -25,10 +25,9 @@
 // THE SOFTWARE.
 
 
-using System;
 using UnitTests;
 using NUnit.Framework;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -42,7 +41,7 @@ namespace MonoDevelop.Projects
 			var project = new MonoDevelop.CSharp.Project.CSharpProject { Name = "foo" };
 			folder.AddItem (project);
 
-			Assert.IsNotNull (folder.GetProjectContainingFile (project.FileName), "#1");
+			Assert.IsNotNull (folder.GetProjectsContainingFile (project.FileName).Single (), "#1");
 
 			project.Dispose ();
 		}

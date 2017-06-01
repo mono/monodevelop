@@ -437,12 +437,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Generating GUI code for project '{0}'...", project.Name));
 				
-				timer.Trace ("Copy support files");
-				
-				// Make sure the referenced assemblies are up to date. It is necessary to do
-				// it now since they may contain widget libraries.
-				project.CopySupportFiles (monitor, configuration);
-				
 				timer.Trace ("Update libraries");
 				
 				info.GuiBuilderProject.UpdateLibraries ();

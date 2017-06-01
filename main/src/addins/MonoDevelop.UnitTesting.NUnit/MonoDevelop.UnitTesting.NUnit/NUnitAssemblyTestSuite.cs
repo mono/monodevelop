@@ -58,6 +58,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		static Queue<LoadData> loadQueue = new Queue<LoadData> ();
 		static bool loaderRunning;
 
+		[Obsolete("This will be removed in future releases")]
 		public virtual IList<string> UserAssemblyPaths {
 			get {
 				return null;

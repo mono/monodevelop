@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -419,7 +420,8 @@ namespace MonoDevelop.Projects
 		{
 			return GetAllItems<SolutionFolderItem> ();
 		}
-		
+
+		[Obsolete ("This method will be removed in future releases")]
 		public ReadOnlyCollection<T> GetAllItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			List<T> list = new List<T> ();
@@ -433,9 +435,10 @@ namespace MonoDevelop.Projects
 			GetAllItems<Project> (list, this);
 			return list.AsReadOnly ();
 		}
-		
+
 		// The projects are returned in the order
 		// they should be compiled, acording to their references.
+		[Obsolete ("This method will be removed in future releases")]
 		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			List<Project> list = new List<Project> ();
@@ -454,23 +457,41 @@ namespace MonoDevelop.Projects
 					GetAllItems<T> (list, ce);
 			}
 		}
-		
-		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
-		{
-			var list = new List<SolutionItem> ();
-			GetAllBuildableEntries (list, configuration, includeExternalReferences);
-			if (topologicalSort)
-				return SolutionItem.TopologicalSort<SolutionItem> (list, configuration);
-			else
-				return list.AsReadOnly ();
-		}
-		
+
+		[Obsolete("Use the overload that returns a Task")]
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration)
 		{
 			return GetAllBuildableEntries (configuration, false, false);
 		}
-		
-		void GetAllBuildableEntries (List<SolutionItem> list, ConfigurationSelector configuration, bool includeExternalReferences)
+
+		[Obsolete ("Use the overload that returns a Task")]
+		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
+		{
+			return GetAllBuildableEntries (configuration, topologicalSort, includeExternalReferences, CancellationToken.None).Result;
+		}
+
+		public Task<ReadOnlyCollection<SolutionItem>> GetAllBuildableEntries (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return GetAllBuildableEntries (configuration, false, false, token);
+		}
+
+		public async Task<ReadOnlyCollection<SolutionItem>> GetAllBuildableEntries (
+			ConfigurationSelector configuration,
+			bool topologicalSort,
+			bool includeExternalReferences,
+			CancellationToken token)
+		{
+			var list = new List<SolutionItem> ();
+			await GetAllBuildableEntries (list, configuration, includeExternalReferences, token);
+			if (topologicalSort)
+				return await SolutionItem.TopologicalSort (list, configuration, token);
+			else
+				return list.AsReadOnly ();
+		}
+
+		async Task GetAllBuildableEntries (
+			List<SolutionItem> list, ConfigurationSelector configuration,
+			bool includeExternalReferences, CancellationToken token)
 		{
 			if (ParentSolution == null)
 				return;
@@ -480,13 +501,15 @@ namespace MonoDevelop.Projects
 
 			foreach (SolutionFolderItem item in Items) {
 				if (item is SolutionFolder)
-					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
+					await ((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences, token);
 				else if ((item is SolutionItem) && conf.BuildEnabledForItem ((SolutionItem) item) && ((SolutionItem)item).SupportsBuild ())
-					GetAllBuildableReferences (list, (SolutionItem)item, configuration, conf, includeExternalReferences, false);
+					await GetAllBuildableReferences (list, (SolutionItem)item, configuration, conf, includeExternalReferences, false, token);
 			}
 		}
 
-		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf, bool includeExternalReferences, bool isDirectReference)
+		async Task GetAllBuildableReferences (
+			List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration,
+			SolutionConfiguration conf, bool includeExternalReferences, bool isDirectReference, CancellationToken token)
 		{
 			if (list.Contains (item) || !conf.BuildEnabledForItem (item))
 				return;
@@ -495,8 +518,8 @@ namespace MonoDevelop.Projects
 				return;
 			list.Add (item);
 			if (includeExternalReferences) {
-				foreach (var it in item.GetReferencedItems (configuration))
-					GetAllBuildableReferences (list, it, configuration, conf, includeExternalReferences, true);
+				foreach (var it in await item.GetReferencedItems (configuration, token))
+					await GetAllBuildableReferences (list, it, configuration, conf, includeExternalReferences, true, token);
 			}
 		}
 
@@ -586,7 +609,7 @@ namespace MonoDevelop.Projects
 
 			ReadOnlyCollection<SolutionItem> allProjects;
 			try {
-				allProjects = GetAllBuildableEntries (configuration, true, true);
+				allProjects = await GetAllBuildableEntries (configuration, true, true, monitor.CancellationToken);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
@@ -615,7 +638,7 @@ namespace MonoDevelop.Projects
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
 			try {
-				allProjects = GetAllBuildableEntries (configuration, true, true);
+				allProjects = await GetAllBuildableEntries (configuration, true, true, monitor.CancellationToken);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
@@ -664,7 +687,8 @@ namespace MonoDevelop.Projects
 
 				// Get a list of the status objects for all items on which this one depends
 
-				var refStatus = item.GetReferencedItems (configuration).Select (it => {
+				var refItems = await item.GetReferencedItems (configuration, monitor.CancellationToken);
+				var refStatus = refItems.Select (it => {
 					BuildStatus bs;
 					buildStatus.TryGetValue (it, out bs);
 					return bs;
@@ -704,11 +728,13 @@ namespace MonoDevelop.Projects
 			return cres;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			return Items.OfType<IBuildTarget>().Any (t => t.NeedsBuilding (configuration));
+			return true;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			// Return the min value, since that the last time all items in the

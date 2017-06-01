@@ -397,51 +397,6 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test()]
-		public async Task NeedsBuilding ()
-		{
-			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
-			
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
-			Assert.IsNotNull (p);
-			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("library1");
-			Assert.IsNotNull (lib1);
-			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
-			Assert.IsNotNull (lib2);
-			
-			SolutionConfigurationSelector config = (SolutionConfigurationSelector) "Debug";
-			
-			Assert.IsTrue (p. NeedsBuilding (config));
-			Assert.IsTrue (lib1.NeedsBuilding (config));
-			Assert.IsTrue (lib2.NeedsBuilding (config));
-			
-			// Build the project and the references
-			
-			BuildResult res = await p.Build (Util.GetMonitor (), config, true);
-			foreach (BuildError er in res.Errors)
-				Console.WriteLine (er);
-			Assert.AreEqual (0, res.ErrorCount);
-			Assert.AreEqual (0, res.WarningCount);
-			Assert.AreEqual (3, res.BuildCount);
-
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb (p, "console-with-libs.exe"))));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb (lib1, "library1.dll"))));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb (lib2, "library2.dll"))));
-			
-			// Build the project, but not the references
-			
-			res = await p.Build (Util.GetMonitor (), config, false);
-			Assert.AreEqual (0, res.ErrorCount);
-			Assert.AreEqual (0, res.WarningCount);
-			Assert.AreEqual (1, res.BuildCount);
-
-			sol.Dispose ();
-		}
-		
-		[Test()]
 		public async Task BuildingAndCleaning ()
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
@@ -756,9 +711,10 @@ namespace MonoDevelop.Projects
 
 			var app = sol.GetAllItems<DotNetProject> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
 
-			// The console app references an unsupported library. The build of the project should fail.
+			// The console app references two unsupported libraries. The build of the project should fail.
 			res = await app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
-			Assert.IsTrue (res.ErrorCount == 1);
+			//both libraries have errors due to the parallel build
+			Assert.IsTrue (res.ErrorCount == 2);
 
 			// A solution build should succeed if it has unbuildable projects but those projects are not referenced by buildable projects
 			app.References.Clear ();

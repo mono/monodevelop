@@ -117,16 +117,9 @@ namespace MonoDevelop.Packaging
 			return true;
 		}
 
-		protected override bool OnGetCanExecute (Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
-			return false;
-		}
-
-		protected override void PopulateOutputFileList (
-			List<FilePath> list,
-			ConfigurationSelector configuration)
-		{
-			list.Add (OnGetOutputFileName (configuration));
+			return base.OnGetSupportedFeatures () | ~ProjectFeatures.Execute;
 		}
 
 		protected override void OnPrepareForEvaluation (MSBuildProject project)

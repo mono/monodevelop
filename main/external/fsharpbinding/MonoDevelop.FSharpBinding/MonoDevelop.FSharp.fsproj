@@ -156,11 +156,6 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\bin\Xwt.Gtk.dll</HintPath>
     </Reference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
-      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
-      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>

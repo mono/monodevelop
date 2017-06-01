@@ -52,6 +52,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		string resultsPath;
 		string storeId;
 
+		[Obsolete ("This will be removed in future releases")]
 		public override IList<string> UserAssemblyPaths {
 			get {
 				return project.GetUserAssemblyPaths (IdeApp.Workspace.ActiveConfiguration);

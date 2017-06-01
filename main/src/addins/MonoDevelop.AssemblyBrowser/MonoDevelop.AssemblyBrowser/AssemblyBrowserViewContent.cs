@@ -170,8 +170,8 @@ namespace MonoDevelop.AssemblyBrowser
 					var netProject = project as DotNetProject;
 					if (netProject == null)
 						continue;
-					foreach (var file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-						if (!System.IO.File.Exists (file.FilePath))
+					foreach (var file in await netProject.GetReferences (ConfigurationSelector.Default)) {
+						if (file.IsProjectReference || !System.IO.File.Exists (file.FilePath))
 							continue;
 						Widget.AddReferenceByFileName (file.FilePath); 
 					}

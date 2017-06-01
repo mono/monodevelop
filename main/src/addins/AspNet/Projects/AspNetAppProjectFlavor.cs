@@ -154,7 +154,6 @@ namespace MonoDevelop.AspNet.Projects
 				BaseDirectory = Project.BaseDirectory,
 				TargetRuntime = Project.TargetRuntime,
 				TargetFramework = Project.TargetFramework,
-				UserAssemblyPaths = Project.GetUserAssemblyPaths (config),
 				EnvironmentVariables = configuration.EnvironmentVariables,
 			};
 		}
@@ -170,8 +169,10 @@ namespace MonoDevelop.AspNet.Projects
 			//check XSP is available
 
 			var cfg = GetConfiguration (configuration);
-			var cmd = CreateExecutionCommand (configuration, cfg);
+			var cmd = (AspNetExecutionCommand) CreateExecutionCommand (configuration, cfg);
 			var browserExcTarget = context.ExecutionTarget as BrowserExecutionTarget;
+
+			cmd.UserAssemblyPaths = await Project.GetUserAssemblyPaths (configuration, monitor.CancellationToken);
 
 			OperationConsole console = null;
 
@@ -625,21 +626,6 @@ namespace MonoDevelop.AspNet.Projects
 							files.Add (file);
 
 			return files;
-		}
-
-		protected override void OnPopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
-		{
-			base.OnPopulateSupportFileList (list, configuration);
-
-			//HACK: workaround for MD not local-copying package references
-			foreach (MonoDevelop.Projects.ProjectReference projectReference in Project.References) {
-				if (projectReference.Package != null && projectReference.Package.Name == "system.web.mvc") {
-					if (projectReference.ReferenceType == ReferenceType.Package)
-						foreach (SystemAssembly assem in projectReference.Package.Assemblies)
-							list.Add (assem.Location);
-					break;
-				}
-			}
 		}
 
 		public string GetAspNetMvcVersion ()

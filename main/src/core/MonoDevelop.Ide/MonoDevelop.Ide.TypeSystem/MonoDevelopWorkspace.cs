@@ -455,7 +455,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var oldProjectData = GetProjectData (projectId);
 			var projectData = CreateProjectData (projectId);
 
-			var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
+			var references = await CreateReferences (p, projectId, token).ConfigureAwait (false);
 			if (token.IsCancellationRequested)
 				return null;
 			var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
@@ -483,8 +483,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions (config) : null,
 				documents.Item1,
-				CreateProjectReferences (p, token),
-				references,
+				references.Item2,
+				references.Item1,
 				additionalDocuments: documents.Item2
 			);
 			projectData.Info = info;
@@ -630,100 +630,74 @@ namespace MonoDevelop.Ide.TypeSystem
 			typeof(System.Xml.XmlDocument).Assembly.Location,                // System.Xml
 		};
 
-
-		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, ProjectId projectId, CancellationToken token)
+		async Task<ValueTuple<List<MetadataReference>,List<ProjectReference>>> CreateReferences (
+			MonoDevelop.Projects.Project proj, ProjectId projectId, CancellationToken token)
 		{
-			List<MetadataReference> result = new List<MetadataReference> ();
+			var assemblyRefs = new List<MetadataReference> ();
 
 			var netProject = proj as MonoDevelop.Projects.DotNetProject;
 			if (netProject == null) {
 				// create some default references for unsupported project types.
 				foreach (var asm in DefaultAssemblies) {
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm);
-					result.Add (metadataReference);
+					assemblyRefs.Add (metadataReference);
 				}
-				return result;
+				return (assemblyRefs, null);
 			}
+
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
-			var hashSet = new HashSet<string> (FilePath.PathComparer);
+
+			var projectRefs = new List<ProjectReference> ();
+			var assembliesHash = new HashSet<string> (FilePath.PathComparer);
+			var projectsHash = new HashSet<MonoDevelop.Projects.DotNetProject> ();
+
 
 			try {
-				foreach (var file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
+				var references = await netProject.GetReferences (configurationSelector).ConfigureAwait (false);
+				foreach (var reference in references) {
 					if (token.IsCancellationRequested)
-						return result;
-					string fileName;
-					if (!Path.IsPathRooted (file.FilePath)) {
-						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file.FilePath);
-					} else {
-						fileName = file.FilePath.FullPath;
-					}
-					if (!hashSet.Add (fileName))
-						continue;
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
-					if (metadataReference == null)
-						continue;
-					metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
-					result.Add (metadataReference);
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting referenced assemblies", e);
-			}
+						return (assemblyRefs, projectRefs);
 
-			try {
-				foreach (var pr in netProject.GetReferencedItems (configurationSelector)) {
-					if (token.IsCancellationRequested)
-						return result;
-					var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
-					if (referencedProject == null)
-						continue;
-					if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
-						var fileName = referencedProject.GetOutputFileName (configurationSelector);
-						if (!hashSet.Add (fileName))
+					// if it's a project reference
+					if (reference.IsProjectReference) {
+						if (!reference.ReferenceOutputAssembly) {
 							continue;
-						var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
-						if (metadataReference != null)
-							result.Add (metadataReference);
+						}
+						var referencedProject = reference.GetReferencedItem (proj.ParentSolution) as MonoDevelop.Projects.DotNetProject;
+						if (referencedProject == null || !projectsHash.Add (referencedProject)) {
+							continue;
+						}
+
+						if(!TypeSystemService.IsOutputTrackedProject (referencedProject)) {
+							projectRefs.Add (new ProjectReference (
+								GetOrCreateProjectId (referencedProject),
+								ImmutableArray<string>.Empty.AddRange (reference.EnumerateAliases ())));
+							continue;
+						}
+
+						//it's an output tracked project, treat it as an assembly ref
 					}
+
+					string fileName;
+					if (!Path.IsPathRooted (reference.FilePath)) {
+						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), reference.FilePath);
+					} else {
+						fileName = reference.FilePath.FullPath;
+					}
+					if (!assembliesHash.Add (fileName)) {
+						continue;
+					}
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
+					if (metadataReference == null) {
+						continue;
+					}
+					metadataReference = metadataReference.WithAliases (reference.EnumerateAliases ());
+					assemblyRefs.Add (metadataReference);
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting referenced projects", e);
+				LoggingService.LogError ("Error while getting references", e);
 			}
-			return result;
-		}
-
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
-		{
-			var netProj = p as MonoDevelop.Projects.DotNetProject;
-			if (netProj == null)
-				yield break;
-
-			//GetReferencedAssemblyProjects returns filtered projects, like:
-			//MSBuild Condtion='something'
-			//pref.ReferenceOutputAssembly
-			//and for iOS/Android extensions
-			MonoDevelop.Projects.DotNetProject [] referencedProjects;
-			try {
-				referencedProjects = netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default).ToArray ();
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting referenced projects.", e);
-				yield break;
-			};
-			var addedProjects = new HashSet<MonoDevelop.Projects.DotNetProject> ();
-			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
-				//But since GetReferencedAssemblyProjects is returing DotNetProject, we lose information about
-				//reference Aliases, hence we have to loop over references
-				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
-				if (referencedProject == null)
-					continue;
-				if (!referencedProjects.Contains (referencedProject))
-					continue;
-				if (!addedProjects.Add (referencedProject))
-					continue;
-				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
-					continue;
-				var splittedAliases = (pr.Aliases ?? "").Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-				yield return new ProjectReference (GetOrCreateProjectId (referencedProject), ImmutableArray<string>.Empty.AddRange (splittedAliases));
-			}
+			return (assemblyRefs, projectRefs);
 		}
 
 		#region Open documents

@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // MSBuildProjectExtension.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using MonoDevelop.Projects.MSBuild;
 using Mono.Addins;
 using System.Linq;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -197,11 +198,13 @@ namespace MonoDevelop.Projects
 			return next.OnCreateProjectItem (item);
 		}
 
+		[Obsolete("Use MSBuild")]
 		internal protected virtual void OnPopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			next.OnPopulateSupportFileList (list, configuration);
 		}
 
+		[Obsolete("Use MSBuild")]
 		internal protected virtual void OnPopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			next.OnPopulateOutputFileList (list, configuration);
@@ -218,9 +221,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete("Use the overload the returns a Task")]
 		internal protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			return next.OnFastCheckNeedsBuild (configuration);
+		}
+
+		internal protected virtual Task<bool> OnFastCheckNeedsBuild (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return next.OnFastCheckNeedsBuild (configuration, token);
 		}
 
 		#endregion

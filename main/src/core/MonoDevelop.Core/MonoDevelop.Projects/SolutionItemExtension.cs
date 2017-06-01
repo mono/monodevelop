@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -129,9 +130,15 @@ namespace MonoDevelop.Projects
 			return next.OnGetExecutionDependencies ();
 		}
 
+		[Obsolete ("Use the overload that returns a Task")]
 		internal protected virtual IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 		{
 			return next.OnGetReferencedItems (configuration);
+		}
+
+		internal protected virtual Task<List<SolutionItem>> OnGetReferencedItems (ConfigurationSelector configuration, CancellationToken token)
+		{
+			return next.OnGetReferencedItems (configuration, token);
 		}
 
 		internal protected virtual void OnSetFormat (MSBuildFileFormat format)
@@ -174,6 +181,7 @@ namespace MonoDevelop.Projects
 			return next.OnClean (monitor, configuration, operationContext);
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		internal protected virtual bool OnNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return next.OnNeedsBuilding (configuration);
@@ -184,9 +192,10 @@ namespace MonoDevelop.Projects
 			return next.OnBuild (monitor, configuration, operationContext);
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		internal protected virtual DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
-			return next.OnGetLastBuildTime (configuration);
+			return DateTime.MinValue;
 		}
 
 		#endregion

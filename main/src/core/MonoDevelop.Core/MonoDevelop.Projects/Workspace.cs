@@ -113,6 +113,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return Items.OfType<IBuildTarget> ().Any (t => t.NeedsBuilding (configuration));

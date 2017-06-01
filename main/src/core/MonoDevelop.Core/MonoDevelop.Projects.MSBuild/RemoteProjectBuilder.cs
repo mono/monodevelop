@@ -372,7 +372,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
+		public async Task<AssemblyReference[]> ResolveReferences (ProjectConfigurationInfo[] configurations, Dictionary<string, string> globalProperties, CancellationToken cancellationToken)
 		{
 			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
@@ -390,24 +390,23 @@ namespace MonoDevelop.Projects.MSBuild
 				try {
 					BeginOperation ();
 					result = await builder.Run (
-								configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
-								new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, globalProperties, taskId
+						configurations, -1, MSBuildEvent.None, MSBuildVerbosity.Quiet,
+						new [] { "ResolveReferences" }, new [] { "ReferencePath" }, null, globalProperties, taskId
 						).ConfigureAwait (false);
 				} catch (Exception ex) {
 					await CheckDisconnected ().ConfigureAwait (false);
-					LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
+					LoggingService.LogError ("ResolveReferences failed", ex);
 					return new AssemblyReference [0];
 				} finally {
 					cr.Dispose ();
 					EndOperation ();
 				}
 
-				MSBuildEvaluatedItem[] items;
-				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-					string aliases;
-					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
-				} else
+				if (result.Items.TryGetValue ("ReferencePath", out MSBuildEvaluatedItem [] items) && items != null) {
+					refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata)).ToArray ();
+				} else {
 					refs = new AssemblyReference [0];
+				}
 
 				referenceCache [id] = refs;
 			}
