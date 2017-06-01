@@ -184,6 +184,8 @@ namespace MonoDevelop.Components
 			Accessible.SetLabel (GettextCatalog.GetString ("Breadcrumb Bar"));
 			Accessible.Description = GettextCatalog.GetString ("Jump to definitions in the current file");
 
+			CanFocus = true;
+
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
 				           EventMask.LeaveNotifyMask |
@@ -304,7 +306,10 @@ namespace MonoDevelop.Components
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
+			Gdk.Rectangle focusRect = new Gdk.Rectangle (0, 0, 0, 0);
+
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				int index = 0;
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
 				ctx.Fill ();
@@ -322,7 +327,7 @@ namespace MonoDevelop.Components
 				int textTopPadding = topPadding + (height - textHeight) / 2;
 				int xpos = leftPadding, ypos = topPadding;
 
-				for (int i = 0; i < leftPath.Length; i++) {
+				for (int i = 0; i < leftPath.Length; i++, index++) {
 					bool last = i == leftPath.Length - 1;
 
 					// Reduce the item size when required
@@ -335,6 +340,10 @@ namespace MonoDevelop.Components
 					if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
 
+					if (index == focusedPathIndex) {
+						Console.WriteLine ($"Found {index}");
+						focusRect = new Gdk.Rectangle (x - padding, 0, itemWidth + (padding * 2) ,0);
+					}
 					int textOffset = 0;
 					if (leftPath [i].DarkIcon != null) {
 						int iy = (height - (int)leftPath [i].DarkIcon.Height) / 2 + topPadding;
@@ -382,7 +391,7 @@ namespace MonoDevelop.Components
 				}
 				
 				int xposRight = Allocation.Width - rightPadding;
-				for (int i = 0; i < rightPath.Length; i++) {
+				for (int i = 0; i < rightPath.Length; i++, index++) {
 					//				bool last = i == rightPath.Length - 1;
 
 					// Reduce the item size when required
@@ -396,7 +405,12 @@ namespace MonoDevelop.Components
 
 					if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
-					
+
+					if (index == focusedPathIndex) {
+						Console.WriteLine ($"Found right {index}");
+						focusRect = new Gdk.Rectangle (x - padding, 0, itemWidth + (padding * 2), 0);
+					}
+
 					int textOffset = 0;
 					if (rightPath [i].DarkIcon != null) {
 						ctx.DrawImage (this, rightPath [i].DarkIcon, x, ypos);
@@ -436,8 +450,14 @@ namespace MonoDevelop.Components
 				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
 				ctx.LineWidth = 1;
 				ctx.Stroke ();
-			}
 
+				if (HasFocus) {
+					int focusY = topPadding - buttonPadding;
+					int focusHeight = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
+
+					Gtk.Style.PaintFocus (Style, GdkWindow, State, Allocation, this, "label", focusRect.X, focusY, focusRect.Width, focusHeight);
+				}
+			}
 			return true;
 		}
 
@@ -517,12 +537,10 @@ namespace MonoDevelop.Components
 				idx++;
 			}
 
-			Console.WriteLine ($"path item: {idx}");
 			if (idx == Path.Length) {
 				return;
 			}
 
-			Console.WriteLine ("Showing menu");
 			ShowMenu ();
 		}
 
@@ -584,6 +602,13 @@ namespace MonoDevelop.Components
 				menuWidget.Destroy ();
 				menuWidget = null;
 			}
+
+			var window = Toplevel as Gtk.Window;
+			if (window != null) {
+				// Present the window because on macOS the main window remains unfocused otherwise.
+				window.Present ();
+			}
+			GrabFocus ();
 		}
 		
 		public int GetHoverXPosition (out int w)
@@ -788,6 +813,62 @@ namespace MonoDevelop.Components
 			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();
+		}
+
+		int focusedPathIndex = -1;
+		bool alreadyHaveFocus = false;
+		protected override bool OnFocused (DirectionType direction)
+		{
+			bool ret = true;
+
+			switch (direction) {
+			case DirectionType.TabForward:
+			case DirectionType.Right:
+				if (!alreadyHaveFocus) {
+					focusedPathIndex = 0;
+				} else {
+					focusedPathIndex++;
+
+					if (focusedPathIndex >= leftPath.Length + rightPath.Length) {
+						ret = false;
+					}
+				}
+				break;
+
+			case DirectionType.TabBackward:
+			case DirectionType.Left:
+				if (!alreadyHaveFocus) {
+					focusedPathIndex = leftPath.Length + rightPath.Length - 1;
+				} else {
+					focusedPathIndex--;
+
+					if (focusedPathIndex < 0) {
+						ret = false;
+					}
+				}
+				break;
+			}
+
+			if (ret) {
+				alreadyHaveFocus = true;
+				GrabFocus ();
+			} else {
+				alreadyHaveFocus = false;
+			}
+			QueueDraw ();
+			return ret;
+		}
+
+		protected override void OnActivate ()
+		{
+			if (focusedPathIndex < 0) {
+				return;
+			}
+
+			hoverIndex = focusedPathIndex;
+			pressHoverIndex = focusedPathIndex;
+
+			ShowMenu ();
 		}
 	}
 }
