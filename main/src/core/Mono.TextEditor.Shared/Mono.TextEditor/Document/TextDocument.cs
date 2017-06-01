@@ -1608,6 +1608,13 @@ namespace Mono.TextEditor
 			return GetTextSegmentMarkersAt (line).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
 		}
 
+		public IEnumerable<TextLineMarker> GetMarkersOrderedByInsertion (DocumentLine line)
+		{
+			if (line == null)
+				return Enumerable.Empty<TextLineMarker> ();
+			return OrderTextSegmentMarkersByInsertion(GetTextSegmentMarkersAt (line)).OfType<DocumentLineTextSegmentMarker> ().Select (m => m.Marker);
+		}
+
 		public void ClearMarkers (DocumentLine line)
 		{
 			if (line == null)
