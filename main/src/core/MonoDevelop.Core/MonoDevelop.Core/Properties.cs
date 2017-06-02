@@ -103,7 +103,8 @@ namespace MonoDevelop.Core
 		
 		public T Get<T> (string property, T defaultValue)
 		{
-			defaultValues = defaultValues.SetItem (property, defaultValue);
+			if (!defaultValues.Contains (new KeyValuePair<string, object> (property, defaultValue)))
+				defaultValues = defaultValues.SetItem (property, defaultValue);
 			object val;
 			if (GetPropertyValue<T> (property, out val))
 				return Convert<T> (val);
