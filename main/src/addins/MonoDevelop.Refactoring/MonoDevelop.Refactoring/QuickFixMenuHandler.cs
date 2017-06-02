@@ -79,7 +79,16 @@ namespace MonoDevelop.Refactoring
 				if (cis.CommandInfos.Count == 0)
 					return;
 				cis.CommandInfos.AddSeparator ();
-			} else {
+			} else if (item is CodeFixMenu)  {
+				var menu = (CodeFixMenu)item;
+				var submenu = new CommandInfoSet {
+					Text = menu.Label
+				};
+				foreach (var subItem in menu.Items) {
+					AddItem (submenu, subItem);
+				}
+				cis.CommandInfos.Add (submenu, item.Action);
+			} else { 
 				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
 			}
 		}
