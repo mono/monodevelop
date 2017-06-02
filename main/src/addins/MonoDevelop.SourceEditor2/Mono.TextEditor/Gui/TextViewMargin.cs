@@ -995,7 +995,6 @@ namespace Mono.TextEditor
 				}
 				preeditLength = (uint)textEditor.preeditString.Length;
 			}
-			char[] lineChars = lineText.ToCharArray ();
 			//int startOffset = offset, endOffset = offset + length;
 			uint curIndex = 0, byteIndex = 0;
 			uint curChunkIndex = 0, byteChunkIndex = 0;
@@ -1037,8 +1036,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1069,8 +1068,8 @@ namespace Mono.TextEditor
 								if (textEditor.preeditOffset < end)
 									end += (int)preeditLength;
 							}
-							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							var si = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							var color = (Cairo.Color)EditorTheme.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
@@ -1085,8 +1084,8 @@ namespace Mono.TextEditor
 							wrapper.SelectionEndIndex = (int)ei;
 						});
 
-						var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
-						var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
+						var translatedStartIndex = TranslateToUTF8Index (lineText, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
+						var translatedEndIndex = TranslateToUTF8Index (lineText, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
 							atts.AddWeightAttribute ((Pango.Weight)chunkStyle.FontWeight, translatedStartIndex, translatedEndIndex);
@@ -1099,8 +1098,8 @@ namespace Mono.TextEditor
 					}
 				}
 				if (containsPreedit) {
-					var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
+					var si = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineText, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
 
 					if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 						uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
@@ -1114,13 +1113,12 @@ namespace Mono.TextEditor
 						atts.AddBackgroundAttribute (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background), si, ei);
 					atts.InsertOffsetList (textEditor.preeditAttrs, si, ei);
 				}
-				wrapper.LineChars = lineChars;
 				wrapper.Text = lineText;
 				wrapper.IndentSize = 0;
 				var tabSize = textEditor.Options != null ? textEditor.Options.TabSize : 4;
 				int i = 0, lineWidth;
-				for (; i < lineChars.Length; i++) {
-					char ch = lineChars [i];
+				for (; i < lineText.Length; i++) {
+					char ch = lineText [i];
 					if (ch == ' ') {
 						wrapper.IndentSize++;
 					} else if (ch == '\t') {
@@ -1132,8 +1130,8 @@ namespace Mono.TextEditor
 				lineWidth = wrapper.IndentSize;
 				bool isFastPathPossible = isMonospacedFont;
 				if (isFastPathPossible) {
-					for (; i < lineChars.Length; i++) {
-						char ch = lineChars [i];
+					for (; i < lineText.Length; i++) {
+						char ch = lineText [i];
 						if (ch == '\t') {
 							lineWidth = GetNextTabstop (textEditor.GetTextEditorData (), lineWidth + 1, tabSize) - 1;
 						} else {
@@ -1369,17 +1367,37 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
+		public static uint TranslateToUTF8Index (string text, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
-			if (textIndex > charArray.Length)
-				throw new ArgumentOutOfRangeException (nameof (textIndex), " must be <= charArrayLength (" + charArray.Length + ") was :" + textIndex);
-			if (textIndex < curIndex) {
-				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
-			} else {
-				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
+			if (text == null)
+				throw new ArgumentNullException (nameof (text));
 
-				if (count > 0)
-					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
+			if (textIndex < 0)
+				throw new ArgumentOutOfRangeException (nameof (textIndex));
+
+			if (textIndex < curIndex) {
+				if (textIndex > text.Length)
+					throw new ArgumentOutOfRangeException (nameof (textIndex));
+
+				unsafe {
+					fixed (char *p = text)
+						byteIndex = (uint)Encoding.UTF8.GetByteCount (p, (int)textIndex);
+				}
+			} else {
+				int count = System.Math.Min ((int)(textIndex - curIndex), text.Length - (int)curIndex);
+
+				if (curIndex < 0)
+					throw new ArgumentOutOfRangeException (nameof (curIndex));
+
+				if (count - curIndex > text.Length)
+					throw new ArgumentOutOfRangeException (nameof (curIndex));
+
+				if (count > 0) {
+					unsafe {
+						fixed (char* p = text)
+							byteIndex += (uint)Encoding.UTF8.GetByteCount (p + curIndex, count);
+					}
+				}
 			}
 			curIndex = textIndex;
 			return byteIndex;
@@ -1427,11 +1445,6 @@ namespace Mono.TextEditor
 				set {
 					Layout.SetText (value);
 				}
-			}
-
-			public char[] LineChars {
-				get;
-				set;
 			}
 
 			int selectionStartIndex;
@@ -1512,7 +1525,7 @@ namespace Mono.TextEditor
 
 			public uint TranslateToUTF8Index (uint textIndex, ref uint curIndex, ref uint byteIndex)
 			{
-				return TextViewMargin.TranslateToUTF8Index (LineChars, textIndex, ref curIndex, ref byteIndex);
+				return TextViewMargin.TranslateToUTF8Index (Text, textIndex, ref curIndex, ref byteIndex);
 			}
 
 			public bool FastPath { get; internal set; }
@@ -1527,7 +1540,7 @@ namespace Mono.TextEditor
 			public void GetSize (out int width, out int height)
 			{
 				if (FastPath) {
-					width = (int)(Pango.Scale.PangoScale * LineChars.Length * parent.charWidth);
+					width = (int)(Pango.Scale.PangoScale * Text.Length * parent.charWidth);
 					height = (int)(Pango.Scale.PangoScale * parent.LineHeight);
 					return;
 				}
@@ -1537,7 +1550,7 @@ namespace Mono.TextEditor
 			public void GetPixelSize (out int width, out int height)
 			{
 				if (FastPath) {
-					width = (int)(LineChars.Length * parent.charWidth);
+					width = (int)(Text.Length * parent.charWidth);
 					height = (int)(parent.LineHeight);
 					return;
 				}
@@ -1593,8 +1606,8 @@ namespace Mono.TextEditor
 
 		void InnerDecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd, char spaceOrTab)
 		{
-			var chars = layout.LineChars;
-			if (Array.IndexOf (chars, spaceOrTab) == -1)
+			var text = layout.Text;
+			if (text.IndexOf (spaceOrTab) == -1)
 				return;
 			var chunks = layout.Chunks;
 			if (chunks == null)
@@ -1627,8 +1640,8 @@ namespace Mono.TextEditor
 			int lastIndex = -1;
 			int lastPosX = 0;
 
-			for (int i = index; i < chars.Length; i++) {
-				if (spaceOrTab != chars [i])
+			for (int i = index; i < text.Length; i++) {
+				if (spaceOrTab != text [i])
 					continue;
 
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
@@ -1643,12 +1656,12 @@ namespace Mono.TextEditor
 				if (lastIndex == i) {
 					posX = lastPosX;
 				} else {
-					layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i, ref curIndex, ref byteIndex), false, out line, out posX);
+					layout.IndexToLineX ((int)TranslateToUTF8Index (text, (uint)i, ref curIndex, ref byteIndex), false, out line, out posX);
 				}
 				double xpos = x + posX / Pango.Scale.PangoScale;
 				if (xpos > textEditorWidth)
 					break;
-				layout.IndexToLineX ((int)TranslateToUTF8Index (chars, (uint)i + 1, ref curIndex, ref byteIndex), false, out line, out posX);
+				layout.IndexToLineX ((int)TranslateToUTF8Index (text, (uint)i + 1, ref curIndex, ref byteIndex), false, out line, out posX);
 				lastPosX = posX;
 				lastIndex = i + 1;
 				double xpos2 = x + posX / Pango.Scale.PangoScale;
@@ -1779,7 +1792,6 @@ namespace Mono.TextEditor
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
 			LayoutWrapper wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
-			wrapper.LineChars = virtualSpace.ToCharArray ();
 			wrapper.Text = virtualSpace;
 			wrapper.Layout.Tabs = tabArray;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
@@ -1930,9 +1942,9 @@ namespace Mono.TextEditor
 					HandleSelection (lineOffset, logicalRulerColumn, selectionStartOffset, selectionEndOffset, System.Math.Max (lineOffset, firstSearch.Offset), System.Math.Min (lineOffset + line.Length, firstSearch.EndOffset), delegate(int start, int end) {
 						uint startIndex = (uint)(start - offset);
 						uint endIndex = (uint)(end - offset);
-						if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
-							uint startTranslated = TranslateToUTF8Index (layout.LineChars, startIndex, ref curIndex, ref byteIndex);
-							uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
+						if (startIndex < endIndex && endIndex <= layout.Text.Length) {
+							uint startTranslated = TranslateToUTF8Index (layout.Text, startIndex, ref curIndex, ref byteIndex);
+							uint endTranslated = TranslateToUTF8Index (layout.Text, endIndex, ref curIndex, ref byteIndex);
 							
 							int l, x1, x2;
 							layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
@@ -1981,7 +1993,7 @@ namespace Mono.TextEditor
 						    textEditor.IsSomethingSelected &&
 						    (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) &&
 						    BackgroundRenderer == null) {
-							DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
+							DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.Text.Length);
 						}
 
 						DrawIndent (cr, wrapper, line, position, y);
@@ -2001,7 +2013,7 @@ namespace Mono.TextEditor
 
 
 							// When drawing virtual space before the selection start paint it as unselected.
-							var virtualSpaceMod = selectionStartOffset < caretOffset ? 0 : wrapper.LineChars.Length;
+							var virtualSpaceMod = selectionStartOffset < caretOffset ? 0 : wrapper.Text.Length;
 
 							if ((!textEditor.IsSomethingSelected || (selectionStartOffset >= offset && selectionStartOffset != selectionEndOffset)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
 								DrawCaretLineMarker (cr, position, y, wrapper.Width, _lineHeight);
@@ -2009,10 +2021,10 @@ namespace Mono.TextEditor
 							}
 
 							if (DecorateLineBg != null)
-								DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStartOffset + virtualSpaceMod, selectionEndOffset + wrapper.LineChars.Length);
+								DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStartOffset + virtualSpaceMod, selectionEndOffset + wrapper.Text.Length);
 
 							if (textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always) {
-								DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
+								DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.Text.Length);
 							}
 
 							position += System.Math.Floor (wrapper.Width);
@@ -2023,7 +2035,7 @@ namespace Mono.TextEditor
 					} else if (index >= 0 && index <= length) {
 						Pango.Rectangle strong_pos, weak_pos;
 						curIndex = byteIndex = 0;
-						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex);
+						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.Text, (uint)index, ref curIndex, ref byteIndex);
 						layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
 						var cx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
 						var cy = y + (strong_pos.Y / Pango.Scale.PangoScale);
@@ -2031,7 +2043,7 @@ namespace Mono.TextEditor
 							SetVisibleCaretPosition (cx, cy, cx, cy);
 						} else {
 							var preeditIndex = (uint)(index + textEditor.preeditCursorCharIndex);
-							utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, preeditIndex, ref curIndex, ref byteIndex);
+							utf8ByteIndex = (int)TranslateToUTF8Index (layout.Text, preeditIndex, ref curIndex, ref byteIndex);
 							layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
 							var pcx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
 							var pcy = y + (strong_pos.Y / Pango.Scale.PangoScale);
@@ -3411,7 +3423,7 @@ namespace Mono.TextEditor
 			int index;
 			Pango.Rectangle pos;
 			try {
-				index = (int)TranslateToUTF8Index (wrapper.LineChars, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.LineChars.Length), ref curIndex, ref byteIndex);
+				index = (int)TranslateToUTF8Index (wrapper.Text, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.Text.Length), ref curIndex, ref byteIndex);
 				pos = wrapper.IndexToPos (index);
 			} catch {
 				return 0;
