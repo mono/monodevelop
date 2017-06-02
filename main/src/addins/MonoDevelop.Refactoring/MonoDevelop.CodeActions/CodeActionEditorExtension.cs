@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Refactoring;
 using RefactoringEssentials;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.CodeActions
 {
@@ -107,10 +108,9 @@ namespace MonoDevelop.CodeActions
 				return;
 			CancelQuickFixTimer ();
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null) {
-				var token = quickFixCancellationTokenSource.Token;
-				var curOffset = Editor.CaretOffset;
 				if (HasCurrentFixes) {
-					foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
+					var curOffset = Editor.CaretOffset;
+					foreach (var fix in smartTagTask.Result.AllValidCodeActions) {
 						if (!fix.ValidSegment.Contains (curOffset)) {
 							RemoveWidget ();
 							break;
@@ -118,126 +118,123 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				var loc = Editor.CaretOffset;
-				var ad = DocumentContext.AnalysisDocument;
-				if (ad == null) {
-					return;
-				}
-
-				TextSpan span;
-
-				if (Editor.IsSomethingSelected) {
-					var selectionRange = Editor.SelectionRange;
-					span = selectionRange.Offset >= 0 ? TextSpan.FromBounds (selectionRange.Offset, selectionRange.EndOffset) : TextSpan.FromBounds (loc, loc);
-				} else {
-					span = TextSpan.FromBounds (loc, loc);
-				}
-
-				var diagnosticsAtCaret =
-					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
-						  .OfType<IGenericTextSegmentMarker> ()
-						  .Select (rm => rm.Tag)
-						  .OfType<DiagnosticResult> ()
-						  .Select (dr => dr.Diagnostic)
-						  .ToList ();
-
-				var errorList = Editor
-					.GetTextSegmentMarkersAt (Editor.CaretOffset)
-					.OfType<IErrorMarker> ()
-					.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
-				int editorLength = Editor.Length;
-
-				smartTagTask = Task.Run (async delegate {
-					try {
-						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToList ();
-						if (codeFixes == null) {
-							codeFixes = (await CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType), token).ConfigureAwait (false)).ToList ();
-						}
-						var root = await ad.GetSyntaxRootAsync (token);
-
-						foreach (var cfp in codeFixes) {
-							if (token.IsCancellationRequested)
-								return CodeActionContainer.Empty;
-							var provider = cfp.GetCodeFixProvider ();
-							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
-								continue;
-
-							// These two delegates were factored out, as using them as lambdas in the inner loop creates more captures than declaring them here.
-							Func<Diagnostic, bool> providerIdsContain = d => provider.FixableDiagnosticIds.Contains (d.Id);
-							Action<Microsoft.CodeAnalysis.CodeActions.CodeAction, ImmutableArray<Diagnostic>> codeFixRegistration = (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, d, d[0].Location.SourceSpan));
-							try {
-								var groupedDiagnostics = diagnosticsAtCaret
-									.Concat (errorList.Select (em => em.Error.Tag)
-									.OfType<Diagnostic> ())
-									.GroupBy (d => d.Location.SourceSpan);
-								foreach (var g in groupedDiagnostics) {
-									if (token.IsCancellationRequested)
-										return CodeActionContainer.Empty;
-									var diagnosticSpan = g.Key;
-
-									var validDiagnostics = g.Where (providerIdsContain).ToImmutableArray ();
-									if (validDiagnostics.Length == 0)
-										continue;
-									if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.End)
-										continue;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, codeFixRegistration, token));
-
-									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
-									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
-									// Work around for now is to only take the first diagnostic batch.
-									break;
-								}
-							} catch (OperationCanceledException) {
-								return CodeActionContainer.Empty;
-							} catch (AggregateException ae) {
-								ae.Flatten ().Handle (aex => aex is OperationCanceledException);
-								return CodeActionContainer.Empty;
-							} catch (Exception ex) {
-								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
-								continue;
-							}
-						}
-						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).ConfigureAwait (false)) {
-							codeActions.Add (action);
-						}
-						if (token.IsCancellationRequested)
-							return CodeActionContainer.Empty;
-
-						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
-						Application.Invoke (delegate {
-							if (token.IsCancellationRequested)
-								return;
-							if (codeActionContainer.IsEmpty) {
-								RemoveWidget ();
-								return;
-							}
-							CreateSmartTag (codeActionContainer, loc);
-						});
-						return codeActionContainer;
-
-					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (aex => aex is OperationCanceledException);
-						return CodeActionContainer.Empty;
-					} catch (OperationCanceledException) {
-						return CodeActionContainer.Empty;
-					} catch (TargetInvocationException ex) {
-						if (ex.InnerException is OperationCanceledException)
-							return CodeActionContainer.Empty;
-						throw;
-					}
-
-				}, token);
+				smartTagTask = GetCurrentFixesAsync (quickFixCancellationTokenSource.Token);
 			} else {
 				RemoveWidget ();
 			}
 		}
 
-		void PopupQuickFixMenu (Gdk.EventButton evt, Action<CodeFixMenu> menuAction)
+		internal Task<CodeActionContainer> GetCurrentFixesAsync (CancellationToken cancellationToken)
 		{
-			//TODO: async
-			var menu = CodeFixMenuService.CreateFixMenu (Editor, GetCurrentFixes()).Result;
+			var loc = Editor.CaretOffset;
+			var ad = DocumentContext.AnalysisDocument;
+			if (ad == null) {
+				return Task.FromResult (CodeActionContainer.Empty);
+			}
+			TextSpan span;
+
+			if (Editor.IsSomethingSelected) {
+				var selectionRange = Editor.SelectionRange;
+				span = selectionRange.Offset >= 0 ? TextSpan.FromBounds (selectionRange.Offset, selectionRange.EndOffset) : TextSpan.FromBounds (loc, loc);
+			} else {
+				span = TextSpan.FromBounds (loc, loc);
+			}
+			var rExt = Editor.GetContent<ResultsEditorExtension> ();
+			var errorList = Editor
+				.GetTextSegmentMarkersAt (Editor.CaretOffset)
+				.OfType<IErrorMarker> ()
+				.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
+			return Task.Run (async delegate {
+				try {
+					var result = await CodeDiagnosticRunner.Check (new AnalysisDocument (Editor, DocumentContext), cancellationToken).ConfigureAwait (false);
+					var diagnosticsAtCaret = result.OfType<DiagnosticResult> ().Where (d => d.Region.Contains (loc)).Select (d => d.Diagnostic).ToList ();
+
+					var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
+					var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToList ();
+					if (codeFixes == null) {
+						codeFixes = (await CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType), cancellationToken).ConfigureAwait (false)).ToList ();
+					}
+					var root = await ad.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+					foreach (var cfp in codeFixes) {
+						if (cancellationToken.IsCancellationRequested)
+							return CodeActionContainer.Empty;
+						var provider = cfp.GetCodeFixProvider ();
+						if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
+							continue;
+
+						// These two delegates were factored out, as using them as lambdas in the inner loop creates more captures than declaring them here.
+						Func<Diagnostic, bool> providerIdsContain = d => provider.FixableDiagnosticIds.Contains (d.Id);
+						Action<Microsoft.CodeAnalysis.CodeActions.CodeAction, ImmutableArray<Diagnostic>> codeFixRegistration = (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, d, d [0].Location.SourceSpan));
+						try {
+							var groupedDiagnostics = diagnosticsAtCaret
+								.Concat (errorList.Select (em => em.Error.Tag)
+								.OfType<Diagnostic> ())
+								.GroupBy (d => d.Location.SourceSpan);
+							foreach (var g in groupedDiagnostics) {
+								if (cancellationToken.IsCancellationRequested)
+									return CodeActionContainer.Empty;
+								var diagnosticSpan = g.Key;
+								var validDiagnostics = g.Where (providerIdsContain).ToImmutableArray ();
+								if (validDiagnostics.Length == 0) {
+									continue;
+								}
+								if (diagnosticSpan.Start < 0 || diagnosticSpan.End > root.Span.End) {
+									continue;
+								}
+								await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, codeFixRegistration, cancellationToken)).ConfigureAwait (false);
+
+								// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
+								//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
+								// Work around for now is to only take the first diagnostic batch.
+								break;
+							}
+						} catch (OperationCanceledException) {
+							return CodeActionContainer.Empty;
+						} catch (AggregateException ae) {
+							ae.Flatten ().Handle (aex => aex is OperationCanceledException);
+							return CodeActionContainer.Empty;
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
+							continue;
+						}
+					}
+					var codeActions = new List<ValidCodeAction> ();
+					foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, cancellationToken).ConfigureAwait (false)) {
+						codeActions.Add (action);
+					}
+					if (cancellationToken.IsCancellationRequested)
+						return CodeActionContainer.Empty;
+
+					var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
+					Application.Invoke (delegate {
+						if (cancellationToken.IsCancellationRequested)
+							return;
+						if (codeActionContainer.IsEmpty) {
+							RemoveWidget ();
+							return;
+						}
+						CreateSmartTag (codeActionContainer, loc);
+					});
+					return codeActionContainer;
+
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (aex => aex is OperationCanceledException);
+					return CodeActionContainer.Empty;
+				} catch (OperationCanceledException) {
+					return CodeActionContainer.Empty;
+				} catch (TargetInvocationException ex) {
+					if (ex.InnerException is OperationCanceledException)
+						return CodeActionContainer.Empty;
+					throw;
+				}
+
+			}, cancellationToken);
+
+		}
+
+		async void PopupQuickFixMenu (Gdk.EventButton evt, Action<CodeFixMenu> menuAction)
+		{
+			var menu = await CodeFixMenuService.CreateFixMenu (Editor, await GetCurrentFixesAsync(default (CancellationToken)));
 
 			if (menu.Items.Count == 0) {
 				return;
@@ -436,9 +433,5 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		internal CodeActionContainer GetCurrentFixes ()
-		{
-			return smartTagTask == null ? CodeActionContainer.Empty : smartTagTask.Result;
-		}
 	}
 }

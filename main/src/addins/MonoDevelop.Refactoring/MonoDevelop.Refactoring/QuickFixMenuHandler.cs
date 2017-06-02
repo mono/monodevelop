@@ -46,7 +46,7 @@ namespace MonoDevelop.Refactoring
 			quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
 			info.Add (quickFixMenu);
 			try {
-				var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
+				var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixesAsync (cancelToken).Result, cancelToken);
 				quickFixMenu.CommandInfos.Clear ();
 				foreach (var item in menu.Items) {
 					AddItem (quickFixMenu, item);
