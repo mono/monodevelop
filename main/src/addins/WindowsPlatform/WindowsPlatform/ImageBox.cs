@@ -41,12 +41,28 @@ namespace WindowsPlatform
 		
 		public static readonly DependencyProperty StretchDirectionProperty =
 			Viewbox.StretchDirectionProperty.AddOwner(typeof(ImageBox));
-		
+
+		bool subscribed;
 		public ImageBox ()
 		{
+			Loaded += HandleLoaded;
+			Unloaded += HandleUnloaded;
 			Image = null;
-			Loaded += (sender, e) => MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
-			Unloaded += (sender, e) => MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
+		}
+
+		void HandleLoaded (object sender, EventArgs args)
+		{
+			if (subscribed)
+				return;
+
+			subscribed = true;
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
+		}
+
+		void HandleUnloaded(object sender, EventArgs args)
+		{
+			subscribed = false;
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
 		}
 
 		public ImageBox (Xwt.Drawing.Image image) : this ()
