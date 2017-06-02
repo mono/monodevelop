@@ -434,18 +434,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
-			project.FileAddedToProject -= OnFileAdded;
-			project.FileRemovedFromProject -= OnFileRemoved;
-			project.FileRenamedInProject -= OnFileRenamed;
 			project.Modified -= OnProjectModified;
 		}
 
 		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
-				p.FileAddedToProject += OnFileAdded;
-				p.FileRemovedFromProject += OnFileRemoved;
-				p.FileRenamedInProject += OnFileRenamed;
 				p.Modified += OnProjectModified;
 			}
 
@@ -1336,123 +1330,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Project modification handlers
-
-		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
-		{
-			try {
-				var project = (MonoDevelop.Projects.Project)sender;
-				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
-					var projectFile = fargs.ProjectFile;
-					if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
-						continue;
-					var projectData = GetProjectData (GetProjectId (project));
-					SourceCodeKind sck;
-					if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck) || CanGenerateAnalysisContextForNonCompileable (project, projectFile)) {
-						if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
-							return;
-						var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile, sck);
-						OnDocumentAdded (newDocument);
-					} else {
-						foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project, null)) {
-							OnDocumentAdded (projectedDocument);
-						}
-					}
-
-				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-			}
-		}
-
-		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
-		{
-			try {
-				var project = (MonoDevelop.Projects.Project)sender;
-				foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
-					var projectId = GetProjectId (project);
-					var data = GetProjectData (projectId);
-					var id = data.GetDocumentId (fargs.ProjectFile.FilePath);
-					if (id != null) {
-						ClearDocumentData (id);
-						try {
-							OnDocumentRemoved (id);
-						} catch (Exception e) {
-							LoggingService.LogInternalError (e);
-						}
-						data.RemoveDocument (fargs.ProjectFile.FilePath);
-					} else {
-						foreach (var entry in ProjectionList) {
-							if (entry.File == fargs.ProjectFile) {
-								foreach (var projectedDocument in entry.Projections) {
-									id = data.GetDocumentId (projectedDocument.Document.FileName);
-									if (id != null) {
-										ClearDocumentData (id);
-										try {
-											OnDocumentRemoved (id);
-										} catch {
-											// already removed as document
-										}
-										data.RemoveDocument (projectedDocument.Document.FileName);
-									}
-									break;
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-			}
-		}
-
-		void OnFileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
-		{
-			try {
-				var project = (MonoDevelop.Projects.Project)sender;
-				foreach (MonoDevelop.Projects.ProjectFileRenamedEventInfo fargs in args) {
-					var projectFile = fargs.ProjectFile;
-					if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
-						continue;
-					var projectId = GetProjectId (project);
-					var data = GetProjectData (projectId);
-					SourceCodeKind sck;
-					if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck) || CanGenerateAnalysisContextForNonCompileable (project, projectFile)) {
-						var id = data.GetDocumentId (fargs.OldName);
-						if (id != null) {
-							if (this.IsDocumentOpen (id)) {
-								this.InformDocumentClose (id, fargs.OldName);
-							}
-							OnDocumentRemoved (id);
-							data.RemoveDocument (fargs.OldName);
-						}
-						var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile, sck);
-						OnDocumentAdded (newDocument);
-					} else {
-						foreach (var entry in ProjectionList) {
-							if (entry.File == projectFile) {
-								foreach (var projectedDocument in entry.Projections) {
-									var id = data.GetDocumentId (projectedDocument.Document.FileName);
-									if (id != null) {
-										if (this.IsDocumentOpen (id)) {
-											this.InformDocumentClose (id, projectedDocument.Document.FileName);
-										}
-										OnDocumentRemoved (id);
-										data.RemoveDocument (projectedDocument.Document.FileName);
-									}
-								}
-								break;
-							}
-						}
-
-						foreach (var projectedDocument in GenerateProjections (fargs.ProjectFile, data, project, null)) {
-							OnDocumentAdded (projectedDocument);
-						}
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-			}
-		}
 
 		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 		object projectModifyLock = new object ();
