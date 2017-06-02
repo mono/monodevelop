@@ -486,6 +486,27 @@ namespace MonoDevelop.Core
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
 			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
+
+			if (Type.GetType ("Mono.Runtime") == null) {
+				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+			}
+		}
+
+		/// <summary>
+		/// This is necessary on Windows because without it, even though the assemblies are already loaded
+		/// the CLR will still throw FileNotFoundException (unable to load assembly).
+		/// </summary>
+		static System.Reflection.Assembly CurrentDomain_AssemblyResolve (object sender, ResolveEventArgs args)
+		{
+			if (args.Name != null && args.Name.StartsWith ("Microsoft.Build", StringComparison.OrdinalIgnoreCase)) {
+				foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (string.Equals (assembly.FullName, args.Name, StringComparison.OrdinalIgnoreCase)) {
+						return assembly;
+					}
+				}
+			}
+
+			return null;
 		}
 	}
 	
