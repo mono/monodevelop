@@ -6,7 +6,10 @@ open System.Threading
 open System.Threading.Tasks
 open FsUnit
 open NUnit.Framework
+open MonoDevelop.Core
+open MonoDevelop.Core.ProgressMonitoring
 open MonoDevelop.FSharp
+open MonoDevelop.Projects
 
 [<TestFixture>]
 module Interactive =
@@ -80,4 +83,37 @@ module Interactive =
             session.SendInput "type CmdResult = ErrorLevel of string * int;;"
             let succeeded = finished.WaitOne(5000)
             if succeeded then results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
+            else Assert.Fail "Timeout" } |> toTask
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
+    let ``Interactive send references uses real assemblies #43307``() =
+        async {
+            let mutable results = String.empty
+            let! session = createSession()
+            let directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            let sln = directoryName / "Samples" / "bug43307" / "bug43307.sln"
+            use monitor = new ConsoleProgressMonitor()
+            use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
+            use project = sol.GetAllItems<FSharpProject> () |> Seq.head
+            project.GetOrderedReferences()
+            |> List.iter (fun a -> session.SendInput (sprintf  @"#r ""%s"";;" a.Path))
+            let finished = new AutoResetEvent(false)
+            session.TextReceived.Add(fun output -> if output.Contains "jsonObj" then
+                                                       results <- output
+                                                       finished.Set() |> ignore)
+            let input =
+                """
+                type Movie = {
+                    Name : string
+                    Year: int
+                }
+                let movies = [
+                     { Name = "Bad Boys"; Year = 1995 }
+                ]
+                let jsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(movies);;
+                """
+
+            session.SendInput input
+            let succeeded = finished.WaitOne(10000)
+            if succeeded then results |> should equal "val jsonObj : string = \"[{\"Name\":\"Bad Boys\",\"Year\":1995}]\"\n"
             else Assert.Fail "Timeout" } |> toTask

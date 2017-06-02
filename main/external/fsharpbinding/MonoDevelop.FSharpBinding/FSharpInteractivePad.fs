@@ -382,25 +382,9 @@ type FSharpInteractivePad() =
             let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
             not(String.IsNullOrEmpty(sel))
 
-    member x.LoadReferences() =
+    member x.LoadReferences(project:FSharpProject) =
         LoggingService.LogDebug ("FSI:  #LoadReferences")
-        let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
-        let referencedAssemblies = project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
-        let references =
-            let args =
-                CompilerArguments.getReferencesFromProject project referencedAssemblies
-                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
-                                          then None
-                                          else
-                                              let ref = ref |> String.replace "-r:" ""
-                                              if File.Exists ref then Some ref
-                                              else None )
-                |> Seq.distinct
-                |> Seq.toArray
-            args
-
-        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
-        let orderedreferences = orderAssemblyReferences.Order references
+        let orderedreferences = project.GetOrderedReferences()
 
         getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
@@ -580,7 +564,7 @@ type FSharpFsiEditorCompletion() =
       inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendFile())
 
   type SendReferences() =
-      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.LoadReferences())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.LoadReferences(IdeApp.Workbench.ActiveDocument.Project :?> FSharpProject))
 
   type RestartFsi() =
       inherit InteractiveCommand(fun fsi -> fsi.RestartFsi())

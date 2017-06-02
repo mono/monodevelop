@@ -85,11 +85,15 @@ module CompilerArguments =
                       | Some asm -> [asm.Location]
                       | None -> []
                   else
-                      reference.Package.Assemblies
+                      let package = reference.Package
+                      package.Assemblies
                       |> Seq.choose (fun a -> match a.Name with
                                               | "FSharp.Core"
                                               | "mscorlib" -> None
-                                              | _ -> Some a.Location)
+                                              | _ -> if package.IsGacPackage then
+                                                         Some a.Name
+                                                     else
+                                                         Some a.Location)
                       |> List.ofSeq
 
           | ReferenceType.Project ->
@@ -402,6 +406,7 @@ module CompilerArguments =
 
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
+
       let pathsToSearch = runtime.GetToolsPaths(framework)
       getToolPath pathsToSearch extensions toolName
 

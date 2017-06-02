@@ -257,6 +257,23 @@ type FSharpProject() as self =
                 referencedAssemblies <- Some assemblies
                 assemblies
 
+    member x.GetOrderedReferences() =
+        let references =
+            let args =
+                CompilerArguments.getReferencesFromProject x x.ReferencedAssemblies
+                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
+                                          then None
+                                          else
+                                              let ref = ref |> String.replace "-r:" ""
+                                              if File.Exists ref then Some ref
+                                              else None )
+                |> Seq.distinct
+                |> Seq.toArray
+            args
+
+        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
+        orderAssemblyReferences.Order references
+
     member x.ReevaluateProject(e) =
         let task = base.OnReevaluateProject (e)
 
