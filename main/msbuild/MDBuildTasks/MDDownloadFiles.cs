@@ -22,13 +22,13 @@ namespace MDBuildTasks
 				string url = taskItem.ItemSpec;
 				Uri uriObj;
 				if (!Uri.TryCreate (url, UriKind.Absolute, out uriObj)) {
-					Log.LogError ($"Download has invalid URL '{url}'");
+					Log.LogError (string.Format ("Download has invalid URL '{0}'", url));
 					return false;
 				}
 
 				string sha1 = taskItem.GetMetadata ("SHA1");
 				if (string.IsNullOrEmpty (sha1)) {
-					Log.LogError ($"Item '{url}' has no SHA metadata");
+					Log.LogError (string.Format ("Item '{0}' has no SHA metadata", url));
 					return false;
 				}
 
@@ -58,21 +58,21 @@ namespace MDBuildTasks
 
 		bool DownloadFile (string cacheDir, string url, string sha1, string outputDir, string outputName, bool unpack)
 		{
-			string cacheFile = Path.Combine (cacheDir, $"{sha1.Substring (0, 8)}-{outputName}");
+			string cacheFile = Path.Combine (cacheDir, string.Format("{0}-{1}", sha1.Substring(0, 8), outputName));
 			string verifiedFile = cacheFile + ".verified";
 
 			if (!File.Exists (verifiedFile)) {
-				Log.LogMessage ($"File '{url}' not found in cache, downloading");
+				Log.LogMessage (string.Format ("File '{0}' not found in cache, downloading", url));
 				if (File.Exists (cacheFile)) {
 					File.Delete (cacheFile);
 				}
 				Directory.CreateDirectory (Path.GetDirectoryName (cacheFile));
 				var webClient = new WebClient ();
 				webClient.DownloadFile (url, cacheFile);
-				Log.LogMessage ($"File '{url}' downloaded to {cacheFile}");
+				Log.LogMessage (string.Format ("File '{0}' downloaded to {1}", url, cacheFile));
 				string fileSha = GetFileSha1 (cacheFile);
 				if (!string.Equals (fileSha, sha1, StringComparison.OrdinalIgnoreCase)) {
-					Log.LogError ($"Hash mismatch for file '{cacheFile}': expected {sha1}, got {fileSha}");
+					Log.LogError (string.Format ("Hash mismatch for file '{0}': expected {1}, got {2}", cacheFile, sha1, fileSha));
 					return false;
 				}
 				File.WriteAllText (verifiedFile, "");
@@ -94,9 +94,9 @@ namespace MDBuildTasks
 			FileInfo srcInfo = new FileInfo (srcFile);
 			FileInfo destInfo = new FileInfo (destFile);
 			if (destInfo.Exists && destInfo.LastWriteTimeUtc == srcInfo.LastWriteTimeUtc && destInfo.Length == srcInfo.Length) {
-				Log.LogMessage ($"Download {destFile} is up to date, skipping");
+				Log.LogMessage (string.Format ("Download {0} is up to date, skipping", destFile));
 			} else {
-				Log.LogMessage ($"Copying {srcFile} to {destFile}");
+				Log.LogMessage (string.Format ("Copying {0} to {1}", srcFile, destFile));
 				Directory.CreateDirectory (Path.GetDirectoryName (destFile));
 				if (destInfo.Exists) {
 					File.Delete (destFile);
@@ -112,9 +112,9 @@ namespace MDBuildTasks
 			var destInfo = new DirectoryInfo (destDir);
 
 			if (destInfo.Exists && destInfo.LastWriteTimeUtc == srcInfo.LastWriteTimeUtc) {
-				Log.LogMessage ($"Download {destDir} is up to date, skipping");
+				Log.LogMessage (string.Format ("Download {0} is up to date, skipping", destDir));
 			} else {
-				Log.LogMessage ($"Extracting {srcFile} to {destDir}");
+				Log.LogMessage (string.Format( "Extracting {0} to {1}", srcFile, destDir));
 				Directory.CreateDirectory (destDir);
 				if (Directory.Exists (destDir)) {
 					Directory.Delete (destDir, true);
@@ -138,7 +138,7 @@ namespace MDBuildTasks
 						//guard against breaking out with ..
 						fileDest = Path.GetFullPath (Path.Combine (destDir,  fileDest));
 						if (!fileDest.StartsWith (destDir, StringComparison.Ordinal)) {
-							throw new Exception ($"Cannot extract outside target dir: '{e.FullName}'");
+							throw new Exception (string.Format ("Cannot extract outside target dir: '{0}'", e.FullName));
 						}
 
 						Directory.CreateDirectory (Path.GetDirectoryName (fileDest));
@@ -174,7 +174,7 @@ namespace MDBuildTasks
 				byte [] hash = provider.ComputeHash (fileStream);
 				var sb = new StringBuilder (hash.Length);
 				foreach (var b in hash) {
-					sb.Append ($"{b:x2}");
+					sb.Append (string.Format ("{0:x2}", b));
 				}
 				return sb.ToString ();
 			}
