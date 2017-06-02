@@ -321,31 +321,19 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		/// <summary>
-		/// Added a workaround for netcoreapp2.0 and netstandard2.0 projects so they
-		/// add a net461 PackageTargetFallback. This information is included in the
-		/// .NET Core 2.0 SDK but requires an sdk resolver to work. Once the resolver
-		/// is working this workaround can be removed.
-		/// </summary>
 		static void AddPackageTargetFallbacks (PackageSpec packageSpec, IDotNetProject project)
 		{
 			var fallbackList = GetPackageTargetFallbackList (project)
 				.Select (NuGetFramework.Parse)
 				.ToList ();
-
-// May need to add net461 even if the project does not have any PackageTargetFallback items so
-// do not return here.
-//			if (!fallbackList.Any ())
-//				return;
+			if (!fallbackList.Any ())
+				return;
 
 			var frameworks = GetProjectFrameworks (project);
 			foreach (var framework in frameworks) {
-				var updatedFallbackList = ModifyFallbackList (fallbackList, framework);
-				if (updatedFallbackList.Any	()) {
-					var frameworkInfo = packageSpec.GetTargetFramework (framework);
-					frameworkInfo.Imports = updatedFallbackList;
-					frameworkInfo.FrameworkName = new FallbackFramework (frameworkInfo.FrameworkName, updatedFallbackList);
-				}
+				var frameworkInfo = packageSpec.GetTargetFramework (framework);
+				frameworkInfo.Imports = fallbackList;
+				frameworkInfo.FrameworkName = new FallbackFramework (frameworkInfo.FrameworkName, fallbackList);
 			}
 		}
 
@@ -357,22 +345,6 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return new string[0];
-		}
-
-		/// <summary>
-		/// Workaround - If netcoreapp2.0 or netstandard2.0 is targeted then add net461 as a
-		/// fallback target framework. This should be removed once the sdk resolver is
-		/// used to use the .NET Core 2.0 sdk targets.
-		/// </summary>
-		static List<NuGetFramework> ModifyFallbackList (List<NuGetFramework> fallbackList, NuGetFramework projectFramework)
-		{
-			string shortFrameworkName = projectFramework.GetShortFolderName ();
-			if (shortFrameworkName == "netcoreapp2.0" || shortFrameworkName == "netstandard2.0") {
-				var updatedFallbackList = new List<NuGetFramework> (fallbackList);
-				updatedFallbackList.Add (NuGetFramework.Parse ("net461"));
-				return updatedFallbackList;
-			}
-			return fallbackList;
 		}
 
 		static RuntimeGraph GetRuntimeGraph (IDotNetProject project)
