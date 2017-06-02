@@ -85,7 +85,7 @@ module Interactive =
             if succeeded then results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
             else Assert.Fail "Timeout" } |> toTask
 
-    [<Test;AsyncStateMachine(typeof<Task>)>]
+    [<Test;Ignore;AsyncStateMachine(typeof<Task>)>]
     let ``Interactive send references uses real assemblies #43307``() =
         async {
             let mutable results = String.empty
