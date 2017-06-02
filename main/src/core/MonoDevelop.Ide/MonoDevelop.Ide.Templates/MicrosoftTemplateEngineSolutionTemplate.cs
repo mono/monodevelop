@@ -68,10 +68,12 @@ namespace MonoDevelop.Ide.Templates
 			var parameters = new List<string> ();
 			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
 
+			if (!cacheParameters.Any ())
+				return defaultParameters;
+
 			if (!string.IsNullOrEmpty (defaultParameters)) {
 				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
-				if (cacheParameters.Any ())
-					defaultParameters += ",";
+				defaultParameters += ",";
 			}
 
 			foreach (var p in cacheParameters) {
