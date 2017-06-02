@@ -415,8 +415,6 @@ namespace MonoDevelop.SourceEditor
 			
 			textEditorData = textEditor.GetTextEditorData ();
 			textEditorData.EditModeChanged += TextEditorData_EditModeChanged;
-
-			ResetFocusChain ();
 			
 			UpdateLineCol ();
 			//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
@@ -473,20 +471,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.UpdateLineCol ();
 		}
-		
-		void ResetFocusChain ()
-		{
-			List<Widget> focusChain = new List<Widget> ();
-			focusChain.Add (this.textEditor.TextArea);
-			if (this.searchAndReplaceWidget != null) {
-				focusChain.Add (this.searchAndReplaceWidget);
-			}
-			if (this.gotoLineNumberWidget != null) {
-				focusChain.Add (this.gotoLineNumberWidget);
-			}
-			vbox.FocusChain = focusChain.ToArray ();
-		}
-		
+
 		public void Dispose ()
 		{
 			if (IdeApp.CommandService != null)
@@ -1131,8 +1116,6 @@ namespace MonoDevelop.SourceEditor
 			if (this.splittedTextEditor != null) 
 				this.splittedTextEditor.HighlightSearchPattern = false;
 			
-			if (!isDisposed)
-				ResetFocusChain ();
 			return result;
 		}
 		
@@ -1211,8 +1194,6 @@ namespace MonoDevelop.SourceEditor
 					this.splittedTextEditor.HighlightSearchPattern = true;
 					this.splittedTextEditor.TextViewMargin.RefreshSearchMarker ();
 				}
-				ResetFocusChain ();
-
 			} else {
 				if (TextEditor.IsSomethingSelected) {
 					searchAndReplaceWidget.SetSearchPattern ();
@@ -1245,8 +1226,6 @@ namespace MonoDevelop.SourceEditor
 				gotoLineNumberWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				gotoLineNumberWidgetFrame.ShowAll ();
 				TextEditor.AddAnimatedWidget (gotoLineNumberWidgetFrame, ANIMATION_DURATION, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
-				
-				ResetFocusChain ();
 			}
 			
 			gotoLineNumberWidget.Focus ();

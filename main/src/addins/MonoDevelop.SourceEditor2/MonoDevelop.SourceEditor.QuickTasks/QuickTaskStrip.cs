@@ -231,11 +231,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		public event EventHandler TaskProviderUpdated;
 
-		void PerformShowMenu (object sender, EventArgs e)
+		internal void ShowMenu ()
 		{
 			int x, y;
 			TranslateCoordinates (Toplevel, 0, 0, out x, out y);
 			IdeApp.CommandService.ShowContextMenu (this, x, y, IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar"), this);
+		}
+
+		void PerformShowMenu (object sender, EventArgs e)
+		{
+			ShowMenu (); 
 		}
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
@@ -342,28 +347,31 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return firstTask;
 		}
 
-		internal void GotoTask (QuickTask quickTask)
+		internal void GotoTask (QuickTask quickTask, bool grabFocus = true)
 		{
 			if (quickTask == null)
 				return;
 
-			GotoLocation (quickTask.Location);
+			GotoLocation (quickTask.Location, grabFocus);
 		}
 
-		void GotoLocation (int location)
+		void GotoLocation (int location, bool grabFocus = true)
 		{
 			TextEditor.Caret.Offset = location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
-			TextEditor.GrabFocus ();
+
+			if (grabFocus) {
+				TextEditor.GrabFocus ();
+			}
 		}
 
-		internal void GotoUsage (Usage usage)
+		internal void GotoUsage (Usage usage, bool grabFocus = true)
 		{
 			if (usage == null)
 				return;
 
-			GotoLocation (usage.Offset);
+			GotoLocation (usage.Offset, grabFocus);
 		}
 	}
 }

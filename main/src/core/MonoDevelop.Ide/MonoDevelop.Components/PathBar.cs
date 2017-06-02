@@ -341,7 +341,6 @@ namespace MonoDevelop.Components
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
 
 					if (index == focusedPathIndex) {
-						Console.WriteLine ($"Found {index}");
 						focusRect = new Gdk.Rectangle (x - padding, 0, itemWidth + (padding * 2) ,0);
 					}
 					int textOffset = 0;
@@ -407,7 +406,6 @@ namespace MonoDevelop.Components
 						DrawButtonBorder (ctx, x - padding, itemWidth + padding + padding);
 
 					if (index == focusedPathIndex) {
-						Console.WriteLine ($"Found right {index}");
 						focusRect = new Gdk.Rectangle (x - padding, 0, itemWidth + (padding * 2), 0);
 					}
 
@@ -603,12 +601,14 @@ namespace MonoDevelop.Components
 				menuWidget = null;
 			}
 
-			var window = Toplevel as Gtk.Window;
-			if (window != null) {
-				// Present the window because on macOS the main window remains unfocused otherwise.
-				window.Present ();
+			if (alreadyHaveFocus) {
+				var window = Toplevel as Gtk.Window;
+				if (window != null) {
+					// Present the window because on macOS the main window remains unfocused otherwise.
+					window.Present ();
+				}
+				GrabFocus ();
 			}
-			GrabFocus ();
 		}
 		
 		public int GetHoverXPosition (out int w)
