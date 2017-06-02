@@ -33,6 +33,9 @@ namespace MonoDevelop.Components.Mac
 {
 	class MacLeakHelpers
 	{
+		// NOTE: When invoking these, the debugger will create a strong reference to the object for the entire session, so only invoke this
+		// to check for leaks after a running an operation a few times (i.e. debug an app), then checking whether any NSObjects were leaked.
+		// Also, place GC.Collect() a few times followed by GC.WaitForPendingFinalizers() before your breakpoint.
 		static Dictionary<IntPtr, WeakReference> Dict {
 			get {
 				var fieldInfo = typeof (ObjCRuntime.Runtime).GetField ("object_map", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
