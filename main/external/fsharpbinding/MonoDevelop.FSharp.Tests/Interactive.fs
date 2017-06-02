@@ -114,6 +114,6 @@ module Interactive =
                 """
 
             session.SendInput input
-            let succeeded = finished.WaitOne(10000)
+            let succeeded = finished.WaitOne(20000)
             if succeeded then results |> should equal "val jsonObj : string = \"[{\"Name\":\"Bad Boys\",\"Year\":1995}]\"\n"
             else Assert.Fail "Timeout" } |> toTask
