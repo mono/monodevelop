@@ -27,6 +27,8 @@ void *libmono, *libxammac;
 static void
 exit_with_message (char *reason, char *argv0)
 {
+	fprintf (stderr, "Failed to launch: %s", reason);
+
 	NSString *appName = nil;
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
