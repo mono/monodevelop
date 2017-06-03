@@ -25,7 +25,7 @@ extern int xamarin_create_classes_Xamarin_Mac ();
 void *libmono, *libxammac;
 
 static void
-exit_with_message (char *reason, char *argv0)
+exit_with_message (const char *reason, char *argv0)
 {
 	fprintf (stderr, "Failed to launch: %s", reason);
 
@@ -403,7 +403,7 @@ int main (int argc, char **argv)
 		new_argv[n++] = extra_argv[i];
 
 	// enable --debug so that we can get useful stack traces
-	new_argv[n++] = "--debug";
+	new_argv[n++] = (char *) "--debug";
 
 	new_argv[n++] = strdup ([exePath UTF8String]);
 
