@@ -33,6 +33,7 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -133,6 +134,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
+		public event EventHandler<TabEventArgs> TabPinned;
 		public event EventHandler<TabEventArgs> TabActivated;
 
 		public event EventHandler<TabEventArgs> PageAdded;
@@ -317,6 +319,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			PageAdded?.Invoke (this, new TabEventArgs { Tab = tab, });
 
+			tab.OnChangingPinned = OnTabPinned;
+
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 
 			return tab;
@@ -326,6 +330,24 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			for (int n=startIndex; n < pages.Count; n++)
 				((DockNotebookTab)pages [n]).Index = n;
+		}
+
+		void OnTabPinned (DockNotebookTab sender, bool value)
+		{
+			if (pages.Count == 1)
+				return;
+			
+			var stickedPages = pages.Where (p => p.IsPinned).OrderBy (p => p.Index).ToList ();
+			var normalPages = pages.Where (p => !p.IsPinned).OrderBy (p => p.Index).ToList ();
+
+			if (value) {
+				if (stickedPages.Count > 0) 
+					ReorderTab (sender, normalPages.Count > 0  ? normalPages [0] : stickedPages [stickedPages.Count - 1], false);
+				 else 
+					ReorderTab (sender, pages [0], false);
+			} else {
+				ReorderTab (sender, stickedPages.Count>0 ? stickedPages [stickedPages.Count - 1] : normalPages [0], false);
+			}
 		}
 
 		public DockNotebookTab GetTab (int n)
@@ -356,8 +378,11 @@ namespace MonoDevelop.Components.DockNotebook
 			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
+		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab, bool pinCheck = true)
 		{
+			if (pinCheck && tab.IsPinned != targetTab.IsPinned)
+				return;
+			
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
@@ -378,6 +403,12 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (TabClosed != null)
 				TabClosed (this, new TabEventArgs () { Tab = tab });
+		}
+
+		internal void OnPinTab (DockNotebookTab tab)
+		{
+			if (TabPinned != null)
+				TabPinned (this, new TabEventArgs () { Tab = tab });
 		}
 
 		internal void OnActivateTab (DockNotebookTab tab)
