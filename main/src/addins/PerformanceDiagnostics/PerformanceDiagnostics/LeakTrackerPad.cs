@@ -33,9 +33,10 @@ namespace PerformanceDiagnosticsAddIn
 	public class LeakTrackerPad : PadContent
 	{
 		Control control;
+		uint timeoutId = 0;
 		public LeakTrackerPad ()
 		{
-			GLib.Timeout.Add (2000, HandleTimeoutHandler);
+			timeoutId = GLib.Timeout.Add (2000, HandleTimeoutHandler);
 		}
 
 		bool HandleTimeoutHandler ()
@@ -53,6 +54,15 @@ namespace PerformanceDiagnosticsAddIn
 				// maybe the collection was modified, don't bother with updating
 			}
 			return true;
+		}
+
+		public override void Dispose ()
+		{
+			if (timeoutId != 0) {
+				GLib.Source.Remove (timeoutId);
+				timeoutId = 0;
+			}
+			base.Dispose ();
 		}
 
 		public override Control Control {
