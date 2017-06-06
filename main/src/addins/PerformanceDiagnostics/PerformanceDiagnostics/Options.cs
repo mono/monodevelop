@@ -31,6 +31,7 @@ namespace PerformanceDiagnosticsAddIn
 	public static class Options
 	{
 		public static readonly ConfigurationProperty<string> OutputPath = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.OutputPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Desktop"));
+		public static readonly ConfigurationProperty<bool> ShowUICounters = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.ShowUICounters", false);
 	}
 }
 
