@@ -124,15 +124,15 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Build">
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework">
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Framework.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core">
       <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
