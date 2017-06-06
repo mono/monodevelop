@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
+		ISourceRepositoryProvider sourceRepositoryProvider;
 		List<NuGetProject> nugetProjects;
 		List<BuildIntegratedNuGetProject> buildIntegratedProjectsToBeRestored;
 		List<INuGetAwareProject> nugetAwareProjectsToBeRestored;
@@ -61,16 +62,23 @@ namespace MonoDevelop.PackageManagement
 			solutionManager.ClearProjectCache ();
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
+			// Use the same source repository provider for all restores and updates to prevent
+			// the credential dialog from being displayed for each restore and updates.
+			sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
+
 			if (AnyProjectsUsingPackagesConfig ()) {
 				restoreManager = new PackageRestoreManager (
-					solutionManager.CreateSourceRepositoryProvider (),
+					sourceRepositoryProvider,
 					solutionManager.Settings,
 					solutionManager
 				);
 			}
 
 			if (AnyDotNetCoreProjectsOrProjectsUsingProjectJson ()) {
-				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (solutionManager);
+				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (
+					solutionManager,
+					sourceRepositoryProvider,
+					solutionManager.Settings);
 			}
 
 			if (AnyNuGetAwareProjects ()) {
@@ -149,7 +157,7 @@ namespace MonoDevelop.PackageManagement
 		void CheckForUpdates ()
 		{
 			try {
-				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates (new SolutionProxy (solution));
+				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates (new SolutionProxy (solution), sourceRepositoryProvider);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}

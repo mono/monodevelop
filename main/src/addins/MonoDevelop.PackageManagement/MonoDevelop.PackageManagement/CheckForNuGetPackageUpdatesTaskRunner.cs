@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,17 +50,30 @@ namespace MonoDevelop.PackageManagement
 			get { return cancellationTokenSource != null; }
 		}
 
-		public void Start (IEnumerable<IDotNetProject> projects)
+		public void Start (
+			IEnumerable<IDotNetProject> projects,
+			ISourceRepositoryProvider sourceRepositoryProvider)
 		{
 			Stop ();
-			CheckForUpdates (projects);
+
+			if (projects.Any ())
+				CheckForUpdates (projects, sourceRepositoryProvider);
 		}
 
-		protected virtual Task CheckForUpdates (IEnumerable<IDotNetProject> projects)
+		protected virtual Task CheckForUpdates (
+			IEnumerable<IDotNetProject> projects,
+			ISourceRepositoryProvider sourceRepositoryProvider)
 		{
 			cancellationTokenSource = new CancellationTokenSource ();
 
-			var providers = projects.Select (CreateProvider).ToList ();
+			// Create the source repositories here and use the same ones for all the projects.
+			// This prevents the credential dialog being displayed for each project.
+			ISolution solution = projects.FirstOrDefault ().ParentSolution;
+			var solutionManager = GetSolutionManager (solution);
+			if (sourceRepositoryProvider == null)
+				sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
+
+			var providers = projects.Select (project => CreateProvider (solutionManager, project, sourceRepositoryProvider)).ToList ();
 			currentProviders = providers;
 
 			return Task.Run (
@@ -70,13 +84,15 @@ namespace MonoDevelop.PackageManagement
 				TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		UpdatedNuGetPackagesProvider CreateProvider (IDotNetProject project)
+		UpdatedNuGetPackagesProvider CreateProvider (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject project,
+			ISourceRepositoryProvider sourceRepositoryProvider)
 		{
-			var solutionManager = GetSolutionManager (project.ParentSolution);
 			var nugetProject = CreateNuGetProject (solutionManager, project);
 			return new UpdatedNuGetPackagesProvider (
 				project,
-				solutionManager,
+				sourceRepositoryProvider,
 				nugetProject,
 				cancellationTokenSource.Token);
 		}
