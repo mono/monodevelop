@@ -469,6 +469,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				Editor = editor,
 				//ParsedDocument = context.ParsedDocument != null ? context.ParsedDocument.ParsedFile : null,
 				InsertPosition = data.CaretLocation,
+				InsertOffset = data.CaretOffset,
 				LineIndent = data.GetLineIndent (data.CaretLocation.Line),
 				TemplateCode = Code
 			};
