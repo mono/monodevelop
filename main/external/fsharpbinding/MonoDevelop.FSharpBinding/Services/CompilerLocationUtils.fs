@@ -29,6 +29,12 @@ type FSharpTargetFramework =
     | NET_3_5
     | NET_4_0
     | NET_4_5
+    | NET_4_5_1
+    | NET_4_5_2
+    | NET_4_6
+    | NET_4_6_1
+    | NET_4_6_2
+    | NET_4_7
 
 type FSharpCompilerVersion =
     // F# 2.0
@@ -336,6 +342,12 @@ module FSharpEnvironment =
                     | NET_2_0 | NET_3_0 | NET_3_5 -> "2.0"
                     | NET_4_0 -> "4.0"
                     | NET_4_5 -> "4.5"
+                    | NET_4_5_1 -> "4.5.1"
+                    | NET_4_5_2 -> "4.5.2"
+                    | NET_4_6 -> "4.6"
+                    | NET_4_6_1 -> "4.6.1"
+                    | NET_4_6_2 -> "4.6.2"
+                    | NET_4_7 -> "4.7"
 
                 let safeExists f = (try File.Exists(f) with _ -> false)
                 let result =
