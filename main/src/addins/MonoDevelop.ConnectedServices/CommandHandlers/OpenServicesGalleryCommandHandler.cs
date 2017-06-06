@@ -14,19 +14,21 @@ namespace MonoDevelop.ConnectedServices.CommandHandlers
 		protected override void Update (CommandInfo info)
 		{
 			base.Update (info);
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			var hints = GetItemHints (info.DataItem);
+			var project = hints.Item1 ?? IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			var binding = project.GetConnectedServicesBinding ();
 			info.Visible = info.Enabled = binding.HasSupportedServices;
 
-			var serviceId = info.DataItem as string;
+			var serviceId = hints.Item2;
 			if (!string.IsNullOrEmpty (serviceId))
 				info.Visible = info.Enabled = binding.SupportedServices.Any (s => s.Id == serviceId);
 		}
 
 		protected override void Run (object dataItem)
 		{
-			var serviceId = dataItem as string;
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			var hints = GetItemHints (dataItem);
+			var serviceId = hints.Item2;
+			var project = hints.Item1 ?? IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			var binding = project.GetConnectedServicesBinding ();
 
 			if (!string.IsNullOrEmpty (serviceId) && binding.SupportedServices.Any (s => s.Id == serviceId))
@@ -39,6 +41,23 @@ namespace MonoDevelop.ConnectedServices.CommandHandlers
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			ConnectedServices.OpenServicesTab (project);
+		}
+
+		static Tuple<DotNetProject, string> GetItemHints (object dataItem)
+		{
+			var args = dataItem as object [];
+			if (args?.Length == 2)
+				return Tuple.Create (args [0] as DotNetProject, args [1] as string);
+
+			var project = dataItem as DotNetProject;
+			if (project != null)
+				return new Tuple<DotNetProject, string> (project, null);
+
+			var serviceId = dataItem as string;
+			if (project != null)
+				return new Tuple<DotNetProject, string> (null, serviceId);
+
+			return new Tuple<DotNetProject, string> (null, null);
 		}
 	}
 }
