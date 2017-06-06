@@ -87,6 +87,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void LastWorkspaceItemClosed (object sender, EventArgs e)
 		{
 			ClearUpdatedPackages ();
+			PackageManagementCredentialService.Reset ();
 		}
 
 		async Task RestoreAndCheckForUpdates (Solution solution)

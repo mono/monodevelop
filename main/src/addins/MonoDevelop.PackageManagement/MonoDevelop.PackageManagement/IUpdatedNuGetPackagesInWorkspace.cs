@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using NuGet.Protocol.Core.Types;
+
 namespace MonoDevelop.PackageManagement
 {
 	internal interface IUpdatedNuGetPackagesInWorkspace
@@ -31,6 +33,7 @@ namespace MonoDevelop.PackageManagement
 		void Clear ();
 		void Clear (ISolution solution);
 		void CheckForUpdates (ISolution solution);
+		void CheckForUpdates (ISolution solution, ISourceRepositoryProvider sourceRepositoryProvider);
 		UpdatedNuGetPackagesInProject GetUpdatedPackages (IDotNetProject project);
 		bool AnyUpdates ();
 	}
