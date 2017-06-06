@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Cairo;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -72,6 +73,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			public TableRow (PropertyGrid parentGrid)
 			{
 				this.parentGrid = parentGrid;
+				Accessible = new AccessibilityElementProxy ();
+				Accessible.SetRole (AtkCocoa.Roles.AXRow);
 			}
 
 			public bool IsCategory;
@@ -88,9 +91,22 @@ namespace MonoDevelop.Components.PropertyGrid
 			public int ChildrenHeight;
 			public uint AnimationHandle;
 
+			internal IAccessibilityElementProxy Accessible { get; private set; }
+
 			public bool IsExpandable {
 				get {
 					return IsCategory || (ChildRows != null && ChildRows.Count > 0);
+				}
+			}
+
+			bool focused;
+			public bool Focused {
+				get {
+					return focused;
+				}
+
+				set {
+					focused = value;
 				}
 			}
 
@@ -144,10 +160,13 @@ namespace MonoDevelop.Components.PropertyGrid
 			this.parentGrid = parentGrid;
 			this.editorManager = editorManager;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			Events |= Gdk.EventMask.PointerMotionMask;
+			Events |= Gdk.EventMask.PointerMotionMask & EventMask.KeyPressMask;
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
+
+			// Accessibility
+			Accessible.Role = Atk.Role.TreeTable;
 		}
 
 		protected override void OnDestroyed ()
@@ -408,6 +427,10 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		PropertyEditorCell GetCell (TableRow row)
 		{
+			if (row.Property == null) {
+				return null;
+			}
+
 			var e = editorManager.GetEditor (row);
 			e.Initialize (this, editorManager, row);
 			return e;
@@ -450,6 +473,21 @@ namespace MonoDevelop.Components.PropertyGrid
 				var r = cr.Value;
 				cr.Key.SizeAllocate (new Gdk.Rectangle (r.X, r.Y, r.Width, r.Height));
 			}
+		}
+
+		protected override bool OnFocused (DirectionType direction)
+		{
+			if (currentEditorRow == null) {
+				currentEditorRow = (direction == DirectionType.TabForward) ? GetNextRow (null) : GetPreviousRow (null);
+				currentEditorRow.Focused = true;
+				if (!currentEditorRow.IsCategory) {
+					StartEditing (currentEditorRow);
+				} else {
+					QueueDraw ();
+				}
+			}
+
+			return base.OnFocused (direction);
 		}
 
 		public void SetAllocation (Gtk.Widget w, Gdk.Rectangle rect)
@@ -543,6 +581,12 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.Rectangle (0, y, Allocation.Width, rh);
 					ctx.SetSourceColor (Styles.PadCategoryBackgroundColor.ToCairoColor ());
 					ctx.Fill ();
+
+					if (IsFocus && r.Focused) {
+						ctx.Rectangle (1, y + 1, Allocation.Width - 2, rh - 2);
+						ctx.SetSourceColor (Styles.BaseForegroundColor.ToCairoColor ());
+						ctx.Stroke ();
+					}
 
 					if (lastCategory == null || lastCategory.Expanded || lastCategory.AnimatingExpand) {
 						ctx.MoveTo (0, y + 0.5);
@@ -649,6 +693,21 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
+		TableRow GetRowAtPoint (int x, int y)
+		{
+			return GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains (x, y));
+		}
+
+		void ExpandOrCollapseRow (TableRow row)
+		{
+			row.Expanded = !row.Expanded;
+			if (row.Expanded)
+				StartExpandAnimation (row);
+			else
+				StartCollapseAnimation (row);
+			QueueResize ();
+		}
+
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Type != EventType.ButtonPress)
@@ -661,21 +720,22 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+			var row = GetRowAtPoint ((int)evnt.X, (int)evnt.Y);
 
 			if (row != null && editSession == null) {
 				var bounds = GetInactiveEditorBounds (row);
 				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
+					EndEditing ();
+
+					// Ending repopulates the tree, meaning that row no longer points to anything in the tree
+					row = GetRowAtPoint ((int)evnt.X, (int)evnt.Y);
+
 					StartEditing (row);
 					return true;
 				}
+
 				if (row.IsExpandable) {
-					row.Expanded = !row.Expanded;
-					if (row.Expanded)
-						StartExpandAnimation (row);
-					else
-						StartCollapseAnimation (row);
-					QueueResize ();
+					ExpandOrCollapseRow (row);
 					return true;
 				}
 			}
@@ -859,17 +919,25 @@ namespace MonoDevelop.Components.PropertyGrid
 				currentEditor = null;
 				editSession.Dispose ();
 				editSession = null;
-				currentEditorRow = null;
+
 				parentGrid.Populate (saveEditSession: false);
-				QueueDraw ();
 			}
+			QueueDraw ();
 		}
 
 		void StartEditing (TableRow row)
 		{
-			EndEditing ();
+			GrabFocus ();
+
 			currentEditorRow = row;
+			row.Focused = true;
+
 			var cell = GetCell (row);
+			if (cell == null) {
+				QueueDraw ();
+				return;
+			}
+
 			editSession = cell.StartEditing (row.EditorBounds, State);
 			if (editSession == null)
 				return;
@@ -880,6 +948,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			currentEditor.Show ();
 			currentEditor.CanFocus = true;
 			currentEditor.GrabFocus ();
+
+			// Because the editor has the focus now, we need to track keypresses on it
 			ConnectTabEvent (currentEditor);
 
 			var refreshAtt = row.Property.Attributes.OfType<RefreshPropertiesAttribute> ().FirstOrDefault ();
@@ -916,27 +986,71 @@ namespace MonoDevelop.Components.PropertyGrid
 		[GLib.ConnectBefore]
 		void HandleKeyPressEvent (object o, KeyPressEventArgs args)
 		{
-			if (args.Event.Key == Gdk.Key.Tab || args.Event.Key == Gdk.Key.ISO_Left_Tab || args.Event.Key == Gdk.Key.KP_Tab) {
-				var r = args.Event.State == ModifierType.ShiftMask ? GetPreviousRow (currentEditorRow) : GetNextRow (currentEditorRow);
+			args.RetVal = OnKeyPressEvent (args.Event);
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Tab || evnt.Key == Gdk.Key.ISO_Left_Tab || evnt.Key == Gdk.Key.KP_Tab) {
+				if (currentEditorRow != null) {
+					if (!currentEditorRow.IsCategory) {
+						// End editing here because it will cause a clear/populate cycle which will make all
+						// the rows invalid
+						EndEditing ();
+					}
+
+					currentEditorRow.Focused = false;
+					QueueDraw ();
+				}
+
+				var r = evnt.State == ModifierType.ShiftMask ? GetPreviousRow (currentEditorRow) : GetNextRow (currentEditorRow);
 				if (r != null) {
-					Gtk.Application.Invoke (delegate {
-						StartEditing (r);
-					});
-					args.RetVal = true;
+					StartEditing (r);
+
+					return true;
+				} else {
+					currentEditorRow = null;
+				}
+			} else if (evnt.Key == Gdk.Key.space) {
+				if (currentEditorRow != null && currentEditorRow.IsExpandable) {
+					ExpandOrCollapseRow (currentEditorRow);
+					return true;
 				}
 			}
+
+			return base.OnKeyPressEvent (evnt);
+		}
+
+		// When we stop editing a row, the tree gets rebuilt
+		// There isn't a reliable method to match old rows with new rows
+		// so check Labels and Property.Name
+		// see SaveStatus
+		bool CompareRows (TableRow r1, TableRow r2)
+		{
+			if (r1 == null || r2 == null) {
+				return false;
+			}
+
+			return (r1 == r2) ||
+				(r1.IsCategory && r2.IsCategory && r1.Label == r2.Label) ||
+				(r1.Property != null && r2.Property != null && r1.Property.Name == r2.Property.Name);
 		}
 
 		TableRow GetNextRow (TableRow row)
 		{
 			bool found = false;
 			foreach (var r in GetAllRows (true)) {
-				if (r.IsCategory || !r.Enabled)
+				if (!r.Enabled) {
 					continue;
-				if (found)
+				}
+
+				if (row == null || found) {
 					return r;
-				if (r == row)
+				}
+
+				if (CompareRows (row, r)) {
 					found = true;
+				}
 			}
 			return null;
 		}
@@ -945,13 +1059,17 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			TableRow prev = null;
 			foreach (var r in GetAllRows (true)) {
-				if (r.IsCategory || !r.Enabled)
+				if (!r.Enabled)
 					continue;
-				if (r == row)
+
+				if (CompareRows (row, r))
 					return prev;
+
 				prev = r;
 			}
-			return null;
+
+			// Return last row
+			return prev;
 		}
 	}
 
