@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
+	<ConditionType id="LeakTrackerEnabled" type="PerformanceDiagnosticsAddIn.LeakTrackerEnabledCondition" />
+	
 	<Extension path="/MonoDevelop/Ide/Commands">
 		<Command id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
@@ -31,5 +33,24 @@
 				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel"
 				icon="md-prefs-performance" />
 		</Section>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Condition id="LeakTrackerEnabled">
+			<Pad id = "PerformanceDiagnosticsAddIn.LeakTrackerPad"
+				_label="Leak Tracker"
+				icon="md-errors-list"
+				group="Logs"
+				class = "PerformanceDiagnosticsAddIn.LeakTrackerPad"
+				defaultPlacement = "Bottom"
+				defaultStatus="AutoHide"
+				defaultLayout="*"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
+		<Condition id="LeakTrackerEnabled">
+			<LayoutPad id="PerformanceDiagnosticsAddIn.LeakTrackerPad" status="AutoHide" />
+		</Condition>
 	</Extension>
 </ExtensionModel>

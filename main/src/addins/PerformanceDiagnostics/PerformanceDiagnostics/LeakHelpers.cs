@@ -64,11 +64,11 @@ namespace PerformanceDiagnosticsAddIn
 			var counts = new Dictionary<Type, int>();
 			foreach (var pair in NSObjectDict)
 			{
-				var value = pair.Value.Target;
-				if (value == null)
+				var obj = pair.Value.Target;
+				if (obj == null)
 					continue;
 
-				var nsobjType = value.GetType();
+				var nsobjType = obj.GetType();
 				if (!counts.TryGetValue(nsobjType, out int count))
 					count = 0;
 				counts[nsobjType] = ++count;
@@ -76,7 +76,11 @@ namespace PerformanceDiagnosticsAddIn
 
 			foreach (var ptr in LeakCheckSafeHandle.alive)
 			{
-				var gobjType = GLib.Object.GetObject(ptr).GetType();
+				var obj = GLib.Object.GetObject (ptr);
+				if (obj == null)
+					continue;
+
+				var gobjType = obj.GetType();
 				if (!counts.TryGetValue(gobjType, out int count))
 					count = 0;
 				counts[gobjType] = ++count;
@@ -94,22 +98,36 @@ namespace PerformanceDiagnosticsAddIn
 				if (!lastCounts.TryGetValue (pair.Key, out int lastCount))
 					lastCount = 0;
 
-				lastCounts [pair.Key] = pair.Value - lastCount;
+				var delta = pair.Value - lastCount;
+				if (delta == 0)
+					lastCounts.Remove (pair.Key);
+				else
+					lastCounts [pair.Key] = delta;
 			}
 			return lastCounts;
 		}
 
-		static Dictionary<Type, int> lastCounts;
+		static Dictionary<Type, int> summaryLastCounts;
 		public static (string summary, string delta) GetSummary ()
 		{
 			var counts = ComputeCurrentCounts();
-			var delta = ComputeDelta (lastCounts, counts);
+			var delta = ComputeDelta (summaryLastCounts, counts);
 
-			lastCounts = counts;
+			summaryLastCounts = counts;
 			return (GetSummaryString (counts), GetSummaryString(delta, "+"));
 		}
 
-		static string GetSummaryString (Dictionary<Type, int> dict, string plusSymbol = "")
+		static Dictionary<Type, int> statisticsLastCounts;
+		public static (Dictionary<Type, int> liveObjects, Dictionary<Type, int> deltaObjects) GetStatistics ()
+		{
+			var counts = ComputeCurrentCounts ();
+			var delta = ComputeDelta (statisticsLastCounts, counts);
+
+			statisticsLastCounts = counts;
+			return (counts, delta);
+		}
+
+		internal static string GetSummaryString (Dictionary<Type, int> dict, string plusSymbol = "")
 		{
 			return string.Join (
 				Environment.NewLine,

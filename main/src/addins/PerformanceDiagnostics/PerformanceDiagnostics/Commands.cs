@@ -44,7 +44,7 @@ namespace PerformanceDiagnosticsAddIn
 
 	public class DumpLiveWidgetsHandler : CommandHandler
 	{
-		static System.IO.TextWriter log = LoggingService.CreateLogFile ("leak-dump");
+		static readonly System.IO.TextWriter log = LoggingService.CreateLogFile ("leak-dump");
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = Options.HasMemoryLeakFeature;
