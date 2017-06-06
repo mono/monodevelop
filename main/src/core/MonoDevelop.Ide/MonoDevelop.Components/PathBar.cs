@@ -850,11 +850,9 @@ namespace MonoDevelop.Components
 			}
 
 			if (ret) {
-				alreadyHaveFocus = true;
 				GrabFocus ();
-			} else {
-				alreadyHaveFocus = false;
 			}
+			alreadyHaveFocus = ret;
 			QueueDraw ();
 			return ret;
 		}
