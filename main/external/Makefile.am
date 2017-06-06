@@ -1,21 +1,26 @@
 TARBALL_PATH=../../tarballs/external
-
+XAMMAC_PATH=/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib
 all:
 
 clean:
 
 if ENABLE_MACPLATFORM
-all: Xamarin.Mac.dll
+all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib
 	$(MAKE) -C monomac/src
 
-Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
+Xamarin.Mac.dll: $(XAMMAC_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp -p $< $@
 	cp -p $<.mdb $@.mdb
-	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mmp/Xamarin.Mac.registrar.full.a .
-	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib .
+
+Xamarin.Mac.registrar.full.a: $(XAMMAC_PATH)/mmp/Xamarin.Mac.registrar.full.a
+	cp -p $< $@
+
+libxammac.dylib: $(XAMMAC_PATH)/libxammac.dylib
+	cp -p $< $@
 
 clean:
 	$(MAKE) -C monomac/src clean
+	rm -f Xamarin.Mac.Registrar.full.a
 	rm -f Xamarin.Mac.dll*
 	rm -f libxammac.dylib
 endif
