@@ -20,7 +20,12 @@ typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef void (* gobject_tracker_init) (void *libmono);
-extern int xamarin_create_classes_Xamarin_Mac ();
+
+extern
+#if EXTERN_C
+"C"
+#endif
+int xamarin_create_classes_Xamarin_Mac ();
 
 void *libmono, *libxammac;
 
