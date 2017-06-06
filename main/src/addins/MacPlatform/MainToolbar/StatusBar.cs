@@ -683,13 +683,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSImage statusReadyImage = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 		void ReconstructString ()
 		{
+			var updatePopover = popoverForStatus && popover != null;
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
 				UpdateApplicationNamePlaceholderText ();
 				imageView.Image = statusReadyImage;
+				if (updatePopover) {
+					DestroyPopover (null, null);
+				}
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
+				if (updatePopover) {
+					DestroyPopover (null, null);
+					ShowPopoverForStatusBar ();
+				}
 			}
 		}
 
@@ -702,6 +710,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			icon.Entered -= ShowPopoverForIcon;
 			icon.Exited -= DestroyPopover;
 			icon.Clicked -= DestroyPopover;
+
+			if (!popoverForStatus && popover != null)
+				DestroyPopover (null, null);
 
 			RepositionStatusIcons ();
 		}
@@ -984,6 +995,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		NSPopover popover;
+		bool popoverForStatus;
 
 		void CreatePopoverCommon (nfloat width, string text)
 		{
@@ -1027,6 +1039,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (popover != null)
 				return;
 
+			popoverForStatus = false;
 			var icon = (StatusIcon) sender;
 
 			if (!CreatePopoverForIcon (icon))
@@ -1040,6 +1053,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (popover != null)
 				return;
 
+			popoverForStatus = true;
 			CreatePopoverForStatusBar ();
 			popover.Show (textField.Frame, this, NSRectEdge.MinYEdge);
 		}
