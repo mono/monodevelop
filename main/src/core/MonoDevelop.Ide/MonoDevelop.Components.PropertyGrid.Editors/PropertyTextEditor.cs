@@ -71,7 +71,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 				PackStart (combo, true, true, 0);
 				combo.Changed += TextChanged;
-				
+				combo.CanFocus = true;
+
 				//fill the list
 				foreach (object stdValue in session.Property.Converter.GetStandardValues (session)) {
 					store.AppendValues (session.Property.Converter.ConvertToString (session, stdValue), ObjectBox.Box (stdValue));
@@ -90,6 +91,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				entry = new Entry ();
 				entry.IsEditable = !session.Property.IsReadOnly;
 				PackStart (entry, true, true, 0);
+				entry.CanFocus = true;
 			}
 
 			//if we have an entry, fix it up a little
@@ -110,7 +112,15 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			Spacing = 3;
 			ShowAll ();
 		}
-		
+		protected override void OnFocusGrabbed ()
+		{
+			if (combo != null) {
+				combo.GrabFocus ();
+			} else if (entry != null) {
+				entry.GrabFocus ();
+			}
+		}
+
 		protected virtual bool ShouldShowDialogButton ()
 		{
 			//if the object's Localizable, show a dialog, since the text's likely to be more substantial
