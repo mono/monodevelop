@@ -31,6 +31,7 @@ using System.Linq;
 using Mono.Addins;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -114,6 +115,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			warningMessage = new HBox ();
 			warningMessage.Spacing = 6;
 			var img = new ImageView (Stock.Warning, IconSize.Menu);
+			img.SetCommonAccessibilityAttributes ("MimeTypePolicyOptionsPanel.Warning",
+												  GettextCatalog.GetString ("Warning"),
+												  null);
 			warningMessage.PackStart (img, false, false, 0);
 			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
 				"Settings for existing projects can be modified in the project (or solution) options dialog."));
