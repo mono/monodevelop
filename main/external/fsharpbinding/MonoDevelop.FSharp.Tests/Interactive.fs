@@ -85,7 +85,7 @@ module Interactive =
             if succeeded then results |> should equal "type CmdResult = | ErrorLevel of string * int\n"
             else Assert.Fail "Timeout" } |> toTask
 
-    [<Test;Ignore;AsyncStateMachine(typeof<Task>)>]
+    [<Test;AsyncStateMachine(typeof<Task>)>]
     let ``Interactive send references uses real assemblies #43307``() =
         async {
             let mutable results = String.empty
@@ -114,6 +114,6 @@ module Interactive =
                 """
 
             session.SendInput input
-            let succeeded = finished.WaitOne(20000)
+            let succeeded = finished.WaitOne(30000)
             if succeeded then results |> should equal "val jsonObj : string = \"[{\"Name\":\"Bad Boys\",\"Year\":1995}]\"\n"
             else Assert.Fail "Timeout" } |> toTask
