@@ -75,7 +75,7 @@ namespace MonoDevelop.PackageManagement
 		/// <summary>
 		/// The credential service puts itself in a retry mode if a credential provider
 		/// is checked. This results in credentials stored in the key chain being ignored
-		/// and a dialog asking for credentials will be shown. it. This method will clear
+		/// and a dialog asking for credentials will be shown. This method will clear
 		/// the retry cache so credentials stored in the key chain will be re-used and a
 		/// dialog prompt will not be displayed unless the credentials are invalid. This
 		/// should be called before a user triggered action such as opening the Add
