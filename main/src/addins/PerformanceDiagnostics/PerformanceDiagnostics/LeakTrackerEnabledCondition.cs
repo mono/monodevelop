@@ -32,6 +32,8 @@ namespace PerformanceDiagnosticsAddIn
 	{
 		public override bool Evaluate (NodeElement conditionNode)
 		{
+			if (conditionNode.GetAttribute ("value") == "pad")
+				return Options.HasMemoryLeakFeaturePad;
 			return Options.HasMemoryLeakFeature;
 		}
 	}
