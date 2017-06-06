@@ -100,7 +100,7 @@ namespace MonoDevelop.Components.Commands
 
 		public bool Equals (KeyBindingSet other)
 		{
-			if (bindings.Count != other.bindings.Count)
+			if (parent != other && bindings.Count != other.bindings.Count)
 				return false;
 			foreach (KeyValuePair<string, string> binding in bindings) {
 				string accel;
