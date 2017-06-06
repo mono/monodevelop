@@ -25,19 +25,15 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
 	public static class LeakSummaryService
 	{
-		public static void Dump (TextWriter log)
+		public static async Task Dump (TextWriter log)
 		{
-			GC.Collect ();
-			GC.Collect ();
-			GC.Collect ();
-			GC.WaitForPendingFinalizers ();
-
-			var (summary, delta) = LeakHelpers.GetSummary ();
+			var (summary, delta) = await LeakHelpers.GetSummary ();
 			log.WriteLine ("Summary:");
 			log.WriteLine (summary);
 			log.WriteLine ();

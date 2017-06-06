@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
@@ -108,13 +109,45 @@ namespace PerformanceDiagnosticsAddIn
 		}
 
 		static Dictionary<Type, int> summaryLastCounts;
-		public static (string summary, string delta) GetSummary ()
+		static TaskCompletionSource<(string summary, string delta)> tcs;
+		public static Task<(string summary, string delta)> GetSummary ()
 		{
-			var counts = ComputeCurrentCounts();
-			var delta = ComputeDelta (summaryLastCounts, counts);
+			if (tcs == null) {
+				tcs = new TaskCompletionSource<(string summary, string delta)> ();
+				GLib.Timeout.Add (100, SummaryTimeoutHandler);
+			}
+			return tcs.Task;
+		}
 
-			summaryLastCounts = counts;
-			return (GetSummaryString (counts), GetSummaryString(delta, "+"));
+		static int remainingEqualChangedCount = 5;
+		static bool SummaryTimeoutHandler ()
+		{
+			int gobjCount = LeakCheckSafeHandle.alive.Count;
+			int nsobjCount = NSObjectDict.Count;
+
+			GC.Collect ();
+			GC.Collect ();
+			GC.Collect ();
+			GC.WaitForPendingFinalizers ();
+
+			bool changed = gobjCount != LeakCheckSafeHandle.alive.Count || nsobjCount != NSObjectDict.Count;
+			if (!changed) {
+				remainingEqualChangedCount--;
+				if (remainingEqualChangedCount == 0) {
+					remainingEqualChangedCount = 5;
+
+					var counts = ComputeCurrentCounts ();
+					var delta = ComputeDelta (summaryLastCounts, counts);
+
+					summaryLastCounts = counts;
+					tcs.SetResult ((GetSummaryString (counts), GetSummaryString (delta, "+")));
+					tcs = null; // Make it so we can queue another dump now.
+					return false;
+				}
+			} else {
+				remainingEqualChangedCount = 5;
+			}
+			return true;
 		}
 
 		static Dictionary<Type, int> statisticsLastCounts;

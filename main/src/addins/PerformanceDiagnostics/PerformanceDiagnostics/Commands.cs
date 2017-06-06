@@ -51,9 +51,9 @@ namespace PerformanceDiagnosticsAddIn
 			base.Update (info);
 		}
 
-		protected override void Run ()
+		protected override async void Run ()
 		{
-			LeakSummaryService.Dump (log);
+			await LeakSummaryService.Dump (log);
 			log.WriteLine ("=========================================================================================");
 		}
 	}
