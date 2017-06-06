@@ -53,17 +53,7 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			GC.Collect ();
-			GC.Collect ();
-			GC.Collect ();
-			GC.WaitForPendingFinalizers ();
-
-			var (summary, delta) = LeakHelpers.GetSummary ();
-			log.WriteLine ("Summary:");
-			log.WriteLine (summary);
-			log.WriteLine ();
-			log.WriteLine ("Delta:");
-			log.WriteLine (delta);
+			LeakSummaryService.Dump (log);
 			log.WriteLine ("=========================================================================================");
 		}
 	}
