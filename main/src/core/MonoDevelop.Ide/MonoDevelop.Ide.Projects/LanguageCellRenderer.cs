@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Projects
 
 		bool TemplateHasMultipleLanguages ()
 		{
-			return !RenderRecentTemplate && Template.AvailableLanguages.Count > 1;
+			return !RenderRecentTemplate && Template != null && Template.AvailableLanguages.Count > 1;
 		}
 
 		static StateType GetState (Widget widget, CellRendererState flags)
