@@ -9,6 +9,14 @@ FOR %%E in (Enterprise, Professional, Community) DO (
 	if exist "!MSBUILD_EXE!" goto :build
 )
 
+REM Couldn't be located in the standard locations, expand search
+FOR /F "delims=" %%E IN ('dir /b /ad "%ProgramFiles(x86)%\Microsoft Visual Studio\"') DO (
+	FOR /F "delims=" %%F IN ('dir /b /ad "%ProgramFiles(x86)%\Microsoft Visual Studio\%%E"') DO (
+		set "MSBUILD_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\%%E\%%F\MSBuild\15.0\Bin\MSBuild.exe"
+		if exist "!MSBUILD_EXE!" goto :build
+	)
+)
+
 echo Could not find MSBuild 15
 exit /b 1
 
