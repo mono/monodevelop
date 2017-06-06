@@ -39,19 +39,8 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class TargetFramework
 	{
-		[ItemProperty(SerializationDataType=typeof(TargetFrameworkMonikerDataType))]
 		TargetFrameworkMoniker id;
-		
-		[ItemProperty ("_name")]
 		string name;
-		
-#pragma warning disable 0649
-		[ItemProperty]
-		bool hidden;
-#pragma warning restore 0649
-		
-		[ItemProperty]
-		ClrVersion clrVersion;
 
 		List<TargetFrameworkMoniker> includedFrameworks = new List<TargetFrameworkMoniker> ();
 		List<SupportedFramework> supportedFrameworks = new List<SupportedFramework> ();
@@ -59,7 +48,6 @@ namespace MonoDevelop.Core.Assemblies
 		internal bool RelationsBuilt;
 		
 		string corlibVersion;
-		TargetFrameworkToolsVersion toolsVersion;
 
 		public static TargetFramework Default {
 			get { return Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.Default); }
@@ -75,12 +63,7 @@ namespace MonoDevelop.Core.Assemblies
 			this.name = id.Profile == null
 				? string.Format ("{0} {1}", id.Identifier, id.Version)
 				: string.Format ("{0} {1} {2} Profile", id.Identifier, id.Version, id.Profile);
-			clrVersion = ClrVersion.Default;
 			Assemblies = new AssemblyInfo[0];
-		}
-		
-		public bool Hidden {
-			get { return hidden; }
 		}
 		
 		public string Name {
@@ -99,50 +82,13 @@ namespace MonoDevelop.Core.Assemblies
 				return id;
 			}
 		}
-		
-		public ClrVersion ClrVersion {
-			get {
-				// Always return a concrete ClrVersion, nothing that uses this can deal with ClrVersion.Default
-				// If the framework didn't specify one, assume the same default as the ToolsVersion.
-				if (clrVersion == ClrVersion.Default) {
-					return ClrVersion.Net_4_0;
-				}
-				return clrVersion;
-			}
-		}
-		
-		//FIXME: this isn't really valid/useful. anything using MSBuild custom frameworks should use 4.0 tools
-		internal TargetFrameworkToolsVersion GetToolsVersion ()
-		{
-			if (toolsVersion != TargetFrameworkToolsVersion.Unspecified)
-				return toolsVersion;
-			
-			if (Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK) {
-				switch (id.Version) {
-				case "4.0":
-					return TargetFrameworkToolsVersion.V4_0;
-				case "3.5":
-					return TargetFrameworkToolsVersion.V3_5;
-				case "3.0":
-				case "2.0":
-					return TargetFrameworkToolsVersion.V2_0;
-				case "1.1":
-					return TargetFrameworkToolsVersion.V1_1;
-				}
-			}
-			
-			switch (clrVersion) {
-			case MonoDevelop.Core.ClrVersion.Net_1_1:
-				return TargetFrameworkToolsVersion.V1_1;
-			case MonoDevelop.Core.ClrVersion.Net_2_0:
-				return TargetFrameworkToolsVersion.V2_0;
-			case MonoDevelop.Core.ClrVersion.Net_4_0:
-				return TargetFrameworkToolsVersion.V4_0;
-			}
-			
-			return TargetFrameworkToolsVersion.V4_0;
-		}
 
+		[Obsolete("It is no longer possible to define a hidden framework")]
+		public bool Hidden { get; } = false;
+		
+		[Obsolete("This value is no longer meaningful")]
+		public ClrVersion ClrVersion { get; } = ClrVersion.Net_4_0;
+		
 		static bool ProfileMatchesPattern (string profile, string pattern)
 		{
 			if (string.IsNullOrEmpty (pattern))
@@ -230,26 +176,6 @@ namespace MonoDevelop.Core.Assemblies
 			return corlibVersion = string.Empty;
 		}
 
-		internal TargetFrameworkNode FrameworkNode { get; set; }
-		
-		internal TargetFrameworkBackend CreateBackendForRuntime (TargetRuntime runtime)
-		{
-			if (FrameworkNode == null)
-				return null;
-			
-			lock (FrameworkNode) {
-				if (FrameworkNode.ChildNodes == null)
-					return null;
-			}
-			
-			foreach (TypeExtensionNode node in FrameworkNode.ChildNodes) {
-				TargetFrameworkBackend backend = (TargetFrameworkBackend) node.CreateInstance (typeof (TargetFrameworkBackend));
-				if (backend.SupportsRuntime (runtime))
-					return backend;
-			}
-			return null;
-		}
-		
 		public bool IncludesFramework (TargetFrameworkMoniker id)
 		{
 			return id == this.id || includedFrameworks.Contains (id);
@@ -259,7 +185,6 @@ namespace MonoDevelop.Core.Assemblies
 			get { return includedFrameworks; }
 		}
 
-		[ItemProperty (Name="IncludesFramework")]
 		#pragma warning disable 649
 		string includesFramework;
 		#pragma warning restore 649
@@ -280,8 +205,6 @@ namespace MonoDevelop.Core.Assemblies
 			get { return supportedFrameworks; }
 		}
 		
-		[ItemProperty]
-		[ItemProperty ("Assembly", Scope="*")]
 		internal AssemblyInfo[] Assemblies {
 			get;
 			set;
@@ -289,8 +212,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string ToString ()
 		{
-			return string.Format ("[TargetFramework: Hidden={0}, Name={1}, Id={2}, ClrVersion={3}]",
-				Hidden, Name, Id, ClrVersion);
+			return $"[TargetFramework: Name={Name}, Id={Id}]";
 		}
 		
 		public static TargetFramework FromFrameworkDirectory (TargetFrameworkMoniker moniker, FilePath dir)
@@ -311,43 +233,6 @@ namespace MonoDevelop.Core.Assemblies
 				
 				if (reader.MoveToAttribute ("Name") && reader.ReadAttributeValue ())
 					fx.name = reader.ReadContentAsString ();
-				
-				if (reader.MoveToAttribute ("RuntimeVersion") && reader.ReadAttributeValue ()) {
-					string runtimeVersion = reader.ReadContentAsString ();
-					switch (runtimeVersion) {
-					case "2.0":
-						fx.clrVersion = ClrVersion.Net_2_0;
-						break;
-					case "4.0":
-						fx.clrVersion = ClrVersion.Net_4_0;
-						break;
-					//The concept of "ClrVersion" breaks down hard after 4.5 and is essentially meaningless
-					default:
-						fx.clrVersion = ClrVersion.Net_4_5;
-						break;
-					}
-				}
-				
-				if (reader.MoveToAttribute ("ToolsVersion") && reader.ReadAttributeValue ()) {
-					string toolsVersion = reader.ReadContentAsString ();
-					switch (toolsVersion) {
-					case "2.0":
-						fx.toolsVersion = TargetFrameworkToolsVersion.V2_0;
-						break;
-					case "3.5":
-						fx.toolsVersion = TargetFrameworkToolsVersion.V3_5;
-						break;
-					case "4.0":
-						fx.toolsVersion = TargetFrameworkToolsVersion.V4_0;
-						break;
-					case "4.5":
-						fx.toolsVersion = TargetFrameworkToolsVersion.V4_5;
-						break;
-					default:
-						LoggingService.LogInfo ("Framework {0} has unknown ToolsVersion {1}", moniker, toolsVersion);
-						return null;
-					}
-				}
 				
 				if (reader.MoveToAttribute ("IncludeFramework") && reader.ReadAttributeValue ()) {
 					string include = reader.ReadContentAsString ();
@@ -472,15 +357,5 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return (AssemblyInfo) MemberwiseClone ();
 		}
-	}
-	
-	public enum TargetFrameworkToolsVersion
-	{
-		Unspecified,
-		V1_1, //not a real MSBuild ToolsVersion, but MD internal build supports it
-		V2_0,
-		V3_5,
-		V4_0,
-		V4_5
 	}
 }

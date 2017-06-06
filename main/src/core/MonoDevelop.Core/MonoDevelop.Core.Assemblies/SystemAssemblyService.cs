@@ -45,8 +45,7 @@ namespace MonoDevelop.Core.Assemblies
 	public sealed class SystemAssemblyService
 	{
 		object frameworkWriteLock = new object ();
-		Dictionary<TargetFrameworkMoniker,TargetFramework> frameworks;
-		List<TargetFrameworkMoniker> coreFrameworks;
+		Dictionary<TargetFrameworkMoniker,TargetFramework> frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
 		DirectoryAssemblyContext userAssemblyContext = new DirectoryAssemblyContext ();
@@ -59,7 +58,6 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal void Initialize ()
 		{
-			CreateFrameworks ();
 			runtimes = new List<TargetRuntime> ();
 			foreach (ITargetRuntimeFactory factory in AddinManager.GetExtensionObjects ("/MonoDevelop/Core/Runtimes", typeof(ITargetRuntimeFactory))) {
 				foreach (TargetRuntime runtime in factory.CreateRuntimes ()) {
@@ -201,13 +199,14 @@ namespace MonoDevelop.Core.Assemblies
 			if (frameworks.TryGetValue (id, out fx))
 				return fx;
 
-			LoggingService.LogDebug ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService, ensuring rutimes initialized and trying again", id);
+			LoggingService.LogDebug ("Unknown TargetFramework '{0}' is being requested from SystemAssemblyService, ensuring runtimes initialized and trying again", id);
 			foreach (var r in runtimes)
 				r.EnsureInitialized ();
 			if (frameworks.TryGetValue (id, out fx))
 				return fx;
 
-			LoggingService.LogWarning ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService, returning empty TargetFramework", id);
+			
+			LoggingService.LogWarning ("Unknown TargetFramework '{0}' is being requested from SystemAssemblyService, returning empty TargetFramework", id);
 			UpdateFrameworks (new [] { new TargetFramework (id) });
 			return frameworks [id];
 		}
@@ -277,27 +276,6 @@ namespace MonoDevelop.Core.Assemblies
 		public static string GetAssemblyName (string file)
 		{
 			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
-		}
-
-		void CreateFrameworks ()
-		{
-			frameworks = new Dictionary<TargetFrameworkMoniker, TargetFramework> ();
-			coreFrameworks = new List<TargetFrameworkMoniker> ();
-			foreach (TargetFrameworkNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/Frameworks")) {
-				try {
-					TargetFramework fx = node.CreateFramework ();
-					if (frameworks.ContainsKey (fx.Id)) {
-						LoggingService.LogError ("Duplicate framework '" + fx.Id + "'");
-						continue;
-					}
-					coreFrameworks.Add (fx.Id);
-					frameworks[fx.Id] = fx;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not load framework '" + node.Id + "'", ex);
-				}
-			}
-
-			BuildFrameworkRelations (frameworks);
 		}
 
 		//warning: this may mutate `frameworks` and any newly-added TargetFrameworks in it
