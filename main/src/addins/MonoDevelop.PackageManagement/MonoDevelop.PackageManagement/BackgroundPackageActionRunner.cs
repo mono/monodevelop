@@ -109,6 +109,7 @@ namespace MonoDevelop.PackageManagement
 
 			List<IPackageAction> actionsList = actions.ToList ();
 			BackgroundDispatch (() => {
+				PackageManagementCredentialService.Reset ();
 				TryRunActionsWithProgressMonitor (progressMessage, actionsList, taskCompletionSource, clearConsole);
 				actionsList = null;
 				progressMessage = null;

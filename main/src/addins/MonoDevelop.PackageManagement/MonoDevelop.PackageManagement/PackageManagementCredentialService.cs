@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet.CommandLine;
 using NuGet.Credentials;
+using NuGet.Protocol;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -69,6 +70,26 @@ namespace MonoDevelop.PackageManagement
 			var settings = SettingsLoader.LoadDefaultSettings ();
 			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
 			return new SettingsCredentialProvider (packageSourceProvider);
+		}
+
+		/// <summary>
+		/// The credential service puts itself in a retry mode if a credential provider
+		/// is checked. This results in credentials stored in the key chain being ignored
+		/// and a dialog asking for credentials will be shown. it. This method will clear
+		/// the retry cache so credentials stored in the key chain will be re-used and a
+		/// dialog prompt will not be displayed unless the credentials are invalid. This
+		/// should be called before a user triggered action such as opening the Add
+		/// Packages dialog, restoring a project's packages, or updating a package.
+		/// </summary>
+		public static void Reset ()
+		{
+			try {
+				var credentialService = HttpHandlerResourceV3.CredentialService as CredentialService;
+				if (credentialService != null)
+					credentialService.Reset ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to reset PackageManagementCredentialService.", ex);
+			}
 		}
 	}
 }
