@@ -600,10 +600,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				if (item == SelectedItemIndex) {
 					var barStyle = SelectionEnabled ? Styles.CodeCompletion.SelectionBackgroundColor : Styles.CodeCompletion.SelectionBackgroundInactiveColor;
-
-					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 					context.SetSourceColor (barStyle.ToCairoColor ());
-					context.Fill ();
+
+					if (SelectionEnabled) {
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						context.Fill ();
+					} else {
+						context.LineWidth++;
+						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
+						context.Stroke ();
+						context.LineWidth--;
+					}
 				}
 
 				if (icon != null) {
