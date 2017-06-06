@@ -68,6 +68,7 @@ Thumbs.db
 *.dmg
 *.app
 /main/build/MacOSX/render.exe
+/main/external/Xamarin.Mac.registrar.full.a
 /main/external/Xamarin.Mac.dll*
 /main/external/libxammac.dylib
 
