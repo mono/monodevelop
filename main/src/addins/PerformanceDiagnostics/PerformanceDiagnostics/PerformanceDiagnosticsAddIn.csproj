@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>PerformanceDiagnosticsAddIn</RootNamespace>
     <AssemblyName>PerformanceDiagnosticsAddIn</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +34,10 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -42,6 +46,7 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="LeakHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml">

@@ -7,12 +7,19 @@
 		<Command id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
 			_label="Profile for 5 seconds" />
+		<Command id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
+			defaultHandler="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler"
+			_label="Dump live widgets" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
 		<ItemSet id="Diagnostics">
 			<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
 			<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.DumpLiveWidgetsHandler" />
 		</ItemSet>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/PreStartupHandlers">
+		<Class class="PerformanceDiagnosticsAddIn.InitializeGtkHelperHandler" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="PerformanceDiagnostics"
