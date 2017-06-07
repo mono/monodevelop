@@ -325,6 +325,7 @@ namespace MonoDevelop.Ide.Projects
 			Show ();
 
 			templatesTreeView.HasFocus = true;
+			Resizable = false;
 		}
 
 		TreeViewColumn CreateTemplateCategoriesTreeViewColumn ()
@@ -365,6 +366,23 @@ namespace MonoDevelop.Ide.Projects
 			column.PackEnd (languageCellRenderer, false);
 			column.SetCellDataFunc (languageCellRenderer, SetLanguageCellData);
 			return column;
+		}
+
+		/// <summary>
+		/// When the dialog has Resizable set to false then the DefaultHeight and
+		/// DefaultWidth are ignored and the size for the dialog changes to fit the
+		/// widgets which will sometimes shrink the dialog. The size also changes
+		/// on moving from page to page so override the requisition if it is too small.
+		/// </summary>
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			if (requisition.Height < DefaultHeight)
+				requisition.Height = DefaultHeight;
+
+			if (requisition.Width < DefaultWidth)
+				requisition.Width = DefaultWidth;
 		}
 	}
 }
