@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public class LanguageCellRenderer : CellRendererText
+	class LanguageCellRenderer : CellRendererText
 	{
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Projects
 
 		bool TemplateHasMultipleLanguages ()
 		{
-			return !RenderRecentTemplate && Template.AvailableLanguages.Count > 1;
+			return !RenderRecentTemplate && Template != null && Template.AvailableLanguages.Count > 1;
 		}
 
 		static StateType GetState (Widget widget, CellRendererState flags)
