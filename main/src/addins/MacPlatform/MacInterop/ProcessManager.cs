@@ -61,7 +61,7 @@ namespace MonoDevelop.MacInterop
 			if (runningApp == null)
 				return false;
 
-			return runningApp.Terminate ();
+			return runningApp.ForceTerminate ();
 		}
 
 		public static bool IsRunning (int pid)
