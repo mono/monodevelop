@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public class LanguageCellRenderer : CellRendererText
+	class LanguageCellRenderer : CellRendererText
 	{
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
