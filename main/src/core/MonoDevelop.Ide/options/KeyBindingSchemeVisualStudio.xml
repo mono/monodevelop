@@ -116,8 +116,8 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown" shortcut="Control+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp" shortcut="Control+Up" />
-    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown" shortcut="Page_Down Control+Page_Down" />
-    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageUp" shortcut="Page_Up Control+Page_Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown" shortcut="Control+Page_Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageUp" shortcut="Control+Page_Up" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd" shortcut="Shift+End" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome" shortcut="Shift+Home" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord" shortcut="Control+Shift+Right" />
