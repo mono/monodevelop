@@ -404,10 +404,16 @@ namespace MonoDevelop.Ide.Projects
 				0,
 				0);
 
+			uint rightAttach = 2;
+			if (extraRow.InformationTooltipWidget == null) {
+				// Allow control to extend all the way across if it has no information tooltip.
+				rightAttach = 3;
+			}
+
 			projectConfigurationTable.Attach (
 				extraRow.MainWidget,
 				1,
-				2,
+				rightAttach,
 				extraRow.Row,
 				extraRow.Row + 1,
 				AttachOptions.Fill,
