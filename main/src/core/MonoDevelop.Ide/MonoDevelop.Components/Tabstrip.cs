@@ -103,6 +103,11 @@ namespace MonoDevelop.Components
 				tab.Active = true;
 			else if (activeTab >= index)
 				activeTab++;
+
+			if (focusedTab >= index) {
+				focusedTab++;
+			}
+
 			QueueResize ();
 
 			tab.Allocation = GetBounds (tab);
@@ -233,17 +238,19 @@ namespace MonoDevelop.Components
 			case DirectionType.Right:
 				focusedTab++;
 				if (focusedTab >= tabs.Count) {
+					focusedTab = -1;
 					ret = false;
 				}
 				break;
 
 			case DirectionType.TabBackward:
 			case DirectionType.Left:
-				if (focusedTab == -1) {
+				if (focusedTab <= -1) {
 					focusedTab = tabs.Count;
 				}
 				focusedTab--;
 				if (focusedTab < 0) {
+					focusedTab = -1;
 					ret = false;
 				}
 				break;
@@ -251,11 +258,13 @@ namespace MonoDevelop.Components
 
 			if (ret) {
 				GrabFocus ();
-				if (oldFocus >= 0) {
+				if (oldFocus >= 0 && oldFocus < tabs.Count) {
 					tabs [oldFocus].Focused = false;
 				}
 
-				tabs [focusedTab].Focused = true;
+				if (focusedTab >= 0) {
+					tabs [focusedTab].Focused = true;
+				}
 			} else {
 				focusedTab = 0;
 			}
@@ -272,10 +281,10 @@ namespace MonoDevelop.Components
 
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
-			if (focusedTab > -1) {
+			if (focusedTab > -1 && focusedTab <= tabs.Count) {
 				tabs [focusedTab].Focused = false;
-				focusedTab = -1;
 			}
+			focusedTab = -1;
 			QueueDraw ();
 			return base.OnFocusOutEvent (evnt);
 		}
