@@ -95,10 +95,12 @@ module Interactive =
             use monitor = new ConsoleProgressMonitor()
             use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
             use project = sol.GetAllItems<FSharpProject> () |> Seq.head
+            printfn "found project"
             project.GetOrderedReferences()
             |> List.iter (fun a -> session.SendInput (sprintf  @"#r ""%s"";;" a.Path))
             let finished = new AutoResetEvent(false)
-            session.TextReceived.Add(fun output -> if output.Contains "jsonObj" then
+            session.TextReceived.Add(fun output ->  printfn "%s" output
+                                                    if output.Contains "jsonObj" then
                                                        results <- output
                                                        finished.Set() |> ignore)
             let input =
