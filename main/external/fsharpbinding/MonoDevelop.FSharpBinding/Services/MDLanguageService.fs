@@ -116,8 +116,8 @@ type MDLanguageService() =
 
   static member invalidateProjectFile(projectFile: FilePath) =
       try
-          if File.Exists (projectFile.ToString()) then
-              MDLanguageService.Instance.TryGetProjectCheckerOptionsFromCache(projectFile.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+          if File.Exists (projectFile.FullPath.ToString()) then
+              MDLanguageService.Instance.TryGetProjectCheckerOptionsFromCache(projectFile.FullPath.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
               |> Option.iter(fun options ->
                   MDLanguageService.Instance.InvalidateConfiguration(options)
                   MDLanguageService.Instance.ClearProjectInfoCache())
