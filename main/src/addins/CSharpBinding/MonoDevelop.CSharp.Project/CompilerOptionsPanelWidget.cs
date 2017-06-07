@@ -111,6 +111,7 @@ namespace MonoDevelop.CSharp.Project
 			langVerStore.AppendValues (GettextCatalog.GetString ("Version 5"), LanguageVersion.CSharp5);
 			langVerStore.AppendValues (GettextCatalog.GetString ("Version 6"), LanguageVersion.CSharp6);
 			langVerStore.AppendValues (GettextCatalog.GetString ("Version 7"), LanguageVersion.CSharp7);
+			langVerStore.AppendValues (GettextCatalog.GetString ("Version 7.1"), LanguageVersion.CSharp7_1);
 			langVerStore.AppendValues (GettextCatalog.GetString ("Latest"), LanguageVersion.Latest);
 			langVerCombo.Model = langVerStore;
 

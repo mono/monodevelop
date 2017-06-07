@@ -80,36 +80,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public bool TryPersist (OptionKey optionKey, object value)
 		{
-			value = null;
 			return false;
 		}
-
-		static void PrintOptionKey (OptionKey optionKey)
-		{
-			Console.WriteLine ($"Name '{optionKey.Option.Name}' Language '{optionKey.Language}' LanguageSpecific'{optionKey.Option.IsPerLanguage}'");
-
-			var locations = optionKey.Option.StorageLocations;
-			if(locations.IsDefault) {
-				return;
-			}
-
-			foreach (var loc in locations) {
-				switch (loc) {
-				case RoamingProfileStorageLocation roaming:
-					Console.WriteLine ($"    roaming: {roaming.GetKeyNameForLanguage (optionKey.Language)}");
-					break;
-				case LocalUserProfileStorageLocation local:
-					Console.WriteLine ($"    local: {local.KeyName}");
-					break;
-				case EditorConfigStorageLocation edconf:
-					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
-					break;
-				default:
-					Console.WriteLine ($"    unknown: {loc.GetType()}");
-					break;
-				}
-			}
-		}
-
 	}
 }
