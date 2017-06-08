@@ -1,0 +1,10 @@
+﻿using System;
+namespace Markdown
+{
+	public class Markdown
+	{
+		public Markdown()
+		{
+		}
+	}
+}
