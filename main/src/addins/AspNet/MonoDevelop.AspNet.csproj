@@ -684,5 +684,4 @@
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
-  <Import Project="..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets" Condition="Exists('..\..\..\packages\StrongNamer.0.0.3\build\StrongNamer.targets')" />
 </Project>
