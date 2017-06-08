@@ -48,6 +48,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		static DotNetCoreVersion minimumVersion = DotNetCoreVersion.Parse ("1.0.4");
 		Dictionary<string, string> properties;
+		readonly object propertiesLock = new object ();
 
 		#pragma warning disable 67
 		public event EventHandler GlobalPropertiesChanged;
@@ -56,16 +57,26 @@ namespace MonoDevelop.DotNetCore
 		public IDictionary<string, string> GetGlobalProperties ()
 		{
 			if (properties == null) {
-				properties = new Dictionary<string, string> ();
-
-				string sdksPath = GetMSBuildSDKsPath ();
-				if (sdksPath != null)
-					properties.Add ("MSBuildSDKsPath", sdksPath);
+				lock (propertiesLock) {
+					if (properties == null)
+						properties = CreateProperties ();
+				}
 			}
 			return properties;
 		}
 
-		string GetMSBuildSDKsPath ()
+		static Dictionary<string, string> CreateProperties ()
+		{
+			var properties = new Dictionary<string, string> ();
+
+			string sdksPath = GetMSBuildSDKsPath ();
+			if (sdksPath != null)
+				properties.Add ("MSBuildSDKsPath", sdksPath);
+
+			return properties;
+		}
+
+		static string GetMSBuildSDKsPath ()
 		{
 			if (DotNetCoreSdk.IsInstalled) {
 				var latestVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
