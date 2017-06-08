@@ -268,6 +268,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
 
+			var style = ConvertChunkStyle (colorScheme.PlainText);
+			style ["fontStyle"] = "bold";
+			settings.Add (new ThemeSetting ("Bold Markup", new List<string> { "markup.bold" }, style));
+
+			style = ConvertChunkStyle (colorScheme.PlainText);
+			style ["fontStyle"] = "italic";
+			settings.Add (new ThemeSetting ("Italic Markup", new List<string> { "markup.italic" }, style));
+
+			settings.Add (new ThemeSetting ("markup.emoji", new List<string> { "markup.emoji" }, ConvertChunkStyle (colorScheme.Preprocessor)));
+			settings.Add (new ThemeSetting ("markup.link", new List<string> { "markup.link" }, ConvertChunkStyle (colorScheme.UserTypesInterfaces)));
+
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 
