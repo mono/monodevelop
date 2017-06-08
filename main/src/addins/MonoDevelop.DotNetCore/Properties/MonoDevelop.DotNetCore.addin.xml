@@ -546,4 +546,10 @@
 		<StockIcon stockid="md-netcore-test-project" resource="project-netcore-test-32.png" size="Dnd" />
 		<StockIcon stockid="md-crossplatform-library-project" resource="project-crossplatform-library-32.png" size="Dnd" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
+		<Type
+			id="DotNetCoreMSBuildSdksPathPropertyProvider"
+			class="MonoDevelop.DotNetCore.MSBuildSdksPathGlobalPropertyProvider" />
+	</Extension>
 </ExtensionModel>
