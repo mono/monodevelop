@@ -73,6 +73,22 @@ module Interactive =
             else Assert.Fail "Timeout" } |> toTask
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
+    let ``Interactive evaluates multiline expression``() =
+        async {
+            let mutable results = String.empty
+            let! session = createSession()
+            let finished = new AutoResetEvent(false)
+            session.TextReceived.Add(fun output -> results <- output 
+                                                   finished.Set() |> ignore)
+            session.SendInput "let myfun x="
+            session.SendInput "    if (x > 0) then 'a'"
+            session.SendInput "    else 'b'"
+            session.SendInput ";;"    
+            let succeeded = finished.WaitOne(5000)
+            if succeeded then results |> should equal "val myfun : x:int -> char\n"
+            else Assert.Fail "Timeout" } |> toTask
+
+    [<Test;AsyncStateMachine(typeof<Task>)>]
     let ``Interactive evaluates complex type``() =
         async {
             let mutable results = String.empty
