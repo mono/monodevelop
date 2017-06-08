@@ -1293,8 +1293,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectId = kv.Key;
 				var docId = this.GetDocumentId (projectId, fileName);
 				if (docId != null) {
-					try { 
-						base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+					try {
+						if (this.GetDocument (docId) != null) {
+							base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+						} else if (this.GetAdditionalDocument (docId) != null) {
+							base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+						}
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Roslyn error on text change", e);
 					}
