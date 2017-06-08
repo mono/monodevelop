@@ -603,9 +603,11 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnsubscribeAnalysisDocument ()
 		{
-			if (analysisDocument != null) {
-				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
-				analysisDocument = null;
+			lock (analysisDocumentLock) {
+				if (analysisDocument != null) {
+					TypeSystemService.InformDocumentClose (analysisDocument, FileName);
+					analysisDocument = null;
+				}
 			}
 		}
 		#region document tasks
@@ -841,15 +843,17 @@ namespace MonoDevelop.Ide.Gui
 				return Task.CompletedTask;
 			}
 			if (Project != null && !IsUnreferencedSharedProject(Project)) {
-				UnsubscribeRoslynWorkspace ();
-				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
-				if (RoslynWorkspace == null) // Solution not loaded yet
-					return Task.CompletedTask;
-				SubscribeRoslynWorkspace ();
-				analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-				if (analysisDocument != null) {
-					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
-					return Task.CompletedTask;
+				lock (analysisDocumentLock) {
+					UnsubscribeRoslynWorkspace ();
+					RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
+					if (RoslynWorkspace == null) // Solution not loaded yet
+						return Task.CompletedTask;
+					SubscribeRoslynWorkspace ();
+					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					if (analysisDocument != null) {
+						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						return Task.CompletedTask;
+					}
 				}
 			}
 			lock (adhocProjectLock) {
@@ -902,6 +906,7 @@ namespace MonoDevelop.Ide.Gui
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
 				ws.WorkspaceChanged -= HandleRoslynProjectChange;
+				ws.DocumentClosed -= HandleRoslynDocumentClosed;
 			}
 		}
 
@@ -910,6 +915,16 @@ namespace MonoDevelop.Ide.Gui
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
 			if (ws != null) {
 				ws.WorkspaceChanged += HandleRoslynProjectChange;
+				ws.DocumentClosed += HandleRoslynDocumentClosed;
+			}
+		}
+
+		void HandleRoslynDocumentClosed (object sender, Microsoft.CodeAnalysis.DocumentEventArgs e)
+		{
+			lock (analysisDocumentLock) {
+				if (e.Document.Id == analysisDocument) {
+					analysisDocument = null;
+				}
 			}
 		}
 
@@ -929,7 +944,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		object adhocProjectLock = new object();
-
+		object analysisDocumentLock = new object ();
 		void UnloadAdhocProject ()
 		{
 			CancelEnsureAnalysisDocumentIsOpen ();
