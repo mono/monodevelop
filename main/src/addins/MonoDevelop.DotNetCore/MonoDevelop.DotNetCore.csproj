@@ -146,6 +146,7 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Gui\GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="MonoDevelop.DotNetCore\MSBuildSdksPathGlobalPropertyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.DotNetCore\" />
