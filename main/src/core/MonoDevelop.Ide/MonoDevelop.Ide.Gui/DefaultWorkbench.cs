@@ -275,6 +275,7 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
 			FileService.FileRemoved += CheckRemovedFile;
+			FileService.FileMoved += CheckRenamedFile;
 			FileService.FileRenamed += CheckRenamedFile;
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
