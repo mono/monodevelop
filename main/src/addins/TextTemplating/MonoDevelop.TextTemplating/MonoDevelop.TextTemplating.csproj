@@ -80,7 +80,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextTemplating">
-      <HintPath>..\..\..\..\packages\Mono.TextTemplating.1.3.0\lib\net45\Mono.TextTemplating.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Mono.TextTemplating.1.3.1\lib\net45\Mono.TextTemplating.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -124,7 +124,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="..\..\..\..\packages\Mono.TextTemplating.1.3.0\tools\TextTransform.exe">
+    <None Include="..\..\..\..\packages\Mono.TextTemplating.1.3.1\tools\TextTransform.exe">
       <Link>TextTransform.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
