@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Templates
 			fileTemplate.LastModified = xmlDocument.DocumentElement.GetAttribute ("LastModified");
 
 			if (xmlNodeConfig ["_Name"] != null) {
-				fileTemplate.Name = xmlNodeConfig ["_Name"].InnerText;
+				fileTemplate.Name = addin.Localizer.GetString (xmlNodeConfig ["_Name"].InnerText);
 			} else {
 				throw new InvalidOperationException (string.Format ("Missing element '_Name' in file template: {0}", templateId));
 			}
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlNodeConfig ["_Description"] != null) {
-				fileTemplate.Description = xmlNodeConfig ["_Description"].InnerText;
+				fileTemplate.Description = addin.Localizer.GetString (xmlNodeConfig ["_Description"].InnerText);
 			}
 
 			if (xmlNodeConfig ["Icon"] != null) {
