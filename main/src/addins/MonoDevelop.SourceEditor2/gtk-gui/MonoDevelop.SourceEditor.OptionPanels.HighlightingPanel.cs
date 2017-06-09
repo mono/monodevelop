@@ -34,7 +34,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox5.Spacing = 6;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.textview1 = new global::Gtk.TextView();
-			this.textview1.Buffer.Text = "The following color theme formats are supported: Visual Studio (.vssettings), Xamarin Studio (.json), TextMate (.tmTheme). Changes in the theme folder require a restart.";
+			this.textview1.Buffer.Text = global::Mono.Unix.Catalog.GetString ("The following color theme formats are supported: Visual Studio (.vssettings), Xamarin Studio (.json), TextMate (.tmTheme). Changes in the theme folder require a restart.");
 			this.textview1.Sensitive = false;
 			this.textview1.Name = "textview1";
 			this.textview1.Editable = false;
