@@ -82,5 +82,42 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return false;
 		}
+
+		static void PrintOptionKey (OptionKey optionKey)
+		{
+			Console.WriteLine ($"Name '{optionKey.Option.Name}' Language '{optionKey.Language}' LanguageSpecific'{optionKey.Option.IsPerLanguage}'");
+
+			var locations = optionKey.Option.StorageLocations;
+			if(locations.IsDefault) {
+				return;
+			}
+
+			foreach (var loc in locations) {
+				switch (loc) {
+				case RoamingProfileStorageLocation roaming:
+					Console.WriteLine ($"    roaming: {roaming.GetKeyNameForLanguage (optionKey.Language)}");
+					break;
+				case LocalUserProfileStorageLocation local:
+					Console.WriteLine ($"    local: {local.KeyName}");
+					break;
+				case EditorConfigStorageLocation<int> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<string> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<bool> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				case EditorConfigStorageLocation<Microsoft.CodeAnalysis.CodeStyle.CodeStyleOption<bool>> edconf:
+					Console.WriteLine ($"    editorconfig: {edconf.KeyName}");
+					break;
+				default:
+					Console.WriteLine ($"    unknown: {loc.GetType ()}");
+					break;
+				}
+			}
+		}
+
 	}
 }
