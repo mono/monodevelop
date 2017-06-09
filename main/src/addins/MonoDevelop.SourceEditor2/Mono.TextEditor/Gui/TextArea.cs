@@ -780,7 +780,7 @@ namespace Mono.TextEditor
 				settingWidgetBg = true; //prevent infinite recusion
 
 				Widget parent = this;
-				while (parent.Parent != null && !(parent is ScrolledWindow)) {
+				while (parent != null && !(parent is ScrolledWindow)) {
 					parent = parent.Parent;
 				}
 
