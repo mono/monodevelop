@@ -589,7 +589,7 @@ namespace Mono.TextEditor
 			indentStyle = other.IndentStyle;
 			fontName = other.FontName;
 			enableSyntaxHighlighting = other.EnableSyntaxHighlighting;
-			colorStyle = other.colorStyle;
+			colorStyle = other.EditorThemeName;
 			overrideDocumentEolMarker = other.OverrideDocumentEolMarker;
 			defaultEolMarker = other.DefaultEolMarker;
 			enableAnimations = other.EnableAnimations;
