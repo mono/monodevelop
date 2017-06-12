@@ -141,7 +141,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			ShowAll ();
 		}
-		
+
+		void UpdateIconAccessibility (bool found)
+		{
+			messageIcon.SetCommonAccessibilityAttributes ("LocationImage",
+			                                              found ? GettextCatalog.GetString ("A Tick") : GettextCatalog.GetString ("A Cross"),
+			                                              found ? GettextCatalog.GetString ("The SDK was found") : GettextCatalog.GetString ("The SDK was not found"));
+		}
+
 		void Validate ()
 		{
 			FilePath location = CleanPath (locationEntry.Path);
@@ -149,10 +156,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (panel.ValidateSdkLocation (location)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
+					UpdateIconAccessibility (true);
 					return;
 				}
 				messageLabel.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 				messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
+				UpdateIconAccessibility (false);
 				return;
 			}
 
@@ -160,12 +169,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (panel.ValidateSdkLocation (loc)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at default location.");
 					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
+					UpdateIconAccessibility (true);
 					return;
 				}
 			}
 
 			messageLabel.Text = GettextCatalog.GetString ("No SDK found at default location.");
 			messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
+			UpdateIconAccessibility (false);
 		}
 		
 		FilePath CleanPath (FilePath path)
