@@ -90,7 +90,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir>
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">C:\MSBuild\bin\Bootstrap\MSBuild\15.0\Bin\</MSBuild_OSS_BinDir>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
 	 when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
 	 Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
