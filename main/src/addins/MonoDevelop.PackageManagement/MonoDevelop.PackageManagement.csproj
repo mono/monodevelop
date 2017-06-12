@@ -616,7 +616,7 @@
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
