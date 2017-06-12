@@ -81,7 +81,7 @@ namespace MonoDevelop.Core.Execution
 		public bool IsReachable {
 			get {
 				var s = status;
-				return s != ConnectionStatus.ConnectionFailed && s != ConnectionStatus.Disconnected;
+				return process != null && s != ConnectionStatus.ConnectionFailed && s != ConnectionStatus.Disconnected;
 			}
 		}
 
@@ -298,6 +298,8 @@ namespace MonoDevelop.Core.Execution
 		{
 			// any exception bubbling up from here would crash the process
 			try {
+				// somehow capture that the process has exited
+				process = null;
 				if (!stopping)
 					AbortConnection (isAsync: true);
 			}
@@ -312,6 +314,11 @@ namespace MonoDevelop.Core.Execution
 
 		public Task<BinaryMessage> SendMessage (BinaryMessage message)
 		{
+			// do not attempt to send new messages if the process has already exited
+			if (process == null || process.IsCompleted) {
+				return Task.FromException<BinaryMessage> (new Exception ("Process not running"));
+			}
+
 			message.ReadCustomData ();
 			var interceptor = Interceptor;
 			if (interceptor != null && !interceptor.PreProcessMessage (message))
@@ -447,8 +454,13 @@ namespace MonoDevelop.Core.Execution
 		void StopPinger ()
 		{
 			if (pinger != null) {
-				pinger.Dispose ();
-				pinger = null;
+				// not sure but it seems that if multiple places call StopPinger we should lock here
+				lock (pingerLock) {
+					if (pinger != null) {
+						pinger.Dispose ();
+						pinger = null;
+					}
+				}
 			}
 		}
 
@@ -457,7 +469,11 @@ namespace MonoDevelop.Core.Execution
 			if (process != null)
 				stopping = true;
 
-			AbortConnection (isAsync: isAsync);
+			if (stopping) {
+				// only abort connection if the process is still there
+				AbortConnection (isAsync: isAsync);
+			}
+
 			StopPinger ();
 
 			if (listener != null) {
@@ -472,7 +488,10 @@ namespace MonoDevelop.Core.Execution
 				connection.Close ();
 				connection = null;
 			}
-			process.Cancel ();
+
+			if (stopping) {
+				process.Cancel ();
+			}
 		}
 
 		void OnConnected (IAsyncResult res)
@@ -672,8 +691,13 @@ namespace MonoDevelop.Core.Execution
 				Monitor.TryEnter (pingerLock, ref lockTaken);
 				if (!lockTaken)
 					return;
-				var msg = new BinaryMessage ("Ping", "Process");
-				SendMessage (msg);
+
+				// only attempt to ping if the process is still there
+				if (pinger != null) {
+					var msg = new BinaryMessage ("Ping", "Process");
+					SendMessage (msg);
+				}
+
 			} catch (Exception ex) {
 				LoggingService.LogError ("Connection ping failed", ex);
 			} finally {
