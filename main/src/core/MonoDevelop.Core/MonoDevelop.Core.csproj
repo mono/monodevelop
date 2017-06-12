@@ -777,7 +777,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.Core.dll.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
