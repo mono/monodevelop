@@ -100,8 +100,8 @@ namespace MonoDevelop.Components.Docking
 
 		void HandleRemoved (object o, RemovedArgs args)
 		{
-			Gtk.Widget w = args.Widget;
-			w.ButtonPressEvent -= OnTabPress;
+			var w = (DockItemTitleTab)args.Widget;
+			w.TabPressed -= OnTabPress;
 			if (currentTab >= box.Children.Length)
 				currentTab = box.Children.Length - 1;
 
