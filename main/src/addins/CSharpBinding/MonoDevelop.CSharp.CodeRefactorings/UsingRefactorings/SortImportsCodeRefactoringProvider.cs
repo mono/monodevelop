@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 				return;
 			}
 
-			if (document.IsGeneratedCode()) {
+			if (document.IsGeneratedCode(cancellationToken)) {
 				return;
 			}
 
@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 				return;
 			}
 
-			if (document.IsGeneratedCode ()) {
+			if (document.IsGeneratedCode (cancellationToken)) {
 				return;
 			}
 

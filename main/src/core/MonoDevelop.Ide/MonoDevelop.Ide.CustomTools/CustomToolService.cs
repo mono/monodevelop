@@ -69,6 +69,11 @@ namespace MonoDevelop.Ide.CustomTools
 					break;
 				}
 			});
+
+			// Allow CustomToolService to be used when running unit tests that do not initialize the workspace.
+			if (IdeApp.Workspace == null)
+				return;
+
 			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, e.Project, false);

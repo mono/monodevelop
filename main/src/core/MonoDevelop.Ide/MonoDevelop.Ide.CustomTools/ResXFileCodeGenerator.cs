@@ -130,6 +130,13 @@ namespace MonoDevelop.Ide.CustomTools
 
 		static bool TargetsPcl2Framework (DotNetProject dnp)
 		{
+			// .NET Core 1.x and .NET Standard 1.x projects also need to be treated as though they target
+			// the PCL 2 framework so GetTypeInfo is used in the generated code. .NET Core 2.0 and
+			// .NET Standard 2.0 do not need to use GetTypeInfo.
+			string framework = dnp.TargetFramework.Id.Identifier;
+			if (framework == ".NETCoreApp" || framework == ".NETStandard")
+				return dnp.TargetFramework.Id.Version.StartsWith ("1.", StringComparison.Ordinal);
+
 			if (dnp.TargetFramework.Id.Identifier != TargetFrameworkMoniker.ID_PORTABLE)
 				return false;
 			var asms = dnp.AssemblyContext.GetAssemblies (dnp.TargetFramework);

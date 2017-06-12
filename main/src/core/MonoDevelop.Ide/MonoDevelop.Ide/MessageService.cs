@@ -335,7 +335,13 @@ namespace MonoDevelop.Ide
 					PlaceDialog (dialog, parent);
 			}).Wait ();
 			#endif
-			return GtkWorkarounds.RunDialogWithNotification (dialog);
+
+			try {
+				IdeApp.DisableIdleActions ();
+				return GtkWorkarounds.RunDialogWithNotification (dialog);
+			} finally {
+				IdeApp.EnableIdleActions ();
+			}
 		}
 
 		#if MAC

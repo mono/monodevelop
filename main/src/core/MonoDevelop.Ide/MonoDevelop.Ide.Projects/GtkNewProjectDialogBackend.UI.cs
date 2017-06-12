@@ -70,6 +70,7 @@ namespace MonoDevelop.Ide.Projects
 		GtkProjectConfigurationWidget projectConfigurationWidget;
 		GtkTemplateCellRenderer templateTextRenderer;
 		GtkTemplateCategoryCellRenderer categoryTextRenderer;
+		LanguageCellRenderer languageCellRenderer;
 
 		static GtkNewProjectDialogBackend ()
 		{
@@ -359,6 +360,11 @@ namespace MonoDevelop.Ide.Projects
 
 			column.SetCellDataFunc (templateTextRenderer, SetTemplateTextCellData);
 
+			languageCellRenderer = new LanguageCellRenderer ();
+			languageCellRenderer.CellBackgroundGdk = templateListBackgroundColor;
+
+			column.PackEnd (languageCellRenderer, false);
+			column.SetCellDataFunc (languageCellRenderer, SetLanguageCellData);
 			return column;
 		}
 	}

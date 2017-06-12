@@ -61,6 +61,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public CustomCommandWidget (WorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
 		{
 			this.Build();
+
+			// Turn these off so that their children can be focused
+			CanFocus = false;
+			vbox1.CanFocus = false;
+			// Turn this off because otherwise it creates a keyboard trap and the focus cannot move off it.
+			comboType.CanFocus = false;
+
 			this.supportedTypes = supportedTypes;
 			this.cmd = cmd;
 			

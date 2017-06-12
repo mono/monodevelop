@@ -27,6 +27,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -129,33 +130,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (panel.RequiresRestart) {
 				PackStart (new HSeparator (), false, false, 0);
 
-				var tableRestart = new Table (2, 3, false) {
-					RowSpacing = 6, ColumnSpacing = 6
-				};
-
-				var btnRestart = new Button () {
-					Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName),
-					CanFocus = true, UseUnderline = true
-				};
-				tableRestart.Attach (btnRestart, 1, 2, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
-
-				var imageRestart = new ImageView ("md-information", IconSize.Menu);
-				tableRestart.Attach (imageRestart, 0, 1, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
-
-				var labelRestart = new Label (GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName));
-				tableRestart.Attach (labelRestart, 1, 3, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
-
-				PackStart (tableRestart, false, false, 0);
-
-				btnRestart.Clicked += (sender, e) => {
+				var tableRestart = new RestartPanel ();
+				tableRestart.RestartRequested += (sender, e) => {
 					ApplyChanges ();
 					IdeApp.Restart (true);
 				};
+
+				PackStart (tableRestart, false, false, 0);
 			}
 
 			ShowAll ();
 		}
-		
+
+		void UpdateIconAccessibility (bool found)
+		{
+			messageIcon.SetCommonAccessibilityAttributes ("LocationImage",
+			                                              found ? GettextCatalog.GetString ("A Tick") : GettextCatalog.GetString ("A Cross"),
+			                                              found ? GettextCatalog.GetString ("The SDK was found") : GettextCatalog.GetString ("The SDK was not found"));
+		}
+
 		void Validate ()
 		{
 			FilePath location = CleanPath (locationEntry.Path);
@@ -163,10 +156,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (panel.ValidateSdkLocation (location)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
+					UpdateIconAccessibility (true);
 					return;
 				}
 				messageLabel.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 				messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
+				UpdateIconAccessibility (false);
 				return;
 			}
 
@@ -174,12 +169,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (panel.ValidateSdkLocation (loc)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at default location.");
 					messageIcon.SetIcon (Gtk.Stock.Apply, IconSize.Menu);
+					UpdateIconAccessibility (true);
 					return;
 				}
 			}
 
 			messageLabel.Text = GettextCatalog.GetString ("No SDK found at default location.");
 			messageIcon.SetIcon (Gtk.Stock.Cancel, IconSize.Menu);
+			UpdateIconAccessibility (false);
 		}
 		
 		FilePath CleanPath (FilePath path)

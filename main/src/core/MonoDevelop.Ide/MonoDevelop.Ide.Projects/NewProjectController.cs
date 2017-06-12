@@ -317,9 +317,9 @@ namespace MonoDevelop.Ide.Projects
 			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
 			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
 			if (IsNewSolution)
-				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().Where ((t) => t.IsMatch (SolutionTemplateVisibility.NewSolution)).ToList ();
+				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates (templateCategories).Where (t => t.IsMatch (SolutionTemplateVisibility.NewSolution)).ToList ();
 			else
-				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates ().ToList ();
+				recentTemplates = IdeApp.Services.TemplatingService.RecentTemplates.GetTemplates (templateCategories).ToList ();
 		}
 
 		Predicate<SolutionTemplate> GetTemplateFilter ()
@@ -453,14 +453,50 @@ namespace MonoDevelop.Ide.Projects
 		SolutionTemplate GetTemplateForProcessing ()
 		{
 			if (SelectedTemplate.HasCondition) {
-				string language = GetLanguageForTemplateProcessing ();
-				SolutionTemplate template = SelectedTemplate.GetTemplate (language, finalConfigurationPage.Parameters);
+				SolutionTemplate template = GetConditionalTemplateForProcessing ();
 				if (template != null) {
 					return template;
 				}
 				throw new ApplicationException (GettextCatalog.GetString ("No template found matching condition '{0}'.", SelectedTemplate.Condition));
 			}
 			return GetSelectedTemplateForSelectedLanguage ();
+		}
+
+		/// <summary>
+		/// Looks at the SelectedTemplate first to find a template that should be conditionally
+		/// used. If there is no match then all templates in the same category that have the
+		/// same template id are checked. This allows multiple templates with the same id in the
+		/// same category to be supported. .NET Core 2.0 and .NET Core 1.0 project templates
+		/// currently use the same template id so only one item is shown in the recently used
+		/// items list but use different templates.
+		/// </summary>
+		SolutionTemplate GetConditionalTemplateForProcessing ()
+		{
+			string language = GetLanguageForTemplateProcessing ();
+
+			SolutionTemplate template = SelectedTemplate.GetTemplate (language, finalConfigurationPage.Parameters);
+			if (template != null)
+				return template;
+
+			// Fallback to checking all templates that match the template id in the same category
+			// and support the condition.
+			SolutionTemplate matchedTemplate = IdeApp.Services.TemplatingService.GetTemplate (
+				templateCategories,
+				currentTemplate => IsTemplateMatch (currentTemplate, SelectedTemplate, language, finalConfigurationPage.Parameters),
+				category => true,
+				category => true);
+
+			if (matchedTemplate != null)
+				return matchedTemplate.GetTemplate (language, finalConfigurationPage.Parameters);
+
+			return null;
+		}
+
+		static bool IsTemplateMatch (SolutionTemplate template, SolutionTemplate templateToMatch, string language, ProjectCreateParameters parameters)
+		{
+			return template.Id == templateToMatch.Id &&
+				template.Category == templateToMatch.Category &&
+				template.GetTemplate (language, parameters) != null;
 		}
 
 		string GetLanguageForTemplateProcessing ()

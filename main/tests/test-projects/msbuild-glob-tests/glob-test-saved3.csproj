@@ -33,7 +33,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\\*.cs" Exclude="*9.cs" />
-    <Compile Include="c1bis.cs">
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="c1bis.cs">
       <foo>bar</foo>
     </Compile>
   </ItemGroup>

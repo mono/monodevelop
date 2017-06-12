@@ -30,13 +30,13 @@ namespace MonoDevelop.SourceEditor
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 
 				uint curIndex = 0, byteIndex = 0;
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)(start - startOffset), ref curIndex, ref byteIndex);
 
 				int x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.Text, (uint)(end - startOffset), ref curIndex, ref byteIndex);
 				x_pos = metrics.Layout.IndexToPos ((int)byteIndex).X;
 
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);

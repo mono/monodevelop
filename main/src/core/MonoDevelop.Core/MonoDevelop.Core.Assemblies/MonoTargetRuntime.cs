@@ -323,6 +323,13 @@ namespace MonoDevelop.Core.Assemblies
 			return new ExecutionEnvironment (EnvironmentVariables);
 		}
 
+		static bool Is64BitPE (Mono.Cecil.TargetArchitecture machine)
+		{
+			return machine == Mono.Cecil.TargetArchitecture.AMD64 ||
+				   machine == Mono.Cecil.TargetArchitecture.IA64 ||
+				   machine == Mono.Cecil.TargetArchitecture.ARM64;
+		}
+
 		/// <summary>
 		/// Get the Mono executable best matching the assembly architecture flags.
 		/// </summary>
@@ -331,27 +338,26 @@ namespace MonoDevelop.Core.Assemblies
 		/// <param name="assemblyPath">Assembly path.</param>
 		public string GetMonoExecutableForAssembly (string assemblyPath)
 		{
-			IKVM.Reflection.PortableExecutableKinds peKind;
-			IKVM.Reflection.ImageFileMachine machine;
+			Mono.Cecil.ModuleAttributes peKind;
+			Mono.Cecil.TargetArchitecture machine;
 
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
-				try {
-					assembly = universe.LoadFile (assemblyPath);
-					assembly.ManifestModule.GetPEKind (out peKind, out machine);
-				} catch {
-					peKind = IKVM.Reflection.PortableExecutableKinds.ILOnly;
-					machine = IKVM.Reflection.ImageFileMachine.I386;
+			try {
+				using (var adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (assemblyPath)) {
+					peKind = adef.MainModule.Attributes;
+					machine = adef.MainModule.Architecture;
 				}
+			} catch {
+				peKind = Mono.Cecil.ModuleAttributes.ILOnly;
+				machine = Mono.Cecil.TargetArchitecture.I386;
 			}
 
 			string monoPath;
 
-			if ((peKind & (IKVM.Reflection.PortableExecutableKinds.Required32Bit | IKVM.Reflection.PortableExecutableKinds.Preferred32Bit)) != 0) {
+			if ((peKind & (Mono.Cecil.ModuleAttributes.Required32Bit | Mono.Cecil.ModuleAttributes.Preferred32Bit)) != 0) {
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
 				if (File.Exists (monoPath))
 					return monoPath;
-			} else if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0) {
+			} else if (Is64BitPE (machine)) {
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
 				if (File.Exists (monoPath))
 					return monoPath;

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
-using Mono.Cecil;
 using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem

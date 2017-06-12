@@ -1410,13 +1410,12 @@ namespace MonoDevelop.Projects
 
 			using (await builderLock.EnterAsync ()) {
 				bool refAdded = false;
-				var sdkPath = GetMSBuildSdkPath (runtime);
-				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile || sdkPath != projectBuilder.SdksPath) {
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
 					if (projectBuilder != null && refAdded) {
 						projectBuilder.Shutdown ();
 						projectBuilder.ReleaseReference ();
 					}
-					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild);
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild);
 					pb.AddReference ();
 					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
@@ -1440,15 +1439,6 @@ namespace MonoDevelop.Projects
 				result = projectBuilder;
 			}
 			return result;
-		}
-
-		string GetMSBuildSdkPath (TargetRuntime runtime)
-		{
-			HashSet<string> sdks = null;
-			GetReferencedSDKs (this, ref sdks, new HashSet<string> (StringComparer.OrdinalIgnoreCase));
-			if (sdks != null)
-				return MSBuildProjectService.FindSdkPath (runtime, sdks);
-			return null;
 		}
 
 		void GetReferencedSDKs (Project project, ref HashSet<string> sdks, HashSet<string> traversedProjects)
@@ -1494,8 +1484,7 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			var sdkPath = GetMSBuildSdkPath (runtime);
-			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, sdkPath, 0, RequiresMicrosoftBuild, true);
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, RequiresMicrosoftBuild, true);
 			pb.AddReference ();
 			if (modifiedInMemory) {
 				try {
@@ -3196,6 +3185,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// When set to true, the project will make use of improved globbing logic to avoid expanding glob in multiple items when
 		/// there are changes. Requires the latest version of msbuild to work.
+		/// </summary>
 		public bool UseAdvancedGlobSupport { get; set; }
 
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
@@ -3345,6 +3335,9 @@ namespace MonoDevelop.Projects
 								einfo.Action = ExpandedItemAction.AddUpdateItem;
 								items.Modified = true;
 								return;
+							} else if (buildItem == null) {
+								buildItem = new MSBuildItem (item.ItemName) { Update = item.Include };
+								msproject.AddItem (buildItem);
 							}
 						}
 					} else if (item.IsFromWildcardItem && item.ItemName != item.WildcardItem.Name) {

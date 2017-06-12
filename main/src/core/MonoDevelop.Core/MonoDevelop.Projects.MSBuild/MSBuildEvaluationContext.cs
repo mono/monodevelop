@@ -30,15 +30,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
-
-using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using System.Reflection;
 using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
-using System.Web.UI.WebControls;
 using MonoDevelop.Projects.Extensions;
 using System.Collections;
 
@@ -64,6 +61,8 @@ namespace MonoDevelop.Projects.MSBuild
 		string itemFile;
 		string recursiveDir;
 
+		public MSBuildEngineLogger Log { get; set; }
+
 		public MSBuildEvaluationContext ()
 		{
 		}
@@ -75,6 +74,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.propertiesWithTransforms = parentContext.propertiesWithTransforms;
 			this.propertiesWithTransformsSorted = parentContext.propertiesWithTransformsSorted;
 			this.ExistsEvaluationCache = parentContext.ExistsEvaluationCache;
+			this.Log = parentContext.Log;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
@@ -107,14 +107,6 @@ namespace MonoDevelop.Projects.MSBuild
 				properties.Add ("MSBuildProjectDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
 				InitEngineProperties (project.TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime, properties, out searchPaths);
-
-				if (project.Sdk != null) {
-					string sdksPath = MSBuildProjectService.FindSdkPath (project.TargetRuntime, project.GetReferencedSDKs ());
-
-					if (sdksPath != null) {
-						properties.Add ("MSBuildSDKsPath", MSBuildProjectService.ToMSBuildPath (null, sdksPath));
-					}
-				}
 			}
 		}
 
@@ -364,6 +356,8 @@ namespace MonoDevelop.Projects.MSBuild
 				parentContext.SetPropertyValue (name, value);
 			else
 				properties [name] = value;
+			if (Log != null)
+				LogPropertySet (name, value);
 		}
 
 		public void SetContextualPropertyValue (string name, string value)
@@ -998,6 +992,8 @@ namespace MonoDevelop.Projects.MSBuild
 			return -1;
 		}
 
+		public string CustomFullDirectoryName { get; set; }
+
 		#region IExpressionContext implementation
 
 		public string EvaluateString (string value)
@@ -1013,6 +1009,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string FullDirectoryName {
 			get {
+				if (CustomFullDirectoryName != null)
+					return CustomFullDirectoryName;
 				if (FullFileName == String.Empty)
 					return null;
 				if (directoryName == null)
@@ -1023,5 +1021,24 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		#endregion
+
+		void LogPropertySet (string key, string value)
+		{
+			if (Log.Flags.HasFlag (MSBuildLogFlags.Properties))
+				Log.LogMessage ($"Set Property: {key} = {value}");
+		}
+
+		public void Dump ()
+		{
+			var allProps = new HashSet<string> ();
+
+			MSBuildEvaluationContext ctx = this;
+			while (ctx != null) {
+				allProps.UnionWith (ctx.properties.Select (p => p.Key));
+				ctx = ctx.parentContext;
+			}
+			foreach (var v in allProps.OrderBy (s => s))
+				Log.LogMessage (string.Format ($"{v,-30} = {GetPropertyValue (v)}"));
+		}
 	}
 }

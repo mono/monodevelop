@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\MonoDevelop.props" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E1F9680D-DA19-49ED-B2B4-586BF52C1483}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.AzureFunctions</RootNamespace>
+    <AssemblyName>MonoDevelop.AzureFunctions</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.AzureFunctions</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.AzureFunctions</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="AzureFunctionsProjectExtension.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Manifest.addin.xml">
+      <LogicalName>Manifest.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark-sel.png">
+      <LogicalName>project-azurefunctions-32-dark-sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark-sel%402x.png">
+      <LogicalName>project-azurefunctions-32-dark-sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark.png">
+      <LogicalName>project-azurefunctions-32-dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-dark%402x.png">
+      <LogicalName>project-azurefunctions-32-dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-sel.png">
+      <LogicalName>project-azurefunctions-32-sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32-sel%402x.png">
+      <LogicalName>project-azurefunctions-32-sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32.png">
+      <LogicalName>project-azurefunctions-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-32%402x.png">
+      <LogicalName>project-azurefunctions-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template-dark.png">
+      <LogicalName>project-azurefunctions-template-dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template-dark%402x.png">
+      <LogicalName>project-azurefunctions-template-dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template.png">
+      <LogicalName>project-azurefunctions-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="images\project-azurefunctions-template%402x.png">
+      <LogicalName>project-azurefunctions-template@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates\" />
+    <Folder Include="images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="..\..\..\packages\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3\Microsoft.AzureFunctions.ProjectTemplates.1.0.0-beta3.nupkg">
+      <Link>Templates\Microsoft.AzureFunctions.ProjectTemplates.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Azure.Functions.Templates.1.0.1-beta1\Azure.Functions.Templates.1.0.1-beta1.nupkg">
+      <Link>Templates\Azure.Functions.Templates.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <MDDownload
+        Include="https://dl.xamarin.com/uploads/at5p4wjtk44/azure-functions-cli-66a932fb.zip"
+        SHA1="81a64e48067a1ef5da6396d151fcfbdfa75afa3c"
+        OutputDir="$(OutputPath)"
+        Unpack="True" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MDBuildTasks)\DownloadFile.targets" />
+</Project>

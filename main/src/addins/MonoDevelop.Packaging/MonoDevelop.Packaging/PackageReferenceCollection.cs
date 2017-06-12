@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
 	[Serializable]
-	class PackageReferenceCollection : ProjectItemCollection<PackageReference>
+	class PackageReferenceCollection : ProjectItemCollection<ProjectPackageReference>
 	{
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.DotNetCore
@@ -36,6 +37,10 @@ namespace MonoDevelop.DotNetCore
 			IsInstalled = !path.IsMissing;
 			FileName = path.FileName;
 
+			Versions = DotNetCoreRuntimeVersions.GetInstalledVersions (path)
+				.OrderByDescending (version => version)
+				.ToArray ();
+
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core runtime not found.");
 		}
@@ -46,6 +51,18 @@ namespace MonoDevelop.DotNetCore
 
 		public static bool IsMissing {
 			get { return !IsInstalled; }
+		}
+
+		internal static DotNetCoreVersion[] Versions { get; private set; }
+
+		internal static bool IsNetCore1xInstalled ()
+		{
+			return Versions.Any (version => version.Major == 1);
+		}
+
+		internal static bool IsNetCore20Installed ()
+		{
+			return Versions.Any (version => version.Major == 2 && version.Minor == 0);
 		}
 	}
 }

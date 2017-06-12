@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Debugger
 {
 	internal partial class DebugApplicationDialog : Gtk.Dialog
@@ -33,6 +36,32 @@ namespace MonoDevelop.Debugger
 		public DebugApplicationDialog ()
 		{
 			this.Build ();
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			fileEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FileEntry", null,
+			                                               GettextCatalog.GetString ("Select the file to debug"));
+			fileEntry.EntryAccessible.SetTitleUIElement (label7.Accessible);
+			label7.Accessible.SetTitleFor (fileEntry.EntryAccessible);
+
+			folderEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FolderEntry", null,
+			                                                 GettextCatalog.GetString ("Select the working directory for execution"));
+			folderEntry.EntryAccessible.SetTitleUIElement (label9.Accessible);
+			label9.Accessible.SetTitleFor (folderEntry.EntryAccessible);
+
+			argsEntry.SetCommonAccessibilityAttributes ("DebugApplicationDialog.ArgumentsEntry", null,
+			                                            GettextCatalog.GetString ("Enter arguments to be passed to the executable"));
+			argsEntry.SetAccessibilityLabelRelationship (label8);
+
+			envVarList.SetCommonAccessibilityAttributes ("DebugApplicationDialog.EnvironmentList", null,
+			                                             GettextCatalog.GetString ("Enter any environment variables that need to be set before execution"));
+			envVarList.SetAccessibilityLabelRelationship (label6);
+
+			buttonCancel.Accessible.SetLabel (GettextCatalog.GetString ("Cancel"));
+			buttonOk.Accessible.SetLabel (GettextCatalog.GetString ("Ok"));
 		}
 
 		public Dictionary<string,string> EnvironmentVariables {

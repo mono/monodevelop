@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects
 		{
 			this.project = other.project;
 			if (other.properties != null) {
-				properties = new Dictionary<string, MSBuildProperty> (other.properties.Count);
+				properties = new Dictionary<string, MSBuildProperty> (other.properties.Count, StringComparer.OrdinalIgnoreCase);
 				foreach (var p in other.propertyList) {
 					var pc = p.Clone ();
 					propertyList.Add (pc);
@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
 			if (properties == null) {
-				properties = new Dictionary<string, MSBuildProperty> ();
+				properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
 				propertyList = new List<MSBuildProperty> ();
 			}
 			int i = propertyOrder != null ? propertyOrder.IndexOf (name) : -1;
@@ -203,7 +203,7 @@ namespace MonoDevelop.Projects
 		internal void AddProperty (ItemMetadataProperty prop)
 		{
 			if (properties == null) {
-				properties = new Dictionary<string, MSBuildProperty> ();
+				properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
 				propertyList = new List<MSBuildProperty> ();
 			}
 			prop.ParentProject = project;

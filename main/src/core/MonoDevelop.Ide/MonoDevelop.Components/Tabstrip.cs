@@ -75,7 +75,8 @@ namespace MonoDevelop.Components
 		public Tabstrip ()
 		{
 			Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
-			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.FocusChangeMask;
+			CanFocus = true;
 		}
 		
 		protected override void OnDestroyed ()
@@ -102,6 +103,11 @@ namespace MonoDevelop.Components
 				tab.Active = true;
 			else if (activeTab >= index)
 				activeTab++;
+
+			if (focusedTab >= index) {
+				focusedTab++;
+			}
+
 			QueueResize ();
 
 			tab.Allocation = GetBounds (tab);
@@ -217,7 +223,76 @@ namespace MonoDevelop.Components
 				
 				tabs[ActiveTab].Draw (cr, GetBounds (tabs[ActiveTab]));
 			}
+
 			return base.OnExposeEvent (evnt);
+		}
+
+		int focusedTab = -1;
+		protected override bool OnFocused (DirectionType direction)
+		{
+			bool ret = true;
+			int oldFocus = focusedTab;
+
+			switch (direction) {
+			case DirectionType.TabForward:
+			case DirectionType.Right:
+				focusedTab++;
+				if (focusedTab >= tabs.Count) {
+					focusedTab = -1;
+					ret = false;
+				}
+				break;
+
+			case DirectionType.TabBackward:
+			case DirectionType.Left:
+				if (focusedTab <= -1) {
+					focusedTab = tabs.Count;
+				}
+				focusedTab--;
+				if (focusedTab < 0) {
+					focusedTab = -1;
+					ret = false;
+				}
+				break;
+			}
+
+			if (ret) {
+				GrabFocus ();
+				if (oldFocus >= 0 && oldFocus < tabs.Count) {
+					tabs [oldFocus].Focused = false;
+				}
+
+				if (focusedTab >= 0) {
+					tabs [focusedTab].Focused = true;
+				}
+			} else {
+				focusedTab = 0;
+			}
+			QueueDraw ();
+
+			return ret;
+		}
+
+		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)
+		{
+			QueueDraw ();
+			return base.OnFocusInEvent (evnt);
+		}
+
+		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
+		{
+			if (focusedTab > -1 && focusedTab <= tabs.Count) {
+				tabs [focusedTab].Focused = false;
+			}
+			focusedTab = -1;
+			QueueDraw ();
+			return base.OnFocusOutEvent (evnt);
+		}
+
+		protected override void OnActivate ()
+		{
+			ActiveTab = focusedTab;
+			base.OnActivate ();
 		}
 	}
 
@@ -231,7 +306,7 @@ namespace MonoDevelop.Components
 		internal static readonly int SpacerWidth = 8;
 		const int Padding = 6;
 		Pango.Layout layout;
-		//Tabstrip parent;
+		Tabstrip parent;
 		int w, h;
 		
 		public string Label {
@@ -264,6 +339,11 @@ namespace MonoDevelop.Components
 		}
 		
 		public object Tag {
+			get;
+			set;
+		}
+
+		public bool Focused {
 			get;
 			set;
 		}
@@ -304,7 +384,7 @@ namespace MonoDevelop.Components
 
 		public Tab (Tabstrip parent, string label, TabPosition tabPosition)
 		{
-			//this.parent = parent;
+			this.parent = parent;
 			this.Label = label;
 
 			layout = PangoUtil.CreateLayout (parent);
@@ -371,6 +451,18 @@ namespace MonoDevelop.Components
 
 			cr.MoveTo (rectangle.X + (int)(rectangle.Width / 2), (rectangle.Height - h) / 2 - 1);
 			Pango.CairoHelper.ShowLayout (cr, layout);
+
+			if (parent.HasFocus && Focused) {
+				cr.LineWidth = 1.0;
+				cr.SetDash (new double[] { 1, 1 }, 0.5);
+				if (Active) {
+					cr.SetSourceColor (Styles.SubTabBarActiveTextColor.ToCairoColor ());
+				} else {
+					cr.SetSourceColor (Styles.FocusColor.ToCairoColor ());
+				}
+				cr.Rectangle (rectangle.X + 2, rectangle.Y + 2, rectangle.Width - 4, rectangle.Height - 4);
+				cr.Stroke ();
+			}
 		}
 		
 		public override string ToString ()

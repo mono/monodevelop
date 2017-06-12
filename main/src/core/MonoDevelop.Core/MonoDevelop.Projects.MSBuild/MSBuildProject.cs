@@ -1060,8 +1060,10 @@ namespace MonoDevelop.Projects.MSBuild
 				g.RemoveItem (item);
 				if (removeEmptyParentGroup && !g.Items.Any ()) {
 					Remove (g);
-					if (bestGroups != null)
-						bestGroups.Remove (item.Name);
+					if (bestGroups != null) {
+						string groupId = GetBestGroupId (item);
+						bestGroups.Remove (groupId);
+					}
 				}
 			}
 		}

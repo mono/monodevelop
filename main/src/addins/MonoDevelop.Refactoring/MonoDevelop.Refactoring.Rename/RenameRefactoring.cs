@@ -219,7 +219,7 @@ namespace MonoDevelop.Refactoring.Rename
 					var newName = properties.NewName;
 					if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
 						continue;
-					if (string.Equals (oldFileName, newName, StringComparison.OrdinalIgnoreCase) || oldFileName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase))
+					if (IsCompatibleForRenaming (oldFileName, newName))
 						continue;
 					int idx = oldFileName.IndexOf (type.Name, StringComparison.Ordinal);
 					if (idx >= 0) {
@@ -237,6 +237,11 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 			return changes;
+		}
+
+		internal static bool IsCompatibleForRenaming (string oldName, string newName)
+		{
+			return string.Equals (oldName, newName, StringComparison.OrdinalIgnoreCase) || oldName.EndsWith ("." + newName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		static void FilterDuplicateLinkedDocs (Solution newSolution, List<DocumentId> documents)

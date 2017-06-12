@@ -70,9 +70,11 @@ namespace Mono.Debugging.Tests
 							if (string.IsNullOrWhiteSpace (o.Version) || o.Version == "Unknown")
 								return new Version (0, 0, 0, 0);
 							int indexOfBeforeDetails = o.Version.IndexOf (" (", StringComparison.Ordinal);
-							if (indexOfBeforeDetails == -1)
-								return new Version (0, 0, 0, 0);
-							string hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
+							string hopefullyVersion;
+							if (indexOfBeforeDetails != -1)
+								hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
+							else
+								hopefullyVersion = o.Version;
 							Version version;
 							if (Version.TryParse (hopefullyVersion, out version)) {
 								return version;

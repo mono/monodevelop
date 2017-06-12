@@ -131,6 +131,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Cell.TrackingMode = NSSegmentSwitchTracking.Momentary;
 		}
 
+		public override void RemoveFromSuperview ()
+		{
+			indexMap.Clear ();
+			base.RemoveFromSuperview ();
+		}
+
 		void LoadIcon (IButtonBarButton button)
 		{
 			if (!indexMap.ContainsKey (button))
