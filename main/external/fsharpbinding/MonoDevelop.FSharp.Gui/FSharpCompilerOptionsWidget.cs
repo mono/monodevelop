@@ -17,7 +17,7 @@ namespace MonoDevelop.FSharp.Gui
         public Gtk.CheckButton CheckXmlDocumentation { get { return this.generateXmlOutputCheckButton; } }
         public Gtk.ComboBox ComboDebugInformation { get { return this.comboDebug; } }
         public Gtk.CheckButton CheckDebugInformation { get { return this.generateOverflowChecksCheckButton; } }
-        public Gtk.CheckButton ComboPlatforms { get { return this.comboPlatforms; } }
+        public Gtk.ComboBox ComboPlatforms { get { return this.comboPlatforms; } }
         public Gtk.CheckButton CheckWarningsAsErrors { get { return this.warningsAsErrorsCheckButton; } }
 		public Gtk.SpinButton WarningLevelSpinButton { get { return this.warningLevelSpinButton; } }
 	}
