@@ -1,8 +1,8 @@
 ﻿<ExtensionModel>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="cloud" name="Cloud" insertafter="netcore">
-			<Category id="general" name="General">
-				<Category id="general" name="General" />
+		<Category id="cloud" _name="Cloud" insertafter="netcore">
+			<Category id="general" _name="General">
+				<Category id="general" _name="General" />
 			</Category>
 		</Category>
 	</Extension>
