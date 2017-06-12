@@ -37,8 +37,18 @@ namespace PerformanceDiagnosticsAddIn
 			if (!Options.HasMemoryLeakFeature)
 				return;
 
-			var field = typeof (GLib.SafeObjectHandle).GetField ("InternalCreateHandle", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-			field.SetValue (null, new Func<IntPtr, GLib.SafeObjectHandle> (arg => new LeakHelpers.LeakCheckSafeHandle (arg)));
+			var type = typeof (GLib.Object).Assembly.GetType ("GLib.PointerWrapper");
+			var field = type.GetField ("ObjectCreated", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+			field.SetValue (null, new Action<IntPtr> (arg => {
+				lock (LeakHelpers.GObjectDict)
+					LeakHelpers.GObjectDict.Add (arg);
+			}));
+
+			field = type.GetField ("ObjectDestroyed", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+			field.SetValue (null, new Action<IntPtr> (arg => {
+				lock (LeakHelpers.GObjectDict)
+					LeakHelpers.GObjectDict.Remove (arg);
+			}));
 		}
 	}
 

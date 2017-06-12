@@ -60,6 +60,13 @@ namespace PerformanceDiagnosticsAddIn
 		}
 		#endregion
 
+		static HashSet<IntPtr> gobjectDict = new HashSet<IntPtr> ();
+		internal static HashSet<IntPtr> GObjectDict {
+			get {
+				return gobjectDict;
+			}
+		}
+
 		static Dictionary<Type, int> ComputeCurrentCounts ()
 		{
 			var counts = new Dictionary<Type, int>();
@@ -75,7 +82,7 @@ namespace PerformanceDiagnosticsAddIn
 				counts[nsobjType] = ++count;
 			}
 
-			foreach (var ptr in LeakCheckSafeHandle.alive)
+			foreach (var ptr in GObjectDict)
 			{
 				var obj = GLib.Object.GetObject (ptr);
 				if (obj == null)
@@ -122,7 +129,7 @@ namespace PerformanceDiagnosticsAddIn
 		static int remainingEqualChangedCount = 5;
 		static bool SummaryTimeoutHandler ()
 		{
-			int gobjCount = LeakCheckSafeHandle.alive.Count;
+			int gobjCount = GObjectDict.Count;
 			int nsobjCount = NSObjectDict.Count;
 
 			GC.Collect ();
@@ -130,7 +137,7 @@ namespace PerformanceDiagnosticsAddIn
 			GC.Collect ();
 			GC.WaitForPendingFinalizers ();
 
-			bool changed = gobjCount != LeakCheckSafeHandle.alive.Count || nsobjCount != NSObjectDict.Count;
+			bool changed = gobjCount != GObjectDict.Count || nsobjCount != NSObjectDict.Count;
 			if (!changed) {
 				remainingEqualChangedCount--;
 				if (remainingEqualChangedCount == 0) {
@@ -166,23 +173,6 @@ namespace PerformanceDiagnosticsAddIn
 				Environment.NewLine,
 				dict.OrderByDescending (x => x.Value)
 					.Select (x => (x.Value >= 0 ? plusSymbol : string.Empty) + x.Value + "\t\t" + x.Key));
-		}
-
-		public class LeakCheckSafeHandle : GLib.SafeObjectHandle
-		{
-			// Maybe capture stacktrace? This would create a lot of debug spill in the log.
-			public static readonly HashSet<IntPtr> alive = new HashSet<IntPtr> ();
-
-			public LeakCheckSafeHandle (IntPtr handle) : base (handle)
-			{
-				alive.Add (handle);
-			}
-
-			protected override bool ReleaseHandle ()
-			{
-				alive.Remove (handle);
-				return base.ReleaseHandle ();
-			}
 		}
 	}
 }
