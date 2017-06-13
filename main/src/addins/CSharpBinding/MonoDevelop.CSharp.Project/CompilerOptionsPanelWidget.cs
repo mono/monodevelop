@@ -225,20 +225,12 @@ namespace MonoDevelop.CSharp.Project
 			
 			if (mainClassEntry.Sensitive)
 				csproject.MainClass = mainClassEntry.Entry.Text;
-			bool notify = false;
 			foreach (DotNetProjectConfiguration configuration in configs) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
-				notify |= compilerParameters.UnsafeCode != allowUnsafeCodeCheckButton.Active;
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
-
-				notify |= compilerParameters.NoStdLib != noStdLibCheckButton.Active;
 				compilerParameters.NoStdLib = noStdLibCheckButton.Active;
-
-				notify |= compilerParameters.LangVersion != langVersion;
 				compilerParameters.LangVersion = langVersion;
 			}
-			if (notify)
-				csproject.NotifyModified ("CompilerParameters");
 		}
 		
 		void OnTargetChanged (object s, EventArgs a)
