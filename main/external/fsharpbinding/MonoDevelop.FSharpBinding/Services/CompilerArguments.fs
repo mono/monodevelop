@@ -326,17 +326,22 @@ module CompilerArguments =
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
        if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
-       yield "--platform:anycpu" //?
+       yield "--platform:" + fsconfig.PlatformTarget
        yield "--fullpaths"
        yield "--flaterrors"
        for symbol in defines do yield "--define:" + symbol
        yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+
        yield match project.CompileTarget with
              | CompileTarget.Library -> "--target:library"
              | CompileTarget.Module -> "--target:module"
              | _ -> "--target:exe"
+       yield if fsconfig.TreatWarningsAsErrors then "--warnaserror+" else "--warnaserror-"
+       yield sprintf "--warn:%d" fsconfig.WarningLevel
+       if not (String.IsNullOrWhiteSpace fsconfig.NoWarn) then
+           yield "--nowarn:" + fsconfig.NoWarn
        // TODO: This currently ignores escaping using "..."
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg

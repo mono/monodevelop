@@ -26,7 +26,7 @@ module Project =
 type FSharpProject() as self =
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
-    let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
+    let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "Itanium" |]
 
     let oldFSharpProjectGuid   = "{4925A630-B079-445D-BCD4-3A9C94FE9307}"
     let supportedPortableProfiles = ["Profile7";"Profile47";"Profile78";"Profile259"]
@@ -192,6 +192,8 @@ type FSharpProject() as self =
 
     override x.OnCreateCompilationParameters(config, kind) =
         let pars = new FSharpCompilerParameters()
+        config.CompilationParameters <- pars
+
         // Set up the default options
         if supportedPlatforms |> Array.exists (fun x -> x.Contains(config.Platform)) then pars.PlatformTarget <- config.Platform
         match kind with
