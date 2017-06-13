@@ -38,6 +38,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Web.SessionState;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -50,10 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				var analysisDocument = DocumentContext.ParsedDocument;
-				if (analysisDocument == null)
-					return null;
-				return analysisDocument.GetAst<SemanticModel> ();
+				return DocumentContext.AnalysisDocument.GetSemanticModelAsync (default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
 			}
 		}
 
