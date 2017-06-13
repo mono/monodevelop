@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-13 18:09:31+0300\n"
+"POT-Creation-Date: 2017-06-13 20:06:06+0300\n"
 "PO-Revision-Date: 2016-01-27 13:37+0900\n"
 "Last-Translator: Junil Um <powerumc@gmail.com>\n"
 "Language-Team: Junil Um <powerumc@gmail.com>\n"
@@ -10245,6 +10245,7 @@ msgstr "실행 구성"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:36
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:18
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:44
 msgid "Getting Started"
 msgstr ""
 
@@ -24172,6 +24173,11 @@ msgstr "5초간 프로파일링"
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
 msgid "Performance Diagnostics"
 msgstr "성능 진단"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
+#, fuzzy
+msgid "Connected Services"
+msgstr "웹 서비스"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:175
 #, fuzzy

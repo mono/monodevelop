@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-13 18:09:31+0300\n"
+"POT-Creation-Date: 2017-06-13 20:06:06+0300\n"
 "PO-Revision-Date: 2016-04-17 10:43+0300\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
@@ -10321,6 +10321,7 @@ msgstr "Конфігурації"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:36
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:18
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:44
 msgid "Getting Started"
 msgstr ""
 
@@ -24103,6 +24104,11 @@ msgstr ""
 #, fuzzy
 msgid "Performance Diagnostics"
 msgstr "Діагностичний"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
+#, fuzzy
+msgid "Connected Services"
+msgstr "Веб-сервіси"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:175
 #, fuzzy

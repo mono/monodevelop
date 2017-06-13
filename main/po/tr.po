@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 1.0\n"
 "Report-Msgid-Bugs-To: ealtin@gmail.com\n"
-"POT-Creation-Date: 2017-06-13 18:09:31+0300\n"
+"POT-Creation-Date: 2017-06-13 20:06:06+0300\n"
 "PO-Revision-Date: 2008-02-24 00:46+0200\n"
 "Last-Translator: Enver ALTIN <ealtin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -10256,6 +10256,7 @@ msgstr "Çalışma Yapılandırmaları"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:36
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:18
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:44
 msgid "Getting Started"
 msgstr ""
 
@@ -24233,6 +24234,11 @@ msgstr "5 saniye boyunca profil oluştur"
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
 msgid "Performance Diagnostics"
 msgstr "Performans Tanılama"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
+#, fuzzy
+msgid "Connected Services"
+msgstr "Web Servisleri"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:175
 #, fuzzy

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-13 18:09:31+0300\n"
+"POT-Creation-Date: 2017-06-13 20:06:06+0300\n"
 "PO-Revision-Date: 2010-10-13 23:48:17+0200\n"
 "Last-Translator: André Offringa <offringa@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -11118,6 +11118,7 @@ msgstr "Configuraties"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:36
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:18
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:44
 msgid "Getting Started"
 msgstr ""
 
@@ -25870,6 +25871,11 @@ msgstr ""
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
 msgid "Performance Diagnostics"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
+#, fuzzy
+msgid "Connected Services"
+msgstr "Webservice"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:175
 #, fuzzy
