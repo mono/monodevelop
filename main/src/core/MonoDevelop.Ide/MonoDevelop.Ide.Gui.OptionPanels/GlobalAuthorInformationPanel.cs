@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -61,8 +62,33 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			copyrightEntry.Text = AuthorInformation.Default.Copyright ?? "";
 			companyEntry.Text = AuthorInformation.Default.Company ?? "";
 			trademarkEntry.Text = AuthorInformation.Default.Trademark ?? "";
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			nameEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.nameEntry", "",
+														GettextCatalog.GetString ("Enter the author name"));
+			nameEntry.SetAccessibilityLabelRelationship (label2);
+
+			emailEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.emailEntry", "",
+														 GettextCatalog.GetString ("Enter the author's email address"));
+			emailEntry.SetAccessibilityLabelRelationship (label4);
+
+			copyrightEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.copyrightEntry", "",
+															 GettextCatalog.GetString ("Enter the copyright statement"));
+			copyrightEntry.SetAccessibilityLabelRelationship (label3);
+
+			companyEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.companyEntry", "",
+														   GettextCatalog.GetString ("Enter the company name"));
+			companyEntry.SetAccessibilityLabelRelationship (label5);
+
+			trademarkEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.trademarkEntry", "",
+															 GettextCatalog.GetString ("Enter the trademark statement"));
+			trademarkEntry.SetAccessibilityLabelRelationship (label6);
+		}
+
 		public void Save ()
 		{
 			Runtime.Preferences.AuthorName.Value = nameEntry.Text;
