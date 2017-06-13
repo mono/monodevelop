@@ -38,6 +38,15 @@ namespace PerformanceDiagnosticsAddIn
 				return;
 
 			var type = typeof (GLib.Object).Assembly.GetType ("GLib.PointerWrapper");
+			if (type == null) {
+				return;
+			}
+
+			LoggingService.LogInfo ("Gtk/Mac leak tracking enabled");
+
+			if (Options.HasMemoryLeakFeaturePad)
+				LoggingService.LogInfo ("Gtk/Mac leak tracking pad enabled. May cause performance issues.");
+
 			var field = type.GetField ("ObjectCreated", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 			field.SetValue (null, new Action<IntPtr> (arg => {
 				lock (LeakHelpers.GObjectDict)
