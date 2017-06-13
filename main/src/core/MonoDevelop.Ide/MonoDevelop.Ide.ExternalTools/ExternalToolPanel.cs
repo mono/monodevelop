@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.ExternalTools;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -135,8 +136,47 @@ namespace MonoDevelop.Ide.ExternalTools
 			defaultKeyTextBox.KeyReleaseEvent += OnDefaultKeyEntryKeyRelease;
 
 			SelectionChanged (this, EventArgs.Empty);
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			addButton.SetCommonAccessibilityAttributes ("ExternalTools.Add", null,
+			                                            GettextCatalog.GetString ("Click to add a new external tool"));
+			removeButton.SetCommonAccessibilityAttributes ("ExternalTools.Remove", null,
+			                                               GettextCatalog.GetString ("Click to remove an external tool from the list"));
+			moveUpButton.SetCommonAccessibilityAttributes ("ExternalTools.Up", null,
+			                                               GettextCatalog.GetString ("Click to move the selected tool up the list"));
+			moveDownButton.SetCommonAccessibilityAttributes ("ExternalTools.Down", null,
+			                                                 GettextCatalog.GetString ("Click to move the selected tool down the list"));
+			titleTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Title", null,
+			                                               GettextCatalog.GetString ("Enter the title for this command"));
+			titleTextBox.SetAccessibilityLabelRelationship (titleLabel);
+			browseButton.Accessible.SetCommonAttributes ("ExternalTools.Command", null,
+			                                             GettextCatalog.GetString ("Enter or select the path for the external command"));
+			browseButton.Accessible.SetTitleUIElement (commandLabel.Accessible);
+			argumentTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Arguments", null,
+			                                                  GettextCatalog.GetString ("Enter the arguments for the external command"));
+			argumentTextBox.SetAccessibilityLabelRelationship (argumentLabel);
+			tagSelectorArgs.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorArgs", GettextCatalog.GetString ("Argument Tags"),
+				                                                  GettextCatalog.GetString ("Select tags to add to the arguments"));
+			workingDirTextBox.SetCommonAccessibilityAttributes ("ExternalTools.workingDir", null,
+			                                                    GettextCatalog.GetString ("Enter the working directory for this command"));
+			workingDirTextBox.SetAccessibilityLabelRelationship (workingDirLabel);
+			tagSelectorPath.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorPath", GettextCatalog.GetString ("Working Directory Tags"),
+				                                                  GettextCatalog.GetString ("Select tags to add to the working directory"));
+			defaultKeyTextBox.SetCommonAccessibilityAttributes ("ExternalTools.defaultKey", null,
+			                                                    GettextCatalog.GetString ("Enter the default key binding for this command"));
+			defaultKeyTextBox.SetAccessibilityLabelRelationship (defaultKeyLabel);
+			promptArgsCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.promptArgs", null,
+			                                                     GettextCatalog.GetString ("Check to prompt for arguments when running the command"));
+			saveCurrentFileCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.saveCurrentFile", null,
+			                                                          GettextCatalog.GetString ("Check to save the current file before running the command"));
+			useOutputPadCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.useExternalPad", null,
+			                                                       GettextCatalog.GetString ("Check to display the commands output in the Output Pad"));
+		}
+
 		void MoveUpButtonClicked (object sender, EventArgs e)
 		{
 			if (toolListBox.Selection.CountSelectedRows () == 1) {
