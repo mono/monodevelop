@@ -88,6 +88,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.Build();
 			Load ();
 
+			comboTheme.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.Theme", null,
+			                                             GettextCatalog.GetString ("Select the user interface theme"));
+			comboTheme.SetAccessibilityLabelRelationship (labelTheme);
+
+			comboLanguage.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.Language", null,
+			                                                GettextCatalog.GetString ("Select the user interface language"));
+			comboLanguage.SetAccessibilityLabelRelationship (label2);
+
 			imageRestart.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.RestartImage", null,
 			                                               GettextCatalog.GetString ("A restart is required before these changes take effect"));
 			imageRestart.SetAccessibilityLabelRelationship (labelRestart);
