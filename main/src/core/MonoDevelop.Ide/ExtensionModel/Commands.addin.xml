@@ -1000,9 +1000,9 @@
 			_label = "Scroll line down"
 			shortcut = "Control|Down" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageUp"
-			_label = "Scroll page up" macShortcut="Page_Up" />
+			_label = "Scroll page up" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown"
-			_label = "Scroll page down" macShortcut="Page_Down"/>
+			_label = "Scroll page down" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollTop"
 			_label = "Scroll to top"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollBottom"

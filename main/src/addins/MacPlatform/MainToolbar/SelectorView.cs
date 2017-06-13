@@ -581,7 +581,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Xwt.Drawing.Image baseIcon = ImageService.GetIcon (ActiveRuntime.Image, Gtk.IconSize.Menu);
 
 				string [] styles, disabledStyles;
-				if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark") {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					styles = new [] { "dark" };
 					disabledStyles = new [] { "dark", "disabled" };
 				} else {

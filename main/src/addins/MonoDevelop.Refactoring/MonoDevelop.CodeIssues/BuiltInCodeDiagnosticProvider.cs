@@ -47,6 +47,7 @@ namespace MonoDevelop.CodeIssues
 
 		static BuiltInCodeDiagnosticProvider ()
 		{
+			RefactoringEssentials.NRefactory6Host.GetLocalizedString = GettextCatalog.GetString;
 			builtInDiagnostics = Task.Run (() => {
 				var result = new AnalyzersFromAssembly ();
 				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {

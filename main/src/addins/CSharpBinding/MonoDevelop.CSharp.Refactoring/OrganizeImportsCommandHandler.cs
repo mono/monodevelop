@@ -110,8 +110,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		internal static async Task<Document> SortUsingsAsync (Document ad, CancellationToken token)
 		{
 			var service = ad.GetLanguageService<IOrganizeImportsService> ();
-			var policy = IdeApp.Workbench.ActiveDocument.GetFormattingPolicy ();
-			return await service.OrganizeImportsAsync (ad, policy != null ? policy.PlaceSystemDirectiveFirst : true, token);
+			return await service.OrganizeImportsAsync (ad, token);
 		}
 
 		protected async override void Run ()

@@ -5,6 +5,7 @@
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
 		<Import assembly="NuGet.Packaging.Core.Types.dll" />
 		<Import assembly="NuGet.Packaging.dll" />
+		<Import assembly="NuGet.Frameworks.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -164,5 +165,11 @@
 
 	<Extension path="/MonoDevelop/Core/SystemInformation"> 
 		<Class class="MonoDevelop.PackageManagement.NuGetSystemInformation" /> 
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType
+			name="HasPackageOrReference"
+			class="MonoDevelop.PackageManagement.HasNuGetPackageOrReferenceFileTemplateCondition" />
 	</Extension>
 </ExtensionModel>

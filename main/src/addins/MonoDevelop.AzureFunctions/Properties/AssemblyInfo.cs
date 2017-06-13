@@ -1,10 +1,5 @@
 ﻿//
-// ProjectIsDotNetProjectOnlyCondition.cs
-//
-// Author:
-//       Matt Ward <matt.ward@xamarin.com>
-//
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) Microsoft Corp.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace MonoDevelop.Packaging
-{
-	class ProjectIsDotNetProjectOnlyCondition : ConditionType
-	{
-		public ProjectIsDotNetProjectOnlyCondition ()
-		{
-			IdeApp.ProjectOperations.CurrentProjectChanged += delegate { NotifyChanged (); };
-		}
-
-		public override bool Evaluate (NodeElement conditionNode)
-		{
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-			if (project is PackagingProject) {
-				return false;
-			} else if (project != null) {
-				return true;
-			}
-			return false;
-		}
-	}
-}
+[assembly: AssemblyTitle ("MonoDevelop.AzureFunctions")]
+[assembly: AssemblyCopyright ("Microsoft Corp.")]
+[assembly: AssemblyVersion ("1.0.0.0")]

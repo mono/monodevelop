@@ -27,32 +27,33 @@
 //
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class LicenseAcceptanceService : ILicenseAcceptanceService
 	{
-		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
+		public Task<bool> AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
 		{
-			if (Runtime.IsMainThread) {
+			if (Runtime.IsMainThread)
 				return ShowLicenseAcceptanceDialog (licenses);
-			}
 
-			bool accepted = false;
-			Runtime.RunInMainThread (() => {
-				accepted = ShowLicenseAcceptanceDialog (licenses);
-			}).Wait ();
-			return accepted;
+			return Runtime.RunInMainThread (() => ShowLicenseAcceptanceDialog (licenses));
 		}
 
-		bool ShowLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
+		Task<bool> ShowLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
 		{
-			bool result = false;
-			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
-				result = dialog.Run (Xwt.MessageDialog.RootWindow);
-			}
-			return result;
+			var res = new TaskCompletionSource<bool> ();
+			IdeApp.RunWhenIdle (() => {
+				Xwt.Toolkit.NativeEngine.Invoke (delegate {
+					using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
+						res.SetResult (dialog.Run (Xwt.MessageDialog.RootWindow));
+					}
+				});
+			});
+			return res.Task;
 		}
 
 		LicenseAcceptanceDialog CreateLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)

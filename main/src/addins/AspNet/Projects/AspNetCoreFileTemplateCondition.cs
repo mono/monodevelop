@@ -29,18 +29,34 @@ using System.Xml;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Projects
 {
 	class AspNetCoreFileTemplateCondition : FileTemplateCondition
 	{
+		Version minVersion;
+
 		public override void Load (XmlElement element)
 		{
+			if (element.HasAttribute ("minVersion"))
+				minVersion = Version.Parse (element.GetAttribute ("minVersion"));
 		}
 
 		public override bool ShouldEnableFor (Project proj, string projectPath)
 		{
-			return proj.GetProjectCapabilities ().Contains ("AspNetCore");
+			if (proj.GetProjectCapabilities ().Contains ("AspNetCore")) {
+				if (minVersion == null)// If minimal version it's not set consider it's supporting all frameworks
+					return true;
+				var dpn = (DotNetProject)proj;
+				if (Version.TryParse (dpn.TargetFramework.Id.Version, out var version))
+					return version >= minVersion;
+				else {
+					LoggingService.LogWarning ($"Failed to parse framework version({dpn.TargetFramework.Id.Version}) of \"{proj.Name}\" project.");
+					return true;//We can't determine project version, show all
+				}
+			} else
+				return false;
 		}
 
 		public override bool ShouldEnableFor (Project proj, string projectPath, string language)

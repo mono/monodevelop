@@ -195,12 +195,14 @@ namespace MonoDevelop.Components.Mac
 		[Export ("menuWillOpen:")]
 		void MenuWillOpen (NSMenu menu)
 		{
+			Ide.IdeApp.DisableIdleActions ();
 			StartBumpingGtkLoop ();
 		}
 
 		[Export ("menuDidClose:")]
 		void MenuDidClose (NSMenu menu)
 		{
+			Ide.IdeApp.EnableIdleActions ();
 			EndBumpingGtkLoop ();
 			if (CloseHandler != null) {
 				CloseHandler (this, null);

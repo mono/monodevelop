@@ -55,10 +55,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken))
 				return false;
 
-			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
-
-			var startLineNumber = text.Lines.IndexOf (completionContext.Position);
-
 			// modifiers* override modifiers* type? |
 			Accessibility seenAccessibility;
 			//DeclarationModifiers modifiers;
@@ -89,6 +85,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					return false;
 				}
 			}
+
+			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
+
+			var startLineNumber = text.Lines.IndexOf (completionContext.Position);
 
 			if (!TryDetermineModifiers(ref tokenBeforeReturnType, text, startLineNumber, out seenAccessibility/*, out modifiers*/) ||
 			    !TryCheckForTrailingTokens (tree, text, startLineNumber, position, cancellationToken)) {

@@ -1647,6 +1647,44 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// As above but the build action is changed to None, then back to Compile,
+		/// then back to None again. The project is saved on each change.
+		/// </summary>
+		[Test]
+		public async Task CSharpFileBuildActionChangedToNoneBackToCompileBackToNoneAgain ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesDotNetProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject-imported-none-wildcard.csproj");
+
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<Project> (p);
+				var mp = (Project)p;
+				mp.UseAdvancedGlobSupport = true;
+
+				var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.Compile;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Program.cs");
+				f.BuildAction = BuildAction.None;
+				await p.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (Util.ReadAllWithWindowsEndings (p.FileName + ".saved1"), Util.ReadAllWithWindowsEndings (p.FileName));
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
 		public async Task LoadProjectWithWildcardLinks ()

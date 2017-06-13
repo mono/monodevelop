@@ -114,20 +114,20 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-	<Category id="multiplat" name="Multiplatform" icon="md-platform-crossplatform">
-			<Category id="library" name="Library">
-				<Category id="general" name="General" mappedCategories="crossplat/library/general" />
+	<Category id="multiplat" _name="Multiplatform" icon="md-platform-crossplatform">
+			<Category id="library" _name="Library">
+				<Category id="general" _name="General" mappedCategories="crossplat/library/general" />
 			</Category>
 		</Category>
-	<Category id="other" name="Other" icon="md-platform-other">
-		<Category id="net" name=".NET">
-			<Category id="general" name="General" mappedCategories="C#" />
-			<Category id="aspnet" name="ASP.NET" mappedCategories="C#/ASP.NET" />
+	<Category id="other" _name="Other" icon="md-platform-other">
+		<Category id="net" _name=".NET">
+			<Category id="general" _name="General" mappedCategories="C#" />
+			<Category id="aspnet" _name="ASP.NET" mappedCategories="C#/ASP.NET" />
 		</Category>
-		<Category id="misc" name="Miscellaneous">
-			<Category id="generic" name="Generic" />
-			<Category id="c" name="C/C++" />
-			<Category id="general" name="General" default="true" />
+		<Category id="misc" _name="Miscellaneous">
+			<Category id="generic" _name="Generic" />
+			<Category id="c" _name="C/C++" />
+			<Category id="general" _name="General" default="true" />
 		</Category>
 	</Category>
 </Extension>

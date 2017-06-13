@@ -27,6 +27,7 @@
 using Mono.Addins;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
+using System;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Codons
@@ -34,8 +35,12 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A template category.")]
 	internal class TemplateCategoryCodon : ExtensionNode
 	{
+		[ObsoleteAttribute ("This is ignored when generating translations.")]
 		[NodeAttribute ("name", "Name of the category.", Localizable=true)]
 		string name;
+
+		[NodeAttribute ("_name", "Name of the category.", Localizable=true)]
+		string _name;
 
 		[NodeAttribute("icon", "Icon for the category.")]
 		string icon;
@@ -48,7 +53,7 @@ namespace MonoDevelop.Ide.Codons
 
 		public TemplateCategory ToTemplateCategory ()
 		{
-			var category = new TemplateCategory (Id, name, icon);
+			var category = new TemplateCategory (Id, _name ?? name, icon);
 			category.MappedCategories = mappedCategories;
 			category.IsDefault = IsDefaultCategory ();
 
