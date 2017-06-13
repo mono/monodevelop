@@ -22,7 +22,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ConnectedServicesWidget ()
 		{
-			header = new ExtendedHeaderBox (GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName));
+			header = new ExtendedHeaderBox (ConnectedServices.SolutionTreeNodeName);
 			header.Image = ImageService.GetIcon ("md-service");
 			header.BackButtonClicked += (sender, e) => {
 				if (ShowingService != null) {
