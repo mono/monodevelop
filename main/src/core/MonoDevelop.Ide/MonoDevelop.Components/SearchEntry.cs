@@ -138,6 +138,8 @@ namespace MonoDevelop.Components
 
 			NoShowAll = true;
 			GtkWorkarounds.SetTransparentBgHint (this, true);
+
+			Accessible.SetShouldIgnore (true);
 		}
 
 		public Xwt.Drawing.Image FilterButtonPixbuf {
@@ -161,6 +163,7 @@ namespace MonoDevelop.Components
 			entry = new FramelessEntry (this);
 			entry.UseNativeContextMenus ();
 			entry.Accessible.SetSubRole ("AXSearchField");
+			entry.Accessible.SetLabel (GettextCatalog.GetString ("Search"));
 
 			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
 			filter_button.Accessible.SetRole (AtkCocoa.Roles.AXMenuButton);
