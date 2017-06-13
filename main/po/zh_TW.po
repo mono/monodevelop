@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-13 18:09:31+0300\n"
+"POT-Creation-Date: 2017-06-13 20:06:06+0300\n"
 "PO-Revision-Date: 2011-02-19 19:10+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
@@ -10096,6 +10096,7 @@ msgstr "執行組態"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedNodeBuilder.cs:36
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.GettingStarted/GettingStartedViewContent.cs:18
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:44
 msgid "Getting Started"
 msgstr ""
 
@@ -23758,6 +23759,11 @@ msgstr "進行設定檔 5 秒"
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:19
 msgid "Performance Diagnostics"
 msgstr "效能診斷"
+
+#: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:28
+#, fuzzy
+msgid "Connected Services"
+msgstr "Web 服務"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServices.cs:175
 #, fuzzy
