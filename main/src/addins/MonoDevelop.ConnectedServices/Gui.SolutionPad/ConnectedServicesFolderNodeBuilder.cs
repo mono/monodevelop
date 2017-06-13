@@ -26,20 +26,20 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		/// Gets the extension point that defines the context menu commands for this node
 		/// </summary>
 		public override string ContextMenuAddinPath {
-			get { 
-				return "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder"; 
+			get {
+				return "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder";
 			}
 		}
 
 		public override Type CommandHandlerType {
-			get { 
-				return typeof (ConnectedServicesFolderCommandHandler); 
+			get {
+				return typeof (ConnectedServicesFolderCommandHandler);
 			}
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			nodeInfo.Label = GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName);
+			nodeInfo.Label = ConnectedServices.SolutionTreeNodeName;
 			nodeInfo.Icon = Context.GetIcon ("md-folder-services");
 			nodeInfo.ClosedIcon = Context.GetIcon ("md-folder-services");
 		}
