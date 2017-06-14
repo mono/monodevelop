@@ -2434,15 +2434,14 @@ namespace Mono.TextEditor
 			if (segment.IsInvalid () || segment.Length == 0)
 				return;
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
+				codeSegmentTooltipTimeoutId = 0;
 				previewWindow = new CodeSegmentPreviewWindow (textEditor, false, segment);
 				if (previewWindow.IsEmptyText) {
 					previewWindow.Destroy ();
 					previewWindow = null;
-					codeSegmentTooltipTimeoutId = 0;
 					return false;
 				}
 				if (textEditor == null || textEditor.GdkWindow == null) {
-					codeSegmentTooltipTimeoutId = 0;
 					return false;
 				}
 				int ox = 0, oy = 0;
@@ -2467,7 +2466,6 @@ namespace Mono.TextEditor
 				int destY = System.Math.Max (0, oy + y);
 				previewWindow.Move (destX, destY);
 				previewWindow.ShowAll ();
-				codeSegmentTooltipTimeoutId = 0;
 				return false;
 			});
 		}
