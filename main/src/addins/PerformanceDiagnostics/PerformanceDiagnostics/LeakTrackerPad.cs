@@ -39,6 +39,18 @@ namespace PerformanceDiagnosticsAddIn
 			timeoutId = GLib.Timeout.Add (2000, HandleTimeoutHandler);
 		}
 
+		//protected override void Initialize (IPadWindow window)
+		//{
+		//	base.Initialize (window);
+		//	window.PadContentShown += OnPadContentShown;
+		//}
+
+		//static void OnPadContentShown (object sender, EventArgs args)
+		//{
+		//	// Force collection of objects.
+		//	LeakHelpers.GetSummary ();
+		//}
+
 		bool HandleTimeoutHandler ()
 		{
 			try {
@@ -58,10 +70,14 @@ namespace PerformanceDiagnosticsAddIn
 
 		public override void Dispose ()
 		{
+			//if (Window != null)
+				//Window.PadContentShown -= OnPadContentShown;
+
 			if (timeoutId != 0) {
 				GLib.Source.Remove (timeoutId);
 				timeoutId = 0;
 			}
+
 			base.Dispose ();
 		}
 
