@@ -117,10 +117,12 @@ namespace PerformanceDiagnosticsAddIn
 
 		static Dictionary<Type, int> summaryLastCounts;
 		static TaskCompletionSource<(string summary, string delta)> tcs;
-		public static Task<(string summary, string delta)> GetSummary ()
+		static bool steadySummary = false;
+		public static Task<(string summary, string delta)> GetSummary (bool steady)
 		{
 			if (tcs == null) {
 				tcs = new TaskCompletionSource<(string summary, string delta)> ();
+				steadySummary = steady;
 				GLib.Timeout.Add (100, SummaryTimeoutHandler);
 			}
 			return tcs.Task;
@@ -137,7 +139,7 @@ namespace PerformanceDiagnosticsAddIn
 			GC.Collect ();
 			GC.WaitForPendingFinalizers ();
 
-			bool changed = gobjCount != GObjectDict.Count || nsobjCount != NSObjectDict.Count;
+			bool changed = steadySummary ? gobjCount != GObjectDict.Count || nsobjCount != NSObjectDict.Count : false;
 			if (!changed) {
 				remainingEqualChangedCount--;
 				if (remainingEqualChangedCount == 0) {
