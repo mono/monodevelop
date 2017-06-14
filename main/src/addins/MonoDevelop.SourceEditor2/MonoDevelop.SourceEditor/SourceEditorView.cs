@@ -154,8 +154,10 @@ namespace MonoDevelop.SourceEditor
 
 		void RemoveMarkerQueue ()
 		{
-			if (removeMarkerTimeout != 0)
+			if (removeMarkerTimeout != 0) {
 				GLib.Source.Remove (removeMarkerTimeout);
+				removeMarkerTimeout = 0;
+			}
 		}
 
 		void ResetRemoveMarker ()

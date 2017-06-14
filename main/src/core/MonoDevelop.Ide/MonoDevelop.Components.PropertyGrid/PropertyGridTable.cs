@@ -846,6 +846,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
+				row.AnimationHandle = 0;
 			} else
 				row.AnimationHeight = 0;
 
@@ -854,6 +855,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				row.AnimationHeight += animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight >= row.ChildrenHeight) {
+					row.AnimationHandle = 0;
 					row.AnimatingExpand = false;
 					return false;
 				}
@@ -866,6 +868,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
+				row.AnimationHandle = 0;
 			} else {
 				row.AnimationHeight = row.ChildrenHeight;
 			}
@@ -874,6 +877,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				row.AnimationHeight -= animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight <= 0) {
+					row.AnimationHandle = 0;
 					row.AnimatingExpand = false;
 					return false;
 				}
@@ -886,6 +890,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			foreach (var r in GetAllRows (false)) {
 				if (r.AnimatingExpand) {
 					GLib.Source.Remove (r.AnimationHandle);
+					r.AnimationHandle = 0;
 					r.AnimatingExpand = false;
 				}
 			}

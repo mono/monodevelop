@@ -452,6 +452,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			public bool Run ()
 			{
+				strip.previewPopupTimeout = 0;
 				strip.previewWindow = new Mono.TextEditor.CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
 				strip.previewWindow.WidthRequest = w;
 				strip.previewWindow.Show ();

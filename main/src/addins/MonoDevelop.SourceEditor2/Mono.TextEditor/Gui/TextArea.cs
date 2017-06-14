@@ -667,22 +667,12 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		uint focusOutTimerId = 0;
-		void RemoveFocusOutTimerId ()
-		{
-			if (focusOutTimerId == 0)
-				return;
-			GLib.Source.Remove (focusOutTimerId);
-			focusOutTimerId = 0;
-		}
-		
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusOutEvent (evnt);
 			imContextNeedsReset = true;
 			mouseButtonPressed = 0;
 			imContext.FocusOut ();
-			RemoveFocusOutTimerId ();
 
 			if (tipWindow != null && currentTooltipProvider != null) {
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
@@ -827,8 +817,7 @@ namespace Mono.TextEditor
 			Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
 
 			DisposeAnimations ();
-			
-			RemoveFocusOutTimerId ();
+
 			RemoveScrollWindowTimer ();
 			if (invisibleCursor != null)
 				invisibleCursor.Dispose ();
