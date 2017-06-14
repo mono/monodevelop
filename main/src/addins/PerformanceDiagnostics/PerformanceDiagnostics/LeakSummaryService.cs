@@ -33,7 +33,7 @@ namespace PerformanceDiagnosticsAddIn
 	{
 		public static async Task Dump (TextWriter log)
 		{
-			var (summary, delta) = await LeakHelpers.GetSummary ();
+			var (summary, delta) = await LeakHelpers.GetSummary (steady: true);
 			log.WriteLine ("Summary:");
 			log.WriteLine (summary);
 			log.WriteLine ();
