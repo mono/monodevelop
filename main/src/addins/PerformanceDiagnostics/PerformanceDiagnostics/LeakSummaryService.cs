@@ -1,5 +1,5 @@
 ﻿//
-// MacLeakHelpers.cs
+// LeakSummaryService.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,40 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Threading.Tasks;
 
-#if DEBUG
-#if MAC
-namespace MonoDevelop.Components.Mac
+namespace PerformanceDiagnosticsAddIn
 {
-	class MacLeakHelpers
+	public static class LeakSummaryService
 	{
-		// NOTE: When invoking these, the debugger will create a strong reference to the object for the entire session, so only invoke this
-		// to check for leaks after a running an operation a few times (i.e. debug an app), then checking whether any NSObjects were leaked.
-		// Also, place GC.Collect() a few times followed by GC.WaitForPendingFinalizers() before your breakpoint.
-		static Dictionary<IntPtr, WeakReference> Dict {
-			get {
-				var fieldInfo = typeof (ObjCRuntime.Runtime).GetField ("object_map", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-				return (Dictionary<IntPtr, WeakReference>)fieldInfo.GetValue (null);
-			}
-		}
-
-		static object [] Values {
-			get {
-				return Dict.Values
-						.Select (x => x.Target)
-						.ToArray ();
-			}
-		}
-
-		static T [] GetValues<T> ()
+		public static async Task Dump (TextWriter log)
 		{
-			return Values
-				.OfType<T> ()
-				.ToArray ();
+			var (summary, delta) = await LeakHelpers.GetSummary ();
+			log.WriteLine ("Summary:");
+			log.WriteLine (summary);
+			log.WriteLine ();
+			log.WriteLine ("Delta:");
+			log.WriteLine (delta);
 		}
 	}
 }
-#endif
-#endif

@@ -1,10 +1,10 @@
 ﻿//
-// Options.cs
+// LeakTrackerEnabledCondition.cs
 //
 // Author:
-//       David Karlaš <david.karlas@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2017 2017
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
+using Mono.Addins;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public static class Options
+	public class LeakTrackerEnabledCondition : ConditionType
 	{
-		public static readonly ConfigurationProperty<string> OutputPath = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.OutputPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Desktop"));
-		//public static readonly ConfigurationProperty<bool> ShowUICounters = ConfigurationProperty.Create ("PerformanceDiagnosticsAddIn.ShowUICounters", false);
-
-		public static readonly bool HasMemoryLeakFeature = System.IO.File.Exists (System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "xs-enable-leak-check"));
-		public static readonly bool HasMemoryLeakFeaturePad = HasMemoryLeakFeature && System.IO.File.Exists (System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "xs-enable-leak-check-pad"));
+		public override bool Evaluate (NodeElement conditionNode)
+		{
+			if (conditionNode.GetAttribute ("value") == "pad")
+				return Options.HasMemoryLeakFeaturePad;
+			return Options.HasMemoryLeakFeature;
+		}
 	}
 }
-
