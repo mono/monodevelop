@@ -644,7 +644,7 @@ namespace Mono.TextEditor
 
 		#region Caret blinking
 		internal bool caretBlink = true;
-		uint blinkTimeout = 0, startBlinkTimeout = 0;
+		uint blinkTimeout = 0;
 
 		// constants taken from gtk.
 		const int cursorOnMultiplier = 2;
@@ -660,11 +660,6 @@ namespace Mono.TextEditor
 
 		internal void StopCaretThread ()
 		{
-			if (startBlinkTimeout != 0) {
-				GLib.Source.Remove (startBlinkTimeout);
-				startBlinkTimeout = 0;
-			}
-
 			if (blinkTimeout == 0)
 				return;
 			GLib.Source.Remove (blinkTimeout);
