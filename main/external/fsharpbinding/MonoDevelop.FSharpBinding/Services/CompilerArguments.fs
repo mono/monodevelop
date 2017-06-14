@@ -326,7 +326,8 @@ module CompilerArguments =
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
        if Project.isPortable project || Project.isDotNetCoreProject project then
            yield "--targetprofile:netcore"
-       yield "--platform:" + fsconfig.PlatformTarget
+       if not (String.IsNullOrWhiteSpace fsconfig.PlatformTarget) then
+           yield "--platform:" + fsconfig.PlatformTarget
        yield "--fullpaths"
        yield "--flaterrors"
        for symbol in defines do yield "--define:" + symbol
