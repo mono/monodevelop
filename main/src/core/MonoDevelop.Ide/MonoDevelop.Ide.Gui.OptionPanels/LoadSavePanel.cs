@@ -88,16 +88,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			folderEntry.EntryAccessible.SetCommonAttributes ("LoadSavePanel.folderEntry", null,
+			folderEntry.EntryAccessible.SetCommonAttributes ("LoadSavePanel.folderEntry", "",
 			                                                 GettextCatalog.GetString ("Enter the default path for the solution"));
 			folderEntry.EntryAccessible.SetTitleUIElement (locationLabel.Accessible);
 			locationLabel.Accessible.SetTitleFor (folderEntry.EntryAccessible);
 
-			loadUserDataCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadUserData", null,
+			loadUserDataCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadUserData", "",
 			                                                          GettextCatalog.GetString ("Check to load the user specific settings with the solution"));
-			loadPrevProjectCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", null,
+			loadPrevProjectCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
 			                                                             GettextCatalog.GetString ("Check to load the previous solution when starting the application"));
-			createBackupCopyCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.createBackup", null,
+			createBackupCopyCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.createBackup", "",
 			                                                              GettextCatalog.GetString ("Check to always create a backup copy"));
 		}
 

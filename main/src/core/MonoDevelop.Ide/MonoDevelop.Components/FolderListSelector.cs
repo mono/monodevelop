@@ -57,13 +57,13 @@ namespace MonoDevelop.Components
 
 		void SetupAccessibility ()
 		{
-			buttonAdd.SetCommonAccessibilityAttributes ("FolderListSelector.add", null,
+			buttonAdd.SetCommonAccessibilityAttributes ("FolderListSelector.add", "",
 			                                            GettextCatalog.GetString ("Add the folder to the list"));
-			buttonRemove.SetCommonAccessibilityAttributes ("FolderListSelector.remove", null,
+			buttonRemove.SetCommonAccessibilityAttributes ("FolderListSelector.remove", "",
 			                                               GettextCatalog.GetString ("Remove the selected folder from the list"));
-			buttonUp.SetCommonAccessibilityAttributes ("FolderListSelector.up", null,
+			buttonUp.SetCommonAccessibilityAttributes ("FolderListSelector.up", "",
 			                                           GettextCatalog.GetString ("Move the selected folder up the list"));
-			buttonDown.SetCommonAccessibilityAttributes ("FolderListSelector.down", null,
+			buttonDown.SetCommonAccessibilityAttributes ("FolderListSelector.down", "",
 			                                             GettextCatalog.GetString ("Move the selected folder down the list"));
 			dirList.SetCommonAccessibilityAttributes ("FolderListSelector.dirList", GettextCatalog.GetString ("Folder List"),
 			                                          GettextCatalog.GetString ("The list of folders"));

@@ -142,38 +142,35 @@ namespace MonoDevelop.Ide.ExternalTools
 
 		void SetupAccessibility ()
 		{
-			addButton.SetCommonAccessibilityAttributes ("ExternalTools.Add", null,
+			addButton.SetCommonAccessibilityAttributes ("ExternalTools.Add", "",
 			                                            GettextCatalog.GetString ("Click to add a new external tool"));
-			removeButton.SetCommonAccessibilityAttributes ("ExternalTools.Remove", null,
+			removeButton.SetCommonAccessibilityAttributes ("ExternalTools.Remove", "",
 			                                               GettextCatalog.GetString ("Click to remove an external tool from the list"));
-			moveUpButton.SetCommonAccessibilityAttributes ("ExternalTools.Up", null,
+			moveUpButton.SetCommonAccessibilityAttributes ("ExternalTools.Up", "",
 			                                               GettextCatalog.GetString ("Click to move the selected tool up the list"));
-			moveDownButton.SetCommonAccessibilityAttributes ("ExternalTools.Down", null,
+			moveDownButton.SetCommonAccessibilityAttributes ("ExternalTools.Down", "",
 			                                                 GettextCatalog.GetString ("Click to move the selected tool down the list"));
-			titleTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Title", null,
+			titleTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Title", titleLabel,
 			                                               GettextCatalog.GetString ("Enter the title for this command"));
-			titleTextBox.SetAccessibilityLabelRelationship (titleLabel);
 			browseButton.Accessible.SetCommonAttributes ("ExternalTools.Command", null,
 			                                             GettextCatalog.GetString ("Enter or select the path for the external command"));
 			browseButton.Accessible.SetTitleUIElement (commandLabel.Accessible);
-			argumentTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Arguments", null,
+			argumentTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Arguments", "",
 			                                                  GettextCatalog.GetString ("Enter the arguments for the external command"));
 			argumentTextBox.SetAccessibilityLabelRelationship (argumentLabel);
 			tagSelectorArgs.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorArgs", GettextCatalog.GetString ("Argument Tags"),
 				                                                  GettextCatalog.GetString ("Select tags to add to the arguments"));
-			workingDirTextBox.SetCommonAccessibilityAttributes ("ExternalTools.workingDir", null,
+			workingDirTextBox.SetCommonAccessibilityAttributes ("ExternalTools.workingDir", workingDirLabel,
 			                                                    GettextCatalog.GetString ("Enter the working directory for this command"));
-			workingDirTextBox.SetAccessibilityLabelRelationship (workingDirLabel);
 			tagSelectorPath.ButtonAccessible.SetCommonAttributes ("ExternalTools.tagSelectorPath", GettextCatalog.GetString ("Working Directory Tags"),
 				                                                  GettextCatalog.GetString ("Select tags to add to the working directory"));
-			defaultKeyTextBox.SetCommonAccessibilityAttributes ("ExternalTools.defaultKey", null,
+			defaultKeyTextBox.SetCommonAccessibilityAttributes ("ExternalTools.defaultKey", defaultKeyLabel,
 			                                                    GettextCatalog.GetString ("Enter the default key binding for this command"));
-			defaultKeyTextBox.SetAccessibilityLabelRelationship (defaultKeyLabel);
-			promptArgsCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.promptArgs", null,
+			promptArgsCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.promptArgs", "",
 			                                                     GettextCatalog.GetString ("Check to prompt for arguments when running the command"));
-			saveCurrentFileCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.saveCurrentFile", null,
+			saveCurrentFileCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.saveCurrentFile", "",
 			                                                          GettextCatalog.GetString ("Check to save the current file before running the command"));
-			useOutputPadCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.useExternalPad", null,
+			useOutputPadCheckBox.SetCommonAccessibilityAttributes ("ExternalTools.useExternalPad", "",
 			                                                       GettextCatalog.GetString ("Check to display the commands output in the Output Pad"));
 		}
 

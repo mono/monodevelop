@@ -103,11 +103,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			tree.SetCommonAccessibilityAttributes ("MonoRuntimePanel.tree", GettextCatalog.GetString ("Available Runtimes"),
 			                                       GettextCatalog.GetString ("A list of available runtimes"));
-			buttonAdd.SetCommonAccessibilityAttributes ("MonoRuntimePanel.add", null,
+			buttonAdd.SetCommonAccessibilityAttributes ("MonoRuntimePanel.add", "",
 			                                            GettextCatalog.GetString ("Click to install a new runtime"));
-			buttonRemove.SetCommonAccessibilityAttributes ("MonoRuntimePanel.remove", null,
+			buttonRemove.SetCommonAccessibilityAttributes ("MonoRuntimePanel.remove", "",
 			                                               GettextCatalog.GetString ("Click to remove the currently selected runtime"));
-			buttonDefault.SetCommonAccessibilityAttributes ("MonoRuntimePanel.default", null,
+			buttonDefault.SetCommonAccessibilityAttributes ("MonoRuntimePanel.default", "",
 			                                                GettextCatalog.GetString ("Click to set the currently selected runtime as default"));
 		}
 

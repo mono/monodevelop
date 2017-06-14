@@ -42,23 +42,21 @@ namespace MonoDevelop.Debugger
 
 		void SetupAccessibility ()
 		{
-			fileEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FileEntry", null,
+			fileEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FileEntry", "",
 			                                               GettextCatalog.GetString ("Select the file to debug"));
 			fileEntry.EntryAccessible.SetTitleUIElement (label7.Accessible);
 			label7.Accessible.SetTitleFor (fileEntry.EntryAccessible);
 
-			folderEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FolderEntry", null,
+			folderEntry.EntryAccessible.SetCommonAttributes ("DebugApplicationDialog.FolderEntry", "",
 			                                                 GettextCatalog.GetString ("Select the working directory for execution"));
 			folderEntry.EntryAccessible.SetTitleUIElement (label9.Accessible);
 			label9.Accessible.SetTitleFor (folderEntry.EntryAccessible);
 
-			argsEntry.SetCommonAccessibilityAttributes ("DebugApplicationDialog.ArgumentsEntry", null,
+			argsEntry.SetCommonAccessibilityAttributes ("DebugApplicationDialog.ArgumentsEntry", label8,
 			                                            GettextCatalog.GetString ("Enter arguments to be passed to the executable"));
-			argsEntry.SetAccessibilityLabelRelationship (label8);
 
-			envVarList.SetCommonAccessibilityAttributes ("DebugApplicationDialog.EnvironmentList", null,
+			envVarList.SetCommonAccessibilityAttributes ("DebugApplicationDialog.EnvironmentList", label6,
 			                                             GettextCatalog.GetString ("Enter any environment variables that need to be set before execution"));
-			envVarList.SetAccessibilityLabelRelationship (label6);
 
 			buttonCancel.Accessible.SetLabel (GettextCatalog.GetString ("Cancel"));
 			buttonOk.Accessible.SetLabel (GettextCatalog.GetString ("Ok"));

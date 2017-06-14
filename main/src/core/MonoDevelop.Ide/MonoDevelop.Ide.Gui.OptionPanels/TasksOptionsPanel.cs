@@ -75,36 +75,30 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			comboPriority.SetCommonAccessibilityAttributes ("TasksPanel.priorityCombo", null,
+			comboPriority.SetCommonAccessibilityAttributes ("TasksPanel.priorityCombo", label113,
 			                                                GettextCatalog.GetString ("Select the priority for this token"));
-			comboPriority.SetAccessibilityLabelRelationship (label113);
 
-			entryToken.SetCommonAccessibilityAttributes ("TasksPanel.tokenEntry", null,
+			entryToken.SetCommonAccessibilityAttributes ("TasksPanel.tokenEntry", label112,
 			                                             GettextCatalog.GetString ("Enter a word to detect as a token"));
-			entryToken.SetAccessibilityLabelRelationship (label112);
 
-			tokensTreeView.SetCommonAccessibilityAttributes ("TasksPanel.tokensList", null,
+			tokensTreeView.SetCommonAccessibilityAttributes ("TasksPanel.tokensList", labelTokens,
 			                                                 GettextCatalog.GetString ("A list of recognised tokens"));
-			tokensTreeView.SetAccessibilityLabelRelationship (labelTokens);
 
-			buttonAdd.SetCommonAccessibilityAttributes ("TasksPanel.addButton", null,
+			buttonAdd.SetCommonAccessibilityAttributes ("TasksPanel.addButton", "",
 			                                            GettextCatalog.GetString ("Add a new token"));
-			buttonChange.SetCommonAccessibilityAttributes ("TasksPanel.changeButton", null,
+			buttonChange.SetCommonAccessibilityAttributes ("TasksPanel.changeButton", "",
 			                                               GettextCatalog.GetString ("Edit the currently selected token"));
-			buttonRemove.SetCommonAccessibilityAttributes ("TasksPanel.removeButton", null,
+			buttonRemove.SetCommonAccessibilityAttributes ("TasksPanel.removeButton", "",
 			                                               GettextCatalog.GetString ("Remove the currently selected token"));
 
-			colorbuttonLowPrio.SetCommonAccessibilityAttributes ("TasksPanel.lowColor", null,
+			colorbuttonLowPrio.SetCommonAccessibilityAttributes ("TasksPanel.lowColor", label12,
 			                                                     GettextCatalog.GetString ("Select the foreground color for low priority tasks"));
-			colorbuttonLowPrio.SetAccessibilityLabelRelationship (label12);
 
-			colorbuttonHighPrio.SetCommonAccessibilityAttributes ("TasksPanel.hiColor", null,
+			colorbuttonHighPrio.SetCommonAccessibilityAttributes ("TasksPanel.hiColor", label10,
 			                                                      GettextCatalog.GetString ("Select the foreground color for the high priority tasks"));
-			colorbuttonHighPrio.SetAccessibilityLabelRelationship (label10);
 
-			colorbuttonNormalPrio.SetCommonAccessibilityAttributes ("TasksPanel.normalColor", null,
+			colorbuttonNormalPrio.SetCommonAccessibilityAttributes ("TasksPanel.normalColor", label11,
 			                                                        GettextCatalog.GetString ("Select the foreground color for the normal priority tasks"));
-			colorbuttonNormalPrio.SetAccessibilityLabelRelationship (label11);
 		}
 		
 		void Validate (object sender, EventArgs args)

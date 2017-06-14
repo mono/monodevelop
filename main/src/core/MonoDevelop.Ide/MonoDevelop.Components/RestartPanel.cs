@@ -52,7 +52,7 @@ namespace MonoDevelop.Components
 			var labelRestart = new Label (GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName));
 			Attach (labelRestart, 1, 3, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 
-			imageRestart.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.RestartImage", null,
+			imageRestart.SetCommonAccessibilityAttributes ("IDEStyleOptionsPanel.RestartImage", "",
 			                                               GettextCatalog.GetString ("A restart is required before these changes take effect"));
 			imageRestart.SetAccessibilityLabelRelationship (labelRestart);
 

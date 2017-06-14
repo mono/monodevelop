@@ -46,13 +46,11 @@ namespace MonoDevelop.Ide.Execution
 			folderEntry.EntryAccessible.SetTitleUIElement (label2.Accessible);
 			label2.Accessible.SetTitleFor (folderEntry.EntryAccessible);
 
-			entryArgs.SetCommonAccessibilityAttributes ("CustomExecutionMode.Arguments", null,
+			entryArgs.SetCommonAccessibilityAttributes ("CustomExecutionMode.Arguments", label4,
 			                                            GettextCatalog.GetString ("Enter any custom arguments to be passed to the executable"));
-			entryArgs.SetAccessibilityLabelRelationship (label4);
 
-			envVarList.SetCommonAccessibilityAttributes ("CustomExecutionMode.Variables", null,
+			envVarList.SetCommonAccessibilityAttributes ("CustomExecutionMode.Variables", label3,
 			                                             GettextCatalog.GetString ("Enter any custom environment variables"));
-			envVarList.SetAccessibilityLabelRelationship (label3);
 		}
 		
 		#region IExecutionModeEditor implementation

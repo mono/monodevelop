@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			                                               GettextCatalog.GetString ("Enter the project version"));
 			label1.Accessible.SetTitleFor (entryVersion.Accessible);
 
-			checkSolutionVersion.SetCommonAccessibilityAttributes ("GeneralProjectOptions.SolutionVersion", null,
+			checkSolutionVersion.SetCommonAccessibilityAttributes ("GeneralProjectOptions.SolutionVersion", "",
 			                                                       GettextCatalog.GetString ("Check to use the same version as the solution"));
 
 			projectDescriptionTextView.Accessible.SetTitleUIElement (descriptionLabel.Accessible);

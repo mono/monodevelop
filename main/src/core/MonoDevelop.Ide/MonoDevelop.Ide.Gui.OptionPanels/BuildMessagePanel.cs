@@ -90,17 +90,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			comboboxJumpToFirst.SetCommonAccessibilityAttributes ("BuildMessagePanel.jumpToFirst", null,
+			comboboxJumpToFirst.SetCommonAccessibilityAttributes ("BuildMessagePanel.jumpToFirst", label6,
 			                                                      GettextCatalog.GetString ("Select which type of result to jump to after build completes"));
-			comboboxJumpToFirst.SetAccessibilityLabelRelationship (label6);
 
-			comboboxErrorPadAfter.SetCommonAccessibilityAttributes ("BuildMessagePanel.errorPadAfter", null,
+			comboboxErrorPadAfter.SetCommonAccessibilityAttributes ("BuildMessagePanel.errorPadAfter", label3,
 			                                                        GettextCatalog.GetString ("Select when to show the Error Pad"));
-			comboboxErrorPadAfter.SetAccessibilityLabelRelationship (label3);
 
-			comboboxMessageBubbles.SetCommonAccessibilityAttributes ("BuildMessagePanel.messageBubbles", null,
+			comboboxMessageBubbles.SetCommonAccessibilityAttributes ("BuildMessagePanel.messageBubbles", label5,
 			                                                         GettextCatalog.GetString ("Select when to show message bubbles"));
-			comboboxMessageBubbles.SetAccessibilityLabelRelationship (label5);
 		}
 		public void Store ()
 		{

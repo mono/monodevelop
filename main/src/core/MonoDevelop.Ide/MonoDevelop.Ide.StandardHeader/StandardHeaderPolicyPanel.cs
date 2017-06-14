@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			treeviewTemplates.SetCommonAccessibilityAttributes ("StandardHeaderPanel.TemplateTree",
 			                                                    GettextCatalog.GetString ("Templates"),
 			                                                    GettextCatalog.GetString ("Select a template to be inserted into the header text"));
-			includeAutoCheck.SetCommonAccessibilityAttributes ("StandardHeaderPanel.AutoCheck", null,
+			includeAutoCheck.SetCommonAccessibilityAttributes ("StandardHeaderPanel.AutoCheck", "",
 			                                                   GettextCatalog.GetString ("Check to include the standard header in newly created files"));
 		}
 		void TreeviewTemplates_RowActivated (object o, Gtk.RowActivatedArgs args)

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			signAssemblyCheckbutton.SetCommonAccessibilityAttributes ("SigningOptions.Sign", null,
+			signAssemblyCheckbutton.SetCommonAccessibilityAttributes ("SigningOptions.Sign", "",
 			                                                          GettextCatalog.GetString ("Check to enable assembly signing"));
 			strongNameFileEntry.EntryAccessible.Name = "SigningOptions.NameFile";
 			strongNameFileEntry.EntryAccessible.SetLabel (GettextCatalog.GetString ("Strong Name File"));
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			strongNameFileEntry.EntryAccessible.SetTitleUIElement (strongNameFileLabel.Accessible);
 			strongNameFileLabel.Accessible.SetTitleFor (strongNameFileEntry.EntryAccessible);
 
-			delaySignCheckbutton.SetCommonAccessibilityAttributes ("SigningOptions.Delay", null,
+			delaySignCheckbutton.SetCommonAccessibilityAttributes ("SigningOptions.Delay", "",
 			                                                       GettextCatalog.GetString ("Delay signing the assembly"));
 		}
 

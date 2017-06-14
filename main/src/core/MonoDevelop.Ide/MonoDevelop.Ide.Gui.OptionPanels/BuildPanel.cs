@@ -71,27 +71,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			buildBeforeRunCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildBeforeRun", null,
+			buildBeforeRunCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildBeforeRun", "",
 			                                                         GettextCatalog.GetString ("Check to build the solution before running"));
-			runWithWarningsCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.runWithWarnings", null,
+			runWithWarningsCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.runWithWarnings", "",
 			                                                          GettextCatalog.GetString ("Check to run the solution even if the build had warnings"));
-			buildBeforeTestCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildBeforeTest", null,
+			buildBeforeTestCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildBeforeTest", "",
 			                                                          GettextCatalog.GetString ("Check to build the solution before running tests"));
-			buildWithMSBuildCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildWithMSBuild", null,
+			buildWithMSBuildCheckBox.SetCommonAccessibilityAttributes ("BuildPanel.buildWithMSBuild", "",
 			                                                           GettextCatalog.GetString ("Check to use MSBuild to build the solution"));
-			parallelBuildCheckbox.SetCommonAccessibilityAttributes ("BuildPanel.parallelBuild", null,
+			parallelBuildCheckbox.SetCommonAccessibilityAttributes ("BuildPanel.parallelBuild", "",
 			                                                        GettextCatalog.GetString ("Check to enable parallel building"));
 
-			saveChangesRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.saveChanges", null,
+			saveChangesRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.saveChanges", "",
 			                                                         GettextCatalog.GetString ("Check to save changes before building"));
-			noSaveRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.noSave", null,
+			noSaveRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.noSave", "",
 			                                                    GettextCatalog.GetString ("Check to not save changes before building"));
-			promptChangesRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.promptSave", null,
+			promptChangesRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.promptSave", "",
 			                                                           GettextCatalog.GetString ("Check to be prompted to save changes before building"));
 
-			verbosityCombo.SetCommonAccessibilityAttributes ("BuildPanel.verbosity", null,
+			verbosityCombo.SetCommonAccessibilityAttributes ("BuildPanel.verbosity", label1,
 			                                                 GettextCatalog.GetString ("Select the verbosity level of the build"));
-			verbosityCombo.SetAccessibilityLabelRelationship (label1);
 		}
 		
 		public void Store ()

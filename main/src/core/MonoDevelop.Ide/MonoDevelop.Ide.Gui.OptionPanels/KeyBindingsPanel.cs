@@ -168,13 +168,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			searchEntry.Entry.SetCommonAccessibilityAttributes ("KeyBindingsPanel.searchEntry", GettextCatalog.GetString ("Search"),
 																GettextCatalog.GetString ("Enter a search term to find it in the keybindings list"));
 
-			accelEntry.SetCommonAccessibilityAttributes ("KeyBindingsPanel.accelEntry", null,
+			accelEntry.SetCommonAccessibilityAttributes ("KeyBindingsPanel.accelEntry", labelEditBinding,
 			                                             GettextCatalog.GetString ("Enter the keybinding for this command"));
-			accelEntry.SetAccessibilityLabelRelationship (labelEditBinding);
 
-			addButton.SetCommonAccessibilityAttributes ("KeyBindingsPanel.addButton", null,
+			addButton.SetCommonAccessibilityAttributes ("KeyBindingsPanel.addButton", "",
 			                                            GettextCatalog.GetString ("Add a new binding for this command"));
-			updateButton.SetCommonAccessibilityAttributes ("KeyBindingsPanel.updateButton", null,
+			updateButton.SetCommonAccessibilityAttributes ("KeyBindingsPanel.updateButton", "",
 			                                               GettextCatalog.GetString ("Update the binding for this command"));
 		}
 

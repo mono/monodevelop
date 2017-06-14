@@ -78,33 +78,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SetupAccessibility ()
 		{
-			columnWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.WidthSpinner",
-			                                                  GettextCatalog.GetString ("Desired File Width"),
+			columnWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.WidthSpinner", label1,
 			                                                  GettextCatalog.GetString ("The desired width of the file in columns"));
-			columnWidthSpin.SetAccessibilityLabelRelationship (label1);
 
-			lineEndingCombo.SetCommonAccessibilityAttributes ("Textpolicy.LineEndings",
-			                                                  GettextCatalog.GetString ("Line Endings"),
+			lineEndingCombo.SetCommonAccessibilityAttributes ("Textpolicy.LineEndings", label6,
 			                                                  GettextCatalog.GetString ("Select the type of line endings the file should have"));
-			lineEndingCombo.SetAccessibilityLabelRelationship (label6);
 
-			tabWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.TabWidth",
-			                                               GettextCatalog.GetString ("Tab Width"),
+			tabWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.TabWidth", label7,
 			                                               GettextCatalog.GetString ("Select the width of tab stops"));
-			tabWidthSpin.SetAccessibilityLabelRelationship (label7);
 
-			indentWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.IndentWidth",
-			                                                  GettextCatalog.GetString ("Indent Width"),
+			indentWidthSpin.SetCommonAccessibilityAttributes ("Textpolicy.IndentWidth", label9,
 			                                                  GettextCatalog.GetString ("Select the width of indents"));
-			indentWidthSpin.SetAccessibilityLabelRelationship (label9);
 
-			tabsToSpaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsToSpaces", null,
+			tabsToSpaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsToSpaces", "",
 			                                                   GettextCatalog.GetString ("Check to automatically convert tabs to spaces"));
-			tabsAfterNonTabsCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsAfterSpaces", null,
+			tabsAfterNonTabsCheck.SetCommonAccessibilityAttributes ("Textpolicy.TabsAfterSpaces", "",
 			                                                        GettextCatalog.GetString ("Check to allow tabs after non-tabs"));
-			removeTrailingWhitespaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TrailingWhitespace", null,
+			removeTrailingWhitespaceCheck.SetCommonAccessibilityAttributes ("Textpolicy.TrailingWhitespace", "",
 			                                                                GettextCatalog.GetString ("Check to automatically remove trailing whitespace from a line"));
 		}
+
 		protected virtual void UpdateState (object sender, System.EventArgs e)
 		{
 			panel.UpdateSelectedNamedPolicy ();
