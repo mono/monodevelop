@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -94,6 +95,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			tree.Selection.Changed += HandleChanged;
 			UpdateButtons ();
+
+			SetupAccessibility ();
+		}
+
+		void SetupAccessibility ()
+		{
+			tree.SetCommonAccessibilityAttributes ("MonoRuntimePanel.tree", GettextCatalog.GetString ("Available Runtimes"),
+			                                       GettextCatalog.GetString ("A list of available runtimes"));
+			buttonAdd.SetCommonAccessibilityAttributes ("MonoRuntimePanel.add", null,
+			                                            GettextCatalog.GetString ("Click to install a new runtime"));
+			buttonRemove.SetCommonAccessibilityAttributes ("MonoRuntimePanel.remove", null,
+			                                               GettextCatalog.GetString ("Click to remove the currently selected runtime"));
+			buttonDefault.SetCommonAccessibilityAttributes ("MonoRuntimePanel.default", null,
+			                                                GettextCatalog.GetString ("Click to set the currently selected runtime as default"));
 		}
 
 		void HandleChanged(object sender, EventArgs e)
