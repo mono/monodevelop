@@ -47,7 +47,11 @@ module highlightUnusedCode =
             if ent.IsFSharpModule then
                 [Some ent.QualifiedName; Some ent.LogicalName; Some ent.AccessPath]
             else
-                [ent.Namespace; Some ent.AccessPath; getAutoOpenAccessPath ent]
+                [ yield ent.Namespace
+                  yield Some ent.AccessPath
+                  if ent.AccessPath.StartsWith "Microsoft.FSharp" then
+                      yield Some (ent.AccessPath.[10..])
+                  yield getAutoOpenAccessPath ent ]
         | None -> []
 
     let getOffset (editor:TextEditor) (pos:Range.pos) =
