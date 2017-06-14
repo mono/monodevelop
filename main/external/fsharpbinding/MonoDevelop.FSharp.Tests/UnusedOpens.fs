@@ -144,3 +144,12 @@ module ``Highlight unused opens`` =
                 let someFunc(selection:Text.ISegment) = 1
             """
         assertUnusedOpens source []
+
+    [<Test>]
+    let ``Microsoft.FSharp namespace is special``() =
+        let source =
+            """
+            open FSharp.Reflection
+            module test=FSharpType.IsFunction typeof<int> |> ignore
+            """
+        assertUnusedOpens source []
