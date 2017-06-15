@@ -236,7 +236,6 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>

@@ -132,6 +132,10 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\netstandard1.0\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
@@ -141,6 +145,10 @@
     <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System.Xaml" />
+    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.3.38\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CoreUtility.15.0.26201\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
     </Reference>
@@ -152,6 +160,10 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.UI">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Text.UI.15.0.26201\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.15\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="ICSharpCode.SharpZipLib">
@@ -172,14 +184,18 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.3.0-beta1\lib\net46\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\build\bin\System.Composition.AttributedModel.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\netstandard1.0\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\..\build\bin\System.Composition.Runtime.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\netstandard1.0\System.Composition.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
