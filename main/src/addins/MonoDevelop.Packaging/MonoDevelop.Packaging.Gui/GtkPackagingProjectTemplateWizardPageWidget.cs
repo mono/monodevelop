@@ -63,6 +63,8 @@ namespace MonoDevelop.Packaging.Gui
 			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			topPadding.ModifyBg (StateType.Normal, backgroundColor);
+			bottomPadding.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkPackagingProjectTemplateWizardPageWidget (PackagingProjectTemplateWizardPage wizardPage)
