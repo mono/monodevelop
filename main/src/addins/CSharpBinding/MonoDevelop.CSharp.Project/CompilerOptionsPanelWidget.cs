@@ -225,9 +225,8 @@ namespace MonoDevelop.CSharp.Project
 			
 			if (mainClassEntry.Sensitive)
 				csproject.MainClass = mainClassEntry.Entry.Text;
-			
 			foreach (DotNetProjectConfiguration configuration in configs) {
-				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
+				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
 				compilerParameters.NoStdLib = noStdLibCheckButton.Active;
 				compilerParameters.LangVersion = langVersion;
