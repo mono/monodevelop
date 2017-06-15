@@ -8379,6 +8379,7 @@
     <Compile Include="MonoDevelop.Ide.Commands\ToolsCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
