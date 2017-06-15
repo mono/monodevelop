@@ -32,7 +32,6 @@
         <child>
           <widget class="Gtk.VBox" id="configurationVBox">
             <property name="MemberName" />
-            <property name="WidthRequest">440</property>
             <child>
               <widget class="Gtk.EventBox" id="configurationTopEventBox">
                 <property name="MemberName" />
@@ -51,7 +50,7 @@
                 <child>
                   <widget class="Gtk.Table" id="configurationTable">
                     <property name="MemberName" />
-                    <property name="NRows">4</property>
+                    <property name="NRows">6</property>
                     <property name="NColumns">3</property>
                     <property name="RowSpacing">7</property>
                     <property name="ColumnSpacing">6</property>
@@ -60,6 +59,38 @@
                     </child>
                     <child>
                       <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <widget class="Gtk.DrawingArea" id="bottomPadding">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">132</property>
+                        <property name="HeightRequest">0</property>
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">5</property>
+                        <property name="BottomAttach">6</property>
+                        <property name="AutoSize">False</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">0</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">False</property>
+                        <property name="YShrink">False</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="Gtk.EventBox" id="idEventBox">
@@ -72,6 +103,8 @@
                         </child>
                       </widget>
                       <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
                         <property name="LeftAttach">2</property>
                         <property name="RightAttach">3</property>
                         <property name="AutoSize">True</property>
@@ -104,8 +137,8 @@
                         </child>
                       </widget>
                       <packing>
-                        <property name="TopAttach">1</property>
-                        <property name="BottomAttach">2</property>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
                         <property name="LeftAttach">2</property>
                         <property name="RightAttach">3</property>
                         <property name="AutoSize">False</property>
@@ -128,8 +161,8 @@
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
+                        <property name="TopAttach">3</property>
+                        <property name="BottomAttach">4</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
@@ -149,8 +182,8 @@
                         <property name="InvisibleChar">●</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
+                        <property name="TopAttach">3</property>
+                        <property name="BottomAttach">4</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
@@ -173,8 +206,8 @@
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">3</property>
-                        <property name="BottomAttach">4</property>
+                        <property name="TopAttach">4</property>
+                        <property name="BottomAttach">5</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
@@ -194,8 +227,8 @@
                         <property name="InvisibleChar">●</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">3</property>
-                        <property name="BottomAttach">4</property>
+                        <property name="TopAttach">4</property>
+                        <property name="BottomAttach">5</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
@@ -212,13 +245,14 @@
                     <child>
                       <widget class="Gtk.Label" id="packageIdLabel">
                         <property name="MemberName" />
-                        <property name="WidthRequest">132</property>
                         <property name="Xpad">5</property>
                         <property name="Xalign">1</property>
                         <property name="LabelProp" translatable="yes">ID:</property>
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
@@ -233,11 +267,14 @@
                     <child>
                       <widget class="Gtk.Entry" id="packageIdTextBox">
                         <property name="MemberName" />
+                        <property name="WidthRequest">280</property>
                         <property name="CanFocus">True</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
                       <packing>
+                        <property name="TopAttach">1</property>
+                        <property name="BottomAttach">2</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">False</property>
@@ -256,9 +293,27 @@
                         <property name="HeightRequest">1</property>
                       </widget>
                       <packing>
-                        <property name="TopAttach">1</property>
-                        <property name="BottomAttach">2</property>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
                         <property name="RightAttach">3</property>
+                        <property name="AutoSize">False</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">0</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">False</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.DrawingArea" id="topPadding">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">132</property>
+                        <property name="HeightRequest">0</property>
+                      </widget>
+                      <packing>
                         <property name="AutoSize">False</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">0</property>
@@ -423,6 +478,7 @@
                   <widget class="Gtk.Label" id="packageDescriptionPaddingLabel">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -953,6 +1009,7 @@
                   <widget class="Gtk.Label" id="packageReleaseNotesPaddingLabel">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -1414,6 +1471,7 @@
                       <widget class="Gtk.Label" id="paddingLabelSharedCode">
                         <property name="MemberName" />
                         <property name="WidthRequest">132</property>
+                        <property name="LabelProp" translatable="yes" />
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
@@ -1434,6 +1492,7 @@
                       <widget class="Gtk.Label" id="paddingLabelTargetPlatforms">
                         <property name="MemberName" />
                         <property name="WidthRequest">132</property>
+                        <property name="LabelProp" translatable="yes" />
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
@@ -1455,6 +1514,7 @@
                         <property name="MemberName" />
                         <property name="WidthRequest">132</property>
                         <property name="HeightRequest">5</property>
+                        <property name="LabelProp" translatable="yes" />
                         <property name="Justify">Right</property>
                       </widget>
                       <packing>
@@ -1521,6 +1581,7 @@
                                   <widget class="Gtk.Label" id="usePortableLibraryInfoIconPaddingLabel">
                                     <property name="MemberName" />
                                     <property name="HeightRequest">1</property>
+                                    <property name="LabelProp" translatable="yes" />
                                   </widget>
                                   <packing>
                                     <property name="Position">0</property>
@@ -1585,6 +1646,7 @@
                                   <widget class="Gtk.Label" id="useSharedLibraryInfoIconPaddingLabel">
                                     <property name="MemberName" />
                                     <property name="HeightRequest">1</property>
+                                    <property name="LabelProp" translatable="yes" />
                                   </widget>
                                   <packing>
                                     <property name="Position">0</property>
