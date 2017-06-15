@@ -436,8 +436,7 @@ namespace MonoDevelop.CSharp.Project
 
 		void NotifyChange ()
 		{
-			ParentProject.NotifyModified ("CompilerParameters");
+			ParentProject?.NotifyModified ("CompilerParameters");
 		}
-
 	}
 }
