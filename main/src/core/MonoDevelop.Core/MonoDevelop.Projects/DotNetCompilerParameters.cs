@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects
 	public abstract class DotNetCompilerParameters
 	{
 		public DotNetProject ParentProject {
-			get { return ParentConfiguration.ParentItem; }
+			get { return ParentConfiguration?.ParentItem; }
 		}
 
 		internal protected virtual void Read (IPropertySet pset)
