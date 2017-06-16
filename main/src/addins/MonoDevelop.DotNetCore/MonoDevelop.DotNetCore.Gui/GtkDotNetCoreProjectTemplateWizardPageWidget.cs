@@ -47,6 +47,11 @@ namespace MonoDevelop.DotNetCore.Gui
 		{
 			this.Build ();
 
+			// Do not use a width request for the configuration box so the left hand side of the
+			// wizard page can expand to fit its contents.
+			configurationVBox.WidthRequest = -1;
+			targetFrameworkLabel.WidthRequest = -1;
+
 			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-netcore.png");
 			backgroundImageView = new ImageView (backgroundImage);
 			backgroundImageView.Xalign = 1.0f;
