@@ -131,32 +131,25 @@ namespace MonoDevelop.CSharp.Project
 
 		void SetupAccessibility ()
 		{
-			compileTargetCombo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget",
-			                                                     GettextCatalog.GetString ("Compile Target"),
+			compileTargetCombo.SetCommonAccessibilityAttributes ("CodeGeneration.CompileTarget", label86,
 			                                                     GettextCatalog.GetString ("Select the compile target for the code generation"));
-			compileTargetCombo.SetAccessibilityLabelRelationship (label86);
 
-			mainClassEntry.SetCommonAccessibilityAttributes ("CodeGeneration.MainClass",
-			                                                 GettextCatalog.GetString ("Main Class"),
+			mainClassEntry.SetCommonAccessibilityAttributes ("CodeGeneration.MainClass", label88,
 			                                                 GettextCatalog.GetString ("Enter the main class for the code generation"));
-			mainClassEntry.SetAccessibilityLabelRelationship (label88);
 
-			iconEntry.SetEntryAccessibilityAttributes ("CodeGeneration.WinIcon", GettextCatalog.GetString ("Win32 Icon"),
+			iconEntry.SetEntryAccessibilityAttributes ("CodeGeneration.WinIcon", "",
 			                                           GettextCatalog.GetString ("Enter the file to use as the icon on Windows"));
 			iconEntry.SetAccessibilityLabelRelationship (label3);
 
-			codepageEntry.SetCommonAccessibilityAttributes ("CodeGeneration.CodePage", GettextCatalog.GetString ("Compiler Code Page"),
+			codepageEntry.SetCommonAccessibilityAttributes ("CodeGeneration.CodePage", label1,
 			                                                GettextCatalog.GetString ("Select the compiler code page"));
-			codepageEntry.SetAccessibilityLabelRelationship (label1);
 
-			noStdLibCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.NoStdLib", null, GettextCatalog.GetString ("Whether or not to include a reference to mscorlib.dll"));
+			noStdLibCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.NoStdLib", "", GettextCatalog.GetString ("Whether or not to include a reference to mscorlib.dll"));
 
-			langVerCombo.SetCommonAccessibilityAttributes ("CodeGeneration.LanguageVersion",
-			                                               GettextCatalog.GetString ("C# Language Version"),
+			langVerCombo.SetCommonAccessibilityAttributes ("CodeGeneration.LanguageVersion", label2,
 			                                               GettextCatalog.GetString ("Select the version of C# to use"));
-			langVerCombo.SetAccessibilityLabelRelationship (label2);
 
-			allowUnsafeCodeCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.AllowUnsafe", null,
+			allowUnsafeCodeCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.AllowUnsafe", "",
 			                                                             GettextCatalog.GetString ("Check to allow 'unsafe' code"));
 		}
 

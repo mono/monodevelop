@@ -28,9 +28,11 @@
 
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -74,8 +76,31 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.info = info;
 			checkCustom.Active = (info != null);
 			UseDefaultToggled (this, EventArgs.Empty);
+
+			SetupAccessibility ();
 		}
-		
+
+		void SetupAccessibility ()
+		{
+			nameEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.nameEntry", "",
+			                                            GettextCatalog.GetString ("Enter the author name"));
+			nameEntry.SetAccessibilityLabelRelationship (label2);
+
+			emailEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.emailEntry", "",
+			                                             GettextCatalog.GetString ("Enter the author's email address"));
+			emailEntry.SetAccessibilityLabelRelationship (label4);
+
+			copyrightEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.copyrightEntry", "",
+			                                                 GettextCatalog.GetString ("Enter the copyright statement"));
+			copyrightEntry.SetAccessibilityLabelRelationship (label3);
+			companyEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.companyEntry", "",
+			                                               GettextCatalog.GetString ("Enter the company name"));
+			companyEntry.SetAccessibilityLabelRelationship (label5);
+			trademarkEntry.SetCommonAccessibilityAttributes ("AuthorInformationPanel.trademarkEntry", "",
+			                                                 GettextCatalog.GetString ("Enter the trademark statement"));
+			trademarkEntry.SetAccessibilityLabelRelationship (label6);
+		}
+
 		public AuthorInformation Get ()
 		{
 			return checkCustom.Active? new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text, companyEntry.Text, trademarkEntry.Text) : null;

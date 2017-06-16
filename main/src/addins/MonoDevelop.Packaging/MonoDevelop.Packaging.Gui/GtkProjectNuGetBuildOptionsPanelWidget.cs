@@ -46,7 +46,7 @@ namespace MonoDevelop.Packaging.Gui
 
 		void SetupAccessibility ()
 		{
-			packOnBuildButton.SetCommonAccessibilityAttributes ("NugetBuildOptionsPanel.PackOnBuild", null,
+			packOnBuildButton.SetCommonAccessibilityAttributes ("NugetBuildOptionsPanel.PackOnBuild", "",
 			                                                    GettextCatalog.GetString ("Check to create a NuGet package when building"));
 		}
 

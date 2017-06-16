@@ -59,26 +59,24 @@ namespace MonoDevelop.VersionControl
 			                                              GettextCatalog.GetString ("Enter the commit message header"));
 			entryHeader.SetAccessibilityLabelRelationship (label4);
 
-			checkUseBullets.SetCommonAccessibilityAttributes ("CommitMessageStyle.UseBullets", null,
+			checkUseBullets.SetCommonAccessibilityAttributes ("CommitMessageStyle.UseBullets", "",
 			                                                  GettextCatalog.GetString ("Check to use bullets for each entry"));
-			checkIndentEntries.SetCommonAccessibilityAttributes ("CommitMessageStyle.IndentEntries", null,
+			checkIndentEntries.SetCommonAccessibilityAttributes ("CommitMessageStyle.IndentEntries", "",
 			                                                     GettextCatalog.GetString ("Check to indent each entry"));
-			checkIndent.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckIndent", null,
+			checkIndent.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckIndent", "",
 			                                              GettextCatalog.GetString ("Check to align the message text"));
-			checkLineSep.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckLineSep", null,
+			checkLineSep.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckLineSep", "",
 			                                               GettextCatalog.GetString ("Check to add a blank line between messages"));
-			checkOneLinePerFile.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckOneLine", null,
+			checkOneLinePerFile.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckOneLine", "",
 			                                                      GettextCatalog.GetString ("Check to add one line per file changed"));
-			checkMsgInNewLine.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckMsgNewLine", null,
+			checkMsgInNewLine.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckMsgNewLine", "",
 			                                                    GettextCatalog.GetString ("Check to keep the file name and messages on separate lines"));
-			checkIncludeDirs.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckIncludeDirs", null,
+			checkIncludeDirs.SetCommonAccessibilityAttributes ("CommitMessageStyle.CheckIncludeDirs", "",
 			                                                   GettextCatalog.GetString ("Check to include file directories"));
-			checkWrap.SetCommonAccessibilityAttributes ("CommitMessageStyle.Wrap", null,
+			checkWrap.SetCommonAccessibilityAttributes ("CommitMessageStyle.Wrap", "",
 			                                            GettextCatalog.GetString ("Check to wrap the lines at 60 characters"));
-			textview.SetCommonAccessibilityAttributes ("CommitMessagesStyle.Preview",
-			                                           GettextCatalog.GetString ("Preview"),
+			textview.SetCommonAccessibilityAttributes ("CommitMessagesStyle.Preview", label9,
 			                                           GettextCatalog.GetString ("A preview of the settings above"));
-			textview.SetAccessibilityLabelRelationship (label9);
 		}
 
 		public void Load (CommitMessageFormat format, AuthorInformation uinfo)
