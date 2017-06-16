@@ -449,7 +449,6 @@
             <child>
               <widget class="Gtk.ScrolledWindow" id="packageDescriptionScrolledWindow">
                 <property name="MemberName" />
-                <property name="HscrollbarPolicy">Never</property>
                 <property name="ShadowType">In</property>
                 <child>
                   <widget class="Gtk.TextView" id="packageDescriptionTextView">
