@@ -734,35 +734,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			filteredItems.Sort (delegate (int left, int right) {
-				var data1 = dataList [left];
-				var data2 = dataList [right];
-				if (data1 != null && data2 == null)
-					return -1;
-				if (data1 == null && data2 != null)
-					return 1;
-				if (data1 == null && data2 == null)
+			try {
+				filteredItems.Sort (delegate (int left, int right) {
+					var data1 = dataList [left];
+					var data2 = dataList [right];
+					if (data1 != null && data2 == null)
+						return -1;
+					if (data1 == null && data2 != null)
+						return 1;
+					if (data1 == null && data2 == null)
+						return left.CompareTo (right);
+
+					if (data1.PriorityGroup != data2.PriorityGroup)
+						return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
+
+					if (string.IsNullOrEmpty (CompletionString))
+						return CompareTo (dataList, left, right);
+
+					int rank1, rank2;
+					bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
+					bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
+					if (!hasRank1 && hasRank2)
+						return 1;
+					if (hasRank1 && !hasRank2)
+						return -1;
+
+					if (rank1 != rank2)
+						return rank2.CompareTo (rank1);
+
 					return left.CompareTo (right);
-
-				if (data1.PriorityGroup != data2.PriorityGroup)
-					return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
-
-				if (string.IsNullOrEmpty (CompletionString))
-					return CompareTo (dataList, left, right);
-
-				int rank1, rank2;
-				bool hasRank1 = matcher.CalcMatchRank (data1.CompletionText, out rank1);
-				bool hasRank2 = matcher.CalcMatchRank (data2.CompletionText, out rank2);
-				if (!hasRank1 && hasRank2)
-					return 1;
-				if (hasRank1 && !hasRank2)
-					return -1;
-
-				if (rank1 != rank2)
-					return rank2.CompareTo (rank1);
-
-				return left.CompareTo (right);
-			});
+				});
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while filtering completion items.", e);
+			}
 
 			// put the item from a lower priority group with the highest match rank always to position #2
 			if (filteredItems.Count > 0) {
