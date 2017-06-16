@@ -501,7 +501,7 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup ((INamedTypeSymbol)t);
 			if (t.TypeKind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
-			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer)
+			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer || t.IsTupleType)
 				return GetTypeReferenceString (t);
 			if (t.IsNullable ())
 				return GetNullableMarkup (t);
