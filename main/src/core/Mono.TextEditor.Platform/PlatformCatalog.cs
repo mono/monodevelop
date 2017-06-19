@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -30,32 +30,19 @@ namespace Microsoft.VisualStudio.Platform
 {
     public class PlatformCatalog
     {
-        public static PlatformCatalog Instance = new PlatformCatalog();
+        public static readonly PlatformCatalog Instance = new PlatformCatalog();
 
         public CompositionContainer CompositionContainer { get; }
 
-        public ITextBufferFactoryService2 TextBufferFactoryService { get; }
-
-        private PlatformCatalog()
+        PlatformCatalog()
         {
             var container = PlatformCatalog.CreateContainer();
             container.SatisfyImportsOnce(this);
 
             this.CompositionContainer = container;
-            this.TextBufferFactoryService = (ITextBufferFactoryService2)_textBufferFactoryService;
-
-            this.MimeToContentTypeRegistryService.LinkTypes("text/plain", this.ContentTypeRegistryService.GetContentType("text"));		  //HACK
-            this.MimeToContentTypeRegistryService.LinkTypes("text/x-csharp", this.ContentTypeRegistryService.GetContentType("csharp"));   //HACK
-
-            if (null != this.ContentTypeRegistryService.GetContentType("css"))
-            {
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-css", this.ContentTypeRegistryService.GetContentType("css"));   //HACK
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-html", this.ContentTypeRegistryService.GetContentType("htmlx"));   //HACK
-                this.MimeToContentTypeRegistryService.LinkTypes("text/x-json", this.ContentTypeRegistryService.GetContentType("JSON"));   //HACK
-            }
         }
 
-        private static CompositionContainer CreateContainer()
+        static CompositionContainer CreateContainer()
         {
             // TODO: Read these from manifest.addin.xml?
             AggregateCatalog catalog = new AggregateCatalog();
@@ -92,15 +79,12 @@ namespace Microsoft.VisualStudio.Platform
             return container;
         }
 
-        [Export]                                        //HACK
-        [Name("csharp")]                                //HACK
-        [BaseDefinition("code")]                        //HACK
-        public ContentTypeDefinition codeContentType;   //HACK
-
         [Import]
         internal ITextBufferFactoryService _textBufferFactoryService { get; private set; }
 
-        [Import]
+		public ITextBufferFactoryService2 TextBufferFactoryService => (ITextBufferFactoryService2)_textBufferFactoryService;
+
+		[Import]
         internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
 
         [Import]
@@ -152,9 +136,17 @@ namespace Microsoft.VisualStudio.Platform
     }
 
     [Export(typeof(IMimeToContentTypeRegistryService))]
-    public class MimeToContentTypeRegistryService : IMimeToContentTypeRegistryService
+    public class MimeToContentTypeRegistryService : IMimeToContentTypeRegistryService, IPartImportsSatisfiedNotification
     {
-        public string GetMimeType(IContentType type)
+		[Import]
+		IContentTypeRegistryService ContentTypeRegistryService { get; set; }
+
+		[Export]
+		[Name ("csharp")]
+		[BaseDefinition ("code")]
+		public ContentTypeDefinition codeContentType;
+
+		public string GetMimeType(IContentType type)
         {
             string mimeType;
             if (this.maps.Item2.TryGetValue(type, out mimeType))
@@ -193,10 +185,26 @@ namespace Microsoft.VisualStudio.Platform
 
                 oldMap = result;
             }
-
         }
 
-        private Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
+		void LinkTypes (string mimeType, string contentType)
+		{
+			LinkTypes (mimeType, ContentTypeRegistryService.GetContentType (contentType));
+		}
+
+		void IPartImportsSatisfiedNotification.OnImportsSatisfied ()
+		{
+			LinkTypes ("text/plain", "text");
+			LinkTypes ("text/x-csharp", "csharp");
+
+			if (this.ContentTypeRegistryService.GetContentType ("css") != null) {
+				LinkTypes ("text/x-css", "css");
+				LinkTypes ("text/x-html", "htmlx");
+				LinkTypes ("text/x-json", "JSON");
+			}
+		}
+
+		Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
     }
 
     // Fold back into Text.Def.TextData.TextSnapshotToTextReader
