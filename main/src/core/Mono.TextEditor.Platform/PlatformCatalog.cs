@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //  Licensed under the MIT License. See License.txt in the project root for license information.
 //
@@ -30,13 +30,13 @@ namespace Microsoft.VisualStudio.Platform
 {
     public class PlatformCatalog
     {
-        public static PlatformCatalog Instance = new PlatformCatalog();
+        public static readonly PlatformCatalog Instance = new PlatformCatalog();
 
         public CompositionContainer CompositionContainer { get; }
 
         public ITextBufferFactoryService2 TextBufferFactoryService { get; }
 
-        private PlatformCatalog()
+        PlatformCatalog()
         {
             var container = PlatformCatalog.CreateContainer();
             container.SatisfyImportsOnce(this);
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.Platform
             }
         }
 
-        private static CompositionContainer CreateContainer()
+        static CompositionContainer CreateContainer()
         {
             // TODO: Read these from manifest.addin.xml?
             AggregateCatalog catalog = new AggregateCatalog();
@@ -196,7 +196,7 @@ namespace Microsoft.VisualStudio.Platform
 
         }
 
-        private Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
+        Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
     }
 
     // Fold back into Text.Def.TextData.TextSnapshotToTextReader
