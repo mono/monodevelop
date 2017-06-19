@@ -234,7 +234,11 @@
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
 	</ExtensionPoint>
 
-	<!-- Extensions -->
+	<ExtensionPoint path="/MonoDevelop/Ide/Composition">
+		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
+	</ExtensionPoint>
+
+  <!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
@@ -394,4 +398,15 @@
 	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="Microsoft.CodeAnalysis.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
+		<Assembly file="MonoDevelop.Ide.dll"/>
+	</Extension>
+
 </ExtensionModel>
