@@ -31,6 +31,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.VisualStudio.Composition;
 using Mono.Addins;
 using MonoDevelop.Core;
@@ -88,6 +90,8 @@ namespace MonoDevelop.Ide.Composition
 		public RuntimeComposition RuntimeComposition { get; private set; }
 		public IExportProviderFactory ExportProviderFactory { get; private set; }
 		public ExportProvider ExportProvider { get; private set; }
+		public HostServices HostServices { get; private set; }
+		public System.ComponentModel.Composition.Hosting.ExportProvider ExportProviderV1 { get; private set; }
 
 		internal CompositionManager ()
 		{
@@ -109,6 +113,7 @@ namespace MonoDevelop.Ide.Composition
 			var assemblies = new HashSet<Assembly> ();
 			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices");
 			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/TypeService/MefHostServices");
+			ReadAssembliesFromAddins (assemblies, "/MonoDevelop/Ide/Composition");
 
 			// spawn discovery tasks in parallel for each assembly
 			var tasks = new List<Task<DiscoveredParts>> (assemblies.Count);
@@ -137,6 +142,8 @@ namespace MonoDevelop.Ide.Composition
 			RuntimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 			ExportProvider = ExportProviderFactory.CreateExportProvider ();
+			HostServices = MefV1HostServices.Create (ExportProvider.AsExportProvider ());
+			ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
 		}
 
 		void ReadAssembliesFromAddins (HashSet<Assembly> assemblies, string extensionPath)
