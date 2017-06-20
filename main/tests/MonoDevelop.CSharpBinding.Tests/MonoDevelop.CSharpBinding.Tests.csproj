@@ -70,51 +70,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\CodeCompletion\NR5\BrowsableAttributeTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionAccessibleTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionBugTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionCSharp3Tests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionCSharpTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CodeCompletionOperatorTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\CompletionDataList.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\DelegateContextTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\DocumentationContextTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\EnumContextTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\FormatItemTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\GetCurrentParameterIndexTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\ImportCompletionTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\KeywordTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\NameContextTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\ObjectInitializerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\PreProcessorTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\TestBase.cs" />
-    <Compile Include="Features\CodeCompletion\NR5\VariableDeclarationStatementTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\CastCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\DelegateCreationContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\EnumMemberContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\KeywordCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\MiscTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\ObjectCreationCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\OverrideCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\PartialCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\SenderCompletionContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\SpeculativeNameContextHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\AttributeNamedParameterCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\CompletionTestBase.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\CrefCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\EnumAndCompletionListTagCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ExplicitInterfaceCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ExternAliasCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\KeywordCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\NamedParameterCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ObjectCreationCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\ObjectInitializerCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\OverrideCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\PartialCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SpeculativeTCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SymbolCompletionHandlerTests.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\SymbolCompletionHandlerTests_NoInteractive.cs" />
-    <Compile Include="Features\CodeCompletion\PortedRoslynTests\XmlDocCompletionHandlerTests.cs" />
     <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />
     <Compile Include="Features\InspectionActionTestBase.cs" />
     <Compile Include="Features\IndentationTests\AlignmentTests.cs" />
@@ -125,7 +80,6 @@
     <Compile Include="Features\IndentationTests\PreProcessorTests.cs" />
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
-    <Compile Include="Features\CodeCompletion\NR6\RegexContextHandlerTests.cs" />
     <Compile Include="Features\TestBase.cs" />
     <Compile Include="Features\Util.cs" />
   </ItemGroup>

@@ -339,13 +339,11 @@
     <Compile Include="MonoDevelop.CSharp.Features\Completion\CompletionResult.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\EditorBrowsableBehavior.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ICompletionDataFactory.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CastCompletionContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\CompletionContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\DelegateCreationContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\EnumMemberContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ExplicitInterfaceContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ExternAliasContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\FormatItemContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\KeywordContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\NamedParameterContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\ObjectCreationContextHandler.cs" />
@@ -355,7 +353,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\PreProcessorExpressionContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RoslynRecommendationsCompletionContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SenderCompletionContextHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SnippetContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SpeculativeNameContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\SpeculativeTContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\XmlDocCommentContextHandler.cs" />
@@ -379,7 +376,6 @@
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\TypeGuessing.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\Resources.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpNavigationTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RegexContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\CSharpNUnitSourceCodeLocationFinder.cs" />
@@ -424,6 +420,11 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\CastCompletionContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\CompletionDataWrapper.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\FormatItemContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\RegexContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\SnippetContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -450,5 +451,6 @@
   <ItemGroup>
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
+    <Folder Include="MonoDevelop.CSharp.Completion\ContextHandlers\" />
   </ItemGroup>
 </Project>

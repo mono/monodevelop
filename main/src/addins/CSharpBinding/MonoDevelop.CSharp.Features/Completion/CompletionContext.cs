@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// </summary>
 		public bool UseDefaultContextHandlers { get; set; } = true;
 
-		public CompletionContext (Document document, int position, SemanticModel semanticModel  = null)
+		public CompletionContext (Document document, int position, SemanticModel semanticModel = null)
 		{
 			this.document = document;
 			this.semanticModel = semanticModel;
