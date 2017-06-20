@@ -338,4 +338,12 @@
 	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
 		<Class class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" insertbefore="Default"/>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+		<Assembly file="MonoDevelop.CSharpBinding.dll"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="MonoDevelop.CSharpBinding.dll"/>
+	</Extension>
 </ExtensionModel>

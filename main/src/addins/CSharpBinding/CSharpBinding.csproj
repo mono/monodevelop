@@ -388,6 +388,7 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\CompletionDataWrapper.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\FormatItemContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -398,9 +399,7 @@
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
     <None Include="packages.config" />
     <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\CastCompletionContextHandler.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\FormatItemContextHandler.cs" />
     <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\RegexContextHandler.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\SnippetContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTests" />
