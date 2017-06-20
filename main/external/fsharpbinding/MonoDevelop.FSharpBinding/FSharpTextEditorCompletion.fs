@@ -192,28 +192,28 @@ module Completion =
 
     let symbolToIcon (symbolUse:FSharpSymbolUse) =
         match symbolUse with
-        | ActivePatternCase _ -> Stock.Enum
-        | Field _ -> Stock.Field
-        | UnionCase _ -> IconId("md-type")
-        | Class _ -> Stock.Class
-        | Delegate _ -> Stock.Delegate
-        | Constructor _  -> Stock.Method
-        | Event _ -> Stock.Event
-        | Property _ -> Stock.Property
+        | SymbolUse.ActivePatternCase _ -> Stock.Enum
+        | SymbolUse.Field _ -> Stock.Field
+        | SymbolUse.UnionCase _ -> IconId("md-type")
+        | SymbolUse.Class _ -> Stock.Class
+        | SymbolUse.Delegate _ -> Stock.Delegate
+        | SymbolUse.Constructor _  -> Stock.Method
+        | SymbolUse.Event _ -> Stock.Event
+        | SymbolUse.Property _ -> Stock.Property
         | Function f ->
             if f.IsExtensionMember then IconId("md-extensionmethod")
             elif f.IsMember then IconId("md-method")
             else IconId("md-fs-field")
-        | Operator _ -> IconId("md-fs-field")
-        | ClosureOrNestedFunction _ -> IconId("md-fs-field")
-        | Val _ -> Stock.Field
-        | Enum _ -> Stock.Enum
-        | Interface _ -> Stock.Interface
-        | Module _ -> IconId("md-module")
-        | Namespace _ -> Stock.NameSpace
-        | Record _ -> Stock.Class
-        | Union _ -> IconId("md-type")
-        | ValueType _ -> Stock.Struct
+        | SymbolUse.Operator _ -> IconId("md-fs-field")
+        | SymbolUse.ClosureOrNestedFunction _ -> IconId("md-fs-field")
+        | SymbolUse.Val _ -> Stock.Field
+        | SymbolUse.Enum _ -> Stock.Enum
+        | SymbolUse.Interface _ -> Stock.Interface
+        | SymbolUse.Module _ -> IconId("md-module")
+        | SymbolUse.Namespace _ -> Stock.NameSpace
+        | SymbolUse.Record _ -> Stock.Class
+        | SymbolUse.Union _ -> IconId("md-type")
+        | SymbolUse.ValueType _ -> Stock.Struct
         | SymbolUse.Entity _ -> IconId("md-type")
         | _ -> Stock.Event
         
@@ -246,30 +246,30 @@ module Completion =
         let category =
             try
                 match symbolUse with
-                | Constructor c ->
+                | SymbolUse.Constructor c ->
                     c.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
-                | Event ev ->
+                | SymbolUse.Event ev ->
                     ev.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
-                | Property pr ->
+                | SymbolUse.Property pr ->
                     pr.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
-                | ActivePatternCase ap ->
+                | SymbolUse.ActivePatternCase ap ->
                     if ap.Group.Names.Count > 1 then
                         ap.Group.EnclosingEntity
                         |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
                                                         un.DisplayName, un)
                     else None
-                | UnionCase uc ->
+                | SymbolUse.UnionCase uc ->
                     if uc.UnionCaseFields.Count > 1 then
                         let ent = uc.ReturnType.TypeDefinition.UnAnnotate()
                         Some(ent.DisplayName, ent)
                     else None
-                | Function f ->
+                | SymbolUse.Function f ->
                     if f.IsExtensionMember then
                         let real = f.LogicalEnclosingEntity.UnAnnotate()
                         Some(real.DisplayName, real)
@@ -277,25 +277,25 @@ module Completion =
                         f.EnclosingEntitySafe
                         |> Option.map (fun real -> let un = real.UnAnnotate()
                                                    un.DisplayName, un)
-                | Operator o ->
+                | SymbolUse.Operator o ->
                     o.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, un)
-                | Pattern p ->
+                | SymbolUse.Pattern p ->
                     p.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un = ent.UnAnnotate()
                                               un.DisplayName, ent)
-                | Val v ->
+                | SymbolUse.Val v ->
                     v.EnclosingEntitySafe
                     |> Option.map (fun ent -> let un  = ent.UnAnnotate()
                                               un.DisplayName, un)
-                | TypeAbbreviation ta ->
+                | SymbolUse.TypeAbbreviation ta ->
                     //TODO:  Check this is correct, I suspect we should return None here
                     let ent = ta.UnAnnotate()
                     Some (ent.DisplayName, ent)
                 //The following have no logical parent to display
                 //Theres no link to a parent type for a closure (FCS limitation)
-                | ClosureOrNestedFunction _cl -> None
+                | SymbolUse.ClosureOrNestedFunction _cl -> None
                 //The F# compiler does not currently expose an Entitys parent, only children
                 //| Class _ | Delegate _ | Enum _ | Interface _ | Module _
                 //| Namespace _ | Record _ | Union _ | ValueType _  -> None
