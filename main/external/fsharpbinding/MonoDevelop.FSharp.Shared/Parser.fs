@@ -26,7 +26,7 @@ module Parsing =
             match sym.Text with
             | "" -> [], ""
             | text ->
-                let res = text.Split '.' |> List.ofArray |> List.rev
+                let res = text.Split '.' |> List.ofArray |> List.filter (String.isEmpty >> not) |> List.rev
                 if lineStr.[col - 1] = '.' then res |> List.rev, ""
                 else
                     match res with
