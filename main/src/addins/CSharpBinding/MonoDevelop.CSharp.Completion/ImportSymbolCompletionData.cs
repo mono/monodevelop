@@ -32,11 +32,13 @@ using System.Text;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ImportSymbolCompletionData : RoslynSymbolCompletionData
+	class ImportSymbolCompletionData : CompletionData
 	{
 		CSharpCompletionTextEditorExtension completionExt;
 		ISymbol type;
 		bool useFullName;
+
+		public ISymbol Symbol { get { return type; } }
 
 		public override IconId Icon {
 			get {
@@ -46,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int PriorityGroup { get { return int.MinValue; } }
 
-		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, RoslynCodeCompletionFactory factory, ISymbol type, bool useFullName) : base (null, factory, type)
+		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, ISymbol type, bool useFullName) 
 		{
 			this.completionExt = ext;
 			this.useFullName = useFullName;

@@ -1,9 +1,6 @@
 ﻿<ExtensionModel>
 
 	<!-- Extension Points -->
-	<ExtensionPoint path = "/MonoDevelop/CSharp/Completion/ContextHandler">
-		<ExtensionNode name="Class"/>
-	</ExtensionPoint>
 
 	<!-- Extensions -->
 

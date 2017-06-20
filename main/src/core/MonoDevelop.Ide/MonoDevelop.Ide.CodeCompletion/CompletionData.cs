@@ -252,32 +252,4 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 	}
-
-	public class ISymbolCompletionData : CompletionData
-	{
-		public virtual Microsoft.CodeAnalysis.ISymbol Symbol {
-			get;
-			protected set;
-		}
-
-		public ISymbolCompletionData ()
-		{
-		}
-
-		public ISymbolCompletionData (string text) : base (text)
-		{
-		}
-
-		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon) : base (text, icon)
-		{
-		}
-
-		public ISymbolCompletionData (string text, MonoDevelop.Core.IconId icon, string description) : base (text, icon, description)
-		{
-		}
-
-		public ISymbolCompletionData (string displayText, MonoDevelop.Core.IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
-		{
-		}
-	}
 }

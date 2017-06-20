@@ -77,8 +77,6 @@ namespace MonoDevelop.CSharp.Completion
 		SyntaxTree unit;
 		static readonly SyntaxTree emptyUnit = CSharpSyntaxTree.ParseText ("");
 
-		List<CompletionContextHandler> additionalContextHandlers = new List<CompletionContextHandler> ();
-
 		SyntaxTree Unit {
 			get {
 				return unit ?? emptyUnit;
@@ -121,44 +119,32 @@ namespace MonoDevelop.CSharp.Completion
 
 		static CSharpCompletionTextEditorExtension ()
 		{
-			try {
-				CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
-					if (snippets != null)
-						return Task.FromResult ((IEnumerable<CompletionData>)snippets);
-					var newSnippets = new List<CompletionData> ();
-					foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
-						if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
-							continue;
-						newSnippets.Add (new RoslynCompletionData (null) {
-							CompletionText = ct.Shortcut,
-							DisplayText = ct.Shortcut,
-							Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
-							Icon = ct.Icon
-						});
-					}
-					snippets = newSnippets;
-					return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
-				};
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
-			}
+			//try {
+			//	CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
+			//		if (snippets != null)
+			//			return Task.FromResult ((IEnumerable<CompletionData>)snippets);
+			//		var newSnippets = new List<CompletionData> ();
+			//		foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
+			//			if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
+			//				continue;
+			//			newSnippets.Add (new RoslynCompletionData (null) {
+			//				CompletionText = ct.Shortcut,
+			//				DisplayText = ct.Shortcut,
+			//				Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
+			//				Icon = ct.Icon
+			//			});
+			//		}
+			//		snippets = newSnippets;
+			//		return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
+			//	};
+			//} catch (Exception e) {
+			//	LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
+			//}
 		}
 
 		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
 		{
 			return doc.WithFrozenPartialSemanticsAsync (token);
-		}
-
-		public CSharpCompletionTextEditorExtension ()
-		{
-			try {
-				foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
-					var handler = (CompletionContextHandler)node.CreateInstance ();
-					additionalContextHandlers.Add (handler);
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while creating c# completion text editor extension.", e);
-			}
 		}
 
 		bool addEventHandlersInInitialization = true;
@@ -167,7 +153,7 @@ namespace MonoDevelop.CSharp.Completion
 		/// Used in testing environment.
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc, bool addEventHandlersInInitialization = true) : this ()
+		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc, bool addEventHandlersInInitialization = true)
 		{
 			this.addEventHandlersInInitialization = addEventHandlersInInitialization;
 			Initialize (doc.Editor, doc);
@@ -318,7 +304,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		internal void AddImportCompletionData (SyntaxContext ctx, CompletionDataList result, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		internal void AddImportCompletionData (SyntaxContext ctx, CompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (result.Count == 0)
 				return;
@@ -407,7 +393,7 @@ namespace MonoDevelop.CSharp.Completion
 									if (!extMethodDict.TryGetValue (type.ContainingNamespace, out importSymbolList)) {
 										extMethodDict.Add (type.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
 									}
-									var newData = new ImportSymbolCompletionData (this, factory, reducedMethod, false);
+									var newData = new ImportSymbolCompletionData (this, reducedMethod, false);
 									var existingItem = importSymbolList.FirstOrDefault (data => data.Symbol.Name == extMethod.Name);
 									if (existingItem != null) {
 										existingItem.AddOverload (newData);
@@ -418,7 +404,7 @@ namespace MonoDevelop.CSharp.Completion
 								}
 							}
 						} else {
-							result.Add (new ImportSymbolCompletionData (this, factory, type, false));
+							result.Add (new ImportSymbolCompletionData (this, type, false));
 						}
 					}
 				}
@@ -485,7 +471,7 @@ namespace MonoDevelop.CSharp.Completion
 			var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (analysisDocument, completionContext.TriggerOffset, semanticModel);
 			var syntaxContext = await ctx.GetSyntaxContextAsync (DocumentContext.RoslynWorkspace, token);
 			if (forceSymbolCompletion || !syntaxContext.LeftToken.IsKind (SyntaxKind.DotToken)) {
-				AddImportCompletionData (syntaxContext, result, new RoslynCodeCompletionFactory (this, semanticModel), semanticModel, completionContext.TriggerOffset, token);
+				AddImportCompletionData (syntaxContext, result, semanticModel, completionContext.TriggerOffset, token);
 			}
 
 			return result;

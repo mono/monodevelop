@@ -35,6 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp
 {
@@ -200,7 +201,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (token, null, null, entity, false, true);
+			return SourceEditor.LanguageItemTooltipProvider.CreateTooltipInformation (token, null, null, entity, false, true);
 		}
 
 //		static string GetString (TypeKind classType)
@@ -613,336 +614,354 @@ namespace MonoDevelop.CSharp
 			}
 			return methodName;
 		}
-//		
-//		string InternalGetMethodString (IMethod method, OutputSettings settings, string methodName, bool getReturnType)
-//		{
-//			if (method == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			AppendModifiers (result, settings, method);
-//			if (!settings.CompletionListFomat && settings.IncludeReturnType && getReturnType) {
-//				result.Append (GetTypeReferenceString (method.ReturnType, settings));
-//				result.Append (settings.Markup (" "));
-//			}
-//			
-//			if (!settings.IncludeReturnType && settings.UseFullName) {
-//				result.Append (GetTypeReferenceString (method.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
-//				result.Append (settings.Markup ("."));
-//			}
-//			AppendExplicitInterfaces (result, method, settings);
-//			if (method.SymbolKind == SymbolKind.Operator) {
-//				result.Append ("operator ");
-//				result.Append (settings.Markup (GetOperator (methodName)));
-//			} else {
-//				result.Append (methodName);
-//			}
-//			
-//			if (settings.IncludeGenerics) {
-//				if (method.TypeParameters.Count > 0) {
-//					result.Append (settings.Markup ("<"));
-//					for (int i = 0; i < method.TypeParameters.Count; i++) {
-//						if (i > 0)
-//							result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
-//						if (!settings.HideGenericParameterNames) {
-//							AppendVariance (result, method.TypeParameters [i].Variance);
-//							result.Append (NetToCSharpTypeName (method.TypeParameters [i].Name));
-//						}
-//					}
-//					result.Append (settings.Markup (">"));
-//				}
-//			}
-//			
-//			if (settings.IncludeParameters) {
-////			CSharpFormattingPolicy policy = GetPolicy (settings);
-////			if (policy.BeforeMethodCallParentheses)
-////				result.Append (settings.Markup (" "));
-//				result.Append (settings.Markup ("("));
-//				AppendParameterList (result, settings, method.Parameters);
-//				result.Append (settings.Markup (")"));
-//			}
-//			
-//			if (settings.CompletionListFomat && settings.IncludeReturnType && getReturnType) {
-//				result.Append (settings.Markup (" : "));
-//				result.Append (GetTypeReferenceString (method.ReturnType, settings));
-//			}
-//			
-////		OutputConstraints (result, settings, method.TypeParameters);
-//			
-//			return result.ToString ();			
-//		}
-//
-//		protected override string GetMethodString (IMethod method, OutputSettings settings)
-//		{
-//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.SymbolKind == SymbolKind.Constructor || method.SymbolKind == SymbolKind.Destructor ? method.DeclaringTypeDefinition.Name : method.Name))), true);
-//		}
-//
-//		protected override string GetConstructorString (IMethod method, OutputSettings settings)
-//		{
-//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
-//		}
-//
-//		protected override string GetDestructorString (IMethod method, OutputSettings settings)
-//		{
-//			return InternalGetMethodString (method, settings, settings.EmitName (method, settings.Markup ("~") + Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
-//		}
-//
-//		protected override string GetOperatorString (IMethod method, OutputSettings settings)
-//		{
-//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.Name))), true);
-//		}
-//
-//		protected override string GetFieldString (IField field, OutputSettings settings)
-//		{
-//			if (field == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			bool isEnum = field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum;
-//			AppendModifiers (result, settings, field);
-//			
-//			if (!settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
-//				result.Append (GetTypeReferenceString (field.ReturnType, settings));
-//				result.Append (settings.Markup (" "));
-//			}
-//			
-//			if (!settings.IncludeReturnType && settings.UseFullName) {
-//				result.Append (GetTypeReferenceString (field.DeclaringTypeDefinition, settings));
-//				result.Append (settings.Markup ("."));
-//			}
-//			result.Append (settings.EmitName (field, FilterName (Format (field.Name))));
-//			
-//			if (settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
-//				result.Append (settings.Markup (" : "));
-//				result.Append (GetTypeReferenceString (field.ReturnType, settings));
-//			}
-//			return result.ToString ();
-//		}
-//
-//		protected override string GetEventString (IEvent evt, OutputSettings settings)
-//		{
-//			if (evt == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			AppendModifiers (result, settings, evt);
-//			if (settings.IncludeKeywords)
-//				result.Append (settings.EmitKeyword ("event"));
-//			if (!settings.CompletionListFomat && settings.IncludeReturnType) {
-//				result.Append (GetTypeReferenceString (evt.ReturnType, settings));
-//				result.Append (settings.Markup (" "));
-//			}
-//			
-//			if (!settings.IncludeReturnType && settings.UseFullName) {
-//				result.Append (GetTypeReferenceString (evt.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
-//				result.Append (settings.Markup ("."));
-//			}
-//			
-//			AppendExplicitInterfaces (result, evt, settings);
-//			result.Append (settings.EmitName (evt, Format (FilterName (evt.Name))));
-//			
-//			if (settings.CompletionListFomat && settings.IncludeReturnType) {
-//				result.Append (settings.Markup (" : "));
-//				result.Append (GetTypeReferenceString (evt.ReturnType, settings));
-//			}
-//			return result.ToString ();
-//		}
-//
-//		protected override string GetPropertyString (IProperty property, OutputSettings settings)
-//		{
-//			if (property == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			AppendModifiers (result, settings, property);
-//			if (!settings.CompletionListFomat && settings.IncludeReturnType) {
-//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
-//				result.Append (settings.Markup (" "));
-//			}
-//			
-//			if (!settings.IncludeReturnType && settings.UseFullName) {
-//				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
-//				result.Append (settings.Markup ("."));
-//			}
-//			
-//			AppendExplicitInterfaces (result, property, settings);
-//			
-//			if (property.SymbolKind == SymbolKind.Indexer) {
-//				result.Append (settings.EmitName (property, "this"));
-//			} else {
-//				result.Append (settings.EmitName (property, Format (FilterName (property.Name))));
-//			}
-//			
-//			if (settings.IncludeParameters && property.Parameters.Count > 0) {
-//				result.Append (settings.Markup ("["));
-//				AppendParameterList (result, settings, property.Parameters);
-//				result.Append (settings.Markup ("]"));
-//			}
-//						
-//			if (settings.CompletionListFomat && settings.IncludeReturnType) {
-//				result.Append (settings.Markup (" : "));
-//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
-//			}
-//			
-//			if (settings.IncludeAccessor) {
-//				result.Append (settings.Markup (" {"));
-//				if (property.CanGet)
-//					result.Append (settings.Markup (" get;"));
-//				if (property.CanSet)
-//					result.Append (settings.Markup (" set;"));
-//				result.Append (settings.Markup (" }"));
-//			}
-//			
-//			return result.ToString ();
-//		}
-//
-//		protected override string GetIndexerString (IProperty property, OutputSettings settings)
-//		{
-//			if (property == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			
-//			AppendModifiers (result, settings, property);
-//			
-//			if (settings.IncludeReturnType) {
-//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
-//				result.Append (settings.Markup (" "));
-//			}
-//			
-//			if (!settings.IncludeReturnType && settings.UseFullName) {
-//				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
-//				result.Append (settings.Markup ("."));
-//			}
-//			
-//			AppendExplicitInterfaces (result, property, settings);
-//			
-//			result.Append (settings.EmitName (property, Format ("this")));
-//			
-//			if (settings.IncludeParameters && property.Getter.Parameters.Count > 0) {
-//				result.Append (settings.Markup ("["));
-//				AppendParameterList (result, settings, property.Getter.Parameters);
-//				result.Append (settings.Markup ("]"));
-//			}
-//			if (settings.IncludeAccessor) {
-//				result.Append (settings.Markup (" {"));
-//				if (property.CanGet)
-//					result.Append (settings.Markup (" get;"));
-//				if (property.CanSet)
-//					result.Append (settings.Markup (" set;"));
-//				result.Append (settings.Markup (" }"));
-//			}
-//			return result.ToString ();
-//		}
-//
-//		protected override string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings)
-//		{
-//			if (parameter == null)
-//				return "";
-//			var result = new StringBuilder ();
-//			if (settings.IncludeParameterName) {
-//				if (settings.IncludeModifiers) {
-//					if (parameter.IsOut) {
-//						result.Append (settings.EmitKeyword ("out"));
-//					}
-//					if (parameter.IsRef) {
-//						result.Append (settings.EmitKeyword ("ref"));
-//					}
-//					if (parameter.IsParams) {
-//						result.Append (settings.EmitKeyword ("params"));
-//					}
-//				}
-//				
-//				result.Append (GetTypeReferenceString (parameter.Type, settings));
-//				result.Append (" ");
-//
-//				if (settings.HighlightName) {
-//					result.Append (settings.EmitName (parameter, settings.Highlight (Format (FilterName (parameter.Name)))));
-//				} else {
-//					result.Append (settings.EmitName (parameter, Format (FilterName (parameter.Name))));
-//				}
-//			} else {
-//				result.Append (GetTypeReferenceString (parameter.Type, settings));
-//			}
-//			return result.ToString ();
-//		}
-//
-//		#endregion
-//		
-//		void AppendExplicitInterfaces (StringBuilder sb, IMember member, OutputSettings settings)
-//		{
-//			if (member == null || !member.IsExplicitInterfaceImplementation)
-//				return;
-//			foreach (var implementedInterfaceMember in member.ImplementedInterfaceMembers) {
-//				if (settings.UseFullName) {
-//					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.FullName));
-//				} else {
-//					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.Name));
-//				}
-//				sb.Append (settings.Markup ("."));
-//			}
-//		}
-//
-//		void AppendParameterList (StringBuilder result, OutputSettings settings, IEnumerable<IParameter> parameterList)
-//		{
-//			if (parameterList == null)
-//				return;
-//			
-//			bool first = true;
-//			foreach (var parameter in parameterList) {
-//				if (!first)
-//					result.Append (settings.Markup (", "));
-//				AppendParameter (settings, result, parameter);
-//				first = false;
-//			}
-//		}
-//		
-//		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
-//		{
-//			if (parameter == null)
-//				return;
-//			if (parameter.IsOut) {
-//				result.Append (settings.Markup ("out"));
-//				result.Append (settings.Markup (" "));
-//			} else if (parameter.IsRef) {
-//				result.Append (settings.Markup ("ref"));
-//				result.Append (settings.Markup (" "));
-//			} else if (parameter.IsParams) {
-//				result.Append (settings.Markup ("params"));
-//				result.Append (settings.Markup (" "));
-//			}
-//			result.Append (GetParameterString (null, parameter, settings));
-//		}
-//		
-//		void AppendModifiers (StringBuilder result, OutputSettings settings, IEntity entity)
-//		{
-//			if (!settings.IncludeModifiers)
-//				return;
-//			if (entity.IsStatic)
-//				result.Append (settings.EmitModifiers ("static"));
-//			if (entity.IsSealed)
-//				result.Append (settings.EmitModifiers ("sealed"));
-//			if (entity.IsAbstract)
-//				result.Append (settings.EmitModifiers ("abstract"));
-//			if (entity.IsShadowing)
-//				result.Append (settings.EmitModifiers ("new"));
-//			
-//			switch (entity.Accessibility) {
-//			case Accessibility.Internal:
-//				result.Append (settings.EmitModifiers ("internal"));
-//				break;
-//			case Accessibility.ProtectedAndInternal:
-//				result.Append (settings.EmitModifiers ("protected internal"));
-//				break;
-//			case Accessibility.ProtectedOrInternal:
-//				result.Append (settings.EmitModifiers ("internal protected"));
-//				break;
-//			case Accessibility.Protected:
-//				result.Append (settings.EmitModifiers ("protected"));
-//				break;
-//			case Accessibility.Private:
-//				result.Append (settings.EmitModifiers ("private"));
-//				break;
-//			case Accessibility.Public:
-//				result.Append (settings.EmitModifiers ("public"));
-//				break;
-//			}
-//		}
+		//		
+		//		string InternalGetMethodString (IMethod method, OutputSettings settings, string methodName, bool getReturnType)
+		//		{
+		//			if (method == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			AppendModifiers (result, settings, method);
+		//			if (!settings.CompletionListFomat && settings.IncludeReturnType && getReturnType) {
+		//				result.Append (GetTypeReferenceString (method.ReturnType, settings));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			
+		//			if (!settings.IncludeReturnType && settings.UseFullName) {
+		//				result.Append (GetTypeReferenceString (method.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
+		//				result.Append (settings.Markup ("."));
+		//			}
+		//			AppendExplicitInterfaces (result, method, settings);
+		//			if (method.SymbolKind == SymbolKind.Operator) {
+		//				result.Append ("operator ");
+		//				result.Append (settings.Markup (GetOperator (methodName)));
+		//			} else {
+		//				result.Append (methodName);
+		//			}
+		//			
+		//			if (settings.IncludeGenerics) {
+		//				if (method.TypeParameters.Count > 0) {
+		//					result.Append (settings.Markup ("<"));
+		//					for (int i = 0; i < method.TypeParameters.Count; i++) {
+		//						if (i > 0)
+		//							result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
+		//						if (!settings.HideGenericParameterNames) {
+		//							AppendVariance (result, method.TypeParameters [i].Variance);
+		//							result.Append (NetToCSharpTypeName (method.TypeParameters [i].Name));
+		//						}
+		//					}
+		//					result.Append (settings.Markup (">"));
+		//				}
+		//			}
+		//			
+		//			if (settings.IncludeParameters) {
+		////			CSharpFormattingPolicy policy = GetPolicy (settings);
+		////			if (policy.BeforeMethodCallParentheses)
+		////				result.Append (settings.Markup (" "));
+		//				result.Append (settings.Markup ("("));
+		//				AppendParameterList (result, settings, method.Parameters);
+		//				result.Append (settings.Markup (")"));
+		//			}
+		//			
+		//			if (settings.CompletionListFomat && settings.IncludeReturnType && getReturnType) {
+		//				result.Append (settings.Markup (" : "));
+		//				result.Append (GetTypeReferenceString (method.ReturnType, settings));
+		//			}
+		//			
+		////		OutputConstraints (result, settings, method.TypeParameters);
+		//			
+		//			return result.ToString ();			
+		//		}
+		//
+		//		protected override string GetMethodString (IMethod method, OutputSettings settings)
+		//		{
+		//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.SymbolKind == SymbolKind.Constructor || method.SymbolKind == SymbolKind.Destructor ? method.DeclaringTypeDefinition.Name : method.Name))), true);
+		//		}
+		//
+		//		protected override string GetConstructorString (IMethod method, OutputSettings settings)
+		//		{
+		//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
+		//		}
+		//
+		//		protected override string GetDestructorString (IMethod method, OutputSettings settings)
+		//		{
+		//			return InternalGetMethodString (method, settings, settings.EmitName (method, settings.Markup ("~") + Format (FilterName (method.DeclaringTypeDefinition != null ? method.DeclaringTypeDefinition.Name : method.Name))), false);
+		//		}
+		//
+		//		protected override string GetOperatorString (IMethod method, OutputSettings settings)
+		//		{
+		//			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.Name))), true);
+		//		}
+		//
+		//		protected override string GetFieldString (IField field, OutputSettings settings)
+		//		{
+		//			if (field == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			bool isEnum = field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum;
+		//			AppendModifiers (result, settings, field);
+		//			
+		//			if (!settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
+		//				result.Append (GetTypeReferenceString (field.ReturnType, settings));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			
+		//			if (!settings.IncludeReturnType && settings.UseFullName) {
+		//				result.Append (GetTypeReferenceString (field.DeclaringTypeDefinition, settings));
+		//				result.Append (settings.Markup ("."));
+		//			}
+		//			result.Append (settings.EmitName (field, FilterName (Format (field.Name))));
+		//			
+		//			if (settings.CompletionListFomat && settings.IncludeReturnType && !isEnum) {
+		//				result.Append (settings.Markup (" : "));
+		//				result.Append (GetTypeReferenceString (field.ReturnType, settings));
+		//			}
+		//			return result.ToString ();
+		//		}
+		//
+		//		protected override string GetEventString (IEvent evt, OutputSettings settings)
+		//		{
+		//			if (evt == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			AppendModifiers (result, settings, evt);
+		//			if (settings.IncludeKeywords)
+		//				result.Append (settings.EmitKeyword ("event"));
+		//			if (!settings.CompletionListFomat && settings.IncludeReturnType) {
+		//				result.Append (GetTypeReferenceString (evt.ReturnType, settings));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			
+		//			if (!settings.IncludeReturnType && settings.UseFullName) {
+		//				result.Append (GetTypeReferenceString (evt.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
+		//				result.Append (settings.Markup ("."));
+		//			}
+		//			
+		//			AppendExplicitInterfaces (result, evt, settings);
+		//			result.Append (settings.EmitName (evt, Format (FilterName (evt.Name))));
+		//			
+		//			if (settings.CompletionListFomat && settings.IncludeReturnType) {
+		//				result.Append (settings.Markup (" : "));
+		//				result.Append (GetTypeReferenceString (evt.ReturnType, settings));
+		//			}
+		//			return result.ToString ();
+		//		}
+		//
+		//		protected override string GetPropertyString (IProperty property, OutputSettings settings)
+		//		{
+		//			if (property == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			AppendModifiers (result, settings, property);
+		//			if (!settings.CompletionListFomat && settings.IncludeReturnType) {
+		//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			
+		//			if (!settings.IncludeReturnType && settings.UseFullName) {
+		//				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
+		//				result.Append (settings.Markup ("."));
+		//			}
+		//			
+		//			AppendExplicitInterfaces (result, property, settings);
+		//			
+		//			if (property.SymbolKind == SymbolKind.Indexer) {
+		//				result.Append (settings.EmitName (property, "this"));
+		//			} else {
+		//				result.Append (settings.EmitName (property, Format (FilterName (property.Name))));
+		//			}
+		//			
+		//			if (settings.IncludeParameters && property.Parameters.Count > 0) {
+		//				result.Append (settings.Markup ("["));
+		//				AppendParameterList (result, settings, property.Parameters);
+		//				result.Append (settings.Markup ("]"));
+		//			}
+		//						
+		//			if (settings.CompletionListFomat && settings.IncludeReturnType) {
+		//				result.Append (settings.Markup (" : "));
+		//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
+		//			}
+		//			
+		//			if (settings.IncludeAccessor) {
+		//				result.Append (settings.Markup (" {"));
+		//				if (property.CanGet)
+		//					result.Append (settings.Markup (" get;"));
+		//				if (property.CanSet)
+		//					result.Append (settings.Markup (" set;"));
+		//				result.Append (settings.Markup (" }"));
+		//			}
+		//			
+		//			return result.ToString ();
+		//		}
+		//
+		//		protected override string GetIndexerString (IProperty property, OutputSettings settings)
+		//		{
+		//			if (property == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			
+		//			AppendModifiers (result, settings, property);
+		//			
+		//			if (settings.IncludeReturnType) {
+		//				result.Append (GetTypeReferenceString (property.ReturnType, settings));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			
+		//			if (!settings.IncludeReturnType && settings.UseFullName) {
+		//				result.Append (GetTypeReferenceString (property.DeclaringTypeDefinition, new OutputSettings (OutputFlags.UseFullName)));
+		//				result.Append (settings.Markup ("."));
+		//			}
+		//			
+		//			AppendExplicitInterfaces (result, property, settings);
+		//			
+		//			result.Append (settings.EmitName (property, Format ("this")));
+		//			
+		//			if (settings.IncludeParameters && property.Getter.Parameters.Count > 0) {
+		//				result.Append (settings.Markup ("["));
+		//				AppendParameterList (result, settings, property.Getter.Parameters);
+		//				result.Append (settings.Markup ("]"));
+		//			}
+		//			if (settings.IncludeAccessor) {
+		//				result.Append (settings.Markup (" {"));
+		//				if (property.CanGet)
+		//					result.Append (settings.Markup (" get;"));
+		//				if (property.CanSet)
+		//					result.Append (settings.Markup (" set;"));
+		//				result.Append (settings.Markup (" }"));
+		//			}
+		//			return result.ToString ();
+		//		}
+		//
+		//		protected override string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings)
+		//		{
+		//			if (parameter == null)
+		//				return "";
+		//			var result = new StringBuilder ();
+		//			if (settings.IncludeParameterName) {
+		//				if (settings.IncludeModifiers) {
+		//					if (parameter.IsOut) {
+		//						result.Append (settings.EmitKeyword ("out"));
+		//					}
+		//					if (parameter.IsRef) {
+		//						result.Append (settings.EmitKeyword ("ref"));
+		//					}
+		//					if (parameter.IsParams) {
+		//						result.Append (settings.EmitKeyword ("params"));
+		//					}
+		//				}
+		//				
+		//				result.Append (GetTypeReferenceString (parameter.Type, settings));
+		//				result.Append (" ");
+		//
+		//				if (settings.HighlightName) {
+		//					result.Append (settings.EmitName (parameter, settings.Highlight (Format (FilterName (parameter.Name)))));
+		//				} else {
+		//					result.Append (settings.EmitName (parameter, Format (FilterName (parameter.Name))));
+		//				}
+		//			} else {
+		//				result.Append (GetTypeReferenceString (parameter.Type, settings));
+		//			}
+		//			return result.ToString ();
+		//		}
+		//
+		//		#endregion
+		//		
+		//		void AppendExplicitInterfaces (StringBuilder sb, IMember member, OutputSettings settings)
+		//		{
+		//			if (member == null || !member.IsExplicitInterfaceImplementation)
+		//				return;
+		//			foreach (var implementedInterfaceMember in member.ImplementedInterfaceMembers) {
+		//				if (settings.UseFullName) {
+		//					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.FullName));
+		//				} else {
+		//					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.Name));
+		//				}
+		//				sb.Append (settings.Markup ("."));
+		//			}
+		//		}
+		//
+		//		void AppendParameterList (StringBuilder result, OutputSettings settings, IEnumerable<IParameter> parameterList)
+		//		{
+		//			if (parameterList == null)
+		//				return;
+		//			
+		//			bool first = true;
+		//			foreach (var parameter in parameterList) {
+		//				if (!first)
+		//					result.Append (settings.Markup (", "));
+		//				AppendParameter (settings, result, parameter);
+		//				first = false;
+		//			}
+		//		}
+		//		
+		//		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
+		//		{
+		//			if (parameter == null)
+		//				return;
+		//			if (parameter.IsOut) {
+		//				result.Append (settings.Markup ("out"));
+		//				result.Append (settings.Markup (" "));
+		//			} else if (parameter.IsRef) {
+		//				result.Append (settings.Markup ("ref"));
+		//				result.Append (settings.Markup (" "));
+		//			} else if (parameter.IsParams) {
+		//				result.Append (settings.Markup ("params"));
+		//				result.Append (settings.Markup (" "));
+		//			}
+		//			result.Append (GetParameterString (null, parameter, settings));
+		//		}
+		//		
+		//		void AppendModifiers (StringBuilder result, OutputSettings settings, IEntity entity)
+		//		{
+		//			if (!settings.IncludeModifiers)
+		//				return;
+		//			if (entity.IsStatic)
+		//				result.Append (settings.EmitModifiers ("static"));
+		//			if (entity.IsSealed)
+		//				result.Append (settings.EmitModifiers ("sealed"));
+		//			if (entity.IsAbstract)
+		//				result.Append (settings.EmitModifiers ("abstract"));
+		//			if (entity.IsShadowing)
+		//				result.Append (settings.EmitModifiers ("new"));
+		//			
+		//			switch (entity.Accessibility) {
+		//			case Accessibility.Internal:
+		//				result.Append (settings.EmitModifiers ("internal"));
+		//				break;
+		//			case Accessibility.ProtectedAndInternal:
+		//				result.Append (settings.EmitModifiers ("protected internal"));
+		//				break;
+		//			case Accessibility.ProtectedOrInternal:
+		//				result.Append (settings.EmitModifiers ("internal protected"));
+		//				break;
+		//			case Accessibility.Protected:
+		//				result.Append (settings.EmitModifiers ("protected"));
+		//				break;
+		//			case Accessibility.Private:
+		//				result.Append (settings.EmitModifiers ("private"));
+		//				break;
+		//			case Accessibility.Public:
+		//				result.Append (settings.EmitModifiers ("public"));
+		//				break;
+		//			}
+		//		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position)
+		{
+			return SafeMinimalDisplayString (symbol, semanticModel, position, Ambience.LabelFormat);
+		}
+
+		internal static string SafeMinimalDisplayString (ISymbol symbol, SemanticModel semanticModel, int position, SymbolDisplayFormat format)
+		{
+			try {
+				return symbol.ToMinimalDisplayString (semanticModel, position, format);
+			} catch (ArgumentOutOfRangeException) {
+				try {
+					return symbol.ToMinimalDisplayString (semanticModel, semanticModel.SyntaxTree.Length / 2, format);
+				} catch (ArgumentOutOfRangeException) {
+					return symbol.Name;
+				}
+			}
+		}
 	}
 
 }

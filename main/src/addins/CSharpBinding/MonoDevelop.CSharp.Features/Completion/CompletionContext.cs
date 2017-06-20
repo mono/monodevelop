@@ -76,20 +76,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return syntaxContext;
 		}
 
-		IEnumerable<CompletionContextHandler> additionalContextHandlers;
-
-		/// <summary>
-		/// Adds completion context handlers to the given context.
-		/// </summary>
-		public IEnumerable<CompletionContextHandler> AdditionalContextHandlers {
-			get {
-				return additionalContextHandlers ?? Enumerable.Empty<CompletionContextHandler> ();
-			}
-			set {
-				additionalContextHandlers = value;
-			}
-		}
-
 		/// <summary>
 		/// If false no default handlers will be used and only the AdditionalContextHandlers will run.
 		/// </summary>
