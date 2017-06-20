@@ -1,5 +1,5 @@
 ﻿//
-// DotNetCoreRunConfigurationEditor.cs
+// AspNetCoreExecutionCommand.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
@@ -24,53 +24,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Execution;
-using MonoDevelop.Ide.Projects.OptionPanels;
-using MonoDevelop.Projects;
-using Xwt;
-using Xwt.Drawing;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.DotNetCore;
 
-namespace MonoDevelop.DotNetCore
+namespace MonoDevelop.AspNetCore
 {
-	class DotNetCoreRunConfigurationEditor : RunConfigurationEditor
+	class AspNetCoreExecutionCommand : ProcessExecutionCommand
 	{
-		DotNetCoreRunConfigurationEditorWidget widget;
-
-		public DotNetCoreRunConfigurationEditor ()
+		public AspNetCoreExecutionCommand (string directory, string outputPath, string arguments)
 		{
-			widget = new DotNetCoreRunConfigurationEditorWidget ();
+			WorkingDirectory = directory;
+			OutputPath = outputPath;
+			DotNetArguments = arguments;
+
+			Command = DotNetCoreRuntime.FileName;
+			Arguments = string.Format ("\"{0}\" {1}", outputPath, arguments);
 		}
 
-		public override Control CreateControl ()
-		{
-			return new XwtControl (widget);
-		}
+		public string OutputPath { get; private set; }
+		public string DotNetArguments { get; private set; }
 
-		public override void Load (Project project, SolutionItemRunConfiguration config)
-		{
-			widget.Load (project, (AssemblyRunConfiguration)config);
-			widget.Changed += (sender, e) => NotifyChanged ();
-		}
-
-		public override void Save ()
-		{
-			widget.Save ();
-		}
-
-		public override bool Validate ()
-		{
-			return widget.Validate ();
-		}
-	}
-
-	class DotNetCoreRunConfigurationEditorWidget : DotNetRunConfigurationEditorWidget
-	{
-		public DotNetCoreRunConfigurationEditorWidget ()
-			: base (false)
-		{
-		}
+		public bool PauseConsoleOutput { get; set; }
+		public bool ExternalConsole { get; set; }
+		public bool LaunchBrowser { get; set; }
+		public string LaunchURL { get; set; }
+		public string ApplicationURL { get; set; }
+		public PipeTransportSettings PipeTransport { get; set; }
 	}
 }
