@@ -49,7 +49,7 @@
 			condition="UseNetCore1x=true"
 			category="netcore/app/general"/>
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0.0-preview2-006479">
 		<Template
 			id="Microsoft.Common.Console.CSharp"
 			templateId="Microsoft.Common.Console.CSharp.2.0"
@@ -103,7 +103,7 @@
 			condition="UseNetStandard1x=true"
 			category="multiplat/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" requiresRuntime="false" sdkVersion="2.0.0-preview2-006479">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -158,7 +158,7 @@
 			condition="UseNetStandard1x=true"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0.0-preview2-006479">
 		<Template
 			_overrideName=".NET Standard Library"
 			_overrideDescription="Creates a new .NET Standard class library project."
@@ -208,7 +208,7 @@
 			condition="UseNetCore1x=true"
 			category="netcore/library/general" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0.0-preview2-006479">
 		<Template
 			_overrideName="Class Library"
 			_overrideDescription="Creates a new .NET Core class library project."
@@ -316,7 +316,7 @@
 			category="netcore/app/aspnet"
 			defaultParameters="IncludeLaunchSettings=true" />
 		</Condition>
-		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.*">
+		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.0.0-preview2-006479">
 		<Template
 			id="Microsoft.Test.xUnit.CSharp"
 			templateId="Microsoft.Test.xUnit.CSharp.2.0"
