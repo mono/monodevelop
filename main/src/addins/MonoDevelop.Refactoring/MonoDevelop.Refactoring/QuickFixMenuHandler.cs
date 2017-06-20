@@ -46,7 +46,8 @@ namespace MonoDevelop.Refactoring
 			quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
 			info.Add (quickFixMenu);
 			try {
-				var menu = await CodeFixMenuService.CreateFixMenu (editor, ext.GetCurrentFixes (), cancelToken);
+				var currentFixes = await ext.GetCurrentFixesAsync (cancelToken);
+				var menu = await CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
 				quickFixMenu.CommandInfos.Clear ();
 				foreach (var item in menu.Items) {
 					AddItem (quickFixMenu, item);
@@ -54,12 +55,14 @@ namespace MonoDevelop.Refactoring
 				if (menu.Items.Count == 0) {
 					quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
 				}
+				info.NotifyChanged ();
 			} catch (OperationCanceledException) {
 				
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating quick fix menu.", e); 
 				quickFixMenu.CommandInfos.Clear ();
 				quickFixMenu.CommandInfos.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+				info.NotifyChanged ();
 			}
 		}
 
@@ -79,7 +82,16 @@ namespace MonoDevelop.Refactoring
 				if (cis.CommandInfos.Count == 0)
 					return;
 				cis.CommandInfos.AddSeparator ();
-			} else {
+			} else if (item is CodeFixMenu)  {
+				var menu = (CodeFixMenu)item;
+				var submenu = new CommandInfoSet {
+					Text = menu.Label
+				};
+				foreach (var subItem in menu.Items) {
+					AddItem (submenu, subItem);
+				}
+				cis.CommandInfos.Add (submenu, item.Action);
+			} else { 
 				cis.CommandInfos.Add (new CommandInfo (item.Label), item.Action);
 			}
 		}
