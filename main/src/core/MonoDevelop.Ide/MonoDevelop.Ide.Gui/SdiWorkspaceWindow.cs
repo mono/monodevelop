@@ -366,12 +366,14 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DocumentToolbar toolbar;
 			if (!documentToolbars.TryGetValue (targetView, out toolbar)) {
+				bool canCoexist = (pathDoc as IPathedDocumentEx)?.AllowToolbarToCoExist == true;
+
 				toolbar = new DocumentToolbar ();
 				documentToolbars [targetView] = toolbar;
 				box.PackStart (toolbar.Container, false, false, 0);
 				box.ReorderChild (toolbar.Container, 0);
 				toolbar.Visible = (targetView == ActiveViewContent);
-				PathWidgetEnabled = !toolbar.Visible;
+				PathWidgetEnabled = canCoexist || !toolbar.Visible;
 			}
 			return toolbar;
 		}
@@ -647,9 +649,9 @@ namespace MonoDevelop.Ide.Gui
 
 			return tab;
 		}
-		
+
 		#region Track and display document's "path"
-		
+
 		internal void AttachToPathedDocument (MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc)
 		{
 			if (this.pathDoc != pathDoc)
@@ -659,9 +661,10 @@ namespace MonoDevelop.Ide.Gui
 			pathDoc.PathChanged += HandlePathChange;
 			this.pathDoc = pathDoc;
 
+			bool canCoexist = (pathDoc as IPathedDocumentEx)?.AllowToolbarToCoExist == true;
 			// If a toolbar is already being shown, we don't show the pathbar yet
 			DocumentToolbar toolbar;
-			if (documentToolbars.TryGetValue (ActiveViewContent, out toolbar) && toolbar.Visible)
+			if (!canCoexist && documentToolbars.TryGetValue (ActiveViewContent, out toolbar) && toolbar.Visible)
 				return;
 
 			PathWidgetEnabled = true;
@@ -737,13 +740,14 @@ namespace MonoDevelop.Ide.Gui
 				pathedDocument = (IPathedDocument)viewContents[newIndex].GetContent (typeof(IPathedDocument));
 			}
 
-			var toolbarVisible = false;
+			bool canCoexist = (pathedDocument as IPathedDocumentEx)?.AllowToolbarToCoExist == true;
+			var toolbarVisible = canCoexist;
 			foreach (var t in documentToolbars) {
-				toolbarVisible = ActiveViewContent == t.Key;
+				toolbarVisible = canCoexist || ActiveViewContent == t.Key;
 				t.Value.Container.GetNativeWidget<Gtk.Widget> ().Visible = toolbarVisible;
 			}
 
-			if (pathedDocument != null && !toolbarVisible)
+			if (pathedDocument != null && (canCoexist || !toolbarVisible))
 				AttachToPathedDocument (pathedDocument);
 
 			if (subViewContent != null)

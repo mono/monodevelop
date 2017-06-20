@@ -39,6 +39,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 	}
+
+	public interface IPathedDocumentEx
+	{
+		bool AllowToolbarToCoExist { get; }
+	}
 	
 	public class DocumentPathChangedEventArgs : EventArgs
 	{
