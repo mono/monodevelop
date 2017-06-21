@@ -69,7 +69,6 @@ module Lexer =
                 // OPTIMIZE: if the new document has the current document as a prefix,
                 // we can reuse lexing results and process only the added part.
                 | _ ->
-                    printfn "queryLexState: lexing current document"
                     let lexStates = getLexStates defines source
                     currentDocumentState := Some (lexStates, source, defines)
                     lexStates
@@ -165,7 +164,7 @@ module Lexer =
                         yield tok
                         yield! parseLine()
                     | None, nstate -> state <- nstate ]
-              yield parseLine(), state ]
+              yield parseLine(), lineText ]
     
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
@@ -195,18 +194,22 @@ module Lexer =
             // Try to find start column of the long identifiers
             // Assume that tokens are ordered in an decreasing order of start columns
             let rec tryFindStartColumn tokens =
-               match tokens with
-               | {Kind = Ident; Token = t1} :: {Kind = Operator; Token = t2} :: remainingTokens ->
+                match tokens with
+                | {Kind = SymbolKind.Other; Token = t1 } :: _ when t1.CharClass = FSharpTokenCharKind.Operator ->
+                    Some t1.LeftColumn
+                | {Kind = SymbolKind.Other; Token = t1 } :: remainingTokens when t1.Tag = FSharpTokenTag.DOT ->
+                    tryFindStartColumn remainingTokens
+                | {Kind = Ident; Token = t1} :: {Kind = SymbolKind.Other; Token = t2} :: remainingTokens ->
                     if t2.Tag = FSharpTokenTag.DOT then
                         tryFindStartColumn remainingTokens
                     else
                         Some t1.LeftColumn
-               | {Kind = Ident; Token = t} :: _ ->
-                   Some t.LeftColumn
-               | {Kind = SymbolKind.Other; Token = t} :: _ when t.TokenName = "HASH" ->
-                   Some t.LeftColumn
-               | _ :: _ | [] ->
-                   None
+                | {Kind = Ident; Token = t} :: _ ->
+                    Some t.LeftColumn
+                | {Kind = SymbolKind.Other; Token = t} :: _ when t.TokenName = "HASH" ->
+                    Some t.LeftColumn
+                | _ :: _ | [] ->
+                    None
             let decreasingTokens =
                 match tokensUnderCursor |> List.sortBy (fun token -> - token.Token.LeftColumn) with
                 // Skip the first dot if it is the start of the identifier
