@@ -174,7 +174,7 @@ namespace MonoDevelop.PackageManagement
 		public string NewPackageSourceName {
 			get { return newPackageSource.Name; }
 			set {
-				newPackageSource.Name = value;
+				newPackageSource.Name = value?.Trim ();
 				OnPropertyChanged(viewModel => viewModel.NewPackageSourceName);
 			}
 		}
@@ -182,7 +182,7 @@ namespace MonoDevelop.PackageManagement
 		public string NewPackageSourceUrl {
 			get { return newPackageSource.Source; }
 			set {
-				newPackageSource.Source = value;
+				newPackageSource.Source = value?.Trim ();
 				OnPropertyChanged(viewModel => viewModel.NewPackageSourceUrl);
 			}
 		}
