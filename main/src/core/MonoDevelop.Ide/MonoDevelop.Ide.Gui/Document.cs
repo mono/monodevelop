@@ -974,7 +974,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();
-				if (string.IsNullOrEmpty (currentParseFile) || Editor.IsDisposed)
+				var editor = Editor;
+				if (string.IsNullOrEmpty (currentParseFile) || editor == null || editor.IsDisposed == true)
 					return;
 				lock (reparseTimeoutLock) {
 					CancelParseTimeout ();
