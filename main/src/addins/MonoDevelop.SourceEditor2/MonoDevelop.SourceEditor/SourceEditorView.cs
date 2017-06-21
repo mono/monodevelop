@@ -3194,7 +3194,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Options.ZoomChanged += value;
 			}
 			remove {
-				TextEditor.Options.ZoomChanged += value;
+				TextEditor.Options.ZoomChanged -= value;
 			}
 		}
 
