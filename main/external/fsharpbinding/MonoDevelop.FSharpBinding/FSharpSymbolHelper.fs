@@ -361,7 +361,7 @@ module Highlight =
         editor.SyntaxHighlighting <- new SyntaxHighlighting(highlighting, editor)
         editor
 
-    let editor =
+    let private editor =
         Runtime.RunInMainThread getEditor
         |> Async.AwaitTask 
         |> Async.RunSynchronously
