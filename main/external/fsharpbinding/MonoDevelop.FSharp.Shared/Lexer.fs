@@ -26,7 +26,7 @@ type SymbolLookupKind =
     | ByLongIdent
     | Simple
 
-type internal DraftToken =
+type DraftToken =
     { Kind: SymbolKind
       Token: FSharpTokenInfo
       RightColumn: int }
@@ -118,7 +118,7 @@ module Lexer =
     // Statically resolved type parameters: we convert INFIX_AT_HAT_OP + IDENT tokens into single IDENT token, altering its LeftColumn
     // and FullMathedLength (for "^type" which is tokenized as (INFIX_AT_HAT_OP, left=2) + (IDENT, left=3, length=4)
     // we'll get (IDENT, left=2, length=5).
-    let internal fixTokens lineStr (tokens : FSharpTokenInfo list) =
+    let fixTokens lineStr (tokens : FSharpTokenInfo list) =
         tokens
         |> List.fold (fun (acc, lastToken) token ->
             match lastToken with

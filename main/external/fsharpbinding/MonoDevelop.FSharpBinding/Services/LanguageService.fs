@@ -11,6 +11,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
+open MonoDevelop.FSharp.Shared
 
 module Symbol =
     /// We always know the text of the identifier that resolved to symbol.

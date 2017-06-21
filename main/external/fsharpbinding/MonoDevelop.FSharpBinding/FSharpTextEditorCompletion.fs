@@ -12,6 +12,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Core.Text
+open MonoDevelop.FSharp.Shared
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
