@@ -50,6 +50,8 @@ module TestHelpers =
         FixtureSetup.initialiseMonoDevelop()
 
         let results = parseFile source
+
+        results.CheckResults |> Option.iter(fun r -> if r.Errors.Length > 0 then printfn "%A" r.Errors)
         let options = ParseOptions(FileName = filename, Content = StringTextSource(source))
 
         let parsedDocument =
