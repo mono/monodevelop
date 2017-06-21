@@ -136,7 +136,13 @@ namespace MonoDevelop.Ide.Composition
 			if (!configuration.CompositionErrors.IsEmpty) {
 				// capture the errors in an array for easier debugging
 				var errors = configuration.CompositionErrors.ToArray ();
-				configuration.ThrowOnErrors ();
+
+				// For now while we're still transitioning to VSMEF it's useful to work
+				// even if the composition has some errors. TODO: re-enable this.
+				//var messages = errors.SelectMany (e => e).Select (e => e.Message);
+				//var text = string.Join (Environment.NewLine, messages);
+				//Xwt.Clipboard.SetText (text);
+				//configuration.ThrowOnErrors ();
 			}
 
 			RuntimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
