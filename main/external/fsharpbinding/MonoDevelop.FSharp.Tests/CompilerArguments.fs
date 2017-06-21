@@ -29,8 +29,7 @@ type CompilerArgumentsTests() =
             let testProject = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
             testProject.FileName <- Path.GetTempFileName() |> FilePath
 
-
-            let! _ = testProject.SaveAsync monitor |> Async.AwaitTask
+            do! testProject.SaveAsync monitor |> Async.awaitPlainTask
             do! testProject.ReevaluateProject(monitor)
             return testProject
         }

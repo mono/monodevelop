@@ -280,10 +280,9 @@ type FSharpProject() as self =
         let task = base.OnReevaluateProject (e)
 
         async {
-            do! task |> Async.AwaitTask
-
+            do! task
             MDLanguageService.invalidateProjectFile self.FileName
-            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
+            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig())
             referencedAssemblies <- Some refs
         }
 
