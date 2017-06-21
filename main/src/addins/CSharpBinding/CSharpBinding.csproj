@@ -387,8 +387,8 @@
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionHelpers.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\GotoDefinition\GotoDefinitionService.cs" />
     <Compile Include="Util\PortingExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\CompletionDataWrapper.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ContextHandlers\FormatItemContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionProvider\FormatItemCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -398,8 +398,8 @@
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
     <None Include="packages.config" />
-    <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\CastCompletionContextHandler.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ContextHandlers\RegexContextHandler.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\CompletionProvider\CastCompletionContextHandler.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\CompletionProvider\RegexContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="UnitTests" />
@@ -417,7 +417,7 @@
   <ItemGroup>
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
-    <Folder Include="MonoDevelop.CSharp.Completion\ContextHandlers\" />
+    <Folder Include="MonoDevelop.CSharp.Completion\CompletionProvider\" />
     <Folder Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\" />
   </ItemGroup>
 </Project>

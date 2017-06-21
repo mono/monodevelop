@@ -38,14 +38,14 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class CompletionDataWrapper : CompletionData
+	class RoslynCompletionData : CompletionData
 	{
 		readonly Document doc;
 		readonly CompletionService completionService;
 	
 		public CompletionItem CompletionItem { get; private set; }
 
-		public CompletionDataWrapper (Document document, CompletionService completionService, CompletionItem completionItem)
+		public RoslynCompletionData (Document document, CompletionService completionService, CompletionItem completionItem)
 		{
 			this.doc = document;
 			this.completionService = completionService;
@@ -83,6 +83,21 @@ namespace MonoDevelop.CSharp.Completion
 				return "md-" + modifier + type;
 			}
 		}
+
+		public override string GetDisplayDescription (bool isSelected)
+		{
+			if (CompletionItem.Properties.TryGetValue ("DescriptionMarkup", out string result))
+				return result;
+			return base.GetDisplayDescription (isSelected);
+		}
+
+		public override string GetRightSideDescription (bool isSelected)
+		{
+			if (CompletionItem.Properties.TryGetValue ("RightSideMarkup", out string result))
+				return result;
+			return null;
+		}
+
 
 		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
 			{ "Field", "field" },

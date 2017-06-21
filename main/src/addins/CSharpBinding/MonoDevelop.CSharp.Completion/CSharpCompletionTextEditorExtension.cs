@@ -56,6 +56,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Refactoring;
 using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -158,7 +159,11 @@ namespace MonoDevelop.CSharp.Completion
 			this.addEventHandlersInInitialization = addEventHandlersInInitialization;
 			Initialize (doc.Editor, doc);
 		}
-		
+
+		public CSharpCompletionTextEditorExtension ()
+		{
+		}
+
 		protected override void Initialize ()
 		{
 			base.Initialize ();
@@ -419,7 +424,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (analysisDocument == null)
 				return EmptyCompletionDataList;
 
-
+		 
 			var cs = DocumentContext.RoslynWorkspace.Services.GetLanguageServices (LanguageNames.CSharp).GetService<CompletionService> ();
 			SourceText sourceText;
 			if (!analysisDocument.TryGetText (out sourceText))
@@ -461,7 +466,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var data in completionList.Items) {
 				if (string.IsNullOrEmpty (data.DisplayText))
 					continue;
-				result.Add (new CompletionDataWrapper (analysisDocument, cs, data));
+				result.Add (new RoslynCompletionData (analysisDocument, cs, data));
 			}
 
 			result.AutoCompleteUniqueMatch = (triggerInfo.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand);
