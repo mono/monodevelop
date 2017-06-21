@@ -77,8 +77,6 @@
   <ItemGroup>
     <Compile Include="Services\Extensions.fs" />
     <Compile Include="Services\CompilerLocationUtils.fs" />
-    <Compile Include="Services\Lexer.fs" />
-    <Compile Include="Services\Parser.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
