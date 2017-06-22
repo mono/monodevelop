@@ -181,17 +181,6 @@
 		<Class class="MonoDevelop.Core.Assemblies.MonoTargetRuntimeFactory"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="Net_1.1" resource="framework_NET_1_1.xml"/>
-		<Framework id="Net_2.0" resource="framework_NET_2_0.xml"/>
-		<Framework id="Net_3.0" resource="framework_NET_3_0.xml"/>
-		<Framework id="Net_3.5" resource="framework_NET_3_5.xml"/>
-		<Framework id="Net_3.5_client" resource="framework_NET_3_5_client.xml"/>
-		<Framework id="Net_4.0" resource="framework_NET_4_0.xml"/>
-		<Framework id="Net_4.0_client" resource="framework_NET_4_0_client.xml"/>
-		<Framework id="Net_4.5" resource="framework_NET_4_5.xml"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="Mono"
 		                  class = "MonoDevelop.Core.Execution.DotNetExecutionHandler"/>
